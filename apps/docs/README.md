@@ -1,0 +1,61 @@
+# Leaf UI 文档站
+
+此目录使用 Rspress 编写 Leaf UI 的在线文档。在线内容只面向组件使用者；文档站运行、维护与仓库开发说明放在源码 Markdown 中。
+
+## 运行环境
+
+Node.js 22.22.2+ / 24.15.0+ 的受支持 LTS 版本，或 Node.js 26；pnpm 11，工作区固定使用 11.10.0。
+
+在仓库根目录运行：
+
+```bash
+pnpm install
+pnpm dev
+```
+
+打开 `http://127.0.0.1:3000`。文档直接引用 `packages/react/src`，组件和 CSS 修改会热更新，不需要预先构建组件包。
+
+## 构建与预览
+
+```bash
+pnpm build:docs
+pnpm preview
+```
+
+静态产物位于 `apps/docs/doc_build`。部署到子路径时，在 `rspress.config.ts` 中配置 `base`。
+
+## 内容与导航
+
+- `docs/guide/`：面向使用者的介绍、安装、快速开始、主题定制。
+- `docs/components/`：组件总览与各组件的使用/API 文档。
+- `src/components/`：首页、主题编辑器、交互示例与示例容器。
+- `theme/`：Rspress 主题扩展和站点样式。
+
+`rspress.config.ts` 按路径分别配置指南和组件侧边栏。添加组件时同时更新总览、组件侧边栏和对应 MDX 页面。
+
+不要将文档站运行命令、发布构建流程或仓库开发指南放入 `docs` 目录；其中的 Markdown 会成为在线页面并进入搜索索引。
+
+## 预览与代码模块
+
+在 MDX 中使用 `ComponentExample`，将交互预览与源码包在同一个卡片内：
+
+````mdx
+import { ComponentExample } from '../../src/components/component-example';
+import { MyExample } from '../../src/components/my-example';
+
+<ComponentExample title="示例名称" preview={<MyExample />} fileName="example.tsx">
+
+```tsx lineNumbers
+import { Button } from '@leaf-ui/react';
+
+<Button>示例按钮</Button>
+```
+
+</ComponentExample>
+````
+
+预览节点单独放在 `preview` 属性中，子内容使用 MDX 代码围栏，可用 `file="../../src/examples/button/variants.tsx"` 直接引用实际预览源码，避免演示与代码脱节。语法高亮在构建时生成；示例容器负责折叠、复制完整源码和代码换行。
+
+长代码默认折叠；短代码会完整展示。样式与行为定义在 `src/components/component-example.tsx` 和 `src/components/component-example.css`。
+
+仓库整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)，组件开发约定见 [packages/react/DEVELOPMENT.md](../../packages/react/DEVELOPMENT.md)。

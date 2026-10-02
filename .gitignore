@@ -1,0 +1,9 @@
+node_modules/
+dist/
+doc_build/
+.rspress/
+coverage/
+*.tgz
+*.tsbuildinfo
+.DS_Store
+*.log

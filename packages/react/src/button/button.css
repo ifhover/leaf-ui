@@ -1,0 +1,184 @@
+.leaf-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  min-height: var(--leaf-button-height, 40px);
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--leaf-button-radius, var(--leaf-radius));
+  font-family: var(--leaf-font-family);
+  font-size: var(--leaf-font-size);
+  font-weight: var(--leaf-font-weight);
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  transition:
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+}
+
+.leaf-button:focus-visible {
+  outline: 3px solid
+    var(--leaf-color-focus, color-mix(in srgb, var(--leaf-color-primary) 42%, transparent));
+  outline-offset: 3px;
+}
+
+.leaf-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.leaf-button[data-loading] {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.leaf-button--solid {
+  color: var(--leaf-color-on-primary);
+  background: var(--leaf-color-primary);
+}
+
+.leaf-button--solid:hover:not(:disabled) {
+  background: var(
+    --leaf-color-primary-hover,
+    color-mix(in srgb, var(--leaf-color-primary) 86%, #000)
+  );
+}
+
+.leaf-button--solid:active:not(:disabled) {
+  background: var(
+    --leaf-color-primary-active,
+    color-mix(in srgb, var(--leaf-color-primary) 76%, #000)
+  );
+}
+
+.leaf-button--soft {
+  color: var(--leaf-color-primary);
+  background: var(
+    --leaf-color-primary-soft,
+    color-mix(in srgb, var(--leaf-color-primary) 11%, transparent)
+  );
+}
+
+.leaf-button--soft:hover:not(:disabled),
+.leaf-button--ghost:hover:not(:disabled) {
+  background: var(
+    --leaf-color-primary-soft-hover,
+    color-mix(in srgb, var(--leaf-color-primary) 18%, transparent)
+  );
+}
+
+.leaf-button--soft:active:not(:disabled),
+.leaf-button--ghost:active:not(:disabled) {
+  background: var(
+    --leaf-color-primary-soft-active,
+    color-mix(in srgb, var(--leaf-color-primary) 25%, transparent)
+  );
+}
+
+.leaf-button--outline {
+  color: var(--leaf-color-primary);
+  border-color: var(
+    --leaf-color-primary-border,
+    color-mix(in srgb, var(--leaf-color-primary) 42%, transparent)
+  );
+  background: transparent;
+}
+
+.leaf-button--outline:hover:not(:disabled) {
+  border-color: var(--leaf-color-primary);
+  background: var(
+    --leaf-color-primary-soft,
+    color-mix(in srgb, var(--leaf-color-primary) 8%, transparent)
+  );
+}
+
+.leaf-button--outline:active:not(:disabled) {
+  background: var(
+    --leaf-color-primary-soft-active,
+    color-mix(in srgb, var(--leaf-color-primary) 18%, transparent)
+  );
+}
+
+.leaf-button--ghost {
+  color: var(--leaf-color-primary);
+  background: transparent;
+}
+
+.leaf-button--sm {
+  min-height: var(--leaf-button-height, 32px);
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.leaf-button--lg {
+  min-height: var(--leaf-button-height, 48px);
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.leaf-button--full-width {
+  display: flex;
+  width: 100%;
+}
+
+.leaf-button__icon,
+.leaf-button__spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.leaf-button__icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.leaf-button__spinner {
+  box-sizing: border-box;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: leaf-button-spin 700ms linear infinite;
+}
+
+@keyframes leaf-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf-button {
+    transition: none;
+  }
+  .leaf-button__spinner {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .leaf-button {
+    border-color: ButtonText;
+  }
+  .leaf-button:disabled {
+    color: GrayText;
+    border-color: GrayText;
+  }
+  .leaf-button:focus-visible {
+    outline-color: Highlight;
+  }
+}

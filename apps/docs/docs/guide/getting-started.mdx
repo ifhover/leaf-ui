@@ -1,0 +1,50 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { GettingStartedExample } from '../../src/components/guide-examples';
+
+# 快速开始
+
+[安装组件包](/guide/installation)并引入样式后，就可以在 React 页面中使用 Leaf UI。
+
+## 使用第一个组件
+
+导入 `Button`，像原生按钮一样添加内容和事件：
+
+<ComponentExample title="第一个按钮" preview={<GettingStartedExample />} fileName="getting-started.tsx">
+
+```tsx lineNumbers file="../../src/examples/guide/getting-started.tsx"
+```
+
+</ComponentExample>
+
+样式只需在应用入口导入一次。如果多个页面使用组件，不必重复引入。
+
+## 使用原生属性
+
+组件保留原生 `button` 属性，例如 `onClick`、`disabled`、`type`、`className` 和 `aria-*`。
+
+```tsx
+<Button type="submit" disabled={submitting}>
+  提交表单
+</Button>
+```
+
+`Button` 的默认类型为 `button`。在表单中提交数据时，请显式设置 `type="submit"`。
+
+## 换一种颜色
+
+在 Leaf UI 样式之后引入主题 CSS：
+
+```css title="theme.css"
+:root {
+  --leaf-color-primary: #3264d9;
+  --leaf-radius: 6px;
+}
+```
+
+主题变量也可以放在父容器上，详情见[定制主题](/guide/theming)。
+
+## 接下来
+
+- [组件总览](/components/)：浏览可用组件。
+- [Button 按钮](/components/button)：查看样式、尺寸、加载状态与完整 API。
+- [定制主题](/guide/theming)：实时调整颜色、圆角和外观。

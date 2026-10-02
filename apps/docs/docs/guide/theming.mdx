@@ -1,0 +1,125 @@
+import { ThemePlayground } from '../../src/components/theme-playground';
+
+# 定制主题
+
+Leaf UI 的绿色只是一个起点。组件通过 CSS 变量读取主题，不需要主题 Provider，也无需重新构建组件包。
+
+## 试试你的风格
+
+切换颜色、圆角和外观，预览会立即更新。复制生成的 CSS 后，将它放在 Leaf UI 样式之后即可使用。
+
+<ThemePlayground />
+
+## 全局主题
+
+```tsx
+import '@leaf-ui/react/styles.css';
+import './theme.css';
+```
+
+```css title="theme.css"
+:root {
+  --leaf-color-primary: #20834a;
+  --leaf-color-on-primary: #ffffff;
+  --leaf-radius: 10px;
+}
+```
+
+悬停、按下、浅色背景和焦点轮廓会基于当前主题色自动计算。你也可以通过可选变量单独覆盖它们。
+
+## 局部主题
+
+CSS 变量可以继承。同一页面中的不同区域可以拥有不同的主题：
+
+```css
+.campaign {
+  --leaf-color-primary: #7654c6;
+  --leaf-radius: 20px;
+}
+```
+
+```tsx
+<div className="campaign">
+  <Button>活动专属主题</Button>
+  <Button variant="outline">了解更多</Button>
+</div>
+```
+
+派生状态色在组件内计算，因此修改局部主题色后，悬停、浅色背景和边框会同步更新。
+
+## 内联变量
+
+使用 `LeafThemeStyle` 类型，可在保留标准 React 样式属性检查的同时传入 `--leaf-*` 变量。尺寸变量需要 CSS 单位。
+
+```tsx
+import { Button, type LeafThemeStyle } from '@leaf-ui/react';
+
+const theme: LeafThemeStyle = {
+  '--leaf-color-primary': '#087f8c',
+  '--leaf-radius': '8px',
+};
+
+export function ScopedTheme() {
+  return <div style={theme}><Button>湖蓝主题</Button></div>;
+}
+```
+
+## 基础变量
+
+| CSS 变量 | 默认值 | 用途 |
+| --- | --- | --- |
+| `--leaf-color-primary` | `#20834a` | 主题色 |
+| `--leaf-color-on-primary` | `#ffffff` | 实心按钮的文字色 |
+| `--leaf-color-text` | `#203329` | 主要文字色 |
+| `--leaf-color-text-muted` | `#6c7c71` | 次要文字色 |
+| `--leaf-color-surface` | `#ffffff` | 内容表面色 |
+| `--leaf-color-surface-muted` | `#f4f7f4` | 次级表面色 |
+| `--leaf-color-border` | `#dce5de` | 中性边框色 |
+| `--leaf-radius` | `10px` | 组件默认圆角 |
+| `--leaf-radius-sm` | `6px` | 小型容器圆角 token |
+| `--leaf-radius-lg` | `16px` | 大型容器圆角 token |
+| `--leaf-font-family` | 系统无衬线字体 | 字体 |
+| `--leaf-font-size` | `14px` | 默认字号 |
+| `--leaf-font-weight` | `500` | 默认字重 |
+| `--leaf-motion-duration` | `160ms` | 状态过渡时间 |
+| `--leaf-motion-easing` | `ease` | 过渡曲线 |
+
+## 按钮与状态变量
+
+下列变量未设定时，会使用组件内的默认值或根据当前主题色计算。所有按钮尺寸都继承 `--leaf-radius`；只修改按钮时，使用 `--leaf-button-radius`。
+
+| CSS 变量 | 未覆盖时 |
+| --- | --- |
+| `--leaf-button-radius` | `var(--leaf-radius)` |
+| `--leaf-button-height` | `sm: 32px / md: 40px / lg: 48px` |
+| `--leaf-color-primary-hover` | 主题色混合 14% 黑色 |
+| `--leaf-color-primary-active` | 主题色混合 24% 黑色 |
+| `--leaf-color-primary-soft` | 柔和样式使用 11% 主题色，描边悬停使用 8% 主题色 |
+| `--leaf-color-primary-soft-hover` | 18% 主题色 |
+| `--leaf-color-primary-soft-active` | 柔和和文字样式按下使用 25%，描边按下使用 18% |
+| `--leaf-color-primary-border` | 42% 主题色 |
+| `--leaf-color-focus` | 42% 主题色 |
+
+## 深色外观
+
+通过 `data-leaf-theme` 切换中性颜色与浏览器原生控件的配色。推荐同时设置合适的主题色和前景色：
+
+```css
+.dark-panel {
+  --leaf-color-primary: #83cf9e;
+  --leaf-color-on-primary: #11271a;
+}
+```
+
+```tsx
+<div className="dark-panel" data-leaf-theme="dark">
+  <Button>深色主题</Button>
+  <Button variant="soft">柔和按钮</Button>
+</div>
+```
+
+浅色背景使用 `data-leaf-theme="light"`。这些属性作用于当前容器和其子元素，可以在同一页面混用。
+
+## 浏览器范围
+
+主题状态色使用原生 `color-mix()`，面向支持该特性的现代浏览器。组件样式不重置应用的全局元素。

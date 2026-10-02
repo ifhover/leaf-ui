@@ -1,0 +1,107 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
+
+# Button 按钮
+
+按钮用来触发一个明确的操作。用合适的层级、清晰的文案，让每一次点击都有预期。
+
+## 基础用法
+
+`solid` 适合主要操作，`soft` 适合柔和强调，`outline` 适合次要操作，`ghost` 适合低优先级操作。
+
+<ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/variants.tsx"
+```
+
+</ComponentExample>
+
+使用前，在应用入口导入一次 `@leaf-ui/react/styles.css`。接入步骤见[快速开始](/guide/getting-started)。
+
+## 尺寸
+
+默认高度分别为 32px、40px、48px。圆角都读取 `--leaf-radius`，也可以通过 `--leaf-button-radius` 单独设置。
+
+<ComponentExample title="按钮尺寸" preview={<ButtonSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/sizes.tsx"
+```
+
+</ComponentExample>
+
+## 禁用与加载
+
+加载时会显示旋转指示器，自动禁用按钮，并设置 `aria-busy`。原有文字保留，帮助用户理解正在进行的操作。
+
+<ComponentExample title="禁用与加载" preview={<ButtonStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/states.tsx"
+```
+
+</ComponentExample>
+
+## 实际交互
+
+通过应用状态控制 `loading`。下面的示例会在 1.2 秒后完成保存；实际使用时，把计时器替换成你的异步业务操作。
+
+<ComponentExample title="异步保存" preview={<ButtonLoading />} fileName="loading.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/loading.tsx"
+```
+
+</ComponentExample>
+
+## 图标
+
+`startIcon` 和 `endIcon` 接受 React 节点。图标容器默认对辅助技术隐藏，按钮文字提供名称；只有图标时请设置 `aria-label`。
+
+<ComponentExample title="图标按钮" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## 整行显示
+
+`fullWidth` 让按钮填满父容器宽度，适合表单提交和移动端操作区。
+
+<ComponentExample title="整行按钮" preview={<ButtonFullWidth />} fileName="full-width.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/full-width.tsx"
+```
+
+</ComponentExample>
+
+## API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | 视觉样式 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
+| `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
+| `disabled` | `boolean` | `false` | 原生禁用状态 |
+| `fullWidth` | `boolean` | `false` | 填满父容器宽度 |
+| `startIcon` | `ReactNode` | — | 文字前的图标，加载时由指示器替代 |
+| `endIcon` | `ReactNode` | — | 文字后的图标 |
+| `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | 原生按钮类型 |
+| `ref` | `Ref<HTMLButtonElement>` | — | 按钮 DOM 引用 |
+
+支持其他原生 `button` 属性，例如 `onClick`、`name`、`value`、`form`、`className`、`style`、`aria-*` 和 `data-*`。
+
+## 表单与键盘
+
+默认 `type="button"`，放进表单时不会意外提交。需要提交表单，请显式设置 `type="submit"`。
+
+组件保留原生键盘行为：Tab 聚焦，Enter 或 Space 触发。禁用和加载状态会阻止交互；聚焦时显示清晰的焦点轮廓。
+
+## 定制样式
+
+```css
+.custom-actions {
+  --leaf-color-primary: #7654c6;
+  --leaf-radius: 18px;
+}
+```
+
+更多变量与实时示例见[定制主题](/guide/theming)。

@@ -1,0 +1,12 @@
+import { Button } from '@leaf-ui/react';
+
+export function ButtonVariants() {
+  return (
+    <>
+      <Button>主要按钮</Button>
+      <Button variant="soft">柔和按钮</Button>
+      <Button variant="outline">描边按钮</Button>
+      <Button variant="ghost">文字按钮</Button>
+    </>
+  );
+}

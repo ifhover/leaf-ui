@@ -1,0 +1,41 @@
+# 安装
+
+Leaf UI 的 React 组件包名为 `@leaf-ui/react`，支持 React 18 与 React 19。React 和 React DOM 由你的应用提供。
+
+## 安装组件包
+
+当前版本尚未发布到 npm，请使用维护者提供的 `leaf-ui-react-0.1.0.tgz` 安装包。在你的 React 项目目录下执行：
+
+```bash
+pnpm add ./leaf-ui-react-0.1.0.tgz
+```
+
+使用 npm 或 Yarn 时，同样可以安装这个文件：
+
+```bash
+npm install ./leaf-ui-react-0.1.0.tgz
+# 或者
+yarn add ./leaf-ui-react-0.1.0.tgz
+```
+
+把示例中的文件路径替换为你实际保存安装包的位置。安装后，组件仍然通过 `@leaf-ui/react` 导入。
+
+## 引入样式
+
+在应用入口导入一次 Leaf UI 样式。自定义主题 CSS 应放在它之后：
+
+```tsx title="src/main.tsx"
+import '@leaf-ui/react/styles.css';
+import './theme.css';
+```
+
+如果暂时不需要自定义主题，只引入 `@leaf-ui/react/styles.css` 即可。
+
+## 兼容性
+
+- React 18 / 19。
+- TypeScript 项目可以直接使用随包提供的类型声明。
+- 提供 ESM 和 CommonJS 模块入口。
+- 样式面向支持 CSS 变量和 `color-mix()` 的现代浏览器。
+
+完成安装后，继续阅读[快速开始](/guide/getting-started)。

@@ -1,0 +1,29 @@
+{
+  "name": "leaf-ui-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Leaf UI — a themeable React component library",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0",
+    "pnpm": ">=11 <12"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @leaf-ui/docs dev",
+    "build": "pnpm build:lib && pnpm build:docs",
+    "build:lib": "pnpm --filter @leaf-ui/react build && pnpm --filter @leaf-ui/react check:package",
+    "build:docs": "pnpm --filter @leaf-ui/docs build",
+    "preview": "pnpm --filter @leaf-ui/docs preview",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "pnpm --filter @leaf-ui/react test",
+    "test:watch": "pnpm --filter @leaf-ui/react test:watch",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2"
+  }
+}

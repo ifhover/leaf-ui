@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+allowBuilds:
+  esbuild: true
+  '@swc/core': true
+
+minimumReleaseAgeExclude:
+  - '@types/node@26.6.4'
