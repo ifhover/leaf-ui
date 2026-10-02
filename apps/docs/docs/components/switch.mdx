@@ -1,0 +1,42 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SwitchBasic, SwitchControlled } from '../../src/components/form-examples';
+
+# Switch 开关
+
+即时启用或关闭一个设置。底层使用带 switch 语义的原生 checkbox，支持空格切换、表单与受控状态。
+
+## 基础状态
+
+loading 显示加载图标并阻止交互，可用于异步保存期间避免重复操作。
+
+<ComponentExample title="基础状态" preview={<SwitchBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/switch/basic.tsx"
+```
+
+</ComponentExample>
+
+## 受控与尺寸
+
+容器最小高度与公共尺寸对齐；内部轨道保持适合开关的比例。
+
+<ComponentExample title="受控与尺寸" preview={<SwitchControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/switch/controlled.tsx"
+```
+
+</ComponentExample>
+
+## API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| checked / defaultChecked | boolean | — | 受控 / 非受控初始值 |
+| onChange | `ChangeEventHandler<HTMLInputElement>` | — | 读取 event.target.checked |
+| size | `'sm' \| 'md' \| 'lg'` | md | 容器最小高度 28 / 34 / 40px |
+| loading | boolean | false | 显示加载状态，设置 aria-busy 并禁用交互 |
+| disabled | boolean | false | 禁用交互 |
+| children | ReactNode | — | 可点击的文字标签 |
+| ref | `Ref<HTMLInputElement>` | — | 原生 checkbox 节点 |
+
+支持 name、value、required、form 等原生属性。未开启或被禁用的开关不参与原生表单提交。没有文字时使用 aria-label；className 与 style 作用于标签容器。

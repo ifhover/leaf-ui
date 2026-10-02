@@ -1,3 +1,4 @@
+export { ButtonDanger } from '../examples/button/danger';
 export { ButtonFullWidth } from '../examples/button/full-width';
 export { ButtonIcons } from '../examples/button/icons';
 export { ButtonLoading } from '../examples/button/loading';

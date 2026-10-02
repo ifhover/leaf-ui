@@ -1,10 +1,42 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Plus, Trash2 } from 'lucide-react';
 import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from './button';
 
 describe('Button', () => {
+  it('hides decorative icons and preserves an icon-only button name during loading', () => {
+    const { rerender } = render(<Button aria-label="添加项目" startIcon={<Plus />} />);
+    const button = screen.getByRole('button', { name: '添加项目' });
+    expect(button).toHaveClass('leaf-button--icon-only');
+    expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    rerender(<Button aria-label="添加项目" startIcon={<Plus />} loading />);
+    expect(button).toHaveClass('leaf-button--icon-only');
+    expect(button).toBeDisabled();
+    expect(button).toHaveAccessibleName('添加项目');
+  });
+  it('supports danger semantics with native click handling and every variant', async () => {
+    const onClick = vi.fn();
+    const { rerender } = render(
+      <Button danger startIcon={<Trash2 />} onClick={onClick}>
+        删除项目
+      </Button>,
+    );
+    const button = screen.getByRole('button', { name: '删除项目' });
+    expect(button).toHaveClass('leaf-button--danger');
+    expect(button).not.toHaveAttribute('danger');
+    await userEvent.click(button);
+    expect(onClick).toHaveBeenCalledOnce();
+    for (const variant of ['solid', 'soft', 'outline', 'ghost'] as const) {
+      rerender(
+        <Button danger variant={variant}>
+          删除项目
+        </Button>,
+      );
+      expect(button).toHaveClass('leaf-button--danger', `leaf-button--${variant}`);
+    }
+  });
   it('passes native props and click events to the button', async () => {
     const onClick = vi.fn();
     render(

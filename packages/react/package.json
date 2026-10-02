@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@rsbuild/plugin-react": "^2.1.1",
+    "@rsbuild/plugin-sass": "^2.0.1",
     "@rslib/core": "^1.0.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
@@ -57,5 +58,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "lucide-react": "^1.50.0"
   }
 }

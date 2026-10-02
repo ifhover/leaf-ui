@@ -8,3 +8,4 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@types/node@26.6.4'
+  - lucide-react@1.50.0

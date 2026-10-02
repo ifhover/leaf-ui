@@ -34,8 +34,7 @@ export function HomeLayout() {
       <section className="leaf-hero">
         <div className="leaf-hero__content">
           <div className="leaf-release">
-            <span />
-            从一个按钮，开始生长 <span className="leaf-release__version">v0.1.0</span>
+            <span />7 个基础组件，开始生长 <span className="leaf-release__version">v0.1.0</span>
           </div>
           <h1>
             为你的界面，
@@ -166,14 +165,11 @@ export function HomeLayout() {
         </span>
         <div>
           <span className="leaf-eyebrow">SMALL START. THOUGHTFUL DETAILS.</span>
-          <h2>先从一个好用的按钮开始。</h2>
-          <p>四种样式，三种尺寸。把每一次点击，都照顾好。</p>
+          <h2>从日常表单，开始生长。</h2>
+          <p>统一尺寸，轻盈交互。把每一个基础细节，都照顾好。</p>
         </div>
-        <a
-          className="leaf-home-link leaf-home-link--secondary"
-          href={withBase('/components/button')}
-        >
-          认识 Button <Icon name="arrow" width="18" height="18" />
+        <a className="leaf-home-link leaf-home-link--secondary" href={withBase('/components/')}>
+          探索基础组件 <Icon name="arrow" width="18" height="18" />
         </a>
       </section>
       <footer className="leaf-home-footer">

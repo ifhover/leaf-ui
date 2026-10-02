@@ -15,15 +15,17 @@
     "build:docs": "pnpm --filter @leaf-ui/docs build",
     "preview": "pnpm --filter @leaf-ui/docs preview",
     "typecheck": "pnpm -r typecheck",
-    "lint": "biome check .",
-    "format": "biome check --write .",
+    "lint": "biome check . && prettier --check \"**/*.scss\"",
+    "format": "biome check --write . && prettier --write \"**/*.scss\"",
     "test": "pnpm --filter @leaf-ui/react test",
     "test:watch": "pnpm --filter @leaf-ui/react test:watch",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "format:scss": "prettier --write \"**/*.scss\""
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
     "@types/node": "^26.6.4",
+    "prettier": "^3.9.9",
     "typescript": "^7.0.2"
   }
 }

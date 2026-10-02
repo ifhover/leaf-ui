@@ -1,0 +1,95 @@
+@use '../styles/mixins' as mixins;
+.leaf-switch {
+  @include mixins.choice;
+  --leaf-switch-width: 36px;
+  --leaf-switch-height: 20px;
+  --leaf-switch-thumb: 14px;
+  &--sm {
+    --leaf-switch-width: 30px;
+    --leaf-switch-height: 16px;
+    --leaf-switch-thumb: 10px;
+  }
+  &--lg {
+    --leaf-switch-width: 42px;
+    --leaf-switch-height: 24px;
+    --leaf-switch-thumb: 18px;
+  }
+  &__control {
+    width: var(--leaf-switch-width);
+    height: var(--leaf-switch-height);
+  }
+  &__input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+  &__track {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--leaf-color-border);
+    pointer-events: none;
+    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+  }
+  &__thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--leaf-switch-thumb);
+    height: var(--leaf-switch-thumb);
+    border-radius: 50%;
+    color: var(--leaf-color-primary);
+    background: var(--leaf-color-on-primary);
+    box-shadow: 0 1px 2px #0002;
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+  }
+  &__input:checked + &__track {
+    background: var(--leaf-color-primary);
+  }
+  &__input:checked + &__track &__thumb {
+    transform: translateX(calc(var(--leaf-switch-width) - var(--leaf-switch-height)));
+  }
+  &__input:focus-visible + &__track {
+    @include mixins.focus-ring;
+  }
+  &__spinner {
+    width: 10px;
+    height: 10px;
+    animation: leaf-spin 900ms linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &__track,
+    &__thumb {
+      transition: none;
+    }
+    &__spinner {
+      animation: none;
+    }
+  }
+  @media (forced-colors: active) {
+    &__track {
+      border: 1px solid ButtonText;
+      background: Canvas;
+    }
+    &__thumb {
+      background: ButtonText;
+    }
+    &__input:checked + &__track {
+      background: Highlight;
+    }
+    &__input:checked + &__track &__thumb {
+      background: HighlightText;
+    }
+    &__input:focus-visible + &__track {
+      outline-color: Highlight;
+    }
+  }
+}

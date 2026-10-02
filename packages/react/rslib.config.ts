@@ -1,9 +1,10 @@
 import { pluginReact } from '@rsbuild/plugin-react';
+import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rslib/core';
 
 export default defineConfig({
   // CommonJS exposes the exports of the final entry, so the component API comes last.
-  source: { entry: { index: ['./src/styles/index.css', './src/index.ts'] } },
+  source: { entry: { index: ['./src/styles/index.scss', './src/index.ts'] } },
   lib: [
     {
       format: 'esm',
@@ -24,5 +25,5 @@ export default defineConfig({
     target: 'web',
     sourceMap: { js: 'source-map', css: true },
   },
-  plugins: [pluginReact()],
+  plugins: [pluginReact(), pluginSass()],
 });

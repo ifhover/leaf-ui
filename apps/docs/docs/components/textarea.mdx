@@ -1,0 +1,41 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TextareaBasic, TextareaControlled } from '../../src/components/form-examples';
+
+# Textarea 文本域
+
+输入较长的多行内容。保留原生 textarea 的表单、光标、字符长度和键盘行为。行数控制高度，多行控件沿用公共尺寸的间距和字号。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<TextareaBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/textarea/basic.tsx"
+```
+
+</ComponentExample>
+
+## 受控与长度提示
+
+使用 value / onChange 管理内容，结合 maxLength 限制长度。长度提示由业务决定，resize="none" 可以关闭手动缩放。
+
+<ComponentExample title="受控与长度提示" preview={<TextareaControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/textarea/controlled.tsx"
+```
+
+</ComponentExample>
+
+## API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `md` | 共用尺寸；单行控件为 28 / 34 / 40px |
+| `status` | `'error' \| 'warning'` | — | 校验状态；error 同时设置 aria-invalid |
+| rows | number | 3 | 初始可见行数 |
+| resize | `'none' \| 'vertical' \| 'both'` | vertical | 允许的手动缩放方向 |
+| value / defaultValue | 原生 textarea 属性 | — | 受控值 / 非受控初始值 |
+| onChange | `ChangeEventHandler<HTMLTextAreaElement>` | — | 读取 event.target.value |
+| disabled / readOnly | boolean | false | 禁用 / 只读 |
+| ref | `Ref<HTMLTextAreaElement>` | — | 原生 textarea 节点 |
+
+min-height 基于当前尺寸的两倍计算；实际高度可由 rows 或 style 调整。其余原生属性直接透传。通过 label 或 aria-label 提供名称，错误说明可用 aria-describedby 关联。

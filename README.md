@@ -1,6 +1,8 @@
 # Leaf UI
 
-轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体和动效；文档站使用 Rspress。
+轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体、控件高度和动效；样式使用 SCSS，文档站使用 Rspress。
+
+提供 Button、Input、Textarea、Checkbox、Radio、Switch、Select。单行控件默认 **34px**，小/大尺寸为 28/40px；图标统一采用 lucide-react。
 
 在线文档面向组件使用者，分为独立的指南和组件页面；仓库架构、组件开发与文档站维护说明保存在源码 Markdown 中。
 
@@ -17,14 +19,15 @@ pnpm install
 pnpm dev
 ```
 
-打开 `http://localhost:3000`。文档直接引用组件源码，修改组件或 CSS 后会热更新，无需先构建组件包。
+打开 `http://localhost:3000`。文档直接引用组件源码，修改组件或 SCSS 后会热更新，无需先构建组件包。
 
 ## 项目结构
 
 ```text
 leaf-ui/
 ├── packages/react/          # @leaf-ui/react 组件包
-│   ├── src/button/          # Button 组件、样式和行为测试
+│   ├── src/<component>/     # 按钮和表单组件、SCSS、行为测试
+│   ├── src/shared/          # 公共尺寸类型、原生表单集成测试
 │   ├── src/styles/          # 公共主题变量和样式入口
 │   ├── src/theme.ts         # CSS 变量内联样式类型
 │   └── rslib.config.ts      # ESM、CommonJS 和类型声明构建
@@ -113,6 +116,6 @@ export function Example() {
 
 1. 在 `packages/react/src/<component>/` 中添加组件、类型和样式，使用 `leaf-` 前缀与公共 CSS 变量。
 2. 从该目录的 `index.ts` 和组件库的 `src/index.ts` 导出。
-3. 在 `src/styles/index.css` 中引入组件样式。
+3. 在 `src/styles/index.scss` 中引入组件样式。
 4. 在 `apps/docs/src/examples/` 中添加示例源码，使用 `ComponentExample` 在 MDX 中展示预览与同一份源码；更新组件总览和组件侧边栏。
 5. 执行 `pnpm check` 和 `pnpm build`。

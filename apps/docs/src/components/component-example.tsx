@@ -1,4 +1,4 @@
-import './component-example.css';
+import './component-example.scss';
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { Icon } from './icon';

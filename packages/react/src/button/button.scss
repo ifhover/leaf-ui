@@ -1,0 +1,184 @@
+@use '../styles/mixins' as mixins;
+
+.leaf-button {
+  --leaf-button-color: var(--leaf-color-primary);
+  --leaf-button-on-color: var(--leaf-color-on-primary);
+  --leaf-button-hover: var(
+    --leaf-color-primary-hover,
+    color-mix(in srgb, var(--leaf-button-color) 86%, #000)
+  );
+  --leaf-button-active: var(
+    --leaf-color-primary-active,
+    color-mix(in srgb, var(--leaf-button-color) 76%, #000)
+  );
+  --leaf-button-soft: var(
+    --leaf-color-primary-soft,
+    color-mix(in srgb, var(--leaf-button-color) 11%, transparent)
+  );
+  --leaf-button-soft-hover: var(
+    --leaf-color-primary-soft-hover,
+    color-mix(in srgb, var(--leaf-button-color) 18%, transparent)
+  );
+  --leaf-button-soft-active: var(
+    --leaf-color-primary-soft-active,
+    color-mix(in srgb, var(--leaf-button-color) 25%, transparent)
+  );
+  --leaf-button-border: var(
+    --leaf-color-primary-border,
+    color-mix(in srgb, var(--leaf-button-color) 42%, transparent)
+  );
+  box-sizing: border-box;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--leaf-button-height, var(--leaf-current-control-height));
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--leaf-button-radius, var(--leaf-radius));
+  font-family: var(--leaf-font-family);
+  font-size: var(--leaf-current-font-size);
+  font-weight: var(--leaf-font-weight);
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  transition:
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    color var(--leaf-motion-duration) var(--leaf-motion-easing);
+  @include mixins.control-size;
+
+  &:focus-visible {
+    @include mixins.focus-ring(var(--leaf-button-color));
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  &[data-loading] {
+    cursor: wait;
+    opacity: 0.8;
+  }
+
+  &--danger {
+    --leaf-button-color: var(--leaf-color-danger);
+    --leaf-button-on-color: var(--leaf-color-on-danger);
+    --leaf-button-hover: var(
+      --leaf-color-danger-hover,
+      color-mix(in srgb, var(--leaf-button-color) 86%, #000)
+    );
+    --leaf-button-active: var(
+      --leaf-color-danger-active,
+      color-mix(in srgb, var(--leaf-button-color) 76%, #000)
+    );
+    --leaf-button-soft: color-mix(in srgb, var(--leaf-button-color) 11%, transparent);
+    --leaf-button-soft-hover: color-mix(in srgb, var(--leaf-button-color) 18%, transparent);
+    --leaf-button-soft-active: color-mix(in srgb, var(--leaf-button-color) 25%, transparent);
+    --leaf-button-border: color-mix(in srgb, var(--leaf-button-color) 42%, transparent);
+  }
+
+  &--solid {
+    color: var(--leaf-button-on-color);
+    background: var(--leaf-button-color);
+    &:hover:not(:disabled) {
+      background: var(--leaf-button-hover);
+    }
+    &:active:not(:disabled) {
+      background: var(--leaf-button-active);
+    }
+  }
+
+  &--soft,
+  &--ghost {
+    color: var(--leaf-button-color);
+    &:hover:not(:disabled) {
+      background: var(--leaf-button-soft-hover);
+    }
+    &:active:not(:disabled) {
+      background: var(--leaf-button-soft-active);
+    }
+  }
+  &--soft {
+    background: var(--leaf-button-soft);
+  }
+  &--ghost {
+    background: transparent;
+  }
+
+  &--outline {
+    color: var(--leaf-button-color);
+    border-color: var(--leaf-button-border);
+    background: transparent;
+    &:hover:not(:disabled) {
+      border-color: var(--leaf-button-color);
+      background: var(--leaf-button-soft);
+    }
+    &:active:not(:disabled) {
+      background: var(--leaf-button-soft-hover);
+    }
+  }
+
+  &--sm {
+    padding-inline: 10px;
+  }
+  &--lg {
+    padding-inline: 18px;
+  }
+  &--icon-only {
+    width: var(--leaf-button-height, var(--leaf-current-control-height));
+    padding: 0;
+  }
+  &--full-width {
+    width: 100%;
+  }
+
+  &__icon,
+  &__spinner {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &__spinner {
+    animation: leaf-spin 900ms linear infinite;
+  }
+}
+
+@keyframes leaf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf-button {
+    transition: none;
+  }
+  .leaf-button__spinner {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .leaf-button {
+    border-color: ButtonText;
+    &:disabled {
+      color: GrayText;
+      border-color: GrayText;
+    }
+    &:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}

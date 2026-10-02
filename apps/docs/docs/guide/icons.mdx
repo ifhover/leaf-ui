@@ -1,0 +1,29 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ButtonIcons } from '../../src/components/button-examples';
+
+# 使用图标
+
+Leaf UI 使用 **Lucide** 图标。按钮通过 startIcon / endIcon 放置图标，输入框通过 prefix / suffix 放置装饰图标。
+
+## 安装和导入
+
+在应用中直接引用图标时，将 lucide-react 声明为应用依赖：
+
+```bash
+pnpm add lucide-react
+```
+
+按名称导入需要的图标即可。尺寸默认跟随组件的图标容器，颜色继承组件的当前文字色。
+
+<ComponentExample title="图标使用" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## 为图标操作提供名称
+
+带文字的按钮使用文字作为名称，前后图标按装饰性内容处理。仅图标按钮必须提供 aria-label，例如“添加项目”或“删除项目”。图标不应作为操作含义的唯一提示。
+
+Leaf UI 的图标属性接受 ReactNode，也可以传入你现有项目的图标组件。Button 的危险状态会让图标和文字一起使用危险色，无需在图标中固定颜色。

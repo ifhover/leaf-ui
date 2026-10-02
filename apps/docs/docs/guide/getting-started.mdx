@@ -1,5 +1,5 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { GettingStartedExample } from '../../src/components/guide-examples';
+import { GettingStartedExample, GettingStartedForm } from '../../src/components/guide-examples';
 
 # 快速开始
 
@@ -30,6 +30,17 @@ import { GettingStartedExample } from '../../src/components/guide-examples';
 
 `Button` 的默认类型为 `button`。在表单中提交数据时，请显式设置 `type="submit"`。
 
+## 组合一个表单
+
+按钮、输入框和选择器默认都是 **34px** 高。name、required 和表单提交沿用原生 HTML 行为，可以直接用 FormData 读取内容。
+
+<ComponentExample title="组合一个表单" preview={<GettingStartedForm />} fileName="form.tsx">
+
+```tsx lineNumbers file="../../src/examples/guide/form.tsx"
+```
+
+</ComponentExample>
+
 ## 换一种颜色
 
 在 Leaf UI 样式之后引入主题 CSS：
@@ -47,4 +58,5 @@ import { GettingStartedExample } from '../../src/components/guide-examples';
 
 - [组件总览](/components/)：浏览可用组件。
 - [Button 按钮](/components/button)：查看样式、尺寸、加载状态与完整 API。
+- [使用图标](/guide/icons)：通过 Lucide 图标表达操作。
 - [定制主题](/guide/theming)：实时调整颜色、圆角和外观。

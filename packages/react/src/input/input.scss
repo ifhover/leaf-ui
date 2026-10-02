@@ -1,0 +1,42 @@
+@use '../styles/mixins' as mixins;
+
+.leaf-input {
+  @include mixins.field;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--leaf-current-control-height);
+  padding-inline: 10px;
+
+  &__native {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: none;
+    border-radius: inherit;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &::placeholder {
+      color: var(--leaf-color-text-muted);
+      opacity: 0.8;
+    }
+  }
+
+  &__affix {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: var(--leaf-color-text-muted);
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@use '../styles/mixins' as mixins;
+
+.leaf-textarea {
+  @include mixins.field;
+  display: block;
+  min-height: calc(var(--leaf-current-control-height) * 2);
+  padding: 8px 10px;
+  outline: none;
+  &::placeholder {
+    color: var(--leaf-color-text-muted);
+    opacity: 0.8;
+  }
+}

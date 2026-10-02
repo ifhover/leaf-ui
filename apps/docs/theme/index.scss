@@ -25,6 +25,10 @@
 }
 
 html.rp-dark {
+  --leaf-color-danger: #ef8585;
+  --leaf-color-on-danger: #381818;
+  --leaf-color-warning: #e0b76e;
+  --leaf-color-surface-muted: #203027;
   --rp-code-block-bg: #18241c;
   --rp-code-title-bg: #1d2b21;
   --leaf-color-primary: #83cf9e;
@@ -604,7 +608,7 @@ html.rp-dark {
   color: #fff;
   cursor: pointer;
 }
-.leaf-color-swatch[aria-pressed="true"] {
+.leaf-color-swatch[aria-pressed='true'] {
   outline: 2px solid var(--leaf-site-border);
   outline-offset: 3px;
 }
@@ -689,7 +693,7 @@ html.rp-dark {
   font-size: 10px;
   cursor: pointer;
 }
-.leaf-mode-toggle > button[aria-pressed="true"] {
+.leaf-mode-toggle > button[aria-pressed='true'] {
   background: var(--leaf-site-panel);
   color: var(--leaf-site-text);
   box-shadow: 0 1px 3px #24342112;
@@ -945,5 +949,50 @@ html.rp-dark {
 @media (prefers-reduced-motion: reduce) {
   .leaf-home-link {
     transition: none;
+  }
+}
+
+// Shared layouts for consumer-facing component examples.
+.leaf-demo-stack {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 360px);
+}
+.leaf-demo-stack--wide {
+  width: 100%;
+}
+.leaf-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+.leaf-demo-note {
+  color: var(--leaf-site-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.leaf-demo-error {
+  margin-top: -6px;
+  color: var(--leaf-color-danger);
+  font-size: 12px;
+}
+.leaf-demo-control-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) minmax(0, 0.85fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.leaf-demo-size {
+  color: var(--leaf-site-muted);
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .leaf-demo-control-row {
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+  }
+  .leaf-demo-control-row .leaf-select {
+    grid-column: 2 / -1;
+    grid-row: 2;
   }
 }

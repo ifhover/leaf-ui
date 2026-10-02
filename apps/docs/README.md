@@ -13,7 +13,7 @@ pnpm install
 pnpm dev
 ```
 
-打开 `http://127.0.0.1:3000`。文档直接引用 `packages/react/src`，组件和 CSS 修改会热更新，不需要预先构建组件包。
+打开 `http://127.0.0.1:3000`。文档直接引用 `packages/react/src`，组件和 SCSS 修改会热更新，不需要预先构建组件包。
 
 ## 构建与预览
 
@@ -56,6 +56,12 @@ import { Button } from '@leaf-ui/react';
 
 预览节点单独放在 `preview` 属性中，子内容使用 MDX 代码围栏，可用 `file="../../src/examples/button/variants.tsx"` 直接引用实际预览源码，避免演示与代码脱节。语法高亮在构建时生成；示例容器负责折叠、复制完整源码和代码换行。
 
-长代码默认折叠；短代码会完整展示。样式与行为定义在 `src/components/component-example.tsx` 和 `src/components/component-example.css`。
+长代码默认折叠；短代码会完整展示。样式与行为定义在 `src/components/component-example.tsx` 和 `src/components/component-example.scss`。
 
 仓库整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)，组件开发约定见 [packages/react/DEVELOPMENT.md](../../packages/react/DEVELOPMENT.md)。
+
+## SCSS 与总览缩略图
+
+站点样式和示例模块使用 .scss，Rspress 的 builderConfig 启用 pluginSass。源码样式入口别名指向组件库的 src/styles/index.scss，消费者的 CSS 入口保持不变。
+
+总览位于 src/components/component-overview.tsx，采用静态 SVG 图片，资源保存在 docs/public/components。新增组件时更新卡片元数据和对应缩略图，无需在总览挂载交互组件。图标统一使用 lucide-react。

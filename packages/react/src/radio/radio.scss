@@ -1,0 +1,42 @@
+@use '../styles/mixins' as mixins;
+.leaf-radio {
+  @include mixins.choice;
+  &__input {
+    border-radius: 50%;
+  }
+  &__mark {
+    display: none;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--leaf-color-on-primary);
+    pointer-events: none;
+  }
+  &__input:checked ~ &__mark {
+    display: block;
+  }
+}
+.leaf-radio-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--leaf-color-text);
+  font-family: var(--leaf-font-family);
+  font-size: var(--leaf-font-size);
+  &__legend {
+    margin-bottom: 6px;
+    padding: 0;
+    font-weight: var(--leaf-font-weight);
+  }
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+  }
+  &--vertical &__options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

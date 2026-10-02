@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rspress/core';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
@@ -15,7 +16,10 @@ const guideSidebar = [
   },
   {
     text: '个性化',
-    items: [{ text: '定制主题', link: '/guide/theming' }],
+    items: [
+      { text: '定制主题', link: '/guide/theming' },
+      { text: '使用图标', link: '/guide/icons' },
+    ],
   },
 ];
 
@@ -28,13 +32,24 @@ const componentSidebar = [
     text: '通用',
     items: [{ text: 'Button 按钮', link: '/components/button' }],
   },
+  {
+    text: '数据录入',
+    items: [
+      { text: 'Input 输入框', link: '/components/input' },
+      { text: 'Textarea 文本域', link: '/components/textarea' },
+      { text: 'Checkbox 复选框', link: '/components/checkbox' },
+      { text: 'Radio 单选框', link: '/components/radio' },
+      { text: 'Switch 开关', link: '/components/switch' },
+      { text: 'Select 选择器', link: '/components/select' },
+    ],
+  },
 ];
 
 export default defineConfig({
   root: path.join(directory, 'docs'),
   themeDir: path.join(directory, 'theme'),
   title: 'Leaf UI',
-  description: '轻盈、自然、可定制的 React 组件库。从一个按钮开始，让界面自然生长。',
+  description: '轻盈、自然、可定制的 React 组件库。统一的基础组件与表单，让界面自然生长。',
   lang: 'zh',
   icon: '/leaf.svg',
   logo: '/leaf.svg',
@@ -51,12 +66,13 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/ifhover/leaf-ui' }],
   },
   builderConfig: {
+    plugins: [pluginSass()],
     resolve: {
       alias: {
         '@leaf-ui/react$': path.resolve(directory, '../../packages/react/src/index.ts'),
         '@leaf-ui/react/styles.css$': path.resolve(
           directory,
-          '../../packages/react/src/styles/index.css',
+          '../../packages/react/src/styles/index.scss',
         ),
       },
     },

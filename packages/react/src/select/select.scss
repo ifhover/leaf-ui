@@ -1,0 +1,45 @@
+@use '../styles/mixins' as mixins;
+.leaf-select {
+  @include mixins.field;
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  height: var(--leaf-current-control-height);
+  &__native {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0 32px 0 10px;
+    border: 0;
+    outline: none;
+    border-radius: inherit;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    appearance: none;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    option {
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface);
+    }
+  }
+  &__arrow {
+    position: absolute;
+    right: 10px;
+    width: 16px;
+    height: 16px;
+    color: var(--leaf-color-text-muted);
+    pointer-events: none;
+  }
+  @media (forced-colors: active) {
+    &__native {
+      appearance: auto;
+    }
+    &__arrow {
+      display: none;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
+import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
 
 # Button 按钮
 
@@ -18,9 +18,20 @@ import { ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, 
 
 使用前，在应用入口导入一次 `@leaf-ui/react/styles.css`。接入步骤见[快速开始](/guide/getting-started)。
 
+## 危险操作
+
+为删除、清空、撤销等操作使用 danger。所有样式、图标和加载状态都会使用独立的红色语义主题。
+
+<ComponentExample title="危险操作" preview={<ButtonDanger />} fileName="danger.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/danger.tsx"
+```
+
+</ComponentExample>
+
 ## 尺寸
 
-默认高度分别为 32px、40px、48px。圆角都读取 `--leaf-radius`，也可以通过 `--leaf-button-radius` 单独设置。
+sm / md / lg 高度分别为 28px、**34px**、40px，默认 md 与 Input、Select 使用公共的 `--leaf-control-height`。圆角都读取 `--leaf-radius`，也可以通过 `--leaf-button-radius` 单独设置。
 
 <ComponentExample title="按钮尺寸" preview={<ButtonSizes />} fileName="sizes.tsx">
 
@@ -53,7 +64,7 @@ import { ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, 
 
 ## 图标
 
-`startIcon` 和 `endIcon` 接受 React 节点。图标容器默认对辅助技术隐藏，按钮文字提供名称；只有图标时请设置 `aria-label`。
+示例使用 `lucide-react` 的按需导入图标。`startIcon` 和 `endIcon` 接受 React 节点。图标容器默认对辅助技术隐藏，按钮文字提供名称；只有图标时请设置 `aria-label`。
 
 <ComponentExample title="图标按钮" preview={<ButtonIcons />} fileName="icons.tsx">
 
@@ -79,6 +90,7 @@ import { ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, 
 | --- | --- | --- | --- |
 | `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
+| `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
 | `disabled` | `boolean` | `false` | 原生禁用状态 |
 | `fullWidth` | `boolean` | `false` | 填满父容器宽度 |

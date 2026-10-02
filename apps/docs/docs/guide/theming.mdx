@@ -70,6 +70,12 @@ export function ScopedTheme() {
 | --- | --- | --- |
 | `--leaf-color-primary` | `#20834a` | 主题色 |
 | `--leaf-color-on-primary` | `#ffffff` | 实心按钮的文字色 |
+| `--leaf-color-danger` | `#c83c3c` | 危险按钮与错误状态 |
+| `--leaf-color-on-danger` | `#ffffff` | 危险实心按钮的文字色 |
+| `--leaf-color-warning` | `#a9670e` | 警告状态 |
+| `--leaf-control-height` | `34px` | 默认单行控件的共用高度 |
+| `--leaf-control-height-sm` | `28px` | 小尺寸控件高度 |
+| `--leaf-control-height-lg` | `40px` | 大尺寸控件高度 |
 | `--leaf-color-text` | `#203329` | 主要文字色 |
 | `--leaf-color-text-muted` | `#6c7c71` | 次要文字色 |
 | `--leaf-color-surface` | `#ffffff` | 内容表面色 |
@@ -84,6 +90,21 @@ export function ScopedTheme() {
 | `--leaf-motion-duration` | `160ms` | 状态过渡时间 |
 | `--leaf-motion-easing` | `ease` | 过渡曲线 |
 
+## 统一控件高度
+
+Button、Input、Select 的默认高度统一为 **34px**；Checkbox、Radio 和 Switch 的标签容器使用相同的最小高度，方便横向排列。Textarea 按行数展开，并共用字号与间距体系。
+
+调整共用变量即可同步改变单行控件：
+
+```css
+.compact-form {
+  --leaf-control-height: 34px;
+  --leaf-control-height-sm: 28px;
+  --leaf-control-height-lg: 40px;
+  --leaf-radius: 8px;
+}
+```
+
 ## 按钮与状态变量
 
 下列变量未设定时，会使用组件内的默认值或根据当前主题色计算。所有按钮尺寸都继承 `--leaf-radius`；只修改按钮时，使用 `--leaf-button-radius`。
@@ -91,14 +112,17 @@ export function ScopedTheme() {
 | CSS 变量 | 未覆盖时 |
 | --- | --- |
 | `--leaf-button-radius` | `var(--leaf-radius)` |
-| `--leaf-button-height` | `sm: 32px / md: 40px / lg: 48px` |
+| `--leaf-button-height` | `对应尺寸的 --leaf-control-height / -sm / -lg` |
 | `--leaf-color-primary-hover` | 主题色混合 14% 黑色 |
 | `--leaf-color-primary-active` | 主题色混合 24% 黑色 |
-| `--leaf-color-primary-soft` | 柔和样式使用 11% 主题色，描边悬停使用 8% 主题色 |
+| `--leaf-color-primary-soft` | 11% 主题色 |
 | `--leaf-color-primary-soft-hover` | 18% 主题色 |
-| `--leaf-color-primary-soft-active` | 柔和和文字样式按下使用 25%，描边按下使用 18% |
+| `--leaf-color-primary-soft-active` | 柔和和文字样式按下使用 25%；描边按下使用 soft-hover（默认 18%） |
 | `--leaf-color-primary-border` | 42% 主题色 |
-| `--leaf-color-focus` | 42% 主题色 |
+| `--leaf-color-focus` | 42% 当前语义色（主题色或危险色） |
+| `--leaf-color-danger-hover` | 危险色混合 14% 黑色 |
+| `--leaf-color-danger-active` | 危险色混合 24% 黑色 |
+| `--leaf-choice-radius` | `5px`，仅复选框 |
 
 ## 深色外观
 
@@ -119,6 +143,8 @@ export function ScopedTheme() {
 ```
 
 浅色背景使用 `data-leaf-theme="light"`。这些属性作用于当前容器和其子元素，可以在同一页面混用。
+
+主题可以用 CSS 或 SCSS 编写。组件使用者只需导入已编译的 `styles.css`，不需要额外安装 Sass。
 
 ## 浏览器范围
 

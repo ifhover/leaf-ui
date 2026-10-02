@@ -1,0 +1,48 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { RadioBasic, RadioControlled } from '../../src/components/form-examples';
+
+# Radio 单选框
+
+从互斥选项中选择一个。RadioGroup 为选项创建共享 name；原生 radio 保留方向键切换和表单提交行为。
+
+## 分组选项
+
+使用 options 声明选项。label 会生成 fieldset 的 legend，帮助用户理解选项分组。
+
+<ComponentExample title="分组选项" preview={<RadioBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/radio/basic.tsx"
+```
+
+</ComponentExample>
+
+## 受控与纵向排列
+
+通过 value / onChange 管理选择结果，direction="vertical" 设置纵向排列。
+
+<ComponentExample title="受控与纵向排列" preview={<RadioControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/radio/controlled.tsx"
+```
+
+</ComponentExample>
+
+## RadioGroup API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| options | readonly RadioOption[] | 必填 | 每项包含 label、value 和可选 disabled |
+| value / defaultValue | string | — | 受控值 / 初始值 |
+| onChange | `ChangeEventHandler<HTMLInputElement>` | — | 从 event.target.value 读取所选值 |
+| name | string | 自动生成 | 同组的原生 name；提交表单时建议显式指定 |
+| label | string | — | 分组名称，显示为 legend |
+| direction | `'horizontal' \| 'vertical'` | horizontal | 布局方向 |
+| size | `'sm' \| 'md' \| 'lg'` | md | 同组控件尺寸 |
+| disabled / required | boolean | false | 禁用整组 / 要求选择一项 |
+| ref | `Ref<HTMLFieldSetElement>` | — | fieldset 节点 |
+
+## Radio API
+
+单独使用 Radio 时，相同 name 的选项构成一组。支持 checked、defaultChecked、onChange、disabled、size、children 以及其余原生 radio 属性。ref 指向 HTMLInputElement；className 和 style 作用于标签容器。
+
+RadioGroup 的 label、aria-label 或 aria-labelledby 应至少提供一种分组名称。选项 label 与 value 建议保持稳定；value 使用不重复的字符串。
