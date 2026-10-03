@@ -57,7 +57,7 @@ usePopupState 处理禁用时收起和去重后的 onOpenChange。useFloatingDis
 
 src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。FormValue 使用不可交互的文本输入参与 FormData 与 required 校验，拦截原生校验提示并聚焦触发器。自定义选择组件 onChange 返回业务值，事件属性仍透传到触发按钮；清除值分别为 Select 空字符串、日期 / 时间 null、级联空数组。
 
-DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 精度为分钟；Cascader 只在末级提交。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
+DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 支持分钟或秒精度，使用草稿并确认提交；Cascader 只在末级提交。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
 
 本地包只包含 dist、package.json 和包 README。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
 

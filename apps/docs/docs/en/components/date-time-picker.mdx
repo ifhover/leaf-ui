@@ -24,13 +24,16 @@ Select a specific date and time.
 | `showSeconds` | `boolean` | `true` | Show seconds; when disabled seconds are zero |
 | `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
 | `minuteStep / secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `showToday` | `boolean` | `true` | Show the Today shortcut |
+| `todayText` | `ReactNode` | Locale default | Customize the Today label |
+| `renderExtraFooter` | `ReactNode` | — | Additional footer content |
 | `allowClear` | `boolean` | `true` | Show the clear button |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `disabled / required` | `boolean` | `false` | Disabled / required; inherited from FormField |
 | `placeholder / name / form` | `string` | — | Placeholder / field name / form ID |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
-| `ref` | `Ref<HTMLButtonElement>` | — | Reference to the trigger button |
+| `ref` | `Ref<HTMLInputElement>` | — | Input element reference |
 
 ## Types
 
@@ -42,6 +45,8 @@ import type { DateTimePickerProps } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-Choose a date, adjust the time, then confirm. Escape or an outside click discards the draft. Values use the local time zone, and the string format is YYYY-MM-DD HH:mm:ss. The 12-hour clock affects display only; Date hours remain 0–23.
+Click the top-right time button to switch between calendar and time panels. Today changes the draft date; Now sets the current date and time. Customize shortcuts with showToday, todayText and renderExtraFooter.
 
-Named fields submit a local date-time string through FormData. Uncontrolled values reset with the form; reset controlled values in application state. See [DatePicker](/en/components/date-picker) and [DateRangePicker](/en/components/date-range-picker) for other scenarios.
+Type `YYYY-MM-DD HH:mm:ss` (or `YYYY-MM-DD HH:mm` without seconds), then press Enter or click OK. Time input accepts 24-hour time, AM/PM and 上午/下午. Escape or clicking outside discards the draft. Invalid and out-of-bounds text is rejected.
+
+Dates use the local timezone. The value and FormData use 24-hour time regardless of use12Hours. Other input attributes and aria-* target the input; className/style target the wrapper. Uncontrolled fields follow form reset.

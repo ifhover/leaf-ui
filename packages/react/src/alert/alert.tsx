@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleAlert, Info, LoaderCircle, TriangleAlert, X } from 'lucide-react';
+import { CheckCircle2, CircleX, Info, LoaderCircle, TriangleAlert, X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from '../shared/classes';
@@ -16,7 +16,7 @@ export function FeedbackIcon({ type }: { type: FeedbackType | 'loading' }) {
     success: CheckCircle2,
     info: Info,
     warning: TriangleAlert,
-    error: CircleAlert,
+    error: CircleX,
     loading: LoaderCircle,
   }[type];
   return (

@@ -4,6 +4,30 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { Select } from '../select';
 
 afterEach(() => vi.useRealTimers());
+it('preserves the last list contents and position during a selection transition', async () => {
+  render(
+    <Select
+      showSearch
+      aria-label="Choice"
+      options={[
+        { value: 'a', label: 'Alpha' },
+        { value: 'b', label: 'Beta' },
+      ]}
+    />,
+  );
+  await userEvent.click(screen.getByRole('combobox'));
+  await userEvent.type(screen.getByRole('combobox'), 'Al');
+  const panel = screen.getByRole('listbox');
+  panel.style.transitionDuration = '160ms';
+  const position = panel.style.transform;
+  await userEvent.click(screen.getByRole('option', { name: 'Alpha' }));
+  expect(panel).toHaveAttribute('data-state', 'closing');
+  expect(panel.textContent).toBe('Alpha');
+  expect(panel.style.transform).toBe(position);
+  expect(panel).toHaveAttribute('inert');
+  fireEvent.transitionEnd(panel, { propertyName: 'opacity' });
+  expect(panel).not.toBeInTheDocument();
+});
 it('keeps a closing panel inert until its animation completes, and cancels removal on reopen', async () => {
   render(<Select aria-label="Choice" options={[{ value: 'a', label: 'Alpha' }]} />);
   await userEvent.click(screen.getByRole('combobox'));

@@ -26,7 +26,9 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `afterClose` | `() => void` | — | 关闭动画完成后触发 |
 | `confirmText / cancelText` | `ReactNode` | 语言默认值 | 确认 / 取消文字 |
-| `danger` | `boolean` | `false` | 使用危险按钮 |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | 图标与颜色，仅 danger 改变确定按钮颜色 |
+| `showCancel` | `boolean` | success 为 false，其余 true | 是否展示取消按钮 |
+| `danger` | `boolean` | `false` | 兼容属性，等同 type="danger" |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；Promise 完成后关闭，拒绝时显示错误 |
 
 ## useConfirm API
@@ -42,7 +44,9 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 | --- | --- | --- | --- |
 | `title / children` | `ReactNode` | — | 标题与确认内容 |
 | `confirmText / cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
-| `danger` | `boolean` | `false` | 危险操作 |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | 图标与颜色，仅 danger 改变确定按钮颜色 |
+| `showCancel` | `boolean` | success 为 false，其余 true | 是否展示取消按钮 |
+| `danger` | `boolean` | `false` | 兼容属性，等同 type="danger" |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认时运行，拒绝保留弹窗 |
 | `width` | `number \| string` | `480` | 弹窗宽度 |
 | `closable / keyboard` | `boolean` | `true` | 关闭按钮 / Escape 关闭 |
@@ -61,3 +65,5 @@ import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
 useConfirm 返回 confirm 与 contextHolder。把 holder 放在 ConfigProvider 内即可继承区域设置。也支持直接渲染 Confirm，控制 open 和 onClose。处理异步确认时会显示加载状态并阻止重复操作。
 
 其他属性参见 [Modal API](/components/modal#modal-api)。
+
+default 不展示图标；info、warning、success、danger 使用对应图标和颜色。只有 danger 的确定按钮为红色；success 默认隐藏取消按钮，可通过 showCancel 覆盖。按钮属性与 Modal 一致，onCancel 在取消时触发，然后调用 onClose。

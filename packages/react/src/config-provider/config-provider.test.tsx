@@ -44,6 +44,7 @@ describe('ConfigProvider', () => {
         <TimePicker aria-label="Time" />
       </ConfigProvider>,
     );
-    expect(screen.getByRole('combobox')).toHaveTextContent('请选择时间');
+    expect(screen.getByRole('combobox')).toHaveValue('');
+    expect(screen.getByRole('combobox')).toHaveAttribute('placeholder', '请选择时间');
   });
 });

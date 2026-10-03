@@ -1,101 +1,38 @@
-@use '../styles/mixins' as mixins;
-
 .leaf-time-picker {
-  @include mixins.field;
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  height: var(--leaf-current-control-height);
-  padding: 0;
-
-  &__trigger {
-    box-sizing: border-box;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    gap: 8px;
-    padding: 0 10px;
-    border: 0;
-    border-radius: inherit;
-    color: inherit;
-    background: transparent;
-    font: inherit;
-    line-height: inherit;
-    text-align: left;
-    cursor: pointer;
-    &:disabled {
-      cursor: not-allowed;
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
-  }
-
-  &__trigger > span {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__placeholder {
-    color: var(--leaf-color-text-muted);
-  }
-  &__arrow {
-    flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
-    color: var(--leaf-color-text-muted);
-    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &[data-open] &__arrow {
-    transform: rotate(180deg);
-  }
   &__panel {
-    min-width: 220px;
-    padding: 8px;
+    min-width: 240px;
+    padding: 0;
   }
   &__columns {
     display: flex;
-    gap: 4px;
+    gap: 0;
+    padding: 8px;
+  }
+  &__column-wrap {
+    min-width: 54px;
+    flex: 1;
+    padding: 0 3px;
+  }
+  &__column-wrap + &__column-wrap {
+    border-left: 1px solid var(--leaf-color-border);
+  }
+  &__column-label {
+    padding: 3px 5px 8px;
+    color: var(--leaf-color-text-muted);
+    text-align: center;
+    font-size: 11px;
   }
   &__column {
-    min-width: 58px;
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    max-height: 220px;
+    max-height: 210px;
     overflow-y: auto;
+    scrollbar-width: thin;
   }
   &__column .leaf-floating__option {
     justify-content: space-between;
-  }
-  &__separator {
-    display: flex;
-    align-items: center;
-    color: var(--leaf-color-text-muted);
-    font-weight: 650;
-  }
-  &__footer {
-    margin-top: 8px;
-    border-top: 1px solid var(--leaf-color-border);
-    padding-top: 8px;
-  }
-  &__footer button {
-    width: 100%;
-    min-height: 30px;
-    border: 0;
-    border-radius: var(--leaf-radius-sm);
-    color: var(--leaf-color-on-primary);
-    background: var(--leaf-color-primary);
-    font: inherit;
-    font-size: 12px;
-    cursor: pointer;
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
+    padding: 5px 7px;
+    margin-top: 0;
   }
 }

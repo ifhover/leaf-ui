@@ -1,64 +1,122 @@
 @use '../styles/mixins' as mixins;
-
 .leaf-select {
   @include mixins.field;
   display: inline-flex;
   position: relative;
   align-items: center;
-  height: var(--leaf-current-control-height);
-  padding: 0;
-
-  &__trigger {
-    box-sizing: border-box;
+  min-height: var(--leaf-current-control-height);
+  padding: 0 30px 0 10px;
+  &[data-clearable] {
+    padding-right: 54px;
+  }
+  &__content {
     display: flex;
-    width: 100%;
-    height: 100%;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 0 10px;
+    width: 100%;
+    min-width: 0;
+    gap: 3px;
+  }
+  &__input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 24px;
+  }
+  &__input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: calc(var(--leaf-current-control-height) - 2px);
+    padding: 0;
     border: 0;
     border-radius: inherit;
+    outline: none;
     color: inherit;
     background: transparent;
     font: inherit;
     line-height: inherit;
-    text-align: left;
-    cursor: pointer;
-
+    &::placeholder {
+      color: var(--leaf-color-text-muted);
+    }
+    &:read-only {
+      cursor: pointer;
+    }
     &:disabled {
       cursor: not-allowed;
     }
-
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
   }
-
   &__value {
-    min-width: 0;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-    &--placeholder {
-      color: var(--leaf-color-text-muted);
+  }
+  &__arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    > svg {
+      transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
   }
-
-  &__arrow {
-    flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
-    color: var(--leaf-color-text-muted);
-    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-
-  &[data-open] &__arrow {
+  &[data-open] &__arrow > svg {
     transform: rotate(180deg);
   }
-
-  &__panel {
-    width: 100%;
+  &__panel .leaf-floating__option {
+    justify-content: space-between;
+  }
+  &--multiple {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  &--multiple &__input {
+    height: calc(var(--leaf-current-control-height) - 8px);
+    min-width: 28px;
+  }
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 1px 5px;
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-surface-muted);
+    font-size: 12px;
+    > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    > button {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px;
+      border: 0;
+      border-radius: 2px;
+      color: var(--leaf-color-text-muted);
+      background: transparent;
+      cursor: pointer;
+      &:hover {
+        color: var(--leaf-color-text);
+      }
+    }
   }
 }

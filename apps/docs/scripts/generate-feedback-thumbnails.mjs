@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { CalendarDays, Check, CircleAlert, Clock3, Palette, X } from 'lucide-react';
+import { CalendarDays, Check, CircleAlert, CircleX, Info, Palette, X } from 'lucide-react';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
@@ -12,12 +12,14 @@ const icon = (component, x, y, color = '#20834a') =>
 const button = (x, y, label, fill = '#20834a') =>
   rect(x, y, 52, 22, fill, 'none', 5) + text(x + 10, y + 15, label, '#fff', 9);
 const dialog = (title, body, confirm = false) =>
-  rect(20, 9, 200, 110, '#dfe8e0', 'none', 9) +
+  rect(20, 9, 200, 110, '#00000040', 'none', 9) +
   rect(36, 18, 168, 92) +
   text(48, 36, title, '#203329', 11) +
   icon(X, 182, 24, '#6c7c71') +
   text(confirm ? 69 : 48, 58, body) +
-  (confirm ? icon(CircleAlert, 48, 47, '#a9670e') : '') +
+  (confirm ? icon(CircleX, 48, 47, '#c83c3c') : '') +
+  rect(82, 78, 52, 22) +
+  text(91, 93, 'Cancel', '#6c7c71', 9) +
   button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#c83c3c' : '#20834a');
 const images = {
   form:
@@ -55,8 +57,8 @@ const images = {
     text(53, 77, 'Your changes are ready.', '#6c7c71', 9),
   message:
     rect(41, 29, 158, 30) +
-    icon(Check, 53, 37) +
-    text(76, 49, 'Saved successfully') +
+    icon(Info, 53, 37, '#1677ff') +
+    text(76, 49, 'A new notification') +
     rect(31, 70, 178, 30) +
     icon(CircleAlert, 43, 78, '#a9670e') +
     text(65, 90, 'Check your settings'),
@@ -64,27 +66,30 @@ const images = {
     rect(20, 13, 200, 26) +
     icon(CalendarDays, 30, 19) +
     text(52, 30, '2026-10-03 14:30:00') +
-    rect(20, 45, 122, 73) +
-    text(43, 60, 'October 2026') +
-    text(34, 83, '12  13  14  15  16  17') +
-    text(34, 102, '19  20  21  22  23  24') +
-    rect(148, 45, 72, 73) +
-    icon(Clock3, 178, 50) +
-    text(156, 79, '14 : 30 : 00', '#20834a', 9) +
+    rect(20, 45, 200, 73) +
+    text(35, 60, 'October 2026') +
+    text(156, 60, '14:30:00', '#20834a', 9) +
+    text(34, 83, '12    13    14    15    16    17') +
+    text(35, 106, 'Today', '#20834a', 9) +
     button(158, 90, 'OK'),
   'date-range-picker':
     rect(15, 13, 210, 26) +
     icon(CalendarDays, 25, 19) +
     text(46, 30, '2026-10-03  —  2026-10-15') +
-    rect(35, 45, 170, 73) +
-    text(84, 61, 'October 2026') +
-    rect(50, 71, 138, 22, '#eaf4ed', 'none', 4) +
-    rect(50, 71, 22, 22, '#20834a', 'none', 4) +
-    rect(166, 71, 22, 22, '#20834a', 'none', 4) +
-    text(56, 86, '3', '#fff') +
-    text(80, 86, '4    5    6    7    8') +
-    text(171, 86, '15', '#fff') +
-    text(52, 108, '16    17    18    19    20    21', '#6c7c71', 9),
+    rect(15, 45, 210, 73) +
+    '<path d="M120 45v73" stroke="#dce5de"/>' +
+    text(32, 61, 'October 2026', '#203329', 9) +
+    text(134, 61, 'November 2026', '#203329', 9) +
+    rect(24, 74, 87, 18, '#eaf4ed', 'none', 2) +
+    rect(128, 74, 87, 18, '#eaf4ed', 'none', 2) +
+    rect(24, 74, 18, 18, '#20834a', 'none', 3) +
+    rect(197, 74, 18, 18, '#20834a', 'none', 3) +
+    text(28, 87, '28', '#fff', 8) +
+    text(46, 87, '29   30   31', '#203329', 8) +
+    text(136, 87, '1     2     3', '#203329', 8) +
+    text(203, 87, '4', '#fff', 8) +
+    text(25, 106, '24   25   26   27', '#6c7c71', 8) +
+    text(129, 106, '5     6     7     8', '#6c7c71', 8),
 };
 for (const [slug, content] of Object.entries(images))
   await writeFile(

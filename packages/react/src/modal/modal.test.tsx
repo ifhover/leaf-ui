@@ -6,6 +6,73 @@ import { Button, ConfigProvider, Confirm, Select, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
+  it('supplies default actions to an extended footer and respects native form validation', async () => {
+    const submit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    const close = vi.fn();
+    render(
+      <ConfigProvider locale="en-US">
+        <Modal
+          open
+          title="Edit"
+          onClose={close}
+          confirmButtonProps={{ type: 'submit', form: 'edit-form' }}
+          footer={({ cancelButton, confirmButton }) => (
+            <>
+              <Button>Help</Button>
+              {cancelButton}
+              {confirmButton}
+            </>
+          )}
+        >
+          <form id="edit-form" onSubmit={submit}>
+            <input aria-label="Title" required />
+          </form>
+        </Modal>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Help' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    expect(submit).not.toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+    await userEvent.type(screen.getByRole('textbox', { name: 'Title' }), 'Leaf');
+    await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    expect(submit).toHaveBeenCalledOnce();
+    expect(close).not.toHaveBeenCalled();
+  });
+  it('hides a null footer and keeps rejected async modal actions open', async () => {
+    const close = vi.fn();
+    const { rerender } = render(<Modal open title="Edit" footer={null} onClose={close} />);
+    expect(screen.queryByRole('button', { name: '确定' })).toBeNull();
+    rerender(
+      <Modal
+        open
+        title="Edit"
+        onClose={close}
+        onConfirm={() => Promise.reject(new Error('Save failed'))}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: '确定' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Save failed');
+    expect(close).not.toHaveBeenCalled();
+  });
+  it.each(['default', 'info', 'success', 'warning', 'danger'] as const)(
+    'renders %s confirmation actions and icons',
+    (type) => {
+      render(
+        <ConfigProvider locale="en-US">
+          <Confirm open type={type} title="Continue">
+            Notice
+          </Confirm>
+        </ConfigProvider>,
+      );
+      const dialog = screen.getByRole('alertdialog');
+      expect(dialog.querySelector('.leaf-confirm-title svg') !== null).toBe(type !== 'default');
+      expect(screen.queryByRole('button', { name: 'Cancel' }) !== null).toBe(type !== 'success');
+      expect(
+        screen.getByRole('button', { name: 'OK' }).classList.contains('leaf-button--danger'),
+      ).toBe(type === 'danger');
+    },
+  );
   it('locks scrolling, restores focus and closes with Escape', async () => {
     function Example() {
       const [open, setOpen] = useState(false);

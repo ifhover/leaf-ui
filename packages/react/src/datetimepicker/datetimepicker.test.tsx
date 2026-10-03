@@ -18,6 +18,10 @@ it('combines a date with hours, minutes and seconds and honors exact bounds', as
     </ConfigProvider>,
   );
   await userEvent.click(screen.getByRole('combobox'));
+  await userEvent.click(screen.getByRole('button', { name: 'Choose time' }));
+  expect(
+    within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '12' }),
+  ).toHaveFocus();
   await userEvent.click(
     within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '11' }),
   );
@@ -31,6 +35,8 @@ it('combines a date with hours, minutes and seconds and honors exact bounds', as
   await userEvent.click(
     within(screen.getByRole('listbox', { name: 'Seconds' })).getByRole('option', { name: '30' }),
   );
+  await userEvent.click(screen.getByRole('button', { name: 'Choose date' }));
+  expect(screen.getByRole('button', { name: '2026-10-03' })).toHaveFocus();
   await userEvent.click(screen.getByRole('button', { name: 'OK' }));
   expect(change.mock.calls[0]?.[1]).toBe('2026-10-03 12:15:30');
 });

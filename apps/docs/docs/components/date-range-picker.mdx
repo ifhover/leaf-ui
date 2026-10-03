@@ -30,8 +30,9 @@ import { DateRangePickerModes } from '../../src/examples/date-range-picker/modes
 | --- | --- | --- | --- |
 | `value / defaultValue` | [`DateRange \| null`](#daterange) | `null` | 受控区间 / 初始区间 |
 | `onChange` | [`(value: DateRange \| null, dateStrings: readonly [string, string]) => void`](#daterange) | — | 完成选择后返回有序区间与字符串；清除返回 null |
-| `picker` | `'year' \| 'month' \| 'week' \| 'weekday' \| 'date' \| 'datetime'` | `'date'` | 选择粒度 |
+| `picker` | `'year' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | 选择粒度 |
 | `minDate / maxDate` | `Date` | — | 最早 / 最晚可选边界 |
+| `showSeconds` | `boolean` | `true` | 日期时间区间展示秒，关闭时秒为 0 |
 | `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
 | `minuteStep / secondStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
 | `allowClear` | `boolean` | `true` | 展示清除按钮 |
@@ -40,7 +41,7 @@ import { DateRangePickerModes } from '../../src/examples/date-range-picker/modes
 | `disabled / required` | `boolean` | `false` | 禁用 / 必填，可继承 FormField |
 | `placeholder / name / form` | `string` | — | 提示文字 / 字段名 / 表单 ID |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
-| `ref` | `Ref<HTMLButtonElement>` | — | 触发按钮引用 |
+| `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 ## DateRange
 
@@ -59,8 +60,14 @@ import type { DateRangePickerProps, DateRange } from '@sudden3/leaf-ui';
 
 ## 使用说明
 
-DateRange 是 readonly [Date, Date]，可导入它组装变量。年取 1 月 1 日，月取当月 1 日，周从星期一开始并使用 ISO 周编号；weekday 选择某周的具体日期并显示星期。日期使用本地时间。
+`DateRange` 是 `readonly [Date, Date]`，可导入它组装变量。年取 1 月 1 日，月取当月 1 日，周从星期一开始并使用 ISO 周编号。日期使用本地时间。
 
-非 datetime 模式第二次选择后自动完成，逆序选择会自动排列；datetime 模式选择起止日期及时间后点击确定，包含秒。minDate / maxDate 在粗粒度模式按对应年、月、周比较，datetime 按准确时间比较。
+两个日历联动导航。选好起点后，悬停年份、月份、周或日期即可预览区间；选好终点立即完成，所有模式都没有底部确定按钮。逆序选择会自动排列。
 
-FormData 提交 start/end 格式字符串（年份 YYYY，月份 YYYY-MM，周 YYYY-Www，日期 YYYY-MM-DD，日期时间 YYYY-MM-DD HH:mm:ss）。需要日期区间类型时导入 DateRange，查看上方字段表格。
+日期时间区间通过两个日历右上角的时间按钮分别调整起止时间，再返回日期面板选择日期。请在选定结束日期前调整时间。“当前时间”设置该端点的时间。
+
+已有完整区间时，调整任一端点的时间会直接更新有效区间，无需重新选择日期。
+
+也可以输入以 ` ~ ` 分隔的两个值，按 Enter 或移走焦点提交。格式依次为 `YYYY`、`YYYY-MM`、`YYYY-Www`、`YYYY-MM-DD`、`YYYY-MM-DD HH:mm:ss`；关闭秒时省略秒。无效或越界输入不会提交，Escape 放弃未完成的输入。
+
+FormData 使用 `start/end` 格式提交对应字符串。非受控组件支持表单 reset；受控组件需同步重置自己的状态。

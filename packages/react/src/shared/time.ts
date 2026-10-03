@@ -5,11 +5,19 @@ export interface TimeParts {
 }
 export const padTime = (value: number) => String(value).padStart(2, '0');
 export function parseTime(value: string | null | undefined): TimeParts | null {
-  const match = value?.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  const match = value
+    ?.trim()
+    .match(/^(?:(上午|下午)\s*)?(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|上午|下午)?$/i);
   if (!match) return null;
-  const hour = Number(match[1]);
-  const minute = Number(match[2]);
-  const second = Number(match[3] ?? 0);
+  if (match[1] && match[5]) return null;
+  let hour = Number(match[2]);
+  const minute = Number(match[3]);
+  const second = Number(match[4] ?? 0);
+  const period = (match[1] ?? match[5])?.toUpperCase();
+  if (period) {
+    if (hour < 1 || hour > 12) return null;
+    hour = (hour % 12) + (period === 'PM' || period === '下午' ? 12 : 0);
+  }
   return hour < 24 && minute < 60 && second < 60 ? { hour, minute, second } : null;
 }
 export function timeString(parts: TimeParts, seconds = false) {

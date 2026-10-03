@@ -109,6 +109,10 @@
     background: var(--leaf-color-surface);
     appearance: none;
     cursor: inherit;
+    transition:
+      border-color var(--leaf-motion-duration) ease,
+      background-color var(--leaf-motion-duration) ease,
+      box-shadow var(--leaf-motion-duration) ease;
 
     &:checked,
     &:indeterminate {
@@ -122,6 +126,15 @@
 
     &:focus-visible {
       @include focus-ring;
+    }
+  }
+  &:hover:not([data-disabled]) &__input {
+    border-color: var(--leaf-color-primary);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &__input,
+    &__mark {
+      transition: none;
     }
   }
 

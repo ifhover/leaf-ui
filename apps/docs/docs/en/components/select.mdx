@@ -1,9 +1,10 @@
+import { SelectSearch } from '../../../src/examples/en/select/search';
 import { ComponentExample } from '../../../src/components/component-example';
 import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../../src/components/en-form-examples';
 
 # Select
 
-Choose one option from a dropdown list.
+Choose one or several options from a dropdown list.
 
 ## Examples
 
@@ -37,6 +38,18 @@ Use options with unique nonempty string values. onChange returns the value and o
 
 </ComponentExample>
 
+
+## Search and multiple selection
+
+showSearch filters existing options; multiple accepts an array and keeps the menu open while choosing.
+
+<ComponentExample title="Search and multiple selection" preview={<SelectSearch />} fileName="search.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/search.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | Property | Type | Default | Description |
@@ -45,19 +58,24 @@ Use options with unique nonempty string values. onChange returns the value and o
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `options` | [`readonly SelectOption[]`](#selectoption) | Required | Options |
 | `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
-| `value` / `defaultValue` | `string` | `''` | Controlled value / initial uncontrolled value |
-| `onChange` | [`(value: string, option?: SelectOption) => void`](#selectoption) | — | Returns value and option; clearing returns an empty string and undefined |
+| `value` / `defaultValue` | `string \| readonly string[]` | `''` | Controlled value / initial uncontrolled value |
+| `onChange` | [`(value: string, option?: SelectOption) => void` or `(values: string[], options: SelectOption[]) => void`](#selectoption) | — | Returns value and option; clearing returns an empty string and undefined |
+| `multiple` | `boolean` | `false` | Use arrays for multiple values; default [] |
+| `showSearch` | `boolean` | `false` | Allow typing to filter options |
+| `filterOption` | [`boolean \| ((query: string, option: SelectOption) => boolean)`](#selectoption) | `true` | Custom filtering; false supports external filtering |
+| `onSearch` | `(query: string) => void` | — | Search text changes |
 | `allowClear` | `boolean` | `false` | Show a clear button |
 | `disabled` | `boolean` | `false` | Disable the control |
 | `name` / `form` | `string` | — | Field name / associated form ID |
 | `required` | `boolean` | `false` | Require a selection |
 | `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
-| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 ### SelectOption
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `string` | Required | Unique option value; empty strings are reserved |
+| `searchLabel` | `string` | — | Search text for node labels; falls back to value |
 | `label` | `ReactNode` | Required | Option content; a string or React node |
 | `disabled` | `boolean` | `false` | Disable the option |
 
@@ -72,3 +90,5 @@ import type { SelectProps, SelectOption } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+In multiple mode, clearing returns []. FormData submits repeated values under the same name; read them with `formData.getAll(name)`. Empty-query Backspace removes the last enabled tag. Leaving clears the query; searches never create values. For node labels, supply searchLabel. The ref and other input attributes target the input.

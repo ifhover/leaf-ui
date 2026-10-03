@@ -44,7 +44,7 @@ interface FormValueProps {
   form?: string;
   disabled?: boolean;
   required?: boolean;
-  triggerRef: RefObject<HTMLButtonElement | null>;
+  triggerRef: RefObject<HTMLButtonElement | HTMLInputElement | null>;
 }
 
 /** A non-interactive form proxy; custom overlays never use native picker controls. */

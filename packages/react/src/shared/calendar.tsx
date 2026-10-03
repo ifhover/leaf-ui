@@ -1,20 +1,27 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from './classes';
 import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from './date';
 
-export type CalendarMode = 'year' | 'month' | 'week' | 'weekday' | 'date' | 'datetime';
+export type CalendarMode = 'year' | 'month' | 'week' | 'date' | 'datetime';
 export function startOfPeriod(date: Date, mode: CalendarMode) {
   const next = new Date(date);
+  next.setMilliseconds(0);
   if (mode !== 'datetime') next.setHours(0, 0, 0, 0);
   if (mode === 'year') next.setMonth(0, 1);
   if (mode === 'month') next.setDate(1);
   if (mode === 'week') next.setDate(next.getDate() - ((next.getDay() + 6) % 7));
   return next;
 }
-export function dateTimeKey(date: Date) {
-  return `${dateKey(date)} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+export function dateTimeKey(date: Date, showSeconds = true) {
+  return (
+    dateKey(date) +
+    ' ' +
+    [date.getHours(), date.getMinutes(), ...(showSeconds ? [date.getSeconds()] : [])]
+      .map((n) => String(n).padStart(2, '0'))
+      .join(':')
+  );
 }
 export function periodKey(date: Date, mode: CalendarMode) {
   if (mode === 'year') return String(date.getFullYear());
@@ -37,18 +44,30 @@ export function periodKey(date: Date, mode: CalendarMode) {
 export function withinPeriod(date: Date, mode: CalendarMode, min?: Date, max?: Date) {
   const time = startOfPeriod(date, mode).getTime();
   return (
+    Number.isFinite(time) &&
     (!min || time >= startOfPeriod(min, mode).getTime()) &&
     (!max || time <= startOfPeriod(max, mode).getTime())
   );
 }
+export function shiftCalendar(date: Date, mode: CalendarMode, amount: number) {
+  if (mode === 'year') return new Date(date.getFullYear() + amount * 12, 0, 1);
+  if (mode === 'month') return new Date(date.getFullYear() + amount, 0, 1);
+  return shiftMonth(date, amount);
+}
 interface CalendarPanelProps {
-  value: Date;
+  value?: Date | null;
   onChange: (date: Date) => void;
   picker?: CalendarMode;
   minDate?: Date;
   maxDate?: Date;
+  visibleDate?: Date;
+  onVisibleChange?: (date: Date) => void;
   autoFocus?: boolean;
   range?: readonly [Date | null, Date | null];
+  hoverDate?: Date | null;
+  onHover?: (date: Date) => void;
+  headerExtra?: ReactNode;
+  showOutsideDays?: boolean;
 }
 export function CalendarPanel({
   value,
@@ -56,25 +75,39 @@ export function CalendarPanel({
   picker = 'date',
   minDate,
   maxDate,
+  visibleDate,
+  onVisibleChange,
   autoFocus,
   range,
+  hoverDate,
+  onHover,
+  headerExtra,
+  showOutsideDays = true,
 }: CalendarPanelProps) {
   const { locale, messages } = useLeafConfig();
-  const initialView = picker === 'year' || picker === 'month' ? picker : 'date';
-  const [view, setView] = useState<'year' | 'month' | 'date'>(initialView);
-  const [visible, setVisible] = useState(value);
-  const [active, setActive] = useState(value);
+  const initial = value ?? minDate ?? new Date();
+  const [view, setView] = useState<'year' | 'month' | 'date'>(
+    picker === 'year' || picker === 'month' ? picker : 'date',
+  );
+  const [internalVisible, setInternalVisible] = useState(initial);
+  const visible = visibleDate ?? internalVisible;
+  const [active, setActive] = useState(initial);
   const root = useRef<HTMLDivElement>(null);
   const focusRequested = useRef(false);
-  const wasAutoFocus = useRef(false);
+  const valueTime = value?.getTime();
+  const controlledVisible = visibleDate !== undefined;
   useEffect(() => {
-    setVisible(value);
-    setActive(value);
-  }, [value]);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Focus runs after the grid changes, only when keyboard navigation requested it.
+    if (valueTime !== undefined) {
+      const next = new Date(valueTime);
+      setActive(next);
+      if (!controlledVisible) setInternalVisible(next);
+    }
+  }, [valueTime, controlledVisible]);
   useEffect(() => {
-    if (autoFocus && !wasAutoFocus.current) focusRequested.current = true;
-    wasAutoFocus.current = Boolean(autoFocus);
+    if (autoFocus) focusRequested.current = true;
+  }, [autoFocus]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only keyboard navigation requests focus, not hover or selection changes.
+  useEffect(() => {
     if (focusRequested.current) {
       root.current
         ?.querySelector<HTMLButtonElement>('[data-active="true"]:not(:disabled)')
@@ -82,6 +115,10 @@ export function CalendarPanel({
       focusRequested.current = false;
     }
   }, [active, view, visible, autoFocus]);
+  const setVisible = (date: Date) => {
+    if (onVisibleChange) onVisibleChange(date);
+    else setInternalVisible(date);
+  };
   const decade = Math.floor(visible.getFullYear() / 12) * 12;
   const cells =
     view === 'year'
@@ -90,8 +127,22 @@ export function CalendarPanel({
         ? Array.from({ length: 12 }, (_, i) => new Date(visible.getFullYear(), i, 1))
         : calendarDays(visible);
   const cellMode = view === 'date' ? (picker === 'datetime' ? 'date' : picker) : view;
-  const selected = (date: Date, candidate: Date) =>
-    startOfPeriod(date, cellMode).getTime() === startOfPeriod(candidate, cellMode).getTime();
+  const focusableCells = cells.filter(
+    (date) =>
+      (showOutsideDays || view !== 'date' || date.getMonth() === visible.getMonth()) &&
+      withinPeriod(date, cellMode, minDate, maxDate),
+  );
+  const activeCell =
+    focusableCells.find((date) =>
+      view === 'date'
+        ? sameDate(date, active)
+        : startOfPeriod(date, cellMode).getTime() === startOfPeriod(active, cellMode).getTime(),
+    ) ?? focusableCells[0];
+  const samePeriod = (date: Date, candidate?: Date | null) =>
+    Boolean(
+      candidate &&
+        startOfPeriod(date, cellMode).getTime() === startOfPeriod(candidate, cellMode).getTime(),
+    );
   const choose = (date: Date) => {
     if (view === 'year' && picker !== 'year') {
       setVisible(date);
@@ -126,9 +177,13 @@ export function CalendarPanel({
       else if (view === 'month') next.setMonth(next.getMonth() + delta);
       else next.setFullYear(next.getFullYear() + delta);
     } else if (event.key === 'Home' || event.key === 'End') {
-      const first = cells[0];
-      const last = cells.at(-1);
-      next.setTime((event.key === 'Home' ? first : last)?.getTime() ?? next.getTime());
+      if (view === 'date')
+        next.setDate(
+          next.getDate() +
+            (event.key === 'Home' ? -((next.getDay() + 6) % 7) : 6 - ((next.getDay() + 6) % 7)),
+        );
+      else
+        next.setTime((event.key === 'Home' ? cells[0] : cells.at(-1))?.getTime() ?? next.getTime());
     } else if (event.key === 'PageUp' || event.key === 'PageDown') {
       const sign = event.key === 'PageUp' ? -1 : 1;
       if (view === 'date') {
@@ -153,6 +208,7 @@ export function CalendarPanel({
     setVisible(next);
     setActive(next);
     focusRequested.current = true;
+    onHover?.(next);
   };
   const navigate = (direction: number) => {
     const next =
@@ -163,56 +219,73 @@ export function CalendarPanel({
             visible.getMonth(),
             1,
           );
+    const nextActive = new Date(next);
+    if (view === 'date')
+      nextActive.setDate(
+        Math.min(active.getDate(), new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()),
+      );
     setVisible(next);
-    setActive(next);
+    setActive(nextActive);
   };
-  const prevLabel =
-    view === 'date'
-      ? messages.previousMonth
-      : view === 'month'
-        ? messages.previousYear
-        : messages.previousYears;
-  const nextLabel =
-    view === 'date'
-      ? messages.nextMonth
-      : view === 'month'
-        ? messages.nextYear
-        : messages.nextYears;
+  const periodNames = [range?.[0], range?.[1] ?? (range?.[0] ? hoverDate : null)] as const;
+  const times = periodNames
+    .filter((date): date is Date => Boolean(date))
+    .map((date) => startOfPeriod(date, cellMode).getTime());
+  const start = times.length === 2 ? Math.min(...times) : undefined;
+  const end = times.length === 2 ? Math.max(...times) : undefined;
   return (
-    <div ref={root} className="leaf-calendar">
+    <div ref={root} className={classes('leaf-calendar', range && 'leaf-calendar--range')}>
       <div className="leaf-date-picker__header">
         <button
           type="button"
           className="leaf-date-picker__nav"
-          aria-label={prevLabel}
+          aria-label={
+            view === 'date'
+              ? messages.previousMonth
+              : view === 'month'
+                ? messages.previousYear
+                : messages.previousYears
+          }
           onClick={() => navigate(-1)}
         >
           <ChevronLeft size={16} aria-hidden="true" />
         </button>
-        <button
-          type="button"
-          className="leaf-calendar__heading"
-          onClick={() => {
-            if (view === 'date') setView('month');
-            else if (view === 'month') setView('year');
-          }}
-          disabled={view === 'year'}
-          aria-live="polite"
-        >
-          {view === 'date'
-            ? formatMonthLabel(visible, locale)
-            : view === 'month'
-              ? visible.getFullYear()
-              : `${decade} – ${decade + 11}`}
-        </button>
+        <div className="leaf-calendar__headings" aria-live="polite">
+          {view === 'date' && (
+            <button
+              type="button"
+              className="leaf-calendar__heading"
+              aria-label={messages.month}
+              onClick={() => setView('month')}
+            >
+              {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
+            </button>
+          )}
+          <button
+            type="button"
+            className="leaf-calendar__heading"
+            aria-label={view === 'year' ? undefined : messages.year}
+            disabled={view === 'year'}
+            onClick={() => setView('year')}
+          >
+            {view === 'year' ? `${decade} – ${decade + 11}` : visible.getFullYear()}
+          </button>
+        </div>
         <button
           type="button"
           className="leaf-date-picker__nav"
-          aria-label={nextLabel}
+          aria-label={
+            view === 'date'
+              ? messages.nextMonth
+              : view === 'month'
+                ? messages.nextYear
+                : messages.nextYears
+          }
           onClick={() => navigate(1)}
         >
           <ChevronRight size={16} aria-hidden="true" />
         </button>
+        {headerExtra}
       </div>
       {view === 'date' && (
         <div className="leaf-calendar__weekdays">
@@ -231,52 +304,63 @@ export function CalendarPanel({
         }
       >
         {cells.map((date) => {
-          const checked = range
-            ? range.some((endpoint) => endpoint && selected(date, endpoint))
-            : selected(date, value);
-          const isActive = view === 'date' ? sameDate(date, active) : selected(date, active);
-          const start = range?.[0] ? startOfPeriod(range[0], cellMode).getTime() : undefined;
-          const end = range?.[1] ? startOfPeriod(range[1], cellMode).getTime() : undefined;
+          const outside = view === 'date' && date.getMonth() !== visible.getMonth();
+          if (outside && !showOutsideDays)
+            return <span key={dateKey(date)} className="leaf-calendar__cell" />;
           const time = startOfPeriod(date, cellMode).getTime();
-          const inRange =
-            start !== undefined &&
-            end !== undefined &&
-            time >= Math.min(start, end) &&
-            time <= Math.max(start, end);
+          const checked = range
+            ? range.some((endpoint) => samePeriod(date, endpoint))
+            : samePeriod(date, value);
+          const hovered = Boolean(range?.[0] && !range[1] && samePeriod(date, hoverDate));
+          const isActive = Boolean(
+            activeCell &&
+              (view === 'date' ? sameDate(date, activeCell) : samePeriod(date, activeCell)),
+          );
+          const between = start !== undefined && end !== undefined && time >= start && time <= end;
           return (
-            <button
+            <span
               key={dateKey(date)}
-              type="button"
-              data-active={isActive}
-              data-day={dateKey(date)}
-              tabIndex={isActive ? 0 : -1}
-              aria-label={
-                view === 'date'
-                  ? dateKey(date)
-                  : view === 'month'
-                    ? dateKey(date).slice(0, 7)
-                    : String(date.getFullYear())
-              }
-              aria-pressed={checked}
-              aria-current={sameDate(date, new Date()) ? 'date' : undefined}
-              disabled={!withinPeriod(date, cellMode, minDate, maxDate)}
               className={classes(
-                'leaf-date-picker__day',
-                view === 'date' &&
-                  date.getMonth() !== visible.getMonth() &&
-                  'leaf-date-picker__day--outside',
-                checked && 'leaf-date-picker__day--selected',
-                inRange && !checked && 'leaf-calendar__in-range',
+                'leaf-calendar__cell',
+                between && start !== end && 'leaf-calendar__cell--range',
+                between && time === start && 'leaf-calendar__cell--start',
+                between && time === end && 'leaf-calendar__cell--end',
               )}
-              onClick={() => choose(date)}
-              onKeyDown={(event) => move(date, event)}
             >
-              {view === 'date'
-                ? date.getDate()
-                : view === 'month'
-                  ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
-                  : date.getFullYear()}
-            </button>
+              <button
+                type="button"
+                data-active={isActive}
+                data-day={dateKey(date)}
+                data-range-hover={hovered || undefined}
+                tabIndex={isActive ? 0 : -1}
+                aria-label={
+                  view === 'date'
+                    ? dateKey(date)
+                    : view === 'month'
+                      ? dateKey(date).slice(0, 7)
+                      : String(date.getFullYear())
+                }
+                aria-pressed={checked}
+                aria-current={sameDate(date, new Date()) ? 'date' : undefined}
+                disabled={!withinPeriod(date, cellMode, minDate, maxDate)}
+                className={classes(
+                  'leaf-date-picker__day',
+                  outside && 'leaf-date-picker__day--outside',
+                  (checked || hovered) && 'leaf-date-picker__day--selected',
+                )}
+                onMouseEnter={() => {
+                  if (withinPeriod(date, cellMode, minDate, maxDate)) onHover?.(date);
+                }}
+                onClick={() => choose(date)}
+                onKeyDown={(event) => move(date, event)}
+              >
+                {view === 'date'
+                  ? date.getDate()
+                  : view === 'month'
+                    ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
+                    : date.getFullYear()}
+              </button>
+            </span>
           );
         })}
       </fieldset>

@@ -24,13 +24,16 @@ import { DateTimePickerBasic } from '../../src/examples/date-time-picker/basic';
 | `showSeconds` | `boolean` | `true` | 显示秒选项；关闭时提交秒为 0 |
 | `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
 | `minuteStep / secondStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
+| `showToday` | `boolean` | `true` | 展示今天快捷按钮 |
+| `todayText` | `ReactNode` | 语言默认值 | 自定义今天按钮文字 |
+| `renderExtraFooter` | `ReactNode` | — | 额外底部内容，可放快捷操作 |
 | `allowClear` | `boolean` | `true` | 展示清除按钮 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `disabled / required` | `boolean` | `false` | 禁用 / 必填，可继承 FormField |
 | `placeholder / name / form` | `string` | — | 提示文字 / 字段名 / 表单 ID |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
-| `ref` | `Ref<HTMLButtonElement>` | — | 触发按钮引用 |
+| `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 ## 类型
 
@@ -42,6 +45,8 @@ import type { DateTimePickerProps } from '@sudden3/leaf-ui';
 
 ## 使用说明
 
-选择日期后调整时间，点击确定完成；Escape 或点击外部放弃草稿。日期和时间使用本地时区，字符串格式为 YYYY-MM-DD HH:mm:ss。12 小时制只影响展示，Date 的小时保持 0–23。
+点击面板右上角的时间，在日历与时间面板间切换。“今天”调整草稿日期；时间面板中的“当前时间”设置当前日期时间。可通过 `showToday`、`todayText`、`renderExtraFooter` 定制快捷操作。
 
-name 对应的 FormData 值是本地日期时间字符串。支持表单 reset；受控时自行重置 value。其他场景见 [DatePicker](/components/date-picker) 与 [DateRangePicker](/components/date-range-picker)。
+可以输入 `YYYY-MM-DD HH:mm:ss`，关闭秒时使用 `YYYY-MM-DD HH:mm`。时间支持 24 小时制、AM/PM 和上午/下午。按 Enter 或点击确定提交草稿；Escape 或点击外部放弃调整。无效或越界输入不会提交。
+
+日期使用本地时区；12 小时制只影响展示，Date 与 FormData 保持 24 小时格式。原生 input 属性与 aria-* 透传至输入框，className / style 作用于外层。非受控组件支持表单 reset；受控时自行重置 value。

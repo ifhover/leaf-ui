@@ -1,3 +1,4 @@
+import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ModalBasic } from '../../../src/examples/en/modal/basic';
 
@@ -14,23 +15,46 @@ Display content or complete an action in a dialog.
 
 </ComponentExample>
 
+
+## Custom footer
+
+<ComponentExample title="Custom footer" preview={<ModalFooter />} fileName="footer.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/footer.tsx"
+```
+
+</ComponentExample>
+
 ## Modal API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `open` | `boolean` | Required | Whether the dialog is visible |
-| `title / children / footer` | `ReactNode` | — | Title / content / custom footer |
+| `title / children` | `ReactNode` | — | Title / content |
+| `footer` | [`ReactNode \| ((actions: ModalFooterActions) => ReactNode)`](#modalfooteractions) | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
+| `confirmText / cancelText` | `ReactNode` | Locale default | Button labels |
+| `confirmLoading` | `boolean` | `false` | Confirm loading state |
+| `confirmButtonProps / cancelButtonProps` | [`ButtonProps`](/en/components/button#button-api) | — | Customize the default buttons |
+| `onConfirm` | `() => void \| Promise<void>` | — | Application controls open; rejection displays an error |
+| `onCancel` | `() => void` | — | Cancel or dismiss; falls back to onClose |
 | `width` | `number \| string` | `480` | Width; numbers are pixels |
 | `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
+
+## ModalFooterActions
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `cancelButton` | `ReactNode` | Default cancel button |
+| `confirmButton` | `ReactNode` | Default confirm button with loading state |
 
 ## Types
 
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { ModalProps } from '@sudden3/leaf-ui';
+import type { ModalProps, ModalFooterActions } from '@sudden3/leaf-ui';
 ```
 
 ## Usage notes
@@ -38,3 +62,5 @@ import type { ModalProps } from '@sudden3/leaf-ui';
 Focus moves into the dialog when opened and returns to the trigger on dismissal. Tab stays within the dialog. Use maskClosable and keyboard to control backdrop and Escape dismissal. Supply aria-label when omitting title.
 
 Customize footer actions or place a Form inside the body. Picker overlays inside a dialog retain its regional theme.
+
+The default footer has Cancel followed by OK. With onConfirm, update open after the action; without it, OK calls onClose. Promises show loading and prevent duplicates. Submit forms with requestSubmit() in onConfirm or a submit type and form ID in confirmButtonProps. Native validation still applies. A footer function extends default buttons; footer={null} hides the footer.

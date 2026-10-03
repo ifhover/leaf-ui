@@ -67,7 +67,7 @@ describe('Native form integration', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: '重置自定义字段' }));
     expect(Object.fromEntries(new FormData(form))).toEqual(defaults);
-    expect(screen.getByRole('combobox', { name: '日期' })).toHaveTextContent('2026年10月15日');
+    expect(screen.getByRole('combobox', { name: '日期' })).toHaveValue('2026-10-15');
     expect(screen.getByRole('combobox', { name: '路径' })).toHaveTextContent('根 / 叶');
   });
 
@@ -100,7 +100,7 @@ describe('Native form integration', () => {
     );
     fireEvent.reset(screen.getByRole('form'));
     await Promise.resolve();
-    expect(screen.getByRole('combobox', { name: '团队' })).toHaveTextContent('设计');
+    expect(screen.getByRole('combobox', { name: '团队' })).toHaveValue('设计');
   });
 
   it('submits field names and values, omits disabled controls and restores defaults on reset', async () => {
@@ -158,6 +158,6 @@ describe('Native form integration', () => {
     expect(screen.getByRole('switch')).toBeChecked();
     expect(screen.getByRole('checkbox')).toBeChecked();
     expect(screen.getByRole('radio', { name: '浅色' })).toBeChecked();
-    expect(screen.getByRole('combobox')).toHaveTextContent('设计');
+    expect(screen.getByRole('combobox')).toHaveValue('设计');
   });
 });

@@ -15,33 +15,42 @@ export function ComponentOverview() {
       description: t(zhDesc, enDesc),
     }),
   );
+  const groups = [...new Set(components.map((component) => component.category))];
   return (
-    <div className="leaf-component-grid">
-      {components.map((component) => (
-        <a
-          key={component.slug}
-          className="leaf-component-card"
-          href={url(`/components/${component.slug}.html`)}
-        >
-          <div className="leaf-component-card__preview">
-            <img
-              src={withBase(`/components/${component.slug}.svg`)}
-              alt=""
-              width={240}
-              height={128}
-              loading="lazy"
-              decoding="async"
-            />
+    <div className="leaf-component-overview">
+      {groups.map((group) => (
+        <section key={group} className="leaf-component-group">
+          <h2>{group}</h2>
+          <div className="leaf-component-grid">
+            {components
+              .filter((component) => component.category === group)
+              .map((component) => (
+                <a
+                  key={component.slug}
+                  className="leaf-component-card"
+                  href={url(`/components/${component.slug}.html`)}
+                >
+                  <div className="leaf-component-card__preview">
+                    <img
+                      src={withBase(`/components/${component.slug}.svg`)}
+                      alt=""
+                      width={240}
+                      height={128}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="leaf-component-card__body">
+                    <h3>
+                      {component.name} {!english && <span>{component.label}</span>}
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                    </h3>
+                    <p>{component.description}</p>
+                  </div>
+                </a>
+              ))}
           </div>
-          <div className="leaf-component-card__body">
-            <span className="leaf-component-card__category">{component.category}</span>
-            <h3>
-              {component.name} {!english && <span>{component.label}</span>}
-              <ArrowUpRight size={15} aria-hidden="true" />
-            </h3>
-            <p>{component.description}</p>
-          </div>
-        </a>
+        </section>
       ))}
     </div>
   );

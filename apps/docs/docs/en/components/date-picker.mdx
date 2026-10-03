@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { DatePickerBasic, DatePickerControlled } from '../../../src/components/en-form-examples';
+import { DatePickerFooter } from '../../../src/examples/en/date-picker/footer';
 
 # DatePicker
 
@@ -23,6 +24,17 @@ Values are Date objects in local time. onChange also supplies a YYYY-MM-DD strin
 
 </ComponentExample>
 
+## Date shortcuts
+
+Customize Today with todayText, add shortcuts with renderExtraFooter, or hide Today with showToday=false.
+
+<ComponentExample title="Date shortcuts" preview={<DatePickerFooter />} fileName="footer.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/footer.tsx"
+```
+
+</ComponentExample>
+
 ## DatePicker API
 
 | Property | Type | Default | Description |
@@ -30,6 +42,9 @@ Values are Date objects in local time. onChange also supplies a YYYY-MM-DD strin
 | `value` / `defaultValue` | `Date \| null` | `null` | Controlled date / initial uncontrolled date |
 | `onChange` | `(date: Date \| null, dateString: string) => void` | — | Changed date; clearing returns null and an empty string |
 | `minDate` / `maxDate` | `Date` | — | Earliest / latest date, compared in local time |
+| `showToday` | `boolean` | `true` | Show the Today shortcut |
+| `todayText` | `ReactNode` | Locale default | Customize the Today label |
+| `renderExtraFooter` | `ReactNode` | — | Additional footer content |
 | `allowClear` | `boolean` | `true` | Show a clear button |
 | `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
@@ -38,7 +53,7 @@ Values are Date objects in local time. onChange also supplies a YYYY-MM-DD strin
 | `name` / `form` | `string` | — | Field name / associated form ID |
 | `required` | `boolean` | `false` | Require a date |
 | `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
-| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ## Types
 
@@ -51,3 +66,7 @@ import type { DatePickerProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+Type `YYYY-MM-DD` and press Enter or move focus away to submit. Invalid dates and values outside minDate/maxDate are rejected. Click the month or year heading to switch panels. Today selects the current date. Use showToday, todayText and renderExtraFooter to customize shortcuts.
+
+Clicking the field keeps typing focus; ArrowDown moves into the calendar, and Escape discards pending text. Other input attributes and aria-* target the input; className/style target the wrapper.

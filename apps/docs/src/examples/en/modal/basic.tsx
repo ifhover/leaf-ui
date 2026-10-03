@@ -1,12 +1,20 @@
 import { Button, Form, FormField, Input, Modal, Select } from '@sudden3/leaf-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 export function ModalBasic() {
   const [open, setOpen] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   return (
     <>
       <Button onClick={() => setOpen(true)}>Edit project</Button>
-      <Modal open={open} title="Project settings" onClose={() => setOpen(false)}>
+      <Modal
+        open={open}
+        title="Project settings"
+        confirmText="Save"
+        onClose={() => setOpen(false)}
+        onConfirm={() => formRef.current?.requestSubmit()}
+      >
         <Form
+          ref={formRef}
           layout="vertical"
           onSubmit={(event) => {
             event.preventDefault();
@@ -18,18 +26,13 @@ export function ModalBasic() {
           </FormField>
           <FormField label="Owner">
             <Select
+              name="owner"
               options={[
                 { value: 'design', label: 'Design team' },
                 { value: 'engineering', label: 'Engineering team' },
               ]}
             />
           </FormField>
-          <div className="leaf-demo-row">
-            <Button type="submit">Save</Button>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-          </div>
         </Form>
       </Modal>
     </>

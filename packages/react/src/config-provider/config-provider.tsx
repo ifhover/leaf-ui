@@ -52,6 +52,12 @@ const zh = {
   week: '周',
   dateMode: '日期',
   loading: '处理中',
+  today: '今天',
+  now: '当前时间',
+  selectTime: '选择时间',
+  selectDate: '选择日期',
+  remove: '移除',
+  search: '搜索选项',
 };
 const en: typeof zh = {
   select: 'Please select',
@@ -94,6 +100,12 @@ const en: typeof zh = {
   week: 'Week',
   dateMode: 'Date',
   loading: 'Loading',
+  today: 'Today',
+  now: 'Now',
+  selectTime: 'Choose time',
+  selectDate: 'Choose date',
+  remove: 'Remove',
+  search: 'Search options',
 };
 const defaultConfig = { locale: 'zh-CN' as LeafLocale, theme: {} as LeafTheme, messages: zh };
 const ConfigContext = createContext(defaultConfig);

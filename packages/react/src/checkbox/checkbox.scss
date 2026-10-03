@@ -5,7 +5,11 @@
     border-radius: var(--leaf-choice-radius, 5px);
   }
   &__mark {
-    display: none;
+    opacity: 0;
+    transform: scale(0.65);
+    transition:
+      opacity var(--leaf-motion-duration) ease,
+      transform var(--leaf-motion-duration) ease;
     position: absolute;
     width: 14px;
     height: 14px;
@@ -15,6 +19,7 @@
   }
   &__input:checked:not(:indeterminate) ~ &__mark--check,
   &__input:indeterminate ~ &__mark--mixed {
-    display: block;
+    opacity: 1;
+    transform: scale(1);
   }
 }

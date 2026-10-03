@@ -1,362 +1,107 @@
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
-import { type ButtonHTMLAttributes, forwardRef, useEffect, useId, useRef, useState } from 'react';
+import { forwardRef, type ReactNode, useRef } from 'react';
+import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { useFormField } from '../form/form';
-import { classes } from '../shared/classes';
-import { ClearButton } from '../shared/clear-button';
-import {
-  calendarDays,
-  dateKey,
-  formatDateLabel,
-  formatMonthLabel,
-  isAfterDay,
-  isBeforeDay,
-  monthKey,
-  sameDate,
-  shiftMonth,
-} from '../shared/date';
-import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
-import { FloatingPanel, useFloatingDismiss, usePopupState } from '../shared/floating';
-import type { ControlSize, ControlStatus } from '../shared/types';
+import { CalendarPanel, withinPeriod } from '../shared/calendar';
+import { dateKey } from '../shared/date';
+import { DateInput, type PickerFieldProps } from '../shared/date-input';
+import { useFieldValue, useMergedRef } from '../shared/field';
+import { usePopupState } from '../shared/floating';
+import { parseDateText } from '../shared/parse-date';
 
-export interface DatePickerProps
-  extends Omit<
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    'type' | 'value' | 'defaultValue' | 'onChange' | 'children'
-  > {
+export interface DatePickerProps extends PickerFieldProps {
   value?: Date | null;
   defaultValue?: Date | null;
-  size?: ControlSize;
-  status?: ControlStatus;
-  placeholder?: string;
   minDate?: Date;
   maxDate?: Date;
-  name?: string;
-  required?: boolean;
-  allowClear?: boolean;
-  form?: string;
-  onChange?: (date: Date | null, dateString: string) => void;
+  showToday?: boolean;
+  todayText?: ReactNode;
+  renderExtraFooter?: ReactNode;
+  onChange?: (value: Date | null, dateString: string) => void;
   onOpenChange?: (open: boolean) => void;
 }
-
-export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker(
+export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
   {
     value,
     defaultValue = null,
-    size = 'md',
-    status: statusProp,
-    placeholder,
     minDate,
     maxDate,
-    name,
-    required: requiredProp,
-    allowClear = true,
-    form,
-    className,
-    style,
-    disabled: disabledProp,
-    id: idProp,
+    showToday = true,
+    todayText,
+    renderExtraFooter,
     onChange,
     onOpenChange,
-    onClick,
-    onKeyDown,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedByProp,
-    'aria-invalid': ariaInvalid,
     ...props
   },
-  forwardedRef,
+  ref,
 ) {
-  const { locale, messages } = useLeafConfig();
+  const { messages } = useLeafConfig();
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
-  const required = requiredProp ?? field?.required;
-  const status = statusProp ?? (field?.error ? 'error' : undefined);
-  const id = idProp ?? field?.id;
-  const ariaDescribedBy =
-    [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const generatedId = useId();
-  const panelId = `${generatedId}-calendar`;
-  const initialDate = value ?? defaultValue;
-  const [selectedDate, setSelectedDate] = useFieldValue(value, defaultValue, triggerRef, form);
-  const [visibleMonth, setVisibleMonth] = useState(
-    new Date((initialDate ?? new Date()).getFullYear(), (initialDate ?? new Date()).getMonth(), 1),
-  );
-  const [open, setOpen] = usePopupState(disabled, onOpenChange);
-  const [activeDate, setActiveDate] = useState(initialDate ?? new Date());
-  const focusDate = useRef(false);
-
-  useEffect(() => {
-    if (open && focusDate.current) {
-      panelRef.current
-        ?.querySelector<HTMLButtonElement>(`[data-day='${dateKey(activeDate)}']`)
-        ?.focus();
-      focusDate.current = false;
-    }
-  }, [open, activeDate]);
-
-  const setTriggerRef = useMergedRef(triggerRef, forwardedRef);
-
-  const close = () => {
-    setOpen(false);
+  const trigger = useRef<HTMLInputElement>(null);
+  const merged = useMergedRef(trigger, ref);
+  const [selected, setSelected] = useFieldValue(value, defaultValue, trigger, props.form);
+  const [open, setOpen] = usePopupState(props.disabled ?? field?.disabled, onOpenChange);
+  const change = (next: Date | null) => {
+    setSelected(next);
+    onChange?.(next, next ? dateKey(next) : '');
   };
-
-  useFloatingDismiss(open, close, triggerRef, panelRef);
-
-  const openCalendar = () => {
-    if (disabled) {
-      return;
-    }
-    let next = selectedDate ?? new Date();
-    if (minDate && isBeforeDay(next, minDate)) next = minDate;
-    if (maxDate && isAfterDay(next, maxDate)) next = maxDate;
-    setVisibleMonth(new Date(next.getFullYear(), next.getMonth(), 1));
-    setActiveDate(next);
-    focusDate.current = true;
-    setOpen(true);
-  };
-
-  const selectDate = (date: Date) => {
-    if ((minDate && isBeforeDay(date, minDate)) || (maxDate && isAfterDay(date, maxDate))) {
-      return;
-    }
-    const nextDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    setSelectedDate(nextDate);
-    setVisibleMonth(new Date(nextDate.getFullYear(), nextDate.getMonth(), 1));
-    onChange?.(nextDate, dateKey(nextDate));
-    close();
-    triggerRef.current?.focus();
-  };
-
-  const days = calendarDays(visibleMonth);
-  const weeks = Array.from({ length: 6 }, (_, index) => days.slice(index * 7, index * 7 + 7));
-
-  const moveDate = (date: Date, key: string) => {
-    const next = new Date(date);
-    const weekday = (date.getDay() + 6) % 7;
-    if (key === 'ArrowLeft') next.setDate(date.getDate() - 1);
-    else if (key === 'ArrowRight') next.setDate(date.getDate() + 1);
-    else if (key === 'ArrowUp') next.setDate(date.getDate() - 7);
-    else if (key === 'ArrowDown') next.setDate(date.getDate() + 7);
-    else if (key === 'Home') next.setDate(date.getDate() - weekday);
-    else if (key === 'End') next.setDate(date.getDate() + 6 - weekday);
-    else if (key === 'PageUp' || key === 'PageDown') {
-      const month = shiftMonth(date, key === 'PageUp' ? -1 : 1);
-      next.setTime(
-        new Date(
-          month.getFullYear(),
-          month.getMonth(),
-          Math.min(
-            date.getDate(),
-            new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate(),
-          ),
-        ).getTime(),
-      );
-    }
-    if (minDate && isBeforeDay(next, minDate)) next.setTime(minDate.getTime());
-    if (maxDate && isAfterDay(next, maxDate)) next.setTime(maxDate.getTime());
-    setActiveDate(next);
-    focusDate.current = true;
-    setVisibleMonth(new Date(next.getFullYear(), next.getMonth(), 1));
-  };
-
-  const changeMonth = (direction: number) => {
-    const month = shiftMonth(visibleMonth, direction);
-    let next = new Date(
-      month.getFullYear(),
-      month.getMonth(),
-      Math.min(
-        activeDate.getDate(),
-        new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate(),
-      ),
-    );
-    if (minDate && isBeforeDay(next, minDate)) next = minDate;
-    if (maxDate && isAfterDay(next, maxDate)) next = maxDate;
-    setActiveDate(next);
-    setVisibleMonth(month);
-  };
-
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   return (
-    <div
-      className={classes('leaf-date-picker', `leaf-date-picker--${size}`, className)}
-      style={style}
-      data-status={status}
-      data-disabled={disabled ? '' : undefined}
-      data-open={open ? '' : undefined}
-      data-clearable={allowClear && selectedDate && !disabled ? '' : undefined}
-    >
-      <button
-        {...props}
-        ref={setTriggerRef}
-        id={id}
-        form={form}
-        type="button"
-        className="leaf-date-picker__trigger"
-        disabled={disabled}
-        role="combobox"
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        aria-controls={panelId}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={status === 'error' ? true : ariaInvalid}
-        aria-required={required || undefined}
-        onClick={(event) => {
-          onClick?.(event);
-          if (!event.defaultPrevented) {
-            if (open) close();
-            else openCalendar();
-          }
-        }}
-        onKeyDown={(event) => {
-          onKeyDown?.(event);
-          if (event.defaultPrevented) return;
-          if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            if (!open) openCalendar();
-          } else if (event.key === 'Escape' && open) {
-            event.preventDefault();
-            event.stopPropagation();
-            close();
-          }
-        }}
-      >
-        <CalendarDays size={16} aria-hidden="true" />
-        <span className={classes(!selectedDate && 'leaf-date-picker__placeholder')}>
-          {selectedDate ? formatDateLabel(selectedDate, locale) : placeholder || messages.date}
-        </span>
-      </button>
-      {allowClear && selectedDate && !disabled && (
-        <ClearButton
-          label={messages.clearDate}
-          onClear={() => {
-            setSelectedDate(null);
-            onChange?.(null, '');
-            close();
-            triggerRef.current?.focus();
-          }}
-        />
+    <DateInput
+      {...props}
+      ref={merged}
+      displayValue={selected ? dateKey(selected) : ''}
+      formValue={selected ? dateKey(selected) : ''}
+      open={open}
+      onOpenChange={setOpen}
+      onOpening={() => {}}
+      onClear={() => change(null)}
+      onTextCommit={(text) => {
+        if (!text) {
+          change(null);
+          return true;
+        }
+        const parsed = parseDateText(text);
+        if (!parsed || !withinPeriod(parsed, 'date', minDate, maxDate)) return false;
+        change(parsed);
+        return true;
+      }}
+      panelClassName="leaf-date-picker__panel"
+      renderPanel={(close) => (
+        <>
+          <CalendarPanel
+            value={selected}
+            minDate={minDate}
+            maxDate={maxDate}
+            onChange={(date) => {
+              change(date);
+              close();
+            }}
+          />
+          {(showToday || renderExtraFooter != null) && (
+            <div className="leaf-picker-footer">
+              <div className="leaf-picker-footer__extra">
+                {showToday && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={!withinPeriod(today, 'date', minDate, maxDate)}
+                    onClick={() => {
+                      change(today);
+                      close();
+                    }}
+                  >
+                    {todayText ?? messages.today}
+                  </Button>
+                )}
+                {renderExtraFooter}
+              </div>
+            </div>
+          )}
+        </>
       )}
-      <FormValue
-        name={name}
-        form={form}
-        value={selectedDate ? dateKey(selectedDate) : ''}
-        disabled={disabled}
-        required={required}
-        triggerRef={triggerRef}
-      />
-      <FloatingPanel
-        open={open}
-        triggerRef={triggerRef}
-        panelRef={panelRef}
-        id={panelId}
-        className="leaf-floating leaf-date-picker__panel"
-        role="dialog"
-        aria-label={messages.chooseDate}
-      >
-        <div className="leaf-date-picker__header">
-          <button
-            type="button"
-            className="leaf-date-picker__nav"
-            aria-label={messages.previousMonth}
-            disabled={Boolean(
-              minDate &&
-                isBeforeDay(
-                  new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 0),
-                  minDate,
-                ),
-            )}
-            onClick={() => changeMonth(-1)}
-          >
-            <ChevronLeft size={16} aria-hidden="true" />
-          </button>
-          <strong aria-live="polite">{formatMonthLabel(visibleMonth, locale)}</strong>
-          <button
-            type="button"
-            className="leaf-date-picker__nav"
-            aria-label={messages.nextMonth}
-            disabled={Boolean(maxDate && isAfterDay(shiftMonth(visibleMonth, 1), maxDate))}
-            onClick={() => changeMonth(1)}
-          >
-            <ChevronRight size={16} aria-hidden="true" />
-          </button>
-        </div>
-        <table
-          className="leaf-date-picker__grid"
-          // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: APG date-picker calendar uses a table with grid semantics and roving focus.
-          role="grid"
-          aria-label={formatMonthLabel(visibleMonth, locale)}
-        >
-          <thead>
-            <tr>
-              {messages.weekdays.map((weekday) => (
-                <th key={weekday} scope="col">
-                  {weekday}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {weeks.map((week) => (
-              <tr key={week[0] ? dateKey(week[0]) : ''}>
-                {week.map((date) => {
-                  const disabledDate = Boolean(
-                    (minDate && isBeforeDay(date, minDate)) ||
-                      (maxDate && isAfterDay(date, maxDate)),
-                  );
-                  const outsideMonth = monthKey(date) !== monthKey(visibleMonth);
-                  const selected = sameDate(date, selectedDate);
-                  const today = sameDate(date, new Date());
-                  return (
-                    // biome-ignore lint/a11y/useFocusableInteractive lint/a11y/noNoninteractiveElementToInteractiveRole: APG calendar gridcells contain a day button that owns the roving keyboard focus.
-                    <td key={dateKey(date)} role="gridcell" aria-selected={selected}>
-                      <button
-                        type="button"
-                        data-day={dateKey(date)}
-                        tabIndex={sameDate(date, activeDate) ? 0 : -1}
-                        aria-label={dateKey(date)}
-                        className={classes(
-                          'leaf-date-picker__day',
-                          outsideMonth && 'leaf-date-picker__day--outside',
-                          selected && 'leaf-date-picker__day--selected',
-                        )}
-                        aria-current={today ? 'date' : undefined}
-                        disabled={disabledDate}
-                        onClick={() => selectDate(date)}
-                        onKeyDown={(event) => {
-                          if (
-                            [
-                              'ArrowLeft',
-                              'ArrowRight',
-                              'ArrowUp',
-                              'ArrowDown',
-                              'Home',
-                              'End',
-                              'PageUp',
-                              'PageDown',
-                            ].includes(event.key)
-                          ) {
-                            event.preventDefault();
-                            moveDate(date, event.key);
-                          }
-                        }}
-                      >
-                        {date.getDate()}
-                      </button>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </FloatingPanel>
-    </div>
+    />
   );
 });
-
 DatePicker.displayName = 'DatePicker';

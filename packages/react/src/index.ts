@@ -26,7 +26,7 @@ export type { InputProps } from './input';
 export { Input } from './input';
 export type { MessageApi, MessageOptions, MessageProps } from './message';
 export { Message, useMessage } from './message';
-export type { ModalProps } from './modal';
+export type { ModalFooterActions, ModalProps } from './modal';
 export { Modal } from './modal';
 export type { RadioGroupProps, RadioOption, RadioProps } from './radio';
 export { Radio, RadioGroup } from './radio';

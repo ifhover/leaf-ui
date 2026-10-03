@@ -1,5 +1,4 @@
 @use '../styles/mixins' as mixins;
-
 .leaf-date-picker {
   @include mixins.field;
   display: inline-flex;
@@ -7,74 +6,78 @@
   align-items: center;
   height: var(--leaf-current-control-height);
   padding: 0;
-
-  &__trigger {
+  &__input {
     box-sizing: border-box;
-    display: flex;
     width: 100%;
+    min-width: 0;
     height: 100%;
-    align-items: center;
-    gap: 8px;
-    padding: 0 10px;
+    padding: 0 34px 0 10px;
     border: 0;
     border-radius: inherit;
+    outline: none;
     color: inherit;
     background: transparent;
     font: inherit;
     line-height: inherit;
-    text-align: left;
-    cursor: pointer;
-
+    &::placeholder {
+      color: var(--leaf-color-text-muted);
+    }
     &:disabled {
       cursor: not-allowed;
     }
-    &:focus-visible {
-      @include mixins.focus-ring;
+  }
+  &[data-clearable] &__input {
+    padding-right: 56px;
+  }
+  &__icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    &:disabled {
+      cursor: not-allowed;
     }
   }
-
-  &__trigger > span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  > .leaf-picker-clear {
+    right: 30px;
   }
-
-  &__trigger > svg {
-    flex: 0 0 auto;
-  }
-
-  &__placeholder {
-    color: var(--leaf-color-text-muted);
-  }
-
   &__panel {
-    width: 304px;
-    padding: 10px;
+    width: 292px;
+    padding: 0;
   }
-
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
-    strong {
-      font-size: 13px;
-      font-weight: var(--leaf-font-weight);
-    }
+    gap: 2px;
+    margin-bottom: 8px;
   }
-
   &__nav {
     display: inline-flex;
-    width: 28px;
+    flex: 0 0 auto;
+    width: 26px;
     height: 28px;
     align-items: center;
     justify-content: center;
+    padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
     color: var(--leaf-color-text-muted);
     background: transparent;
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration),
+      background-color var(--leaf-motion-duration);
     &:hover:not(:disabled) {
       color: var(--leaf-color-primary);
       background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
@@ -87,25 +90,6 @@
       @include mixins.focus-ring;
     }
   }
-
-  &__grid {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 3px;
-    th {
-      padding: 3px 0;
-      color: var(--leaf-color-text-muted);
-      font-size: 11px;
-      font-weight: 400;
-      text-align: center;
-    }
-    td {
-      padding: 0;
-      border: 0;
-    }
-  }
-
   &__day {
     display: inline-flex;
     min-width: 0;
@@ -113,7 +97,6 @@
     width: 100%;
     align-items: center;
     justify-content: center;
-    gap: 2px;
     padding: 0;
     border: 1px solid transparent;
     border-radius: var(--leaf-radius-sm);
@@ -122,6 +105,9 @@
     font: inherit;
     font-size: 12px;
     cursor: pointer;
+    transition:
+      background-color var(--leaf-motion-duration),
+      color var(--leaf-motion-duration);
     &:hover:not(:disabled) {
       background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
     }
@@ -138,11 +124,9 @@
       color: var(--leaf-color-text-muted);
       opacity: 0.7;
     }
-    &--selected {
-      color: var(--leaf-color-on-primary);
-      background: var(--leaf-color-primary);
-    }
+    &--selected,
     &--selected:hover:not(:disabled) {
+      color: var(--leaf-color-on-primary);
       background: var(--leaf-color-primary);
     }
   }

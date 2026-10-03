@@ -1,2 +1,2 @@
-export type { ModalProps } from './modal';
+export type { ModalFooterActions, ModalProps } from './modal';
 export { Modal } from './modal';

@@ -1,26 +1,17 @@
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, type ReactNode, useRef, useState } from 'react';
+import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { useFormField } from '../form/form';
 import { CalendarPanel, dateTimeKey } from '../shared/calendar';
-import { DateInput, type DateInputProps } from '../shared/date-input';
+import { dateKey } from '../shared/date';
+import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
-import { displayTime } from '../shared/time';
+import { parseDateText } from '../shared/parse-date';
+import { displayTime, type TimeParts } from '../shared/time';
 import { TimePanel } from '../timepicker/time-panel';
 
-export interface DateTimePickerProps
-  extends Omit<
-    DateInputProps,
-    | 'displayValue'
-    | 'formValue'
-    | 'open'
-    | 'onOpenChange'
-    | 'onOpening'
-    | 'onClear'
-    | 'renderPanel'
-    | 'panelClassName'
-    | 'clearLabel'
-  > {
+export interface DateTimePickerProps extends PickerFieldProps {
   value?: Date | null;
   defaultValue?: Date | null;
   minDate?: Date;
@@ -29,10 +20,13 @@ export interface DateTimePickerProps
   showSeconds?: boolean;
   minuteStep?: number;
   secondStep?: number;
+  showToday?: boolean;
+  todayText?: ReactNode;
+  renderExtraFooter?: ReactNode;
   onChange?: (value: Date | null, dateString: string) => void;
   onOpenChange?: (open: boolean) => void;
 }
-export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>(
+export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
   function DateTimePicker(
     {
       value,
@@ -43,92 +37,189 @@ export const DateTimePicker = forwardRef<HTMLButtonElement, DateTimePickerProps>
       showSeconds = true,
       minuteStep = 1,
       secondStep = 1,
+      showToday = true,
+      todayText,
+      renderExtraFooter,
       onChange,
       onOpenChange,
       ...props
     },
     ref,
   ) {
-    const { locale, messages } = useLeafConfig();
+    const { messages } = useLeafConfig();
     const field = useFormField();
-    const trigger = useRef<HTMLButtonElement>(null);
+    const trigger = useRef<HTMLInputElement>(null);
     const [selected, setSelected] = useFieldValue(value, defaultValue, trigger, props.form);
     const merged = useMergedRef(trigger, ref);
     const [open, setOpen] = usePopupState(props.disabled ?? field?.disabled, onOpenChange);
     const [draft, setDraft] = useState(selected ?? new Date());
+    const [view, setView] = useState<'date' | 'time'>('date');
+    const [focusCalendar, setFocusCalendar] = useState(false);
+    const [validText, setValidText] = useState(true);
+    const normalize = (date: Date) => {
+      const next = new Date(date);
+      next.setMilliseconds(0);
+      if (!showSeconds) next.setSeconds(0);
+      return next;
+    };
+    const inBounds = (date: Date) =>
+      Number.isFinite(date.getTime()) &&
+      (!minDate || date >= minDate) &&
+      (!maxDate || date <= maxDate);
     const change = (next: Date | null) => {
-      setSelected(next);
-      onChange?.(next, next ? dateTimeKey(next) : '');
+      const normalized = next ? normalize(next) : null;
+      setSelected(normalized);
+      onChange?.(normalized, normalized ? dateTimeKey(normalized, showSeconds) : '');
     };
-    const valid = (!minDate || draft >= minDate) && (!maxDate || draft <= maxDate);
-    const parts = {
-      hour: draft.getHours(),
-      minute: draft.getMinutes(),
-      second: draft.getSeconds(),
+    const parts = (date: Date): TimeParts => ({
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      second: date.getSeconds(),
+    });
+    const timeLabel = (date: Date) =>
+      displayTime(parts(date), showSeconds, use12Hours, [messages.am, messages.pm]);
+    const label = (date: Date) => `${dateKey(date)} ${timeLabel(date)}`;
+    const today = new Date();
+    today.setHours(draft.getHours(), draft.getMinutes(), showSeconds ? draft.getSeconds() : 0, 0);
+    const updateTime = (time: TimeParts) => {
+      const next = new Date(draft);
+      next.setHours(time.hour, time.minute, showSeconds ? time.second : 0, 0);
+      setDraft(next);
+      setValidText(true);
     };
-    const dateLabel = selected
-      ? `${new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(selected)} ${displayTime({ hour: selected.getHours(), minute: selected.getMinutes(), second: selected.getSeconds() }, showSeconds, use12Hours, [messages.am, messages.pm])}`
-      : '';
     return (
       <DateInput
         {...props}
         ref={merged}
         placeholder={props.placeholder ?? messages.dateTime}
-        displayValue={dateLabel}
-        formValue={selected ? dateTimeKey(selected) : ''}
+        commitOnBlur={false}
+        displayValue={selected ? label(selected) : ''}
+        formValue={selected ? dateTimeKey(selected, showSeconds) : ''}
         open={open}
         onOpenChange={setOpen}
         onOpening={() => {
           let next = new Date(selected ?? new Date());
           if (minDate && next < minDate) next = new Date(minDate);
           if (maxDate && next > maxDate) next = new Date(maxDate);
-          if (!showSeconds) next.setSeconds(0, 0);
-          setDraft(next);
+          setDraft(normalize(next));
+          setView('date');
+          setFocusCalendar(false);
+          setValidText(true);
         }}
         onClear={() => change(null)}
+        onTextChange={(text) => {
+          const next = parseDateText(text.trim(), 'datetime');
+          setValidText(Boolean(next && inBounds(normalize(next))));
+          if (next) setDraft(normalize(next));
+        }}
+        onTextCommit={(text) => {
+          if (!text) {
+            change(null);
+            return true;
+          }
+          const next = parseDateText(text, 'datetime');
+          if (!next || !inBounds(normalize(next))) return false;
+          change(next);
+          return true;
+        }}
         panelClassName="leaf-datetime-panel"
         renderPanel={(close) => (
           <>
-            <div className="leaf-datetime-panel__body">
+            {view === 'date' ? (
               <CalendarPanel
                 value={draft}
                 picker="datetime"
+                autoFocus={focusCalendar}
                 minDate={minDate}
                 maxDate={maxDate}
-                autoFocus={open}
+                headerExtra={
+                  <button
+                    type="button"
+                    className="leaf-picker-time-toggle"
+                    aria-label={messages.selectTime}
+                    onClick={() => {
+                      setFocusCalendar(false);
+                      setView('time');
+                    }}
+                  >
+                    {timeLabel(draft)}
+                  </button>
+                }
                 onChange={(date) => {
                   const next = new Date(date);
-                  next.setHours(parts.hour, parts.minute, showSeconds ? parts.second : 0, 0);
-                  setDraft(next);
-                }}
-              />
-              <TimePanel
-                value={parts}
-                showSeconds={showSeconds}
-                use12Hours={use12Hours}
-                minuteStep={minuteStep}
-                secondStep={secondStep}
-                onChange={(time) => {
-                  const next = new Date(draft);
+                  const time = parts(draft);
                   next.setHours(time.hour, time.minute, showSeconds ? time.second : 0, 0);
                   setDraft(next);
+                  setValidText(true);
                 }}
               />
-            </div>
+            ) : (
+              <div className="leaf-picker-time-view">
+                <div className="leaf-picker-time-view__header">
+                  <button
+                    type="button"
+                    className="leaf-picker-time-toggle"
+                    aria-label={messages.selectDate}
+                    onClick={() => {
+                      setFocusCalendar(true);
+                      setView('date');
+                    }}
+                  >
+                    {dateKey(draft)}
+                  </button>
+                  <span>{timeLabel(draft)}</span>
+                </div>
+                <TimePanel
+                  autoFocus
+                  value={parts(draft)}
+                  onChange={updateTime}
+                  showSeconds={showSeconds}
+                  use12Hours={use12Hours}
+                  minuteStep={minuteStep}
+                  secondStep={secondStep}
+                />
+              </div>
+            )}
             <div className="leaf-picker-footer">
-              <span>{dateTimeKey(draft)}</span>
-              <button
-                type="button"
-                disabled={!valid}
+              <div className="leaf-picker-footer__extra">
+                {showToday && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={!inBounds(today)}
+                    onClick={() => {
+                      setDraft(today);
+                      setValidText(true);
+                      setView('date');
+                    }}
+                  >
+                    {todayText ?? messages.today}
+                  </Button>
+                )}
+                {view === 'time' && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setDraft(normalize(new Date()));
+                      setValidText(true);
+                    }}
+                  >
+                    {messages.now}
+                  </Button>
+                )}
+                {renderExtraFooter}
+              </div>
+              <Button
+                size="sm"
+                disabled={!validText || !inBounds(draft)}
                 onClick={() => {
-                  if (valid) {
-                    change(new Date(draft));
-                    close();
-                  }
+                  change(draft);
+                  close();
                 }}
               >
                 {messages.confirm}
-              </button>
+              </Button>
             </div>
           </>
         )}

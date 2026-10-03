@@ -10,7 +10,6 @@ interface TimePanelProps {
   use12Hours?: boolean;
   minuteStep?: number;
   secondStep?: number;
-  onMinuteCommit?: (value: TimeParts) => void;
   autoFocus?: boolean;
 }
 export function TimePanel({
@@ -20,7 +19,6 @@ export function TimePanel({
   use12Hours,
   minuteStep = 5,
   secondStep = 1,
-  onMinuteCommit,
   autoFocus,
 }: TimePanelProps) {
   const { messages } = useLeafConfig();
@@ -34,15 +32,11 @@ export function TimePanel({
       ...new Set([...Array.from({ length: Math.ceil(60 / safe) }, (_, i) => i * safe), selected]),
     ].sort((a, b) => a - b);
   };
-  const hours = use12Hours
-    ? Array.from({ length: 12 }, (_, i) => i + 1)
-    : Array.from({ length: 24 }, (_, i) => i);
-  const selectedHour = use12Hours ? value.hour % 12 || 12 : value.hour;
   const column = (
     label: string,
     choices: number[],
     selected: number,
-    change: (next: number, commit: boolean) => void,
+    change: (next: number) => void,
     labels?: string[],
   ) => {
     const key = (event: KeyboardEvent<HTMLButtonElement>, current: number) => {
@@ -54,63 +48,59 @@ export function TimePanel({
       else if (event.key === 'End') next = choices.length - 1;
       else return;
       event.preventDefault();
-      change(choices[next] ?? current, false);
+      change(choices[next] ?? current);
       const node =
         event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button')[next];
       node?.focus();
       node?.scrollIntoView?.({ block: 'nearest' });
     };
     return (
-      <div className="leaf-time-picker__column" role="listbox" aria-label={label}>
-        {choices.map((option) => (
-          <button
-            type="button"
-            key={option}
-            role="option"
-            tabIndex={option === selected ? 0 : -1}
-            aria-selected={option === selected}
-            className="leaf-floating__option"
-            ref={(node) => {
-              if (node && option === selected) node.scrollIntoView?.({ block: 'nearest' });
-            }}
-            onClick={() => change(option, true)}
-            onKeyDown={(event) => key(event, option)}
-          >
-            {labels?.[option] ?? padTime(option)}
-            {option === selected && <Check size={14} aria-hidden="true" />}
-          </button>
-        ))}
+      <div className="leaf-time-picker__column-wrap" key={label}>
+        <div className="leaf-time-picker__column-label" aria-hidden="true">
+          {label}
+        </div>
+        <div className="leaf-time-picker__column" role="listbox" aria-label={label}>
+          {choices.map((option) => (
+            <button
+              type="button"
+              key={option}
+              role="option"
+              tabIndex={option === selected ? 0 : -1}
+              aria-selected={option === selected}
+              className="leaf-floating__option"
+              ref={(node) => {
+                if (node && option === selected) node.scrollIntoView?.({ block: 'nearest' });
+              }}
+              onClick={() => change(option)}
+              onKeyDown={(event) => key(event, option)}
+            >
+              <span>{labels?.[option] ?? padTime(option)}</span>
+              <Check
+                size={14}
+                aria-hidden="true"
+                style={{ opacity: option === selected ? 1 : 0 }}
+              />
+            </button>
+          ))}
+        </div>
       </div>
     );
   };
+  const hours = use12Hours
+    ? Array.from({ length: 12 }, (_, i) => i + 1)
+    : Array.from({ length: 24 }, (_, i) => i);
   return (
     <div ref={ref} className="leaf-time-picker__columns">
-      {column(messages.hours, hours, selectedHour, (hour) =>
+      {column(messages.hours, hours, use12Hours ? value.hour % 12 || 12 : value.hour, (hour) =>
         onChange({ ...value, hour: use12Hours ? (hour % 12) + (value.hour < 12 ? 0 : 12) : hour }),
       )}
-      <div className="leaf-time-picker__separator" aria-hidden="true">
-        :
-      </div>
-      {column(
-        messages.minutes,
-        options(minuteStep, value.minute),
-        value.minute,
-        (minute, commit) => {
-          const next = { ...value, minute };
-          onChange(next);
-          if (commit) onMinuteCommit?.(next);
-        },
+      {column(messages.minutes, options(minuteStep, value.minute), value.minute, (minute) =>
+        onChange({ ...value, minute }),
       )}
-      {showSeconds && (
-        <>
-          <div className="leaf-time-picker__separator" aria-hidden="true">
-            :
-          </div>
-          {column(messages.seconds, options(secondStep, value.second), value.second, (second) =>
-            onChange({ ...value, second }),
-          )}
-        </>
-      )}
+      {showSeconds &&
+        column(messages.seconds, options(secondStep, value.second), value.second, (second) =>
+          onChange({ ...value, second }),
+        )}
       {use12Hours &&
         column(
           messages.period,

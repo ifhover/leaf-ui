@@ -50,11 +50,11 @@ const time =
   rect(128, 70, 57, 22, '#eaf4ed', 'none', 4) +
   text(78, 67, '13') +
   text(78, 85, '14', colors.green) +
-  text(78, 107, '15') +
-  text(119, 85, ':', colors.muted) +
   text(150, 67, '15') +
   text(150, 85, '30', colors.green) +
-  text(150, 107, '45');
+  text(58, 110, 'Now', colors.green, 8) +
+  rect(143, 99, 36, 15, colors.green, 'none', 3) +
+  text(154, 110, 'OK', '#fff', 8);
 
 const autocomplete =
   field('Leaf', Search) +

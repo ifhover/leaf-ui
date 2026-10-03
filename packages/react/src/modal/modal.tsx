@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from 'react';
+import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { tabbable } from 'tabbable';
+import { Button, type ButtonProps } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from '../shared/classes';
 import { inertAttribute } from '../shared/inert';
@@ -8,10 +9,21 @@ import { OverlayOwner } from '../shared/overlay-owner';
 import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 
+export interface ModalFooterActions {
+  confirmButton: ReactNode;
+  cancelButton: ReactNode;
+}
 export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   open: boolean;
   title?: ReactNode;
-  footer?: ReactNode;
+  footer?: ReactNode | ((actions: ModalFooterActions) => ReactNode);
+  confirmText?: ReactNode;
+  cancelText?: ReactNode;
+  confirmLoading?: boolean;
+  confirmButtonProps?: ButtonProps;
+  cancelButtonProps?: ButtonProps;
+  onConfirm?: () => void | Promise<void>;
+  onCancel?: () => void;
   width?: number | string;
   closable?: boolean;
   maskClosable?: boolean;
@@ -26,6 +38,13 @@ function ModalSurface({
   open,
   title,
   footer,
+  confirmText,
+  cancelText,
+  confirmLoading = false,
+  confirmButtonProps,
+  cancelButtonProps,
+  onConfirm,
+  onCancel,
   width = 480,
   closable = true,
   maskClosable = true,
@@ -38,13 +57,86 @@ function ModalSurface({
   ...props
 }: ModalProps) {
   const { messages } = useLeafConfig();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
+  const mounted = useRef(true);
+  const accepting = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (open) setError(undefined);
+  }, [open]);
+  const busy = pending || confirmLoading;
+  async function accept() {
+    if (accepting.current || busy) return;
+    if (!onConfirm) {
+      if (confirmButtonProps?.type !== 'submit') onClose?.();
+      return;
+    }
+    accepting.current = true;
+    setPending(true);
+    setError(undefined);
+    try {
+      await onConfirm();
+    } catch (reason) {
+      if (mounted.current) setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      accepting.current = false;
+      if (mounted.current) setPending(false);
+    }
+  }
+  const cancel = () => {
+    if (!busy) (onCancel ?? onClose)?.();
+  };
+  const actions: ModalFooterActions = {
+    cancelButton: (
+      <Button
+        variant="outline"
+        {...cancelButtonProps}
+        disabled={busy || cancelButtonProps?.disabled}
+        onClick={(event) => {
+          cancelButtonProps?.onClick?.(event);
+          if (!event.defaultPrevented) cancel();
+        }}
+      >
+        {cancelText ?? messages.cancel}
+      </Button>
+    ),
+    confirmButton: (
+      <Button
+        {...confirmButtonProps}
+        loading={busy || confirmButtonProps?.loading}
+        onClick={(event) => {
+          confirmButtonProps?.onClick?.(event);
+          if (!event.defaultPrevented) void accept();
+        }}
+      >
+        {confirmText ?? messages.confirm}
+      </Button>
+    ),
+  };
+  const renderedFooter =
+    typeof footer === 'function' ? (
+      footer(actions)
+    ) : footer === undefined ? (
+      <>
+        {actions.cancelButton}
+        {actions.confirmButton}
+      </>
+    ) : (
+      footer
+    );
   const panel = useRef<HTMLDivElement>(null);
   const root = useRef<HTMLDivElement>(null);
   const present = usePresence(open, root);
   const titleId = `${useId()}-title`;
   const modalId = `${useId()}-dialog`;
-  const close = useRef(onClose);
-  close.current = onClose;
+  const close = useRef(cancel);
+  close.current = cancel;
   const keyboardRef = useRef(keyboard);
   keyboardRef.current = keyboard;
   const wasPresent = useRef(false);
@@ -152,8 +244,15 @@ function ModalSurface({
               )}
             </div>
           )}
-          <div className="leaf-modal__body">{children}</div>
-          {footer != null && <div className="leaf-modal__footer">{footer}</div>}
+          <div className="leaf-modal__body">
+            {children}
+            {error && (
+              <p role="alert" className="leaf-confirm-error">
+                {error}
+              </p>
+            )}
+          </div>
+          {renderedFooter != null && <div className="leaf-modal__footer">{renderedFooter}</div>}
         </OverlayOwner.Provider>
       </div>
     </div>

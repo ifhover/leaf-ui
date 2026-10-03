@@ -1,8 +1,9 @@
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, X } from 'lucide-react';
 import {
-  type ButtonHTMLAttributes,
   forwardRef,
+  type InputHTMLAttributes,
   type ReactNode,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -24,266 +25,388 @@ export interface SelectOption {
   value: string;
   label: ReactNode;
   disabled?: boolean;
+  searchLabel?: string;
 }
-
-export interface SelectProps
+interface SelectBaseProps
   extends Omit<
-    ButtonHTMLAttributes<HTMLButtonElement>,
-    'type' | 'value' | 'defaultValue' | 'onChange' | 'children'
+    InputHTMLAttributes<HTMLInputElement>,
+    'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children' | 'multiple'
   > {
   options: readonly SelectOption[];
   size?: ControlSize;
   status?: ControlStatus;
-  placeholder?: string;
-  value?: string;
-  defaultValue?: string;
-  name?: string;
-  required?: boolean;
   allowClear?: boolean;
-  form?: string;
-  onChange?: (value: string, option?: SelectOption) => void;
+  showSearch?: boolean;
+  filterOption?: boolean | ((query: string, option: SelectOption) => boolean);
+  onSearch?: (query: string) => void;
   onOpenChange?: (open: boolean) => void;
 }
-
-export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
-  {
-    options,
-    size = 'md',
-    status: statusProp,
-    placeholder,
-    value,
-    defaultValue = '',
-    name,
-    required: requiredProp,
-    allowClear = false,
-    form,
-    className,
-    style,
-    disabled: disabledProp,
-    id: idProp,
-    onChange,
-    onOpenChange,
-    onClick,
-    onKeyDown,
-    'aria-label': ariaLabel,
-    'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedByProp,
-    'aria-invalid': ariaInvalid,
-    ...props
-  },
-  forwardedRef,
-) {
-  const { messages } = useLeafConfig();
-  const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
-  const required = requiredProp ?? field?.required;
-  const status = statusProp ?? (field?.error ? 'error' : undefined);
-  const id = idProp ?? field?.id;
-  const ariaDescribedBy =
-    [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const generatedId = useId();
-  const panelId = `${generatedId}-listbox`;
-  const [selectedValue, setSelectedValue] = useFieldValue(value, defaultValue, triggerRef, form);
-  const [open, setOpen] = usePopupState(disabled, onOpenChange);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const selectedIndex = options.findIndex((option) => option.value === selectedValue);
-  const selectedOption = selectedIndex >= 0 ? options[selectedIndex] : undefined;
-
-  const setTriggerRef = useMergedRef(triggerRef, forwardedRef);
-
-  const close = () => {
-    setOpen(false);
-  };
-
-  useFloatingDismiss(open, close, triggerRef, panelRef);
-  useActiveOption(open, highlightedIndex >= 0 ? `${panelId}-${highlightedIndex}` : undefined);
-
-  const openMenu = () => {
-    if (disabled) {
-      return;
-    }
-    setHighlightedIndex(
-      selectedIndex >= 0 && !options[selectedIndex]?.disabled
-        ? selectedIndex
-        : options.findIndex((item) => !item.disabled),
-    );
-    setOpen(true);
-  };
-
-  const selectOption = (option: SelectOption, index: number) => {
-    if (option.disabled) {
-      return;
-    }
-    setSelectedValue(option.value);
-    setHighlightedIndex(index);
-    onChange?.(option.value, option);
-    close();
-    triggerRef.current?.focus();
-  };
-
-  const moveHighlight = (direction: 1 | -1) => {
-    if (!options.length) {
-      return;
-    }
-    let next = highlightedIndex < 0 ? (direction > 0 ? -1 : options.length) : highlightedIndex;
-    for (let step = 0; step < options.length; step += 1) {
-      next = (next + direction + options.length) % options.length;
-      if (!options[next]?.disabled) {
-        setHighlightedIndex(next);
-        break;
+export type SelectProps = SelectBaseProps &
+  (
+    | {
+        multiple?: false;
+        value?: string;
+        defaultValue?: string;
+        onChange?: (value: string, option?: SelectOption) => void;
       }
-    }
-  };
-
-  return (
-    <div
-      className={classes('leaf-select', `leaf-select--${size}`, className)}
-      style={style}
-      data-status={status}
-      data-disabled={disabled ? '' : undefined}
-      data-open={open ? '' : undefined}
-      data-clearable={allowClear && selectedValue && !disabled ? '' : undefined}
-    >
-      <button
-        {...props}
-        ref={setTriggerRef}
-        id={id}
-        form={form}
-        type="button"
-        className="leaf-select__trigger"
-        disabled={disabled}
-        role="combobox"
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        aria-controls={panelId}
-        aria-activedescendant={
-          open && highlightedIndex >= 0 ? `${panelId}-${highlightedIndex}` : undefined
-        }
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={status === 'error' ? true : ariaInvalid}
-        aria-required={required || undefined}
-        onClick={(event) => {
-          onClick?.(event);
-          if (!event.defaultPrevented) {
-            if (open) {
-              close();
-            } else {
-              openMenu();
-            }
-          }
-        }}
-        onKeyDown={(event) => {
-          onKeyDown?.(event);
-          if (event.defaultPrevented) {
-            return;
-          }
-          if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            if (!open) {
-              openMenu();
-            } else {
-              moveHighlight(1);
-            }
-          } else if (event.key === 'ArrowUp') {
-            event.preventDefault();
-            if (!open) {
-              openMenu();
-            } else {
-              moveHighlight(-1);
-            }
-          } else if ((event.key === 'Home' || event.key === 'End') && open) {
-            event.preventDefault();
-            const candidates = options
-              .map((option, index) => ({ option, index }))
-              .filter(({ option }) => !option.disabled);
-            setHighlightedIndex(
-              (event.key === 'Home' ? candidates[0] : candidates.at(-1))?.index ?? -1,
-            );
-          } else if ((event.key === 'Enter' || event.key === ' ') && open) {
-            event.preventDefault();
-            const option = options[highlightedIndex];
-            if (option) {
-              selectOption(option, highlightedIndex);
-            }
-          } else if (event.key === 'Escape' && open) {
-            event.preventDefault();
-            event.stopPropagation();
-            close();
-          } else if (event.key === 'Tab' && open) {
-            close();
-          }
-        }}
-      >
-        <span
-          className={classes(
-            'leaf-select__value',
-            !selectedOption && 'leaf-select__value--placeholder',
-          )}
-        >
-          {selectedOption?.label ?? placeholder ?? messages.select}
-        </span>
-        <ChevronDown className="leaf-select__arrow" aria-hidden="true" />
-      </button>
-      {allowClear && selectedValue && !disabled && (
-        <ClearButton
-          label={messages.clearSelection}
-          beforeArrow
-          onClear={() => {
-            setSelectedValue('');
-            onChange?.('', undefined);
-            close();
-            triggerRef.current?.focus();
-          }}
-        />
-      )}
-      <FormValue
-        name={name}
-        form={form}
-        value={selectedValue}
-        disabled={disabled}
-        required={required}
-        triggerRef={triggerRef}
-      />
-      <FloatingPanel
-        open={open}
-        triggerRef={triggerRef}
-        panelRef={panelRef}
-        matchWidth
-        id={panelId}
-        className="leaf-floating leaf-select__panel"
-        role="listbox"
-        aria-label={ariaLabel || messages.select}
-      >
-        {options.length ? (
-          options.map((option, index) => (
-            <button
-              key={option.value}
-              id={`${panelId}-${index}`}
-              type="button"
-              role="option"
-              aria-selected={option.value === selectedValue}
-              aria-disabled={option.disabled || undefined}
-              data-highlighted={highlightedIndex === index || undefined}
-              className="leaf-floating__option"
-              disabled={option.disabled}
-              tabIndex={-1}
-              onMouseEnter={() => !option.disabled && setHighlightedIndex(index)}
-              onClick={() => selectOption(option, index)}
-            >
-              <span>{option.label}</span>
-              {option.value === selectedValue && <Check size={15} aria-hidden="true" />}
-            </button>
-          ))
-        ) : (
-          <div className="leaf-floating__empty">{messages.empty}</div>
-        )}
-      </FloatingPanel>
-    </div>
+    | {
+        multiple: true;
+        value?: readonly string[];
+        defaultValue?: readonly string[];
+        onChange?: (value: string[], options: SelectOption[]) => void;
+      }
   );
-});
-
+const empty: readonly string[] = [];
+const searchText = (option: SelectOption) =>
+  option.searchLabel ??
+  (typeof option.label === 'string' || typeof option.label === 'number'
+    ? String(option.label)
+    : option.value);
+export const Select = forwardRef<HTMLInputElement, SelectProps>(
+  function Select(props, forwardedRef) {
+    const {
+      options,
+      size = 'md',
+      status: statusProp,
+      placeholder,
+      value,
+      defaultValue,
+      name,
+      required: requiredProp,
+      allowClear = false,
+      form,
+      className,
+      style,
+      disabled: disabledProp,
+      id: idProp,
+      onOpenChange,
+      onClick,
+      onKeyDown,
+      onBlur,
+      multiple = false,
+      showSearch = false,
+      filterOption = true,
+      onSearch,
+      onChange: _onChange,
+      ...inputProps
+    } = props;
+    const { messages } = useLeafConfig();
+    const field = useFormField();
+    const disabled = disabledProp ?? field?.disabled;
+    const required = requiredProp ?? field?.required;
+    const status = statusProp ?? (field?.error ? 'error' : undefined);
+    const root = useRef<HTMLDivElement>(null);
+    const input = useRef<HTMLInputElement>(null);
+    const panel = useRef<HTMLDivElement>(null);
+    const merged = useMergedRef(input, forwardedRef);
+    const panelId = `${useId()}-listbox`;
+    const [selected, setSelected] = useFieldValue<string | readonly string[]>(
+      value,
+      defaultValue ?? (multiple ? empty : ''),
+      input,
+      form,
+    );
+    const values = typeof selected === 'string' ? (selected ? [selected] : []) : selected;
+    const selectedOptions = options.filter((option) => values.includes(option.value));
+    const [query, setQuery] = useState('');
+    const [open, setOpen] = usePopupState(disabled, onOpenChange);
+    const [highlighted, setHighlighted] = useState(-1);
+    const filtered =
+      !query || !showSearch || filterOption === false
+        ? options
+        : options.filter((option) =>
+            typeof filterOption === 'function'
+              ? filterOption(query, option)
+              : searchText(option).toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+          );
+    const updateQuery = (next: string) => {
+      setQuery(next);
+      onSearch?.(next);
+    };
+    const close = () => {
+      setOpen(false);
+      if (query) updateQuery('');
+    };
+    useFloatingDismiss(open, close, input, panel, root);
+    useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined);
+    useEffect(() => {
+      if (!open) setQuery('');
+    }, [open]);
+    const change = (next: readonly string[]) => {
+      setSelected(multiple ? next : (next[0] ?? ''));
+      if (props.multiple)
+        props.onChange?.(
+          [...next],
+          options.filter((option) => next.includes(option.value)),
+        );
+      else
+        props.onChange?.(
+          next[0] ?? '',
+          options.find((option) => option.value === next[0]),
+        );
+    };
+    const openMenu = () => {
+      if (disabled) return;
+      const active = filtered.findIndex(
+        (option) => values.includes(option.value) && !option.disabled,
+      );
+      setHighlighted(active >= 0 ? active : filtered.findIndex((option) => !option.disabled));
+      setOpen(true);
+    };
+    const selectOption = (option: SelectOption) => {
+      if (option.disabled) return;
+      change(
+        multiple
+          ? values.includes(option.value)
+            ? values.filter((value) => value !== option.value)
+            : [...values, option.value]
+          : [option.value],
+      );
+      if (multiple) updateQuery('');
+      else close();
+      input.current?.focus();
+    };
+    const move = (direction: number) => {
+      if (!filtered.length) return;
+      let next = highlighted < 0 ? (direction > 0 ? -1 : filtered.length) : highlighted;
+      for (let i = 0; i < filtered.length; i++) {
+        next = (next + direction + filtered.length) % filtered.length;
+        if (!filtered[next]?.disabled) {
+          setHighlighted(next);
+          break;
+        }
+      }
+    };
+    const displayLabel = selectedOptions[0]?.label;
+    const textLabel =
+      typeof displayLabel === 'string' || typeof displayLabel === 'number'
+        ? String(displayLabel)
+        : '';
+    const inputValue = multiple || (showSearch && open) ? query : textLabel;
+    const clearable = allowClear && values.length > 0 && !disabled;
+    return (
+      <div
+        ref={root}
+        className={classes(
+          'leaf-select',
+          `leaf-select--${size}`,
+          multiple && 'leaf-select--multiple',
+          className,
+        )}
+        style={style}
+        data-status={status}
+        data-disabled={disabled ? '' : undefined}
+        data-open={open ? '' : undefined}
+        data-clearable={clearable ? '' : undefined}
+      >
+        <div className="leaf-select__content">
+          {multiple &&
+            values.map((value) => {
+              const option = options.find((option) => option.value === value);
+              return (
+                <span key={value} className="leaf-select__tag">
+                  <span>{option?.label ?? value}</span>
+                  {!disabled && !option?.disabled && (
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      aria-label={`${messages.remove} ${option ? searchText(option) : value}`}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => {
+                        change(values.filter((item) => item !== value));
+                        input.current?.focus();
+                      }}
+                    >
+                      <X size={12} aria-hidden="true" />
+                    </button>
+                  )}
+                </span>
+              );
+            })}
+          <div className="leaf-select__input-wrap">
+            {!multiple &&
+              !query &&
+              displayLabel != null &&
+              (!textLabel || (showSearch && open)) && (
+                <span className="leaf-select__value">{displayLabel}</span>
+              )}
+            <input
+              {...inputProps}
+              ref={merged}
+              id={idProp ?? field?.id}
+              form={form}
+              type="text"
+              className="leaf-select__input"
+              disabled={disabled}
+              readOnly={!showSearch || inputProps.readOnly}
+              value={inputValue}
+              placeholder={values.length ? '' : (placeholder ?? messages.select)}
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={open}
+              aria-haspopup="listbox"
+              aria-controls={panelId}
+              aria-autocomplete={showSearch ? 'list' : undefined}
+              aria-activedescendant={
+                open && filtered[highlighted] ? `${panelId}-${highlighted}` : undefined
+              }
+              aria-required={required || undefined}
+              aria-invalid={status === 'error' ? true : inputProps['aria-invalid']}
+              aria-describedby={
+                [inputProps['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') ||
+                undefined
+              }
+              onClick={(event) => {
+                onClick?.(event);
+                if (!event.defaultPrevented) {
+                  if (open && !showSearch) close();
+                  else if (!open) openMenu();
+                }
+              }}
+              onBlur={(event) => {
+                onBlur?.(event);
+                if (
+                  !event.defaultPrevented &&
+                  !root.current?.contains(event.relatedTarget) &&
+                  !panel.current?.contains(event.relatedTarget)
+                )
+                  close();
+              }}
+              onChange={(event) => {
+                if (!open) openMenu();
+                updateQuery(event.target.value);
+                setHighlighted(-1);
+              }}
+              onKeyDown={(event) => {
+                onKeyDown?.(event);
+                if (event.defaultPrevented || event.nativeEvent.isComposing) return;
+                if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                  event.preventDefault();
+                  if (!open) openMenu();
+                  else move(event.key === 'ArrowDown' ? 1 : -1);
+                } else if ((event.key === 'Home' || event.key === 'End') && open && !showSearch) {
+                  event.preventDefault();
+                  const candidates = filtered
+                    .map((option, index) => ({ option, index }))
+                    .filter(({ option }) => !option.disabled);
+                  setHighlighted(
+                    (event.key === 'Home' ? candidates[0] : candidates.at(-1))?.index ?? -1,
+                  );
+                } else if (event.key === 'Enter' || (event.key === ' ' && !showSearch)) {
+                  event.preventDefault();
+                  if (!open) openMenu();
+                  else {
+                    const option =
+                      filtered[highlighted] ?? filtered.find((option) => !option.disabled);
+                    if (option) selectOption(option);
+                  }
+                } else if (event.key === 'Escape' && open) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  close();
+                } else if (event.key === 'Tab' && open) close();
+                else if (event.key === 'Backspace' && multiple && !query && !inputProps.readOnly) {
+                  const last = [...values]
+                    .reverse()
+                    .find((value) => !options.find((option) => option.value === value)?.disabled);
+                  if (last) {
+                    event.preventDefault();
+                    change(values.filter((value) => value !== last));
+                  }
+                }
+              }}
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          className="leaf-select__arrow"
+          tabIndex={-1}
+          disabled={disabled}
+          aria-label={messages.select}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            if (open) close();
+            else openMenu();
+            input.current?.focus();
+          }}
+        >
+          <ChevronDown size={16} aria-hidden="true" />
+        </button>
+        {clearable && (
+          <ClearButton
+            label={messages.clearSelection}
+            beforeArrow
+            onClear={() => {
+              change(empty);
+              close();
+              input.current?.focus();
+            }}
+          />
+        )}
+        <FormValue
+          name={multiple ? undefined : name}
+          form={form}
+          value={multiple ? values.join(',') : (values[0] ?? '')}
+          disabled={disabled}
+          required={required}
+          triggerRef={input}
+        />
+        {multiple &&
+          values.map((value) => (
+            <input
+              key={value}
+              type="hidden"
+              name={name}
+              form={form}
+              value={value}
+              disabled={disabled}
+            />
+          ))}
+        <FloatingPanel
+          open={open}
+          triggerRef={root}
+          panelRef={panel}
+          matchWidth
+          id={panelId}
+          className="leaf-floating leaf-select__panel"
+          role="listbox"
+          aria-label={inputProps['aria-label'] ?? messages.select}
+          aria-multiselectable={multiple || undefined}
+        >
+          {filtered.length ? (
+            filtered.map((option, index) => (
+              <button
+                key={option.value}
+                id={`${panelId}-${index}`}
+                type="button"
+                role="option"
+                aria-selected={values.includes(option.value)}
+                aria-disabled={option.disabled || undefined}
+                data-highlighted={highlighted === index || undefined}
+                className="leaf-floating__option"
+                disabled={option.disabled}
+                tabIndex={-1}
+                onMouseEnter={() => {
+                  if (!option.disabled) setHighlighted(index);
+                }}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => selectOption(option)}
+              >
+                <span>{option.label}</span>
+                <Check
+                  size={15}
+                  aria-hidden="true"
+                  style={{ opacity: values.includes(option.value) ? 1 : 0 }}
+                />
+              </button>
+            ))
+          ) : (
+            <div className="leaf-floating__empty">{messages.empty}</div>
+          )}
+        </FloatingPanel>
+      </div>
+    );
+  },
+);
 Select.displayName = 'Select';

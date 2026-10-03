@@ -59,10 +59,19 @@ export function FloatingPanel({
   const owner = useContext(OverlayOwner);
   const present = usePresence(open, panelRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
-  const { refs, floatingStyles } = useFloating({
+  const openRef = useRef(open);
+  openRef.current = open;
+  const previousPosition = useRef<CSSProperties>({});
+  const closingContent = useRef(children);
+  if (open) closingContent.current = children;
+  const { refs, floatingStyles, isPositioned } = useFloating({
+    open,
     placement: 'bottom-start',
     strategy: 'fixed',
-    whileElementsMounted: autoUpdate,
+    whileElementsMounted: (reference, floating, update) =>
+      autoUpdate(reference, floating, () => {
+        if (openRef.current) update();
+      }),
     middleware: [
       offset(6),
       flip({ padding: 12 }),
@@ -70,6 +79,7 @@ export function FloatingPanel({
       size({
         padding: 12,
         apply({ availableHeight, availableWidth, rects, elements }) {
+          if (!openRef.current) return;
           Object.assign(elements.floating.style, {
             maxHeight: `${Math.max(0, availableHeight)}px`,
             maxWidth: `${Math.max(0, availableWidth)}px`,
@@ -81,6 +91,7 @@ export function FloatingPanel({
       }),
     ],
   });
+  if (open) previousPosition.current = floatingStyles;
   const setPanelRef = useCallback(
     (node: HTMLDivElement | null) => {
       panelRef.current = node;
@@ -126,11 +137,12 @@ export function FloatingPanel({
       ref={setPanelRef}
       data-leaf-owner={owner}
       data-state={open ? 'open' : 'closing'}
+      data-positioned={isPositioned || !open}
       aria-hidden={!open || undefined}
       inert={inertAttribute(!open)}
-      style={{ ...theme, ...style, ...floatingStyles }}
+      style={{ ...theme, ...style, ...(open ? floatingStyles : previousPosition.current) }}
     >
-      {children}
+      {open ? children : closingContent.current}
     </div>,
     document.body,
   );
@@ -139,9 +151,10 @@ export function FloatingPanel({
 /** Close a custom floating panel when focus leaves it or Escape is pressed. */
 export function useFloatingDismiss(
   open: boolean,
-  onClose: () => void,
+  onClose: (reason?: 'escape' | 'outside' | 'focus' | 'tab') => void,
   triggerRef: RefObject<HTMLElement | null>,
   panelRef: RefObject<HTMLElement | null>,
+  boundaryRef: RefObject<HTMLElement | null> = triggerRef,
 ) {
   useEffect(() => {
     if (!open) {
@@ -153,10 +166,10 @@ export function useFloatingDismiss(
       if (!(target instanceof Node)) {
         return;
       }
-      if (triggerRef.current?.contains(target) || panelRef.current?.contains(target)) {
+      if (boundaryRef.current?.contains(target) || panelRef.current?.contains(target)) {
         return;
       }
-      onClose();
+      onClose('outside');
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -164,7 +177,7 @@ export function useFloatingDismiss(
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();
-        onClose();
+        onClose('escape');
         triggerRef.current?.focus();
       } else if (event.key === 'Tab') {
         const panel = panelRef.current;
@@ -178,7 +191,7 @@ export function useFloatingDismiss(
         const leaving = event.shiftKey ? index <= 0 : index === items.length - 1;
         if (!leaving) return;
         event.preventDefault();
-        onClose();
+        onClose('tab');
         if (event.shiftKey) trigger.focus();
         else {
           const pageItems = tabbable(document.body).filter((item) => !panel.contains(item));
@@ -192,10 +205,10 @@ export function useFloatingDismiss(
       const target = event.target;
       if (
         target instanceof Node &&
-        !triggerRef.current?.contains(target) &&
+        !boundaryRef.current?.contains(target) &&
         !panelRef.current?.contains(target)
       )
-        onClose();
+        onClose('focus');
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -206,7 +219,7 @@ export function useFloatingDismiss(
       document.removeEventListener('keydown', handleKeyDown, true);
       document.removeEventListener('focusin', handleFocus);
     };
-  }, [open, onClose, panelRef, triggerRef]);
+  }, [open, onClose, panelRef, triggerRef, boundaryRef]);
 }
 
 /** Keep keyboard-highlighted options visible without animated scrolling. */

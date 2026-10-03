@@ -9,12 +9,12 @@
   --rp-c-brand-dark: #1a713f;
   --rp-c-brand-darker: #145b32;
   --rp-c-brand-tint: #20834a12;
-  --rp-c-bg: #fcfdfb;
+  --rp-c-bg: #ffffff;
   --rp-c-bg-soft: #f3f6f1;
   --rp-c-text-1: #22362a;
   --rp-c-text-2: #68776d;
   --rp-c-divider-light: #e4e9e1;
-  --leaf-site-bg: #fcfdfb;
+  --leaf-site-bg: #ffffff;
   --leaf-site-text: #22362a;
   --leaf-site-muted: #718075;
   --leaf-site-panel: #ffffff;
@@ -87,12 +87,22 @@ html.rp-dark {
   box-sizing: border-box;
 }
 .leaf-hero {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: 1.16fr 1fr;
   gap: 48px;
   align-items: center;
   min-height: 560px;
   padding: 76px 0 68px;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    inset: -40px -8vw -30px;
+    background: radial-gradient(ellipse at 62% 25%, #dff1e48a 0, #edf7ee55 35%, transparent 70%);
+  }
 }
 .leaf-release {
   display: inline-flex;

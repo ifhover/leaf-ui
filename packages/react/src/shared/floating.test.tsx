@@ -22,10 +22,13 @@ describe('Floating field focus', () => {
       </>,
     );
     await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.keyboard('{ArrowDown}');
     await userEvent.tab();
     expect(screen.getByRole('option', { name: '00', selected: true })).toHaveFocus();
     await userEvent.tab();
-    expect(screen.getByRole('button', { name: '使用 09:00' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: '当前时间' })).toHaveFocus();
+    await userEvent.tab();
+    expect(screen.getByRole('button', { name: '确定' })).toHaveFocus();
     await userEvent.tab();
     expect(screen.getByRole('button', { name: '下一个字段' })).toHaveFocus();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -45,7 +48,7 @@ describe('Floating field focus', () => {
     await userEvent.tab({ shift: true });
     expect(trigger).toHaveFocus();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(trigger).toHaveTextContent('2026年10月15日');
+    expect(trigger).toHaveValue('2026-10-15');
   });
 
   it('reports Escape once and removes disabled menus without reopening when reenabled', async () => {

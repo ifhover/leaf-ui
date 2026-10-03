@@ -11,7 +11,7 @@ export function ConfirmBasic() {
           const accepted = await confirm({
             title: 'Delete project',
             children: 'This cannot be undone. Continue?',
-            danger: true,
+            type: 'danger',
             onConfirm: () => new Promise((resolve) => setTimeout(resolve, 900)),
           });
           if (accepted) feedback.message.success('Project deleted');
@@ -19,6 +19,28 @@ export function ConfirmBasic() {
       >
         Delete project
       </Button>
+      <div className="leaf-demo-row">
+        {(['default', 'info', 'success', 'warning'] as const).map((type) => (
+          <Button
+            key={type}
+            variant="outline"
+            onClick={() =>
+              confirm({
+                type,
+                title: {
+                  default: 'Confirmation',
+                  info: 'Information',
+                  success: 'Success',
+                  warning: 'Warning',
+                }[type],
+                children: 'Please review this notice.',
+              })
+            }
+          >
+            {type}
+          </Button>
+        ))}
+      </div>
       {contextHolder}
       {feedback.contextHolder}
     </>

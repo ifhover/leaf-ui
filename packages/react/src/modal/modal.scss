@@ -6,9 +6,13 @@
   place-items: center;
   overflow: auto;
   padding: 24px;
-  animation: leaf-floating-in var(--leaf-motion-duration) ease;
+  opacity: 1;
+  transition: opacity var(--leaf-motion-duration) ease;
+  @starting-style {
+    opacity: 0;
+  }
   &[data-state='closing'] {
-    animation: leaf-floating-out var(--leaf-motion-duration) ease forwards;
+    opacity: 0;
     pointer-events: none;
   }
 }
@@ -20,7 +24,7 @@
   padding: 0;
   border: 0;
   cursor: default;
-  background: #14201966;
+  background: rgb(0 0 0 / 42%);
 }
 .leaf-modal {
   position: relative;
@@ -36,6 +40,11 @@
   font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
   box-shadow: 0 24px 70px #14201933;
   outline: none;
+  transform: translateY(0) scale(1);
+  transition: transform var(--leaf-motion-duration) ease;
+  @starting-style {
+    transform: translateY(8px) scale(0.97);
+  }
   &__header {
     display: flex;
     align-items: center;
@@ -73,16 +82,22 @@
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 14px 22px;
+    gap: 6px;
+    padding: 12px 22px 18px;
     border-top: 1px solid var(--leaf-color-border);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-modal-mask,
   .leaf-modal-mask[data-state='closing'] {
-    animation: none;
+    transition: none;
   }
+  .leaf-modal {
+    transition: none;
+  }
+}
+.leaf-modal-mask[data-state='closing'] .leaf-modal {
+  transform: translateY(8px) scale(0.97);
 }
 .leaf-modal {
   --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);

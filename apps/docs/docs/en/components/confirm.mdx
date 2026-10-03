@@ -26,7 +26,9 @@ Ask for confirmation before an important action.
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
 | `confirmText / cancelText` | `ReactNode` | Locale default | Confirm / cancel labels from the current locale |
-| `danger` | `boolean` | `false` | Use a danger button |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Icon and color; only danger changes the confirm button |
+| `showCancel` | `boolean` | false for success; true otherwise | Show the cancel button |
+| `danger` | `boolean` | `false` | Legacy shorthand for type="danger" |
 | `onConfirm` | `() => void \| Promise<void>` | — | Confirm action; resolves to close, rejects to show an error |
 
 ## useConfirm API
@@ -42,7 +44,9 @@ Ask for confirmation before an important action.
 | --- | --- | --- | --- |
 | `title / children` | `ReactNode` | — | Title and confirmation content |
 | `confirmText / cancelText` | `ReactNode` | Locale default | Button labels |
-| `danger` | `boolean` | `false` | Danger action |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Icon and color; only danger changes the confirm button |
+| `showCancel` | `boolean` | false for success; true otherwise | Show the cancel button |
+| `danger` | `boolean` | `false` | Legacy shorthand for type="danger" |
 | `onConfirm` | `() => void \| Promise<void>` | — | Runs on confirmation; rejection keeps the dialog open |
 | `width` | `number \| string` | `480` | Dialog width |
 | `closable / keyboard` | `boolean` | `true` | Close button / Escape dismissal |
@@ -61,3 +65,5 @@ import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
 useConfirm returns confirm and contextHolder. Render the holder inside ConfigProvider to inherit regional settings. You can also render Confirm directly and control open and onClose. Async confirmation displays a loading state and prevents duplicate actions.
 
 See [Modal API](/en/components/modal#modal-api) for inherited attributes.
+
+default has no icon. info, warning, success and danger have distinct icons and colors. Only danger has a red OK button; success hides Cancel by default. Use showCancel to override it. Button props follow Modal. onCancel notifies cancellation before onClose.

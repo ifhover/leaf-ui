@@ -5,7 +5,11 @@
     border-radius: 50%;
   }
   &__mark {
-    display: none;
+    opacity: 0;
+    transform: scale(0.5);
+    transition:
+      opacity var(--leaf-motion-duration) ease,
+      transform var(--leaf-motion-duration) ease;
     position: absolute;
     width: 6px;
     height: 6px;
@@ -14,7 +18,8 @@
     pointer-events: none;
   }
   &__input:checked ~ &__mark {
-    display: block;
+    opacity: 1;
+    transform: scale(1);
   }
 }
 .leaf-radio-group {

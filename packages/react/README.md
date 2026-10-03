@@ -44,7 +44,7 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - Form / FormField: native submission, labels, help, validation and shared automatic or fixed label widths.
 - ConfigProvider: scoped primary color, radius and Chinese/English UI with nested inheritance.
 - DateTimePicker: calendar and time selection, optional seconds, draft confirmation and bounds.
-- DateRangePicker: year, month, ISO week, weekday, date and date-time ranges.
+- DateRangePicker: year, month, ISO week, date and date-time ranges with hover previews and text input.
 - Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
 - Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
 - Alert: inline success, info, warning and error feedback.

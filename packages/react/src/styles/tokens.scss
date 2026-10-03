@@ -4,6 +4,8 @@
   --leaf-color-danger: #c83c3c;
   --leaf-color-on-danger: #ffffff;
   --leaf-color-warning: #a9670e;
+  --leaf-color-info: #1677ff;
+  --leaf-color-success: #20834a;
   --leaf-control-height: 34px;
   --leaf-control-height-sm: 28px;
   --leaf-control-height-lg: 40px;
@@ -33,6 +35,8 @@
 }
 
 [data-leaf-theme='dark'] {
+  --leaf-color-info: #69b1ff;
+  --leaf-color-success: #83cf9e;
   --leaf-color-danger: #ef8585;
   --leaf-color-on-danger: #381818;
   --leaf-color-warning: #e0b76e;

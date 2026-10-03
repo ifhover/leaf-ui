@@ -4,6 +4,31 @@ import { describe, expect, it, vi } from 'vitest';
 import { TimePicker } from './timepicker';
 
 describe('TimePicker', () => {
+  it('accepts 12-hour typed values and keeps unconfirmed text out of FormData', async () => {
+    const change = vi.fn();
+    render(
+      <form aria-label="Times">
+        <TimePicker name="time" use12Hours defaultValue="09:00" onChange={change} />
+        <button type="button">Next</button>
+      </form>,
+    );
+    const input = screen.getByRole('combobox');
+    const form = screen.getByRole('form') as HTMLFormElement;
+    await userEvent.clear(input);
+    await userEvent.type(input, '11:25 PM');
+    expect(new FormData(form).get('time')).toBe('09:00');
+    await userEvent.keyboard('{Enter}');
+    expect(change).toHaveBeenLastCalledWith('23:25');
+    await userEvent.clear(input);
+    await userEvent.type(input, '12:45 上午');
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(new FormData(form).get('time')).toBe('23:25');
+    expect(input).toHaveValue('11:25 下午');
+    await userEvent.clear(input);
+    await userEvent.type(input, '25:99{Enter}');
+    expect(change).toHaveBeenCalledOnce();
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+  });
   it.each([
     ['00:05:30', '上午', '下午', '12:05:30'],
     ['12:05:30', '下午', '上午', '00:05:30'],
@@ -12,12 +37,12 @@ describe('TimePicker', () => {
     async (initial, before, after, result) => {
       const change = vi.fn();
       render(<TimePicker use12Hours showSeconds defaultValue={initial} onChange={change} />);
-      expect(screen.getByRole('combobox')).toHaveTextContent(`12:05:30 ${before}`);
+      expect(screen.getByRole('combobox')).toHaveValue(`12:05:30 ${before}`);
       await userEvent.click(screen.getByRole('combobox'));
       await userEvent.click(
         within(screen.getByRole('listbox', { name: '时段' })).getByRole('option', { name: after }),
       );
-      await userEvent.click(screen.getByRole('button', { name: `使用 12:05:30 ${after}` }));
+      await userEvent.click(screen.getByRole('button', { name: '确定' }));
       expect(change).toHaveBeenCalledWith(result);
     },
   );
@@ -34,13 +59,16 @@ describe('TimePicker', () => {
     await userEvent.click(
       within(screen.getByRole('listbox', { name: '分钟' })).getByRole('option', { name: '30' }),
     );
+    expect(onChange).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: '确定' }));
     expect(onChange).toHaveBeenCalledWith('14:30');
-    expect(screen.getByRole('combobox')).toHaveTextContent('14:30');
+    expect(screen.getByRole('combobox')).toHaveValue('14:30');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
   it('supports keyboard selection and preserves a default minute outside the configured step', async () => {
     render(<TimePicker aria-label="时间" defaultValue="08:07" minuteStep={15} />);
     await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.keyboard('{ArrowDown}');
     const hours = within(screen.getByRole('listbox', { name: '小时' }));
     expect(hours.getByRole('option', { name: '08' })).toHaveFocus();
     await userEvent.keyboard('{ArrowDown}{Enter}');
@@ -48,10 +76,10 @@ describe('TimePicker', () => {
     expect(
       within(screen.getByRole('listbox', { name: '分钟' })).getByRole('option', { name: '07' }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: '使用 09:07' }));
-    expect(screen.getByRole('combobox')).toHaveTextContent('09:07');
+    await userEvent.click(screen.getByRole('button', { name: '确定' }));
+    expect(screen.getByRole('combobox')).toHaveValue('09:07');
     await userEvent.click(screen.getByRole('button', { name: '清除时间' }));
-    expect(screen.getByRole('combobox')).toHaveTextContent('请选择时间');
+    expect(screen.getByRole('combobox')).toHaveValue('');
   });
   it('normalizes invalid steps and blocks disabled interaction', async () => {
     const { rerender } = render(<TimePicker aria-label="时间" minuteStep={0} />);

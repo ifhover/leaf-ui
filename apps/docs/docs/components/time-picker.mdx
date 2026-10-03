@@ -8,7 +8,7 @@ import { TimePickerTwelveHours } from '../../src/examples/time-picker/twelve-hou
 
 ## 基础选择
 
-打开面板后选择小时，再点击分钟完成选择；也可以点击底部确认按钮。关闭面板会放弃未确认的调整。
+输入时间或在面板中选择小时、分钟和秒，点击确定后生效。关闭面板会放弃未确认的调整。
 
 <ComponentExample title="基础选择" preview={<TimePickerBasic />} fileName="basic.tsx">
 
@@ -57,9 +57,9 @@ import { TimePickerTwelveHours } from '../../src/examples/time-picker/twelve-hou
 | `name` / `form` | `string` | — | 字段名 / 关联的表单 ID |
 | `required` | `boolean` | `false` | 要求选择时间 |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
-| `ref` | `Ref<HTMLButtonElement>` | — | 触发按钮引用 |
+| `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
-其余原生 button 属性和 `aria-*` 透传至触发按钮；`className` / `style` 作用于外层容器。
+其余原生 input 属性和 `aria-*` 透传至输入框；`className` / `style` 作用于外层容器。
 
 ## 类型
 
@@ -71,8 +71,10 @@ import type { TimePickerProps, ControlSize, ControlStatus } from '@sudden3/leaf-
 
 ## 使用说明
 
-传入 `00:00` 至 `23:59` 的有效时间；开启秒时使用 `HH:mm:ss`。时间值不包含日期或时区。未选择时面板从 09:00 开始，打开面板本身不会改变值。12 小时制与秒模式通过底部按钮确认。
+传入 `00:00` 至 `23:59` 的有效时间；开启秒时使用 `HH:mm:ss`。时间值不包含日期或时区。未选择时面板从 09:00 开始，打开面板本身不会改变值。所有模式都通过底部确定按钮提交。
 
 设置 `name` 后，FormData 提交 HH:mm 或 HH:mm:ss 字符串，清除后为空字符串。非受控组件支持表单 reset；受控组件需重置自己的状态。
 
-Enter、空格或 ↓ 打开面板。↑ / ↓ 在列内移动，Home / End 移至首尾；Tab 在小时、分钟及确认之间移动，Enter 选择或确认。Escape 放弃调整并收起；Tab 离开面板后聚焦表单中的后续控件。面板继承局部主题。
+点击输入框打开面板，↓ 移入选项。↑ / ↓ 在列内移动，Home / End 移至首尾；Tab 在小时、分钟及确认之间移动，Enter 选择或确认。Escape 放弃调整并收起；Tab 离开面板后聚焦表单中的后续控件。面板继承局部主题。
+
+可直接输入 `HH:mm` 或 `HH:mm:ss`，12 小时制输入支持 AM/PM 或上午/下午。按 Enter 确认输入，也可在面板中调整后点击确定。“当前时间”将草稿设为当前时间，仍需确定。无效时间不会提交；移走焦点或 Escape 放弃未确认内容。

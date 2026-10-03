@@ -49,7 +49,7 @@ Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the d
 | `name` / `form` | `string` | — | Field name / associated form ID |
 | `required` | `boolean` | `false` | Require a time |
 | `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
-| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ## Types
 
@@ -62,3 +62,5 @@ import type { TimePickerProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+Type `HH:mm` or `HH:mm:ss`; 12-hour text accepts AM/PM or 上午/下午. Press Enter to submit, or adjust columns and click OK. Every mode requires confirmation. Now updates the draft and still requires OK. Escape or leaving the field discards changes. Other input attributes and aria-* target the input; className/style target the wrapper. ArrowDown moves focus to the selected hour.

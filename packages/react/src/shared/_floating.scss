@@ -15,11 +15,18 @@
   background: var(--leaf-color-surface);
   box-shadow: 0 12px 32px color-mix(in srgb, #13251a 14%, transparent);
   overscroll-behavior: contain;
-  animation: leaf-floating-in var(--leaf-motion-duration) var(--leaf-motion-easing);
+  opacity: 1;
+  transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+  @starting-style {
+    opacity: 0;
+  }
+  &[data-positioned='false'] {
+    opacity: 0;
+  }
 
   &[data-state='closing'] {
     pointer-events: none;
-    animation: leaf-floating-out var(--leaf-motion-duration) var(--leaf-motion-easing) forwards;
+    opacity: 0;
   }
 
   &:focus {
@@ -29,23 +36,8 @@
   @media (prefers-reduced-motion: reduce) {
     &,
     &[data-state='closing'] {
-      animation: none;
+      transition: none;
     }
-  }
-}
-
-@keyframes leaf-floating-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes leaf-floating-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 

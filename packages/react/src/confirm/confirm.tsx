@@ -1,10 +1,12 @@
-import { CircleAlert } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { FeedbackIcon } from '../alert/alert';
 import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { Modal, type ModalProps } from '../modal';
 
-export interface ConfirmProps extends Omit<ModalProps, 'footer'> {
+export interface ConfirmProps extends Omit<ModalProps, 'footer' | 'onConfirm'> {
+  type?: 'default' | 'danger' | 'success' | 'warning' | 'info';
+  showCancel?: boolean;
   confirmText?: ReactNode;
   cancelText?: ReactNode;
   danger?: boolean;
@@ -19,6 +21,12 @@ export function Confirm({
   confirmText,
   cancelText,
   danger,
+  type: typeProp,
+  showCancel,
+  confirmLoading = false,
+  confirmButtonProps,
+  cancelButtonProps,
+  onCancel,
   onConfirm,
   onClose,
   ...props
@@ -28,6 +36,7 @@ export function Confirm({
   const [error, setError] = useState<string>();
   const mounted = useRef(true);
   const busy = useRef(false);
+  const type = typeProp ?? (danger ? 'danger' : 'default');
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -38,7 +47,7 @@ export function Confirm({
     if (open) setError(undefined);
   }, [open]);
   async function accept() {
-    if (busy.current) return;
+    if (busy.current || confirmLoading) return;
     busy.current = true;
     setPending(true);
     setError(undefined);
@@ -52,29 +61,65 @@ export function Confirm({
       if (mounted.current) setPending(false);
     }
   }
+  const cancel = () => {
+    if (!pending && !confirmLoading) {
+      onCancel?.();
+      onClose?.();
+    }
+  };
   return (
     <Modal
       {...props}
       open={open}
+      confirmLoading={pending || confirmLoading}
       role="alertdialog"
-      title={title}
+      className={['leaf-confirm', `leaf-confirm--${type}`, props.className]
+        .filter(Boolean)
+        .join(' ')}
+      title={
+        title ? (
+          <span className="leaf-confirm-title">
+            {type !== 'default' && <FeedbackIcon type={type === 'danger' ? 'error' : type} />}
+            {title}
+          </span>
+        ) : undefined
+      }
       maskClosable={pending ? false : (props.maskClosable ?? false)}
       closable={!pending && (props.closable ?? true)}
       keyboard={!pending && (props.keyboard ?? true)}
-      onClose={pending ? undefined : onClose}
+      onClose={cancel}
+      onCancel={cancel}
       footer={
         <>
-          <Button variant="outline" disabled={pending} onClick={onClose}>
-            {cancelText ?? messages.cancel}
-          </Button>
-          <Button danger={danger} loading={pending} onClick={accept}>
+          {(showCancel ?? type !== 'success') && (
+            <Button
+              variant="outline"
+              {...cancelButtonProps}
+              disabled={pending || confirmLoading || cancelButtonProps?.disabled}
+              onClick={(event) => {
+                cancelButtonProps?.onClick?.(event);
+                if (!event.defaultPrevented) cancel();
+              }}
+            >
+              {cancelText ?? messages.cancel}
+            </Button>
+          )}
+          <Button
+            {...confirmButtonProps}
+            danger={type === 'danger'}
+            loading={pending || confirmLoading || confirmButtonProps?.loading}
+            onClick={(event) => {
+              confirmButtonProps?.onClick?.(event);
+              if (!event.defaultPrevented) void accept();
+            }}
+          >
             {confirmText ?? messages.confirm}
           </Button>
         </>
       }
     >
       <div className="leaf-confirm-content">
-        <CircleAlert size={22} aria-hidden="true" />
+        {!title && type !== 'default' && <FeedbackIcon type={type === 'danger' ? 'error' : type} />}
         <div>{children}</div>
       </div>
       {error && (
