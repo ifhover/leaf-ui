@@ -2,6 +2,8 @@
 
 轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
 
+[在线文档](https://ifhover.github.io/leaf-ui/)
+
 ## 安装与使用
 
 组件包名为 `@leaf-ui/react`，当前尚未发布到 npm。取得 `leaf-ui-react-0.1.0.tgz` 安装包后，在你的 React 应用中安装：

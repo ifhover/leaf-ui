@@ -983,6 +983,10 @@ html.rp-dark {
 .leaf-demo-stack--wide {
   width: 100%;
 }
+.leaf-demo-field {
+  display: grid;
+  gap: 4px;
+}
 .leaf-demo-row {
   display: flex;
   flex-wrap: wrap;

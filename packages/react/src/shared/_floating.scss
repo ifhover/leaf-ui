@@ -81,7 +81,10 @@
 .leaf-select[data-clearable] > .leaf-select__trigger,
 .leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
 .leaf-cascader[data-clearable] > .leaf-cascader__trigger {
-  padding-right: 54px;
+  // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
+  > span {
+    margin-right: 24px;
+  }
 }
 
 .leaf-floating__option {

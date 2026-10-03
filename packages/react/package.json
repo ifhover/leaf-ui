@@ -2,6 +2,23 @@
   "name": "@leaf-ui/react",
   "version": "0.1.0",
   "description": "A lightweight React component library with CSS variable theming.",
+  "homepage": "https://ifhover.github.io/leaf-ui/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ifhover/leaf-ui.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/ifhover/leaf-ui/issues"
+  },
+  "keywords": [
+    "react",
+    "ui",
+    "components",
+    "leaf-ui",
+    "scss",
+    "css-variables"
+  ],
   "type": "module",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",
@@ -57,7 +74,8 @@
     "vitest": "^5.0.3"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.9",

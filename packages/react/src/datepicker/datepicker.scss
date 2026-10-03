@@ -34,9 +34,14 @@
   }
 
   &__trigger > span {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &__trigger > svg {
+    flex: 0 0 auto;
   }
 
   &__placeholder {

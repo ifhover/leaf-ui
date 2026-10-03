@@ -89,7 +89,7 @@ export function ComponentOverview() {
         <a
           key={component.slug}
           className="leaf-component-card"
-          href={withBase(`/components/${component.slug}`)}
+          href={withBase(`/components/${component.slug}.html`)}
         >
           <div className="leaf-component-card__preview">
             <img

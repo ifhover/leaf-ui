@@ -68,7 +68,7 @@ pnpm build:lib
 pnpm --dir packages/react pack
 ```
 
-打包范围只包含 `dist` 与包 README。源码测试和文档不会进入 npm 包。当前版本尚未发布到 npm。
+打包范围只包含 `dist` 与包 README。源码测试和文档不会进入 npm 包。
 
 ## 文档内容边界
 

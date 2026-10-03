@@ -50,11 +50,14 @@ export function HomeLayout() {
           <div className="leaf-hero__actions">
             <a
               className="leaf-home-link leaf-home-link--primary"
-              href={withBase('/guide/getting-started')}
+              href={withBase('/guide/getting-started.html')}
             >
               开始使用 <Icon name="arrow" width="18" height="18" />
             </a>
-            <a className="leaf-home-link leaf-home-link--secondary" href={withBase('/components/')}>
+            <a
+              className="leaf-home-link leaf-home-link--secondary"
+              href={withBase('/components/index.html')}
+            >
               <Icon name="code" width="18" height="18" />
               探索组件
             </a>
@@ -154,7 +157,7 @@ export function HomeLayout() {
             <h2 id="playground-heading">自然，也可以有你的个性。</h2>
             <p>换一种颜色，调一点圆角。看看 Leaf UI 如何融入你的产品。</p>
           </div>
-          <a href={withBase('/guide/theming')}>
+          <a href={withBase('/guide/theming.html')}>
             了解主题定制 <Icon name="arrow" width="16" height="16" />
           </a>
         </div>
@@ -169,7 +172,10 @@ export function HomeLayout() {
           <h2>从日常表单，开始生长。</h2>
           <p>统一尺寸，轻盈交互。把每一个基础细节，都照顾好。</p>
         </div>
-        <a className="leaf-home-link leaf-home-link--secondary" href={withBase('/components/')}>
+        <a
+          className="leaf-home-link leaf-home-link--secondary"
+          href={withBase('/components/index.html')}
+        >
           探索基础组件 <Icon name="arrow" width="18" height="18" />
         </a>
       </section>

@@ -22,7 +22,11 @@ pnpm build:docs
 pnpm preview
 ```
 
-静态产物位于 `apps/docs/doc_build`。部署到子路径时，在 `rspress.config.ts` 中配置 `base`。
+静态产物位于 `apps/docs/doc_build`。`LEAF_DOCS_BASE` 控制部署路径，默认 `/`；GitHub Pages 使用 `/leaf-ui/`。自定义链接必须使用 withBase 并指向实际的 .html 文件，保证刷新和直接访问可用。
+
+## GitHub Pages
+
+在线站点：https://ifhover.github.io/leaf-ui/。仓库的 Pages 来源为 GitHub Actions，.github/workflows/pages.yml 在 main 推送或手动触发时检查源码、构建组件与文档，然后上传和部署静态产物。构建设置 `LEAF_DOCS_BASE=/leaf-ui/`，不需要提交 doc_build。
 
 ## 内容与导航
 

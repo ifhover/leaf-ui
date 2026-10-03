@@ -50,6 +50,7 @@ const componentSidebar = [
 ];
 
 export default defineConfig({
+  base: process.env.LEAF_DOCS_BASE || '/',
   root: path.join(directory, 'docs'),
   themeDir: path.join(directory, 'theme'),
   title: 'Leaf UI',

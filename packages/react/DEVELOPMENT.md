@@ -59,4 +59,8 @@ src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。Fo
 
 DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 精度为分钟；Cascader 只在末级提交。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
 
-本地包只包含 dist、package.json 和包 README。当前未发布到 npm。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
+本地包只包含 dist、package.json 和包 README。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
+
+## 发布 npm
+
+在根目录执行 `pnpm check` 和 `pnpm build:lib`，确认当前版本尚未发布。发布账户必须具备 @leaf-ui 作用域的写入权限，以及 npm 要求的双因素认证或可用于发布且允许绕过 2FA 的 granular token。检查打包文件后，在 packages/react 目录运行 `npm publish --access public`。npm 身份验证通过用户本地登录完成，不将令牌写入仓库。

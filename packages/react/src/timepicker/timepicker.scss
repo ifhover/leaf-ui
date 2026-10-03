@@ -34,6 +34,7 @@
 
   &__trigger > span {
     flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -43,6 +44,9 @@
     color: var(--leaf-color-text-muted);
   }
   &__arrow {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
     color: var(--leaf-color-text-muted);
     transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
