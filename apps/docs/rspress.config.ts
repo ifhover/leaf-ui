@@ -12,6 +12,7 @@ const guideSidebar = [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
       { text: '安装', link: '/guide/installation' },
       { text: '快速开始', link: '/guide/getting-started' },
+      { text: 'SSR 使用', link: '/guide/ssr' },
     ],
   },
   {
@@ -76,6 +77,7 @@ const englishLabels: Record<string, string> = {
   '认识 Leaf UI': 'Introduction',
   安装: 'Installation',
   快速开始: 'Quick start',
+  'SSR 使用': 'SSR usage',
   个性化: 'Personalization',
   定制主题: 'Theming',
   使用图标: 'Icons',

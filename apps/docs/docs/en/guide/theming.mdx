@@ -2,77 +2,145 @@ import { ThemePlayground } from '../../../src/components/theme-playground';
 
 # Theming
 
-Set your product’s colors and shapes with ConfigProvider or CSS variables.
+Configure components with [ConfigProvider](/en/components/config-provider). Start with a primary color, base radius and control height; related sizes and interaction colors are derived for you.
+
+## Start with a few settings
+
+Wrap the application and import the stylesheet once:
+
+```tsx
+import { Button, ConfigProvider, Input } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+
+export function App() {
+  return (
+    <ConfigProvider theme={{
+      primaryColor: '#7654c6',
+      borderRadius: 8,
+      controlHeight: 34,
+    }}>
+      <Input aria-label="Project name" placeholder="Project name" />
+      <Button>Save</Button>
+    </ConfigProvider>
+  );
+}
+```
+
+Omitted settings use defaults. Hover, pressed, soft backgrounds and focus colors follow the primary color automatically.
 
 ## Try your theme
 
+Adjust color, radius, height and appearance. Copy the generated ConfigProvider code into your application.
+
 <ThemePlayground />
 
-## Regional configuration
+## Derived sizes
+
+The defaults are a 10px base radius, 34px control height and 14px font size:
+
+| Base setting | Derived values | Default result |
+| --- | --- | --- |
+| `borderRadius` | Small radius × 0.6; large radius × 1.6 | `6px / 16px` |
+| `controlHeight` | Small height − 6px; large height + 6px | `28px / 40px` |
+| `fontSize` | Small font − 2px; large font + 2px | `12px / 16px` |
+
+Numbers are pixels; CSS lengths with units are also accepted. Buttons, inputs and pickers share the same sizes.
+
+## Regional themes
+
+Nested providers override only supplied settings, including individual token overrides:
 
 ```tsx
-import { ConfigProvider, Button, DatePicker } from '@sudden3/leaf-ui';
-
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#7654c6', borderRadius: 6 }}>
-  <Button>Save</Button>
-  <DatePicker aria-label="Deadline" />
+<ConfigProvider theme={{ primaryColor: '#20834a', controlHeight: 36 }}>
+  <Button>Default region</Button>
+  <ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 16 }}>
+    <Button>Campaign region</Button>
+  </ConfigProvider>
 </ConfigProvider>
 ```
 
-Nested providers override only supplied settings. Floating panels inherit the trigger’s theme. Render message and confirm contextHolder inside the region they should inherit. Details are in [ConfigProvider](/en/components/config-provider).
+Floating panels, Modal and message / confirm context holders placed in a region inherit its theme. Set `locale` separately for built-in text.
 
-## CSS variables
+## Appearance and switching
 
-Import overrides after the Leaf UI stylesheet. Set them on :root for a whole application, or on a container for one region.
+```tsx
+import { useState } from 'react';
+import { Button, ConfigProvider } from '@sudden3/leaf-ui';
 
-```scss
-:root {
-  --leaf-color-primary: #20834a;
-  --leaf-color-on-primary: #ffffff;
-  --leaf-radius: 10px;
-  --leaf-control-height: 34px;
-}
-
-.campaign {
-  --leaf-color-primary: #7654c6;
-  --leaf-radius: 6px;
+export function ThemeSwitch() {
+  const [dark, setDark] = useState(false);
+  return (
+    <ConfigProvider theme={{ appearance: dark ? 'dark' : 'light' }}>
+      <Button onClick={() => setDark(!dark)}>Switch appearance</Button>
+    </ConfigProvider>
+  );
 }
 ```
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `--leaf-color-primary` | `#20834a` | Primary actions and selection |
-| `--leaf-color-on-primary` | `#ffffff` | Content on primary backgrounds |
-| `--leaf-color-danger` | `#c83c3c` | Danger and error state |
-| `--leaf-color-warning` | `#a9670e` | Warning state |
-| `--leaf-color-text` / `--leaf-color-text-muted` | Theme | Main / secondary content |
-| `--leaf-color-surface` / `--leaf-color-surface-muted` | Theme | Main / subtle backgrounds |
-| `--leaf-color-border` | `#dce5de` | Borders |
-| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | `10px` / `6px` / `16px` | Border radii |
-| `--leaf-control-height` | `34px` | Default single-line control height |
-| `--leaf-control-height-sm` / `--leaf-control-height-lg` | `28px` / `40px` | Small / large height |
-| `--leaf-motion-duration` / `--leaf-motion-easing` | `160ms` / `ease` | Motion |
-| `--leaf-z-index-popup` / `--leaf-z-index-modal` / `--leaf-z-index-message` | `1000` / `1100` / `1200` | Overlay stacking |
+Dark appearance supplies suitable text, surface, border and status colors. Explicit primary colors keep their value. Pair very light brand colors with a suitable `onPrimaryColor` override.
 
-## Dark regions
+## Advanced overrides
+
+Use `theme.tokens` when you need specific derived sizes, semantic colors, surfaces, typography, motion or overlay stacking:
 
 ```tsx
-<div data-leaf-theme="dark">
-  <Button>Save</Button>
-</div>
-```
+import type { LeafTheme } from '@sudden3/leaf-ui';
 
-Choose accessible foreground colors when using a very light primary background. System reduced-motion preferences disable overlay animations.
-
-## Typed inline styles
-
-```tsx
-import type { LeafThemeStyle } from '@sudden3/leaf-ui';
-
-const theme: LeafThemeStyle = {
-  '--leaf-color-primary': '#7654c6',
-  '--leaf-radius': '6px',
+const theme: LeafTheme = {
+  controlHeight: 36,
+  borderRadius: 8,
+  tokens: {
+    controlHeightSm: 28,
+    borderRadiusLg: 18,
+    infoColor: '#1677ff',
+    motionDuration: 200,
+  },
 };
 ```
 
-LeafThemeStyle extends React CSSProperties and permits custom --leaf-* variables.
+Explicit small and large sizes take precedence over derived values. See [LeafThemeTokens](/en/components/config-provider#leafthemetokens) for all options.
+
+`motion: false` disables transitions and pauses loading icons. System reduced-motion preferences remain respected.
+
+## Reuse styles in your own components
+
+Read the current region's CSS variables in your application styles. Use ConfigProvider to configure Leaf UI, and `var()` to make custom components follow that configuration:
+
+```tsx
+<ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 8 }}>
+  <button className="product-button" type="button">Custom button</button>
+  <Button>Leaf UI button</Button>
+</ConfigProvider>
+```
+
+```scss
+.product-button {
+  min-height: var(--leaf-control-height);
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-primary);
+  color: var(--leaf-color-on-primary);
+  font-family: var(--leaf-font-family);
+  font-size: var(--leaf-font-size);
+  font-weight: var(--leaf-font-weight);
+  cursor: pointer;
+}
+```
+
+| Variables to read | Purpose |
+| --- | --- |
+| `--leaf-color-primary` / `--leaf-color-on-primary` | Primary background and foreground |
+| `--leaf-color-danger` / `--leaf-color-success` / `--leaf-color-warning` / `--leaf-color-info` | Semantic colors |
+| `--leaf-color-text` / `--leaf-color-text-muted` | Main / secondary text |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` / `--leaf-color-border` | Surfaces and borders |
+| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | Base / small / large radius |
+| `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | Base / small / large height |
+| `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | Typography |
+| `--leaf-motion-duration` / `--leaf-motion-easing` | Transitions |
+
+Place custom components inside the intended provider. Import the compiled `styles.css`; consumers do not need Sass.
+
+## Server rendering
+
+Static CSS and dynamic themes work together without generating CSS at runtime. See [SSR usage](/en/guide/ssr) for Next.js and other frameworks.

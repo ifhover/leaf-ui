@@ -1,10 +1,121 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
-import { Select, TimePicker } from '../index';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
+import { describe, expect, it, vi } from 'vitest';
+import { Button, Input, Select, TimePicker } from '../index';
 import { ConfigProvider, useLeafConfig } from './config-provider';
 
 describe('ConfigProvider', () => {
+  it('inherits advanced overrides and removes stale settings when the theme changes', () => {
+    const { rerender } = render(
+      <ConfigProvider
+        theme={{
+          borderRadius: 8,
+          controlHeight: 38,
+          tokens: { controlHeightSm: 30, infoColor: '#006cff' },
+        }}
+      >
+        <ConfigProvider
+          data-testid="nested"
+          theme={{ borderRadius: 12, controlHeight: 42, tokens: { surfaceColor: '#fafafa' } }}
+        />
+      </ConfigProvider>,
+    );
+    const scope = screen.getByTestId('nested');
+    expect(scope.style.getPropertyValue('--leaf-radius')).toBe('12px');
+    expect(scope.style.getPropertyValue('--leaf-control-height')).toBe('42px');
+    expect(scope.style.getPropertyValue('--leaf-control-height-sm')).toBe('30px');
+    expect(scope.style.getPropertyValue('--leaf-color-info')).toBe('#006cff');
+    expect(scope.style.getPropertyValue('--leaf-color-surface')).toBe('#fafafa');
+    rerender(
+      <ConfigProvider>
+        <ConfigProvider data-testid="nested" theme={{ appearance: 'dark', motion: false }} />
+      </ConfigProvider>,
+    );
+    expect(scope.style.getPropertyValue('--leaf-control-height-sm')).toBe('');
+    expect(scope.style.getPropertyValue('--leaf-color-info')).toBe('');
+    expect(scope.style.getPropertyValue('--leaf-motion-duration')).toBe('0ms');
+    expect(scope).toHaveAttribute('data-leaf-theme', 'dark');
+  });
+  it('supports explicit small and large sizes, CSS lengths and per-scope motion', () => {
+    render(
+      <ConfigProvider
+        data-testid="theme"
+        theme={{
+          borderRadius: '0.75rem',
+          fontSize: 16,
+          controlHeight: '2.5rem',
+          fontFamily: 'Arial',
+          tokens: {
+            borderRadiusLg: 24,
+            controlHeightLg: '3rem',
+            fontSizeSm: 13,
+            fontWeight: 600,
+            motionDuration: 250,
+            popupZIndex: 1400,
+          },
+        }}
+      >
+        <ConfigProvider data-testid="still" theme={{ motion: false }} />
+        <ConfigProvider data-testid="moving" theme={{ motion: false }}>
+          <ConfigProvider data-testid="resumed" theme={{ motion: true }} />
+        </ConfigProvider>
+      </ConfigProvider>,
+    );
+    const scope = screen.getByTestId('theme');
+    expect(scope.style.getPropertyValue('--leaf-radius')).toBe('0.75rem');
+    expect(scope.style.getPropertyValue('--leaf-radius-lg')).toBe('24px');
+    expect(scope.style.getPropertyValue('--leaf-control-height-lg')).toBe('3rem');
+    expect(scope.style.getPropertyValue('--leaf-font-size-sm')).toBe('13px');
+    expect(scope.style.getPropertyValue('--leaf-font-weight')).toBe('600');
+    expect(scope.style.getPropertyValue('--leaf-z-index-popup')).toBe('1400');
+    expect(screen.getByTestId('still').style.getPropertyValue('--leaf-motion-play-state')).toBe(
+      'paused',
+    );
+    expect(screen.getByTestId('resumed').style.getPropertyValue('--leaf-motion-duration')).toBe(
+      '250ms',
+    );
+    expect(screen.getByTestId('resumed').style.getPropertyValue('--leaf-motion-play-state')).toBe(
+      'running',
+    );
+  });
+  it('renders a configured first frame on the server and hydrates without replacing it', async () => {
+    const app = (
+      <ConfigProvider
+        locale="en-US"
+        theme={{ appearance: 'dark', primaryColor: '#7654c6', borderRadius: 8, controlHeight: 38 }}
+      >
+        <Button>Save</Button>
+        <Input name="title" defaultValue="Leaf" />
+        <Select
+          aria-label="Team"
+          options={[{ value: 'design', label: 'Design' }]}
+          defaultValue="design"
+        />
+      </ConfigProvider>
+    );
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(app);
+    document.body.append(container);
+    const scope = container.firstElementChild;
+    const serverButton = container.querySelector('button');
+    expect(scope).toHaveAttribute('data-leaf-theme', 'dark');
+    expect(container.innerHTML).toContain('--leaf-control-height:38px');
+    expect(container.innerHTML).toContain('--leaf-radius:8px');
+    const recover = vi.fn();
+    const root = hydrateRoot(container, app, { onRecoverableError: recover });
+    try {
+      await act(async () => {});
+      expect(recover).not.toHaveBeenCalled();
+      expect(container.firstElementChild).toBe(scope);
+      expect(container.querySelector('button')).toBe(serverButton);
+      expect(container.querySelector('input[name="title"]')).toHaveValue('Leaf');
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+    }
+  });
   it('merges nested regions without affecting siblings', () => {
     function Values() {
       const { locale, theme } = useLeafConfig();

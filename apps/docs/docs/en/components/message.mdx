@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MessageBasic } from '../../../src/examples/en/message/basic';
+import { MessageStack } from '../../../src/examples/en/message/stack';
 
 # Message
 
@@ -10,6 +11,17 @@ Provide brief feedback about an operation.
 <ComponentExample title="Messages and updates" preview={<MessageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## Multiple messages
+
+When a message closes, those below it move up smoothly. Content of different heights collapses using its actual space.
+
+<ComponentExample title="Multiple messages" preview={<MessageStack />} fileName="stack.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/message/stack.tsx"
 ```
 
 </ComponentExample>

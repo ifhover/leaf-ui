@@ -14,10 +14,10 @@ const button = (x, y, label, fill = '#20834a') =>
 const dialog = (title, body, confirm = false) =>
   rect(20, 9, 200, 110, '#00000040', 'none', 9) +
   rect(36, 18, 168, 92) +
-  text(48, 36, title, '#203329', 11) +
+  text(confirm ? 69 : 48, 36, title, '#203329', 11) +
   icon(X, 182, 24, '#6c7c71') +
   text(confirm ? 69 : 48, 58, body) +
-  (confirm ? icon(CircleX, 48, 47, '#c83c3c') : '') +
+  (confirm ? icon(CircleX, 48, 24, '#c83c3c') : '') +
   rect(82, 78, 52, 22) +
   text(91, 93, 'Cancel', '#6c7c71', 9) +
   button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#c83c3c' : '#20834a');

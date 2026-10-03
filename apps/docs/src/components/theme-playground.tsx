@@ -1,4 +1,4 @@
-import { Button, type LeafThemeStyle } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider } from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -16,35 +16,42 @@ export function ThemePlayground() {
 
   const [color, setColor] = useState('#20834a');
   const [radius, setRadius] = useState(10);
+  const [height, setHeight] = useState(34);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [subscribed, setSubscribed] = useState(false);
   const id = useId();
-  const themeColor = mode === 'dark' ? `color-mix(in srgb, ${color} 65%, white)` : color;
-  const style: LeafThemeStyle = {
-    '--leaf-color-primary': themeColor,
-    '--leaf-color-on-primary': mode === 'dark' ? '#11271a' : '#ffffff',
-    '--leaf-radius': `${radius}px`,
-  };
-  const css = [
-    ':root {',
-    `  --leaf-color-primary: ${themeColor};`,
-    `  --leaf-radius: ${radius}px;`,
-    mode === 'dark' ? '  --leaf-color-on-primary: #11271a;' : '',
-    '}',
-  ]
-    .filter(Boolean)
-    .join('\n');
+  const source = [
+    "import { Button, ConfigProvider } from '@sudden3/leaf-ui';",
+    '',
+    '<ConfigProvider theme={{',
+    `  primaryColor: '${color}',`,
+    `  borderRadius: ${radius},`,
+    `  controlHeight: ${height},`,
+    `  appearance: '${mode}',`,
+    '}}>',
+    `  <Button>${t('保存', 'Save')}</Button>`,
+    '</ConfigProvider>',
+  ].join('\n');
 
   function reset() {
     setColor('#20834a');
     setRadius(10);
+    setHeight(34);
     setMode('light');
     setSubscribed(false);
   }
 
   return (
     <div className="leaf-playground">
-      <div className="leaf-playground__preview" data-leaf-theme={mode} style={style}>
+      <ConfigProvider
+        className="leaf-playground__preview"
+        theme={{
+          primaryColor: color,
+          borderRadius: radius,
+          controlHeight: height,
+          appearance: mode,
+        }}
+      >
         <div className="leaf-playground__preview-header">
           <span className="leaf-eyebrow">LIVE PREVIEW</span>
           <span className="leaf-preview-tag">
@@ -105,14 +112,14 @@ export function ThemePlayground() {
             <span>Ghost</span>
           </div>
         </div>
-      </div>
+      </ConfigProvider>
       <div className="leaf-playground__controls">
         <div className="leaf-playground__controls-header">
           <Icon name="sliders" width="18" height="18" />
           <h3>{t('你的风格，你来定义', 'Your style, your choice')}</h3>
         </div>
         <p className="leaf-control-description">
-          {t('几个变量，就能长成你喜欢的样子。', 'A few variables shape the look you want.')}
+          {t('几个设置，就能长成你喜欢的样子。', 'A few settings shape the look you want.')}
         </p>
         <fieldset className="leaf-control-fieldset">
           <legend>
@@ -182,13 +189,33 @@ export function ThemePlayground() {
             </button>
           </div>
         </fieldset>
+        <div className="leaf-control-radius">
+          <label htmlFor={`${id}-height`}>
+            {t('控件高度', 'Control height')}
+            <span>Control height</span>
+            <output htmlFor={`${id}-height`}>{height}px</output>
+          </label>
+          <input
+            id={`${id}-height`}
+            type="range"
+            min="28"
+            max="44"
+            step="1"
+            value={height}
+            onChange={(event) => setHeight(Number(event.target.value))}
+          />
+          <div>
+            <span>{t('紧凑', 'Compact')}</span>
+            <span>{t('宽松', 'Spacious')}</span>
+          </div>
+        </div>
         <div className="leaf-playground__code">
           <div>
-            <span>theme.css</span>
-            <CopyButton text={css} />
+            <span>theme.tsx</span>
+            <CopyButton text={source} />
           </div>
           <pre>
-            <code>{css}</code>
+            <code>{source}</code>
           </pre>
         </div>
         <Button className="leaf-playground__reset" size="sm" variant="ghost" onClick={reset}>

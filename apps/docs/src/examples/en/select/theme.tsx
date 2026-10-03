@@ -1,13 +1,13 @@
-import { type LeafThemeStyle, Select } from '@sudden3/leaf-ui';
+import { ConfigProvider, type LeafTheme, Select } from '@sudden3/leaf-ui';
 
-const theme: LeafThemeStyle = {
-  '--leaf-color-primary': '#7654c6',
-  '--leaf-radius': '6px',
+const theme: LeafTheme = {
+  primaryColor: '#7654c6',
+  borderRadius: 6,
 };
 
 export function SelectTheme() {
   return (
-    <div className="leaf-demo-stack" style={theme}>
+    <ConfigProvider className="leaf-demo-stack" theme={theme}>
       <Select
         aria-label="Themed team"
         allowClear
@@ -20,6 +20,6 @@ export function SelectTheme() {
       <span className="leaf-demo-note">
         Open the list to see its purple theme and border radius.
       </span>
-    </div>
+    </ConfigProvider>
   );
 }

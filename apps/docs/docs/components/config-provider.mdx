@@ -1,9 +1,10 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ConfigProviderBasic } from '../../src/examples/config-provider/basic';
+import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 # ConfigProvider 配置
 
-按区域设置主题色、圆角与语言。
+统一设置区域的主题、外观与语言。
 
 ## 区域主题与语言
 
@@ -14,31 +15,86 @@ import { ConfigProviderBasic } from '../../src/examples/config-provider/basic';
 
 </ComponentExample>
 
+## 基础尺寸与高级覆盖
+
+修改基础高度时，小、大控件会同步调整。需要特殊尺寸时，再通过 tokens 单独覆盖。
+
+<ComponentExample title="基础尺寸与高级覆盖" preview={<ConfigProviderSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/config-provider/sizes.tsx"
+```
+
+</ComponentExample>
+
 ## ConfigProvider API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `theme` | [`LeafTheme`](#leaftheme) | — | 区域主题设置 |
-| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | 中文或英文；嵌套时继承上层设置 |
+| `theme` | [`LeafTheme`](#leaftheme) | — | 区域主题；未设置的字段继承上层 |
+| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | 内置文本语言，嵌套时继承 |
 | `children` | `ReactNode` | — | 区域中的内容 |
+
+其余原生 div 属性、className 和 style 作用于区域容器。主题设置通过 theme 传入。
 
 ## LeafTheme
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | — | 主题色，支持 CSS 颜色 |
-| `borderRadius` | `number \| string` | — | 数字为像素，也支持 CSS 长度 |
+| `primaryColor` | `string` | `'#20834a'` | 主题色，悬停和按下等状态自动生成；深色默认采用较浅的绿色 |
+| `borderRadius` | `number \| string` | `10` | 基础圆角；数字为 px，小 / 大圆角按 0.6 / 1.6 倍生成 |
+| `controlHeight` | `number \| string` | `34` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
+| `fontSize` | `number \| string` | `14` | 基础字号；小 / 大字号分别减 / 加 2px |
+| `fontFamily` | `string` | 系统无衬线字体 | 字体族 |
+| `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
+| `motion` | `boolean` | `true` | 是否启用过渡与加载图标旋转；尊重系统减少动态效果设置 |
+| `tokens` | [`LeafThemeTokens`](#leafthemetokens) | — | 可选的高级覆盖，不必配置全部字段 |
+
+以上默认值适用于未配置的应用。嵌套区域继承上层显式设置；长度也支持 CSS 单位。小控件高度和字号的自动结果不会小于 1px。
+
+## LeafThemeTokens
+
+所有字段均可选；显式值优先于默认或自动生成值。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `onPrimaryColor` | `string` | 按主题生成 | 主题背景上的文字色 |
+| `dangerColor / onDangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
+| `successColor / warningColor / infoColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
+| `textColor / mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
+| `surfaceColor / mutedSurfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
+| `borderColor` | `string` | 按外观生成 | 中性边框 |
+| `borderRadiusSm / borderRadiusLg` | `number \| string` | 基础圆角 × 0.6 / 1.6 | 单独覆盖小 / 大圆角 |
+| `controlHeightSm / controlHeightLg` | `number \| string` | 基础高度 − / + 6px | 单独覆盖小 / 大高度 |
+| `fontSizeSm / fontSizeLg` | `number \| string` | 基础字号 − / + 2px | 单独覆盖小 / 大字号 |
+| `fontWeight` | `number` | `500` | 按钮等组件的字重 |
+| `motionDuration` | `number \| string` | `160` | 过渡时间；数字为 ms，也支持 `'0.2s'`；motion=false 时为 0 |
+| `motionEasing` | `string` | `'ease'` | 过渡曲线 |
+| `popupZIndex / modalZIndex / messageZIndex` | `number` | `1000 / 1100 / 1200` | 浮层 / 弹窗 / 消息层级 |
+| `buttonBorderRadius / buttonHeight` | `number \| string` | 当前控件尺寸 | 仅按钮的圆角 / 共用高度覆盖 |
+| `choiceBorderRadius` | `number \| string` | 基础圆角 × 0.5 | 复选框圆角 |
+| `focusColor` | `string` | 当前语义色自动生成 | 焦点轮廓颜色 |
+| `primaryHoverColor / primaryActiveColor` | `string` | 主题色自动生成 | 主色悬停 / 按下 |
+| `primarySoftColor / primarySoftHoverColor / primarySoftActiveColor` | `string` | 主题色自动生成 | 主色柔和背景与交互状态 |
+| `primaryBorderColor` | `string` | 主题色自动生成 | 主题色边框 |
+| `dangerHoverColor / dangerActiveColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
 
 ## 类型
 
-定义组件属性或组装变量时可导入相关类型。
+组装可复用的主题或属性时，可导入这些类型：
 
 ```ts
-import type { ConfigProviderProps, LeafTheme, LeafLocale } from '@sudden3/leaf-ui';
+import type { ConfigProviderProps, LeafTheme, LeafThemeTokens, LeafLocale } from '@sudden3/leaf-ui';
+
+const theme: LeafTheme = { primaryColor: '#7654c6', borderRadius: 8 };
+const advanced: LeafThemeTokens = { controlHeightLg: 44 };
 ```
+
+`LeafLocale` 直接表示 `'zh-CN' | 'en-US'`。ConfigProviderProps 对应上方 [ConfigProvider API](#configprovider-api)。
 
 ## 使用说明
 
-嵌套区域只覆盖明确传入的选项，其余沿用上层。主题色与圆角通过 CSS 变量应用，语言覆盖选择器提示、日期、时间、清除按钮和反馈组件。业务内容、label、options 由应用自行翻译。
+嵌套区域按字段合并 tokens；手动指定的派生尺寸会继续继承。浮层、Modal 和此区域内的 message / confirm contextHolder 沿用相同配置。
 
-浮层、Modal 和放置在此区域的 message / confirm contextHolder 都会继承该区域。需要更多样式时仍可以覆盖 CSS 变量。
+语言覆盖内置提示、日期、时间、清除按钮和反馈组件；业务内容、label 和 options 由应用翻译。
+
+使用 ConfigProvider 调整主题，CSS 变量供业务组件读取和复用。入门示例见[定制主题](/guide/theming)，服务端接入见 [SSR 使用](/guide/ssr)。

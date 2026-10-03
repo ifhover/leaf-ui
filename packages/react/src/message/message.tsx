@@ -90,25 +90,33 @@ function MessageItem({
   return (
     <div
       ref={ref}
-      className={`leaf-message leaf-message--${type}`}
+      className="leaf-message-slot"
       data-state={entry.open ? 'open' : 'closing'}
       aria-hidden={!entry.open || undefined}
       inert={inertAttribute(!entry.open)}
-      role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
-      onPointerEnter={() => setHover(true)}
-      onPointerLeave={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setHover(false);
-      }}
     >
-      <FeedbackIcon type={type} />
-      <span>{entry.content}</span>
-      {entry.closable && (
-        <button type="button" aria-label={messages.close} onClick={close}>
-          <X size={15} aria-hidden="true" />
-        </button>
-      )}
+      <div className="leaf-message-slot__content">
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: These events pause dismissal; the message must retain its live-region role. */}
+        <div
+          className={`leaf-message leaf-message--${type}`}
+          data-state={entry.open ? 'open' : 'closing'}
+          role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
+          onFocus={() => setHover(true)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setHover(false);
+          }}
+        >
+          <FeedbackIcon type={type} />
+          <span>{entry.content}</span>
+          {entry.closable && (
+            <button type="button" aria-label={messages.close} onClick={close}>
+              <X size={15} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

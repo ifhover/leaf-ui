@@ -22,8 +22,8 @@ export function HomeLayout() {
       number: '02',
       title: t('随你而变', 'Make it yours'),
       text: t(
-        '主题色、圆角、字体与动效，用 CSS 变量，定义你的设计语言。',
-        'Shape colors, radii, fonts and motion with CSS variables.',
+        '轻松调整主题色、圆角与尺寸，定义你的设计语言。',
+        'Choose your colors, shapes and sizes to express your design.',
       ),
     },
     {

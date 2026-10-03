@@ -1,6 +1,6 @@
 # Leaf UI
 
-轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
+轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 ConfigProvider 调整颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
 
 [在线文档](https://ifhover.github.io/leaf-ui/) · [npm](https://www.npmjs.com/package/@sudden3/leaf-ui)
 
@@ -47,19 +47,19 @@ export function App() {
 | `Checkbox` | 多项选择与半选 |
 | `Radio` / `RadioGroup` | 单选与选项分组 |
 | `Switch` | 开关与加载状态 |
-| `Select` | 单选菜单，支持禁用选项与清除 |
+| `Select` | 单选、多选和搜索，支持禁用选项与清除 |
 | `DatePicker` | 日期选择，支持最早 / 最晚日期 |
 | `TimePicker` | 24 / 12 小时制与秒选择 |
 | `AutoComplete` | 自由文本输入与动态建议 |
 | `Cascader` | 按层级选择完整路径 |
 | `Form` / `FormField` | 表单布局、自动标签宽度与校验反馈 |
-| `ConfigProvider` | 区域主题、圆角和中英文 |
+| `ConfigProvider` | 区域主题、自动派生尺寸、外观和中英文 |
 | `DateTimePicker` / `DateRangePicker` | 日期时间与多粒度起止区间 |
 | `Dropdown` | 操作菜单与键盘导航 |
 | `Modal` / `Confirm` | 弹窗与异步确认 |
 | `Alert` / `Message` / `useMessage` | 页内提示与短暂消息 |
 
-`Select` 的 onChange 返回字符串值与选项；`DatePicker` 返回 Date 或 null 及本地 `YYYY-MM-DD` 字符串；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
+`Select` 的 onChange 返回字符串值与选项，多选时返回数组；`DatePicker` 返回 Date 或 null 及本地 `YYYY-MM-DD` 字符串；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
 
 设置 name 后，可通过 FormData 读取值。日期为 `YYYY-MM-DD`，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控组件支持表单 reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
 
@@ -77,31 +77,26 @@ import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-u
 </ConfigProvider>
 ```
 
-嵌套配置继承未设置的选项；浮层与放在区域内的 message / confirm contextHolder 沿用主题和语言。其他样式仍可使用 CSS 变量。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
+嵌套配置继承未设置的选项；浮层与放在区域内的 message / confirm contextHolder 沿用主题和语言。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
 
 ## 主题定制
 
-在 Leaf UI 样式之后引入自己的 CSS / SCSS，或在局部父容器上覆盖变量。浮层同样沿用局部主题。
+使用 ConfigProvider 调整主题。只需给出基础圆角、高度和字号，其他尺寸自动生成；特殊需求通过可选的 tokens 覆盖。
 
-```css
-:root {
-  --leaf-color-primary: #20834a;
-  --leaf-color-on-primary: #ffffff;
-  --leaf-color-danger: #c83c3c;
-  --leaf-radius: 10px;
-  --leaf-control-height: 34px;
-  --leaf-control-height-sm: 28px;
-  --leaf-control-height-lg: 40px;
-  --leaf-z-index-popup: 1000;
-}
-
-.campaign {
-  --leaf-color-primary: #7654c6;
-  --leaf-radius: 6px;
-}
+```tsx
+<ConfigProvider theme={{
+  primaryColor: '#7654c6',
+  borderRadius: 8,
+  controlHeight: 34,
+  appearance: 'light',
+}}>
+  <Button>品牌按钮</Button>
+</ConfigProvider>
 ```
 
-内联主题可以使用 `LeafThemeStyle` 类型。通过 `data-leaf-theme="light"` / `data-leaf-theme="dark"` 切换中性色和语义色。
+CSS 变量供业务组件读取：自己的按钮也可以使用 `var(--leaf-color-primary)`、`var(--leaf-radius)` 与 `var(--leaf-control-height)`，跟随所在区域的配置。
+
+服务端渲染使用同一份静态 CSS 和初始主题，动态切换无需重新生成样式。Next.js App Router、Pages Router 和其他框架的例子见 [SSR 使用](https://ifhover.github.io/leaf-ui/guide/ssr.html)。
 
 图标采用 [Lucide](https://lucide.dev/)。应用中需要使用图标时安装 `lucide-react`，然后通过具名导入将图标节点传给 Button 的 startIcon / endIcon 或 Input 的 prefix / suffix。
 

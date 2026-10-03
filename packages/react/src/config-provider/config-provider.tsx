@@ -1,11 +1,9 @@
 import { createContext, type HTMLAttributes, useContext, useMemo } from 'react';
-import type { LeafThemeStyle } from '../theme';
+import { type LeafTheme, leafThemeVariables, mergeLeafTheme } from '../theme';
+
+export type { LeafTheme, LeafThemeTokens } from '../theme';
 
 export type LeafLocale = 'zh-CN' | 'en-US';
-export interface LeafTheme {
-  primaryColor?: string;
-  borderRadius?: number | string;
-}
 export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   locale?: LeafLocale;
   theme?: LeafTheme;
@@ -120,25 +118,19 @@ export function ConfigProvider({ locale, theme, style, children, ...props }: Con
     const language = locale ?? parent.locale;
     return {
       locale: language,
-      theme: { ...parent.theme, ...theme },
+      theme: mergeLeafTheme(parent.theme, theme),
       messages: language === 'en-US' ? en : zh,
     };
   }, [parent, locale, theme]);
-  const variables: LeafThemeStyle = {
-    ...(theme?.primaryColor ? { '--leaf-color-primary': theme.primaryColor } : {}),
-    ...(theme?.borderRadius !== undefined
-      ? {
-          '--leaf-radius':
-            typeof theme.borderRadius === 'number' ? `${theme.borderRadius}px` : theme.borderRadius,
-          '--leaf-radius-sm': 'calc(var(--leaf-radius) * 0.6)',
-          '--leaf-radius-lg': 'calc(var(--leaf-radius) * 1.6)',
-        }
-      : {}),
-    ...style,
-  };
+  const variables = useMemo(() => leafThemeVariables(merged.theme), [merged.theme]);
   return (
     <ConfigContext.Provider value={merged}>
-      <div {...props} lang={merged.locale} style={variables}>
+      <div
+        {...props}
+        lang={merged.locale}
+        data-leaf-theme={merged.theme.appearance}
+        style={{ ...variables, ...style }}
+      >
         {children}
       </div>
     </ConfigContext.Provider>

@@ -43,16 +43,17 @@ import { GettingStartedExample, GettingStartedForm } from '../../src/components/
 
 ## 换一种颜色
 
-在 Leaf UI 样式之后引入主题 CSS：
+在应用或需要定制的区域外包裹 ConfigProvider：
 
-```css title="theme.css"
-:root {
-  --leaf-color-primary: #3264d9;
-  --leaf-radius: 6px;
-}
+```tsx
+import { Button, ConfigProvider } from '@sudden3/leaf-ui';
+
+<ConfigProvider theme={{ primaryColor: '#3264d9', borderRadius: 6 }}>
+  <Button>保存</Button>
+</ConfigProvider>
 ```
 
-主题变量也可以放在父容器上，详情见[定制主题](/guide/theming)。
+更多配置与样式复用见[定制主题](/guide/theming)。使用 Next.js 等框架时，可阅读 [SSR 使用](/guide/ssr)。
 
 ## 接下来
 

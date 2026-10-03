@@ -1,0 +1,145 @@
+# SSR usage
+
+Leaf UI supports server rendering. Import the compiled stylesheet at your framework's root entry and provide an initial theme with ConfigProvider.
+
+## Static styles and dynamic themes
+
+Layout, states and animations are compiled into `@sudden3/leaf-ui/styles.css`. ConfigProvider renders the region's theme variables into HTML; derived sizes use CSS calculations.
+
+Server rendering and dynamic themes therefore work together: the server renders the initial HTML and theme, the client hydrates using the same settings, and React state handles later switches. No CSS-in-JS registry, server style extraction, Sass configuration or SSR opt-out is required.
+
+## Next.js App Router
+
+### Import styles in the root layout
+
+```tsx title="app/layout.tsx"
+import type { ReactNode } from 'react';
+import { cookies } from 'next/headers';
+import type { LeafTheme } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+import './globals.css';
+import { Providers } from './providers';
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const store = await cookies();
+  const initialTheme: LeafTheme = {
+    primaryColor: '#7654c6',
+    borderRadius: 8,
+    controlHeight: 34,
+    appearance: store.get('leaf-appearance')?.value === 'dark' ? 'dark' : 'light',
+  };
+
+  return (
+    <html lang="en">
+      <body>
+        <Providers initialTheme={initialTheme}>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+This example uses the current async Next.js cookies API. The appearance cookie is optional; account preferences or a fixed server theme also work.
+
+### Create an interactive provider
+
+```tsx title="app/providers.tsx"
+'use client';
+
+import { useState, type ReactNode } from 'react';
+import { Button, ConfigProvider, type LeafTheme } from '@sudden3/leaf-ui';
+
+export function Providers({
+  initialTheme,
+  children,
+}: {
+  initialTheme: LeafTheme;
+  children: ReactNode;
+}) {
+  const [theme, setTheme] = useState(initialTheme);
+
+  function toggleAppearance() {
+    const appearance = theme.appearance === 'dark' ? 'light' : 'dark';
+    setTheme((current) => ({ ...current, appearance }));
+    document.cookie =
+      'leaf-appearance=' + appearance + '; Path=/; Max-Age=31536000; SameSite=Lax';
+  }
+
+  return (
+    <ConfigProvider locale="en-US" theme={theme}>
+      <Button onClick={toggleAppearance}>Switch appearance</Button>
+      {children}
+    </ConfigProvider>
+  );
+}
+```
+
+`'use client'` declares a client boundary, which Next.js still prerenders on the server. The package's built entries preserve this directive. Server Components may import and render Leaf UI components; put event handlers, hooks and interactive state in Client Components, and pass serializable settings across the boundary.
+
+Passing server-rendered content through children preserves its Server Component boundary.
+
+### Use form components
+
+```tsx title="app/project-form.tsx"
+'use client';
+
+import { Button, Form, FormField, Input } from '@sudden3/leaf-ui';
+
+export function ProjectForm() {
+  return (
+    <Form onSubmit={(event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      console.log(data.get('name'));
+    }}>
+      <FormField label="Project name" required>
+        <Input name="name" />
+      </FormField>
+      <Button type="submit">Save</Button>
+    </Form>
+  );
+}
+```
+
+Import ProjectForm into your page. It inherits the outer theme without `dynamic(..., { ssr: false })`.
+
+## Next.js Pages Router
+
+Import styles and wrap the page in `pages/_app.tsx`:
+
+```tsx title="pages/_app.tsx"
+import type { AppProps } from 'next/app';
+import { ConfigProvider } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ConfigProvider theme={pageProps.initialTheme ?? { borderRadius: 8 }}>
+      <Component {...pageProps} />
+    </ConfigProvider>
+  );
+}
+```
+
+For a personalized first frame, read preferences in getServerSideProps and return initialTheme. The client's first render uses the same pageProps. Later switches can use React state as in Providers above.
+
+## Other React SSR frameworks
+
+Remix, React Router framework mode and custom React SSR servers follow the same steps:
+
+1. Import `styles.css` through the framework's root entry or route, so it loads with the first frame.
+2. Read theme and language on the server and wrap the rendered tree in ConfigProvider.
+3. Pass the same initial settings to the browser through the framework's data mechanism.
+4. Initialize client state with those settings, then handle later switches.
+
+The static stylesheet is cacheable. Dynamic settings stay on each region's HTML container, with no DOM or window access during theme calculation.
+
+## Keep the first render consistent
+
+Prefer cookies, account settings or fixed defaults that the server can read. A preference stored only in localStorage is unavailable on the server: hydrate with a consistent default, then load it in an effect. This causes a visible theme switch. Persist preferences where the server can read them when the first frame should already match.
+
+Date pickers display local dates and times. Different server and browser time zones can produce different labels. Use a shared time-zone policy for SSR date defaults, or set the user's local dates after hydration. Avoid independently generating different initial values with `new Date()`.
+
+Modal, Confirm, Message and floating panels create their portals after client mounting. Form controls themselves can render on the server; initially open overlays appear after hydration.
+
+Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.

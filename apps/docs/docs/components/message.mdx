@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { MessageBasic } from '../../src/examples/message/basic';
+import { MessageStack } from '../../src/examples/message/stack';
 
 # Message 消息提示
 
@@ -10,6 +11,17 @@ import { MessageBasic } from '../../src/examples/message/basic';
 <ComponentExample title="消息与更新" preview={<MessageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## 多条消息
+
+消息关闭时，后续消息会平滑上移。不同高度的内容会按照实际占用空间收起。
+
+<ComponentExample title="多条消息" preview={<MessageStack />} fileName="stack.tsx">
+
+```tsx lineNumbers file="../../src/examples/message/stack.tsx"
 ```
 
 </ComponentExample>

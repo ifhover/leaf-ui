@@ -67,6 +67,7 @@
     width: 10px;
     height: 10px;
     animation: leaf-spin 900ms linear infinite;
+    animation-play-state: var(--leaf-motion-play-state, running);
   }
   @media (prefers-reduced-motion: reduce) {
     &__track,

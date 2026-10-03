@@ -8,7 +8,12 @@ export type { CascaderOption, CascaderProps } from './cascader';
 export { Cascader } from './cascader';
 export type { CheckboxProps } from './checkbox';
 export { Checkbox } from './checkbox';
-export type { ConfigProviderProps, LeafLocale, LeafTheme } from './config-provider';
+export type {
+  ConfigProviderProps,
+  LeafLocale,
+  LeafTheme,
+  LeafThemeTokens,
+} from './config-provider';
 export { ConfigProvider } from './config-provider';
 export type { ConfirmOptions, ConfirmProps } from './confirm';
 export { Confirm, useConfirm } from './confirm';

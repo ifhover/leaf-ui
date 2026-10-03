@@ -3,7 +3,40 @@ import { afterEach, expect, it, vi } from 'vitest';
 import type { MessageApi } from './message';
 import { useMessage } from './message';
 
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
+it('keeps the closing slot until its transition finishes and preserves following messages', async () => {
+  let message: MessageApi | undefined;
+  const onClose = vi.fn();
+  function Example() {
+    const result = useMessage();
+    message = result.message;
+    return result.contextHolder;
+  }
+  render(<Example />);
+  await act(async () => {
+    message?.open({ key: 'first', content: 'First', duration: 0, onClose });
+    message?.open({ key: 'second', content: 'Second', duration: 0, closable: true });
+  });
+  const firstSlot = screen.getByText('First').closest('.leaf-message-slot');
+  if (firstSlot instanceof HTMLElement) firstSlot.style.transitionDuration = '160ms';
+  const secondMessage = screen.getByText('Second').closest('.leaf-message');
+  const closeButton = screen.getByRole('button', { name: '关闭' });
+  closeButton.focus();
+  act(() => message?.close('first'));
+  expect(firstSlot).toHaveAttribute('data-state', 'closing');
+  expect(firstSlot).toBeInTheDocument();
+  expect(screen.getAllByRole('status')).toHaveLength(1);
+  expect(screen.getByText('Second').closest('.leaf-message')).toBe(secondMessage);
+  expect(closeButton).toHaveFocus();
+  expect(onClose).toHaveBeenCalledOnce();
+  if (firstSlot) fireEvent.transitionEnd(firstSlot, { propertyName: 'opacity' });
+  await waitFor(() => expect(firstSlot).not.toBeInTheDocument());
+  expect(screen.getByRole('status')).toHaveTextContent('Second');
+  expect(closeButton).toHaveFocus();
+});
 it('updates a loading message by key and closes only once', async () => {
   let message: MessageApi | undefined;
   const onClose = vi.fn();

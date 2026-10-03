@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { FeedbackIcon } from '../alert/alert';
 import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
@@ -37,6 +37,7 @@ export function Confirm({
   const mounted = useRef(true);
   const busy = useRef(false);
   const type = typeProp ?? (danger ? 'danger' : 'default');
+  const titleId = `${useId()}-confirm-title`;
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -73,17 +74,16 @@ export function Confirm({
       open={open}
       confirmLoading={pending || confirmLoading}
       role="alertdialog"
-      className={['leaf-confirm', `leaf-confirm--${type}`, props.className]
+      className={[
+        'leaf-confirm',
+        `leaf-confirm--${type}`,
+        type !== 'default' && 'leaf-confirm--has-icon',
+        props.closable !== false && 'leaf-confirm--closable',
+        props.className,
+      ]
         .filter(Boolean)
         .join(' ')}
-      title={
-        title ? (
-          <span className="leaf-confirm-title">
-            {type !== 'default' && <FeedbackIcon type={type === 'danger' ? 'error' : type} />}
-            {title}
-          </span>
-        ) : undefined
-      }
+      aria-labelledby={title ? titleId : props['aria-labelledby']}
       maskClosable={pending ? false : (props.maskClosable ?? false)}
       closable={!pending && (props.closable ?? true)}
       keyboard={!pending && (props.keyboard ?? true)}
@@ -119,14 +119,25 @@ export function Confirm({
       }
     >
       <div className="leaf-confirm-content">
-        {!title && type !== 'default' && <FeedbackIcon type={type === 'danger' ? 'error' : type} />}
-        <div>{children}</div>
+        {type !== 'default' && (
+          <span className="leaf-confirm-icon">
+            <FeedbackIcon type={type === 'danger' ? 'error' : type} />
+          </span>
+        )}
+        <div className="leaf-confirm-copy">
+          {title && (
+            <h2 id={titleId} className="leaf-confirm-title">
+              {title}
+            </h2>
+          )}
+          <div className="leaf-confirm-description">{children}</div>
+          {error && (
+            <p role="alert" className="leaf-confirm-error">
+              {error}
+            </p>
+          )}
+        </div>
       </div>
-      {error && (
-        <p role="alert" className="leaf-confirm-error">
-          {error}
-        </p>
-      )}
     </Modal>
   );
 }

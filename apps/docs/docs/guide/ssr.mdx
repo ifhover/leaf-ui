@@ -1,0 +1,145 @@
+# SSR 使用
+
+Leaf UI 支持服务端渲染。将编译好的样式导入框架入口，再通过 ConfigProvider 提供初始主题即可。
+
+## 静态样式与动态主题
+
+组件布局、状态和动画已经编译到 `@sudden3/leaf-ui/styles.css`。ConfigProvider 在渲染时输出当前区域的主题变量，大小尺寸使用 CSS 计算，浏览器直接应用它们。
+
+因此 SSR 和动态主题可以同时保留：服务端输出首屏 HTML 与初始主题，客户端使用同一份配置接管后，再通过 React 状态切换主题。无需 CSS-in-JS 注册器、服务端提取样式、Sass 配置或关闭 SSR。
+
+## Next.js App Router
+
+### 在根布局导入样式
+
+```tsx title="app/layout.tsx"
+import type { ReactNode } from 'react';
+import { cookies } from 'next/headers';
+import type { LeafTheme } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+import './globals.css';
+import { Providers } from './providers';
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const store = await cookies();
+  const initialTheme: LeafTheme = {
+    primaryColor: '#7654c6',
+    borderRadius: 8,
+    controlHeight: 34,
+    appearance: store.get('leaf-appearance')?.value === 'dark' ? 'dark' : 'light',
+  };
+
+  return (
+    <html lang="zh-CN">
+      <body>
+        <Providers initialTheme={initialTheme}>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+该示例使用当前 Next.js 的异步 cookies API。Cookie 为可选的外观偏好；也可以在服务端读取账户设置，或始终提供固定主题。
+
+### 创建可以切换主题的区域
+
+```tsx title="app/providers.tsx"
+'use client';
+
+import { useState, type ReactNode } from 'react';
+import { Button, ConfigProvider, type LeafTheme } from '@sudden3/leaf-ui';
+
+export function Providers({
+  initialTheme,
+  children,
+}: {
+  initialTheme: LeafTheme;
+  children: ReactNode;
+}) {
+  const [theme, setTheme] = useState(initialTheme);
+
+  function toggleAppearance() {
+    const appearance = theme.appearance === 'dark' ? 'light' : 'dark';
+    setTheme((current) => ({ ...current, appearance }));
+    document.cookie =
+      'leaf-appearance=' + appearance + '; Path=/; Max-Age=31536000; SameSite=Lax';
+  }
+
+  return (
+    <ConfigProvider locale="zh-CN" theme={theme}>
+      <Button onClick={toggleAppearance}>切换外观</Button>
+      {children}
+    </ConfigProvider>
+  );
+}
+```
+
+`'use client'` 为交互组件声明客户端边界，仍会参与 Next.js 的服务端预渲染。包的构建入口也保留了该声明。在 Server Component 中可以导入并渲染 Leaf UI 组件；事件回调、hooks 和交互状态应放在 Client Component 中，传过边界的配置保持可序列化。
+
+将服务端内容作为 children 传给 Providers 可以保留这些内容的 Server Component 边界，不必把整个应用写成客户端组件。
+
+### 使用表单组件
+
+```tsx title="app/project-form.tsx"
+'use client';
+
+import { Button, Form, FormField, Input } from '@sudden3/leaf-ui';
+
+export function ProjectForm() {
+  return (
+    <Form onSubmit={(event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      console.log(data.get('name'));
+    }}>
+      <FormField label="项目名称" required>
+        <Input name="name" />
+      </FormField>
+      <Button type="submit">保存</Button>
+    </Form>
+  );
+}
+```
+
+在页面里导入 ProjectForm 后即可使用，它会继承外层主题。无需 `dynamic(..., { ssr: false })`。
+
+## Next.js Pages Router
+
+在 `pages/_app.tsx` 导入样式并包裹组件：
+
+```tsx title="pages/_app.tsx"
+import type { AppProps } from 'next/app';
+import { ConfigProvider } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ConfigProvider theme={pageProps.initialTheme ?? { borderRadius: 8 }}>
+      <Component {...pageProps} />
+    </ConfigProvider>
+  );
+}
+```
+
+需要用户专属首屏主题时，在页面的 getServerSideProps 中读取偏好并返回 initialTheme。客户端首次渲染使用同样的 pageProps；后续切换可以参照上方 Providers 的 React 状态写法。
+
+## 其他 React SSR 框架
+
+Remix、React Router 框架模式或自建 React SSR 服务使用相同方式：
+
+1. 按框架规则在根入口或根路由引入 `styles.css`，确保样式随首屏加载。
+2. 在服务端读取主题和语言，把 ConfigProvider 包裹进要渲染的组件树。
+3. 将同一份初始配置通过框架的数据机制传给客户端。
+4. 客户端从这份配置初始化状态，再响应主题切换。
+
+静态 CSS 可以由浏览器缓存，动态配置保留在 HTML 的区域容器中。主题计算不依赖 window、matchMedia 或读取 DOM。
+
+## 保持首次渲染一致
+
+首屏主题优先来自服务端可读的 Cookie、账户设置或固定默认值。若只把偏好放在 localStorage，服务端无法读取：先用一致的默认配置完成接管，再在 effect 中读取偏好，会产生一次可见主题切换。希望首屏直接正确时，应把偏好同步到服务端可读的存储。
+
+日期选择器使用本地日期和时间；时区不同可能导致服务器与浏览器显示不同的值。SSR 页面使用日期默认值时，让服务端与浏览器采用同一时区策略，或在客户端接管后设置用户本地日期。不要在两次首次渲染中分别调用 `new Date()` 生成不同初值。
+
+Modal、Confirm、Message 与选择浮层会在客户端挂载后创建 Portal。表单控件本身可以服务端渲染；已打开的弹层在客户端接管后展示。
+
+这些交互组件需要客户端 JavaScript 才能响应操作。样式复用与高级主题配置见[定制主题](/guide/theming)。

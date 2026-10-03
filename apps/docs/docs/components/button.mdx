@@ -117,11 +117,10 @@ import type { ButtonProps, ButtonVariant, ButtonSize } from '@sudden3/leaf-ui';
 
 ## 定制样式
 
-```css
-.custom-actions {
-  --leaf-color-primary: #7654c6;
-  --leaf-radius: 18px;
-}
+```tsx
+<ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 18 }}>
+  <Button>自定义主题</Button>
+</ConfigProvider>
 ```
 
-更多变量与实时示例见[定制主题](/guide/theming)。
+配置选项与实时示例见[定制主题](/guide/theming)。

@@ -14,14 +14,13 @@ React 18 or 19 and the matching React DOM version must be installed in your appl
 
 ## Styles
 
-Import the compiled stylesheet once, then your own theme overrides:
+Import the compiled stylesheet once in the application entry:
 
 ```tsx
 import '@sudden3/leaf-ui/styles.css';
-import './theme.scss';
 ```
 
-The package includes compiled CSS; consuming it does not require Sass. Your own theme may use CSS or SCSS.
+The package includes compiled CSS; consuming it does not require Sass. Configure colors, shapes and sizes through [ConfigProvider](/en/components/config-provider). Custom components can read the resulting CSS variables. See [SSR usage](/en/guide/ssr) for framework entry points.
 
 ## Icons
 

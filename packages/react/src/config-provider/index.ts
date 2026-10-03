@@ -1,2 +1,7 @@
-export type { ConfigProviderProps, LeafLocale, LeafTheme } from './config-provider';
+export type {
+  ConfigProviderProps,
+  LeafLocale,
+  LeafTheme,
+  LeafThemeTokens,
+} from './config-provider';
 export { ConfigProvider } from './config-provider';

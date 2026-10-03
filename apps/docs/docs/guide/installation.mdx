@@ -22,16 +22,13 @@ React 和 React DOM 是组件包的对等依赖。如果项目尚未安装，请
 
 ## 引入样式
 
-在应用入口导入一次 Leaf UI 样式。自定义主题 CSS 应放在它之后：
+在应用入口导入一次 Leaf UI 样式：
 
 ```tsx title="src/main.tsx"
 import '@sudden3/leaf-ui/styles.css';
-import './theme.css';
 ```
 
-如果暂时不需要自定义主题，只引入 `@sudden3/leaf-ui/styles.css` 即可。
-
-样式已经编译为 CSS；使用 Leaf UI 无需安装 Sass。你的主题文件可以根据应用构建环境使用 CSS 或 SCSS。
+样式已经编译为 CSS；使用 Leaf UI 无需安装 Sass。调整颜色、圆角或尺寸时使用 [ConfigProvider](/components/config-provider)，业务 CSS 可以读取主题变量复用样式。服务端框架的入口配置见 [SSR 使用](/guide/ssr)。
 
 ## 添加图标
 

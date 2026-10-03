@@ -53,13 +53,27 @@
   }
 }
 .leaf-confirm-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: flex-start;
   gap: 12px;
+}
+.leaf-confirm--has-icon .leaf-confirm-content {
+  grid-template-columns: 22px minmax(0, 1fr);
+}
+.leaf-confirm-icon {
+  display: flex;
+  align-items: center;
+  height: 27px;
+  color: var(--leaf-feedback-color);
   > svg {
-    flex-shrink: 0;
-    color: var(--leaf-feedback-color);
+    width: 22px;
+    height: 22px;
   }
+}
+.leaf-confirm-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .leaf-confirm {
   --leaf-feedback-color: var(--leaf-color-text);
@@ -76,32 +90,36 @@
     --leaf-feedback-color: var(--leaf-color-info);
   }
   .leaf-modal__header {
-    padding-bottom: 8px;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1;
+    padding: 0;
   }
   .leaf-modal__body {
-    padding-bottom: 18px;
+    padding: 24px 24px 20px;
   }
   .leaf-modal__footer {
     border-top: 0;
     padding-top: 0;
+    padding-inline: 24px;
   }
 }
+.leaf-confirm--closable .leaf-confirm-copy {
+  padding-inline-end: 22px;
+}
 .leaf-confirm-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  > svg {
-    flex-shrink: 0;
-    color: var(--leaf-feedback-color);
-    width: 22px;
-    height: 22px;
-  }
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.6;
 }
 .leaf-confirm-error {
   color: var(--leaf-color-danger);
 }
 .leaf-feedback-spinner {
   animation: leaf-spin 900ms linear infinite;
+  animation-play-state: var(--leaf-motion-play-state, running);
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-feedback-spinner {

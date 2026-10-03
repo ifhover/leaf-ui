@@ -231,7 +231,7 @@ function ModalSurface({
         <OverlayOwner.Provider value={modalId}>
           {(title || closable) && (
             <div className="leaf-modal__header">
-              <h2 id={titleId}>{title}</h2>
+              {title && <h2 id={titleId}>{title}</h2>}
               {closable && (
                 <button
                   type="button"

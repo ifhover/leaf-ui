@@ -83,6 +83,25 @@ for (const [format, api] of [
     return createElement(Fragment, null, confirm.contextHolder, message.contextHolder);
   }
   assert.match(renderToStaticMarkup(createElement(HookHolders)), /<span/);
+  const themed = renderToStaticMarkup(
+    createElement(
+      api.ConfigProvider,
+      {
+        theme: {
+          appearance: 'dark',
+          primaryColor: '#7654c6',
+          borderRadius: 8,
+          controlHeight: 38,
+          tokens: { controlHeightLg: 48 },
+        },
+      },
+      createElement(api.Button, null, 'Save'),
+    ),
+  );
+  assert.match(themed, /data-leaf-theme="dark"/);
+  assert.match(themed, /--leaf-radius:8px/);
+  assert.match(themed, /--leaf-control-height:38px/);
+  assert.match(themed, /--leaf-control-height-lg:48px/);
 }
 const esmTypes = await readFile(new URL(entry.import.types, packageRoot), 'utf8');
 assert.ok(
@@ -118,6 +137,12 @@ for (const name of [
 assert.ok(!css.includes('@use'), 'Published CSS must be compiled from SCSS');
 const esmCode = await readFile(new URL(entry.import.default, packageRoot), 'utf8');
 const cjsCode = await readFile(new URL(entry.require.default, packageRoot), 'utf8');
+assert.match(esmCode, /^\s*["']use client["'];/, 'ESM must preserve the Next.js client boundary');
+assert.match(
+  cjsCode,
+  /^\s*["']use client["'];/,
+  'CommonJS must preserve the Next.js client boundary',
+);
 assert.ok(esmCode.includes('from "react"'), 'ESM must keep React external');
 assert.ok(cjsCode.includes('require("react")'), 'CommonJS must keep React external');
 assert.ok(esmCode.includes('from "lucide-react"'), 'Lucide must remain an external dependency');

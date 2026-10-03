@@ -152,6 +152,7 @@
   }
   &__spinner {
     animation: leaf-spin 900ms linear infinite;
+    animation-play-state: var(--leaf-motion-play-state, running);
   }
 }
 

@@ -1,13 +1,13 @@
-import { type LeafThemeStyle, Select } from '@sudden3/leaf-ui';
+import { ConfigProvider, type LeafTheme, Select } from '@sudden3/leaf-ui';
 
-const theme: LeafThemeStyle = {
-  '--leaf-color-primary': '#7654c6',
-  '--leaf-radius': '6px',
+const theme: LeafTheme = {
+  primaryColor: '#7654c6',
+  borderRadius: 6,
 };
 
 export function SelectTheme() {
   return (
-    <div className="leaf-demo-stack" style={theme}>
+    <ConfigProvider className="leaf-demo-stack" theme={theme}>
       <Select
         aria-label="主题团队"
         allowClear
@@ -18,6 +18,6 @@ export function SelectTheme() {
         ]}
       />
       <span className="leaf-demo-note">展开选项，浮层会沿用这里的紫色主题与圆角。</span>
-    </div>
+    </ConfigProvider>
   );
 }

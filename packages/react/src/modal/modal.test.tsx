@@ -66,7 +66,11 @@ describe('Modal and Confirm', () => {
         </ConfigProvider>,
       );
       const dialog = screen.getByRole('alertdialog');
-      expect(dialog.querySelector('.leaf-confirm-title svg') !== null).toBe(type !== 'default');
+      expect(dialog.querySelector('.leaf-confirm-icon svg') !== null).toBe(type !== 'default');
+      const title = screen.getByRole('heading', { name: 'Continue' });
+      expect(title.querySelector('svg')).toBeNull();
+      expect(title.parentElement).toBe(screen.getByText('Notice').parentElement);
+      expect(dialog).toHaveAccessibleName('Continue');
       expect(screen.queryByRole('button', { name: 'Cancel' }) !== null).toBe(type !== 'success');
       expect(
         screen.getByRole('button', { name: 'OK' }).classList.contains('leaf-button--danger'),

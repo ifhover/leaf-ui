@@ -1,6 +1,6 @@
 # Leaf UI
 
-A lightweight React component library with a green default theme, SCSS source styles and runtime CSS variable theming. Supports React 18 and 19.
+A lightweight React component library with a green default theme, ConfigProvider theming and reusable CSS variables. Supports React 18 and 19.
 
 ## Usage
 
@@ -42,7 +42,7 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - AutoComplete: free text input, filtered or dynamic suggestions, composition-aware keyboard selection.
 - Cascader: hierarchical options, full leaf paths, disabled branches and keyboard navigation.
 - Form / FormField: native submission, labels, help, validation and shared automatic or fixed label widths.
-- ConfigProvider: scoped primary color, radius and Chinese/English UI with nested inheritance.
+- ConfigProvider: scoped themes, derived sizes, appearance, typography, motion and Chinese/English UI with nested inheritance.
 - DateTimePicker: calendar and time selection, optional seconds, draft confirmation and bounds.
 - DateRangePicker: year, month, ISO week, date and date-time ranges with hover previews and text input.
 - Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
@@ -54,34 +54,27 @@ Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default
 
 ## Theming
 
-```css
-:root {
-  --leaf-color-primary: #20834a;
-  --leaf-color-on-primary: #ffffff;
-  --leaf-color-danger: #c83c3c;
-  --leaf-control-height: 34px;
-  --leaf-control-height-sm: 28px;
-  --leaf-control-height-lg: 40px;
-  --leaf-radius: 10px;
-  --leaf-z-index-popup: 1000;
-}
-```
-
-Override variables on any parent for a local theme. Hover, soft and focus colors use the current semantic color in that scope. The exported LeafThemeStyle type accepts inline --leaf-* variables. Use data-leaf-theme="dark" for dark neutral and semantic colors.
+Use ConfigProvider to customize a region. Start with primaryColor, borderRadius and controlHeight; smaller and larger sizes are generated automatically. Advanced overrides live in theme.tokens.
 
 ```tsx
 import { ConfigProvider, Button } from '@sudden3/leaf-ui';
 
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8 }}>
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8, controlHeight: 34, appearance: 'light' }}>
   <Button>Save</Button>
 </ConfigProvider>
 ```
 
 Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Place message and confirm context holders within the desired ConfigProvider region.
 
+Custom components can read var(--leaf-color-primary), var(--leaf-radius), var(--leaf-control-height) and other shared variables inside the region. Use ConfigProvider to change library styles, and CSS variables to reuse the resulting values. See [theming](https://ifhover.github.io/leaf-ui/guide/theming.html).
+
+## Server rendering
+
+Import the static stylesheet in the framework's root entry and provide the same initial theme to server rendering and client hydration. React state can switch themes afterward without generating CSS at runtime. See [SSR usage](https://ifhover.github.io/leaf-ui/en/guide/ssr.html) for Next.js App Router, Pages Router and other React SSR frameworks.
+
 ## Forms
 
-All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, TimePicker submits HH:mm, and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, TimePicker and Cascader forward a ref to their trigger button; AutoComplete forwards its native input. Provide a label or aria-label for every control.
+All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, TimePicker submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateTimePicker, DateRangePicker, TimePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
 
 Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DateTimePicker submits YYYY-MM-DD HH:mm:ss; DateRangePicker submits a start/end string in the selected granularity.
 
