@@ -104,6 +104,10 @@
   text-align: left;
   cursor: pointer;
 
+  & + & {
+    margin-top: 2px;
+  }
+
   &:hover:not(:disabled),
   &[data-highlighted='true'],
   &[aria-selected='true'] {

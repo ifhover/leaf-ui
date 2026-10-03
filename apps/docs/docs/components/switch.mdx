@@ -3,7 +3,7 @@ import { SwitchBasic, SwitchControlled } from '../../src/components/form-example
 
 # Switch 开关
 
-即时启用或关闭一个设置。底层使用带 switch 语义的原生 checkbox，支持空格切换、表单与受控状态。
+用于即时开启或关闭某个设置。
 
 ## 基础状态
 
@@ -18,7 +18,7 @@ loading 显示加载图标并阻止交互，可用于异步保存期间避免重
 
 ## 受控与尺寸
 
-容器最小高度与公共尺寸对齐；内部轨道保持适合开关的比例。
+通过 `checked` / `onChange` 管理开关状态，`size` 调整大小。
 
 <ComponentExample title="受控与尺寸" preview={<SwitchControlled />} fileName="controlled.tsx">
 
@@ -27,16 +27,32 @@ loading 显示加载图标并阻止交互，可用于异步保存期间避免重
 
 </ComponentExample>
 
-## API
+## Switch API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| checked / defaultChecked | boolean | — | 受控 / 非受控初始值 |
-| onChange | `ChangeEventHandler<HTMLInputElement>` | — | 读取 event.target.checked |
-| size | `'sm' \| 'md' \| 'lg'` | md | 容器最小高度 28 / 34 / 40px |
-| loading | boolean | false | 显示加载状态，设置 aria-busy 并禁用交互 |
-| disabled | boolean | false | 禁用交互 |
-| children | ReactNode | — | 可点击的文字标签 |
-| ref | `Ref<HTMLInputElement>` | — | 原生 checkbox 节点 |
+| `checked` / `defaultChecked` | `boolean` | — | 受控状态 / 非受控初始状态 |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 `event.target.checked` 读取开关状态 |
+| `size` | [`ControlSize`](#controlsize) | `'md'` | 开关尺寸 |
+| `loading` | `boolean` | `false` | 显示加载状态并禁用交互 |
+| `disabled` | `boolean` | `false` | 禁用交互 |
+| `children` | `ReactNode` | — | 可点击的文字标签 |
+| `ref` | `Ref<HTMLInputElement>` | — | 开关引用 |
 
 支持 name、value、required、form 等原生属性。未开启或被禁用的开关不参与原生表单提交。没有文字时使用 aria-label；className 与 style 作用于标签容器。
+
+## 类型
+
+可导入 [`SwitchProps`](#switch-api) 定义组件属性，或使用尺寸类型：
+
+```ts
+import type { SwitchProps, ControlSize } from '@sudden3/leaf-ui';
+```
+
+### ControlSize
+
+| 值 | 说明 |
+| --- | --- |
+| `'sm'` | 小尺寸 |
+| `'md'` | 中尺寸，默认值 |
+| `'lg'` | 大尺寸 |

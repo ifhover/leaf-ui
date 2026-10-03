@@ -3,7 +3,7 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 
 # Textarea 文本域
 
-输入较长的多行内容。保留原生 textarea 的表单、光标、字符长度和键盘行为。行数控制高度，多行控件沿用公共尺寸的间距和字号。
+用于输入多行文本，如留言、简介或备注。
 
 ## 基础用法
 
@@ -25,17 +25,42 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 
 </ComponentExample>
 
-## API
+## Textarea API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `md` | 共用尺寸；单行控件为 28 / 34 / 40px |
-| `status` | `'error' \| 'warning'` | — | 校验状态；error 同时设置 aria-invalid |
-| rows | number | 3 | 初始可见行数 |
-| resize | `'none' \| 'vertical' \| 'both'` | vertical | 允许的手动缩放方向 |
-| value / defaultValue | 原生 textarea 属性 | — | 受控值 / 非受控初始值 |
-| onChange | `ChangeEventHandler<HTMLTextAreaElement>` | — | 读取 event.target.value |
-| disabled / readOnly | boolean | false | 禁用 / 只读 |
-| ref | `Ref<HTMLTextAreaElement>` | — | 原生 textarea 节点 |
+| `size` | [`ControlSize`](#controlsize) | `'md'` | 文本域尺寸 |
+| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `rows` | `number` | `3` | 初始可见行数 |
+| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | 允许的手动缩放方向 |
+| `value` / `defaultValue` | `string \| number \| readonly string[]` | — | 受控值 / 非受控初始值 |
+| `onChange` | `ChangeEventHandler<HTMLTextAreaElement>` | — | 从 `event.target.value` 读取内容 |
+| `disabled` / `readOnly` | `boolean` | `false` | 禁用 / 只读 |
+| `ref` | `Ref<HTMLTextAreaElement>` | — | 文本域引用 |
 
-min-height 基于当前尺寸的两倍计算；实际高度可由 rows 或 style 调整。其余原生属性直接透传。通过 label 或 aria-label 提供名称，错误说明可用 aria-describedby 关联。
+可通过 `rows` 调整行数，或通过 `style` 设置高度。支持其他 textarea 属性。通过 `label` 或 `aria-label` 提供名称，错误说明可用 `aria-describedby` 关联。
+
+## 类型
+
+可导入 [`TextareaProps`](#textarea-api) 定义组件属性，或单独使用尺寸、校验状态类型：
+
+```ts
+import type { TextareaProps, ControlSize, ControlStatus } from '@sudden3/leaf-ui';
+```
+
+### ControlSize
+
+| 值 | 说明 |
+| --- | --- |
+| `'sm'` | 小尺寸 |
+| `'md'` | 中尺寸，默认值 |
+| `'lg'` | 大尺寸 |
+
+### ControlStatus
+
+| 值 | 说明 |
+| --- | --- |
+| `'error'` | 错误状态 |
+| `'warning'` | 警告状态 |
+
+未设置 `status` 时使用默认外观。

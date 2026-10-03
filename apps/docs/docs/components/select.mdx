@@ -3,7 +3,7 @@ import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../
 
 # Select 选择器
 
-从给定选项中选择一项。默认高度 **34px**，与 Button、Input 对齐。选项面板统一沿用 Leaf UI 的主题与交互样式。
+用于从下拉列表中选择一项。
 
 ## 基础选择
 
@@ -47,22 +47,62 @@ value / onChange 管理选择结果，回调直接返回字符串值和选项对
 
 </ComponentExample>
 
-## API
+## Select API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `md` | 共用尺寸；单行控件为 28 / 34 / 40px |
-| `status` | `'error' \| 'warning'` | — | 校验状态；error 同时设置 aria-invalid |
-| options | `readonly SelectOption[]` | 必填 | 每项包含字符串 value、ReactNode label 和可选 disabled |
-| placeholder | string | `请选择` | 空值提示；保留空字符串作为未选择值 |
-| value / defaultValue | `string` | `''` | 受控值 / 非受控初始值 |
-| onChange | `(value: string, option?: SelectOption) => void` | — | 直接返回值与选项；清除时为空字符串和 undefined |
-| allowClear | boolean | false | 展示清除按钮 |
-| disabled | boolean | false | 禁用整个选择器 |
-| onOpenChange | `(open: boolean) => void` | — | 展开或收起选项面板 |
-| ref | `Ref<HTMLButtonElement>` | — | 触发按钮，可调用 focus() |
+| `size` | [`ControlSize`](#controlsize) | `'md'` | 选择器尺寸 |
+| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `options` | [`readonly SelectOption[]`](#selectoption) | 必填 | 选项列表 |
+| `placeholder` | `string` | `'请选择'` | 未选择时的提示文字 |
+| `value` / `defaultValue` | `string` | `''` | 受控值 / 非受控初始值 |
+| `onChange` | [`(value: string, option?: SelectOption) => void`](#selectoption) | — | 返回值与选项；清除时返回空字符串和 `undefined` |
+| `allowClear` | `boolean` | `false` | 展示清除按钮 |
+| `disabled` | `boolean` | `false` | 禁用整个选择器 |
+| `name` / `form` | `string` | — | 字段名 / 关联的表单 ID |
+| `required` | `boolean` | `false` | 要求选择一项 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开或收起选项面板 |
+| `ref` | `Ref<HTMLButtonElement>` | — | 触发按钮引用 |
 
 支持 name、required、form 和非受控表单 reset；其余原生 button 属性及 aria-* 透传至触发按钮。className 与 style 作用于外层容器。选项 value 应唯一，不要将空字符串用作业务选项值。
+
+## 类型
+
+[`SelectProps`](#select-api) 用于定义组件属性。单独组装选项列表时，可以使用 [`SelectOption`](#selectoption)：
+
+```ts
+import type { SelectProps, SelectOption, ControlSize, ControlStatus } from '@sudden3/leaf-ui';
+
+const options: SelectOption[] = [
+  { label: '设计团队', value: 'design' },
+  { label: '研发团队', value: 'engineering' },
+];
+```
+
+### SelectOption
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 必填 | 唯一选项值，不能使用空字符串 |
+| `label` | `ReactNode` | 必填 | 选项内容，可以是文字或 React 节点 |
+| `disabled` | `boolean` | `false` | 禁用该选项 |
+
+### ControlSize
+
+| 值 | 说明 |
+| --- | --- |
+| `'sm'` | 小尺寸 |
+| `'md'` | 中尺寸，默认值 |
+| `'lg'` | 大尺寸 |
+
+### ControlStatus
+
+| 值 | 说明 |
+| --- | --- |
+| `'error'` | 错误状态 |
+| `'warning'` | 警告状态 |
+
+未设置 `status` 时使用默认外观。
 
 ## 使用说明
 
