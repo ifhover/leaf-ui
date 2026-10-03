@@ -11,14 +11,14 @@
   "scripts": {
     "dev": "pnpm --filter @leaf-ui/docs dev",
     "build": "pnpm build:lib && pnpm build:docs",
-    "build:lib": "pnpm --filter @leaf-ui/react build && pnpm --filter @leaf-ui/react check:package",
+    "build:lib": "pnpm --filter @sudden3/leaf-ui build && pnpm --filter @sudden3/leaf-ui check:package",
     "build:docs": "pnpm --filter @leaf-ui/docs build",
     "preview": "pnpm --filter @leaf-ui/docs preview",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && prettier --check \"**/*.scss\"",
     "format": "biome check --write . && prettier --write \"**/*.scss\"",
-    "test": "pnpm --filter @leaf-ui/react test",
-    "test:watch": "pnpm --filter @leaf-ui/react test:watch",
+    "test": "pnpm --filter @sudden3/leaf-ui test",
+    "test:watch": "pnpm --filter @sudden3/leaf-ui test:watch",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format:scss": "prettier --write \"**/*.scss\""
   },

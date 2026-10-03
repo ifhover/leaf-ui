@@ -1,4 +1,4 @@
-import { Button, type ControlSize, Input, Select } from '@leaf-ui/react';
+import { Button, type ControlSize, Input, Select } from '@sudden3/leaf-ui';
 
 export function ControlSizes() {
   return (

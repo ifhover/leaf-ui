@@ -1,4 +1,4 @@
-import { type LeafThemeStyle, Select } from '@leaf-ui/react';
+import { type LeafThemeStyle, Select } from '@sudden3/leaf-ui';
 
 const theme: LeafThemeStyle = {
   '--leaf-color-primary': '#7654c6',

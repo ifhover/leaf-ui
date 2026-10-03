@@ -74,8 +74,8 @@ export default defineConfig({
     plugins: [pluginSass()],
     resolve: {
       alias: {
-        '@leaf-ui/react$': path.resolve(directory, '../../packages/react/src/index.ts'),
-        '@leaf-ui/react/styles.css$': path.resolve(
+        '@sudden3/leaf-ui$': path.resolve(directory, '../../packages/react/src/index.ts'),
+        '@sudden3/leaf-ui/styles.css$': path.resolve(
           directory,
           '../../packages/react/src/styles/index.scss',
         ),

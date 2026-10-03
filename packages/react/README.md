@@ -4,10 +4,16 @@ A lightweight React component library with a green default theme, SCSS source st
 
 ## Usage
 
+```bash
+npm install @sudden3/leaf-ui
+```
+
+[Documentation](https://ifhover.github.io/leaf-ui/) · [Source](https://github.com/ifhover/leaf-ui) · [Issues](https://github.com/ifhover/leaf-ui/issues)
+
 ```tsx
-import { Button, Input, Select } from '@leaf-ui/react';
+import { Button, Input, Select } from '@sudden3/leaf-ui';
 import { Plus } from 'lucide-react';
-import '@leaf-ui/react/styles.css';
+import '@sudden3/leaf-ui/styles.css';
 
 export function App() {
   return (
@@ -20,7 +26,7 @@ export function App() {
 }
 ```
 
-Import the compiled stylesheet once in your application entry; consumers do not need Sass. JavaScript is available as ESM and CommonJS, with TypeScript declarations. The package is not yet published to npm.
+Import the compiled stylesheet once in your application entry; consumers do not need Sass. JavaScript is available as ESM and CommonJS, with TypeScript declarations.
 
 ## Components
 

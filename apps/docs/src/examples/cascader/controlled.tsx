@@ -1,4 +1,4 @@
-import { Cascader } from '@leaf-ui/react';
+import { Cascader } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 import { regions } from './options';
 

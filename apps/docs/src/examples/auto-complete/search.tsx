@@ -1,4 +1,4 @@
-import { AutoComplete, type AutoCompleteOption } from '@leaf-ui/react';
+import { AutoComplete, type AutoCompleteOption } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function AutoCompleteSearch() {

@@ -23,7 +23,7 @@ importers:
 
   apps/docs:
     dependencies:
-      '@leaf-ui/react':
+      '@sudden3/leaf-ui':
         specifier: workspace:*
         version: link:../../packages/react
       '@rspress/core':

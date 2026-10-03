@@ -1,4 +1,4 @@
-import { Textarea } from '@leaf-ui/react';
+import { Textarea } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function TextareaControlled() {

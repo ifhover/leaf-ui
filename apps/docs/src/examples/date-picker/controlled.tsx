@@ -1,4 +1,4 @@
-import { DatePicker } from '@leaf-ui/react';
+import { DatePicker } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function DatePickerControlled() {

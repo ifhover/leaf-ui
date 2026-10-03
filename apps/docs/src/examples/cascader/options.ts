@@ -1,4 +1,4 @@
-import type { CascaderOption } from '@leaf-ui/react';
+import type { CascaderOption } from '@sudden3/leaf-ui';
 
 export const regions: CascaderOption[] = [
   {

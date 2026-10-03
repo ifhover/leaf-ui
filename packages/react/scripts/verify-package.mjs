@@ -18,8 +18,8 @@ for (const relativePath of [
 ]) {
   assert.ok((await stat(new URL(relativePath, packageRoot))).isFile(), relativePath);
 }
-const esm = await import('@leaf-ui/react');
-const cjs = require('@leaf-ui/react');
+const esm = await import('@sudden3/leaf-ui');
+const cjs = require('@sudden3/leaf-ui');
 const components = [
   ['Button', { danger: true }, 'Leaf UI', /<button/],
   ['Input', { name: 'title' }, null, /<input/],

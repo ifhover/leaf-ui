@@ -1,4 +1,4 @@
-import { Button } from '@leaf-ui/react';
+import { Button } from '@sudden3/leaf-ui';
 import { Trash2 } from 'lucide-react';
 
 export function ButtonDanger() {

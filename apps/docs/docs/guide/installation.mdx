@@ -1,35 +1,35 @@
 # 安装
 
-Leaf UI 的 React 组件包名为 `@leaf-ui/react`，支持 React 18 与 React 19。React 和 React DOM 由你的应用提供。
+Leaf UI 的 React 组件包名为 `@sudden3/leaf-ui`，支持 React 18 与 React 19。React 和 React DOM 由你的应用提供。
 
 ## 安装组件包
 
-当前版本尚未发布到 npm，请使用维护者提供的 `leaf-ui-react-0.1.0.tgz` 安装包。在你的 React 项目目录下执行：
+在你的 React 项目目录下执行：
 
 ```bash
-pnpm add ./leaf-ui-react-0.1.0.tgz
+pnpm add @sudden3/leaf-ui
 ```
 
-使用 npm 或 Yarn 时，同样可以安装这个文件：
+也可以使用 npm 或 Yarn：
 
 ```bash
-npm install ./leaf-ui-react-0.1.0.tgz
+npm install @sudden3/leaf-ui
 # 或者
-yarn add ./leaf-ui-react-0.1.0.tgz
+yarn add @sudden3/leaf-ui
 ```
 
-把示例中的文件路径替换为你实际保存安装包的位置。安装后，组件仍然通过 `@leaf-ui/react` 导入。
+React 和 React DOM 是组件包的对等依赖。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@sudden3/leaf-ui) 查看组件包的最新版本。
 
 ## 引入样式
 
 在应用入口导入一次 Leaf UI 样式。自定义主题 CSS 应放在它之后：
 
 ```tsx title="src/main.tsx"
-import '@leaf-ui/react/styles.css';
+import '@sudden3/leaf-ui/styles.css';
 import './theme.css';
 ```
 
-如果暂时不需要自定义主题，只引入 `@leaf-ui/react/styles.css` 即可。
+如果暂时不需要自定义主题，只引入 `@sudden3/leaf-ui/styles.css` 即可。
 
 样式已经编译为 CSS；使用 Leaf UI 无需安装 Sass。你的主题文件可以根据应用构建环境使用 CSS 或 SCSS。
 

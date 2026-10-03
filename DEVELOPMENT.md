@@ -6,7 +6,7 @@
 
 | 路径 | 包名 | 职责 |
 | --- | --- | --- |
-| `packages/react` | `@leaf-ui/react` | 组件、类型、样式、测试和发布产物 |
+| `packages/react` | `@sudden3/leaf-ui` | 组件、类型、样式、测试和发布产物 |
 | `apps/docs` | `@leaf-ui/docs` | Rspress 文档、首页和交互示例 |
 
 共享 TypeScript 严格模式与 Biome 规范放在仓库根目录。SCSS 由 Prettier 格式化，纳入 pnpm lint / pnpm format。
@@ -32,7 +32,7 @@ packages/react/src/
 
 ## 本地开发链路
 
-`pnpm dev` 启动 Rspress。文档构建器与 TypeScript 将 `@leaf-ui/react` 映射到组件源码，所以 JSX、类型与 SCSS 的修改都能直接反馈到示例中。
+`pnpm dev` 启动 Rspress。文档构建器与 TypeScript 将 `@sudden3/leaf-ui` 映射到组件源码，所以 JSX、类型与 SCSS 的修改都能直接反馈到示例中。
 
 文档生产构建也读取同一份源码；单独的 `pnpm build:lib` 负责验证组件包的 ESM、CommonJS、CSS 和声明产物。
 

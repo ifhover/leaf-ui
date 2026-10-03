@@ -45,7 +45,7 @@ pnpm build:lib
 pnpm --dir packages/react pack
 ```
 
-Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明，外部入口仍为 @leaf-ui/react/styles.css。
+Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明，外部入口仍为 @sudden3/leaf-ui/styles.css。
 
 check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、34px 公共 token、编译后的样式及 React / Lucide 外部依赖。
 
@@ -63,4 +63,4 @@ DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 精度为分�
 
 ## 发布 npm
 
-在根目录执行 `pnpm check` 和 `pnpm build:lib`，确认当前版本尚未发布。发布账户必须具备 @leaf-ui 作用域的写入权限，以及 npm 要求的双因素认证或可用于发布且允许绕过 2FA 的 granular token。检查打包文件后，在 packages/react 目录运行 `npm publish --access public`。npm 身份验证通过用户本地登录完成，不将令牌写入仓库。
+在根目录执行 `pnpm check` 和 `pnpm build:lib`，确认当前版本尚未发布。发布包名为 @sudden3/leaf-ui，账户必须具备 @sudden3 作用域的写入权限，以及 npm 要求的双因素认证。检查打包文件后，在 packages/react 目录运行 `npm publish --access public`。浏览器验证由维护者在已登录的浏览器中完成，不将令牌写入仓库。

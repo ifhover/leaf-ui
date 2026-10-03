@@ -1,4 +1,4 @@
-import { Select } from '@leaf-ui/react';
+import { Select } from '@sudden3/leaf-ui';
 
 const options = [
   { label: '设计工作室', value: 'design' },

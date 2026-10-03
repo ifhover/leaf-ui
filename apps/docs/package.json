@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@leaf-ui/react": "workspace:*",
+    "@sudden3/leaf-ui": "workspace:*",
     "@rspress/core": "^2.0.23",
     "lucide-react": "^1.50.0",
     "react": "^19.3.0",

@@ -1,4 +1,4 @@
-import { Button } from '@leaf-ui/react';
+import { Button } from '@sudden3/leaf-ui';
 
 export function ButtonStates() {
   return (

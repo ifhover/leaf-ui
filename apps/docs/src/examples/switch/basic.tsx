@@ -1,4 +1,4 @@
-import { Switch } from '@leaf-ui/react';
+import { Switch } from '@sudden3/leaf-ui';
 
 export function SwitchBasic() {
   return (

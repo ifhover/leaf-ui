@@ -1,4 +1,4 @@
-import { AutoComplete } from '@leaf-ui/react';
+import { AutoComplete } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 const options = [

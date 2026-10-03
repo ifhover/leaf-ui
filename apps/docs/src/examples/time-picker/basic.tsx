@@ -1,4 +1,4 @@
-import { TimePicker } from '@leaf-ui/react';
+import { TimePicker } from '@sudden3/leaf-ui';
 
 export function TimePickerBasic() {
   return (

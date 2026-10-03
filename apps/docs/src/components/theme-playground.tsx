@@ -1,4 +1,4 @@
-import { Button, type LeafThemeStyle } from '@leaf-ui/react';
+import { Button, type LeafThemeStyle } from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { Icon } from './icon';

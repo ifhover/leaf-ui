@@ -2,21 +2,21 @@
 
 轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
 
-[在线文档](https://ifhover.github.io/leaf-ui/)
+[在线文档](https://ifhover.github.io/leaf-ui/) · [npm](https://www.npmjs.com/package/@sudden3/leaf-ui)
 
 ## 安装与使用
 
-组件包名为 `@leaf-ui/react`，当前尚未发布到 npm。取得 `leaf-ui-react-0.1.0.tgz` 安装包后，在你的 React 应用中安装：
+在你的 React 应用中安装组件包：
 
 ```bash
-pnpm add ./leaf-ui-react-0.1.0.tgz
+pnpm add @sudden3/leaf-ui
 ```
 
-将文件路径替换为安装包的实际位置。样式只需在应用入口引入一次，使用组件无需安装 Sass。
+也可以使用 `npm install @sudden3/leaf-ui` 或 `yarn add @sudden3/leaf-ui`。样式只需在应用入口引入一次，使用组件无需安装 Sass。
 
 ```tsx
-import { Button, DatePicker, Input, Select } from '@leaf-ui/react';
-import '@leaf-ui/react/styles.css';
+import { Button, DatePicker, Input, Select } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
 
 export function App() {
   return (

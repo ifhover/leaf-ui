@@ -1,4 +1,4 @@
-import { Select } from '@leaf-ui/react';
+import { Select } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function SelectControlled() {

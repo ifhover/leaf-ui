@@ -1,5 +1,5 @@
-import { Button } from '@leaf-ui/react';
 import { withBase } from '@rspress/core/runtime';
+import { Button } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 import { CopyButton } from './copy-button';
 import { Icon } from './icon';
@@ -66,8 +66,8 @@ export function HomeLayout() {
             <span className="leaf-install__prompt">
               <Icon name="code" width="15" height="15" />
             </span>
-            <code>import &#123; Button &#125; from '@leaf-ui/react';</code>
-            <CopyButton text="import { Button } from '@leaf-ui/react';" label="复制" />
+            <code>pnpm add @sudden3/leaf-ui</code>
+            <CopyButton text="pnpm add @sudden3/leaf-ui" label="复制安装命令" />
           </div>
           <span className="leaf-hero__note">
             React 18 / 19 <span>·</span> TypeScript <span>·</span> CSS Variables

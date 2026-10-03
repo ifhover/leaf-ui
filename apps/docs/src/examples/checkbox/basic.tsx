@@ -1,4 +1,4 @@
-import { Checkbox } from '@leaf-ui/react';
+import { Checkbox } from '@sudden3/leaf-ui';
 
 export function CheckboxBasic() {
   return (

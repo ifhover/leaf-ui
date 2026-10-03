@@ -1,4 +1,4 @@
-import { RadioGroup } from '@leaf-ui/react';
+import { RadioGroup } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function RadioControlled() {

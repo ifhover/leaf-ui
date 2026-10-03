@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "types": ["node", "react", "react-dom"],
-    "paths": { "@leaf-ui/react": ["../../packages/react/src/index.ts"] }
+    "paths": { "@sudden3/leaf-ui": ["../../packages/react/src/index.ts"] }
   },
   "include": ["rspress.config.ts", "theme", "src", "docs", "env.d.ts"]
 }

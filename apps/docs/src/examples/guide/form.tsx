@@ -1,4 +1,4 @@
-import { Button, Input, Select } from '@leaf-ui/react';
+import { Button, Input, Select } from '@sudden3/leaf-ui';
 import { Plus } from 'lucide-react';
 import { useId, useState } from 'react';
 

@@ -1,4 +1,4 @@
-import { Checkbox } from '@leaf-ui/react';
+import { Checkbox } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 const options = ['设计更新', '产品动态', '每周摘要'];

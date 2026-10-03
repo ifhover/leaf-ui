@@ -1,4 +1,4 @@
-import { Switch } from '@leaf-ui/react';
+import { Switch } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function SwitchControlled() {

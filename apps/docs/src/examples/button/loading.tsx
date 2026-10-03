@@ -1,4 +1,4 @@
-import { Button } from '@leaf-ui/react';
+import { Button } from '@sudden3/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 
 export function ButtonLoading() {

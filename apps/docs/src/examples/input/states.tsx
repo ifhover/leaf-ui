@@ -1,4 +1,4 @@
-import { Input } from '@leaf-ui/react';
+import { Input } from '@sudden3/leaf-ui';
 
 export function InputStates() {
   return (

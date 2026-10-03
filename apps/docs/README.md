@@ -52,7 +52,7 @@ import { MyExample } from '../../src/components/my-example';
 <ComponentExample title="示例名称" preview={<MyExample />} fileName="example.tsx">
 
 ```tsx lineNumbers
-import { Button } from '@leaf-ui/react';
+import { Button } from '@sudden3/leaf-ui';
 
 <Button>示例按钮</Button>
 ```
