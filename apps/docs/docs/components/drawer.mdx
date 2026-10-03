@@ -1,0 +1,43 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { DrawerBasic } from '../../src/examples/drawer/basic';
+
+# Drawer 抽屉
+
+从页面边缘展开内容，查看详情或完成操作。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<DrawerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/drawer/basic.tsx"
+```
+
+</ComponentExample>
+
+## Drawer API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | 必填 | 是否展开 |
+| `title` | `ReactNode` | — | 标题 |
+| `children` | `ReactNode` | — | 抽屉内容 |
+| `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
+| `width` | `number \| string` | `380` | 左右抽屉宽度 |
+| `height` | `number \| string` | `300` | 上下抽屉高度 |
+| `extra` | `ReactNode` | — | 标题旁的操作内容 |
+| `footer` | `ReactNode` | — | 底部内容 |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩 / Escape 关闭 |
+| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
+| `afterClose` | `() => void` | — | 关闭过渡结束后触发 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { DrawerProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+通过 footer 放置取消、提交等操作；表单提交按钮可使用 form 属性关联抽屉内的表单。标题为空时请使用 aria-label 提供名称。支持嵌套弹窗和抽屉，关闭后焦点会回到打开位置。

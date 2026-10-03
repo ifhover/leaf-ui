@@ -1,0 +1,88 @@
+.leaf-tag {
+  --leaf-tag-color: var(--leaf-color-text-muted);
+  &[data-color='primary'] {
+    --leaf-tag-color: var(--leaf-color-primary);
+  }
+  &[data-color='success'] {
+    --leaf-tag-color: var(--leaf-color-success);
+  }
+  &[data-color='warning'] {
+    --leaf-tag-color: var(--leaf-color-warning);
+  }
+  &[data-color='error'] {
+    --leaf-tag-color: var(--leaf-color-danger);
+  }
+  &[data-color='info'] {
+    --leaf-tag-color: var(--leaf-color-info);
+  }
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 2px 8px;
+  border: 1px solid color-mix(in srgb, var(--leaf-tag-color) 22%, transparent);
+  border-radius: var(--leaf-radius-sm);
+  color: var(--leaf-tag-color);
+  background: color-mix(in srgb, var(--leaf-tag-color) 8%, var(--leaf-color-surface));
+  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  vertical-align: middle;
+  white-space: nowrap;
+  > span:not(.leaf-tag__icon) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &--sm {
+    padding: 0 6px;
+  }
+  &--lg {
+    padding: 4px 10px;
+    font-size: var(--leaf-font-size);
+  }
+  &--outline {
+    background: transparent;
+  }
+  &--solid {
+    background: var(--leaf-tag-color);
+    border-color: var(--leaf-tag-color);
+    color: white;
+  }
+  &--solid[data-color='primary'] {
+    color: var(--leaf-color-on-primary);
+  }
+  &--solid[data-color='error'] {
+    color: var(--leaf-color-on-danger);
+  }
+  &__icon {
+    display: inline-flex;
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    margin-inline-end: -3px;
+    border: 0;
+    border-radius: 3px;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity var(--leaf-motion-duration);
+    &:hover {
+      opacity: 1;
+    }
+    &:focus-visible {
+      outline: 2px solid currentColor;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-tag__close {
+    transition: none;
+  }
+}

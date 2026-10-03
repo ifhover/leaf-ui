@@ -1,0 +1,43 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { PaginationBasic } from '../../../src/examples/en/pagination/basic';
+
+# Pagination
+
+Browse large datasets one page at a time.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<PaginationBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/basic.tsx"
+```
+
+</ComponentExample>
+
+## Pagination API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `total` | `number` | Required | Total number of items |
+| `current / defaultCurrent` | `number` | `1` | Controlled / initial page |
+| `pageSize / defaultPageSize` | `number` | `10` | Controlled / initial page size |
+| `onChange` | `(page: number, pageSize: number) => void` | — | Page or page size changes |
+| `showSizeChanger` | `boolean` | `false` | Show page size selector |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | Available page sizes |
+| `showQuickJumper` | `boolean` | `false` | Allow typing a page and pressing Enter |
+| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | Custom total and visible range description |
+| `simple` | `boolean` | `false` | Use compact page display |
+| `disabled / hideOnSinglePage` | `boolean` | `false` | Disable / hide when only one page exists |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { PaginationProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Pages start at 1. Load data in response to onChange. Page size changes preserve the current item position where possible, and out of range pages are bounded automatically.

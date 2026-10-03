@@ -1,0 +1,83 @@
+@use '../styles/mixins' as mixins;
+.leaf-pagination {
+  @include mixins.control-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--leaf-color-text);
+  font: var(--leaf-current-font-size)/1.5 var(--leaf-font-family);
+  & > button,
+  &__entry > button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--leaf-current-control-height);
+    height: var(--leaf-current-control-height);
+    padding: 0 8px;
+    border: 1px solid var(--leaf-color-border);
+    border-radius: var(--leaf-radius-sm);
+    color: inherit;
+    background: var(--leaf-color-surface);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      background-color var(--leaf-motion-duration),
+      border-color var(--leaf-motion-duration),
+      color var(--leaf-motion-duration);
+    &:hover:not(:disabled) {
+      border-color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary);
+    }
+    &[aria-current='page'] {
+      background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+      border-color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary);
+      font-weight: 600;
+    }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+  }
+  &__entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  &__ellipsis {
+    min-width: var(--leaf-current-control-height);
+    text-align: center;
+    color: var(--leaf-color-text-muted);
+  }
+  &__size {
+    width: 110px;
+    margin-inline-start: 6px;
+  }
+  &__jumper {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-inline-start: 6px;
+    .leaf-input-number {
+      width: 58px;
+    }
+  }
+  &__total {
+    margin-inline-end: 8px;
+    color: var(--leaf-color-text-muted);
+  }
+  &__simple {
+    padding-inline: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-pagination > button,
+  .leaf-pagination__entry > button {
+    transition: none;
+  }
+}

@@ -68,6 +68,8 @@ interface CalendarPanelProps {
   onHover?: (date: Date) => void;
   headerExtra?: ReactNode;
   showOutsideDays?: boolean;
+  disabledDate?: (date: Date) => boolean;
+  cellRender?: (date: Date) => ReactNode;
 }
 export function CalendarPanel({
   value,
@@ -83,12 +85,17 @@ export function CalendarPanel({
   onHover,
   headerExtra,
   showOutsideDays = true,
+  disabledDate,
+  cellRender,
 }: CalendarPanelProps) {
   const { locale, messages } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
   const [view, setView] = useState<'year' | 'month' | 'date'>(
     picker === 'year' || picker === 'month' ? picker : 'date',
   );
+  useEffect(() => {
+    setView(picker === 'year' || picker === 'month' ? picker : 'date');
+  }, [picker]);
   const [internalVisible, setInternalVisible] = useState(initial);
   const visible = visibleDate ?? internalVisible;
   const [active, setActive] = useState(initial);
@@ -130,7 +137,8 @@ export function CalendarPanel({
   const focusableCells = cells.filter(
     (date) =>
       (showOutsideDays || view !== 'date' || date.getMonth() === visible.getMonth()) &&
-      withinPeriod(date, cellMode, minDate, maxDate),
+      withinPeriod(date, cellMode, minDate, maxDate) &&
+      !(view === picker && disabledDate?.(date)),
   );
   const activeCell =
     focusableCells.find((date) =>
@@ -205,6 +213,18 @@ export function CalendarPanel({
       next.setTime(startOfPeriod(minDate, cellMode).getTime());
     if (maxDate && next > startOfPeriod(maxDate, cellMode))
       next.setTime(startOfPeriod(maxDate, cellMode).getTime());
+    if (view === picker && disabledDate?.(next)) {
+      const step = delta || (event.key === 'End' || event.key === 'PageDown' ? 1 : -1);
+      let attempts = 0;
+      while (disabledDate(next) && attempts < 366) {
+        if (view === 'date') next.setDate(next.getDate() + step);
+        else if (view === 'month') next.setMonth(next.getMonth() + step);
+        else next.setFullYear(next.getFullYear() + step);
+        if (!withinPeriod(next, cellMode, minDate, maxDate)) return;
+        attempts += 1;
+      }
+      if (disabledDate(next)) return;
+    }
     setVisible(next);
     setActive(next);
     focusRequested.current = true;
@@ -342,7 +362,10 @@ export function CalendarPanel({
                 }
                 aria-pressed={checked}
                 aria-current={sameDate(date, new Date()) ? 'date' : undefined}
-                disabled={!withinPeriod(date, cellMode, minDate, maxDate)}
+                disabled={
+                  !withinPeriod(date, cellMode, minDate, maxDate) ||
+                  Boolean(view === picker && disabledDate?.(date))
+                }
                 className={classes(
                   'leaf-date-picker__day',
                   outside && 'leaf-date-picker__day--outside',
@@ -359,6 +382,9 @@ export function CalendarPanel({
                   : view === 'month'
                     ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
                     : date.getFullYear()}
+                {cellRender && view === picker && (
+                  <span className="leaf-calendar__cell-content">{cellRender(date)}</span>
+                )}
               </button>
             </span>
           );

@@ -34,9 +34,26 @@ const componentSidebar = [
     items: [{ text: 'Button', tag: '按钮', link: '/components/button' }],
   },
   {
+    text: '导航',
+    items: [
+      { text: 'Steps', tag: '步骤条', link: '/components/steps' },
+      { text: 'Breadcrumb', tag: '面包屑', link: '/components/breadcrumb' },
+      { text: 'Pagination', tag: '分页', link: '/components/pagination' },
+      { text: 'Tabs', tag: '标签页', link: '/components/tabs' },
+    ],
+  },
+  {
+    text: '数据展示',
+    items: [
+      { text: 'Tag', tag: '标签', link: '/components/tag' },
+      { text: 'Badge', tag: '角标', link: '/components/badge' },
+    ],
+  },
+  {
     text: '数据录入',
     items: [
       { text: 'Input', tag: '输入框', link: '/components/input' },
+      { text: 'InputNumber', tag: '数字输入框', link: '/components/input-number' },
       { text: 'Textarea', tag: '文本域', link: '/components/textarea' },
       { text: 'Checkbox', tag: '复选框', link: '/components/checkbox' },
       { text: 'Radio', tag: '单选框', link: '/components/radio' },
@@ -54,6 +71,7 @@ const componentSidebar = [
       { text: 'TimePicker', tag: '时间选择器', link: '/components/time-picker' },
       { text: 'DateTimePicker', tag: '日期时间选择器', link: '/components/date-time-picker' },
       { text: 'DateRangePicker', tag: '日期区间选择器', link: '/components/date-range-picker' },
+      { text: 'Calendar', tag: '日历', link: '/components/calendar' },
     ],
   },
   {
@@ -61,9 +79,13 @@ const componentSidebar = [
     items: [
       { text: 'Dropdown', tag: '下拉菜单', link: '/components/dropdown' },
       { text: 'Modal', tag: '弹窗', link: '/components/modal' },
+      { text: 'Drawer', tag: '抽屉', link: '/components/drawer' },
       { text: 'Confirm', tag: '确认框', link: '/components/confirm' },
       { text: 'Alert', tag: '警告提示', link: '/components/alert' },
       { text: 'Message', tag: '消息提示', link: '/components/message' },
+      { text: 'Loading', tag: '加载', link: '/components/loading' },
+      { text: 'Progress', tag: '进度条', link: '/components/progress' },
+      { text: 'Tooltip', tag: '文字提示', link: '/components/tooltip' },
     ],
   },
   {
@@ -84,6 +106,8 @@ const englishLabels: Record<string, string> = {
   组件: 'Components',
   组件总览: 'Overview',
   通用: 'General',
+  导航: 'Navigation',
+  数据展示: 'Data display',
   数据录入: 'Data entry',
   日期与时间: 'Date and time',
   反馈与交互: 'Feedback',

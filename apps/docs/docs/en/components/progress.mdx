@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ProgressBasic } from '../../../src/examples/en/progress/basic';
+
+# Progress
+
+Display how much of a task is complete.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ProgressBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/progress/basic.tsx"
+```
+
+</ComponentExample>
+
+## Progress API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `percent` | `number` | `0` | Completion percentage, from 0 to 100 |
+| `type` | `'line' \| 'circle'` | `'line'` | Line or circular progress |
+| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | Progress status |
+| `showInfo` | `boolean` | `true` | Show percentage or status icon |
+| `format` | `(percent: number) => ReactNode` | — | Custom progress text |
+| `strokeWidth` | `number` | `8 / 6` | Stroke width; pixels for lines, view units for circles |
+| `color` | `string` | — | Custom progress color |
+| `size` | `number` | `100` | Circular diameter in pixels |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { ProgressProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Reaching 100% automatically uses success styling. Set aria-label to identify the task, such as upload progress. The numeric progress is also exposed to assistive technology.

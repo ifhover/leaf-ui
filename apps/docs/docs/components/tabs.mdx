@@ -1,0 +1,51 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TabsBasic } from '../../src/examples/tabs/basic';
+
+# Tabs 标签页
+
+在同一区域切换不同内容。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<TabsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## Tabs API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly TabItem[]`](#tabitem) | 必填 | 标签页列表 |
+| `activeKey / defaultActiveKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
+| `onChange` | `(key: string) => void` | — | 激活项变化 |
+| `type` | `'line' \| 'card'` | `'line'` | 标签形态 |
+| `placement` | `'top' \| 'left'` | `'top'` | 标签栏位置 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸 |
+| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活 / 回车或空格激活 |
+| `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
+| `extra` | `ReactNode` | — | 标签栏附加内容 |
+
+## TabItem
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一标识 |
+| `label` | `ReactNode` | 必填 | 标签名称 |
+| `children` | `ReactNode` | 必填 | 对应内容 |
+| `icon` | `ReactNode` | — | 前置图标 |
+| `disabled` | `boolean` | `false` | 禁用该标签页 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { TabsProps, TabItem } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+内容首次访问时挂载，默认保留访问过的内容和输入状态。方向键会跳过禁用项，Home / End 跳至首尾；manual 模式适合内容切换需要等待的场景。

@@ -44,6 +44,12 @@ export function App() {
 | --- | --- |
 | `Button` | 按钮、图标、加载与红色危险状态 |
 | `Input` / `Textarea` | 单行 / 多行文本输入 |
+| `InputNumber` | 数量、金额、范围与小数精度 |
+| `Steps` / `Breadcrumb` / `Pagination` / `Tabs` | 步骤、路径、分页和内容切换 |
+| `Tag` / `Badge` | 分类标签、状态与未读角标 |
+| `Calendar` | 日历、日期选择与自定义日程 |
+| `Drawer` | 边缘抽屉，支持嵌套与表单操作 |
+| `Loading` / `Progress` / `Tooltip` | 加载、任务进度和文字说明 |
 | `Checkbox` | 多项选择与半选 |
 | `Radio` / `RadioGroup` | 单选与选项分组 |
 | `Switch` | 开关与加载状态 |

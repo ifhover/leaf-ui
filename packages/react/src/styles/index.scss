@@ -17,3 +17,15 @@
 @use '../dropdown/dropdown';
 @use '../message/message';
 @use '../shared/calendar';
+@use '../steps/steps';
+@use '../breadcrumb/breadcrumb';
+@use '../pagination/pagination';
+@use '../tag/tag';
+@use '../badge/badge';
+@use '../drawer/drawer';
+@use '../loading/loading';
+@use '../progress/progress';
+@use '../tooltip/tooltip';
+@use '../calendar/calendar' as calendar-view;
+@use '../tabs/tabs';
+@use '../inputnumber/inputnumber';

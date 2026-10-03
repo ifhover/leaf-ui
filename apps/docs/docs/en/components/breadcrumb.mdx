@@ -1,0 +1,46 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { BreadcrumbBasic } from '../../../src/examples/en/breadcrumb/basic';
+
+# Breadcrumb
+
+Show the current page within a navigation hierarchy.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<BreadcrumbBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/breadcrumb/basic.tsx"
+```
+
+</ComponentExample>
+
+## Breadcrumb API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly BreadcrumbItem[]`](#breadcrumbitem) | Required | Path items |
+| `separator` | `ReactNode` | ChevronRight | Separator |
+| `aria-label` | `string` | Locale default | Navigation label |
+
+## BreadcrumbItem
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Stable identifier |
+| `title` | `ReactNode` | Required | Page title |
+| `icon` | `ReactNode` | — | Leading icon |
+| `href` | `string` | — | Link destination; omit for plain text |
+| `target` | `string` | — | Link target |
+| `onClick` | `MouseEventHandler<HTMLAnchorElement>` | — | Link click handler |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { BreadcrumbProps, BreadcrumbItem } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+The final item is marked as the current page. BreadcrumbItem accepts native anchor attributes. A router Link can be passed as title; omitting href avoids an additional anchor.

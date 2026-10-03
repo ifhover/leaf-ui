@@ -2,9 +2,44 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { ConfigProvider } from '../config-provider';
 import { Input } from './input';
 
 describe('Input', () => {
+  it('reveals passwords without changing the value and supports controlled visibility', async () => {
+    const visible = vi.fn();
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <Input
+          type="password"
+          aria-label="Password"
+          defaultValue="secret"
+          onVisibleChange={visible}
+        />
+      </ConfigProvider>,
+    );
+    const input = screen.getByLabelText('Password');
+    expect(input).toHaveAttribute('type', 'password');
+    await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(input).toHaveAttribute('type', 'text');
+    expect(input).toHaveValue('secret');
+    expect(visible).toHaveBeenLastCalledWith(true);
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Input
+          type="password"
+          aria-label="Password"
+          visible={false}
+          onVisibleChange={visible}
+          visibilityIcon={() => <span>eye</span>}
+        />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(input).toHaveAttribute('type', 'password');
+    rerender(<Input type="password" aria-label="Password" visibilityToggle={false} />);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
   it('supports controlled native input and a forwarded focus ref', async () => {
     const ref = createRef<HTMLInputElement>();
     function Example() {

@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TooltipBasic } from '../../src/examples/tooltip/basic';
+
+# Tooltip 文字提示
+
+为页面元素补充简短说明。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<TooltipBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/tooltip/basic.tsx"
+```
+
+</ComponentExample>
+
+## Tooltip API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `content` | `ReactNode` | 必填 | 提示内容 |
+| `children` | `ReactElement` | 必填 | 触发元素，需支持 ref 和事件 |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 期望展示位置，空间不足时自动调整 |
+| `open / defaultOpen` | `boolean` | `false` | 受控展开状态 / 初始状态 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `disabled` | `boolean` | `false` | 禁用提示 |
+| `enterDelay / leaveDelay` | `number` | `100` | 指针进入 / 离开后的延迟，单位毫秒 |
+| `className` | `string` | — | 提示浮层类名 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { TooltipProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+鼠标悬停或键盘聚焦均可展示，Escape 关闭。Tooltip 会保留触发元素原有事件、ref 和 aria-describedby。禁用按钮不接受焦点，可改用外层可聚焦 span 作为触发元素。提示中适合放说明文字；可交互操作请使用 Dropdown 或弹窗。

@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { BadgeBasic } from '../../../src/examples/en/badge/basic';
+
+# Badge
+
+Show counts, unread notifications or brief statuses.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<BadgeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## Badge API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Attach the indicator to this content |
+| `count` | `number \| string` | — | Badge content |
+| `max` | `number` | `99` | Display max+ above this count |
+| `showZero` | `boolean` | `false` | Show a zero count |
+| `dot` | `boolean` | `false` | Use a notification dot |
+| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'default'` | — | Use a semantic status dot |
+| `text` | `ReactNode` | — | Text beside the indicator |
+| `color` | `string` | — | Custom indicator color |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { BadgeProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Use alone for counts or status text. When attaching a notification dot to another control, provide aria-label to explain the notification.

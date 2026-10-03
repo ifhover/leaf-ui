@@ -1,0 +1,12 @@
+.leaf-tooltip {
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 7px 11px;
+  border: 0;
+  border-radius: var(--leaf-radius-sm);
+  color: var(--leaf-color-surface);
+  background: var(--leaf-color-text);
+  font-size: var(--leaf-font-size-sm);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  box-shadow: 0 4px 12px #0002;
+}

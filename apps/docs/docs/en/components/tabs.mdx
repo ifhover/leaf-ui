@@ -1,0 +1,51 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TabsBasic } from '../../../src/examples/en/tabs/basic';
+
+# Tabs
+
+Switch between content views within the same region.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TabsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## Tabs API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly TabItem[]`](#tabitem) | Required | Tab items |
+| `activeKey / defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
+| `onChange` | `(key: string) => void` | — | Active key change |
+| `type` | `'line' \| 'card'` | `'line'` | Tab appearance |
+| `placement` | `'top' \| 'left'` | `'top'` | Tab bar placement |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
+| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
+| `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
+| `extra` | `ReactNode` | — | Extra tab bar content |
+
+## TabItem
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique identifier |
+| `label` | `ReactNode` | Required | Tab label |
+| `children` | `ReactNode` | Required | Tab content |
+| `icon` | `ReactNode` | — | Leading icon |
+| `disabled` | `boolean` | `false` | Disable this tab |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { TabsProps, TabItem } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Content mounts on first visit. Visited panels and their input state are kept by default. Arrow keys skip disabled tabs, and Home / End move to the first / last tab. Use manual activation when changing content takes time.

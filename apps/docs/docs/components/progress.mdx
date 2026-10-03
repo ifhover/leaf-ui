@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ProgressBasic } from '../../src/examples/progress/basic';
+
+# Progress 进度条
+
+展示任务的完成程度。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<ProgressBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/progress/basic.tsx"
+```
+
+</ComponentExample>
+
+## Progress API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `percent` | `number` | `0` | 完成百分比，范围 0–100 |
+| `type` | `'line' \| 'circle'` | `'line'` | 直线或圆形进度 |
+| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | 进度状态 |
+| `showInfo` | `boolean` | `true` | 展示百分比或状态图标 |
+| `format` | `(percent: number) => ReactNode` | — | 自定义进度文字 |
+| `strokeWidth` | `number` | `8 / 6` | 进度线宽；直线为像素，圆形为视图单位 |
+| `color` | `string` | — | 自定义进度颜色 |
+| `size` | `number` | `100` | 圆形宽高，单位像素 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { ProgressProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+达到 100% 时自动使用成功状态。aria-label 可描述具体任务，如“上传进度”；进度本身也会提供给辅助技术。

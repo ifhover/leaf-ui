@@ -49,6 +49,21 @@ html.rp-dark .leaf-component-example {
   padding: 32px;
 }
 
+// Keep the documentation's prose list rules out of component previews.
+.leaf-component-example .leaf-component-example__preview {
+  ol.leaf-steps,
+  .leaf-breadcrumb ol {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  ol.leaf-steps > li,
+  .leaf-breadcrumb ol > li {
+    margin: 0;
+    list-style: none;
+  }
+}
+
 .leaf-component-example__preview > [role='status'] {
   color: var(--leaf-site-muted);
   font-size: 12px;

@@ -1,0 +1,44 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { InputNumberBasic } from '../../../src/examples/en/input-number/basic';
+
+# InputNumber
+
+Enter numeric values such as quantities or prices.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<InputNumberBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/basic.tsx"
+```
+
+</ComponentExample>
+
+## InputNumber API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `number \| null` | `null` | Controlled / initial value; null is empty |
+| `onChange` | `(value: number \| null) => void` | — | Called for a valid number or clearing |
+| `min / max` | `number` | Unbounded | Allowed number range |
+| `step` | `number` | `1` | Increment and decrement step |
+| `precision` | `number` | — | Decimal precision, from 0 to 15 |
+| `controls` | `boolean` | `true` | Show increment and decrement buttons |
+| `keyboard` | `boolean` | `true` | Support arrow key increments |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `prefix / suffix` | `ReactNode` | — | Leading / trailing decoration |
+| `disabled / readOnly` | `boolean` | `false` | Disable / read only |
+| `ref` | `Ref<HTMLInputElement>` | — | Input element ref |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { InputNumberProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Partial minus signs and decimal points are preserved during typing. Blur or Enter normalizes the range and precision; stepping avoids common decimal accumulation errors. Use name for FormData submission. required, form and autoComplete reach the input, and form reset is supported. className and style apply to the wrapper.

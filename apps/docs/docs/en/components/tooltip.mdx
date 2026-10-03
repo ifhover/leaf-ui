@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TooltipBasic } from '../../../src/examples/en/tooltip/basic';
+
+# Tooltip
+
+Add a brief explanation to a page element.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TooltipBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/basic.tsx"
+```
+
+</ComponentExample>
+
+## Tooltip API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `content` | `ReactNode` | Required | Tooltip content |
+| `children` | `ReactElement` | Required | Trigger element supporting a ref and events |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Preferred placement; adjusts when space is limited |
+| `open / defaultOpen` | `boolean` | `false` | Controlled / initial open state |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state change |
+| `disabled` | `boolean` | `false` | Disable the tooltip |
+| `enterDelay / leaveDelay` | `number` | `100` | Pointer enter / leave delays in milliseconds |
+| `className` | `string` | — | Tooltip panel class |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { TooltipProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Hover and keyboard focus both open the tooltip; Escape closes it. Existing events, refs and aria-describedby are preserved. Disabled buttons cannot receive focus; use a focusable span wrapper when needed. Use tooltips for explanatory text and a Dropdown or dialog for interactive actions.

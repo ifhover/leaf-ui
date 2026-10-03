@@ -1,0 +1,50 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { StepsBasic } from '../../src/examples/steps/basic';
+
+# Steps 步骤条
+
+展示任务的进展和当前步骤。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<StepsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/steps/basic.tsx"
+```
+
+</ComponentExample>
+
+## Steps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly StepItem[]`](#stepitem) | 必填 | 步骤列表 |
+| `current` | `number` | `0` | 当前步骤的索引，从 0 开始 |
+| `status` | `'process' \| 'finish' \| 'error'` | `'process'` | 当前步骤状态 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 步骤尺寸 |
+| `loading` | `boolean` | `false` | 当前步骤展示加载图标 |
+| `onChange` | `(current: number) => void` | — | 设置后可点击步骤 |
+
+## StepItem
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 稳定标识 |
+| `title` | `ReactNode` | 必填 | 步骤名称 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | 覆盖该步骤状态 |
+| `disabled` | `boolean` | `false` | 禁止点击该步骤 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { StepsProps, StepItem } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+current 由应用维护；onChange 提供目标索引。未指定单项 status 时，会根据 current 自动显示已完成、进行中和等待状态。

@@ -39,4 +39,46 @@
       height: 16px;
     }
   }
+  &--password &__native[type='password'] {
+    letter-spacing: 0.12em;
+    &::placeholder {
+      letter-spacing: normal;
+    }
+  }
+  &__native::-ms-reveal {
+    display: none;
+  }
+  &__visibility {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin-inline-end: -3px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration),
+      background-color var(--leaf-motion-duration);
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+      color: var(--leaf-color-primary);
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-input__visibility {
+    transition: none;
+  }
 }

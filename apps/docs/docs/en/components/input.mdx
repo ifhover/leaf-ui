@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../../src/components/en-form-examples';
+import { InputPassword } from '../../../src/examples/en/input/password';
 
 # Input
 
@@ -37,6 +38,17 @@ Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix 
 
 </ComponentExample>
 
+## Password input
+
+Use type="password" to mask input and show a visibility toggle. Customize the icon or hide the toggle when needed.
+
+<ComponentExample title="Password input" preview={<InputPassword />} fileName="password.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/password.tsx"
+```
+
+</ComponentExample>
+
 ## Input API
 
 | Property | Type | Default | Description |
@@ -45,6 +57,11 @@ Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix 
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `prefix` / `suffix` | `ReactNode` | — | Decorative content before / after the input |
 | `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Runs when Enter is pressed |
+| `type` | `HTMLInputTypeAttribute` | `'text'` | Input type; use `'password'` for passwords |
+| `visibilityToggle` | `boolean` | `true` | Show the password visibility toggle |
+| `visible` / `defaultVisible` | `boolean` | `false` | Controlled / initial password visibility |
+| `onVisibleChange` | `(visible: boolean) => void` | — | Password visibility change |
+| `visibilityIcon` | `(visible: boolean) => ReactNode` | — | Custom visibility toggle icon |
 | `value` / `defaultValue` | `string \| number \| readonly string[]` | — | Controlled value / initial uncontrolled value |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
 | `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only |

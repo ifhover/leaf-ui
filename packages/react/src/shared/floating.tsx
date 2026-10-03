@@ -1,4 +1,12 @@
-import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/react-dom';
+import {
+  autoUpdate,
+  flip,
+  offset,
+  type Placement,
+  shift,
+  size,
+  useFloating,
+} from '@floating-ui/react-dom';
 import {
   type CSSProperties,
   type HTMLAttributes,
@@ -44,6 +52,7 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   triggerRef: RefObject<HTMLElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
   matchWidth?: boolean;
+  placement?: Placement;
 }
 
 /** Position a lazily mounted portal, preserving the trigger's scoped theme. */
@@ -52,6 +61,7 @@ export function FloatingPanel({
   triggerRef,
   panelRef,
   matchWidth,
+  placement = 'bottom-start',
   style,
   children,
   ...props
@@ -66,7 +76,7 @@ export function FloatingPanel({
   if (open) closingContent.current = children;
   const { refs, floatingStyles, isPositioned } = useFloating({
     open,
-    placement: 'bottom-start',
+    placement,
     strategy: 'fixed',
     whileElementsMounted: (reference, floating, update) =>
       autoUpdate(reference, floating, () => {

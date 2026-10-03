@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../src/components/form-examples';
+import { InputPassword } from '../../src/examples/input/password';
 
 # Input 输入框
 
@@ -12,6 +13,17 @@ import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../sr
 <ComponentExample title="基础输入" preview={<InputBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input/basic.tsx"
+```
+
+</ComponentExample>
+
+## 密码输入
+
+设置 type="password" 可输入密码并切换可见状态。可自定义切换图标，也可以隐藏切换按钮。
+
+<ComponentExample title="密码输入" preview={<InputPassword />} fileName="password.tsx">
+
+```tsx lineNumbers file="../../src/examples/input/password.tsx"
 ```
 
 </ComponentExample>
@@ -57,12 +69,17 @@ onPressEnter 在按下 Enter 时触发；输入法正在组合文字或事件已
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `prefix` / `suffix` | `ReactNode` | — | 输入内容前后的装饰性内容 |
 | `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | 按下回车时触发 |
+| `type` | `HTMLInputTypeAttribute` | `'text'` | 输入方式，密码使用 `'password'` |
+| `visibilityToggle` | `boolean` | `true` | 密码输入框展示切换按钮 |
+| `visible` / `defaultVisible` | `boolean` | `false` | 受控密码可见状态 / 初始状态 |
+| `onVisibleChange` | `(visible: boolean) => void` | — | 密码可见状态变化 |
+| `visibilityIcon` | `(visible: boolean) => ReactNode` | — | 自定义密码切换图标 |
 | `value` / `defaultValue` | `string \| number \| readonly string[]` | — | 受控值 / 非受控初始值 |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 `event.target.value` 读取内容 |
 | `disabled` / `readOnly` | `boolean` | `false` | 禁用 / 只读 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
-其余原生属性（name、required、maxLength、autoComplete、type 等）直接传给 input。className 与 style 作用于外层容器，可用于布局、宽度和局部主题。
+其余原生属性（name、required、maxLength、autoComplete 等）直接传给 input。className 与 style 作用于外层容器，可用于布局和宽度；区域主题通过 ConfigProvider 调整。
 
 ## 类型
 

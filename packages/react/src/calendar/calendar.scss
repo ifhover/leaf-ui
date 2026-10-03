@@ -1,0 +1,65 @@
+.leaf-calendar-view {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+  width: 300px;
+  max-width: 100%;
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  .leaf-calendar {
+    min-width: 0;
+  }
+  &--full {
+    width: 100%;
+    .leaf-calendar {
+      padding: 14px;
+    }
+    .leaf-date-picker__header {
+      margin-bottom: 12px;
+    }
+    .leaf-calendar__heading {
+      font-size: var(--leaf-font-size);
+    }
+    .leaf-calendar__weekdays {
+      padding-block: 10px;
+      font-size: var(--leaf-font-size-sm);
+    }
+    .leaf-calendar__cell {
+      padding: 2px;
+    }
+    .leaf-date-picker__day {
+      min-height: 76px;
+      height: 100%;
+      padding: 8px;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      border-color: var(--leaf-color-border);
+      font-size: var(--leaf-font-size);
+    }
+    .leaf-calendar__cell-content {
+      display: block;
+      width: 100%;
+      flex: 1;
+      text-align: start;
+      font-size: var(--leaf-font-size-sm);
+      overflow: hidden;
+    }
+  }
+}
+@media (max-width: 520px) {
+  .leaf-calendar-view--full {
+    .leaf-calendar {
+      padding: 6px;
+    }
+    .leaf-date-picker__day {
+      min-height: 52px;
+      padding: 4px;
+    }
+    .leaf-calendar__cell-content {
+      font-size: 10px;
+    }
+  }
+}

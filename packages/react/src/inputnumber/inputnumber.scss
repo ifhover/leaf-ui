@@ -1,0 +1,72 @@
+@use '../styles/mixins' as mixins;
+.leaf-input-number {
+  @include mixins.field;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--leaf-current-control-height);
+  padding-inline-start: 10px;
+  overflow: hidden;
+  &__input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    &::placeholder {
+      color: var(--leaf-color-text-muted);
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+  &:not(:has(#{&}__controls)) {
+    padding-inline-end: 10px;
+  }
+  &__controls {
+    display: flex;
+    flex: 0 0 24px;
+    align-self: stretch;
+    flex-direction: column;
+    border-inline-start: 1px solid var(--leaf-color-border);
+    button {
+      display: inline-flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      color: var(--leaf-color-text-muted);
+      background: transparent;
+      cursor: pointer;
+      transition:
+        color var(--leaf-motion-duration),
+        background-color var(--leaf-motion-duration);
+      &:hover:not(:disabled) {
+        color: var(--leaf-color-primary);
+        background: var(--leaf-color-surface-muted);
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-primary);
+        outline-offset: -2px;
+      }
+    }
+    button + button {
+      border-top: 1px solid var(--leaf-color-border);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-input-number__controls button {
+    transition: none;
+  }
+}

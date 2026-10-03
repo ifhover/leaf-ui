@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { BadgeBasic } from '../../src/examples/badge/basic';
+
+# Badge 角标
+
+展示数量、未读提醒或简短状态。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<BadgeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## Badge API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 设置后将角标附着在该内容右上方 |
+| `count` | `number \| string` | — | 角标内容 |
+| `max` | `number` | `99` | 超过该值时展示 max+ |
+| `showZero` | `boolean` | `false` | 允许展示 0 |
+| `dot` | `boolean` | `false` | 使用圆点提醒 |
+| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'default'` | — | 使用对应颜色的状态圆点 |
+| `text` | `ReactNode` | — | 圆点旁的说明 |
+| `color` | `string` | — | 自定义角标颜色 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { BadgeProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+独立使用时可展示数量或状态。附着在按钮等内容上时，为圆点提醒提供 aria-label，以说明提醒的含义。

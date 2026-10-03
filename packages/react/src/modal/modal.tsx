@@ -1,9 +1,9 @@
 import { X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
-import { tabbable } from 'tabbable';
 import { Button, type ButtonProps } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from '../shared/classes';
+import { useDialog } from '../shared/dialog';
 import { inertAttribute } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
 import { usePresence } from '../shared/presence';
@@ -31,8 +31,6 @@ export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   onClose?: () => void;
   afterClose?: () => void;
 }
-const stack: HTMLElement[] = [];
-let savedOverflow = '';
 
 function ModalSurface({
   open,
@@ -137,67 +135,12 @@ function ModalSurface({
   const modalId = `${useId()}-dialog`;
   const close = useRef(cancel);
   close.current = cancel;
-  const keyboardRef = useRef(keyboard);
-  keyboardRef.current = keyboard;
   const wasPresent = useRef(false);
   useEffect(() => {
     if (wasPresent.current && !present) afterClose?.();
     wasPresent.current = present;
   }, [present, afterClose]);
-  useEffect(() => {
-    const node = panel.current;
-    if (!open || !node) return;
-    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    if (!stack.length) {
-      savedOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-    }
-    stack.push(node);
-    (tabbable(node)[0] ?? node).focus();
-    const key = (event: KeyboardEvent) => {
-      if (stack.at(-1) !== node || event.defaultPrevented) return;
-      if (event.key === 'Escape' && keyboardRef.current) {
-        event.preventDefault();
-        event.stopPropagation();
-        close.current?.();
-      }
-      if (event.key === 'Tab') {
-        const items = tabbable(node);
-        if (!items.length) {
-          event.preventDefault();
-          node.focus();
-          return;
-        }
-        const index = items.indexOf(document.activeElement as HTMLElement);
-        if (event.shiftKey && index <= 0) {
-          event.preventDefault();
-          items.at(-1)?.focus();
-        } else if (!event.shiftKey && (index < 0 || index === items.length - 1)) {
-          event.preventDefault();
-          items[0]?.focus();
-        }
-      }
-    };
-    const focus = (event: FocusEvent) => {
-      if (
-        stack.at(-1) === node &&
-        event.target instanceof HTMLElement &&
-        !node.contains(event.target) &&
-        event.target.closest('[data-leaf-owner]')?.getAttribute('data-leaf-owner') !== modalId
-      )
-        (tabbable(node)[0] ?? node).focus();
-    };
-    document.addEventListener('keydown', key);
-    document.addEventListener('focusin', focus);
-    return () => {
-      document.removeEventListener('keydown', key);
-      document.removeEventListener('focusin', focus);
-      const index = stack.indexOf(node);
-      if (index >= 0) stack.splice(index, 1);
-      if (!stack.length) document.body.style.overflow = savedOverflow;
-      if (previous?.isConnected) previous.focus();
-    };
-  }, [open, modalId]);
+  useDialog(open, panel, modalId, cancel, keyboard);
   if (!present) return null;
   return (
     <div

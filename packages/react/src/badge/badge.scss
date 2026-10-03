@@ -1,0 +1,54 @@
+.leaf-badge {
+  --leaf-badge-color: var(--leaf-color-danger);
+  &[data-status='success'] {
+    --leaf-badge-color: var(--leaf-color-success);
+  }
+  &[data-status='warning'] {
+    --leaf-badge-color: var(--leaf-color-warning);
+  }
+  &[data-status='info'] {
+    --leaf-badge-color: var(--leaf-color-info);
+  }
+  &[data-status='default'] {
+    --leaf-badge-color: var(--leaf-color-text-muted);
+  }
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  vertical-align: middle;
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__indicator {
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 100px;
+    color: #fff;
+    background: var(--leaf-badge-color);
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  &__indicator--dot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    padding: 0;
+  }
+  &--attached &__indicator {
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 0 2px var(--leaf-color-surface);
+    pointer-events: none;
+  }
+  &__text {
+    color: var(--leaf-color-text);
+  }
+}

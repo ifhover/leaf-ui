@@ -1,0 +1,39 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TagBasic } from '../../../src/examples/en/tag/basic';
+
+# Tag
+
+Label content categories or statuses.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TagBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/basic.tsx"
+```
+
+</ComponentExample>
+
+## Tag API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Tag content |
+| `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| string` | `'default'` | Semantic or custom color |
+| `variant` | `'soft' \| 'outline' \| 'solid'` | `'soft'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
+| `icon` | `ReactNode` | — | Leading icon |
+| `closable` | `boolean` | `false` | Show a close button |
+| `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { TagProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.

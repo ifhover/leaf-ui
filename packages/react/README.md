@@ -78,6 +78,10 @@ All fields support name, form and required. DatePicker submits a local YYYY-MM-D
 
 Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DateTimePicker submits YYYY-MM-DD HH:mm:ss; DateRangePicker submits a start/end string in the selected granularity.
 
+## More components
+
+Use Steps, Breadcrumb, Pagination and Tabs for navigation; Tag and Badge for classifications and notifications; Drawer, Loading, Progress and Tooltip for contextual feedback. Calendar supports compact and full layouts with custom schedule content. InputNumber handles numeric ranges, precision and stepping; Input with type="password" supports controlled visibility and custom toggle icons. See the [component overview](https://ifhover.github.io/leaf-ui/en/components/index.html) for examples and API details.
+
 ## Icons
 
 When importing icons in your app, add lucide-react as an app dependency (for example, pnpm add lucide-react). Leaf UI uses named imports from lucide-react for its internal icons. Import icons directly from lucide-react for button and input decoration; no private icon paths or runtime full-library icon loader is needed.

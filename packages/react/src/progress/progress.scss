@@ -1,0 +1,78 @@
+.leaf-progress {
+  --leaf-progress-color: var(--leaf-color-primary);
+  &[data-status='success'] {
+    --leaf-progress-color: var(--leaf-color-success);
+  }
+  &[data-status='error'] {
+    --leaf-progress-color: var(--leaf-color-danger);
+  }
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  &__track {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 100px;
+    background: var(--leaf-color-surface-muted);
+  }
+  &__fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--leaf-progress-color);
+    transition:
+      width var(--leaf-motion-duration),
+      background-color var(--leaf-motion-duration);
+  }
+  &__info {
+    flex-shrink: 0;
+    min-width: 36px;
+    text-align: end;
+    svg {
+      width: 17px;
+      height: 17px;
+      color: var(--leaf-progress-color);
+      vertical-align: middle;
+    }
+  }
+  &--circle {
+    display: inline-flex;
+    position: relative;
+    flex-shrink: 0;
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+    .leaf-progress__info {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: var(--leaf-font-size);
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+  &__trail {
+    fill: none;
+    stroke: var(--leaf-color-surface-muted);
+  }
+  &__arc {
+    fill: none;
+    stroke: var(--leaf-progress-color);
+    stroke-linecap: round;
+    transition:
+      stroke-dashoffset var(--leaf-motion-duration),
+      stroke var(--leaf-motion-duration);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-progress__fill,
+  .leaf-progress__arc {
+    transition: none;
+  }
+}

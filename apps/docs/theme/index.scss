@@ -1005,6 +1005,8 @@ html.rp-dark {
 
 .leaf-demo-stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 12px;
   width: min(100%, 360px);
 }
@@ -1017,6 +1019,7 @@ html.rp-dark {
 }
 .leaf-demo-row {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 20px;
@@ -1040,6 +1043,16 @@ html.rp-dark {
 .leaf-demo-size {
   color: var(--leaf-site-muted);
   font-size: 12px;
+}
+.leaf-demo-surface {
+  padding: 24px;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+  color: var(--leaf-color-text);
+  background: var(--leaf-color-surface);
+  p {
+    margin-block: 8px 14px;
+  }
 }
 @media (max-width: 480px) {
   .leaf-demo-control-row {

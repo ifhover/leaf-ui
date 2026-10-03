@@ -45,7 +45,7 @@ export function HomeLayout() {
         <div className="leaf-hero__content">
           <div className="leaf-release">
             <span />
-            {t('20 个组件，持续生长', '20 components, growing together')}
+            {t('32 个组件，持续生长', '32 components, growing together')}
           </div>
           <h1>
             {t('为你的界面，', 'For your interface,')}

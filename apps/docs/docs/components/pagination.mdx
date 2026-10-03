@@ -1,0 +1,43 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { PaginationBasic } from '../../src/examples/pagination/basic';
+
+# Pagination 分页
+
+按页浏览较多的数据。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<PaginationBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/pagination/basic.tsx"
+```
+
+</ComponentExample>
+
+## Pagination API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `total` | `number` | 必填 | 数据总条数 |
+| `current / defaultCurrent` | `number` | `1` | 受控页码 / 初始页码 |
+| `pageSize / defaultPageSize` | `number` | `10` | 受控每页条数 / 初始条数 |
+| `onChange` | `(page: number, pageSize: number) => void` | — | 页码或每页条数变化 |
+| `showSizeChanger` | `boolean` | `false` | 展示每页条数选择器 |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | 可选每页条数 |
+| `showQuickJumper` | `boolean` | `false` | 允许输入页码，回车跳转 |
+| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | 自定义总数说明 |
+| `simple` | `boolean` | `false` | 使用简洁页码展示 |
+| `disabled / hideOnSinglePage` | `boolean` | `false` | 禁用 / 单页时隐藏 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { PaginationProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+页码从 1 开始。应用根据 onChange 加载对应数据；改变每页条数时，页码会尽量保留当前数据的位置。越界页码会自动限制到有效范围。

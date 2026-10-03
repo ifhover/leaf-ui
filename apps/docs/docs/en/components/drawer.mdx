@@ -1,0 +1,43 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DrawerBasic } from '../../../src/examples/en/drawer/basic';
+
+# Drawer
+
+Open content from a page edge to view details or complete actions.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<DrawerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/basic.tsx"
+```
+
+</ComponentExample>
+
+## Drawer API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | Required | Whether the drawer is open |
+| `title` | `ReactNode` | — | Title |
+| `children` | `ReactNode` | — | Drawer content |
+| `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
+| `width` | `number \| string` | `380` | Width for left and right drawers |
+| `height` | `number \| string` | `300` | Height for top and bottom drawers |
+| `extra` | `ReactNode` | — | Actions beside the title |
+| `footer` | `ReactNode` | — | Footer content |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop click / Escape |
+| `onClose` | `() => void` | — | Close request; update open in application state |
+| `afterClose` | `() => void` | — | Called after the closing transition |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { DrawerProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Place actions in footer. A submit button can use its form attribute to target a form inside the drawer. Provide aria-label if there is no title. Nested dialogs are supported, and focus returns to the opener after closing.

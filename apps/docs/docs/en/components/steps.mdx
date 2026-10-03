@@ -1,0 +1,50 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { StepsBasic } from '../../../src/examples/en/steps/basic';
+
+# Steps
+
+Show the progress and current step of a task.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<StepsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/basic.tsx"
+```
+
+</ComponentExample>
+
+## Steps API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly StepItem[]`](#stepitem) | Required | Step items |
+| `current` | `number` | `0` | Current step index, starting at 0 |
+| `status` | `'process' \| 'finish' \| 'error'` | `'process'` | Current step status |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Step size |
+| `loading` | `boolean` | `false` | Show a spinner for the current step |
+| `onChange` | `(current: number) => void` | — | Makes steps selectable |
+
+## StepItem
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Stable identifier |
+| `title` | `ReactNode` | Required | Step title |
+| `description` | `ReactNode` | — | Supporting description |
+| `icon` | `ReactNode` | — | Custom icon |
+| `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | Override the item status |
+| `disabled` | `boolean` | `false` | Prevent selecting the step |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { StepsProps, StepItem } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Keep current in application state. onChange reports the selected index. Item statuses are derived from current unless explicitly supplied.

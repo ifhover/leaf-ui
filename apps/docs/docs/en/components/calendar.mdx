@@ -1,0 +1,43 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CalendarBasic } from '../../../src/examples/en/calendar/basic';
+
+# Calendar
+
+Browse dates, choose days and display a schedule.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<CalendarBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/calendar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Calendar API
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `Date` | — | Controlled / initially selected date |
+| `onChange` | `(date: Date) => void` | — | Called on date selection |
+| `visibleDate` | `Date` | — | Controlled visible month or year |
+| `onVisibleChange` | `(date: Date) => void` | — | Visible period change |
+| `mode` | `'date' \| 'month'` | `'date'` | Choose days or months |
+| `fullscreen` | `boolean` | `true` | Use a full calendar layout |
+| `minDate / maxDate` | `Date` | — | Selectable date boundaries |
+| `disabledDate` | `(date: Date) => boolean` | — | Disable specific dates |
+| `cellRender` | `(date: Date) => ReactNode` | — | Add content below a day or month |
+
+## Types
+
+Import the component props and item types when preparing your own values.
+
+```ts
+import type { CalendarProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Use the full layout for schedules and `fullscreen={false}` for a compact calendar. Render non-interactive text or Tags in `cellRender`, without nesting controls in date buttons. Arrow keys move between dates, Home / End move within a row, and PageUp / PageDown change months. For SSR, supply the same initial date on server and client; see the SSR guide.
+
+[SSR usage](/en/guide/ssr)。
