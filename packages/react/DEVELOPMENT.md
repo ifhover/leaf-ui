@@ -16,7 +16,7 @@ pnpm dev
 ## 添加组件
 
 1. 在 src/<component>/ 中添加实现、类型、.scss 样式和必要的行为测试。
-2. 保留原生属性、DOM ref、合理的键盘操作和表单提交行为，优先使用原生控件。
+2. 保留适用的原生属性、DOM ref、合理的键盘操作和表单提交行为。文本与勾选控件使用原生语义；下拉、日期、时间等浮层使用共享 FloatingPanel，不使用原生 select / date / time / datalist 面板。
 3. 更新目录和 src/index.ts 的导出，在 src/styles/index.scss 中用 @use 引入样式。
 4. 在 apps/docs/src/examples/<component>/ 添加示例，MDX 的 ComponentExample 与 file 围栏共同引用该源码。
 5. 更新组件侧边栏和总览卡片，提供静态 SVG 缩略图，避免总览挂载全部组件实例。
@@ -48,5 +48,15 @@ pnpm --dir packages/react pack
 Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明，外部入口仍为 @leaf-ui/react/styles.css。
 
 check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、34px 公共 token、编译后的样式及 React / Lucide 外部依赖。
+
+## 自定义浮层与表单
+
+src/shared/floating.tsx 基于 @floating-ui/react-dom 定位，按需 Portal 到 body，统一处理 offset、flip、shift、size、滚动和尺寸变化。仅打开时订阅定位与事件；复制触发节点的 --leaf-* 计算变量，并监听祖先主题属性，保证局部主题在 Portal 中一致。浮层层级由 --leaf-z-index-popup 控制。
+
+usePopupState 处理禁用时收起和去重后的 onOpenChange。useFloatingDismiss 处理外部点击、焦点离开和 Escape；通过 tabbable 保持浮层前后与原表单一致的 Tab 顺序。列表组件保留输入 / 触发器焦点并使用 aria-activedescendant；日历和多列面板使用实际焦点与 roving tabIndex。
+
+src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。FormValue 使用不可交互的文本输入参与 FormData 与 required 校验，拦截原生校验提示并聚焦触发器。自定义选择组件 onChange 返回业务值，事件属性仍透传到触发按钮；清除值分别为 Select 空字符串、日期 / 时间 null、级联空数组。
+
+DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 精度为分钟；Cascader 只在末级提交。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
 
 本地包只包含 dist、package.json 和包 README。当前未发布到 npm。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。

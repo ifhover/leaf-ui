@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { DatePickerBasic, DatePickerControlled } from '../../src/components/form-examples';
+
+# DatePicker 日期选择器
+
+从日历中选择一个日期。默认高度 **34px**，支持受控值、日期范围限制和清除。
+
+## 基础选择
+
+点击控件打开日历，选择日期后收起。`defaultValue` 设置初始日期，`disabled` 禁用整个控件。
+
+<ComponentExample title="基础选择" preview={<DatePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## 受控与日期限制
+
+通过 `minDate` / `maxDate` 限定可选日期，边界当天也可以选择。`onChange` 同时提供 Date 对象和本地日期字符串。
+
+<ComponentExample title="受控与日期限制" preview={<DatePickerControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+## API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` / `defaultValue` | `Date \| null` | `null` | 受控日期 / 非受控初始日期 |
+| `onChange` | `(date: Date \| null, dateString: string) => void` | — | 日期变更；清除时返回 null 和空字符串 |
+| `minDate` / `maxDate` | `Date` | — | 最早 / 最晚可选日期，按本地年月日比较 |
+| `allowClear` | `boolean` | `true` | 展示清除按钮 |
+| `placeholder` | `string` | `请选择日期` | 空值提示 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `md` | 高度 28 / 34 / 40px |
+| `status` | `'error' \| 'warning'` | — | 校验外观，error 同时设置 aria-invalid |
+| `disabled` | `boolean` | `false` | 禁用输入与浮层 |
+| `name` / `form` / `required` | 原生表单属性 | — | 表单关联、提交与必填校验 |
+| `onOpenChange` | `(open: boolean) => void` | — | 日历展开或收起 |
+| `ref` | `Ref<HTMLButtonElement>` | — | 触发按钮，可调用 focus() |
+
+其余原生 button 属性和 `aria-*` 透传至触发按钮；`className` / `style` 作用于外层容器。
+
+## 日期与表单
+
+传入有效 Date 对象，且 `minDate` 不晚于 `maxDate`。组件按本地日期处理：可用 `new Date(2026, 9, 15)` 表示 2026 年 10 月 15 日，月份从 0 开始。选择结果为本地当天零点；避免用 UTC 字符串转换代替本地日期构造。
+
+设置 `name` 后，FormData 中的值为 `YYYY-MM-DD`，清除后为空字符串。非受控组件支持表单 reset，受控组件需同步重置自己的状态。当前提供单日期选择，日历从周一开始。
+
+## 键盘与主题
+
+Enter、空格或 ↓ 打开日历。方向键按日或周移动，Home / End 移至本周首尾，PageUp / PageDown 切换月份，Enter 选择。Tab 依次访问月切换与日期；离开面板时回到表单中的后续控件，Escape 收起并聚焦触发按钮。
+
+为控件提供 label 或 aria-label。日历沿用控件所在容器的主题色、圆角和浅深色变量；点击外部或移走焦点会收起。

@@ -1,9 +1,9 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { SelectBasic, SelectControlled, ControlSizes } from '../../src/components/form-examples';
+import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../src/components/form-examples';
 
 # Select 选择器
 
-从给定选项中选择一项。默认高度 **34px**，与 Button、Input 对齐。使用浏览器原生选择菜单，保留键盘、触屏和表单能力。
+从给定选项中选择一项。默认高度 **34px**，与 Button、Input 对齐。选项面板统一沿用 Leaf UI 的主题与交互样式。
 
 ## 基础选择
 
@@ -18,11 +18,22 @@ import { SelectBasic, SelectControlled, ControlSizes } from '../../src/component
 
 ## 受控与校验
 
-value / onChange 管理选择结果，status="error" 同时提供错误外观与 aria-invalid。
+value / onChange 管理选择结果，回调直接返回字符串值和选项对象。`allowClear` 显示清除按钮；status="error" 同时提供错误外观与 aria-invalid。
 
 <ComponentExample title="受控与校验" preview={<SelectControlled />} fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/controlled.tsx"
+```
+
+</ComponentExample>
+
+## 局部主题
+
+在父容器上覆盖主题变量，选项浮层也会使用相同的颜色与圆角。
+
+<ComponentExample title="局部主题与清除" preview={<SelectTheme />} fileName="theme.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/theme.tsx"
 ```
 
 </ComponentExample>
@@ -42,15 +53,21 @@ value / onChange 管理选择结果，status="error" 同时提供错误外观与
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `md` | 共用尺寸；单行控件为 28 / 34 / 40px |
 | `status` | `'error' \| 'warning'` | — | 校验状态；error 同时设置 aria-invalid |
-| options | readonly SelectOption[] | 必填 | 每项包含字符串 label、value 和可选 disabled |
-| placeholder | string | — | 空值占位项；保留空字符串作为未选择值 |
-| value / defaultValue | 原生 select 属性 | — | 受控值 / 非受控初始值 |
-| onChange | `ChangeEventHandler<HTMLSelectElement>` | — | 读取 event.target.value |
+| options | `readonly SelectOption[]` | 必填 | 每项包含字符串 value、ReactNode label 和可选 disabled |
+| placeholder | string | `请选择` | 空值提示；保留空字符串作为未选择值 |
+| value / defaultValue | `string` | `''` | 受控值 / 非受控初始值 |
+| onChange | `(value: string, option?: SelectOption) => void` | — | 直接返回值与选项；清除时为空字符串和 undefined |
+| allowClear | boolean | false | 展示清除按钮 |
 | disabled | boolean | false | 禁用整个选择器 |
-| ref | `Ref<HTMLSelectElement>` | — | 原生 select 节点 |
+| onOpenChange | `(open: boolean) => void` | — | 展开或收起选项面板 |
+| ref | `Ref<HTMLButtonElement>` | — | 触发按钮，可调用 focus() |
 
-其余原生单选属性（name、required、form、autoFocus 等）直接透传。className 与 style 作用于外层容器。选项 value 应唯一；带 placeholder 时不要将空字符串用作业务选项值。
+支持 name、required、form 和非受控表单 reset；其余原生 button 属性及 aria-* 透传至触发按钮。className 与 style 作用于外层容器。选项 value 应唯一，不要将空字符串用作业务选项值。
 
 ## 使用说明
 
-为选择器提供 label 或 aria-label。弹出菜单的外观和打开方式由浏览器与操作系统控制，主题变量作用于闭合状态的组件。当前提供基础单选，适用于选项数量较少的场景。
+为选择器提供 label 或 aria-label。FormData 提交选项的字符串 value，清除后为空字符串；受控组件的表单重置需同步重置自己的状态。
+
+Enter、空格或方向键打开面板，↑ / ↓ 移动高亮并跳过禁用选项，Home / End 跳至首尾，Enter 或空格确认。Escape 收起，Tab 继续访问后续控件。点击外部或移走焦点会收起。
+
+浮层随页面滚动定位，并在视口边缘避让；长列表可滚动。当前提供单选，适用于选项数量适中的场景。

@@ -9,7 +9,8 @@ export function SelectControlled() {
         aria-label="项目可见性"
         value={value}
         placeholder="选择可见性"
-        onChange={(event) => setValue(event.target.value)}
+        allowClear
+        onChange={setValue}
         options={[
           { label: '公开', value: 'public' },
           { label: '团队', value: 'team' },

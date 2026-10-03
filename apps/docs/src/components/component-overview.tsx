@@ -49,8 +49,36 @@ const components = [
     name: 'Select',
     label: '选择器',
     category: '数据录入',
-    description: '从选项中选择，支持原生表单。',
+    description: '统一主题的选项面板与键盘选择。',
     slug: 'select',
+  },
+  {
+    name: 'DatePicker',
+    label: '日期选择器',
+    category: '数据录入',
+    description: '日历选择，支持日期限制与清除。',
+    slug: 'date-picker',
+  },
+  {
+    name: 'TimePicker',
+    label: '时间选择器',
+    category: '数据录入',
+    description: '小时与分钟选择，自定义分钟间隔。',
+    slug: 'time-picker',
+  },
+  {
+    name: 'AutoComplete',
+    label: '自动完成',
+    category: '数据录入',
+    description: '自由输入文本，选择匹配建议。',
+    slug: 'auto-complete',
+  },
+  {
+    name: 'Cascader',
+    label: '级联选择',
+    category: '数据录入',
+    description: '逐级展开选项，选择完整路径。',
+    slug: 'cascader',
   },
 ];
 

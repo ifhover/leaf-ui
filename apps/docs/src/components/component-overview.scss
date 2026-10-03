@@ -47,12 +47,14 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      flex-wrap: wrap;
       margin: 5px 0 8px;
       font-size: 14px;
       font-weight: 650;
       line-height: 1.5;
       color: var(--leaf-site-text);
       span {
+        color: var(--leaf-site-muted);
         font-size: 12px;
         font-weight: 400;
       }

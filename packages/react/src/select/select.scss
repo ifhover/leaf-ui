@@ -1,45 +1,64 @@
 @use '../styles/mixins' as mixins;
+
 .leaf-select {
   @include mixins.field;
   display: inline-flex;
   position: relative;
   align-items: center;
   height: var(--leaf-current-control-height);
-  &__native {
+  padding: 0;
+
+  &__trigger {
     box-sizing: border-box;
+    display: flex;
     width: 100%;
     height: 100%;
-    padding: 0 32px 0 10px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 10px;
     border: 0;
-    outline: none;
     border-radius: inherit;
     color: inherit;
     background: transparent;
     font: inherit;
+    line-height: inherit;
+    text-align: left;
     cursor: pointer;
-    appearance: none;
+
     &:disabled {
       cursor: not-allowed;
     }
-    option {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-surface);
+
+    &:focus-visible {
+      @include mixins.focus-ring;
     }
   }
+
+  &__value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--placeholder {
+      color: var(--leaf-color-text-muted);
+    }
+  }
+
   &__arrow {
-    position: absolute;
-    right: 10px;
+    flex: 0 0 auto;
     width: 16px;
     height: 16px;
     color: var(--leaf-color-text-muted);
-    pointer-events: none;
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
-  @media (forced-colors: active) {
-    &__native {
-      appearance: auto;
-    }
-    &__arrow {
-      display: none;
-    }
+
+  &[data-open] &__arrow {
+    transform: rotate(180deg);
+  }
+
+  &__panel {
+    width: 100%;
   }
 }

@@ -1,0 +1,63 @@
+@use '../styles/mixins' as mixins;
+.leaf-cascader {
+  @include mixins.field;
+  display: inline-flex;
+  position: relative;
+  height: var(--leaf-current-control-height);
+  &__trigger {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 0 10px;
+    border: 0;
+    border-radius: inherit;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
+    text-align: left;
+    cursor: pointer;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+    > svg {
+      flex: 0 0 auto;
+      color: var(--leaf-color-text-muted);
+    }
+  }
+  &__value {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  &__placeholder {
+    color: var(--leaf-color-text-muted);
+  }
+  &__panel {
+    width: max-content;
+    max-width: min(560px, calc(100vw - 24px));
+  }
+  &__columns {
+    display: flex;
+  }
+  &__column {
+    min-width: 140px;
+    max-height: 256px;
+    overflow-y: auto;
+    padding: 0 4px;
+  }
+  &__column + &__column {
+    border-left: 1px solid var(--leaf-color-border);
+  }
+  &__column .leaf-floating__option {
+    justify-content: space-between;
+  }
+}

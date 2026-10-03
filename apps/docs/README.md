@@ -33,6 +33,8 @@ pnpm preview
 
 `rspress.config.ts` 按路径分别配置指南和组件侧边栏。添加组件时同时更新总览、组件侧边栏和对应 MDX 页面。
 
+组件项的 text 使用实际导入名称，例如 DatePicker；tag 作为同一行的中文副标题，站点 SCSS 将其设置为更小、更浅的文字。不要在标题中拼接两种字号，或运行时修改 Rspress 的 DOM。
+
 不要将文档站运行命令、发布构建流程或仓库开发指南放入 `docs` 目录；其中的 Markdown 会成为在线页面并进入搜索索引。
 
 ## 预览与代码模块
@@ -65,3 +67,5 @@ import { Button } from '@leaf-ui/react';
 站点样式和示例模块使用 .scss，Rspress 的 builderConfig 启用 pluginSass。源码样式入口别名指向组件库的 src/styles/index.scss，消费者的 CSS 入口保持不变。
 
 总览位于 src/components/component-overview.tsx，采用静态 SVG 图片，资源保存在 docs/public/components。新增组件时更新卡片元数据和对应缩略图，无需在总览挂载交互组件。图标统一使用 lucide-react。
+
+选择类组件缩略图由 scripts/generate-picker-thumbnails.mjs 生成，包含静态控件与浮层示意，并复用 Lucide 图标；在此目录运行 `node scripts/generate-picker-thumbnails.mjs` 可重建。

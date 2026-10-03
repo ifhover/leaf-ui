@@ -47,6 +47,8 @@ CSS 变量可以继承。同一页面中的不同区域可以拥有不同的主�
 
 派生状态色在组件内计算，因此修改局部主题色后，悬停、浅色背景和边框会同步更新。
 
+Select、DatePicker、TimePicker、AutoComplete 和 Cascader 的浮层也会沿用局部主题，包括主题色、圆角和浅深色表面。
+
 ## 内联变量
 
 使用 `LeafThemeStyle` 类型，可在保留标准 React 样式属性检查的同时传入 `--leaf-*` 变量。尺寸变量需要 CSS 单位。
@@ -89,10 +91,11 @@ export function ScopedTheme() {
 | `--leaf-font-weight` | `500` | 默认字重 |
 | `--leaf-motion-duration` | `160ms` | 状态过渡时间 |
 | `--leaf-motion-easing` | `ease` | 过渡曲线 |
+| `--leaf-z-index-popup` | `1000` | 选择菜单、日历等浮层的层级 |
 
 ## 统一控件高度
 
-Button、Input、Select 的默认高度统一为 **34px**；Checkbox、Radio 和 Switch 的标签容器使用相同的最小高度，方便横向排列。Textarea 按行数展开，并共用字号与间距体系。
+Button、Input、Select、DatePicker、TimePicker、AutoComplete 和 Cascader 的默认高度统一为 **34px**；Checkbox、Radio 和 Switch 的标签容器使用相同的最小高度，方便横向排列。Textarea 按行数展开，并共用字号与间距体系。
 
 调整共用变量即可同步改变单行控件：
 

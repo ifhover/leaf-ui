@@ -30,17 +30,21 @@ const componentSidebar = [
   },
   {
     text: '通用',
-    items: [{ text: 'Button 按钮', link: '/components/button' }],
+    items: [{ text: 'Button', tag: '按钮', link: '/components/button' }],
   },
   {
     text: '数据录入',
     items: [
-      { text: 'Input 输入框', link: '/components/input' },
-      { text: 'Textarea 文本域', link: '/components/textarea' },
-      { text: 'Checkbox 复选框', link: '/components/checkbox' },
-      { text: 'Radio 单选框', link: '/components/radio' },
-      { text: 'Switch 开关', link: '/components/switch' },
-      { text: 'Select 选择器', link: '/components/select' },
+      { text: 'Input', tag: '输入框', link: '/components/input' },
+      { text: 'Textarea', tag: '文本域', link: '/components/textarea' },
+      { text: 'Checkbox', tag: '复选框', link: '/components/checkbox' },
+      { text: 'Radio', tag: '单选框', link: '/components/radio' },
+      { text: 'Switch', tag: '开关', link: '/components/switch' },
+      { text: 'Select', tag: '选择器', link: '/components/select' },
+      { text: 'DatePicker', tag: '日期选择器', link: '/components/date-picker' },
+      { text: 'TimePicker', tag: '时间选择器', link: '/components/time-picker' },
+      { text: 'AutoComplete', tag: '自动完成', link: '/components/auto-complete' },
+      { text: 'Cascader', tag: '级联选择', link: '/components/cascader' },
     ],
   },
 ];

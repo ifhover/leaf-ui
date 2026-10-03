@@ -33,7 +33,11 @@ const components = [
     /<fieldset/,
   ],
   ['Switch', { defaultChecked: true }, 'Notifications', /role="switch"/],
-  ['Select', { options: [{ value: 'design', label: 'Design' }] }, null, /<select/],
+  ['Select', { options: [{ value: 'design', label: 'Design' }] }, null, /role="combobox"/],
+  ['DatePicker', { defaultValue: new Date(2026, 9, 15) }, null, /role="combobox"/],
+  ['TimePicker', { defaultValue: '09:30' }, null, /role="combobox"/],
+  ['AutoComplete', { options: [{ value: 'Leaf' }] }, null, /role="combobox"/],
+  ['Cascader', { options: [{ value: 'design', label: 'Design' }] }, null, /role="combobox"/],
 ];
 for (const [format, api] of [
   ['ESM', esm],
@@ -54,7 +58,20 @@ assert.ok(
 const css = await readFile(new URL(manifest.exports['./styles.css'], packageRoot), 'utf8');
 assert.match(css, /--leaf-control-height:\s*34px/);
 assert.match(css, /--leaf-color-danger/);
-for (const name of ['button', 'input', 'textarea', 'checkbox', 'radio', 'switch', 'select']) {
+for (const name of [
+  'button',
+  'input',
+  'textarea',
+  'checkbox',
+  'radio',
+  'switch',
+  'select',
+  'date-picker',
+  'time-picker',
+  'autocomplete',
+  'cascader',
+  'floating',
+]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }
 assert.ok(!css.includes('@use'), 'Published CSS must be compiled from SCSS');
@@ -64,6 +81,13 @@ assert.ok(esmCode.includes('from "react"'), 'ESM must keep React external');
 assert.ok(cjsCode.includes('require("react")'), 'CommonJS must keep React external');
 assert.ok(esmCode.includes('from "lucide-react"'), 'Lucide must remain an external dependency');
 assert.ok(cjsCode.includes('require("lucide-react")'), 'CommonJS must keep Lucide external');
+for (const dependency of ['react-dom', '@floating-ui/react-dom', 'tabbable']) {
+  assert.ok(esmCode.includes(`from "${dependency}"`), `ESM must keep ${dependency} external`);
+  assert.ok(
+    cjsCode.includes(`require("${dependency}")`),
+    `CommonJS must keep ${dependency} external`,
+  );
+}
 console.log(
   'All component exports, ESM/CommonJS rendering, declarations, compiled SCSS and dependencies verified.',
 );

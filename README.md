@@ -1,121 +1,92 @@
 # Leaf UI
 
-轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体、控件高度和动效；样式使用 SCSS，文档站使用 Rspress。
+轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 CSS 变量控制颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
 
-提供 Button、Input、Textarea、Checkbox、Radio、Switch、Select。单行控件默认 **34px**，小/大尺寸为 28/40px；图标统一采用 lucide-react。
+## 安装与使用
 
-在线文档面向组件使用者，分为独立的指南和组件页面；仓库架构、组件开发与文档站维护说明保存在源码 Markdown 中。
-
-- [项目架构与开发](DEVELOPMENT.md)
-- [组件开发](packages/react/DEVELOPMENT.md)
-- [文档站运行与维护](apps/docs/README.md)
-
-## 本地开发
-
-需要 Node.js 22.22.2 / 24.15.0 及以上受支持的 LTS 版本，或 Node.js 26，以及 pnpm 11。工作区锁定 pnpm 11.10.0。
+组件包名为 `@leaf-ui/react`，当前尚未发布到 npm。取得 `leaf-ui-react-0.1.0.tgz` 安装包后，在你的 React 应用中安装：
 
 ```bash
-pnpm install
-pnpm dev
+pnpm add ./leaf-ui-react-0.1.0.tgz
 ```
 
-打开 `http://localhost:3000`。文档直接引用组件源码，修改组件或 SCSS 后会热更新，无需先构建组件包。
-
-## 项目结构
-
-```text
-leaf-ui/
-├── packages/react/          # @leaf-ui/react 组件包
-│   ├── src/<component>/     # 按钮和表单组件、SCSS、行为测试
-│   ├── src/shared/          # 公共尺寸类型、原生表单集成测试
-│   ├── src/styles/          # 公共主题变量和样式入口
-│   ├── src/theme.ts         # CSS 变量内联样式类型
-│   └── rslib.config.ts      # ESM、CommonJS 和类型声明构建
-├── apps/docs/               # Rspress 文档站
-│   ├── docs/                # 指南和组件 MDX 文档
-│   ├── src/components/      # 首页、主题编辑器和统一示例卡片
-│   ├── src/examples/        # 预览与代码片段共同引用的示例源码
-│   └── theme/               # Rspress 主题扩展与站点样式
-├── DEVELOPMENT.md          # 源码开发与构建说明
-├── biome.json               # 格式化与代码检查
-├── tsconfig.base.json       # 共享 TypeScript 配置
-└── pnpm-workspace.yaml
-```
-
-## 常用命令
-
-| 命令 | 用途 |
-| --- | --- |
-| `pnpm dev` | 启动文档与组件开发环境 |
-| `pnpm build:lib` | 构建组件库 |
-| `pnpm build:docs` | 构建文档站 |
-| `pnpm build` | 构建组件库和文档站 |
-| `pnpm preview` | 预览已构建的文档站 |
-| `pnpm check` | 格式、Lint、类型和组件行为测试 |
-| `pnpm test:watch` | 监听组件测试 |
-| `pnpm format` | 格式化并应用安全的 Lint 修复 |
-
-## 使用组件
-
-组件包名为 `@leaf-ui/react`，当前尚未发布到 npm。可在工作区中引用，或构建后生成本地安装包：
-
-```bash
-pnpm build:lib
-pnpm --dir packages/react pack
-```
-
-在另一个 React 项目中安装生成的 `packages/react/leaf-ui-react-0.1.0.tgz` 后使用：
+将文件路径替换为安装包的实际位置。样式只需在应用入口引入一次，使用组件无需安装 Sass。
 
 ```tsx
-import { Button } from '@leaf-ui/react';
+import { Button, DatePicker, Input, Select } from '@leaf-ui/react';
 import '@leaf-ui/react/styles.css';
 
 export function App() {
-  return <Button onClick={() => console.log('clicked')}>让灵感生长</Button>;
+  return (
+    <form onSubmit={(event) => {
+      event.preventDefault();
+      console.log(Object.fromEntries(new FormData(event.currentTarget)));
+    }}>
+      <Input name="title" aria-label="项目名称" placeholder="项目名称" required />
+      <Select name="team" aria-label="团队" required options={[
+        { value: 'design', label: '设计团队' },
+        { value: 'engineering', label: '工程团队' },
+      ]} />
+      <DatePicker name="deadline" aria-label="截止日期" />
+      <Button type="submit">创建项目</Button>
+    </form>
+  );
 }
 ```
 
-支持 React 18 / 19。React 作为 peer dependency，不打进组件包；ESM 和 CommonJS 各自带有类型声明。样式需在应用入口显式引入一次。
+单行控件默认高度统一为 **34px**，小 / 大尺寸为 **28 / 40px**。选择类组件使用统一的浮层，支持键盘操作、点击外部收起和局部主题。
+
+## 组件
+
+| 导入名称 | 用途 |
+| --- | --- |
+| `Button` | 按钮、图标、加载与红色危险状态 |
+| `Input` / `Textarea` | 单行 / 多行文本输入 |
+| `Checkbox` | 多项选择与半选 |
+| `Radio` / `RadioGroup` | 单选与选项分组 |
+| `Switch` | 开关与加载状态 |
+| `Select` | 单选菜单，支持禁用选项与清除 |
+| `DatePicker` | 日期选择，支持最早 / 最晚日期 |
+| `TimePicker` | HH:mm 时间选择与分钟间隔 |
+| `AutoComplete` | 自由文本输入与动态建议 |
+| `Cascader` | 按层级选择完整路径 |
+
+`Select` 的 onChange 返回字符串值与选项；`DatePicker` 返回 Date 或 null 及本地 `YYYY-MM-DD` 字符串；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
+
+设置 name 后，可通过 FormData 读取值。日期为 `YYYY-MM-DD`，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控组件支持表单 reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
 
 ## 主题定制
 
-在 Leaf UI 样式之后引入自己的 CSS。状态色在组件中根据当前主题色计算，局部主题也能正确更新。
+在 Leaf UI 样式之后引入自己的 CSS / SCSS，或在局部父容器上覆盖变量。浮层同样沿用局部主题。
 
 ```css
 :root {
   --leaf-color-primary: #20834a;
   --leaf-color-on-primary: #ffffff;
+  --leaf-color-danger: #c83c3c;
   --leaf-radius: 10px;
+  --leaf-control-height: 34px;
+  --leaf-control-height-sm: 28px;
+  --leaf-control-height-lg: 40px;
+  --leaf-z-index-popup: 1000;
 }
 
-/* 局部主题，同一页面可以使用不同的配色 */
 .campaign {
   --leaf-color-primary: #7654c6;
-  --leaf-radius: 20px;
+  --leaf-radius: 6px;
 }
 ```
 
-需要内联配置时，可以使用 `LeafThemeStyle` 类型：
+内联主题可以使用 `LeafThemeStyle` 类型。通过 `data-leaf-theme="light"` / `data-leaf-theme="dark"` 切换中性色和语义色。
 
-```tsx
-import { Button, type LeafThemeStyle } from '@leaf-ui/react';
+图标采用 [Lucide](https://lucide.dev/)。应用中需要使用图标时安装 `lucide-react`，然后通过具名导入将图标节点传给 Button 的 startIcon / endIcon 或 Input 的 prefix / suffix。
 
-const theme: LeafThemeStyle = {
-  '--leaf-color-primary': '#3264d9',
-  '--leaf-radius': '6px',
-};
+## Git 与反馈
 
-export function Example() {
-  return <div style={theme}><Button>局部主题</Button></div>;
-}
+公开仓库：[ifhover/leaf-ui](https://github.com/ifhover/leaf-ui)。问题与建议请提交至 [GitHub Issues](https://github.com/ifhover/leaf-ui/issues)。
+
+```bash
+git clone https://github.com/ifhover/leaf-ui.git
 ```
 
-组件样式不包含应用全局 reset。浅色和深色中性变量可通过 `data-leaf-theme="light"` / `data-leaf-theme="dark"` 切换。使用深色背景时，建议同时为主题色和按钮前景色选择有足够对比度的值；文档主题编辑器提供了对应示例。
-
-## 添加新组件
-
-1. 在 `packages/react/src/<component>/` 中添加组件、类型和样式，使用 `leaf-` 前缀与公共 CSS 变量。
-2. 从该目录的 `index.ts` 和组件库的 `src/index.ts` 导出。
-3. 在 `src/styles/index.scss` 中引入组件样式。
-4. 在 `apps/docs/src/examples/` 中添加示例源码，使用 `ComponentExample` 在 MDX 中展示预览与同一份源码；更新组件总览和组件侧边栏。
-5. 执行 `pnpm check` 和 `pnpm build`。
+源码维护、构建与文档站说明见 [开发文档](DEVELOPMENT.md)。

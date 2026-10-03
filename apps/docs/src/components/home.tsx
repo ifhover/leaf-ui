@@ -34,7 +34,8 @@ export function HomeLayout() {
       <section className="leaf-hero">
         <div className="leaf-hero__content">
           <div className="leaf-release">
-            <span />7 个基础组件，开始生长 <span className="leaf-release__version">v0.1.0</span>
+            <span />
+            11 个基础组件，开始生长 <span className="leaf-release__version">v0.1.0</span>
           </div>
           <h1>
             为你的界面，
