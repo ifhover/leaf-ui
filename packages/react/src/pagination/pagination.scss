@@ -54,6 +54,20 @@
     text-align: center;
     color: var(--leaf-color-text-muted);
   }
+  &__jump {
+    > svg {
+      display: none;
+    }
+    &:hover:not(:disabled),
+    &:focus-visible {
+      > span {
+        display: none;
+      }
+      > svg {
+        display: block;
+      }
+    }
+  }
   &__size {
     width: 110px;
     margin-inline-start: 6px;

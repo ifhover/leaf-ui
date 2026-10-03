@@ -10,6 +10,69 @@ const options = [
   { label: '产品', value: 'product' },
 ];
 describe('Select custom popup', () => {
+  it('caps selections while allowing removal and collapses extra tags', async () => {
+    const change = vi.fn();
+    const { container } = render(
+      <Select
+        options={options}
+        multiple
+        defaultValue={['design', 'product']}
+        maxCount={2}
+        maxTagCount={1}
+        onChange={change}
+      />,
+    );
+    expect(container.querySelectorAll('.leaf-select__tag')).toHaveLength(2);
+    expect(screen.getByText('+1')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: '设计' }));
+    expect(change).toHaveBeenLastCalledWith(['product'], [options[2]]);
+    expect(screen.getByRole('option', { name: '设计' })).not.toBeDisabled();
+  });
+  it('disables new selections at the cap and skips them during keyboard navigation', async () => {
+    render(<Select options={options} multiple maxCount={1} defaultValue={['design']} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('option', { name: '产品' })).toBeDisabled();
+    await userEvent.keyboard('{End}{Enter}');
+    expect(screen.getByRole('option', { name: '产品' })).not.toBeDisabled();
+    expect(screen.getByRole('option', { name: '设计' })).toHaveAttribute('aria-selected', 'false');
+  });
+  it('opens once from container padding, retains focus and keeps clear actions from reopening', async () => {
+    const onOpenChange = vi.fn();
+    const click = vi.fn();
+    const { container } = render(
+      <Select
+        options={options}
+        defaultValue="design"
+        allowClear
+        onOpenChange={onOpenChange}
+        onClick={click}
+      />,
+    );
+    const root = container.querySelector('.leaf-select') as HTMLElement;
+    await userEvent.click(root);
+    expect(screen.getByRole('combobox')).toHaveFocus();
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[true]]);
+    expect(click).toHaveBeenCalledOnce();
+    await userEvent.click(screen.getByRole('button', { name: '清除选择' }));
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
+    expect(screen.getByRole('combobox')).toHaveValue('');
+  });
+  it('shows loading and custom empty content, and renders option details without changing their value', async () => {
+    const { rerender } = render(<Select options={[]} loading />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByText('处理中')).toBeInTheDocument();
+    rerender(<Select options={[]} notFoundContent="没有团队" />);
+    expect(screen.getByText('没有团队')).toBeInTheDocument();
+    rerender(
+      <Select options={options} optionRender={(option) => <span>{option.label}团队</span>} />,
+    );
+    await userEvent.click(screen.getByRole('option', { name: '产品团队' }));
+    expect(screen.getByRole('combobox')).toHaveValue('产品');
+  });
   it('filters only existing options and restores selection after a discarded query', async () => {
     const change = vi.fn();
     render(<Select options={options} showSearch defaultValue="design" onChange={change} />);

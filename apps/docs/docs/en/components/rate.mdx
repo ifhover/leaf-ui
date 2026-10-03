@@ -1,0 +1,41 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { RateBasic } from '../../../src/examples/en/rate/basic';
+
+# Rate
+
+Select or display a rating.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<RateBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/rate/basic.tsx"
+```
+
+</ComponentExample>
+
+## Rate API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `number` | `0` | Controlled / initial rating |
+| `onChange` | `(value: number) => void` | — | Rating changes |
+| `count` | `number` | `5` | Stars, from 1 to 20 |
+| `allowHalf / allowClear` | `boolean` | `false / true` | Half ratings / click again to clear |
+| `disabled / readOnly` | `boolean` | `false` | Disabled / read only |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Star size |
+| `color` | `string` | Theme warning color | Rating color |
+| `name / form` | `string` | — | Field name / form ID |
+| `required` | `boolean` | `false` | Require a nonzero rating |
+
+## Types
+
+Import the exported types when defining props or building item lists.
+
+```ts
+import type { RateProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Arrow keys change the rating, Home / End select the first or last rating, and Delete or Backspace clears it. Set name to read ratings with FormData. required participates in form validation; uncontrolled ratings support reset.

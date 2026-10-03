@@ -1,0 +1,39 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SkeletonBasic } from '../../src/examples/skeleton/basic';
+
+# Skeleton 骨架屏
+
+在内容加载时展示结构占位。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<SkeletonBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/skeleton/basic.tsx"
+```
+
+</ComponentExample>
+
+## Skeleton API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `loading / active` | `boolean` | `true` | 展示占位 / 过渡动画 |
+| `avatar / round` | `boolean` | `false` | 头像占位 / 圆形条目 |
+| `title` | `boolean` | `true` | 标题占位 |
+| `titleWidth` | `number \| string` | `'38%'` | 标题宽度 |
+| `rows` | `number` | `3` | 正文行数，最多 20 行 |
+| `rowWidths` | `readonly (number \| string)[]` | — | 各行宽度 |
+| `children` | `ReactNode` | — | 加载完成后展示的内容 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { SkeletonProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+loading 为 false 时展示 children。减少动画偏好以及 ConfigProvider 的 motion 设置会控制占位动画。

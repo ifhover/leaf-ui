@@ -21,6 +21,26 @@ for (const relativePath of [
 const esm = await import('@sudden3/leaf-ui');
 const cjs = require('@sudden3/leaf-ui');
 const components = [
+  ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
+  ['Card', { title: 'Project' }, 'Details', /leaf-card/],
+  [
+    'Collapse',
+    { items: [{ key: 'first', label: 'First', children: 'Content' }] },
+    null,
+    /aria-expanded/,
+  ],
+  ['Divider', {}, null, /role="separator"/],
+  ['Empty', {}, null, /leaf-empty/],
+  ['Skeleton', { rows: 2 }, null, /role="status"/],
+  ['Slider', { defaultValue: 20 }, null, /type="range"/],
+  ['Rate', { defaultValue: 3 }, null, /role="radiogroup"/],
+  [
+    'Popover',
+    { title: 'Details', content: 'Info' },
+    createElement('button', { type: 'button' }, 'Details'),
+    /aria-haspopup="dialog"/,
+    false,
+  ],
   ['Button', { danger: true }, 'Leaf UI', /<button/],
   ['Input', { name: 'title' }, null, /<input/],
   ['InputNumber', { name: 'count', defaultValue: 2 }, null, /role="spinbutton"/],
@@ -166,6 +186,15 @@ for (const name of [
   'calendar-view',
   'tabs',
   'input-number',
+  'avatar',
+  'card',
+  'collapse',
+  'divider',
+  'empty',
+  'skeleton',
+  'slider',
+  'rate',
+  'popover',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }

@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Tabs } from './tabs';
 
@@ -9,6 +10,22 @@ const items = [
   { key: 'two', label: 'Second', children: 'Second content' },
 ];
 describe('Tabs', () => {
+  it('closes an active tab and moves selection and focus to a surviving tab', async () => {
+    function Example() {
+      const [list, setList] = useState(items.map((item) => ({ ...item, closable: true })));
+      return (
+        <Tabs
+          items={list}
+          onClose={(key) => setList((list) => list.filter((item) => item.key !== key))}
+        />
+      );
+    }
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: '关闭标签页 First' }));
+    expect(screen.queryByRole('tab', { name: 'First' })).toBeNull();
+    expect(screen.getByRole('tab', { name: 'Second' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Second' })).toHaveFocus();
+  });
   it('skips disabled tabs, activates using arrow keys and preserves visited panel state', async () => {
     render(<Tabs items={items} aria-label="Project" />);
     const first = screen.getByRole('tab', { name: 'First' });

@@ -15,7 +15,7 @@
     flex: 1;
     overflow: hidden;
     border-radius: 100px;
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
   }
   &__fill {
     height: 100%;
@@ -59,7 +59,7 @@
   }
   &__trail {
     fill: none;
-    stroke: var(--leaf-color-surface-muted);
+    stroke: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
   }
   &__arc {
     fill: none;
@@ -69,10 +69,40 @@
       stroke-dashoffset var(--leaf-motion-duration),
       stroke var(--leaf-motion-duration);
   }
+  &[data-indeterminate='true'] {
+    .leaf-progress__fill {
+      width: 35% !important;
+      animation: leaf-progress-travel 1.4s ease-in-out infinite;
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+    &.leaf-progress--circle > svg {
+      animation: leaf-progress-rotate 1s linear infinite;
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+  }
+}
+@keyframes leaf-progress-travel {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(390%);
+  }
+}
+@keyframes leaf-progress-rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-progress__fill,
   .leaf-progress__arc {
     transition: none;
+  }
+  .leaf-progress[data-indeterminate='true'] {
+    .leaf-progress__fill,
+    &.leaf-progress--circle > svg {
+      animation: none;
+    }
   }
 }

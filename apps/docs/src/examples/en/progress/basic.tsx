@@ -7,6 +7,7 @@ export function ProgressBasic() {
       <Progress percent={percent} aria-label="Upload progress" />
       <Progress percent={70} status="error" />
       <Progress percent={100} />
+      <Progress indeterminate aria-label="Loading progress" />
       <div className="leaf-demo-row">
         <Progress percent={percent} type="circle" aria-label="Project progress" />
         <Progress percent={100} type="circle" size={80} />

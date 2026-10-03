@@ -1,5 +1,6 @@
 import { Button } from '@sudden3/leaf-ui';
 import { useState } from 'react';
+import { componentCatalog } from './component-catalog';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
@@ -45,7 +46,10 @@ export function HomeLayout() {
         <div className="leaf-hero__content">
           <div className="leaf-release">
             <span />
-            {t('32 个组件，持续生长', '32 components, growing together')}
+            {t(
+              `${componentCatalog.length} 个组件，持续生长`,
+              `${componentCatalog.length} components, growing together`,
+            )}
           </div>
           <h1>
             {t('为你的界面，', 'For your interface,')}

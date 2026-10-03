@@ -1,0 +1,179 @@
+.leaf-slider {
+  position: relative;
+  box-sizing: border-box;
+  height: var(--leaf-control-height);
+  margin: 8px 10px 28px;
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  &__rail {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(var(--leaf-control-height) / 2 - 2px);
+    height: 4px;
+    border-radius: 10px;
+    background: var(--leaf-color-surface-muted);
+  }
+  &__fill {
+    position: absolute;
+    left: var(--leaf-slider-start);
+    right: calc(100% - var(--leaf-slider-end));
+    height: 100%;
+    border-radius: inherit;
+    background: var(--leaf-color-primary);
+  }
+  &__input {
+    appearance: none;
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--leaf-control-height);
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    &::-webkit-slider-runnable-track {
+      height: 4px;
+      background: transparent;
+    }
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      margin-top: -6px;
+      border: 2px solid var(--leaf-color-primary);
+      border-radius: 50%;
+      background: var(--leaf-color-surface);
+      cursor: grab;
+      transition: box-shadow var(--leaf-motion-duration);
+    }
+    &::-moz-range-track {
+      background: transparent;
+      height: 4px;
+    }
+    &::-moz-range-thumb {
+      box-sizing: border-box;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--leaf-color-primary);
+      border-radius: 50%;
+      background: var(--leaf-color-surface);
+      cursor: grab;
+    }
+    &:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf-color-primary) 20%, transparent);
+    }
+    &:focus-visible::-moz-range-thumb {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf-color-primary) 20%, transparent);
+    }
+  }
+  &--range &__input {
+    pointer-events: none;
+    &::-webkit-slider-thumb {
+      pointer-events: auto;
+    }
+    &::-moz-range-thumb {
+      pointer-events: auto;
+    }
+  }
+  &__value {
+    position: absolute;
+    inset-inline-end: 0;
+    top: -16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--leaf-motion-duration);
+    color: var(--leaf-color-primary);
+  }
+  &:hover &__value,
+  &:focus-within &__value {
+    opacity: 1;
+  }
+  &__mark {
+    position: absolute;
+    top: calc(var(--leaf-control-height) / 2 + 3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    font: inherit;
+    transform: translateX(-50%);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  &__dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--leaf-color-border);
+  }
+  &--vertical {
+    width: 34px;
+    height: 200px;
+    margin: 12px 40px 12px 8px;
+    .leaf-slider__rail {
+      inset-block: 0;
+      inset-inline: auto;
+      left: 15px;
+      width: 4px;
+      height: auto;
+    }
+    .leaf-slider__fill {
+      left: 0;
+      right: 0;
+      bottom: var(--leaf-slider-start);
+      top: calc(100% - var(--leaf-slider-end));
+      height: auto;
+    }
+    .leaf-slider__input {
+      width: 34px;
+      height: 100%;
+      writing-mode: vertical-lr;
+      direction: rtl;
+      &::-webkit-slider-runnable-track {
+        width: 4px;
+        height: 100%;
+      }
+      &::-webkit-slider-thumb {
+        margin-top: 0;
+        margin-left: -6px;
+      }
+    }
+    .leaf-slider__mark {
+      top: auto;
+      left: 22px;
+      flex-direction: row;
+      transform: translateY(50%);
+    }
+    .leaf-slider__value {
+      inset-inline-end: auto;
+      top: -22px;
+    }
+  }
+  &[data-disabled] {
+    opacity: 0.5;
+    .leaf-slider__input,
+    .leaf-slider__mark {
+      cursor: not-allowed;
+    }
+    .leaf-slider__input::-webkit-slider-thumb {
+      cursor: not-allowed;
+    }
+    .leaf-slider__input::-moz-range-thumb {
+      cursor: not-allowed;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-slider__value {
+    transition: none;
+  }
+  .leaf-slider__input::-webkit-slider-thumb {
+    transition: none;
+  }
+}

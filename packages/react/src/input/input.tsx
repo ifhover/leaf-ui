@@ -1,14 +1,16 @@
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 import {
   forwardRef,
   type InputHTMLAttributes,
   type KeyboardEventHandler,
   type ReactNode,
+  useRef,
   useState,
 } from 'react';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
+import { useFieldValue, useMergedRef } from '../shared/field';
 import type { ControlSize, ControlStatus } from '../shared/types';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
@@ -16,6 +18,9 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   status?: ControlStatus;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  allowClear?: boolean;
+  onClear?: () => void;
+  showCount?: boolean | ((value: string, maxLength?: number) => ReactNode);
   /** Show a visibility toggle when type is password. */
   visibilityToggle?: boolean;
   visible?: boolean;
@@ -32,6 +37,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     status: statusProp,
     prefix,
     suffix,
+    allowClear = false,
+    onClear,
+    showCount = false,
+    value,
+    defaultValue,
+    onChange,
     type = 'text',
     visibilityToggle = true,
     visible: controlledVisible,
@@ -50,6 +61,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 ) {
   const field = useFormField();
   const { messages } = useLeafConfig();
+  const input = useRef<HTMLInputElement>(null);
+  const mergedRef = useMergedRef(input, ref);
+  const [current, setCurrent] = useFieldValue(
+    value === undefined ? undefined : String(value),
+    String(defaultValue ?? ''),
+    input,
+    props.form,
+  );
   const [internalVisible, setVisible] = useState(defaultVisible);
   const visible = controlledVisible ?? internalVisible;
   const password = type === 'password';
@@ -77,10 +96,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         type={password && visible ? 'text' : type}
         id={props.id ?? field?.id}
         required={props.required ?? field?.required}
+        value={current}
+        onChange={(event) => {
+          setCurrent(event.target.value);
+          onChange?.(event);
+        }}
         aria-describedby={
           [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
         }
-        ref={ref}
+        ref={mergedRef}
         disabled={disabled}
         className="leaf-input__native"
         aria-invalid={status === 'error' ? true : ariaInvalid}
@@ -91,6 +115,34 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           }
         }}
       />
+      {allowClear && current && !disabled && !props.readOnly && (
+        <button
+          type="button"
+          className="leaf-input__clear"
+          aria-label={messages.clearInput}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            const node = input.current;
+            if (!node) return;
+            Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(
+              node,
+              '',
+            );
+            node.dispatchEvent(new Event('input', { bubbles: true }));
+            node.focus();
+            onClear?.();
+          }}
+        >
+          <X size={14} aria-hidden="true" />
+        </button>
+      )}
+      {showCount && (
+        <span className="leaf-input__count">
+          {typeof showCount === 'function'
+            ? showCount(current, props.maxLength)
+            : `${current.length}${props.maxLength === undefined ? '' : ` / ${props.maxLength}`}`}
+        </span>
+      )}
       {suffix && (
         <span className="leaf-input__affix" aria-hidden="true">
           {suffix}

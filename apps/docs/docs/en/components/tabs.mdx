@@ -1,3 +1,4 @@
+import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TabsBasic } from '../../../src/examples/en/tabs/basic';
 
@@ -10,6 +11,15 @@ Switch between content views within the same region.
 <ComponentExample title="Basic usage" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## Closable tabs
+
+<ComponentExample title="Closable tabs" preview={<TabsClosable />} fileName="closable.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/closable.tsx"
 ```
 
 </ComponentExample>
@@ -27,6 +37,7 @@ Switch between content views within the same region.
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
 | `extra` | `ReactNode` | — | Extra tab bar content |
+| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | Close request: remove the item in the application; preventDefault cancels selection changes |
 
 ## TabItem
 
@@ -37,6 +48,7 @@ Switch between content views within the same region.
 | `children` | `ReactNode` | Required | Tab content |
 | `icon` | `ReactNode` | — | Leading icon |
 | `disabled` | `boolean` | `false` | Disable this tab |
+| `closable` | `boolean` | `false` | Show a close button; requires onClose |
 
 ## Types
 

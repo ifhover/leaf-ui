@@ -1,3 +1,4 @@
+import { TabsClosable } from '../../src/examples/tabs/closable';
 import { ComponentExample } from '../../src/components/component-example';
 import { TabsBasic } from '../../src/examples/tabs/basic';
 
@@ -10,6 +11,15 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 <ComponentExample title="基础用法" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## 可关闭标签页
+
+<ComponentExample title="可关闭标签页" preview={<TabsClosable />} fileName="closable.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/closable.tsx"
 ```
 
 </ComponentExample>
@@ -27,6 +37,7 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活 / 回车或空格激活 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
 | `extra` | `ReactNode` | — | 标签栏附加内容 |
+| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除 items 中的项；可阻止默认切换 |
 
 ## TabItem
 
@@ -37,6 +48,7 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 | `children` | `ReactNode` | 必填 | 对应内容 |
 | `icon` | `ReactNode` | — | 前置图标 |
 | `disabled` | `boolean` | `false` | 禁用该标签页 |
+| `closable` | `boolean` | `false` | 展示关闭按钮，需配合 onClose |
 
 ## 类型
 

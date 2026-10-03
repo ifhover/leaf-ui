@@ -1,5 +1,6 @@
-import { Check, ChevronDown, X } from 'lucide-react';
+import { Check, ChevronDown, LoaderCircle, X } from 'lucide-react';
 import {
+  type CSSProperties,
   forwardRef,
   type InputHTMLAttributes,
   type ReactNode,
@@ -40,6 +41,15 @@ interface SelectBaseProps
   filterOption?: boolean | ((query: string, option: SelectOption) => boolean);
   onSearch?: (query: string) => void;
   onOpenChange?: (open: boolean) => void;
+  popupWidth?: number | string;
+  popupMaxWidth?: number | string;
+  popupClassName?: string;
+  popupStyle?: CSSProperties;
+  loading?: boolean;
+  notFoundContent?: ReactNode;
+  optionRender?: (option: SelectOption) => ReactNode;
+  maxCount?: number;
+  maxTagCount?: number;
 }
 export type SelectProps = SelectBaseProps &
   (
@@ -87,6 +97,15 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       showSearch = false,
       filterOption = true,
       onSearch,
+      popupWidth = 'auto',
+      popupMaxWidth = 420,
+      popupClassName,
+      popupStyle,
+      loading = false,
+      notFoundContent,
+      optionRender,
+      maxCount,
+      maxTagCount,
       onChange: _onChange,
       ...inputProps
     } = props;
@@ -107,6 +126,12 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       form,
     );
     const values = typeof selected === 'string' ? (selected ? [selected] : []) : selected;
+    const visibleTagCount =
+      maxTagCount === undefined ? values.length : Math.max(0, Math.floor(maxTagCount));
+    const atLimit =
+      multiple && maxCount !== undefined && values.length >= Math.max(0, Math.floor(maxCount));
+    const unavailable = (option: SelectOption) =>
+      option.disabled || (atLimit && !values.includes(option.value));
     const selectedOptions = options.filter((option) => values.includes(option.value));
     const [query, setQuery] = useState('');
     const [open, setOpen] = usePopupState(disabled, onOpenChange);
@@ -148,13 +173,13 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     const openMenu = () => {
       if (disabled) return;
       const active = filtered.findIndex(
-        (option) => values.includes(option.value) && !option.disabled,
+        (option) => values.includes(option.value) && !unavailable(option),
       );
-      setHighlighted(active >= 0 ? active : filtered.findIndex((option) => !option.disabled));
+      setHighlighted(active >= 0 ? active : filtered.findIndex((option) => !unavailable(option)));
       setOpen(true);
     };
     const selectOption = (option: SelectOption) => {
-      if (option.disabled) return;
+      if (unavailable(option)) return;
       change(
         multiple
           ? values.includes(option.value)
@@ -171,13 +196,14 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       let next = highlighted < 0 ? (direction > 0 ? -1 : filtered.length) : highlighted;
       for (let i = 0; i < filtered.length; i++) {
         next = (next + direction + filtered.length) % filtered.length;
-        if (!filtered[next]?.disabled) {
+        const candidate = filtered[next];
+        if (candidate && !unavailable(candidate)) {
           setHighlighted(next);
           break;
         }
       }
     };
-    const displayLabel = selectedOptions[0]?.label;
+    const displayLabel = selectedOptions[0]?.label ?? (!multiple ? values[0] : undefined);
     const textLabel =
       typeof displayLabel === 'string' || typeof displayLabel === 'number'
         ? String(displayLabel)
@@ -185,6 +211,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     const inputValue = multiple || (showSearch && open) ? query : textLabel;
     const clearable = allowClear && values.length > 0 && !disabled;
     return (
+      // biome-ignore lint/a11y/noStaticElementInteractions: Pointer events on padding forward to the keyboard-accessible combobox input.
+      // biome-ignore lint/a11y/useKeyWithClickEvents: The combobox input owns all keyboard interaction; this wrapper only extends its hit area.
       <div
         ref={root}
         className={classes(
@@ -198,10 +226,30 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         data-disabled={disabled ? '' : undefined}
         data-open={open ? '' : undefined}
         data-clearable={clearable ? '' : undefined}
+        data-searchable={showSearch ? '' : undefined}
+        onMouseDown={(event) => {
+          if (
+            !disabled &&
+            event.target instanceof Element &&
+            !event.target.closest('input, button, a')
+          )
+            event.preventDefault();
+        }}
+        onClick={(event) => {
+          if (
+            !disabled &&
+            event.target instanceof Element &&
+            root.current?.contains(event.target) &&
+            !event.target.closest('input, button, a')
+          ) {
+            input.current?.focus();
+            input.current?.click();
+          }
+        }}
       >
         <div className="leaf-select__content">
           {multiple &&
-            values.map((value) => {
+            values.slice(0, visibleTagCount).map((value) => {
               const option = options.find((option) => option.value === value);
               return (
                 <span key={value} className="leaf-select__tag">
@@ -223,6 +271,9 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
                 </span>
               );
             })}
+          {multiple && values.length > visibleTagCount && (
+            <span className="leaf-select__tag">+{values.length - visibleTagCount}</span>
+          )}
           <div className="leaf-select__input-wrap">
             {!multiple &&
               !query &&
@@ -288,7 +339,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
                   event.preventDefault();
                   const candidates = filtered
                     .map((option, index) => ({ option, index }))
-                    .filter(({ option }) => !option.disabled);
+                    .filter(({ option }) => !unavailable(option));
                   setHighlighted(
                     (event.key === 'Home' ? candidates[0] : candidates.at(-1))?.index ?? -1,
                   );
@@ -297,7 +348,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
                   if (!open) openMenu();
                   else {
                     const option =
-                      filtered[highlighted] ?? filtered.find((option) => !option.disabled);
+                      filtered[highlighted] ?? filtered.find((option) => !unavailable(option));
                     if (option) selectOption(option);
                   }
                 } else if (event.key === 'Escape' && open) {
@@ -331,7 +382,11 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
             input.current?.focus();
           }}
         >
-          <ChevronDown size={16} aria-hidden="true" />
+          {loading ? (
+            <LoaderCircle className="leaf-select__spinner" size={16} aria-hidden="true" />
+          ) : (
+            <ChevronDown size={16} aria-hidden="true" />
+          )}
         </button>
         {clearable && (
           <ClearButton
@@ -367,14 +422,27 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           open={open}
           triggerRef={root}
           panelRef={panel}
-          matchWidth
+          matchWidth={popupWidth === 'trigger'}
+          width={
+            popupWidth === 'trigger'
+              ? undefined
+              : popupWidth === 'auto'
+                ? 'max-content'
+                : popupWidth
+          }
+          minWidth={popupWidth === 'auto' ? 'trigger' : undefined}
+          maxWidth={popupMaxWidth}
           id={panelId}
-          className="leaf-floating leaf-select__panel"
+          className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}
+          style={popupStyle}
           role="listbox"
+          aria-busy={loading || undefined}
           aria-label={inputProps['aria-label'] ?? messages.select}
           aria-multiselectable={multiple || undefined}
         >
-          {filtered.length ? (
+          {loading && !filtered.length ? (
+            <div className="leaf-floating__empty">{messages.loading}</div>
+          ) : filtered.length ? (
             filtered.map((option, index) => (
               <button
                 key={option.value}
@@ -382,18 +450,22 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
                 type="button"
                 role="option"
                 aria-selected={values.includes(option.value)}
-                aria-disabled={option.disabled || undefined}
+                aria-disabled={
+                  option.disabled || (atLimit && !values.includes(option.value)) || undefined
+                }
                 data-highlighted={highlighted === index || undefined}
                 className="leaf-floating__option"
-                disabled={option.disabled}
+                disabled={option.disabled || (atLimit && !values.includes(option.value))}
                 tabIndex={-1}
                 onMouseEnter={() => {
-                  if (!option.disabled) setHighlighted(index);
+                  if (!unavailable(option)) setHighlighted(index);
                 }}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => selectOption(option)}
               >
-                <span>{option.label}</span>
+                <span className="leaf-select__option-label">
+                  {optionRender ? optionRender(option) : option.label}
+                </span>
                 <Check
                   size={15}
                   aria-hidden="true"
@@ -402,7 +474,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
               </button>
             ))
           ) : (
-            <div className="leaf-floating__empty">{messages.empty}</div>
+            <div className="leaf-floating__empty">{notFoundContent ?? messages.empty}</div>
           )}
         </FloatingPanel>
       </div>

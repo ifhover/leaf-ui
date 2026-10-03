@@ -56,7 +56,7 @@ export function ComponentExample({
         </span>
         <span>{title}</span>
       </div>
-      <div className="leaf-component-example__preview">{preview}</div>
+      <div className="leaf-component-example__preview rp-not-doc">{preview}</div>
       <div className="leaf-component-example__code-header">
         <span>
           <Icon name="code" width="15" height="15" />

@@ -8,6 +8,8 @@ import {
   ChevronUp,
   Info,
   LoaderCircle,
+  Star,
+  UserRound,
   X,
 } from 'lucide-react';
 import { createElement } from 'react';
@@ -22,6 +24,58 @@ const icon = (component, x, y, color = '#20834a', size = 14) =>
 const circle = (x, y, radius, color) =>
   `<circle cx="${x}" cy="${y}" r="${radius}" fill="${color}"/>`;
 const images = {
+  avatar:
+    circle(58, 62, 26, '#eaf4ed') +
+    icon(UserRound, 45, 48, '#20834a', 27) +
+    rect(103, 38, 50, 50, '#eaf4ed', '#bddcc7', 8) +
+    text(116, 69, 'LF', '#20834a', 18) +
+    circle(188, 62, 20, '#f1edf9') +
+    text(179, 67, 'UI', '#7654c6', 14),
+  card:
+    rect(25, 15, 190, 98) +
+    text(39, 37, 'Leaf Garden', '#203329', 11) +
+    '<path d="M25 47h190" stroke="#dce5de"/>' +
+    text(39, 70, 'Projects, people and plans', '#6c7c71', 9) +
+    rect(39, 88, 52, 16, '#eaf4ed', 'none', 4) +
+    text(49, 100, 'Details', '#20834a', 8),
+  divider:
+    text(38, 30, 'Project details', '#6c7c71', 10) +
+    '<path d="M25 58h52m84 0h54M25 95h190" stroke="#dce5de"/>' +
+    text(92, 62, 'Settings', '#203329', 10),
+  empty:
+    icon(UserRound, 104, 20, '#bddcc7', 32) +
+    text(85, 75, 'No projects yet', '#6c7c71', 9) +
+    rect(83, 86, 76, 24, '#20834a', 'none', 5) +
+    text(93, 102, 'Create project', '#fff', 9),
+  skeleton:
+    circle(43, 39, 17, '#dce5de') +
+    rect(73, 26, 93, 12, '#e1e9e3', 'none', 5) +
+    [60, 78, 96].map((y, i) => rect(73, y, 143 - i * 21, 9, '#e7ece8', 'none', 4)).join(''),
+  collapse:
+    rect(25, 15, 190, 98) +
+    icon(ChevronDown, 37, 25, '#20834a') +
+    text(60, 36, 'About this project', '#203329', 10) +
+    text(60, 59, 'Keep your plans together.', '#6c7c71', 9) +
+    '<path d="M25 75h190" stroke="#dce5de"/>' +
+    icon(ChevronRight, 37, 87, '#6c7c71') +
+    text(60, 98, 'Settings', '#203329', 10),
+  popover:
+    rect(45, 14, 150, 71) +
+    text(60, 36, 'Project details', '#203329', 10) +
+    text(60, 58, 'Edit and save your changes.', '#6c7c71', 8) +
+    rect(90, 94, 60, 23, '#eaf4ed', '#bddcc7', 5) +
+    text(104, 110, 'Open', '#20834a', 9),
+  slider:
+    '<path d="M28 58h184" stroke="#dce5de" stroke-width="4" stroke-linecap="round"/><path d="M28 58h106" stroke="#20834a" stroke-width="4" stroke-linecap="round"/>' +
+    circle(134, 58, 7, '#20834a') +
+    circle(134, 58, 4, '#fff') +
+    text(25, 86, '0', '#6c7c71', 9) +
+    text(112, 86, '50', '#6c7c71', 9) +
+    text(200, 86, '100', '#6c7c71', 9),
+  rate:
+    [0, 1, 2, 3, 4]
+      .map((i) => icon(Star, 32 + i * 37, 44, i < 4 ? '#b78221' : '#dce5de', 28))
+      .join('') + text(89, 96, '4 / 5 rating', '#6c7c71', 10),
   steps:
     '<path d="M40 43h164" stroke="#dce5de"/>' +
     '<path d="M40 43h81" stroke="#20834a"/>' +

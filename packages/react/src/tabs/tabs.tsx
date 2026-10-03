@@ -1,4 +1,13 @@
-import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { X } from 'lucide-react';
+import {
+  type HTMLAttributes,
+  type MouseEvent,
+  type ReactNode,
+  useId,
+  useRef,
+  useState,
+} from 'react';
+import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 
@@ -8,6 +17,7 @@ export interface TabItem {
   children: ReactNode;
   disabled?: boolean;
   icon?: ReactNode;
+  closable?: boolean;
 }
 export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   items: readonly TabItem[];
@@ -20,6 +30,7 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   activationMode?: 'automatic' | 'manual';
   destroyInactive?: boolean;
   extra?: ReactNode;
+  onClose?: (key: string, event: MouseEvent<HTMLButtonElement>) => void;
 }
 export function Tabs({
   items,
@@ -32,10 +43,12 @@ export function Tabs({
   activationMode = 'automatic',
   destroyInactive = false,
   extra,
+  onClose,
   className,
   'aria-label': label,
   ...props
 }: TabsProps) {
+  const { messages } = useLeafConfig();
   const enabled = items.filter((item) => !item.disabled);
   const [internal, setInternal] = useState(defaultActiveKey ?? enabled[0]?.key);
   const requested = activeKey ?? internal;
@@ -74,42 +87,73 @@ export function Tabs({
           className="leaf-tabs__list"
         >
           {items.map((item, index) => (
-            <button
+            <div
+              className="leaf-tabs__entry"
               key={item.key}
-              id={`${id}-tab-${index}`}
-              type="button"
-              role="tab"
-              aria-selected={item.key === selected}
-              aria-controls={`${id}-panel-${index}`}
-              disabled={item.disabled}
-              tabIndex={item.key === focusKey ? 0 : -1}
-              className="leaf-tabs__tab"
-              onFocus={() => setFocused(item.key)}
-              onClick={() => choose(item.key)}
-              onKeyDown={(event) => {
-                let next: string | undefined;
-                const position = enabled.findIndex((entry) => entry.key === item.key);
-                const forward = placement === 'left' ? 'ArrowDown' : 'ArrowRight';
-                const backward = placement === 'left' ? 'ArrowUp' : 'ArrowLeft';
-                if (event.key === forward) next = enabled[(position + 1) % enabled.length]?.key;
-                else if (event.key === backward)
-                  next = enabled[(position - 1 + enabled.length) % enabled.length]?.key;
-                else if (event.key === 'Home') next = enabled[0]?.key;
-                else if (event.key === 'End') next = enabled.at(-1)?.key;
-                if (next !== undefined) {
-                  event.preventDefault();
-                  setFocused(next);
-                  const nextIndex = items.findIndex((entry) => entry.key === next);
-                  list.current
-                    ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
-                    ?.focus();
-                  if (activationMode === 'automatic') choose(next);
-                }
-              }}
+              data-active={item.key === selected || undefined}
             >
-              {item.icon && <span aria-hidden="true">{item.icon}</span>}
-              {item.label}
-            </button>
+              <button
+                id={`${id}-tab-${index}`}
+                type="button"
+                role="tab"
+                aria-selected={item.key === selected}
+                aria-controls={`${id}-panel-${index}`}
+                disabled={item.disabled}
+                tabIndex={item.key === focusKey ? 0 : -1}
+                className="leaf-tabs__tab"
+                onFocus={() => setFocused(item.key)}
+                onClick={() => choose(item.key)}
+                onKeyDown={(event) => {
+                  let next: string | undefined;
+                  const position = enabled.findIndex((entry) => entry.key === item.key);
+                  const forward = placement === 'left' ? 'ArrowDown' : 'ArrowRight';
+                  const backward = placement === 'left' ? 'ArrowUp' : 'ArrowLeft';
+                  if (event.key === forward) next = enabled[(position + 1) % enabled.length]?.key;
+                  else if (event.key === backward)
+                    next = enabled[(position - 1 + enabled.length) % enabled.length]?.key;
+                  else if (event.key === 'Home') next = enabled[0]?.key;
+                  else if (event.key === 'End') next = enabled.at(-1)?.key;
+                  if (next !== undefined) {
+                    event.preventDefault();
+                    setFocused(next);
+                    const nextIndex = items.findIndex((entry) => entry.key === next);
+                    list.current
+                      ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
+                      ?.focus();
+                    if (activationMode === 'automatic') choose(next);
+                  }
+                }}
+              >
+                {item.icon && <span aria-hidden="true">{item.icon}</span>}
+                {item.label}
+              </button>
+              {item.closable && (
+                <button
+                  type="button"
+                  className="leaf-tabs__close"
+                  disabled={item.disabled || !onClose}
+                  aria-label={`${messages.closeTab} ${typeof item.label === 'string' ? item.label : item.key}`}
+                  onClick={(event) => {
+                    onClose?.(item.key, event);
+                    if (event.defaultPrevented) return;
+                    const position = enabled.findIndex((entry) => entry.key === item.key);
+                    const next =
+                      item.key === selected
+                        ? (enabled[position + 1] ?? enabled[position - 1])
+                        : enabled.find((entry) => entry.key === selected);
+                    if (next) {
+                      if (item.key === selected) choose(next.key);
+                      const nextIndex = items.findIndex((entry) => entry.key === next.key);
+                      list.current
+                        ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
+                        ?.focus();
+                    }
+                  }}
+                >
+                  <X size={13} aria-hidden="true" />
+                </button>
+              )}
+            </div>
           ))}
         </div>
         {extra && <div className="leaf-tabs__extra">{extra}</div>}

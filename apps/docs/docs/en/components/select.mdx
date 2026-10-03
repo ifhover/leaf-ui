@@ -1,3 +1,4 @@
+import { SelectPopup } from '../../../src/examples/en/select/popup';
 import { SelectSearch } from '../../../src/examples/en/select/search';
 import { ComponentExample } from '../../../src/components/component-example';
 import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../../src/components/en-form-examples';
@@ -50,6 +51,15 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 
 </ComponentExample>
 
+## Popup width and content
+
+<ComponentExample title="Popup width and content" preview={<SelectPopup />} fileName="popup.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/popup.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | Property | Type | Default | Description |
@@ -70,6 +80,15 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 | `required` | `boolean` | `false` | Require a selection |
 | `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+| `popupWidth` | `number \| string` | `'auto'` | Popup width: auto fits content, trigger matches the field, or use pixels / a CSS length |
+| `popupMaxWidth` | `number \| string` | `420` | Maximum width, also limited by the viewport |
+| `popupClassName / popupStyle` | `string / CSSProperties` | — | Popup styling |
+| `loading` | `boolean` | `false` | Loading indicator |
+| `notFoundContent` | `ReactNode` | — | Content when no options match |
+| `optionRender` | [`(option: SelectOption) => ReactNode`](#selectoption) | — | Custom option content |
+| `maxCount` | `number` | — | Maximum selections; selected items remain removable |
+| `maxTagCount` | `number` | — | Number of visible tags; the rest show as a count |
+
 ### SelectOption
 
 | Property | Type | Default | Description |
@@ -92,3 +111,5 @@ import type { SelectProps, SelectOption } from '@sudden3/leaf-ui';
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
 
 In multiple mode, clearing returns []. FormData submits repeated values under the same name; read them with `formData.getAll(name)`. Empty-query Backspace removes the last enabled tag. Leaving clears the query; searches never create values. For node labels, supply searchLabel. The ref and other input attributes target the input.
+
+The field keeps its layout width. The popup is at least as wide as the field and grows to fit its options, up to popupMaxWidth. Use `popupWidth="trigger"` for a matching width or set `popupWidth={300}` for a fixed width. Content wraps only after reaching its width limit.

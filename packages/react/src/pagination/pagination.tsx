@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useState } from 'react';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { InputNumber } from '../inputnumber';
@@ -121,9 +121,20 @@ export function Pagination({
                   {number - 1}
                 </button>
               ) : (
-                <span className="leaf-pagination__ellipsis" aria-hidden="true">
-                  …
-                </span>
+                <button
+                  type="button"
+                  className="leaf-pagination__jump"
+                  disabled={disabled}
+                  aria-label={number > page ? messages.pageForward : messages.pageBack}
+                  onClick={() => choose(page + (number > page ? 5 : -5))}
+                >
+                  <span aria-hidden="true">…</span>
+                  {number > page ? (
+                    <ChevronsRight size={16} aria-hidden="true" />
+                  ) : (
+                    <ChevronsLeft size={16} aria-hidden="true" />
+                  )}
+                </button>
               ))}
             <button
               type="button"
@@ -152,6 +163,8 @@ export function Pagination({
           aria-label={messages.pageSize}
           disabled={disabled}
           value={String(perPage)}
+          popupWidth="auto"
+          popupMaxWidth={240}
           options={options.map((number) => ({
             value: String(number),
             label: `${number} ${messages.itemsPerPage}`,

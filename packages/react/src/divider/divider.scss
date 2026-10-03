@@ -1,0 +1,46 @@
+.leaf-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block: 20px;
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font: 500 var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-block-start: 1px solid var(--leaf-color-border);
+  }
+  &:not(&--text)::after {
+    display: none;
+  }
+  &__text {
+    flex: 0 1 auto;
+  }
+  &--start::before,
+  &--end::after {
+    flex: 0 0 24px;
+  }
+  &--dashed {
+    &::before,
+    &::after {
+      border-block-start-style: dashed;
+    }
+  }
+  &--vertical {
+    display: inline-block;
+    height: 1em;
+    margin-block: 0;
+    margin-inline: 12px;
+    border-inline-start: 1px solid var(--leaf-color-border);
+    vertical-align: middle;
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+  &--vertical#{&}--dashed {
+    border-inline-start-style: dashed;
+  }
+}

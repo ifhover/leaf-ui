@@ -1,0 +1,62 @@
+.leaf-skeleton {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+  &__avatar,
+  &__title,
+  &__row {
+    background: color-mix(in srgb, var(--leaf-color-text-muted) 16%, var(--leaf-color-surface));
+    border-radius: var(--leaf-radius-sm);
+  }
+  &__avatar {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  &__title {
+    height: 18px;
+    margin-block-end: 22px;
+    max-width: 100%;
+  }
+  &__row {
+    height: 14px;
+    max-width: 100%;
+    & + & {
+      margin-block-start: 12px;
+    }
+  }
+  &--round {
+    .leaf-skeleton__row,
+    .leaf-skeleton__title {
+      border-radius: 100px;
+    }
+  }
+  &--active {
+    .leaf-skeleton__avatar,
+    .leaf-skeleton__title,
+    .leaf-skeleton__row {
+      animation: leaf-skeleton-pulse 1.6s ease-in-out infinite;
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+  }
+}
+@keyframes leaf-skeleton-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-skeleton--active {
+    .leaf-skeleton__avatar,
+    .leaf-skeleton__title,
+    .leaf-skeleton__row {
+      animation: none;
+    }
+  }
+}

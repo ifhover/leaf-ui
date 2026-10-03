@@ -82,6 +82,8 @@ Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in 
 
 Use Steps, Breadcrumb, Pagination and Tabs for navigation; Tag and Badge for classifications and notifications; Drawer, Loading, Progress and Tooltip for contextual feedback. Calendar supports compact and full layouts with custom schedule content. InputNumber handles numeric ranges, precision and stepping; Input with type="password" supports controlled visibility and custom toggle icons. See the [component overview](https://ifhover.github.io/leaf-ui/en/components/index.html) for examples and API details.
 
+Avatar, Card, Collapse and Empty organize content; Divider separates it. Skeleton supplies loading placeholders, Popover offers nearby details or actions, and Slider and Rate collect numeric values and ratings. Select popups fit their content by default; popupWidth and popupMaxWidth customize the width. Input supports clear actions and character counts, Tabs supports closable items, and Progress can show indeterminate loading.
+
 ## Icons
 
 When importing icons in your app, add lucide-react as an app dependency (for example, pnpm add lucide-react). Leaf UI uses named imports from lucide-react for its internal icons. Import icons directly from lucide-react for button and input decoration; no private icon paths or runtime full-library icon loader is needed.

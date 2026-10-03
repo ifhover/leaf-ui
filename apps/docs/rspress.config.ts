@@ -31,7 +31,10 @@ const componentSidebar = [
   },
   {
     text: '通用',
-    items: [{ text: 'Button', tag: '按钮', link: '/components/button' }],
+    items: [
+      { text: 'Button', tag: '按钮', link: '/components/button' },
+      { text: 'Divider', tag: '分割线', link: '/components/divider' },
+    ],
   },
   {
     text: '导航',
@@ -47,6 +50,10 @@ const componentSidebar = [
     items: [
       { text: 'Tag', tag: '标签', link: '/components/tag' },
       { text: 'Badge', tag: '角标', link: '/components/badge' },
+      { text: 'Avatar', tag: '头像', link: '/components/avatar' },
+      { text: 'Card', tag: '卡片', link: '/components/card' },
+      { text: 'Collapse', tag: '折叠面板', link: '/components/collapse' },
+      { text: 'Empty', tag: '空状态', link: '/components/empty' },
     ],
   },
   {
@@ -58,6 +65,8 @@ const componentSidebar = [
       { text: 'Checkbox', tag: '复选框', link: '/components/checkbox' },
       { text: 'Radio', tag: '单选框', link: '/components/radio' },
       { text: 'Switch', tag: '开关', link: '/components/switch' },
+      { text: 'Slider', tag: '滑动输入条', link: '/components/slider' },
+      { text: 'Rate', tag: '评分', link: '/components/rate' },
       { text: 'Select', tag: '选择器', link: '/components/select' },
       { text: 'AutoComplete', tag: '自动完成', link: '/components/auto-complete' },
       { text: 'Cascader', tag: '级联选择', link: '/components/cascader' },
@@ -84,8 +93,10 @@ const componentSidebar = [
       { text: 'Alert', tag: '警告提示', link: '/components/alert' },
       { text: 'Message', tag: '消息提示', link: '/components/message' },
       { text: 'Loading', tag: '加载', link: '/components/loading' },
+      { text: 'Skeleton', tag: '骨架屏', link: '/components/skeleton' },
       { text: 'Progress', tag: '进度条', link: '/components/progress' },
       { text: 'Tooltip', tag: '文字提示', link: '/components/tooltip' },
+      { text: 'Popover', tag: '气泡卡片', link: '/components/popover' },
     ],
   },
   {

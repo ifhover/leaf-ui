@@ -71,6 +71,15 @@ const zh = {
   invalidNumber: '请输入范围内的有效数字',
   progress: '进度',
   calendar: '日历',
+  clearInput: '清除输入',
+  noData: '暂无数据',
+  avatar: '头像',
+  rating: '评分',
+  collapse: '折叠面板',
+  slider: '滑动输入',
+  pageBack: '向前跳 5 页',
+  pageForward: '向后跳 5 页',
+  closeTab: '关闭标签页',
 };
 const en: typeof zh = {
   select: 'Please select',
@@ -134,6 +143,15 @@ const en: typeof zh = {
   invalidNumber: 'Enter a valid number within the allowed range',
   progress: 'Progress',
   calendar: 'Calendar',
+  clearInput: 'Clear input',
+  noData: 'No data',
+  avatar: 'Avatar',
+  rating: 'Rating',
+  collapse: 'Collapsible panels',
+  slider: 'Slider',
+  pageBack: 'Jump back 5 pages',
+  pageForward: 'Jump forward 5 pages',
+  closeTab: 'Close tab',
 };
 const defaultConfig = { locale: 'zh-CN' as LeafLocale, theme: {} as LeafTheme, messages: zh };
 const ConfigContext = createContext(defaultConfig);

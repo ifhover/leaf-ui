@@ -1,0 +1,36 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { EmptyBasic } from '../../src/examples/empty/basic';
+
+# Empty 空状态
+
+在没有内容时提示原因并提供下一步操作。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<EmptyBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/empty/basic.tsx"
+```
+
+</ComponentExample>
+
+## Empty API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `image` | `ReactNode` | Inbox 图标 | 自定义图像，null 隐藏 |
+| `description` | `ReactNode` | 暂无数据 | 提示内容，null 隐藏 |
+| `children` | `ReactNode` | — | 下一步操作 |
+| `size` | `'sm' \| 'md'` | `'md'` | 展示尺寸 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { EmptyProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+描述应说明没有内容的原因，需要时通过 children 提供操作按钮。

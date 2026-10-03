@@ -1,0 +1,38 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CardBasic } from '../../../src/examples/en/card/basic';
+
+# Card
+
+Group related content and actions in a container.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/card/basic.tsx"
+```
+
+</ComponentExample>
+
+## Card API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title / extra` | `ReactNode` | — | Title / header actions |
+| `cover / footer` | `ReactNode` | — | Cover / footer |
+| `children` | `ReactNode` | — | Body content |
+| `loading` | `boolean` | `false` | Replace the body with a skeleton |
+| `bordered / hoverable` | `boolean` | `true / false` | Border / hover emphasis |
+| `size` | `'sm' \| 'md'` | `'md'` | Content spacing |
+
+## Types
+
+Import the exported types when defining props or building item lists.
+
+```ts
+import type { CardProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Place buttons or links in extra and footer. hoverable adds visual feedback; use an explicit button or link for actions.

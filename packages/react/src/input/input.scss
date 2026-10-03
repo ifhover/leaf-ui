@@ -48,7 +48,13 @@
   &__native::-ms-reveal {
     display: none;
   }
-  &__visibility {
+  &__count {
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+    white-space: nowrap;
+  }
+  &__visibility,
+  &__clear {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -78,7 +84,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-input__visibility {
+  .leaf-input__visibility,
+  .leaf-input__clear {
     transition: none;
   }
 }

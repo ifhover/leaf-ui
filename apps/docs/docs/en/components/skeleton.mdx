@@ -1,0 +1,39 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SkeletonBasic } from '../../../src/examples/en/skeleton/basic';
+
+# Skeleton
+
+Show a content placeholder while loading.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SkeletonBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/skeleton/basic.tsx"
+```
+
+</ComponentExample>
+
+## Skeleton API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `loading / active` | `boolean` | `true` | Show placeholder / animate |
+| `avatar / round` | `boolean` | `false` | Avatar placeholder / round rows |
+| `title` | `boolean` | `true` | Title placeholder |
+| `titleWidth` | `number \| string` | `'38%'` | Title width |
+| `rows` | `number` | `3` | Body rows, up to 20 |
+| `rowWidths` | `readonly (number \| string)[]` | — | Widths of each row |
+| `children` | `ReactNode` | — | Loaded content |
+
+## Types
+
+Import the exported types when defining props or building item lists.
+
+```ts
+import type { SkeletonProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+When loading is false, render children. Reduced motion preferences and ConfigProvider motion settings control the animation.

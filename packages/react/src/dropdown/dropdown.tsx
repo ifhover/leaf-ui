@@ -34,6 +34,9 @@ export interface DropdownProps {
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   onSelect?: (key: string) => void;
+  placement?: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
+  popupWidth?: number | string;
+  popupMaxWidth?: number | string;
 }
 export function Dropdown({
   items,
@@ -43,6 +46,9 @@ export function Dropdown({
   defaultOpen = false,
   onOpenChange,
   onSelect,
+  placement = 'bottom-start',
+  popupWidth,
+  popupMaxWidth = 420,
 }: DropdownProps) {
   const [internal, setInternal] = useState(defaultOpen);
   const inactive = disabled || children.props.disabled;
@@ -134,6 +140,9 @@ export function Dropdown({
         triggerRef={trigger}
         panelRef={panel}
         id={id}
+        placement={placement}
+        width={popupWidth}
+        maxWidth={popupMaxWidth}
         role="menu"
         tabIndex={-1}
         aria-label={

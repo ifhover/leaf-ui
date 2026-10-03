@@ -12,6 +12,8 @@ export interface ProgressProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chi
   strokeWidth?: number;
   color?: string;
   size?: number;
+  indeterminate?: boolean;
+  trailColor?: string;
 }
 export function Progress({
   percent = 0,
@@ -22,6 +24,8 @@ export function Progress({
   strokeWidth,
   color,
   size = 100,
+  indeterminate = false,
+  trailColor,
   className,
   style,
   'aria-label': label,
@@ -29,7 +33,7 @@ export function Progress({
 }: ProgressProps) {
   const { messages } = useLeafConfig();
   const value = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
-  const state = status === 'normal' && value === 100 ? 'success' : status;
+  const state = !indeterminate && status === 'normal' && value === 100 ? 'success' : status;
   const width = Math.max(1, Math.min(20, strokeWidth ?? (type === 'circle' ? 6 : 8)));
   const content = format ? (
     format(value)
@@ -48,13 +52,15 @@ export function Progress({
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={value}
+      aria-valuenow={indeterminate ? undefined : value}
       aria-label={label ?? messages.progress}
-      aria-valuetext={`${value}%`}
+      aria-valuetext={indeterminate ? messages.loading : `${value}%`}
       data-status={state}
+      data-indeterminate={indeterminate || undefined}
       className={classes('leaf-progress', `leaf-progress--${type}`, className)}
       style={{
         ...(color ? { '--leaf-progress-color': color } : {}),
+        ...(trailColor ? { '--leaf-progress-trail': trailColor } : {}),
         ...(type === 'circle' ? { width: size, height: size } : {}),
         ...style,
       }}
@@ -72,13 +78,15 @@ export function Progress({
             cy="50"
             r={radius}
             strokeWidth={width}
-            strokeDasharray={circumference}
+            strokeDasharray={
+              indeterminate ? `${circumference * 0.25} ${circumference}` : circumference
+            }
             strokeDashoffset={circumference * (1 - value / 100)}
             transform="rotate(-90 50 50)"
           />
         </svg>
       )}
-      {showInfo && <span className="leaf-progress__info">{content}</span>}
+      {showInfo && !indeterminate && <span className="leaf-progress__info">{content}</span>}
     </div>
   );
 }

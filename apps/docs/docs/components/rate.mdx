@@ -1,0 +1,41 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { RateBasic } from '../../src/examples/rate/basic';
+
+# Rate 评分
+
+选择或展示评分。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<RateBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/rate/basic.tsx"
+```
+
+</ComponentExample>
+
+## Rate API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `number` | `0` | 受控 / 初始评分 |
+| `onChange` | `(value: number) => void` | — | 评分变化 |
+| `count` | `number` | `5` | 星数，范围 1–20 |
+| `allowHalf / allowClear` | `boolean` | `false / true` | 半星 / 再次点击清空 |
+| `disabled / readOnly` | `boolean` | `false` | 禁用 / 只读 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 星星尺寸 |
+| `color` | `string` | 主题警告色 | 评分颜色 |
+| `name / form` | `string` | — | 字段名 / 关联表单 |
+| `required` | `boolean` | `false` | 要求非零评分 |
+
+## 类型
+
+定义组件属性或组装列表时可导入相关类型。
+
+```ts
+import type { RateProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+方向键切换评分，Home / End 选择首尾，Delete 或 Backspace 清空。设置 name 后可通过 FormData 读取评分；required 支持表单校验，非受控评分支持 reset。

@@ -1,3 +1,4 @@
+import { InputClear } from '../../../src/examples/en/input/clear';
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../../src/components/en-form-examples';
 import { InputPassword } from '../../../src/examples/en/input/password';
@@ -49,6 +50,15 @@ Use type="password" to mask input and show a visibility toggle. Customize the ic
 
 </ComponentExample>
 
+## Clear and character count
+
+<ComponentExample title="Clear and character count" preview={<InputClear />} fileName="clear.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/clear.tsx"
+```
+
+</ComponentExample>
+
 ## Input API
 
 | Property | Type | Default | Description |
@@ -66,6 +76,9 @@ Use type="password" to mask input and show a visibility toggle. Customize the ic
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
 | `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+| `allowClear` | `boolean` | `false` | Show clear button |
+| `onClear` | `() => void` | — | After clearing; onChange also fires |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Show or customize the character count |
 
 ## Types
 

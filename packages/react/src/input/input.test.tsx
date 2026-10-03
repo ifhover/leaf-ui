@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -6,6 +6,36 @@ import { ConfigProvider } from '../config-provider';
 import { Input } from './input';
 
 describe('Input', () => {
+  it('clears through onChange, updates count and restores uncontrolled form defaults', async () => {
+    const clear = vi.fn();
+    const change = vi.fn();
+    render(
+      <form aria-label="Input form">
+        <Input
+          aria-label="Name"
+          name="title"
+          defaultValue="Leaf"
+          allowClear
+          showCount
+          maxLength={10}
+          onClear={clear}
+          onChange={change}
+        />
+      </form>,
+    );
+    const input = screen.getByRole('textbox');
+    expect(screen.getByText('4 / 10')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '清除输入' }));
+    expect(input).toHaveValue('');
+    expect(input).toHaveFocus();
+    expect(change).toHaveBeenCalledOnce();
+    expect(clear).toHaveBeenCalledOnce();
+    expect(screen.getByText('0 / 10')).toBeInTheDocument();
+    const form = screen.getByRole('form') as HTMLFormElement;
+    await act(async () => form.reset());
+    expect(input).toHaveValue('Leaf');
+    expect(new FormData(form).get('title')).toBe('Leaf');
+  });
   it('reveals passwords without changing the value and supports controlled visibility', async () => {
     const visible = vi.fn();
     const { rerender } = render(

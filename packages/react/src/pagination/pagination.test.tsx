@@ -5,6 +5,18 @@ import { ConfigProvider } from '../config-provider';
 import { Pagination } from './pagination';
 
 describe('Pagination', () => {
+  it('jumps across omitted pages using accessible ellipsis controls', async () => {
+    const change = vi.fn();
+    render(
+      <ConfigProvider locale="en-US">
+        <Pagination total={1000} defaultCurrent={20} onChange={change} />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Jump forward 5 pages' }));
+    expect(change).toHaveBeenLastCalledWith(25, 10);
+    await userEvent.click(screen.getByRole('button', { name: 'Jump back 5 pages' }));
+    expect(change).toHaveBeenLastCalledWith(20, 10);
+  });
   it('bounds button count for large totals and clamps when total shrinks', async () => {
     const change = vi.fn();
     const { rerender } = render(

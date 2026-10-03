@@ -52,6 +52,10 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   triggerRef: RefObject<HTMLElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
   matchWidth?: boolean;
+  width?: CSSProperties['width'];
+  minWidth?: CSSProperties['minWidth'] | 'trigger';
+  maxWidth?: CSSProperties['maxWidth'];
+  maxHeight?: CSSProperties['maxHeight'];
   placement?: Placement;
 }
 
@@ -61,6 +65,10 @@ export function FloatingPanel({
   triggerRef,
   panelRef,
   matchWidth,
+  width,
+  minWidth,
+  maxWidth,
+  maxHeight,
   placement = 'bottom-start',
   style,
   children,
@@ -90,12 +98,29 @@ export function FloatingPanel({
         padding: 12,
         apply({ availableHeight, availableWidth, rects, elements }) {
           if (!openRef.current) return;
+          const length = (value: string | number) =>
+            typeof value === 'number' ? `${value}px` : value;
+          const widthMaximum = maxWidth ?? style?.maxWidth;
+          const heightMaximum = maxHeight ?? style?.maxHeight;
+          const viewportWidth = `${Math.max(0, availableWidth)}px`;
+          const viewportHeight = `${Math.max(0, availableHeight)}px`;
+          const widthLimit =
+            widthMaximum === undefined
+              ? viewportWidth
+              : `min(${length(widthMaximum)}, ${viewportWidth})`;
           Object.assign(elements.floating.style, {
-            maxHeight: `${Math.max(0, availableHeight)}px`,
-            maxWidth: `${Math.max(0, availableWidth)}px`,
-            ...(matchWidth
-              ? { width: `${Math.min(rects.reference.width, availableWidth)}px` }
-              : {}),
+            maxHeight:
+              heightMaximum === undefined
+                ? viewportHeight
+                : `min(${length(heightMaximum)}, ${viewportHeight})`,
+            maxWidth: widthLimit,
+            width: matchWidth
+              ? `${Math.min(rects.reference.width, availableWidth)}px`
+              : length(width ?? style?.width ?? ''),
+            minWidth:
+              minWidth === 'trigger'
+                ? `min(${rects.reference.width}px, ${widthLimit})`
+                : length(minWidth ?? style?.minWidth ?? ''),
           });
         },
       }),

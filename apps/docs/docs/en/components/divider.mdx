@@ -1,0 +1,36 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DividerBasic } from '../../../src/examples/en/divider/basic';
+
+# Divider
+
+Separate content, paragraphs or actions.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<DividerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/divider/basic.tsx"
+```
+
+</ComponentExample>
+
+## Divider API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `'horizontal' \| 'vertical'` | `'horizontal'` | Orientation |
+| `align` | `'start' \| 'center' \| 'end'` | `'center'` | Text alignment |
+| `dashed` | `boolean` | `false` | Dashed line |
+| `children` | `ReactNode` | — | Horizontal divider text |
+
+## Types
+
+Import the exported types when defining props or building item lists.
+
+```ts
+import type { DividerProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Use vertical dividers between inline content.

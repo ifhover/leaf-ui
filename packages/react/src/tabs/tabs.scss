@@ -67,6 +67,41 @@
       height: 16px;
     }
   }
+  &__entry {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-width: 0;
+  }
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    margin-inline: 2px 4px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration),
+      background-color var(--leaf-motion-duration);
+    &:hover:not(:disabled) {
+      color: var(--leaf-color-primary);
+      background: var(--leaf-color-surface-muted);
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+  }
   &__extra {
     margin-inline-start: auto;
     flex-shrink: 0;
@@ -85,15 +120,17 @@
   &--card .leaf-tabs__list {
     gap: 4px;
   }
-  &--card .leaf-tabs__tab {
-    padding-inline: 14px;
+  &--card .leaf-tabs__entry {
     border: 1px solid var(--leaf-color-border);
     border-bottom: 0;
     border-radius: var(--leaf-radius-sm) var(--leaf-radius-sm) 0 0;
     background: var(--leaf-color-surface-muted);
-    &[aria-selected='true'] {
+    &[data-active='true'] {
       background: var(--leaf-color-surface);
     }
+  }
+  &--card .leaf-tabs__tab {
+    padding-inline: 14px;
   }
   &--left {
     display: flex;
