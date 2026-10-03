@@ -19,9 +19,10 @@ Ask for confirmation before an important action.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `open` | `boolean` | Required | Whether the dialog is visible |
-| `title / children / footer` | `ReactNode` | — | Title / content / custom footer |
+| `title / children` | `ReactNode` | — | Title / confirmation content |
 | `width` | `number \| string` | `480` | Width; numbers are pixels |
-| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `closable / keyboard` | `boolean` | `true` | Close button / Escape dismissal |
+| `maskClosable` | `boolean` | `false` | Backdrop dismissal |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
 | `confirmText / cancelText` | `ReactNode` | Locale default | Confirm / cancel labels from the current locale |
@@ -44,7 +45,8 @@ Ask for confirmation before an important action.
 | `danger` | `boolean` | `false` | Danger action |
 | `onConfirm` | `() => void \| Promise<void>` | — | Runs on confirmation; rejection keeps the dialog open |
 | `width` | `number \| string` | `480` | Dialog width |
-| `closable / maskClosable / keyboard` | `boolean` | — | Modal options; confirmation dialogs disable backdrop dismissal |
+| `closable / keyboard` | `boolean` | `true` | Close button / Escape dismissal |
+| `maskClosable` | `boolean` | `false` | Backdrop dismissal |
 
 ## Types
 

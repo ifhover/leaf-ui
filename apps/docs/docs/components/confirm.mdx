@@ -19,9 +19,10 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `open` | `boolean` | 必填 | 是否显示弹窗 |
-| `title / children / footer` | `ReactNode` | — | 标题 / 内容 / 自定义底部 |
+| `title / children` | `ReactNode` | — | 标题 / 确认内容 |
 | `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
-| `closable / maskClosable / keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `closable / keyboard` | `boolean` | `true` | 关闭按钮 / Escape 关闭 |
+| `maskClosable` | `boolean` | `false` | 点击遮罩关闭 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `afterClose` | `() => void` | — | 关闭动画完成后触发 |
 | `confirmText / cancelText` | `ReactNode` | 语言默认值 | 确认 / 取消文字 |
@@ -44,7 +45,8 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 | `danger` | `boolean` | `false` | 危险操作 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认时运行，拒绝保留弹窗 |
 | `width` | `number \| string` | `480` | 弹窗宽度 |
-| `closable / maskClosable / keyboard` | `boolean` | — | 沿用 Modal 属性；确认框默认不可点遮罩关闭 |
+| `closable / keyboard` | `boolean` | `true` | 关闭按钮 / Escape 关闭 |
+| `maskClosable` | `boolean` | `false` | 点击遮罩关闭 |
 
 ## 类型
 
