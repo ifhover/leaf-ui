@@ -29,8 +29,8 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 文本域尺寸 |
-| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 文本域尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `rows` | `number` | `3` | 初始可见行数 |
 | `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | 允许的手动缩放方向 |
 | `value` / `defaultValue` | `string \| number \| readonly string[]` | — | 受控值 / 非受控初始值 |
@@ -47,20 +47,3 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 ```ts
 import type { TextareaProps, ControlSize, ControlStatus } from '@sudden3/leaf-ui';
 ```
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |
-
-### ControlStatus
-
-| 值 | 说明 |
-| --- | --- |
-| `'error'` | 错误状态 |
-| `'warning'` | 警告状态 |
-
-未设置 `status` 时使用默认外观。

@@ -1,0 +1,38 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { AlertBasic } from '../../../src/examples/en/alert/basic';
+
+# Alert
+
+Show a result or information that needs attention within a page.
+
+## Feedback types
+
+<ComponentExample title="Feedback types" preview={<AlertBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/alert/basic.tsx"
+```
+
+</ComponentExample>
+
+## Alert API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | Main content |
+| `description` | `ReactNode` | — | Additional details |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Feedback type |
+| `showIcon` | `boolean` | `true` | Show the feedback icon |
+| `closable` | `boolean` | `false` | Allow dismissal |
+| `onClose` | `() => void` | — | Called after dismissal |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { AlertProps, FeedbackType } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Success, information, warning and error messages use distinct semantic colors. Supply application text yourself; the close button follows the ConfigProvider language.

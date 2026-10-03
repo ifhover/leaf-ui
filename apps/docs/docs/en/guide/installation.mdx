@@ -1,0 +1,38 @@
+# Installation
+
+Install Leaf UI in your React application:
+
+```bash
+pnpm add @sudden3/leaf-ui
+# or
+npm install @sudden3/leaf-ui
+# or
+yarn add @sudden3/leaf-ui
+```
+
+React 18 or 19 and the matching React DOM version must be installed in your application. See the current release on [npm](https://www.npmjs.com/package/@sudden3/leaf-ui).
+
+## Styles
+
+Import the compiled stylesheet once, then your own theme overrides:
+
+```tsx
+import '@sudden3/leaf-ui/styles.css';
+import './theme.scss';
+```
+
+The package includes compiled CSS; consuming it does not require Sass. Your own theme may use CSS or SCSS.
+
+## Icons
+
+When importing icons in your application, install Lucide:
+
+```bash
+pnpm add lucide-react
+```
+
+See [icons](/en/guide/icons) for examples.
+
+## Compatibility
+
+Leaf UI includes ESM and CommonJS entry points, TypeScript declarations, and support for modern browsers with CSS variables and color-mix(). Continue with [quick start](/en/guide/getting-started).

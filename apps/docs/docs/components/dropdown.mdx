@@ -1,0 +1,48 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { DropdownBasic } from '../../src/examples/dropdown/basic';
+
+# Dropdown 下拉菜单
+
+在菜单中收纳更多操作。
+
+## 操作菜单
+
+<ComponentExample title="操作菜单" preview={<DropdownBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/dropdown/basic.tsx"
+```
+
+</ComponentExample>
+
+## Dropdown API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly DropdownItem[]`](#dropdownitem) | 必填 | 菜单项列表 |
+| `children` | `ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>` | 必填 | 单个按钮，支持 Leaf Button 或 button |
+| `open / defaultOpen` | `boolean` | `false` | 受控 / 初始展开状态 |
+| `disabled` | `boolean` | `false` | 禁用触发器 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变更 |
+| `onSelect` | `(key: string) => void` | — | 选择可用菜单项 |
+
+## DropdownItem
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一标识 |
+| `label / icon` | `ReactNode` | — | 文字与图标 |
+| `type` | `'item' \| 'divider'` | `'item'` | 菜单项或分割线 |
+| `disabled / danger` | `boolean` | `false` | 禁用 / 危险操作 |
+| `onClick` | `() => void` | — | 点击此项时触发 |
+
+## 类型
+
+定义组件属性或组装变量时可导入相关类型。
+
+```ts
+import type { DropdownProps, DropdownItem } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+按钮按 ↓ / ↑ 打开菜单，菜单中使用方向键、Home、End 或文字首字符定位；Enter 选择，Escape 关闭并恢复按钮焦点。disabled 菜单项与分割线会被跳过。

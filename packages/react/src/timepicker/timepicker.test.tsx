@@ -4,6 +4,23 @@ import { describe, expect, it, vi } from 'vitest';
 import { TimePicker } from './timepicker';
 
 describe('TimePicker', () => {
+  it.each([
+    ['00:05:30', '上午', '下午', '12:05:30'],
+    ['12:05:30', '下午', '上午', '00:05:30'],
+  ])(
+    'converts midnight and noon correctly in 12-hour mode (%s)',
+    async (initial, before, after, result) => {
+      const change = vi.fn();
+      render(<TimePicker use12Hours showSeconds defaultValue={initial} onChange={change} />);
+      expect(screen.getByRole('combobox')).toHaveTextContent(`12:05:30 ${before}`);
+      await userEvent.click(screen.getByRole('combobox'));
+      await userEvent.click(
+        within(screen.getByRole('listbox', { name: '时段' })).getByRole('option', { name: after }),
+      );
+      await userEvent.click(screen.getByRole('button', { name: `使用 12:05:30 ${after}` }));
+      expect(change).toHaveBeenCalledWith(result);
+    },
+  );
   it('selects hours and stepped minutes without a native time input', async () => {
     const onChange = vi.fn();
     const { container } = render(

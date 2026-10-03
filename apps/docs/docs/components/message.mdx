@@ -1,0 +1,67 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { MessageBasic } from '../../src/examples/message/basic';
+
+# Message 消息提示
+
+以短暂提示反馈操作结果。
+
+## 消息与更新
+
+<ComponentExample title="消息与更新" preview={<MessageBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## useMessage API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `message` | [`MessageApi`](#messageapi) | — | 调用消息方法 |
+| `contextHolder` | `ReactNode` | — | 放在目标主题、语言区域中 |
+
+## MessageApi
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | 创建或按 key 更新，返回 key |
+| `success / info / warning / error` | `(content: ReactNode, duration?: number) => string` | — | 快捷显示对应类型 |
+| `loading` | `(content: ReactNode) => string` | — | 持续加载消息，返回 key |
+| `close` | `(key?: string) => void` | — | 关闭指定消息，无 key 时关闭全部 |
+
+## MessageOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 自动生成 | 相同 key 更新现有消息 |
+| `content` | `ReactNode` | 必填 | 消息内容 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | 消息类型 |
+| `duration` | `number` | `3` | 自动关闭秒数；0 不自动关闭；loading 默认 0 |
+| `closable` | `boolean` | `false` | 展示关闭按钮 |
+| `onClose` | `() => void` | — | 开始关闭时触发一次 |
+
+## Message API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | 必填 | 受控显示状态 |
+| `content` | `ReactNode` | 必填 | 消息内容 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | 消息类型 |
+| `duration` | `number` | `3` | 秒数；0 持续显示 |
+| `closable` | `boolean` | `false` | 关闭按钮 |
+| `onClose / afterClose` | `() => void` | — | 请求关闭 / 动画完成 |
+
+## 类型
+
+定义组件属性或组装变量时可导入相关类型。
+
+```ts
+import type { MessageProps, MessageOptions, MessageApi } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+推荐通过 useMessage 使用，同一 key 可以把加载消息更新为结果。鼠标停留或焦点位于消息中时暂停计时，离开后按剩余时间继续。
+
+也支持直接渲染 Message；收到 onClose 后由应用设置 open=false。将 contextHolder 放到 ConfigProvider 中，消息跟随区域主题与语言。

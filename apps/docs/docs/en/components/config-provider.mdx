@@ -1,0 +1,44 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ConfigProviderBasic } from '../../../src/examples/en/config-provider/basic';
+
+# ConfigProvider
+
+Set a region’s primary color, border radius and language.
+
+## Regional themes and languages
+
+<ComponentExample title="Regional themes and languages" preview={<ConfigProviderBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/config-provider/basic.tsx"
+```
+
+</ComponentExample>
+
+## ConfigProvider API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `theme` | [`LeafTheme`](#leaftheme) | — | Theme settings for the region |
+| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | Chinese or English; nested providers inherit omitted settings |
+| `children` | `ReactNode` | — | Content inside the region |
+
+## LeafTheme
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `primaryColor` | `string` | — | Primary color; accepts a CSS color |
+| `borderRadius` | `number \| string` | — | Border radius; numbers are pixels, strings are CSS lengths |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { ConfigProviderProps, LeafTheme, LeafLocale } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Nested regions override only the settings provided. Themes use CSS variables. Language affects picker prompts, dates, times, clear buttons and feedback controls. Translate application content, labels and options in your application.
+
+Floating panels, Modal and message / confirm holders placed inside the region inherit its settings. You can still override other CSS variables.

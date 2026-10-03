@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { AutoCompleteBasic, AutoCompleteSearch } from '../../../src/components/en-form-examples';
+
+# AutoComplete
+
+Suggest values while allowing free-text input.
+
+## Examples
+
+Use options for suggestions and onChange for typed or selected text. onSelect fires only when choosing a suggestion; onSearch fires only for typing. Set filterOption=false for server-generated suggestions. Handle debouncing and request order in your application.
+
+<ComponentExample title="Input and suggestions" preview={<AutoCompleteBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/auto-complete/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Dynamic email suggestions" preview={<AutoCompleteSearch />} fileName="search.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/auto-complete/search.tsx"
+```
+
+</ComponentExample>
+
+## AutoComplete API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly AutoCompleteOption[]`](#autocompleteoption) | Required | Suggestion options |
+| `value` / `defaultValue` | `string` | `''` | Controlled text / uncontrolled initial text |
+| `onChange` | `(value: string) => void` | — | Text after typing or selecting |
+| `onSelect` | [`(value: string, option: AutoCompleteOption) => void`](#autocompleteoption) | — | Runs when selecting a suggestion |
+| `onSearch` | `(query: string) => void` | — | Runs on typing, not on selection |
+| `filterOption` | [`false \| ((query: string, option: AutoCompleteOption) => boolean)`](#autocompleteoption) | Substring match | false disables local filtering; a function customizes matching |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only fields do not open suggestions |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+### AutoCompleteOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Unique suggestion value; inserted into the input on selection |
+| `label` | `string` | `value` | Suggestion label, also used by the default filter |
+| `disabled` | `boolean` | `false` | Disable the suggestion |
+
+## Types
+
+Import AutoCompleteProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { AutoCompleteProps, AutoCompleteOption } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

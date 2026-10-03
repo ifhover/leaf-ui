@@ -4,6 +4,9 @@
   --leaf-switch-width: 36px;
   --leaf-switch-height: 20px;
   --leaf-switch-thumb: 14px;
+  &[data-loading] {
+    cursor: default;
+  }
   &--sm {
     --leaf-switch-width: 30px;
     --leaf-switch-height: 16px;

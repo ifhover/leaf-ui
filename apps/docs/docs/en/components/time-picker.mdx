@@ -1,0 +1,64 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TimePickerBasic, TimePickerControlled } from '../../../src/components/en-form-examples';
+import { TimePickerTwelveHours } from '../../../src/examples/en/time-picker/twelve-hours';
+
+# TimePicker
+
+Choose a time.
+
+## Examples
+
+Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the display to a 12-hour clock with AM/PM, while values remain 24-hour. Midnight is 12 AM and noon is 12 PM. The initial draft is 09:00. Close without confirming to discard edits. Minute and second steps preserve an existing value outside the step.
+
+<ComponentExample title="Basic selection" preview={<TimePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/time-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Controlled value and minute steps" preview={<TimePickerControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/time-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="12-hour clock and seconds" preview={<TimePickerTwelveHours />} fileName="twelve-hours.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/time-picker/twelve-hours.tsx"
+```
+
+</ComponentExample>
+
+## TimePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` / `defaultValue` | `string \| null` | `null` | Controlled / initial HH:mm value; HH:mm:ss when seconds are enabled |
+| `onChange` | `(value: string \| null) => void` | — | Confirmed time; null when cleared |
+| `minuteStep` | `number` | `5` | Minute step, an integer from 1 to 60 |
+| `secondStep` | `number` | `1` | Second step, an integer from 1 to 60 |
+| `showSeconds` | `boolean` | `false` | Show seconds and use HH:mm:ss values |
+| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM |
+| `allowClear` | `boolean` | `true` | Show a clear button |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable the control |
+| `name` / `form` | `string` | — | Field name / associated form ID |
+| `required` | `boolean` | `false` | Require a time |
+| `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
+| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+
+## Types
+
+Import TimePickerProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { TimePickerProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

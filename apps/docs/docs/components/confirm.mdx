@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ConfirmBasic } from '../../src/examples/confirm/basic';
+
+# Confirm 确认框
+
+在执行重要操作前征求确认。
+
+## 异步确认
+
+<ComponentExample title="异步确认" preview={<ConfirmBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/confirm/basic.tsx"
+```
+
+</ComponentExample>
+
+## Confirm API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | 必填 | 是否显示弹窗 |
+| `title / children / footer` | `ReactNode` | — | 标题 / 内容 / 自定义底部 |
+| `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
+| `afterClose` | `() => void` | — | 关闭动画完成后触发 |
+| `confirmText / cancelText` | `ReactNode` | 语言默认值 | 确认 / 取消文字 |
+| `danger` | `boolean` | `false` | 使用危险按钮 |
+| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；Promise 完成后关闭，拒绝时显示错误 |
+
+## useConfirm API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | 确认返回 true，取消或卸载返回 false |
+| `contextHolder` | `ReactNode` | — | 放在目标 ConfigProvider 区域内 |
+
+## ConfirmOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title / children` | `ReactNode` | — | 标题与确认内容 |
+| `confirmText / cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
+| `danger` | `boolean` | `false` | 危险操作 |
+| `onConfirm` | `() => void \| Promise<void>` | — | 确认时运行，拒绝保留弹窗 |
+| `width` | `number \| string` | `480` | 弹窗宽度 |
+| `closable / maskClosable / keyboard` | `boolean` | — | 沿用 Modal 属性；确认框默认不可点遮罩关闭 |
+
+## 类型
+
+定义组件属性或组装变量时可导入相关类型。
+
+```ts
+import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+useConfirm 返回 confirm 与 contextHolder。把 holder 放在 ConfigProvider 内即可继承区域设置。也支持直接渲染 Confirm，控制 open 和 onClose。处理异步确认时会显示加载状态并阻止重复操作。
+
+其他属性参见 [Modal API](/components/modal#modal-api)。

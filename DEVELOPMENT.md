@@ -13,6 +13,12 @@
 
 ## 组件目录
 
+表单采用真实的 `form` 与字段上下文，控件独立管理值并保留 FormData / reset。`FormField` 通过 ResizeObserver 注册标签内在宽度，由 Form 统一使用最大宽度。配置上下文只管理语言和区域主题，不建立字段值仓库。
+
+浮层共用 FloatingPanel、presence 和区域 CSS 变量传递。关闭时保留节点至动画结束，并立即设为 inert。Modal 用 OverlayOwner 关联内部控件的 portal，保证焦点管理与嵌套浮层的 Escape 行为。
+
+日期、区间和时间面板在 shared 与 timepicker 中复用；日期值使用本地时间，周使用 ISO 周编号。反馈图标继续来自 Lucide。
+
 ```text
 packages/react/src/
 ├── button/

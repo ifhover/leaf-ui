@@ -1,0 +1,24 @@
+.leaf-dropdown {
+  min-width: 164px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  &__divider {
+    width: 100%;
+    margin: 4px 0;
+    border: 0;
+    border-top: 1px solid var(--leaf-color-border);
+  }
+  &__danger {
+    color: var(--leaf-color-danger);
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--leaf-color-danger) 8%, transparent);
+    }
+  }
+  .leaf-floating__option {
+    gap: 8px;
+    justify-content: flex-start;
+  }
+}

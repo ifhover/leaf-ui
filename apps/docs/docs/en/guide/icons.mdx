@@ -1,0 +1,25 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ButtonIcons } from '../../../src/examples/en/button/icons';
+
+# Icons
+
+Leaf UI uses [Lucide](https://lucide.dev/) icons. Install lucide-react when importing icons in your application:
+
+```bash
+pnpm add lucide-react
+```
+
+## Using icons
+
+Button accepts startIcon and endIcon; Input accepts prefix and suffix. Import only the icons you need. Icons inherit the current text color.
+
+<ComponentExample title="Icon buttons" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## Accessible names
+
+Text supplies the name of a text button. Supply aria-label for icon-only buttons. Icons are decorative and should not be the only indication of an action. Icon properties accept ReactNode, so you can use your existing React icon components too.

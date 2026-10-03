@@ -5,15 +5,18 @@ import {
   type InputHTMLAttributes,
   useId,
 } from 'react';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: ControlSize;
 }
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
-  { size = 'md', className, style, disabled, children, ...props },
+  { size = 'md', className, style, disabled: disabledProp, children, ...props },
   ref,
 ) {
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
   return (
     <label
       className={classes('leaf-radio', `leaf-radio--${size}`, className)}
@@ -23,6 +26,12 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
       <span className="leaf-radio__control">
         <input
           {...props}
+          id={props.id ?? field?.id}
+          required={props.required ?? field?.required}
+          aria-describedby={
+            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+          }
+          aria-invalid={field?.error ? true : props['aria-invalid']}
           ref={ref}
           type="radio"
           disabled={disabled}
@@ -66,17 +75,26 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
     direction = 'horizontal',
     required,
     onChange,
-    disabled,
+    disabled: disabledProp,
     className,
     ...props
   },
   ref,
 ) {
   const id = useId();
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
   return (
     <fieldset
       {...props}
       ref={ref}
+      id={props.id ?? field?.id}
+      aria-labelledby={props['aria-labelledby'] ?? (!label ? field?.labelId : undefined)}
+      aria-describedby={
+        [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+      }
+      aria-invalid={field?.error ? true : props['aria-invalid']}
+      tabIndex={-1}
       disabled={disabled}
       className={classes('leaf-radio-group', `leaf-radio-group--${direction}`, className)}
     >
@@ -85,11 +103,12 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
         {options.map((option) => (
           <Radio
             key={option.value}
+            id={`${props.id ?? field?.id ?? id}-${option.value}`}
             size={size}
             name={name ?? id}
             value={option.value}
             disabled={disabled || option.disabled}
-            required={required}
+            required={required ?? field?.required}
             checked={value === undefined ? undefined : value === option.value}
             defaultChecked={value === undefined ? defaultValue === option.value : undefined}
             onChange={onChange}

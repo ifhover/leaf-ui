@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { createElement } from 'react';
+import { createElement, Fragment } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const require = createRequire(import.meta.url);
@@ -38,17 +38,51 @@ const components = [
   ['TimePicker', { defaultValue: '09:30' }, null, /role="combobox"/],
   ['AutoComplete', { options: [{ value: 'Leaf' }] }, null, /role="combobox"/],
   ['Cascader', { options: [{ value: 'design', label: 'Design' }] }, null, /role="combobox"/],
+  ['DateTimePicker', { defaultValue: new Date(2026, 9, 15, 9, 30) }, null, /role="combobox"/],
+  [
+    'DateRangePicker',
+    { defaultValue: [new Date(2026, 9, 15), new Date(2026, 9, 20)] },
+    null,
+    /role="combobox"/,
+  ],
+  ['Form', { labelWidth: 120 }, 'Fields', /<form/],
+  ['FormField', { label: 'Title' }, null, /<label/],
+  [
+    'ConfigProvider',
+    { locale: 'en-US', theme: { primaryColor: '#427d52' } },
+    'Scope',
+    /lang="en-US"/,
+  ],
+  ['Alert', { title: 'Saved' }, null, /role="status"/],
+  [
+    'Dropdown',
+    { items: [{ key: 'edit', label: 'Edit' }] },
+    createElement('button', { type: 'button' }, 'Actions'),
+    /aria-haspopup="menu"/,
+    false,
+  ],
+  ['Modal', { open: false, title: 'Details' }, null, /<span/, false],
+  ['Confirm', { open: false, title: 'Remove' }, null, /<span/, false],
+  ['Message', { open: false, content: 'Saved' }, null, /<span/, false],
 ];
 for (const [format, api] of [
   ['ESM', esm],
   ['CommonJS', cjs],
 ]) {
-  for (const [name, props, children, expected] of components) {
+  for (const [name, props, children, expected, hasClass = true] of components) {
     assert.ok(api[name], `${format} must export ${name}`);
     const markup = renderToStaticMarkup(createElement(api[name], props, children));
     assert.match(markup, expected);
-    assert.ok(markup.includes('leaf-'), `${name} must include its component class`);
+    if (hasClass) assert.ok(markup.includes('leaf-'), `${name} must include its component class`);
   }
+  for (const name of ['useConfirm', 'useMessage'])
+    assert.equal(typeof api[name], 'function', `${format} must export ${name}`);
+  function HookHolders() {
+    const confirm = api.useConfirm();
+    const message = api.useMessage();
+    return createElement(Fragment, null, confirm.contextHolder, message.contextHolder);
+  }
+  assert.match(renderToStaticMarkup(createElement(HookHolders)), /<span/);
 }
 const esmTypes = await readFile(new URL(entry.import.types, packageRoot), 'utf8');
 assert.ok(
@@ -71,6 +105,13 @@ for (const name of [
   'autocomplete',
   'cascader',
   'floating',
+  'form',
+  'modal',
+  'confirm',
+  'dropdown',
+  'alert',
+  'message',
+  'date-range-picker',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }

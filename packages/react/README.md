@@ -38,9 +38,17 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - Switch: native checkbox with switch semantics, loading and keyboard/form support.
 - Select: themed floating listbox, keyboard selection, clearable values, disabled options and form validation. onChange receives a string value and optional option.
 - DatePicker: calendar with local Date values, inclusive day bounds, keyboard navigation and clearing.
-- TimePicker: HH:mm values, hour/minute columns, configurable minute steps and clearing.
+- TimePicker: 12/24-hour clocks, optional seconds, configurable steps and clearing.
 - AutoComplete: free text input, filtered or dynamic suggestions, composition-aware keyboard selection.
 - Cascader: hierarchical options, full leaf paths, disabled branches and keyboard navigation.
+- Form / FormField: native submission, labels, help, validation and shared automatic or fixed label widths.
+- ConfigProvider: scoped primary color, radius and Chinese/English UI with nested inheritance.
+- DateTimePicker: calendar and time selection, optional seconds, draft confirmation and bounds.
+- DateRangePicker: year, month, ISO week, weekday, date and date-time ranges.
+- Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
+- Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
+- Alert: inline success, info, warning and error feedback.
+- Message / useMessage: transient feedback, loading and keyed updates.
 
 Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 
@@ -61,11 +69,21 @@ Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default
 
 Override variables on any parent for a local theme. Hover, soft and focus colors use the current semantic color in that scope. The exported LeafThemeStyle type accepts inline --leaf-* variables. Use data-leaf-theme="dark" for dark neutral and semantic colors.
 
-Floating panels inherit the trigger's scoped theme, render only while open, and follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order.
+```tsx
+import { ConfigProvider, Button } from '@sudden3/leaf-ui';
+
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8 }}>
+  <Button>Save</Button>
+</ConfigProvider>
+```
+
+Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Place message and confirm context holders within the desired ConfigProvider region.
 
 ## Forms
 
 All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, TimePicker submits HH:mm, and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, TimePicker and Cascader forward a ref to their trigger button; AutoComplete forwards its native input. Provide a label or aria-label for every control.
+
+Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DateTimePicker submits YYYY-MM-DD HH:mm:ss; DateRangePicker submits a start/end string in the selected granularity.
 
 ## Icons
 

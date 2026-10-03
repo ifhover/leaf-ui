@@ -1,0 +1,48 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SwitchBasic, SwitchControlled } from '../../../src/components/en-form-examples';
+
+# Switch
+
+Turn a setting on or off.
+
+## Examples
+
+Read event.target.checked in onChange. Loading preserves children and prevents interaction. Give the control a text label or aria-label. Native name, value and required properties support form submission.
+
+<ComponentExample title="Interactive example" preview={<SwitchBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/switch/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<SwitchControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/switch/controlled.tsx"
+```
+
+</ComponentExample>
+
+## Switch API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.checked |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `loading` | `boolean` | `false` | Show loading and disable interaction |
+| `disabled` | `boolean` | `false` | Disable interaction |
+| `children` | `ReactNode` | — | Clickable text label |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+
+## Types
+
+Import SwitchProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { SwitchProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

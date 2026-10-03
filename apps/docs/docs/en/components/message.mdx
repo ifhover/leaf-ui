@@ -1,0 +1,67 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { MessageBasic } from '../../../src/examples/en/message/basic';
+
+# Message
+
+Provide brief feedback about an operation.
+
+## Messages and updates
+
+<ComponentExample title="Messages and updates" preview={<MessageBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## useMessage API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `message` | [`MessageApi`](#messageapi) | — | Call message methods |
+| `contextHolder` | `ReactNode` | — | Render inside the desired theme and language region |
+
+## MessageApi
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | Create or update by key; returns the key |
+| `success / info / warning / error` | `(content: ReactNode, duration?: number) => string` | — | Show feedback of the specified type |
+| `loading` | `(content: ReactNode) => string` | — | Persistent loading message; returns the key |
+| `close` | `(key?: string) => void` | — | Close one message, or all when key is omitted |
+
+## MessageOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Generated | Use the same key to update a message |
+| `content` | `ReactNode` | Required | Message content |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
+| `duration` | `number` | `3` | Seconds before dismissal; 0 persists, loading defaults to 0 |
+| `closable` | `boolean` | `false` | Show a close button |
+| `onClose` | `() => void` | — | Called once when dismissal starts |
+
+## Message API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | Required | Controlled visibility |
+| `content` | `ReactNode` | Required | Message content |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
+| `duration` | `number` | `3` | Duration in seconds; 0 persists |
+| `closable` | `boolean` | `false` | Close button |
+| `onClose / afterClose` | `() => void` | — | Requests closure / closing animation completed |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { MessageProps, MessageOptions, MessageApi } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Prefer useMessage. Update a loading message with its key to show the result. Timers pause while a message is hovered or focused and resume with the remaining time.
+
+Message also supports declarative rendering; set open=false after onClose. Place contextHolder inside ConfigProvider so messages follow its theme and language.

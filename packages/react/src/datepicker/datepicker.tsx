@@ -1,5 +1,7 @@
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { type ButtonHTMLAttributes, forwardRef, useEffect, useId, useRef, useState } from 'react';
+import { useLeafConfig } from '../config-provider/config-provider';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import {
@@ -37,37 +39,43 @@ export interface DatePickerProps
   onOpenChange?: (open: boolean) => void;
 }
 
-const weekdays = ['一', '二', '三', '四', '五', '六', '日'];
-
 export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(function DatePicker(
   {
     value,
     defaultValue = null,
     size = 'md',
-    status,
-    placeholder = '请选择日期',
+    status: statusProp,
+    placeholder,
     minDate,
     maxDate,
     name,
-    required,
+    required: requiredProp,
     allowClear = true,
     form,
     className,
     style,
-    disabled,
-    id,
+    disabled: disabledProp,
+    id: idProp,
     onChange,
     onOpenChange,
     onClick,
     onKeyDown,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedBy,
+    'aria-describedby': ariaDescribedByProp,
     'aria-invalid': ariaInvalid,
     ...props
   },
   forwardedRef,
 ) {
+  const { locale, messages } = useLeafConfig();
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
+  const required = requiredProp ?? field?.required;
+  const status = statusProp ?? (field?.error ? 'error' : undefined);
+  const id = idProp ?? field?.id;
+  const ariaDescribedBy =
+    [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const generatedId = useId();
@@ -219,12 +227,12 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
       >
         <CalendarDays size={16} aria-hidden="true" />
         <span className={classes(!selectedDate && 'leaf-date-picker__placeholder')}>
-          {selectedDate ? formatDateLabel(selectedDate) : placeholder}
+          {selectedDate ? formatDateLabel(selectedDate, locale) : placeholder || messages.date}
         </span>
       </button>
       {allowClear && selectedDate && !disabled && (
         <ClearButton
-          label="清除日期"
+          label={messages.clearDate}
           onClear={() => {
             setSelectedDate(null);
             onChange?.(null, '');
@@ -241,113 +249,112 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
         required={required}
         triggerRef={triggerRef}
       />
-      {open && (
-        <FloatingPanel
-          triggerRef={triggerRef}
-          panelRef={panelRef}
-          id={panelId}
-          className="leaf-floating leaf-date-picker__panel"
-          role="dialog"
-          aria-label="选择日期"
-        >
-          <div className="leaf-date-picker__header">
-            <button
-              type="button"
-              className="leaf-date-picker__nav"
-              aria-label="上个月"
-              disabled={Boolean(
-                minDate &&
-                  isBeforeDay(
-                    new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 0),
-                    minDate,
-                  ),
-              )}
-              onClick={() => changeMonth(-1)}
-            >
-              <ChevronLeft size={16} aria-hidden="true" />
-            </button>
-            <strong aria-live="polite">{formatMonthLabel(visibleMonth)}</strong>
-            <button
-              type="button"
-              className="leaf-date-picker__nav"
-              aria-label="下个月"
-              disabled={Boolean(maxDate && isAfterDay(shiftMonth(visibleMonth, 1), maxDate))}
-              onClick={() => changeMonth(1)}
-            >
-              <ChevronRight size={16} aria-hidden="true" />
-            </button>
-          </div>
-          <table
-            className="leaf-date-picker__grid"
-            // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: APG date-picker calendar uses a table with grid semantics and roving focus.
-            role="grid"
-            aria-label={formatMonthLabel(visibleMonth)}
+      <FloatingPanel
+        open={open}
+        triggerRef={triggerRef}
+        panelRef={panelRef}
+        id={panelId}
+        className="leaf-floating leaf-date-picker__panel"
+        role="dialog"
+        aria-label={messages.chooseDate}
+      >
+        <div className="leaf-date-picker__header">
+          <button
+            type="button"
+            className="leaf-date-picker__nav"
+            aria-label={messages.previousMonth}
+            disabled={Boolean(
+              minDate &&
+                isBeforeDay(
+                  new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 0),
+                  minDate,
+                ),
+            )}
+            onClick={() => changeMonth(-1)}
           >
-            <thead>
-              <tr>
-                {weekdays.map((weekday) => (
-                  <th key={weekday} scope="col">
-                    {weekday}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {weeks.map((week) => (
-                <tr key={week[0] ? dateKey(week[0]) : ''}>
-                  {week.map((date) => {
-                    const disabledDate = Boolean(
-                      (minDate && isBeforeDay(date, minDate)) ||
-                        (maxDate && isAfterDay(date, maxDate)),
-                    );
-                    const outsideMonth = monthKey(date) !== monthKey(visibleMonth);
-                    const selected = sameDate(date, selectedDate);
-                    const today = sameDate(date, new Date());
-                    return (
-                      // biome-ignore lint/a11y/useFocusableInteractive lint/a11y/noNoninteractiveElementToInteractiveRole: APG calendar gridcells contain a day button that owns the roving keyboard focus.
-                      <td key={dateKey(date)} role="gridcell" aria-selected={selected}>
-                        <button
-                          type="button"
-                          data-day={dateKey(date)}
-                          tabIndex={sameDate(date, activeDate) ? 0 : -1}
-                          aria-label={dateKey(date)}
-                          className={classes(
-                            'leaf-date-picker__day',
-                            outsideMonth && 'leaf-date-picker__day--outside',
-                            selected && 'leaf-date-picker__day--selected',
-                          )}
-                          aria-current={today ? 'date' : undefined}
-                          disabled={disabledDate}
-                          onClick={() => selectDate(date)}
-                          onKeyDown={(event) => {
-                            if (
-                              [
-                                'ArrowLeft',
-                                'ArrowRight',
-                                'ArrowUp',
-                                'ArrowDown',
-                                'Home',
-                                'End',
-                                'PageUp',
-                                'PageDown',
-                              ].includes(event.key)
-                            ) {
-                              event.preventDefault();
-                              moveDate(date, event.key);
-                            }
-                          }}
-                        >
-                          {date.getDate()}
-                        </button>
-                      </td>
-                    );
-                  })}
-                </tr>
+            <ChevronLeft size={16} aria-hidden="true" />
+          </button>
+          <strong aria-live="polite">{formatMonthLabel(visibleMonth, locale)}</strong>
+          <button
+            type="button"
+            className="leaf-date-picker__nav"
+            aria-label={messages.nextMonth}
+            disabled={Boolean(maxDate && isAfterDay(shiftMonth(visibleMonth, 1), maxDate))}
+            onClick={() => changeMonth(1)}
+          >
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+        <table
+          className="leaf-date-picker__grid"
+          // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: APG date-picker calendar uses a table with grid semantics and roving focus.
+          role="grid"
+          aria-label={formatMonthLabel(visibleMonth, locale)}
+        >
+          <thead>
+            <tr>
+              {messages.weekdays.map((weekday) => (
+                <th key={weekday} scope="col">
+                  {weekday}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </FloatingPanel>
-      )}
+            </tr>
+          </thead>
+          <tbody>
+            {weeks.map((week) => (
+              <tr key={week[0] ? dateKey(week[0]) : ''}>
+                {week.map((date) => {
+                  const disabledDate = Boolean(
+                    (minDate && isBeforeDay(date, minDate)) ||
+                      (maxDate && isAfterDay(date, maxDate)),
+                  );
+                  const outsideMonth = monthKey(date) !== monthKey(visibleMonth);
+                  const selected = sameDate(date, selectedDate);
+                  const today = sameDate(date, new Date());
+                  return (
+                    // biome-ignore lint/a11y/useFocusableInteractive lint/a11y/noNoninteractiveElementToInteractiveRole: APG calendar gridcells contain a day button that owns the roving keyboard focus.
+                    <td key={dateKey(date)} role="gridcell" aria-selected={selected}>
+                      <button
+                        type="button"
+                        data-day={dateKey(date)}
+                        tabIndex={sameDate(date, activeDate) ? 0 : -1}
+                        aria-label={dateKey(date)}
+                        className={classes(
+                          'leaf-date-picker__day',
+                          outsideMonth && 'leaf-date-picker__day--outside',
+                          selected && 'leaf-date-picker__day--selected',
+                        )}
+                        aria-current={today ? 'date' : undefined}
+                        disabled={disabledDate}
+                        onClick={() => selectDate(date)}
+                        onKeyDown={(event) => {
+                          if (
+                            [
+                              'ArrowLeft',
+                              'ArrowRight',
+                              'ArrowUp',
+                              'ArrowDown',
+                              'Home',
+                              'End',
+                              'PageUp',
+                              'PageDown',
+                            ].includes(event.key)
+                          ) {
+                            event.preventDefault();
+                            moveDate(date, event.key);
+                          }
+                        }}
+                      >
+                        {date.getDate()}
+                      </button>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </FloatingPanel>
     </div>
   );
 });

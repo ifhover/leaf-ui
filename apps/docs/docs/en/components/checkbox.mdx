@@ -1,0 +1,48 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
+
+# Checkbox
+
+Select one or more options.
+
+## Examples
+
+Read event.target.checked in onChange. Use indeterminate to represent a partially selected group; it does not change the submitted value. Native name, value, required and form attributes are supported.
+
+<ComponentExample title="Interactive example" preview={<CheckboxBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Select all and indeterminate" preview={<CheckboxCheckAll />} fileName="check-all.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/check-all.tsx"
+```
+
+</ComponentExample>
+
+## Checkbox API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `indeterminate` | `boolean` | `false` | Partially checked state |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.checked |
+| `disabled` | `boolean` | `false` | Disable the option |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `children` | `ReactNode` | — | Clickable label |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+
+## Types
+
+Import CheckboxProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { CheckboxProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

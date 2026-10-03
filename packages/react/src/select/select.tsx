@@ -7,6 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useLeafConfig } from '../config-provider/config-provider';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
@@ -47,30 +49,38 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
   {
     options,
     size = 'md',
-    status,
-    placeholder = '请选择',
+    status: statusProp,
+    placeholder,
     value,
     defaultValue = '',
     name,
-    required,
+    required: requiredProp,
     allowClear = false,
     form,
     className,
     style,
-    disabled,
-    id,
+    disabled: disabledProp,
+    id: idProp,
     onChange,
     onOpenChange,
     onClick,
     onKeyDown,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
-    'aria-describedby': ariaDescribedBy,
+    'aria-describedby': ariaDescribedByProp,
     'aria-invalid': ariaInvalid,
     ...props
   },
   forwardedRef,
 ) {
+  const { messages } = useLeafConfig();
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
+  const required = requiredProp ?? field?.required;
+  const status = statusProp ?? (field?.error ? 'error' : undefined);
+  const id = idProp ?? field?.id;
+  const ariaDescribedBy =
+    [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const generatedId = useId();
@@ -214,13 +224,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
             !selectedOption && 'leaf-select__value--placeholder',
           )}
         >
-          {selectedOption?.label ?? placeholder}
+          {selectedOption?.label ?? placeholder ?? messages.select}
         </span>
         <ChevronDown className="leaf-select__arrow" aria-hidden="true" />
       </button>
       {allowClear && selectedValue && !disabled && (
         <ClearButton
-          label="清除选择"
+          label={messages.clearSelection}
           beforeArrow
           onClear={() => {
             setSelectedValue('');
@@ -238,41 +248,40 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
         required={required}
         triggerRef={triggerRef}
       />
-      {open && (
-        <FloatingPanel
-          triggerRef={triggerRef}
-          panelRef={panelRef}
-          matchWidth
-          id={panelId}
-          className="leaf-floating leaf-select__panel"
-          role="listbox"
-          aria-label={ariaLabel || '可选项'}
-        >
-          {options.length ? (
-            options.map((option, index) => (
-              <button
-                key={option.value}
-                id={`${panelId}-${index}`}
-                type="button"
-                role="option"
-                aria-selected={option.value === selectedValue}
-                aria-disabled={option.disabled || undefined}
-                data-highlighted={highlightedIndex === index || undefined}
-                className="leaf-floating__option"
-                disabled={option.disabled}
-                tabIndex={-1}
-                onMouseEnter={() => !option.disabled && setHighlightedIndex(index)}
-                onClick={() => selectOption(option, index)}
-              >
-                <span>{option.label}</span>
-                {option.value === selectedValue && <Check size={15} aria-hidden="true" />}
-              </button>
-            ))
-          ) : (
-            <div className="leaf-floating__empty">暂无选项</div>
-          )}
-        </FloatingPanel>
-      )}
+      <FloatingPanel
+        open={open}
+        triggerRef={triggerRef}
+        panelRef={panelRef}
+        matchWidth
+        id={panelId}
+        className="leaf-floating leaf-select__panel"
+        role="listbox"
+        aria-label={ariaLabel || messages.select}
+      >
+        {options.length ? (
+          options.map((option, index) => (
+            <button
+              key={option.value}
+              id={`${panelId}-${index}`}
+              type="button"
+              role="option"
+              aria-selected={option.value === selectedValue}
+              aria-disabled={option.disabled || undefined}
+              data-highlighted={highlightedIndex === index || undefined}
+              className="leaf-floating__option"
+              disabled={option.disabled}
+              tabIndex={-1}
+              onMouseEnter={() => !option.disabled && setHighlightedIndex(index)}
+              onClick={() => selectOption(option, index)}
+            >
+              <span>{option.label}</span>
+              {option.value === selectedValue && <Check size={15} aria-hidden="true" />}
+            </button>
+          ))
+        ) : (
+          <div className="leaf-floating__empty">{messages.empty}</div>
+        )}
+      </FloatingPanel>
     </div>
   );
 });

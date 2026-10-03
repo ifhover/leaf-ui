@@ -33,7 +33,7 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 | `indeterminate` | `boolean` | `false` | 半选状态 |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 `event.target.checked` 读取选中状态 |
 | `disabled` | `boolean` | `false` | 禁用选项 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 复选框尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 复选框尺寸 |
 | `children` | `ReactNode` | — | 可点击的选项标签 |
 | `ref` | `Ref<HTMLInputElement>` | — | 复选框引用 |
 
@@ -46,11 +46,3 @@ name、value、required、form 等原生属性可直接使用。只有已勾选�
 ```ts
 import type { CheckboxProps, ControlSize } from '@sudden3/leaf-ui';
 ```
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |

@@ -1,4 +1,6 @@
 import { forwardRef, type InputHTMLAttributes, useId, useRef, useState } from 'react';
+import { useLeafConfig } from '../config-provider/config-provider';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import {
@@ -37,9 +39,9 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     value,
     defaultValue = '',
     size = 'md',
-    status,
+    status: statusProp,
     filterOption,
-    disabled,
+    disabled: disabledProp,
     readOnly,
     className,
     style,
@@ -56,6 +58,10 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   },
   forwardedRef,
 ) {
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
+  const status = statusProp ?? (field?.error ? 'error' : undefined);
+  const { locale, messages } = useLeafConfig();
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const ref = useMergedRef(inputRef, forwardedRef);
@@ -102,6 +108,11 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     >
       <input
         {...props}
+        id={props.id ?? field?.id}
+        required={props.required ?? field?.required}
+        aria-describedby={
+          [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+        }
         ref={ref}
         type="text"
         form={form}
@@ -150,40 +161,43 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
           } else if (event.key === 'Tab') setOpen(false);
         }}
       />
-      {expanded && (
-        <FloatingPanel
-          triggerRef={inputRef}
-          panelRef={panelRef}
-          matchWidth
-          id={listId}
-          className="leaf-floating"
-          role="listbox"
-          aria-label={ariaLabel ? `${ariaLabel}建议` : '输入建议'}
-        >
-          {visibleOptions.length ? (
-            visibleOptions.map((option, index) => (
-              <button
-                key={option.value}
-                id={`${listId}-${index}`}
-                type="button"
-                role="option"
-                tabIndex={-1}
-                aria-selected={active === index}
-                disabled={option.disabled}
-                aria-disabled={option.disabled || undefined}
-                className="leaf-floating__option"
-                onMouseDown={(event) => event.preventDefault()}
-                onMouseEnter={() => !option.disabled && setActive(index)}
-                onClick={() => select(option)}
-              >
-                {option.label ?? option.value}
-              </button>
-            ))
-          ) : (
-            <div className="leaf-floating__empty">没有匹配建议，可继续输入</div>
-          )}
-        </FloatingPanel>
-      )}
+      <FloatingPanel
+        open={expanded}
+        triggerRef={inputRef}
+        panelRef={panelRef}
+        matchWidth
+        id={listId}
+        className="leaf-floating"
+        role="listbox"
+        aria-label={
+          ariaLabel
+            ? `${ariaLabel} ${locale === 'en-US' ? 'suggestions' : '建议'}`
+            : messages.noMatches
+        }
+      >
+        {visibleOptions.length ? (
+          visibleOptions.map((option, index) => (
+            <button
+              key={option.value}
+              id={`${listId}-${index}`}
+              type="button"
+              role="option"
+              tabIndex={-1}
+              aria-selected={active === index}
+              disabled={option.disabled}
+              aria-disabled={option.disabled || undefined}
+              className="leaf-floating__option"
+              onMouseDown={(event) => event.preventDefault()}
+              onMouseEnter={() => !option.disabled && setActive(index)}
+              onClick={() => select(option)}
+            >
+              {option.label ?? option.value}
+            </button>
+          ))
+        ) : (
+          <div className="leaf-floating__empty">{messages.noMatches}</div>
+        )}
+      </FloatingPanel>
     </div>
   );
 });

@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ModalBasic } from '../../../src/examples/en/modal/basic';
+
+# Modal
+
+Display content or complete an action in a dialog.
+
+## Edit content
+
+<ComponentExample title="Edit content" preview={<ModalBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/basic.tsx"
+```
+
+</ComponentExample>
+
+## Modal API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | Required | Whether the dialog is visible |
+| `title / children / footer` | `ReactNode` | — | Title / content / custom footer |
+| `width` | `number \| string` | `480` | Width; numbers are pixels |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `onClose` | `() => void` | — | Requests closure; update open in the application |
+| `afterClose` | `() => void` | — | Called after the closing animation finishes |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { ModalProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Focus moves into the dialog when opened and returns to the trigger on dismissal. Tab stays within the dialog. Use maskClosable and keyboard to control backdrop and Escape dismissal. Supply aria-label when omitting title.
+
+Customize footer actions or place a Form inside the body. Picker overlays inside a dialog retain its regional theme.

@@ -17,12 +17,26 @@
   overscroll-behavior: contain;
   animation: leaf-floating-in var(--leaf-motion-duration) var(--leaf-motion-easing);
 
+  &[data-state='closing'] {
+    pointer-events: none;
+    animation: leaf-floating-out var(--leaf-motion-duration) var(--leaf-motion-easing) forwards;
+  }
+
   &:focus {
     outline: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    animation: none;
+    &,
+    &[data-state='closing'] {
+      animation: none;
+    }
+  }
+}
+
+@keyframes leaf-floating-out {
+  to {
+    opacity: 0;
   }
 }
 

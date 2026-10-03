@@ -1,0 +1,66 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DateRangePickerBasic } from '../../../src/examples/en/date-range-picker/basic';
+import { DateRangePickerModes } from '../../../src/examples/en/date-range-picker/modes';
+
+# DateRangePicker
+
+Select start and end dates or times to define a range.
+
+## Controlled range
+
+<ComponentExample title="Controlled range" preview={<DateRangePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## Picker modes
+
+<ComponentExample title="Picker modes" preview={<DateRangePickerModes />} fileName="modes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/modes.tsx"
+```
+
+</ComponentExample>
+
+## DateRangePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | [`DateRange \| null`](#daterange) | `null` | Controlled / initial range |
+| `onChange` | [`(value: DateRange \| null, dateStrings: readonly [string, string]) => void`](#daterange) | — | Returns an ordered range and formatted strings; clearing returns null |
+| `picker` | `'year' \| 'month' \| 'week' \| 'weekday' \| 'date' \| 'datetime'` | `'date'` | Selection granularity |
+| `minDate / maxDate` | `Date` | — | Earliest / latest allowed values |
+| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
+| `minuteStep / secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled / required` | `boolean` | `false` | Disabled / required; inherited from FormField |
+| `placeholder / name / form` | `string` | — | Placeholder / field name / form ID |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
+| `ref` | `Ref<HTMLButtonElement>` | — | Reference to the trigger button |
+
+## DateRange
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `0` | `Date` | Required | Start, no later than the end |
+| `1` | `Date` | Required | End |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { DateRangePickerProps, DateRange } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+DateRange is readonly [Date, Date]; import it when assembling values. Years use January 1, months use the first day, and weeks start on Monday with ISO week numbers. weekday selects a concrete date within a week and displays its weekday. Dates use local time.
+
+The second selection commits non-datetime ranges and sorts reversed endpoints. In datetime mode, choose both dates and times, including seconds, then confirm. Bounds compare the selected year, month or week for coarse modes, and exact times for datetime.
+
+FormData submits a start/end string: YYYY for years, YYYY-MM for months, YYYY-Www for weeks, YYYY-MM-DD for dates, or YYYY-MM-DD HH:mm:ss for datetime. Import DateRange for reusable typed values; its positions are detailed above.

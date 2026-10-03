@@ -1,17 +1,19 @@
 import { Button, type LeafThemeStyle } from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
+import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 
-const palettes = [
-  { name: '苔绿', color: '#20834a' },
-  { name: '湖蓝', color: '#087f8c' },
-  { name: '晴蓝', color: '#3264d9' },
-  { name: '鸢紫', color: '#7654c6' },
-  { name: '陶橙', color: '#b75b1c' },
-];
-
 export function ThemePlayground() {
+  const { t } = useDocsLocale();
+  const palettes = [
+    { name: t('苔绿', 'Moss'), color: '#20834a' },
+    { name: t('湖蓝', 'Lake'), color: '#087f8c' },
+    { name: t('晴蓝', 'Sky'), color: '#3264d9' },
+    { name: t('鸢紫', 'Iris'), color: '#7654c6' },
+    { name: t('陶橙', 'Clay'), color: '#b75b1c' },
+  ];
+
   const [color, setColor] = useState('#20834a');
   const [radius, setRadius] = useState(10);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
@@ -47,7 +49,7 @@ export function ThemePlayground() {
           <span className="leaf-eyebrow">LIVE PREVIEW</span>
           <span className="leaf-preview-tag">
             <span />
-            实时预览
+            {t('实时预览', 'Live preview')}
           </span>
         </div>
         <div className="leaf-preview-card">
@@ -55,46 +57,50 @@ export function ThemePlayground() {
             <Icon name="leaf" width="28" height="28" />
           </div>
           <span className="leaf-preview-card__tag">LESS, BUT BETTER</span>
-          <h3>一点绿意，很多可能。</h3>
-          <p>从小小的交互开始，构建属于你的界面。</p>
+          <h3>{t('一点绿意，很多可能。', 'A little green. Many possibilities.')}</h3>
+          <p>
+            {t('从小小的交互开始，构建属于你的界面。', 'Start small and build your own interface.')}
+          </p>
           <div className="leaf-preview-card__actions">
             <Button
               onClick={() => setSubscribed(!subscribed)}
               startIcon={<Icon name={subscribed ? 'check' : 'plus'} />}
               aria-pressed={subscribed}
             >
-              {subscribed ? '已加入项目' : '创建你的项目'}
+              {subscribed
+                ? t('已加入项目', 'Project joined')
+                : t('创建你的项目', 'Create your project')}
             </Button>
             <Button variant="outline" onClick={() => setSubscribed(false)}>
-              重新开始
+              {t('重新开始', 'Start again')}
             </Button>
           </div>
           <div className="leaf-preview-card__footer">
             <span className="leaf-avatar">L</span>
-            <span>为下一个好想法，留一点空间。</span>
+            <span>{t('为下一个好想法，留一点空间。', 'Make room for the next good idea.')}</span>
             <Icon name="sparkles" width="16" height="16" />
           </div>
         </div>
         <div className="leaf-preview-variants">
           <div>
-            <Button size="sm">主要按钮</Button>
+            <Button size="sm">{t('主要按钮', 'Primary')}</Button>
             <span>Solid</span>
           </div>
           <div>
             <Button size="sm" variant="soft">
-              柔和按钮
+              {t('柔和按钮', 'Soft')}
             </Button>
             <span>Soft</span>
           </div>
           <div>
             <Button size="sm" variant="outline">
-              描边按钮
+              {t('描边按钮', 'Outline')}
             </Button>
             <span>Outline</span>
           </div>
           <div>
             <Button size="sm" variant="ghost">
-              文字按钮
+              {t('文字按钮', 'Ghost')}
             </Button>
             <span>Ghost</span>
           </div>
@@ -103,12 +109,15 @@ export function ThemePlayground() {
       <div className="leaf-playground__controls">
         <div className="leaf-playground__controls-header">
           <Icon name="sliders" width="18" height="18" />
-          <h3>你的风格，你来定义</h3>
+          <h3>{t('你的风格，你来定义', 'Your style, your choice')}</h3>
         </div>
-        <p className="leaf-control-description">几个变量，就能长成你喜欢的样子。</p>
+        <p className="leaf-control-description">
+          {t('几个变量，就能长成你喜欢的样子。', 'A few variables shape the look you want.')}
+        </p>
         <fieldset className="leaf-control-fieldset">
           <legend>
-            主题色 <span>Primary color</span>
+            {t('主题色', 'Primary color')}
+            <span>Primary color</span>
           </legend>
           <div className="leaf-color-swatches">
             {palettes.map((palette) => (
@@ -116,7 +125,7 @@ export function ThemePlayground() {
                 key={palette.color}
                 type="button"
                 className="leaf-color-swatch"
-                aria-label={`使用${palette.name}主题`}
+                aria-label={t(`使用${palette.name}主题`, `Use ${palette.name} theme`)}
                 aria-pressed={color === palette.color}
                 title={palette.name}
                 onClick={() => setColor(palette.color)}
@@ -134,12 +143,13 @@ export function ThemePlayground() {
               onChange={(event) => setColor(event.target.value)}
             />
             <span>{color.toUpperCase()}</span>
-            <span className="leaf-color-input__hint">自定义</span>
+            <span className="leaf-color-input__hint">{t('自定义', 'Custom')}</span>
           </label>
         </fieldset>
         <div className="leaf-control-radius">
           <label htmlFor={`${id}-radius`}>
-            圆角 <span>Border radius</span>
+            {t('圆角', 'Radius')}
+            <span>Border radius</span>
             <output htmlFor={`${id}-radius`}>{radius}px</output>
           </label>
           <input
@@ -152,22 +162,23 @@ export function ThemePlayground() {
             onChange={(event) => setRadius(Number(event.target.value))}
           />
           <div>
-            <span>利落</span>
-            <span>圆润</span>
+            <span>{t('利落', 'Sharp')}</span>
+            <span>{t('圆润', 'Rounded')}</span>
           </div>
         </div>
         <fieldset className="leaf-control-fieldset">
           <legend>
-            外观 <span>Appearance</span>
+            {t('外观', 'Appearance')}
+            <span>Appearance</span>
           </legend>
           <div className="leaf-mode-toggle">
             <button type="button" aria-pressed={mode === 'light'} onClick={() => setMode('light')}>
               <Icon name="sun" width="16" height="16" />
-              浅色
+              {t('浅色', 'Light')}
             </button>
             <button type="button" aria-pressed={mode === 'dark'} onClick={() => setMode('dark')}>
               <Icon name="moon" width="16" height="16" />
-              深色
+              {t('深色', 'Dark')}
             </button>
           </div>
         </fieldset>
@@ -181,7 +192,7 @@ export function ThemePlayground() {
           </pre>
         </div>
         <Button className="leaf-playground__reset" size="sm" variant="ghost" onClick={reset}>
-          恢复默认
+          {t('恢复默认', 'Reset theme')}
         </Button>
       </div>
     </div>

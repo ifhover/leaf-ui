@@ -1,0 +1,39 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { GettingStartedExample } from '../../../src/examples/en/guide/getting-started';
+import { FormBasic } from '../../../src/examples/en/form/basic';
+
+# Quick start
+
+[Install the package](/en/guide/installation) and import its stylesheet once in your application entry point.
+
+## Your first button
+
+<ComponentExample title="Your first button" preview={<GettingStartedExample />} fileName="getting-started.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/guide/getting-started.tsx"
+```
+
+</ComponentExample>
+
+## Build a form
+
+Use FormField for labels and validation feedback. Read named values with FormData in the submission handler. Button defaults to type="button"; specify type="submit" when submitting a form.
+
+<ComponentExample title="Form submission" preview={<FormBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/form/basic.tsx"
+```
+
+</ComponentExample>
+
+## Choose a theme and language
+
+```tsx
+import { ConfigProvider, DatePicker } from '@sudden3/leaf-ui';
+
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#3264d9', borderRadius: 6 }}>
+  <DatePicker aria-label="Deadline" />
+</ConfigProvider>
+```
+
+Explore [components](/en/components/), [icons](/en/guide/icons) and [theming](/en/guide/theming).

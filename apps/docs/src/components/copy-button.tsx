@@ -1,14 +1,10 @@
 import { Button } from '@sudden3/leaf-ui';
 import { useEffect, useState } from 'react';
+import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 
-export function CopyButton({
-  text,
-  label = '复制',
-}: {
-  text: string | (() => string);
-  label?: string;
-}) {
+export function CopyButton({ text, label }: { text: string | (() => string); label?: string }) {
+  const { t } = useDocsLocale();
   const [status, setStatus] = useState<'idle' | 'copied' | 'error'>('idle');
 
   useEffect(() => {
@@ -34,7 +30,11 @@ export function CopyButton({
       startIcon={<Icon name={status === 'copied' ? 'check' : 'copy'} />}
       aria-live="polite"
     >
-      {status === 'copied' ? '已复制' : status === 'error' ? '复制失败，请手动复制' : label}
+      {status === 'copied'
+        ? t('已复制', 'Copied')
+        : status === 'error'
+          ? t('复制失败，请手动复制', 'Copy failed; copy manually')
+          : (label ?? t('复制', 'Copy'))}
     </Button>
   );
 }

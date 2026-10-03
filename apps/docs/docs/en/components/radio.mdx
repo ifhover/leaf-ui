@@ -1,0 +1,69 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { RadioBasic, RadioControlled } from '../../../src/components/en-form-examples';
+
+# Radio
+
+Choose one option from a group.
+
+## Examples
+
+RadioGroup builds options and supplies a group name. Provide label, aria-label or aria-labelledby. Give the group a name for form submission. Read event.target.value in onChange. Individual Radio controls with the same name form a native group.
+
+<ComponentExample title="Grouped options" preview={<RadioBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/radio/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Controlled and vertical layout" preview={<RadioControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/radio/controlled.tsx"
+```
+
+</ComponentExample>
+
+## RadioGroup API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly RadioOption[]`](#radiooption) | Required | Options |
+| `value` / `defaultValue` | `string` | — | Controlled value / initial uncontrolled value |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
+| `name` | `string` | Generated | Shared field name; specify it for form submission |
+| `label` | `string` | — | Group name |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `disabled` / `required` | `boolean` | `false` | Disable the group / require a selection |
+| `ref` | `Ref<HTMLFieldSetElement>` | — | DOM reference |
+## Radio API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `value` | `string \| number \| readonly string[]` | — | The submitted value for this option |
+| `name` | `string` | — | Radio controls with the same name form a group |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
+| `disabled` / `required` | `boolean` | `false` | Disable the option / require a selection |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `children` | `ReactNode` | — | Clickable label |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+### RadioOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `string` | Required | Option label |
+| `value` | `string` | Required | Value; unique within the group |
+| `disabled` | `boolean` | `false` | Disable the option |
+
+## Types
+
+Import RadioProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { RadioProps, RadioGroupProps, RadioOption } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

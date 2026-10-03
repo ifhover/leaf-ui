@@ -5,6 +5,8 @@ import { DatePickerBasic, DatePickerControlled } from '../../src/components/form
 
 用于从日历中选择日期。
 
+需要同时选择时间时，使用 [DateTimePicker](/components/date-time-picker)；需要起止区间时，使用 [DateRangePicker](/components/date-range-picker)。
+
 ## 基础选择
 
 点击控件打开日历，选择日期后收起。`defaultValue` 设置初始日期，`disabled` 禁用整个控件。
@@ -36,8 +38,8 @@ import { DatePickerBasic, DatePickerControlled } from '../../src/components/form
 | `minDate` / `maxDate` | `Date` | — | 最早 / 最晚可选日期，按本地年月日比较 |
 | `allowClear` | `boolean` | `true` | 展示清除按钮 |
 | `placeholder` | `string` | `'请选择日期'` | 未选择时的提示文字 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 选择器尺寸 |
-| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `disabled` | `boolean` | `false` | 禁用输入与浮层 |
 | `name` / `form` | `string` | — | 字段名 / 关联的表单 ID |
 | `required` | `boolean` | `false` | 要求选择日期 |
@@ -53,23 +55,6 @@ import { DatePickerBasic, DatePickerControlled } from '../../src/components/form
 ```ts
 import type { DatePickerProps, ControlSize, ControlStatus } from '@sudden3/leaf-ui';
 ```
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |
-
-### ControlStatus
-
-| 值 | 说明 |
-| --- | --- |
-| `'error'` | 错误状态 |
-| `'warning'` | 警告状态 |
-
-未设置 `status` 时使用默认外观。
 
 ## 日期与表单
 

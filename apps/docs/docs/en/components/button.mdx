@@ -1,0 +1,86 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../../src/components/en-button-examples';
+
+# Button
+
+Trigger an action, such as saving, submitting or deleting.
+
+## Examples
+
+Use solid for primary actions, soft for subtle emphasis, outline for secondary actions and ghost for low-priority actions. Loading preserves the label and prevents duplicate clicks. Set type="submit" for form submission, and aria-label for icon-only actions.
+
+<ComponentExample title="Variants" preview={<ButtonVariants />} fileName="variants.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/variants.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Danger actions" preview={<ButtonDanger />} fileName="danger.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Sizes" preview={<ButtonSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/sizes.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Disabled and loading" preview={<ButtonStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/states.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Async saving" preview={<ButtonLoading />} fileName="loading.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Icons" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Full width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/full-width.tsx"
+```
+
+</ComponentExample>
+
+## Button API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `danger` | `boolean` | `false` | Danger colors; works with every variant |
+| `loading` | `boolean` | `false` | Show loading and disable interaction |
+| `disabled` | `boolean` | `false` | Disable interaction |
+| `fullWidth` | `boolean` | `false` | Fill the parent width |
+| `startIcon` | `ReactNode` | — | Leading icon; replaced by the spinner during loading |
+| `endIcon` | `ReactNode` | — | Trailing icon |
+| `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Standard button type |
+| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+
+## Types
+
+Import ButtonProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { ButtonProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

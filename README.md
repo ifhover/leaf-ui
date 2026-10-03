@@ -49,13 +49,35 @@ export function App() {
 | `Switch` | 开关与加载状态 |
 | `Select` | 单选菜单，支持禁用选项与清除 |
 | `DatePicker` | 日期选择，支持最早 / 最晚日期 |
-| `TimePicker` | HH:mm 时间选择与分钟间隔 |
+| `TimePicker` | 24 / 12 小时制与秒选择 |
 | `AutoComplete` | 自由文本输入与动态建议 |
 | `Cascader` | 按层级选择完整路径 |
+| `Form` / `FormField` | 表单布局、自动标签宽度与校验反馈 |
+| `ConfigProvider` | 区域主题、圆角和中英文 |
+| `DateTimePicker` / `DateRangePicker` | 日期时间与多粒度起止区间 |
+| `Dropdown` | 操作菜单与键盘导航 |
+| `Modal` / `Confirm` | 弹窗与异步确认 |
+| `Alert` / `Message` / `useMessage` | 页内提示与短暂消息 |
 
 `Select` 的 onChange 返回字符串值与选项；`DatePicker` 返回 Date 或 null 及本地 `YYYY-MM-DD` 字符串；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
 
 设置 name 后，可通过 FormData 读取值。日期为 `YYYY-MM-DD`，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控组件支持表单 reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
+
+## 区域主题与语言
+
+```tsx
+import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-ui';
+
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#7654c6', borderRadius: 6 }}>
+  <Form labelWidth="auto">
+    <FormField label="Deadline" required>
+      <DateTimePicker name="deadline" />
+    </FormField>
+  </Form>
+</ConfigProvider>
+```
+
+嵌套配置继承未设置的选项；浮层与放在区域内的 message / confirm contextHolder 沿用主题和语言。其他样式仍可使用 CSS 变量。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
 
 ## 主题定制
 

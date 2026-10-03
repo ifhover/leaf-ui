@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ConfirmBasic } from '../../../src/examples/en/confirm/basic';
+
+# Confirm
+
+Ask for confirmation before an important action.
+
+## Async confirmation
+
+<ComponentExample title="Async confirmation" preview={<ConfirmBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/basic.tsx"
+```
+
+</ComponentExample>
+
+## Confirm API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | Required | Whether the dialog is visible |
+| `title / children / footer` | `ReactNode` | — | Title / content / custom footer |
+| `width` | `number \| string` | `480` | Width; numbers are pixels |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `onClose` | `() => void` | — | Requests closure; update open in the application |
+| `afterClose` | `() => void` | — | Called after the closing animation finishes |
+| `confirmText / cancelText` | `ReactNode` | Locale default | Confirm / cancel labels from the current locale |
+| `danger` | `boolean` | `false` | Use a danger button |
+| `onConfirm` | `() => void \| Promise<void>` | — | Confirm action; resolves to close, rejects to show an error |
+
+## useConfirm API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or unmount |
+| `contextHolder` | `ReactNode` | — | Render inside the target ConfigProvider |
+
+## ConfirmOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title / children` | `ReactNode` | — | Title and confirmation content |
+| `confirmText / cancelText` | `ReactNode` | Locale default | Button labels |
+| `danger` | `boolean` | `false` | Danger action |
+| `onConfirm` | `() => void \| Promise<void>` | — | Runs on confirmation; rejection keeps the dialog open |
+| `width` | `number \| string` | `480` | Dialog width |
+| `closable / maskClosable / keyboard` | `boolean` | — | Modal options; confirmation dialogs disable backdrop dismissal |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+useConfirm returns confirm and contextHolder. Render the holder inside ConfigProvider to inherit regional settings. You can also render Confirm directly and control open and onClose. Async confirmation displays a loading state and prevents duplicate actions.
+
+See [Modal API](/en/components/modal#modal-api) for inherited attributes.

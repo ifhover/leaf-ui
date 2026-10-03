@@ -61,7 +61,7 @@
     opacity: 0.45;
   }
   &[data-loading] {
-    cursor: wait;
+    cursor: default;
     opacity: 0.8;
   }
 

@@ -1,4 +1,4 @@
-import { type Ref, type RefObject, useCallback, useEffect, useState } from 'react';
+import { type Ref, type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 export function useMergedRef<T>(local: RefObject<T | null>, forwarded?: Ref<T>) {
   return useCallback(
@@ -49,8 +49,17 @@ interface FormValueProps {
 
 /** A non-interactive form proxy; custom overlays never use native picker controls. */
 export function FormValue({ value, name, form, disabled, required, triggerRef }: FormValueProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const previousValue = useRef(value);
+  useEffect(() => {
+    if (previousValue.current !== value) {
+      inputRef.current?.dispatchEvent(new Event('input', { bubbles: true }));
+      previousValue.current = value;
+    }
+  }, [value]);
   return (
     <input
+      ref={inputRef}
       type="text"
       className="leaf-form-value"
       aria-hidden="true"

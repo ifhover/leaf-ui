@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CascaderBasic, CascaderControlled } from '../../../src/components/en-form-examples';
+
+# Cascader
+
+Choose a value through a hierarchy of options.
+
+## Examples
+
+A selection is committed at a leaf option. onChange supplies both the path and its options. Named fields submit a JSON array string. Use arrow keys to navigate levels, Enter to choose and Escape to close.
+
+<ComponentExample title="Interactive example" preview={<CascaderBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<CascaderControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/controlled.tsx"
+```
+
+</ComponentExample>
+
+## Cascader API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly CascaderOption[]`](#cascaderoption) | Required | Hierarchical options |
+| `value` / `defaultValue` | `readonly string[]` | `[]` | Controlled path / initial uncontrolled path |
+| `onChange` | [`(value: string[], selectedOptions: CascaderOption[]) => void`](#cascaderoption) | — | Runs when a leaf is selected or the path is cleared |
+| `allowClear` | `boolean` | `true` | Clearing returns two empty arrays |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable the control |
+| `name` / `form` | `string` | — | Field name / associated form ID |
+| `required` | `boolean` | `false` | Require a selection |
+| `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
+| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+### CascaderOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Value; unique at the same level |
+| `label` | `string` | Required | Option label |
+| `disabled` | `boolean` | `false` | Disable this option and its descendants |
+| `children` | [`readonly CascaderOption[]`](#cascaderoption) | — | Child options; an option without children can be selected |
+
+## Types
+
+Import CascaderProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { CascaderProps, CascaderOption } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

@@ -1,0 +1,78 @@
+import { ThemePlayground } from '../../../src/components/theme-playground';
+
+# Theming
+
+Set your product’s colors and shapes with ConfigProvider or CSS variables.
+
+## Try your theme
+
+<ThemePlayground />
+
+## Regional configuration
+
+```tsx
+import { ConfigProvider, Button, DatePicker } from '@sudden3/leaf-ui';
+
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#7654c6', borderRadius: 6 }}>
+  <Button>Save</Button>
+  <DatePicker aria-label="Deadline" />
+</ConfigProvider>
+```
+
+Nested providers override only supplied settings. Floating panels inherit the trigger’s theme. Render message and confirm contextHolder inside the region they should inherit. Details are in [ConfigProvider](/en/components/config-provider).
+
+## CSS variables
+
+Import overrides after the Leaf UI stylesheet. Set them on :root for a whole application, or on a container for one region.
+
+```scss
+:root {
+  --leaf-color-primary: #20834a;
+  --leaf-color-on-primary: #ffffff;
+  --leaf-radius: 10px;
+  --leaf-control-height: 34px;
+}
+
+.campaign {
+  --leaf-color-primary: #7654c6;
+  --leaf-radius: 6px;
+}
+```
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `--leaf-color-primary` | `#20834a` | Primary actions and selection |
+| `--leaf-color-on-primary` | `#ffffff` | Content on primary backgrounds |
+| `--leaf-color-danger` | `#c83c3c` | Danger and error state |
+| `--leaf-color-warning` | `#a9670e` | Warning state |
+| `--leaf-color-text` / `--leaf-color-text-muted` | Theme | Main / secondary content |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` | Theme | Main / subtle backgrounds |
+| `--leaf-color-border` | `#dce5de` | Borders |
+| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | `10px` / `6px` / `16px` | Border radii |
+| `--leaf-control-height` | `34px` | Default single-line control height |
+| `--leaf-control-height-sm` / `--leaf-control-height-lg` | `28px` / `40px` | Small / large height |
+| `--leaf-motion-duration` / `--leaf-motion-easing` | `160ms` / `ease` | Motion |
+| `--leaf-z-index-popup` / `--leaf-z-index-modal` / `--leaf-z-index-message` | `1000` / `1100` / `1200` | Overlay stacking |
+
+## Dark regions
+
+```tsx
+<div data-leaf-theme="dark">
+  <Button>Save</Button>
+</div>
+```
+
+Choose accessible foreground colors when using a very light primary background. System reduced-motion preferences disable overlay animations.
+
+## Typed inline styles
+
+```tsx
+import type { LeafThemeStyle } from '@sudden3/leaf-ui';
+
+const theme: LeafThemeStyle = {
+  '--leaf-color-primary': '#7654c6',
+  '--leaf-radius': '6px',
+};
+```
+
+LeafThemeStyle extends React CSSProperties and permits custom --leaf-* variables.

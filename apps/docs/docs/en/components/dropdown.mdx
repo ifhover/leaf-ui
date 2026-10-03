@@ -1,0 +1,48 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DropdownBasic } from '../../../src/examples/en/dropdown/basic';
+
+# Dropdown
+
+Group additional actions in a menu.
+
+## Action menu
+
+<ComponentExample title="Action menu" preview={<DropdownBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/basic.tsx"
+```
+
+</ComponentExample>
+
+## Dropdown API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly DropdownItem[]`](#dropdownitem) | Required | Menu entries |
+| `children` | `ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>` | Required | A single Leaf Button or native button |
+| `open / defaultOpen` | `boolean` | `false` | Controlled / initial open state |
+| `disabled` | `boolean` | `false` | Disable the trigger |
+| `onOpenChange` | `(open: boolean) => void` | — | Open-state changes |
+| `onSelect` | `(key: string) => void` | — | Called when an enabled menu entry is selected |
+
+## DropdownItem
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique key |
+| `label / icon` | `ReactNode` | — | Content and icon |
+| `type` | `'item' \| 'divider'` | `'item'` | Menu entry or divider |
+| `disabled / danger` | `boolean` | `false` | Disabled / danger action |
+| `onClick` | `() => void` | — | Runs when the item is selected |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { DropdownProps, DropdownItem } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Press Down / Up on the trigger to open. Use arrow keys, Home, End or the first letter to navigate, Enter to select, and Escape to close and restore focus. Disabled entries and dividers are skipped.

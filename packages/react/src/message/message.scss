@@ -1,0 +1,59 @@
+.leaf-message-region {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: var(--leaf-z-index-message, 1200);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(480px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.leaf-message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 11px 16px;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  box-shadow: 0 6px 24px #14201918;
+  pointer-events: auto;
+  animation: leaf-floating-in var(--leaf-motion-duration) ease;
+  > span {
+    overflow-wrap: anywhere;
+  }
+  > svg {
+    flex-shrink: 0;
+    color: var(--leaf-feedback-color, var(--leaf-color-primary));
+  }
+  > button {
+    display: inline-flex;
+    margin-left: 6px;
+    padding: 3px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+    }
+  }
+  &[data-state='closing'] {
+    animation: leaf-floating-out var(--leaf-motion-duration) ease forwards;
+    pointer-events: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-message,
+  .leaf-message[data-state='closing'] {
+    animation: none;
+  }
+}

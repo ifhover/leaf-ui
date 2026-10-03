@@ -1,0 +1,44 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ConfigProviderBasic } from '../../src/examples/config-provider/basic';
+
+# ConfigProvider 配置
+
+按区域设置主题色、圆角与语言。
+
+## 区域主题与语言
+
+<ComponentExample title="区域主题与语言" preview={<ConfigProviderBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/config-provider/basic.tsx"
+```
+
+</ComponentExample>
+
+## ConfigProvider API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `theme` | [`LeafTheme`](#leaftheme) | — | 区域主题设置 |
+| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | 中文或英文；嵌套时继承上层设置 |
+| `children` | `ReactNode` | — | 区域中的内容 |
+
+## LeafTheme
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `primaryColor` | `string` | — | 主题色，支持 CSS 颜色 |
+| `borderRadius` | `number \| string` | — | 数字为像素，也支持 CSS 长度 |
+
+## 类型
+
+定义组件属性或组装变量时可导入相关类型。
+
+```ts
+import type { ConfigProviderProps, LeafTheme, LeafLocale } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+嵌套区域只覆盖明确传入的选项，其余沿用上层。主题色与圆角通过 CSS 变量应用，语言覆盖选择器提示、日期、时间、清除按钮和反馈组件。业务内容、label、options 由应用自行翻译。
+
+浮层、Modal 和放置在此区域的 message / confirm contextHolder 都会继承该区域。需要更多样式时仍可以覆盖 CSS 变量。

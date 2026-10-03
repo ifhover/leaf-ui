@@ -1,0 +1,47 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DateTimePickerBasic } from '../../../src/examples/en/date-time-picker/basic';
+
+# DateTimePicker
+
+Select a specific date and time.
+
+## Date and time
+
+<ComponentExample title="Date and time" preview={<DateTimePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-time-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## DateTimePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `Date \| null` | `null` | Controlled / initial value |
+| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Confirms a Date and local date-time string; clearing returns null |
+| `minDate / maxDate` | `Date` | — | Bounds, including the time |
+| `showSeconds` | `boolean` | `true` | Show seconds; when disabled seconds are zero |
+| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
+| `minuteStep / secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled / required` | `boolean` | `false` | Disabled / required; inherited from FormField |
+| `placeholder / name / form` | `string` | — | Placeholder / field name / form ID |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
+| `ref` | `Ref<HTMLButtonElement>` | — | Reference to the trigger button |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { DateTimePickerProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Choose a date, adjust the time, then confirm. Escape or an outside click discards the draft. Values use the local time zone, and the string format is YYYY-MM-DD HH:mm:ss. The 12-hour clock affects display only; Date hours remain 0–23.
+
+Named fields submit a local date-time string through FormData. Uncontrolled values reset with the form; reset controlled values in application state. See [DatePicker](/en/components/date-picker) and [DateRangePicker](/en/components/date-range-picker) for other scenarios.

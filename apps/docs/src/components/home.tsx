@@ -1,32 +1,42 @@
-import { withBase } from '@rspress/core/runtime';
 import { Button } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 import { CopyButton } from './copy-button';
+import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 import { ThemePlayground } from './theme-playground';
 
-const features = [
-  {
-    icon: 'leaf',
-    number: '01',
-    title: '轻盈，自然',
-    text: '克制的视觉，恰好的细节。让内容成为主角，让交互自然发生。',
-  },
-  {
-    icon: 'sliders',
-    number: '02',
-    title: '随你而变',
-    text: '主题色、圆角、字体与动效，用 CSS 变量，定义你的设计语言。',
-  },
-  {
-    icon: 'code',
-    number: '03',
-    title: '为 React 而生',
-    text: '完整的 TypeScript 类型，熟悉的原生属性，融入你的开发习惯。',
-  },
-] as const;
-
 export function HomeLayout() {
+  const { t, url } = useDocsLocale();
+  const features = [
+    {
+      icon: 'leaf',
+      number: '01',
+      title: t('轻盈，自然', 'Lightweight, natural'),
+      text: t(
+        '克制的视觉，恰好的细节。让内容成为主角，让交互自然发生。',
+        'Calm visuals and thoughtful details. Give your content room to breathe.',
+      ),
+    },
+    {
+      icon: 'sliders',
+      number: '02',
+      title: t('随你而变', 'Make it yours'),
+      text: t(
+        '主题色、圆角、字体与动效，用 CSS 变量，定义你的设计语言。',
+        'Shape colors, radii, fonts and motion with CSS variables.',
+      ),
+    },
+    {
+      icon: 'code',
+      number: '03',
+      title: t('为 React 而生', 'Made for React'),
+      text: t(
+        '完整的 TypeScript 类型，熟悉的原生属性，融入你的开发习惯。',
+        'TypeScript types and familiar HTML properties fit your React workflow.',
+      ),
+    },
+  ] as const;
+
   const [liked, setLiked] = useState(false);
 
   return (
@@ -35,31 +45,36 @@ export function HomeLayout() {
         <div className="leaf-hero__content">
           <div className="leaf-release">
             <span />
-            11 个基础组件，开始生长 <span className="leaf-release__version">v0.1.0</span>
+            {t('20 个组件，持续生长', '20 components, growing together')}
           </div>
           <h1>
-            为你的界面，
+            {t('为你的界面，', 'For your interface,')}
             <br />
-            添一抹<span className="leaf-hero__accent">自然。</span>
+            {t('添一抹', 'a touch of ')}
+            <span className="leaf-hero__accent">{t('自然。', 'nature.')}</span>
           </h1>
           <p>
-            轻盈的 React 组件，自然的设计语言。
+            {t(
+              '轻盈的 React 组件，自然的设计语言。',
+              'Lightweight React components. A natural design language.',
+            )}
             <br />
-            让每一个好想法，都有舒适的表达。
+            {t('让每一个好想法，都有舒适的表达。', 'A comfortable home for every good idea.')}
           </p>
           <div className="leaf-hero__actions">
             <a
               className="leaf-home-link leaf-home-link--primary"
-              href={withBase('/guide/getting-started.html')}
+              href={url('/guide/getting-started.html')}
             >
-              开始使用 <Icon name="arrow" width="18" height="18" />
+              {t('开始使用', 'Get started')}
+              <Icon name="arrow" width="18" height="18" />
             </a>
             <a
               className="leaf-home-link leaf-home-link--secondary"
-              href={withBase('/components/index.html')}
+              href={url('/components/index.html')}
             >
               <Icon name="code" width="18" height="18" />
-              探索组件
+              {t('探索组件', 'Explore components')}
             </a>
           </div>
           <div className="leaf-install">
@@ -67,7 +82,10 @@ export function HomeLayout() {
               <Icon name="code" width="15" height="15" />
             </span>
             <code>pnpm add @sudden3/leaf-ui</code>
-            <CopyButton text="pnpm add @sudden3/leaf-ui" label="复制安装命令" />
+            <CopyButton
+              text="pnpm add @sudden3/leaf-ui"
+              label={t('复制安装命令', 'Copy install command')}
+            />
           </div>
           <span className="leaf-hero__note">
             React 18 / 19 <span>·</span> TypeScript <span>·</span> CSS Variables
@@ -81,7 +99,7 @@ export function HomeLayout() {
               <span className="leaf-hero-card__logo">
                 <Icon name="leaf" />
               </span>
-              <span>一切，从这里开始</span>
+              <span>{t('一切，从这里开始', 'It all starts here')}</span>
               <span className="leaf-hero-card__dots">···</span>
             </div>
             <div className="leaf-hero-card__art">
@@ -99,8 +117,13 @@ export function HomeLayout() {
               <span className="leaf-hero-card__art-caption">GROW AT YOUR OWN PACE</span>
             </div>
             <div className="leaf-hero-card__body">
-              <h2>把灵感，种进界面。</h2>
-              <p>简单的组件，装得下不简单的想法。</p>
+              <h2>{t('把灵感，种进界面。', 'Plant ideas in your interface.')}</h2>
+              <p>
+                {t(
+                  '简单的组件，装得下不简单的想法。',
+                  'Simple components for ideas with possibilities.',
+                )}
+              </p>
               <div>
                 <Button
                   size="sm"
@@ -108,12 +131,14 @@ export function HomeLayout() {
                   onClick={() => setLiked(!liked)}
                   aria-pressed={liked}
                 >
-                  {liked ? '灵感已收藏' : '让灵感生长'}
+                  {liked ? t('灵感已收藏', 'Idea saved') : t('让灵感生长', 'Let ideas grow')}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  aria-label={liked ? '取消收藏' : '收藏灵感'}
+                  aria-label={
+                    liked ? t('取消收藏', 'Remove saved idea') : t('收藏灵感', 'Save idea')
+                  }
                   aria-pressed={liked}
                   onClick={() => setLiked(!liked)}
                   startIcon={<Icon name={liked ? 'check' : 'heart'} />}
@@ -125,7 +150,7 @@ export function HomeLayout() {
             <span className="leaf-floating-note__icon">
               <Icon name="check" width="15" height="15" />
             </span>
-            <span>恰到好处的细节</span>
+            <span>{t('恰到好处的细节', 'Thoughtful details')}</span>
           </div>
           <div className="leaf-floating-note leaf-floating-note--bottom">
             <span className="leaf-floating-colors">
@@ -133,12 +158,12 @@ export function HomeLayout() {
               <i />
               <i />
             </span>
-            <span>你的品牌，你的颜色</span>
+            <span>{t('你的品牌，你的颜色', 'Your brand, your colors')}</span>
           </div>
           <span className="leaf-visual-caption">A LITTLE LEAF. A LOT OF POSSIBILITY.</span>
         </div>
       </section>
-      <section className="leaf-features" aria-label="设计理念">
+      <section className="leaf-features" aria-label={t('设计理念', 'Design principles')}>
         {features.map((feature) => (
           <article key={feature.number}>
             <div className="leaf-feature-heading">
@@ -154,11 +179,19 @@ export function HomeLayout() {
         <div className="leaf-section-heading">
           <div>
             <span className="leaf-eyebrow">MAKE IT YOURS</span>
-            <h2 id="playground-heading">自然，也可以有你的个性。</h2>
-            <p>换一种颜色，调一点圆角。看看 Leaf UI 如何融入你的产品。</p>
+            <h2 id="playground-heading">
+              {t('自然，也可以有你的个性。', 'Natural, with your personality.')}
+            </h2>
+            <p>
+              {t(
+                '换一种颜色，调一点圆角。看看 Leaf UI 如何融入你的产品。',
+                'Change colors and corners to make Leaf UI fit your product.',
+              )}
+            </p>
           </div>
-          <a href={withBase('/guide/theming.html')}>
-            了解主题定制 <Icon name="arrow" width="16" height="16" />
+          <a href={url('/guide/theming.html')}>
+            {t('了解主题定制', 'Explore theming')}
+            <Icon name="arrow" width="16" height="16" />
           </a>
         </div>
         <ThemePlayground />
@@ -169,14 +202,20 @@ export function HomeLayout() {
         </span>
         <div>
           <span className="leaf-eyebrow">SMALL START. THOUGHTFUL DETAILS.</span>
-          <h2>从日常表单，开始生长。</h2>
-          <p>统一尺寸，轻盈交互。把每一个基础细节，都照顾好。</p>
+          <h2>{t('从日常表单，开始生长。', 'Grow from everyday forms.')}</h2>
+          <p>
+            {t(
+              '统一尺寸，轻盈交互。把每一个基础细节，都照顾好。',
+              'Consistent controls and calm interactions, with care in every detail.',
+            )}
+          </p>
         </div>
         <a
           className="leaf-home-link leaf-home-link--secondary"
-          href={withBase('/components/index.html')}
+          href={url('/components/index.html')}
         >
-          探索基础组件 <Icon name="arrow" width="18" height="18" />
+          {t('探索基础组件', 'Explore components')}
+          <Icon name="arrow" width="18" height="18" />
         </a>
       </section>
       <footer className="leaf-home-footer">
@@ -184,7 +223,7 @@ export function HomeLayout() {
           <Icon name="leaf" width="17" height="17" />
           Leaf UI
         </span>
-        <p>让界面自然生长。</p>
+        <p>{t('让界面自然生长。', 'Let your interface grow naturally.')}</p>
         <span className="leaf-home-footer__credit">Built with React & Rspress</span>
       </footer>
     </main>

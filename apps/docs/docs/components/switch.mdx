@@ -33,7 +33,7 @@ loading 显示加载图标并阻止交互，可用于异步保存期间避免重
 | --- | --- | --- | --- |
 | `checked` / `defaultChecked` | `boolean` | — | 受控状态 / 非受控初始状态 |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 `event.target.checked` 读取开关状态 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 开关尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 开关尺寸 |
 | `loading` | `boolean` | `false` | 显示加载状态并禁用交互 |
 | `disabled` | `boolean` | `false` | 禁用交互 |
 | `children` | `ReactNode` | — | 可点击的文字标签 |
@@ -48,11 +48,3 @@ loading 显示加载图标并阻止交互，可用于异步保存期间避免重
 ```ts
 import type { SwitchProps, ControlSize } from '@sudden3/leaf-ui';
 ```
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |

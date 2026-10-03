@@ -28,6 +28,12 @@ pnpm preview
 
 在线站点：https://ifhover.github.io/leaf-ui/。仓库的 Pages 来源为 GitHub Actions，.github/workflows/pages.yml 在 main 推送或手动触发时检查源码、构建组件与文档，然后上传和部署静态产物。构建设置 `LEAF_DOCS_BASE=/leaf-ui/`，不需要提交 doc_build。
 
+## 中英文文档
+
+中文页面位于 docs/guide 与 docs/components，英文镜像位于 docs/en。英文示例位于 src/examples/en；代码围栏与预览引用同一份源码。theme/Layout 按 Rspress useLang 设置 ConfigProvider 语言。组件侧边栏键需分别使用 /components/ 与 /en/components/，指南同理。
+
+组件总览数据在 src/components/component-catalog.ts；缩略图使用静态 SVG，新增资产可通过 scripts/generate-feedback-thumbnails.mjs 生成。
+
 ## 内容与导航
 
 - `docs/guide/`：面向使用者的介绍、安装、快速开始、主题定制。

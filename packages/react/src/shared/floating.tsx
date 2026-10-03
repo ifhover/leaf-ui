@@ -4,6 +4,7 @@ import {
   type HTMLAttributes,
   type RefObject,
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -12,6 +13,9 @@ import {
 import { createPortal } from 'react-dom';
 import { tabbable } from 'tabbable';
 import type { LeafThemeStyle } from '../theme';
+import { inertAttribute } from './inert';
+import { OverlayOwner } from './overlay-owner';
+import { usePresence } from './presence';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -36,6 +40,7 @@ export function usePopupState(disabled?: boolean, onOpenChange?: (open: boolean)
 }
 
 interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
+  open: boolean;
   triggerRef: RefObject<HTMLElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
   matchWidth?: boolean;
@@ -43,6 +48,7 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
 
 /** Position a lazily mounted portal, preserving the trigger's scoped theme. */
 export function FloatingPanel({
+  open,
   triggerRef,
   panelRef,
   matchWidth,
@@ -50,6 +56,8 @@ export function FloatingPanel({
   children,
   ...props
 }: FloatingPanelProps) {
+  const owner = useContext(OverlayOwner);
+  const present = usePresence(open, panelRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
   const { refs, floatingStyles } = useFloating({
     placement: 'bottom-start',
@@ -83,7 +91,7 @@ export function FloatingPanel({
 
   useBrowserLayoutEffect(() => {
     const trigger = triggerRef.current;
-    if (!trigger) return;
+    if (!trigger || !present) return;
     refs.setReference(trigger);
     const syncTheme = () => {
       const computed = getComputedStyle(trigger);
@@ -109,11 +117,19 @@ export function FloatingPanel({
       ancestor = ancestor.parentElement;
     }
     return () => observer.disconnect();
-  }, [triggerRef, refs.setReference]);
+  }, [triggerRef, refs.setReference, present]);
 
-  if (typeof document === 'undefined') return null;
+  if (!present || typeof document === 'undefined') return null;
   return createPortal(
-    <div {...props} ref={setPanelRef} style={{ ...theme, ...style, ...floatingStyles }}>
+    <div
+      {...props}
+      ref={setPanelRef}
+      data-leaf-owner={owner}
+      data-state={open ? 'open' : 'closing'}
+      aria-hidden={!open || undefined}
+      inert={inertAttribute(!open)}
+      style={{ ...theme, ...style, ...floatingStyles }}
+    >
       {children}
     </div>,
     document.body,
@@ -183,11 +199,11 @@ export function useFloatingDismiss(
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('focusin', handleFocus);
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown, true);
       document.removeEventListener('focusin', handleFocus);
     };
   }, [open, onClose, panelRef, triggerRef]);

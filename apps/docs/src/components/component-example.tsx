@@ -1,6 +1,7 @@
 import './component-example.scss';
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { CopyButton } from './copy-button';
+import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 
 const COLLAPSED_HEIGHT = 172;
@@ -19,6 +20,7 @@ export function ComponentExample({
   children,
   fileName = 'example.tsx',
 }: ComponentExampleProps) {
+  const { t } = useDocsLocale();
   const [expanded, setExpanded] = useState(false);
   const [collapsible, setCollapsible] = useState(true);
   const [wrapCode, setWrapCode] = useState(false);
@@ -42,7 +44,7 @@ export function ComponentExample({
   return (
     <section
       className="leaf-component-example"
-      aria-label={`${title}示例`}
+      aria-label={t(`${title}示例`, `${title} example`)}
       data-expanded={expanded}
       data-collapsible={collapsible}
       data-wrap-code={wrapCode}
@@ -50,7 +52,7 @@ export function ComponentExample({
       <div className="leaf-component-example__preview-header">
         <span>
           <i />
-          交互预览
+          {t('交互预览', 'Live preview')}
         </span>
         <span>{title}</span>
       </div>
@@ -64,14 +66,14 @@ export function ComponentExample({
           <button
             type="button"
             className="leaf-component-example__wrap"
-            aria-label="切换代码换行"
-            title="切换代码换行"
+            aria-label={t('切换代码换行', 'Toggle line wrapping')}
+            title={t('切换代码换行', 'Toggle line wrapping')}
             aria-pressed={wrapCode}
             onClick={() => setWrapCode(!wrapCode)}
           >
             <Icon name="wrap" width="16" height="16" />
           </button>
-          <CopyButton text={copySource} label="复制代码" />
+          <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
         </div>
       </div>
       <div className="leaf-component-example__code-viewport" id={codeId}>
@@ -87,7 +89,7 @@ export function ComponentExample({
             aria-controls={codeId}
             onClick={() => setExpanded(!expanded)}
           >
-            {expanded ? '收起代码' : '展开代码'}
+            {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}
             <Icon name="chevron" width="14" height="14" />
           </button>
         </div>

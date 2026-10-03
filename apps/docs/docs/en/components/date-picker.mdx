@@ -1,0 +1,53 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DatePickerBasic, DatePickerControlled } from '../../../src/components/en-form-examples';
+
+# DatePicker
+
+Choose a date from a calendar.
+
+## Examples
+
+Values are Date objects in local time. onChange also supplies a YYYY-MM-DD string. Named fields submit this string. Arrow keys move days, Home / End move within a week, and PageUp / PageDown move months. Use [DateTimePicker](/en/components/date-time-picker) for time, or [DateRangePicker](/en/components/date-range-picker) for a range.
+
+<ComponentExample title="Basic selection" preview={<DatePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<DatePickerControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+## DatePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` / `defaultValue` | `Date \| null` | `null` | Controlled date / initial uncontrolled date |
+| `onChange` | `(date: Date \| null, dateString: string) => void` | — | Changed date; clearing returns null and an empty string |
+| `minDate` / `maxDate` | `Date` | — | Earliest / latest date, compared in local time |
+| `allowClear` | `boolean` | `true` | Show a clear button |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable the control and its panel |
+| `name` / `form` | `string` | — | Field name / associated form ID |
+| `required` | `boolean` | `false` | Require a date |
+| `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
+| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+
+## Types
+
+Import DatePickerProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { DatePickerProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

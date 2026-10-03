@@ -1,0 +1,63 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../../src/components/en-form-examples';
+
+# Input
+
+Enter a single line of text.
+
+## Examples
+
+Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix are decorative content. Standard name, required, type, form and aria-* properties are forwarded to the input; className and style apply to the container.
+
+<ComponentExample title="Basic input" preview={<InputBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<InputStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/states.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<InputControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/controlled.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Control sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/guide/control-sizes.tsx"
+```
+
+</ComponentExample>
+
+## Input API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `prefix` / `suffix` | `ReactNode` | — | Decorative content before / after the input |
+| `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Runs when Enter is pressed |
+| `value` / `defaultValue` | `string \| number \| readonly string[]` | — | Controlled value / initial uncontrolled value |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
+| `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+
+## Types
+
+Import InputProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { InputProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

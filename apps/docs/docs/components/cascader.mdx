@@ -41,8 +41,8 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 | `onChange` | [`(value: string[], selectedOptions: CascaderOption[]) => void`](#cascaderoption) | — | 末级选择完成或清除时触发 |
 | `allowClear` | `boolean` | `true` | 清除后返回两个空数组 |
 | `placeholder` | `string` | `'请选择'` | 未选择时的提示文字 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 选择器尺寸 |
-| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `disabled` | `boolean` | `false` | 禁用整个控件 |
 | `name` / `form` | `string` | — | 字段名 / 关联的表单 ID |
 | `required` | `boolean` | `false` | 要求选择一项 |
@@ -75,23 +75,6 @@ const options: CascaderOption[] = [
 | `label` | `string` | 必填 | 选项文字 |
 | `disabled` | `boolean` | `false` | 禁用该选项及其子级 |
 | `children` | [`readonly CascaderOption[]`](#cascaderoption) | — | 子选项；没有子选项时可确认选择 |
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |
-
-### ControlStatus
-
-| 值 | 说明 |
-| --- | --- |
-| `'error'` | 错误状态 |
-| `'warning'` | 警告状态 |
-
-未设置 `status` 时使用默认外观。
 
 ## 表单与键盘
 

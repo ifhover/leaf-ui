@@ -1,5 +1,7 @@
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { type ButtonHTMLAttributes, forwardRef, useEffect, useId, useRef, useState } from 'react';
+import { useLeafConfig } from '../config-provider/config-provider';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
@@ -50,13 +52,13 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     value,
     defaultValue = emptyPath,
     size = 'md',
-    status,
-    placeholder = '请选择',
+    status: statusProp,
+    placeholder,
     name,
     form,
-    required,
+    required: requiredProp,
     allowClear = true,
-    disabled,
+    disabled: disabledProp,
     className,
     style,
     onChange,
@@ -64,11 +66,21 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     onClick,
     onKeyDown,
     'aria-label': ariaLabel,
+    id: idProp,
+    'aria-describedby': ariaDescribedByProp,
     'aria-invalid': ariaInvalid,
     ...props
   },
   forwardedRef,
 ) {
+  const { locale, messages } = useLeafConfig();
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
+  const required = requiredProp ?? field?.required;
+  const status = statusProp ?? (field?.error ? 'error' : undefined);
+  const id = idProp ?? field?.id;
+  const ariaDescribedBy =
+    [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const ref = useMergedRef(triggerRef, forwardedRef);
@@ -136,6 +148,8 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         aria-haspopup="dialog"
         aria-controls={panelId}
         aria-label={ariaLabel}
+        id={id}
+        aria-describedby={ariaDescribedBy}
         aria-invalid={status === 'error' ? true : ariaInvalid}
         aria-required={required || undefined}
         onClick={(event) => {
@@ -167,13 +181,13 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         >
           {selectedOptions.length
             ? selectedOptions.map((option) => option.label).join(' / ')
-            : placeholder}
+            : placeholder || messages.select}
         </span>
         <ChevronDown size={16} aria-hidden="true" />
       </button>
       {allowClear && selectedValue.length > 0 && !disabled && (
         <ClearButton
-          label="清除级联选择"
+          label={messages.clearCascader}
           beforeArrow
           onClear={() => {
             setSelectedValue([]);
@@ -192,87 +206,85 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         value={selectedValue.length ? JSON.stringify(selectedValue) : ''}
         triggerRef={triggerRef}
       />
-      {open && (
-        <FloatingPanel
-          triggerRef={triggerRef}
-          panelRef={panelRef}
-          id={panelId}
-          className="leaf-floating leaf-cascader__panel"
-          role="dialog"
-          aria-label="级联选择"
-        >
-          <div className="leaf-cascader__columns">
-            {levels.map((level, depth) => (
-              <div
-                key={depth === 0 ? 'root' : draft[depth - 1]}
-                className="leaf-cascader__column"
-                data-level={depth}
-                role="listbox"
-                aria-label={`第 ${depth + 1} 级`}
-              >
-                {level.length ? (
-                  level.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="option"
-                      className="leaf-floating__option"
-                      aria-selected={draft[depth] === option.value}
-                      disabled={option.disabled}
-                      tabIndex={
-                        option.value ===
-                        (draft[depth] ?? level.find((item) => !item.disabled)?.value)
-                          ? 0
-                          : -1
-                      }
-                      onClick={() => {
+      <FloatingPanel
+        open={open}
+        triggerRef={triggerRef}
+        panelRef={panelRef}
+        id={panelId}
+        className="leaf-floating leaf-cascader__panel"
+        role="dialog"
+        aria-label={ariaLabel || messages.select}
+      >
+        <div className="leaf-cascader__columns">
+          {levels.map((level, depth) => (
+            <div
+              key={depth === 0 ? 'root' : draft[depth - 1]}
+              className="leaf-cascader__column"
+              data-level={depth}
+              role="listbox"
+              aria-label={locale === 'en-US' ? `Level ${depth + 1}` : `第 ${depth + 1} 级`}
+            >
+              {level.length ? (
+                level.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="option"
+                    className="leaf-floating__option"
+                    aria-selected={draft[depth] === option.value}
+                    disabled={option.disabled}
+                    tabIndex={
+                      option.value === (draft[depth] ?? level.find((item) => !item.disabled)?.value)
+                        ? 0
+                        : -1
+                    }
+                    onClick={() => {
+                      choose(option, depth);
+                      if (option.children?.length) setFocusLevel(depth + 1);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'ArrowRight' && option.children?.length) {
+                        event.preventDefault();
                         choose(option, depth);
-                        if (option.children?.length) setFocusLevel(depth + 1);
-                      }}
-                      onKeyDown={(event) => {
-                        if (event.key === 'ArrowRight' && option.children?.length) {
-                          event.preventDefault();
-                          choose(option, depth);
-                          setFocusLevel(depth + 1);
-                        } else if (event.key === 'ArrowLeft' && depth > 0) {
-                          event.preventDefault();
-                          setFocusLevel(depth - 1);
-                        } else if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                          event.preventDefault();
-                          const items = Array.from(
-                            event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                              'button:not(:disabled)',
-                            ) ?? [],
-                          );
-                          const index = items.indexOf(event.currentTarget);
-                          const next =
-                            event.key === 'Home'
-                              ? 0
-                              : event.key === 'End'
-                                ? items.length - 1
-                                : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) %
-                                  items.length;
-                          items[next]?.focus();
-                          items[next]?.scrollIntoView?.({ block: 'nearest' });
-                        }
-                      }}
-                    >
-                      <span>{option.label}</span>
-                      {option.children?.length ? (
-                        <ChevronRight size={14} aria-hidden="true" />
-                      ) : (
-                        draft[depth] === option.value && <Check size={14} aria-hidden="true" />
-                      )}
-                    </button>
-                  ))
-                ) : (
-                  <div className="leaf-floating__empty">暂无选项</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </FloatingPanel>
-      )}
+                        setFocusLevel(depth + 1);
+                      } else if (event.key === 'ArrowLeft' && depth > 0) {
+                        event.preventDefault();
+                        setFocusLevel(depth - 1);
+                      } else if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                        event.preventDefault();
+                        const items = Array.from(
+                          event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                            'button:not(:disabled)',
+                          ) ?? [],
+                        );
+                        const index = items.indexOf(event.currentTarget);
+                        const next =
+                          event.key === 'Home'
+                            ? 0
+                            : event.key === 'End'
+                              ? items.length - 1
+                              : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) %
+                                items.length;
+                        items[next]?.focus();
+                        items[next]?.scrollIntoView?.({ block: 'nearest' });
+                      }
+                    }}
+                  >
+                    <span>{option.label}</span>
+                    {option.children?.length ? (
+                      <ChevronRight size={14} aria-hidden="true" />
+                    ) : (
+                      draft[depth] === option.value && <Check size={14} aria-hidden="true" />
+                    )}
+                  </button>
+                ))
+              ) : (
+                <div className="leaf-floating__empty">{messages.empty}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </FloatingPanel>
     </div>
   );
 });

@@ -8,7 +8,7 @@ export function SwitchBasic() {
       <Switch disabled defaultChecked>
         已锁定
       </Switch>
-      <Switch loading aria-label="正在保存设置" />
+      <Switch loading>正在保存设置</Switch>
     </>
   );
 }

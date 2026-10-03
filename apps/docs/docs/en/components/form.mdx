@@ -1,0 +1,59 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { FormBasic } from '../../../src/examples/en/form/basic';
+import { FormLabelWidth } from '../../../src/examples/en/form/label-width';
+
+# Form
+
+Organize fields, labels and validation feedback, and collect form data.
+
+## Submission and validation
+
+<ComponentExample title="Submission and validation" preview={<FormBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/form/basic.tsx"
+```
+
+</ComponentExample>
+
+## Label widths
+
+<ComponentExample title="Label widths" preview={<FormLabelWidth />} fileName="label-width.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/form/label-width.tsx"
+```
+
+</ComponentExample>
+
+## Form API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `labelWidth` | `number \| 'auto'` | `'auto'` | A pixel width, or auto to align all labels to the widest label |
+| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Label and field layout |
+| `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment |
+| `disabled` | `boolean` | `false` | Disable Leaf controls inside the form |
+| `onSubmit / onReset` | `FormEventHandler<HTMLFormElement>` | — | Standard submit / reset events |
+| `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
+
+## FormField API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label / help / error` | `ReactNode` | — | Label / help text / application error |
+| `htmlFor` | `string` | Generated | The associated control ID; one field wraps one control or group |
+| `required` | `boolean` | `false` | Show the required mark and pass required to the control |
+| `labelWidth` | `number` | — | Override this field’s label width in pixels |
+
+## Types
+
+Import types when defining reusable component props or assembling options.
+
+```ts
+import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+By default, all labels in one Form use the width of its widest label. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
+
+Read named controls with FormData. Use required, type and minLength for basic validation; errors appear beside their fields. Pass application or server errors through error. Set noValidate when handling validation yourself. FormData contains strings, does not build nested objects, and omits unchecked checkboxes. Reset controlled fields in application state.

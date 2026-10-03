@@ -6,6 +6,7 @@ import {
   useImperativeHandle,
   useRef,
 } from 'react';
+import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 
@@ -16,9 +17,19 @@ export interface CheckboxProps
   indeterminate?: boolean;
 }
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
-  { size = 'md', indeterminate = false, className, style, disabled, children, ...props },
+  {
+    size = 'md',
+    indeterminate = false,
+    className,
+    style,
+    disabled: disabledProp,
+    children,
+    ...props
+  },
   ref,
 ) {
+  const field = useFormField();
+  const disabled = disabledProp ?? field?.disabled;
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
   useEffect(() => {
@@ -33,6 +44,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       <span className="leaf-checkbox__control">
         <input
           {...props}
+          id={props.id ?? field?.id}
+          required={props.required ?? field?.required}
+          aria-describedby={
+            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+          }
           ref={inputRef}
           type="checkbox"
           className="leaf-checkbox__input"

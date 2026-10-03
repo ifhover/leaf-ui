@@ -37,7 +37,7 @@ import { RadioBasic, RadioControlled } from '../../src/components/form-examples'
 | `name` | `string` | 自动生成 | 同组的字段名；提交表单时建议指定 |
 | `label` | `string` | — | 分组名称 |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 同组控件尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 同组控件尺寸 |
 | `disabled` / `required` | `boolean` | `false` | 禁用整组 / 要求选择一项 |
 | `ref` | `Ref<HTMLFieldSetElement>` | — | 分组引用 |
 
@@ -50,7 +50,7 @@ import { RadioBasic, RadioControlled } from '../../src/components/form-examples'
 | `name` | `string` | — | 相同字段名的单选框构成一组 |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 `event.target.value` 读取所选值 |
 | `disabled` / `required` | `boolean` | `false` | 禁用选项 / 要求选择一项 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 单选框尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 单选框尺寸 |
 | `children` | `ReactNode` | — | 可点击的选项标签 |
 | `ref` | `Ref<HTMLInputElement>` | — | 单选框引用 |
 
@@ -78,11 +78,3 @@ const options: RadioOption[] = [
 | `label` | `string` | 必填 | 选项文字 |
 | `value` | `string` | 必填 | 选项值，同组内应唯一 |
 | `disabled` | `boolean` | `false` | 禁用该选项 |
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |

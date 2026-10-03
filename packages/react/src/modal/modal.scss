@@ -1,0 +1,89 @@
+.leaf-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: var(--leaf-z-index-modal, 1100);
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: 24px;
+  animation: leaf-floating-in var(--leaf-motion-duration) ease;
+  &[data-state='closing'] {
+    animation: leaf-floating-out var(--leaf-motion-duration) ease forwards;
+    pointer-events: none;
+  }
+}
+.leaf-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  cursor: default;
+  background: #14201966;
+}
+.leaf-modal {
+  position: relative;
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  box-shadow: 0 24px 70px #14201933;
+  outline: none;
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px 10px;
+  }
+  &__header h2 {
+    flex: 1;
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    color: var(--leaf-color-text-muted);
+    background: transparent;
+    cursor: pointer;
+    &:hover {
+      background: var(--leaf-color-surface-muted);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+    }
+  }
+  &__body {
+    overflow: auto;
+    padding: 10px 22px 20px;
+  }
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--leaf-color-border);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-modal-mask,
+  .leaf-modal-mask[data-state='closing'] {
+    animation: none;
+  }
+}
+.leaf-modal {
+  --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
+}

@@ -1,0 +1,74 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../../src/components/en-form-examples';
+
+# Select
+
+Choose one option from a dropdown list.
+
+## Examples
+
+Use options with unique nonempty string values. onChange returns the value and option; clearing returns an empty string and undefined. Arrow keys highlight options, Enter selects, Escape closes and Tab moves on.
+
+<ComponentExample title="Basic selection" preview={<SelectBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Controlled value and validation" preview={<SelectControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/controlled.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<SelectTheme />} fileName="theme.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/theme.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Control sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/guide/control-sizes.tsx"
+```
+
+</ComponentExample>
+
+## Select API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `options` | [`readonly SelectOption[]`](#selectoption) | Required | Options |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `value` / `defaultValue` | `string` | `''` | Controlled value / initial uncontrolled value |
+| `onChange` | [`(value: string, option?: SelectOption) => void`](#selectoption) | — | Returns value and option; clearing returns an empty string and undefined |
+| `allowClear` | `boolean` | `false` | Show a clear button |
+| `disabled` | `boolean` | `false` | Disable the control |
+| `name` / `form` | `string` | — | Field name / associated form ID |
+| `required` | `boolean` | `false` | Require a selection |
+| `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
+| `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+### SelectOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Unique option value; empty strings are reserved |
+| `label` | `ReactNode` | Required | Option content; a string or React node |
+| `disabled` | `boolean` | `false` | Disable the option |
+
+## Types
+
+Import SelectProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { SelectProps, SelectOption } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

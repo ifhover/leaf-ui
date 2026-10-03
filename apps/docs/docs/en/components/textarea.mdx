@@ -1,0 +1,49 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TextareaBasic, TextareaControlled } from '../../../src/components/en-form-examples';
+
+# Textarea
+
+Enter multiple lines of text.
+
+## Examples
+
+Use rows for initial height and resize for manual resizing. Standard maxLength, name, required and form attributes are supported. Controlled values update through onChange. className and style apply to the container.
+
+<ComponentExample title="Interactive example" preview={<TextareaBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/basic.tsx"
+```
+
+</ComponentExample>
+
+<ComponentExample title="Interactive example" preview={<TextareaControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/controlled.tsx"
+```
+
+</ComponentExample>
+
+## Textarea API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `rows` | `number` | `3` | Initial visible rows |
+| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | Allowed manual resizing direction |
+| `value` / `defaultValue` | `string \| number \| readonly string[]` | — | Controlled value / initial uncontrolled value |
+| `onChange` | `ChangeEventHandler<HTMLTextAreaElement>` | — | Read event.target.value |
+| `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only |
+| `ref` | `Ref<HTMLTextAreaElement>` | — | DOM reference |
+
+## Types
+
+Import TextareaProps to describe component props. Option types in the API table link to their detailed fields above.
+
+```ts
+import type { TextareaProps } from '@sudden3/leaf-ui';
+```
+
+## Forms and localization
+
+Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

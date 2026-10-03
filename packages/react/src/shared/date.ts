@@ -27,16 +27,16 @@ export function shiftMonth(date: Date, amount: number) {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1);
 }
 
-export function formatDateLabel(date: Date) {
-  return new Intl.DateTimeFormat('zh-CN', {
+export function formatDateLabel(date: Date, locale = 'zh-CN') {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(date);
 }
 
-export function formatMonthLabel(date: Date) {
-  return new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long' }).format(date);
+export function formatMonthLabel(date: Date, locale = 'zh-CN') {
+  return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(date);
 }
 
 export function isBeforeDay(left: Date, right: Date) {

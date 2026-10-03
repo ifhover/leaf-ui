@@ -39,8 +39,8 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 | `onSelect` | [`(value: string, option: AutoCompleteOption) => void`](#autocompleteoption) | — | 选择建议时触发 |
 | `onSearch` | `(query: string) => void` | — | 用户输入时触发，选择建议时不触发 |
 | `filterOption` | [`false \| ((query: string, option: AutoCompleteOption) => boolean)`](#autocompleteoption) | 包含匹配 | `false` 关闭本地过滤；函数可定制过滤 |
-| `size` | [`ControlSize`](#controlsize) | `'md'` | 输入框尺寸 |
-| `status` | [`ControlStatus`](#controlstatus) | — | 校验状态 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `disabled` / `readOnly` | `boolean` | `false` | 禁用 / 只读时不打开建议面板 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
@@ -66,23 +66,6 @@ const options: AutoCompleteOption[] = [
 | `value` | `string` | 必填 | 唯一建议值，选择后填入输入框 |
 | `label` | `string` | `value` | 建议的显示文字，也用于默认的本地过滤 |
 | `disabled` | `boolean` | `false` | 禁用该建议 |
-
-### ControlSize
-
-| 值 | 说明 |
-| --- | --- |
-| `'sm'` | 小尺寸 |
-| `'md'` | 中尺寸，默认值 |
-| `'lg'` | 大尺寸 |
-
-### ControlStatus
-
-| 值 | 说明 |
-| --- | --- |
-| `'error'` | 错误状态 |
-| `'warning'` | 警告状态 |
-
-未设置 `status` 时使用默认外观。
 
 ## 键盘与表单
 

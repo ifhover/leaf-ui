@@ -1,0 +1,40 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ModalBasic } from '../../src/examples/modal/basic';
+
+# Modal 弹窗
+
+在弹窗中展示内容或完成操作。
+
+## 编辑内容
+
+<ComponentExample title="编辑内容" preview={<ModalBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/modal/basic.tsx"
+```
+
+</ComponentExample>
+
+## Modal API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | 必填 | 是否显示弹窗 |
+| `title / children / footer` | `ReactNode` | — | 标题 / 内容 / 自定义底部 |
+| `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
+| `closable / maskClosable / keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
+| `afterClose` | `() => void` | — | 关闭动画完成后触发 |
+
+## 类型
+
+定义组件属性或组装变量时可导入相关类型。
+
+```ts
+import type { ModalProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+弹窗打开后聚焦内部控件，Tab 在弹窗中移动；Escape 关闭后恢复触发前的焦点。maskClosable、keyboard 可分别关闭遮罩、键盘退出。没有 title 时请提供 aria-label。
+
+footer 可放确认、取消等操作；也可以在内容中使用 Form。弹窗中的选择器浮层沿用区域主题。

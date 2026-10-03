@@ -1,0 +1,143 @@
+.leaf-calendar {
+  min-width: 260px;
+  padding: 8px;
+  box-sizing: border-box;
+  &__heading {
+    padding: 5px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+    }
+    &:disabled {
+      cursor: default;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+    }
+  }
+  &__weekdays,
+  &__cells {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+  }
+  &__cells {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  &__weekdays {
+    color: var(--leaf-color-text-muted);
+    text-align: center;
+    font-size: 11px;
+    padding: 5px 0;
+  }
+  &__cells--coarse {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    .leaf-date-picker__day {
+      min-height: 42px;
+      width: 100%;
+    }
+  }
+  &__in-range {
+    background: color-mix(in srgb, var(--leaf-color-primary) 9%, transparent);
+  }
+}
+.leaf-datetime-panel,
+.leaf-range-panel {
+  padding: 0;
+}
+.leaf-datetime-panel__body {
+  display: flex;
+  .leaf-calendar {
+    flex: 0 0 280px;
+  }
+  .leaf-time-picker__columns {
+    padding: 8px;
+    border-left: 1px solid var(--leaf-color-border);
+    min-width: 180px;
+  }
+}
+.leaf-picker-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--leaf-color-border);
+  font-size: 12px;
+  color: var(--leaf-color-text-muted);
+  > button {
+    padding: 5px 14px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    font: inherit;
+    color: var(--leaf-color-on-primary);
+    background: var(--leaf-color-primary);
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+.leaf-date-range-picker {
+  min-width: 260px;
+}
+.leaf-range-panel__endpoints {
+  display: flex;
+  border-bottom: 1px solid var(--leaf-color-border);
+  > button {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    &[aria-pressed='true'] {
+      color: var(--leaf-color-primary);
+      border-bottom-color: var(--leaf-color-primary);
+    }
+    > span {
+      display: block;
+      margin-top: 3px;
+      white-space: nowrap;
+      font-size: 11px;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: -2px;
+    }
+  }
+}
+@media (max-width: 560px) {
+  .leaf-datetime-panel__body {
+    flex-direction: column;
+    .leaf-calendar {
+      flex-basis: auto;
+    }
+    .leaf-time-picker__columns {
+      border-left: 0;
+      border-top: 1px solid var(--leaf-color-border);
+    }
+    .leaf-time-picker__column {
+      max-height: 130px;
+    }
+  }
+}
