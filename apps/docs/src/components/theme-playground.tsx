@@ -83,7 +83,7 @@ export function ThemePlayground() {
             </Button>
           </div>
           <div className="leaf-preview-card__footer">
-            <span className="leaf-avatar">L</span>
+            <span className="leaf-preview-avatar">L</span>
             <span>{t('为下一个好想法，留一点空间。', 'Make room for the next good idea.')}</span>
             <Icon name="sparkles" width="16" height="16" />
           </div>
