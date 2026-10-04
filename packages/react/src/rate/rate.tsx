@@ -18,6 +18,8 @@ export interface RateProps
   readOnly?: boolean;
   size?: ControlSize;
   color?: string;
+  colorByValue?: boolean;
+  colors?: readonly [string, string, string];
   name?: string;
   form?: string;
   required?: boolean;
@@ -33,6 +35,8 @@ export function Rate({
   readOnly = false,
   size = 'md',
   color,
+  colorByValue = false,
+  colors = ['#ef5350', '#f49b23', '#ffc53d'],
   name,
   form,
   required: requiredProp,
@@ -56,6 +60,11 @@ export function Rate({
   const [hovered, setHovered] = useState<number>();
   const [focused, setFocused] = useState<number>();
   const displayed = disabled || readOnly ? selected : (hovered ?? selected);
+  const activeColor =
+    color ??
+    (colorByValue
+      ? colors[displayed / maximum <= 0.4 ? 0 : displayed / maximum <= 0.7 ? 1 : 2]
+      : undefined);
   const values = Array.from({ length: maximum / step }, (_, index) => (index + 1) * step);
   const focusValue = values.includes(focused ?? 0) ? focused : selected || step;
   const choose = (next: number) => {
@@ -79,7 +88,7 @@ export function Rate({
         [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
       }
       className={classes('leaf-rate', `leaf-rate--${size}`, className)}
-      style={{ ...(color ? { '--leaf-rate-color': color } : {}), ...style }}
+      style={{ ...(activeColor ? { '--leaf-rate-color': activeColor } : {}), ...style }}
       onPointerLeave={() => setHovered(undefined)}
       onBlur={(event) => {
         props.onBlur?.(event);

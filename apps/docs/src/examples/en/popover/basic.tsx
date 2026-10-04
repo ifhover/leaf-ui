@@ -1,25 +1,15 @@
-import { Button, Input, Popover } from '@sudden3/leaf-ui';
-
+import { Button, Popover } from '@sudden3/leaf-ui';
 export function PopoverBasic() {
   return (
     <div className="leaf-demo-row">
-      <Popover
-        title="Project details"
-        content={
-          <div className="leaf-demo-stack">
-            <Input aria-label="Project name" defaultValue="Leaf Garden" />
-            <Button>Save</Button>
-          </div>
-        }
-        width={260}
-      >
-        <Button variant="outline">Click to edit</Button>
+      <Popover title="Project details" content="See project details and recent updates here.">
+        <Button variant="outline">Click for details</Button>
       </Popover>
       <Popover
-        title="Details"
+        title="Hint"
         trigger="hover"
         placement="right"
-        content="Read more details about this project."
+        content="Find more project information here."
       >
         <Button variant="soft">Hover for details</Button>
       </Popover>

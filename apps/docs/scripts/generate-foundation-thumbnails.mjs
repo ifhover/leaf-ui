@@ -6,6 +6,9 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  CircleCheck,
+  File,
+  Folder,
   Info,
   LoaderCircle,
   Star,
@@ -41,11 +44,12 @@ const images = {
     text(38, 30, 'Project details', '#6c7c71', 10) +
     '<path d="M25 58h52m84 0h54M25 95h190" stroke="#dce5de"/>' +
     text(92, 62, 'Settings', '#203329', 10),
-  empty:
-    icon(UserRound, 104, 20, '#bddcc7', 32) +
-    text(85, 75, 'No projects yet', '#6c7c71', 9) +
+  result:
+    circle(120, 42, 24, '#eaf4ed') +
+    icon(CircleCheck, 105, 27, '#20834a', 30) +
+    text(82, 79, 'Project created', '#203329', 11) +
     rect(83, 86, 76, 24, '#20834a', 'none', 5) +
-    text(93, 102, 'Create project', '#fff', 9),
+    text(92, 102, 'Open project', '#fff', 9),
   skeleton:
     circle(43, 39, 17, '#dce5de') +
     rect(73, 26, 93, 12, '#e1e9e3', 'none', 5) +
@@ -72,7 +76,7 @@ const images = {
     text(200, 86, '100', '#6c7c71', 9),
   rate:
     [0, 1, 2, 3, 4]
-      .map((i) => icon(Star, 32 + i * 37, 44, i < 4 ? '#b78221' : '#dce5de', 28))
+      .map((i) => icon(Star, 32 + i * 37, 44, i < 4 ? '#ffc53d' : '#dce5de', 28))
       .join('') + text(89, 96, '4 / 5 rating', '#6c7c71', 10),
   steps:
     '<path d="M40 43h164" stroke="#dce5de"/>' +
@@ -194,6 +198,36 @@ const images = {
     icon(ChevronUp, 181, 44, '#6c7c71', 11) +
     icon(ChevronDown, 181, 61, '#6c7c71', 11) +
     text(59, 98, 'Range 0–20 · Step 1', '#6c7c71', 9),
+  tree:
+    icon(ChevronDown, 28, 19, '#6c7c71', 12) +
+    icon(Folder, 45, 18) +
+    text(66, 29, 'Design resources') +
+    icon(File, 65, 44, '#6c7c71') +
+    text(86, 55, 'Components', '#6c7c71') +
+    rect(51, 66, 166, 24, '#eaf4ed', 'none', 5) +
+    icon(File, 65, 72) +
+    text(86, 83, 'Brand colors', '#20834a') +
+    icon(ChevronRight, 28, 101, '#6c7c71', 12) +
+    icon(Folder, 45, 100) +
+    text(66, 111, 'Engineering'),
+  'tree-select':
+    rect(27, 9, 186, 28) +
+    text(39, 27, 'Visual design') +
+    icon(ChevronDown, 191, 17, '#6c7c71', 12) +
+    rect(27, 43, 186, 76) +
+    icon(ChevronDown, 35, 50, '#6c7c71', 12) +
+    text(55, 60, 'Design') +
+    rect(36, 69, 168, 22, '#eaf4ed', 'none', 4) +
+    text(66, 84, 'Visual design', '#20834a') +
+    icon(Check, 184, 74, '#20834a', 12) +
+    text(66, 108, 'Product design', '#6c7c71'),
+  'color-picker':
+    '<defs><linearGradient id="c" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#20834a"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="h"><stop stop-color="#f00"/><stop offset=".2" stop-color="#ff0"/><stop offset=".4" stop-color="#0f0"/><stop offset=".6" stop-color="#0ff"/><stop offset=".8" stop-color="#00f"/><stop offset="1" stop-color="#f00"/></linearGradient></defs>' +
+    rect(54, 8, 132, 111) +
+    rect(63, 17, 114, 57, 'url(#c)', 'none', 5) +
+    circle(128, 36, 4, '#fff') +
+    rect(63, 83, 114, 6, 'url(#h)', 'none', 3) +
+    text(77, 108, '#20834A', '#6c7c71', 10),
 };
 for (const [slug, content] of Object.entries(images))
   await writeFile(

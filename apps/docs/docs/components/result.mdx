@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ResultBasic } from '../../src/examples/result/basic';
+import { ResultStates } from '../../src/examples/result/states';
+import { ResultCustom } from '../../src/examples/result/custom';
+
+# Result 结果
+
+展示操作结果、空数据或需要关注的状态。
+
+## 操作结果
+
+<ComponentExample title="操作结果" preview={<ResultBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/result/basic.tsx"
+```
+
+</ComponentExample>
+
+## 空数据与其他状态
+
+<ComponentExample title="空数据与其他状态" preview={<ResultStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/result/states.tsx"
+```
+
+</ComponentExample>
+
+## 自定义内容
+
+<ComponentExample title="自定义内容" preview={<ResultCustom />} fileName="custom.tsx">
+
+```tsx lineNumbers file="../../src/examples/result/custom.tsx"
+```
+
+</ComponentExample>
+
+## Result API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `status` | `'empty' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'empty'` | 结果状态 |
+| `title / description` | `ReactNode` | 语言默认标题 / — | 标题 / 说明，null 隐藏 |
+| `icon` | `ReactNode` | 状态图标 | 自定义图标；null 隐藏 |
+| `extra` | `ReactNode` | — | 底部按钮或链接 |
+| `children` | `ReactNode` | — | 补充信息 |
+| `size` | `'sm' \| 'md'` | `'md'` | 内容间距和图标大小 |
+
+
+## 类型
+
+可导入以下类型定义属性、组装数据或处理回调。
+
+```ts
+import type { ResultProps } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+空数据使用 `status="empty"`，成功、警告、错误与信息状态有对应图标和颜色。传入 `icon`、`title`、`description` 和 `extra` 可自定义内容。
+
+原来的 `Empty` 仍保留兼容入口，建议迁移为 `Result`：`image` 改为 `icon`，`description` 改为 `title`，原本的操作按钮移到 `extra`。

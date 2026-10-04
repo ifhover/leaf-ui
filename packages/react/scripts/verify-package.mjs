@@ -31,6 +31,10 @@ const components = [
   ],
   ['Divider', {}, null, /role="separator"/],
   ['Empty', {}, null, /leaf-empty/],
+  ['Result', { status: 'success' }, null, /leaf-result/],
+  ['ColorPicker', { defaultValue: '#20834a' }, null, /leaf-color-picker/],
+  ['Tree', { data: [{ key: 'leaf', title: 'Leaf' }] }, null, /role="tree"/],
+  ['TreeSelect', { options: [{ value: 'leaf', label: 'Leaf' }] }, null, /role="combobox"/],
   ['Skeleton', { rows: 2 }, null, /role="status"/],
   ['Slider', { defaultValue: 20 }, null, /type="range"/],
   ['Rate', { defaultValue: 3 }, null, /role="radiogroup"/],
@@ -190,11 +194,14 @@ for (const name of [
   'card',
   'collapse',
   'divider',
-  'empty',
   'skeleton',
   'slider',
   'rate',
   'popover',
+  'result',
+  'tree',
+  'tree-select',
+  'color-picker',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }

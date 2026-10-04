@@ -1,0 +1,136 @@
+@use '../styles/mixins' as mixins;
+.leaf-tree-select {
+  @include mixins.field;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--leaf-current-control-height);
+  padding: 0 30px 0 10px;
+  cursor: pointer;
+  &[data-clearable] {
+    padding-right: 54px;
+  }
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+  }
+  &__input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 24px;
+  }
+  &__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(var(--leaf-current-control-height) - 2px);
+    min-width: 0;
+    border: 0;
+    padding: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    &--caption {
+      color: transparent;
+      caret-color: var(--leaf-color-text);
+    }
+    &:read-only {
+      cursor: pointer;
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &::placeholder {
+      color: var(--leaf-color-text-muted);
+    }
+  }
+  &__value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__arrow,
+  &__clear {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    color: var(--leaf-color-text-muted);
+    background: transparent;
+    cursor: pointer;
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+  &__clear {
+    right: 30px;
+    &:hover {
+      color: var(--leaf-color-text);
+    }
+  }
+  &__arrow svg {
+    transition: transform var(--leaf-motion-duration);
+  }
+  &[data-open] &__arrow svg {
+    transform: rotate(180deg);
+  }
+  &--multiple {
+    padding-block: 3px;
+  }
+  &--multiple &__input {
+    height: calc(var(--leaf-current-control-height) - 8px);
+  }
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 1px 5px;
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-surface-muted);
+    font-size: 12px;
+    > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    > button {
+      display: grid;
+      place-items: center;
+      padding: 1px;
+      border: 0;
+      border-radius: 2px;
+      color: var(--leaf-color-text-muted);
+      background: transparent;
+      cursor: pointer;
+    }
+  }
+  &__panel {
+    padding: 6px;
+    .leaf-tree__row {
+      white-space: nowrap;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-tree-select__arrow svg {
+    transition: none;
+  }
+}

@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { AvatarBasic } from '../../../src/examples/en/avatar/basic';
+import { AvatarImage } from '../../../src/examples/en/avatar/image';
+import { AvatarFallback } from '../../../src/examples/en/avatar/fallback';
 
 # Avatar
 
-Display a user, team or object avatar.
+Display an avatar for a user, team or object.
 
-## Basic usage
+## Sizes and shapes
 
-<ComponentExample title="Basic usage" preview={<AvatarBasic />} fileName="basic.tsx">
+<ComponentExample title="Sizes and shapes" preview={<AvatarBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Image avatars
+
+<ComponentExample title="Image avatars" preview={<AvatarImage />} fileName="image.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/avatar/image.tsx"
+```
+
+</ComponentExample>
+
+## Fallbacks and defaults
+
+<ComponentExample title="Fallbacks and defaults" preview={<AvatarFallback />} fileName="fallback.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/avatar/fallback.tsx"
 ```
 
 </ComponentExample>
@@ -18,17 +38,18 @@ Display a user, team or object avatar.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `src` | `string` | — | Image source |
-| `alt` | `string` | — | Accessible name |
-| `size` | `'sm' \| 'md' \| 'lg' \| number` | `'md'` | Preset size or size in pixels |
-| `shape` | `'circle' \| 'square'` | `'circle'` | Avatar shape |
-| `icon` | `ReactNode` | — | Fallback icon |
-| `children` | `ReactNode` | — | Text or custom content, also displayed when the image fails |
-| `onError` | `() => void` | — | Called when the image fails |
+| `src / srcSet` | `string` | — | Image source / responsive candidates |
+| `alt` | `string` | Text or localized default | Accessible name |
+| `imageProps` | `Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' \| 'srcSet' \| 'alt' \| 'onError'>` | — | Image attributes such as loading, sizes, crossOrigin and objectFit styles |
+| `onError` | `() => void` | — | Image loading error callback |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | `'md'` | Preset size or pixel value |
+| `shape` | `'circle' \| 'square'` | `'circle'` | Shape |
+| `icon / children` | `ReactNode` | — | Fallback icon / text |
+
 
 ## Types
 
-Import the exported types when defining props or building item lists.
+Import these types to define props or prepare data.
 
 ```ts
 import type { AvatarProps } from '@sudden3/leaf-ui';
@@ -36,4 +57,4 @@ import type { AvatarProps } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-Supply alt to name the avatar. A failed image falls back to children or icon; changing src retries the new image.
+Failed images fall back to children, icon or the default avatar. Changing the source retries loading. Alt provides an accessible name without duplicate image announcements. Use imageProps.style to customize cropping.

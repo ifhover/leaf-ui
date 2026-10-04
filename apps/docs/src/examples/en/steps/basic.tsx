@@ -10,7 +10,10 @@ export function StepsBasic() {
   const [current, setCurrent] = useState(1);
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Steps items={items} current={current} onChange={setCurrent} />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Interactive steps</span>
+        <Steps items={items} current={current} onChange={setCurrent} />
+      </div>
       <div className="leaf-demo-row">
         <Button variant="outline" disabled={current === 0} onClick={() => setCurrent(current - 1)}>
           Previous
@@ -19,7 +22,10 @@ export function StepsBasic() {
           Next
         </Button>
       </div>
-      <Steps items={items} current={1} direction="vertical" status="error" size="sm" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Error feedback</span>
+        <Steps items={items} current={1} direction="vertical" status="error" size="sm" />
+      </div>
     </div>
   );
 }

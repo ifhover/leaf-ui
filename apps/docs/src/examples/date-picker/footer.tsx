@@ -9,16 +9,19 @@ export function DatePickerFooter() {
     setValue(next);
   };
   return (
-    <DatePicker
-      aria-label="自定义快捷日期"
-      value={value}
-      onChange={setValue}
-      todayText="今天"
-      renderExtraFooter={
-        <Button variant="ghost" size="sm" onClick={tomorrow}>
-          明天
-        </Button>
-      }
-    />
+    <div className="leaf-demo-case">
+      <span className="leaf-demo-label">自定义快捷日期</span>
+      <DatePicker
+        aria-label="自定义快捷日期"
+        value={value}
+        onChange={setValue}
+        todayText="今天"
+        renderExtraFooter={
+          <Button variant="ghost" size="sm" onClick={tomorrow}>
+            明天
+          </Button>
+        }
+      />
+    </div>
   );
 }

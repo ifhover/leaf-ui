@@ -19,9 +19,18 @@ const items: readonly TabItem[] = [
 export function TabsBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Tabs aria-label="项目信息" items={items} />
-      <Tabs items={items} type="card" size="sm" />
-      <Tabs items={items} placement="left" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">线形标签</span>
+        <Tabs aria-label="项目信息" items={items} />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">卡片标签</span>
+        <Tabs items={items} type="card" size="sm" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">纵向标签</span>
+        <Tabs items={items} placement="left" />
+      </div>
     </div>
   );
 }

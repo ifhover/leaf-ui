@@ -13,10 +13,13 @@ const items: readonly TabItem[] = [
     label: 'Settings',
     icon: <Settings />,
     children: (
-      <Input
-        aria-label="Project name"
-        placeholder="Type, switch tabs, and your draft is preserved"
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Project name</span>
+        <Input
+          aria-label="Project name"
+          placeholder="Type, switch tabs, and your draft is preserved"
+        />
+      </div>
     ),
   },
   { key: 'history', label: 'History', disabled: true, children: null },
@@ -24,9 +27,18 @@ const items: readonly TabItem[] = [
 export function TabsBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Tabs aria-label="Project information" items={items} />
-      <Tabs items={items} type="card" size="sm" />
-      <Tabs items={items} placement="left" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Line tabs</span>
+        <Tabs aria-label="Project information" items={items} />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Card tabs</span>
+        <Tabs items={items} type="card" size="sm" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Vertical tabs</span>
+        <Tabs items={items} placement="left" />
+      </div>
     </div>
   );
 }

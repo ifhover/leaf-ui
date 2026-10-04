@@ -13,23 +13,29 @@ export function AutoCompleteBasic() {
   const [selected, setSelected] = useState('');
   return (
     <div className="leaf-demo-stack">
-      <AutoComplete
-        aria-label="Project name"
-        placeholder="Type Leaf or enter any text"
-        options={options}
-        value={value}
-        onChange={setValue}
-        onSelect={setSelected}
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Project name</span>
+        <AutoComplete
+          aria-label="Project name"
+          placeholder="Type Leaf or enter any text"
+          options={options}
+          value={value}
+          onChange={setValue}
+          onSelect={setSelected}
+        />
+      </div>
       <span className="leaf-demo-note">
         Input:{value || 'Empty'} · Last selection:{selected || 'None'}
       </span>
-      <AutoComplete
-        aria-label="Disabled suggestions"
-        options={options}
-        disabled
-        defaultValue="Leaf Garden"
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Disabled suggestions</span>
+        <AutoComplete
+          aria-label="Disabled suggestions"
+          options={options}
+          disabled
+          defaultValue="Leaf Garden"
+        />
+      </div>
     </div>
   );
 }

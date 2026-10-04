@@ -12,8 +12,14 @@ const items: CollapseItem[] = [
 export function CollapseBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Collapse items={items} defaultActiveKey="about" />
-      <Collapse items={items} accordion size="sm" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">自由展开</span>
+        <Collapse items={items} defaultActiveKey="about" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">手风琴 · 紧凑尺寸</span>
+        <Collapse items={items} accordion size="sm" />
+      </div>
     </div>
   );
 }

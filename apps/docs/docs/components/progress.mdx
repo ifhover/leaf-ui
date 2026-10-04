@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ProgressBasic } from '../../src/examples/progress/basic';
+import { ProgressStates } from '../../src/examples/progress/states';
+import { ProgressCircles } from '../../src/examples/progress/circles';
 
 # Progress 进度条
 
 展示任务的完成程度。
 
-## 基础用法
+## 交互进度
 
-<ComponentExample title="基础用法" preview={<ProgressBasic />} fileName="basic.tsx">
+<ComponentExample title="交互进度" preview={<ProgressBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/progress/basic.tsx"
+```
+
+</ComponentExample>
+
+## 进度状态
+
+<ComponentExample title="进度状态" preview={<ProgressStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/progress/states.tsx"
+```
+
+</ComponentExample>
+
+## 圆形进度
+
+<ComponentExample title="圆形进度" preview={<ProgressCircles />} fileName="circles.tsx">
+
+```tsx lineNumbers file="../../src/examples/progress/circles.tsx"
 ```
 
 </ComponentExample>

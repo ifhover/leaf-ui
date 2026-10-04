@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { RateBasic } from '../../../src/examples/en/rate/basic';
+import { RateColors } from '../../../src/examples/en/rate/colors';
+import { RateStates } from '../../../src/examples/en/rate/states';
 
 # Rate
 
 Select or display a rating.
 
-## Basic usage
+## Choose a rating
 
-<ComponentExample title="Basic usage" preview={<RateBasic />} fileName="basic.tsx">
+<ComponentExample title="Choose a rating" preview={<RateBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/rate/basic.tsx"
+```
+
+</ComponentExample>
+
+## Colors by score
+
+<ComponentExample title="Colors by score" preview={<RateColors />} fileName="colors.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/rate/colors.tsx"
+```
+
+</ComponentExample>
+
+## Read-only and disabled
+
+<ComponentExample title="Read-only and disabled" preview={<RateStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/rate/states.tsx"
 ```
 
 </ComponentExample>
@@ -20,17 +40,20 @@ Select or display a rating.
 | --- | --- | --- | --- |
 | `value / defaultValue` | `number` | `0` | Controlled / initial rating |
 | `onChange` | `(value: number) => void` | — | Rating changes |
-| `count` | `number` | `5` | Stars, from 1 to 20 |
-| `allowHalf / allowClear` | `boolean` | `false / true` | Half ratings / click again to clear |
-| `disabled / readOnly` | `boolean` | `false` | Disabled / read only |
+| `count` | `number` | `5` | Number of stars, up to 20 |
+| `allowHalf / allowClear` | `boolean` | `false / true` | Half stars / click again to clear |
+| `readOnly / disabled` | `boolean` | `false` | Read-only / disabled |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Star size |
-| `color` | `string` | Theme warning color | Rating color |
-| `name / form` | `string` | — | Field name / form ID |
+| `color` | `string` | `'#ffc53d'` | Fixed color; takes precedence over score colors |
+| `colorByValue` | `boolean` | `false` | Use low, medium and high score colors |
+| `colors` | `readonly [string, string, string]` | `['#ef5350', '#f49b23', '#ffc53d']` | Low, medium and high colors, with thresholds of 40% and 70% |
+| `name / form` | `string` | — | Field name / associated form |
 | `required` | `boolean` | `false` | Require a nonzero rating |
+
 
 ## Types
 
-Import the exported types when defining props or building item lists.
+Import these types to define props or prepare data.
 
 ```ts
 import type { RateProps } from '@sudden3/leaf-ui';
@@ -38,4 +61,4 @@ import type { RateProps } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-Arrow keys change the rating, Home / End select the first or last rating, and Delete or Backspace clears it. Set name to read ratings with FormData. required participates in form validation; uncontrolled ratings support reset.
+Hover previews the score and color; leaving restores the selected value. Arrow keys adjust rating, Home/End jump to the ends and Delete/Backspace clear. Read-only preserves display; disabled also prevents interaction. Supports FormData and uncontrolled form reset.

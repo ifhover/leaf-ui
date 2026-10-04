@@ -26,17 +26,26 @@ export function InputNumberBasic() {
           prefix="¥"
         />
       </div>
-      <InputNumber
-        aria-label="百分比"
-        defaultValue={50}
-        min={0}
-        max={100}
-        suffix="%"
-        controls={false}
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">百分比</span>
+        <InputNumber
+          aria-label="百分比"
+          defaultValue={50}
+          min={0}
+          max={100}
+          suffix="%"
+          controls={false}
+        />
+      </div>
       <div className="leaf-demo-row">
-        <InputNumber aria-label="只读" defaultValue={12} readOnly />
-        <InputNumber aria-label="禁用" defaultValue={8} disabled />
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">只读</span>
+          <InputNumber aria-label="只读" defaultValue={12} readOnly />
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">禁用</span>
+          <InputNumber aria-label="禁用" defaultValue={8} disabled />
+        </div>
       </div>
       <p className="leaf-demo-note">当前数量：{value ?? '未填写'}</p>
     </div>

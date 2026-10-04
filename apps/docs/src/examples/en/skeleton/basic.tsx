@@ -8,10 +8,16 @@ export function SkeletonBasic() {
       <Button variant="outline" onClick={() => setLoading(!loading)}>
         Toggle loading
       </Button>
-      <Skeleton loading={loading} avatar rows={3} rowWidths={['100%', '85%', '55%']} round>
-        <p>Project content is ready.</p>
-      </Skeleton>
-      <Skeleton active={false} title={false} rows={2} />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Loading content</span>
+        <Skeleton loading={loading} avatar rows={3} rowWidths={['100%', '85%', '55%']} round>
+          <p>Project content is ready.</p>
+        </Skeleton>
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Static placeholder</span>
+        <Skeleton active={false} title={false} rows={2} />
+      </div>
     </div>
   );
 }

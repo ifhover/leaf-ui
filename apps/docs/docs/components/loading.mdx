@@ -1,15 +1,37 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { LoadingBasic } from '../../src/examples/loading/basic';
+import { LoadingSizes } from '../../src/examples/loading/sizes';
+import { LoadingOverlay } from '../../src/examples/loading/overlay';
 
 # Loading 加载
 
 提示内容正在加载或操作正在进行。
 
-## 基础用法
+## 加载提示
 
-<ComponentExample title="基础用法" preview={<LoadingBasic />} fileName="basic.tsx">
+<ComponentExample title="加载提示" preview={<LoadingBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading/basic.tsx"
+```
+
+</ComponentExample>
+
+## 不同尺寸
+
+<ComponentExample title="不同尺寸" preview={<LoadingSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading/sizes.tsx"
+```
+
+</ComponentExample>
+
+## 区域加载
+
+加载时覆盖内容区域，完成后恢复操作。
+
+<ComponentExample title="区域加载" preview={<LoadingOverlay />} fileName="overlay.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading/overlay.tsx"
 ```
 
 </ComponentExample>
@@ -18,15 +40,16 @@ import { LoadingBasic } from '../../src/examples/loading/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `spinning` | `boolean` | `true` | 是否处于加载状态 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 加载图标尺寸 |
+| `spinning` | `boolean` | `true` | 是否加载中 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 图标尺寸 |
 | `tip` | `ReactNode` | — | 提示文字 |
-| `delay` | `number` | `0` | 延迟展示时间，单位毫秒 |
-| `children` | `ReactNode` | — | 加载时覆盖的内容 |
+| `delay` | `number` | `0` | 延迟显示，单位毫秒 |
+| `children` | `ReactNode` | — | 覆盖的内容 |
+
 
 ## 类型
 
-定义组件属性或组装列表时可导入相关类型。
+可导入以下类型定义属性、组装数据或处理回调。
 
 ```ts
 import type { LoadingProps } from '@sudden3/leaf-ui';
@@ -34,4 +57,4 @@ import type { LoadingProps } from '@sudden3/leaf-ui';
 
 ## 使用说明
 
-独立使用展示加载图标；传入 children 后覆盖所在区域，并在显示加载层时阻止该区域操作。delay 可避免短暂请求造成图标闪现；鼠标保持默认样式。
+独立使用展示加载提示；传入 `children` 后覆盖所在区域，并在显示加载层时阻止操作。`delay` 可避免短暂请求造成闪现。

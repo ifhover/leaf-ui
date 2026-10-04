@@ -7,25 +7,28 @@ export function TabsClosable() {
     { key: '2', label: '项目二', children: '项目二的内容', closable: true },
   ]);
   return (
-    <Tabs
-      items={items}
-      type="card"
-      onClose={(key) => setItems((list) => list.filter((item) => item.key !== key))}
-      extra={
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            const key = String(++sequence.current);
-            setItems((list) => [
-              ...list,
-              { key, label: `Project ${key}`, children: `Project ${key}`, closable: true },
-            ]);
-          }}
-        >
-          新增
-        </Button>
-      }
-    />
+    <div className="leaf-demo-case">
+      <span className="leaf-demo-label">卡片标签</span>
+      <Tabs
+        items={items}
+        type="card"
+        onClose={(key) => setItems((list) => list.filter((item) => item.key !== key))}
+        extra={
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              const key = String(++sequence.current);
+              setItems((list) => [
+                ...list,
+                { key, label: `Project ${key}`, children: `Project ${key}`, closable: true },
+              ]);
+            }}
+          >
+            新增
+          </Button>
+        }
+      />
+    </div>
   );
 }

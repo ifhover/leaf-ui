@@ -16,7 +16,10 @@ export function TextareaControlled() {
         />
         <span className="leaf-demo-note">{value.length} / 120</span>
       </div>
-      <Textarea aria-label="错误留言" status="error" placeholder="请补充描述" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">错误留言</span>
+        <Textarea aria-label="错误留言" status="error" placeholder="请补充描述" />
+      </div>
     </div>
   );
 }

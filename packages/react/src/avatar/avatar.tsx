@@ -1,11 +1,13 @@
 import { UserRound } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+import { type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, useState } from 'react';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 
 export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
   src?: string;
+  srcSet?: string;
+  imageProps?: Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'alt' | 'onError'>;
   alt?: string;
   size?: ControlSize | number;
   shape?: 'circle' | 'square';
@@ -14,6 +16,8 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
 }
 export function Avatar({
   src,
+  srcSet,
+  imageProps,
   alt,
   size = 'md',
   shape = 'circle',
@@ -50,12 +54,14 @@ export function Avatar({
         ...style,
       }}
     >
-      {src && failedSource !== src ? (
+      {(src || srcSet) && failedSource !== `${src ?? ''}|${srcSet ?? ''}` ? (
         <img
+          {...imageProps}
           src={src}
+          srcSet={srcSet}
           alt=""
           onError={() => {
-            setFailedSource(src);
+            setFailedSource(`${src ?? ''}|${srcSet ?? ''}`);
             onError?.();
           }}
         />

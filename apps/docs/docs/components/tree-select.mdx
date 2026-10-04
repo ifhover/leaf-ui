@@ -1,0 +1,90 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TreeSelectBasic } from '../../src/examples/tree-select/basic';
+import { TreeSelectMultiple } from '../../src/examples/tree-select/multiple';
+import { TreeSelectStates } from '../../src/examples/tree-select/states';
+
+# TreeSelect 树选择器
+
+从层级数据中选择一个或多个值。
+
+## 选择与搜索
+
+<ComponentExample title="选择与搜索" preview={<TreeSelectBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree-select/basic.tsx"
+```
+
+</ComponentExample>
+
+## 多选与勾选
+
+<ComponentExample title="多选与勾选" preview={<TreeSelectMultiple />} fileName="multiple.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree-select/multiple.tsx"
+```
+
+</ComponentExample>
+
+## 状态与浮层
+
+<ComponentExample title="状态与浮层" preview={<TreeSelectStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree-select/states.tsx"
+```
+
+</ComponentExample>
+
+## TreeSelect API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `options` | [`readonly TreeSelectOption[]`](#treeselectoption) | 必填 | 层级选项 |
+| `value / defaultValue` | `string \| readonly string[] \| null` | `null` | 受控 / 初始值；多选使用数组 |
+| `onChange` | `(value: string \| readonly string[] \| null) => void` | — | 选择变化，清除单选返回 null，多选返回 [] |
+| `multiple / treeCheckable` | `boolean` | `false` | 多选 / 复选框模式，后者自动开启多选 |
+| `checkStrictly` | `boolean` | `false` | 父子节点独立勾选 |
+| `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | 勾选后显示与输出子节点、合并父节点或全部节点 |
+| `showSearch` | `boolean` | `true` | 通过输入过滤节点 |
+| `onSearch` | `(query: string) => void` | — | 搜索文字变化 |
+| `allowClear` | `boolean` | `true` | 允许清除可用选项 |
+| `defaultExpandAll` | `boolean` | `false` | 初始展开全部 |
+| `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | 初始展开的 value |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验反馈 |
+| `disabled / required` | `boolean` | `false` | 禁用 / 必填 |
+| `name / form` | `string` | — | 字段名 / 关联表单 |
+| `popupWidth / popupMaxWidth` | `number \| string` | 内容宽度 / 420 | 浮层宽度 / 最大宽度；至少与触发器等宽 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
+
+## TreeSelectOption
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `value` | `string` | 唯一值，必填 |
+| `label` | `ReactNode` | 展示内容，必填 |
+| `children` | [`readonly TreeSelectOption[]`](#treeselectoption) | 子选项，结构相同 |
+| `disabled` | `boolean` | 禁止选择与勾选 |
+| `selectable` | `boolean` | 设为 false 可让分类节点仅用于浏览 |
+| `disableCheckbox` | `boolean` | 禁止勾选并阻断联动 |
+| `icon` | `ReactNode` | 节点图标 |
+| `searchLabel` | `string` | label 为节点时提供搜索和读屏文字 |
+
+## 类型
+
+可导入以下类型定义属性、组装数据或处理回调。
+
+```ts
+import type { TreeSelectProps, TreeSelectOption, TreeSelectValue } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+选项的 `value` 应唯一且稳定。示例数据：
+
+```ts lineNumbers file="../../src/examples/tree-select/options.ts"
+```
+
+`TreeSelectValue` 是 `string | readonly string[] | null`，可用于组装受控值。复选框默认提交最终子节点；`showCheckedStrategy` 同时决定显示和回调值。禁用的已有选项不会被清除或父子联动修改。
+
+方向键下进入树，Enter 选择，空格勾选，Escape 关闭。多选时，搜索为空按 Backspace 可移除最后一个可用选项。FormData 在同一字段名下提交多个值，使用 `getAll(name)` 读取；非受控字段响应表单 reset。

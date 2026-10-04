@@ -78,6 +78,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
+    "@ctrl/tinycolor": "^4.2.1",
     "@floating-ui/react-dom": "^2.1.9",
     "lucide-react": "^1.50.0",
     "tabbable": "^6.5.0"

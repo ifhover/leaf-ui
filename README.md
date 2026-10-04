@@ -47,7 +47,9 @@ export function App() {
 | `InputNumber` | 数量、金额、范围与小数精度 |
 | `Steps` / `Breadcrumb` / `Pagination` / `Tabs` | 步骤、路径、分页和内容切换 |
 | `Tag` / `Badge` | 分类标签、状态与未读角标 |
-| `Avatar` / `Card` / `Collapse` / `Empty` | 头像、卡片、折叠内容和空状态 |
+| `Avatar` / `Card` / `Collapse` / `Tree` | 头像、卡片、折叠内容和层级数据 |
+| `Result` | 成功、警告、错误、信息与空数据结果 |
+| `TreeSelect` / `ColorPicker` | 层级选择、颜色与透明度选择 |
 | `Divider` / `Skeleton` / `Popover` | 内容分隔、加载占位和气泡卡片 |
 | `Slider` / `Rate` | 数值区间与评分输入 |
 | `Calendar` | 日历、日期选择与自定义日程 |

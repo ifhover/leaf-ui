@@ -26,17 +26,26 @@ export function InputNumberBasic() {
           prefix="¥"
         />
       </div>
-      <InputNumber
-        aria-label="Percentage"
-        defaultValue={50}
-        min={0}
-        max={100}
-        suffix="%"
-        controls={false}
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Percentage</span>
+        <InputNumber
+          aria-label="Percentage"
+          defaultValue={50}
+          min={0}
+          max={100}
+          suffix="%"
+          controls={false}
+        />
+      </div>
       <div className="leaf-demo-row">
-        <InputNumber aria-label="Read only" defaultValue={12} readOnly />
-        <InputNumber aria-label="Disabled" defaultValue={8} disabled />
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Read only</span>
+          <InputNumber aria-label="Read only" defaultValue={12} readOnly />
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Disabled</span>
+          <InputNumber aria-label="Disabled" defaultValue={8} disabled />
+        </div>
       </div>
       <p className="leaf-demo-note">Current quantity: {value ?? 'Empty'}</p>
     </div>

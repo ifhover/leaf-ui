@@ -10,11 +10,23 @@ export function SliderBasic() {
   const [value, setValue] = useState(35);
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Slider aria-label="Volume" value={value} onChange={setValue} marks={marks} />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Volume</span>
+        <Slider aria-label="Volume" value={value} onChange={setValue} marks={marks} />
+      </div>
       <p className="leaf-demo-note">Current value: {value}</p>
-      <Slider aria-label="Budget" range defaultValue={[20, 70]} marks={marks} />
-      <Slider aria-label="Disabled value" defaultValue={45} disabled />
-      <Slider aria-label="Vertical value" vertical defaultValue={60} />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Budget</span>
+        <Slider aria-label="Budget" range defaultValue={[20, 70]} marks={marks} />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Disabled value</span>
+        <Slider aria-label="Disabled value" defaultValue={45} disabled />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Vertical value</span>
+        <Slider aria-label="Vertical value" vertical defaultValue={60} />
+      </div>
     </div>
   );
 }

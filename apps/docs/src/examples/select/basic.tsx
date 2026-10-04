@@ -10,9 +10,18 @@ const options = [
 export function SelectBasic() {
   return (
     <div className="leaf-demo-stack">
-      <Select aria-label="选择团队" options={options} placeholder="请选择团队" />
-      <Select aria-label="默认团队" options={options} defaultValue="design" />
-      <Select aria-label="禁用团队" options={options} disabled defaultValue="product" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">选择团队</span>
+        <Select aria-label="选择团队" options={options} placeholder="请选择团队" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">默认团队</span>
+        <Select aria-label="默认团队" options={options} defaultValue="design" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">禁用团队</span>
+        <Select aria-label="禁用团队" options={options} disabled defaultValue="product" />
+      </div>
     </div>
   );
 }

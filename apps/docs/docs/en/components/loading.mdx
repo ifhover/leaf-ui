@@ -1,32 +1,55 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { LoadingBasic } from '../../../src/examples/en/loading/basic';
+import { LoadingSizes } from '../../../src/examples/en/loading/sizes';
+import { LoadingOverlay } from '../../../src/examples/en/loading/overlay';
 
 # Loading
 
-Indicate that content is loading or work is in progress.
+Indicate that content is loading or an operation is in progress.
 
-## Basic usage
+## Loading indicator
 
-<ComponentExample title="Basic usage" preview={<LoadingBasic />} fileName="basic.tsx">
+<ComponentExample title="Loading indicator" preview={<LoadingBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading/basic.tsx"
 ```
 
 </ComponentExample>
 
+## Sizes
+
+<ComponentExample title="Sizes" preview={<LoadingSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading/sizes.tsx"
+```
+
+</ComponentExample>
+
+## Loading an area
+
+Cover a content area while loading and restore interaction when finished.
+
+<ComponentExample title="Loading an area" preview={<LoadingOverlay />} fileName="overlay.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading/overlay.tsx"
+```
+
+</ComponentExample>
+
 ## Loading API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `spinning` | `boolean` | `true` | Whether loading is active |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Spinner size |
-| `tip` | `ReactNode` | — | Loading message |
-| `delay` | `number` | `0` | Delay before displaying, in milliseconds |
-| `children` | `ReactNode` | — | Content covered during loading |
+| `spinning` | `boolean` | `true` | Whether loading |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Indicator size |
+| `tip` | `ReactNode` | — | Hint text |
+| `delay` | `number` | `0` | Display delay in milliseconds |
+| `children` | `ReactNode` | — | Covered content |
+
 
 ## Types
 
-Import the component props and item types when preparing your own values.
+Import these types to define props or prepare data.
 
 ```ts
 import type { LoadingProps } from '@sudden3/leaf-ui';
@@ -34,4 +57,4 @@ import type { LoadingProps } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-Use alone for a spinner, or pass children to cover a content region and block interaction while the overlay is visible. delay avoids flashes for short requests. The cursor keeps its normal appearance.
+Used alone, Loading displays an indicator. With children it covers the area and prevents interaction while visible. A delay prevents flicker for brief requests.

@@ -1,10 +1,10 @@
 .leaf-calendar-view {
   box-sizing: border-box;
   min-width: 0;
-  border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius);
   width: 300px;
   max-width: 100%;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
   background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
@@ -13,53 +13,190 @@
   }
   &--full {
     width: 100%;
+    border-color: color-mix(in srgb, var(--leaf-color-border) 70%, var(--leaf-color-surface));
+    border-radius: var(--leaf-radius-lg);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 3%);
     .leaf-calendar {
-      padding: 14px;
+      padding: 20px;
     }
     .leaf-date-picker__header {
+      display: grid;
+      grid-template-columns: auto auto auto 1fr auto;
+      gap: 6px;
       margin-bottom: 12px;
     }
+    .leaf-calendar__headings {
+      grid-column: 2;
+      grid-row: 1;
+      justify-content: flex-start;
+      padding-inline: 4px;
+    }
+    .leaf-calendar__extra {
+      grid-column: 4;
+      grid-row: 1;
+      justify-self: end;
+      min-width: 0;
+      font-size: 12px;
+      color: var(--leaf-color-text-muted);
+    }
+    .leaf-date-picker__nav {
+      width: 28px;
+      height: 32px;
+    }
+    .leaf-date-picker__nav:nth-of-type(2) {
+      grid-column: 3;
+    }
     .leaf-calendar__heading {
-      font-size: var(--leaf-font-size);
+      padding: 4px;
+      font-size: 18px;
+      &:last-child {
+        color: var(--leaf-color-text-muted);
+        font-weight: 400;
+      }
+    }
+    .leaf-calendar__today {
+      grid-column: 5;
+      padding: 5px 12px;
+      border: 0;
+      border-radius: var(--leaf-radius-sm);
+      background: var(--leaf-color-surface-muted);
+      color: var(--leaf-color-text);
+      font: inherit;
+      font-size: var(--leaf-font-size-sm);
+      cursor: pointer;
+      transition:
+        background-color var(--leaf-motion-duration),
+        color var(--leaf-motion-duration);
+      &:hover {
+        background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+        color: var(--leaf-color-primary);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-primary);
+        outline-offset: 2px;
+      }
     }
     .leaf-calendar__weekdays {
-      padding-block: 10px;
+      gap: 6px;
+      padding-block: 10px 12px;
       font-size: var(--leaf-font-size-sm);
     }
+    .leaf-calendar__cells {
+      gap: 6px;
+    }
     .leaf-calendar__cell {
-      padding: 2px;
+      padding: 0;
     }
     .leaf-date-picker__day {
+      box-sizing: border-box;
       min-height: 76px;
       height: 100%;
-      padding: 8px;
+      padding: 10px 6px;
+      gap: 4px;
       flex-direction: column;
-      align-items: flex-end;
-      justify-content: flex-start;
-      border-color: var(--leaf-color-border);
+      border-color: color-mix(in srgb, var(--leaf-color-border) 65%, var(--leaf-color-surface));
+      border-radius: var(--leaf-radius-lg);
       font-size: var(--leaf-font-size);
+      transition:
+        background-color var(--leaf-motion-duration),
+        border-color var(--leaf-motion-duration),
+        color var(--leaf-motion-duration);
+      &:hover:not(:disabled) {
+        border-color: color-mix(in srgb, var(--leaf-color-primary) 35%, var(--leaf-color-border));
+        background: color-mix(in srgb, var(--leaf-color-primary) 5%, var(--leaf-color-surface));
+      }
+      &[aria-current='date']:not(:disabled) {
+        border-color: var(--leaf-color-primary);
+      }
+      &--outside {
+        border-color: transparent;
+        opacity: 1;
+        background: var(--leaf-color-surface-muted);
+      }
+      &--selected,
+      &--selected:hover:not(:disabled) {
+        color: var(--leaf-color-text);
+        background: color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface));
+        border-color: color-mix(in srgb, var(--leaf-color-primary) 30%, var(--leaf-color-border));
+      }
+      &:disabled {
+        opacity: 1;
+        color: var(--leaf-color-text-muted);
+        background: var(--leaf-color-surface-muted);
+        border-color: transparent;
+      }
+      &--selected:disabled {
+        border-color: var(--leaf-color-border);
+      }
+    }
+    .leaf-calendar__cell-label {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      min-height: 28px;
+      padding-inline: 3px;
+      border-radius: 50%;
+    }
+    .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label {
+      background: var(--leaf-color-primary);
+      color: var(--leaf-color-on-primary);
+    }
+    .leaf-calendar__cells--coarse .leaf-calendar__cell-label {
+      border-radius: var(--leaf-radius-sm);
+      padding-inline: 8px;
     }
     .leaf-calendar__cell-content {
       display: block;
       width: 100%;
-      flex: 1;
-      text-align: start;
+      min-width: 0;
+      text-align: center;
       font-size: var(--leaf-font-size-sm);
       overflow: hidden;
+      text-overflow: ellipsis;
+      > :first-child {
+        margin-block-start: 0;
+      }
+      > :last-child {
+        margin-block-end: 0;
+      }
+    }
+    .leaf-calendar__cell-content:empty {
+      display: none;
     }
   }
 }
 @media (max-width: 520px) {
   .leaf-calendar-view--full {
     .leaf-calendar {
-      padding: 6px;
+      padding: 12px;
+    }
+    .leaf-calendar__heading {
+      font-size: 15px;
+    }
+    .leaf-calendar__weekdays,
+    .leaf-calendar__cells {
+      gap: 3px;
     }
     .leaf-date-picker__day {
-      min-height: 52px;
-      padding: 4px;
+      min-height: 60px;
+      padding: 6px 2px;
+      border-radius: var(--leaf-radius);
+    }
+    .leaf-calendar__cell-label {
+      min-width: 24px;
+      min-height: 24px;
+      font-size: 12px;
     }
     .leaf-calendar__cell-content {
       font-size: 10px;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-calendar-view--full .leaf-date-picker__day,
+  .leaf-calendar-view--full .leaf-calendar__today {
+    transition: none;
   }
 }

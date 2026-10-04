@@ -1,5 +1,6 @@
 .leaf-card {
-  --leaf-card-padding: 24px;
+  --leaf-card-padding: 20px;
+  --leaf-card-heading-gap: 16px;
   box-sizing: border-box;
   min-width: 0;
   border: 1px solid transparent;
@@ -19,7 +20,8 @@
     box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
   }
   &--sm {
-    --leaf-card-padding: 14px;
+    --leaf-card-padding: 12px;
+    --leaf-card-heading-gap: 12px;
   }
   &__header {
     display: flex;
@@ -51,7 +53,7 @@
     }
   }
   &__header + &__body {
-    padding-block-start: 12px;
+    padding-block-start: var(--leaf-card-heading-gap);
   }
   &__footer {
     padding: 0 var(--leaf-card-padding) var(--leaf-card-padding);

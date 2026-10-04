@@ -23,12 +23,12 @@ importers:
 
   apps/docs:
     dependencies:
-      '@sudden3/leaf-ui':
-        specifier: workspace:*
-        version: link:../../packages/react
       '@rspress/core':
         specifier: ^2.0.23
         version: 2.0.23(micromark-util-types@2.0.3)(micromark@4.0.3)
+      '@sudden3/leaf-ui':
+        specifier: workspace:*
+        version: link:../../packages/react
       lucide-react:
         specifier: ^1.50.0
         version: 1.50.0(@types/react@19.3.0)(react@19.3.0)
@@ -51,6 +51,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@ctrl/tinycolor':
+        specifier: ^4.2.1
+        version: 4.2.1
       '@floating-ui/react-dom':
         specifier: ^2.1.9
         version: 2.1.9(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -290,6 +293,10 @@ packages:
   '@csstools/css-tokenizer@4.0.2':
     resolution: {integrity: sha512-OoKoR0f76dCY666JlcbhmVTs2drYj1GUXZTYTcbUgJjh9Nv41aFfZ21bPQTERm5+L5cBDo466NltB2lplS5GBw==}
     engines: {node: '>=20.19.0'}
+
+  '@ctrl/tinycolor@4.2.1':
+    resolution: {integrity: sha512-Vh5uy9Y1JBMId6J1f68TMXnZrTCvNdo9Fu2k0d1YnJngR+sM5kWTKl441c/3TFs+cG0NWOjRWgQ/iaWhbYx+7A==}
+    engines: {node: '>=14'}
 
   '@emnapi/core@1.11.3':
     resolution: {integrity: sha512-zLpS5asjEb7lq8jYLq37N6XKaE41DIexlY1rF/z4/tIl3wo13Sqm28fRyfIsKZD+NZ8mM5RoKkpW/rBcuoSZSg==}
@@ -2328,6 +2335,8 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.2': {}
+
+  '@ctrl/tinycolor@4.2.1': {}
 
   '@emnapi/core@1.11.3':
     dependencies:

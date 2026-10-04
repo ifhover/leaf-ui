@@ -5,14 +5,6 @@ export function ProgressBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
       <Progress percent={percent} aria-label="Upload progress" />
-      <Progress percent={70} status="error" />
-      <Progress percent={100} />
-      <Progress indeterminate aria-label="Loading progress" />
-      <div className="leaf-demo-row">
-        <Progress percent={percent} type="circle" aria-label="Project progress" />
-        <Progress percent={100} type="circle" size={80} />
-        <Progress percent={60} type="circle" status="error" size={80} />
-      </div>
       <div className="leaf-demo-row">
         <Button
           variant="outline"

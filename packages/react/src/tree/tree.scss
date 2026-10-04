@@ -1,0 +1,102 @@
+.leaf-tree {
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__item {
+    outline: none;
+  }
+  &__group {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  &__item:focus-visible > .leaf-tree__row {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: -2px;
+  }
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: var(--leaf-control-height);
+    margin-block: 3px;
+    padding: 3px 8px 3px 4px;
+    border-radius: var(--leaf-radius-sm);
+    cursor: pointer;
+    transition:
+      background-color var(--leaf-motion-duration),
+      color var(--leaf-motion-duration);
+    &:hover:not([data-disabled]) {
+      background: var(--leaf-color-surface-muted);
+    }
+    &[data-selected],
+    &[data-selected]:hover {
+      color: var(--leaf-color-primary);
+      background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+    }
+    &[data-disabled] {
+      color: var(--leaf-color-text-muted);
+      cursor: not-allowed;
+    }
+  }
+  &__toggle {
+    display: grid;
+    place-items: center;
+    flex: 0 0 20px;
+    width: 20px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    svg {
+      transition: transform var(--leaf-motion-duration);
+    }
+    &[data-hidden] {
+      visibility: hidden;
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+  &__check {
+    display: inline-flex;
+    flex: 0 0 auto;
+    .leaf-checkbox {
+      min-height: 24px;
+    }
+  }
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: var(--leaf-color-text-muted);
+  }
+  &__title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    &[data-match] {
+      font-weight: 600;
+      color: var(--leaf-color-primary);
+    }
+  }
+  &--lines .leaf-tree__group {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: var(--leaf-tree-line-left, 14px);
+      border-inline-start: 1px dashed var(--leaf-color-border);
+      pointer-events: none;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-tree__row,
+  .leaf-tree__toggle svg {
+    transition: none;
+  }
+}

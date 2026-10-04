@@ -6,7 +6,10 @@ const items: CollapseItem[] = [
     key: 'settings',
     label: 'Settings',
     children: (
-      <Input aria-label="Project name" placeholder="Type a draft, then collapse to keep it" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Project name</span>
+        <Input aria-label="Project name" placeholder="Type a draft, then collapse to keep it" />
+      </div>
     ),
   },
   { key: 'archived', label: 'Archived', children: null, disabled: true },
@@ -14,8 +17,14 @@ const items: CollapseItem[] = [
 export function CollapseBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <Collapse items={items} defaultActiveKey="about" />
-      <Collapse items={items} accordion size="sm" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Expand freely</span>
+        <Collapse items={items} defaultActiveKey="about" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Accordion · Compact</span>
+        <Collapse items={items} accordion size="sm" />
+      </div>
     </div>
   );
 }

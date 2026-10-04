@@ -1,0 +1,122 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TreeBasic } from '../../../src/examples/en/tree/basic';
+import { TreeCheckable } from '../../../src/examples/en/tree/checkable';
+import { TreeStrict } from '../../../src/examples/en/tree/strict';
+import { TreeSearch } from '../../../src/examples/en/tree/search';
+
+# Tree
+
+Browse, select and check hierarchical content.
+
+## Browse and select
+
+<ComponentExample title="Browse and select" preview={<TreeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree/basic.tsx"
+```
+
+</ComponentExample>
+
+## Linked checks
+
+<ComponentExample title="Linked checks" preview={<TreeCheckable />} fileName="checkable.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree/checkable.tsx"
+```
+
+</ComponentExample>
+
+## Independent checks
+
+Parents and children are checked independently.
+
+<ComponentExample title="Independent checks" preview={<TreeStrict />} fileName="strict.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree/strict.tsx"
+```
+
+</ComponentExample>
+
+## Search nodes
+
+<ComponentExample title="Search nodes" preview={<TreeSearch />} fileName="search.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree/search.tsx"
+```
+
+</ComponentExample>
+
+## Tree API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | [`readonly TreeNode[]`](#treenode) | Required | Tree nodes |
+| `selectedKeys / defaultSelectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
+| `onSelect` | [`(keys: string[], info: TreeSelectInfo) => void`](#treeselectinfo) | — | Selection changes |
+| `multiple / selectable` | `boolean` | `false / true` | Multiple selection / allow selection |
+| `checkedKeys / defaultCheckedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
+| `onCheck` | [`(keys: string[], info: TreeCheckInfo) => void`](#treecheckinfo) | — | Check changes, including linked results |
+| `checkable / checkStrictly` | `boolean` | `false / false` | Show checkboxes / disable linked checks |
+| `expandedKeys / defaultExpandedKeys` | `readonly string[]` | `[]` | Controlled / initial expanded keys |
+| `defaultExpandAll` | `boolean` | `false` | Expand all nodes initially |
+| `onExpand` | [`(keys: string[], info: TreeExpandInfo) => void`](#treeexpandinfo) | — | Expansion changes |
+| `disabled / showIcon / showLine` | `boolean` | `false` | Disable interaction / show icons / show connecting lines |
+| `searchValue` | `string` | `''` | Filter nodes, retaining matches and ancestors |
+| `filterTreeNode` | [`(node: TreeNode, query: string) => boolean`](#treenode) | — | Custom search predicate |
+| `notFoundContent` | `ReactNode` | No options | Content when no nodes match |
+
+## TreeNode
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `key` | `string` | Unique key, required |
+| `title` | `ReactNode` | Node content, required |
+| `children` | [`readonly TreeNode[]`](#treenode) | Child nodes using this same structure |
+| `disabled` | `boolean` | Prevent selection/checking while keeping descendants browsable |
+| `selectable / checkable` | `boolean` | Allow selection / display a checkbox; enabled by default |
+| `disableCheckbox` | `boolean` | Disable checks and stop check propagation |
+| `icon` | `ReactNode` | Custom icon |
+| `searchLabel` | `string` | Search and accessible text for non-text titles |
+
+## TreeSelectInfo
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | Operated node |
+| `selected` | `boolean` | Whether the node is now selected |
+| `selectedNodes` | [`readonly TreeNode[]`](#treenode) | All selected nodes |
+
+## TreeCheckInfo
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | Operated node |
+| `checked` | `boolean` | Whether the node is now checked |
+| `checkedNodes` | [`readonly TreeNode[]`](#treenode) | All fully checked nodes |
+| `halfCheckedKeys` | `readonly string[]` | Partially checked keys |
+
+## TreeExpandInfo
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | Operated node |
+| `expanded` | `boolean` | Whether the node is now expanded |
+
+## Types
+
+Import these types to define props or prepare data.
+
+```ts
+import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Each node needs a unique, stable `key`. Example data:
+
+```ts lineNumbers file="../../../src/examples/en/tree/data.ts"
+```
+
+Checking a parent checks enabled children; disabled nodes are unaffected. Partially checked children create a mixed parent. `checkStrictly` keeps checks independent. In multiple mode, clicking toggles selection; Shift selects a range of visible nodes.
+
+Use up/down to move, right/left to expand/collapse, Home/End to jump, Enter to select and Space to check. Typing locates nodes. Search temporarily reveals matching paths; clearing it restores the original expansion.

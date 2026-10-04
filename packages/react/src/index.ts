@@ -20,6 +20,8 @@ export type { CheckboxProps } from './checkbox';
 export { Checkbox } from './checkbox';
 export type { CollapseItem, CollapseProps } from './collapse';
 export { Collapse } from './collapse';
+export type { ColorPickerProps, ColorPreset } from './colorpicker';
+export { ColorPicker } from './colorpicker';
 export type {
   ConfigProviderProps,
   LeafLocale,
@@ -65,6 +67,8 @@ export type { RadioGroupProps, RadioOption, RadioProps } from './radio';
 export { Radio, RadioGroup } from './radio';
 export type { RateProps } from './rate';
 export { Rate } from './rate';
+export type { ResultProps } from './result';
+export { Result } from './result';
 export type { SelectOption, SelectProps } from './select';
 export { Select } from './select';
 export type { ControlSize, ControlStatus } from './shared/types';
@@ -87,3 +91,7 @@ export type { TimePickerProps } from './timepicker';
 export { TimePicker } from './timepicker';
 export type { TooltipProps } from './tooltip';
 export { Tooltip } from './tooltip';
+export type { TreeCheckInfo, TreeExpandInfo, TreeNode, TreeProps, TreeSelectInfo } from './tree';
+export { Tree } from './tree';
+export type { TreeSelectOption, TreeSelectProps, TreeSelectValue } from './treeselect';
+export { TreeSelect } from './treeselect';

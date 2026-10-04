@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { RateBasic } from '../../src/examples/rate/basic';
+import { RateColors } from '../../src/examples/rate/colors';
+import { RateStates } from '../../src/examples/rate/states';
 
 # Rate 评分
 
 选择或展示评分。
 
-## 基础用法
+## 选择评分
 
-<ComponentExample title="基础用法" preview={<RateBasic />} fileName="basic.tsx">
+<ComponentExample title="选择评分" preview={<RateBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/rate/basic.tsx"
+```
+
+</ComponentExample>
+
+## 按分数变色
+
+<ComponentExample title="按分数变色" preview={<RateColors />} fileName="colors.tsx">
+
+```tsx lineNumbers file="../../src/examples/rate/colors.tsx"
+```
+
+</ComponentExample>
+
+## 只读与禁用
+
+<ComponentExample title="只读与禁用" preview={<RateStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/rate/states.tsx"
 ```
 
 </ComponentExample>
@@ -20,17 +40,20 @@ import { RateBasic } from '../../src/examples/rate/basic';
 | --- | --- | --- | --- |
 | `value / defaultValue` | `number` | `0` | 受控 / 初始评分 |
 | `onChange` | `(value: number) => void` | — | 评分变化 |
-| `count` | `number` | `5` | 星数，范围 1–20 |
-| `allowHalf / allowClear` | `boolean` | `false / true` | 半星 / 再次点击清空 |
-| `disabled / readOnly` | `boolean` | `false` | 禁用 / 只读 |
+| `count` | `number` | `5` | 星星数量，最多 20 |
+| `allowHalf / allowClear` | `boolean` | `false / true` | 半星 / 重复点击清除 |
+| `readOnly / disabled` | `boolean` | `false` | 只读 / 禁用 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 星星尺寸 |
-| `color` | `string` | 主题警告色 | 评分颜色 |
+| `color` | `string` | `'#ffc53d'` | 固定星星颜色；优先于按分数变色 |
+| `colorByValue` | `boolean` | `false` | 按分数比例使用低、中、高档颜色 |
+| `colors` | `readonly [string, string, string]` | `['#ef5350', '#f49b23', '#ffc53d']` | 低、中、高档颜色；阈值为总分的 40% 和 70% |
 | `name / form` | `string` | — | 字段名 / 关联表单 |
-| `required` | `boolean` | `false` | 要求非零评分 |
+| `required` | `boolean` | `false` | 需要非零评分 |
+
 
 ## 类型
 
-定义组件属性或组装列表时可导入相关类型。
+可导入以下类型定义属性、组装数据或处理回调。
 
 ```ts
 import type { RateProps } from '@sudden3/leaf-ui';
@@ -38,4 +61,4 @@ import type { RateProps } from '@sudden3/leaf-ui';
 
 ## 使用说明
 
-方向键切换评分，Home / End 选择首尾，Delete 或 Backspace 清空。设置 name 后可通过 FormData 读取评分；required 支持表单校验，非受控评分支持 reset。
+悬停可预览评分和颜色，离开恢复已选值。方向键调整评分，Home / End 跳至首尾，Delete / Backspace 可清除。只读保留展示，禁用也会阻止交互。支持 FormData 和非受控表单 reset。

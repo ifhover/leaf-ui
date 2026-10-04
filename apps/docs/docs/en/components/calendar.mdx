@@ -1,36 +1,59 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { CalendarBasic } from '../../../src/examples/en/calendar/basic';
+import { CalendarCompact } from '../../../src/examples/en/calendar/compact';
+import { CalendarMonth } from '../../../src/examples/en/calendar/month';
 
 # Calendar
 
-Browse dates, choose days and display a schedule.
+Browse and select dates, and display schedules.
 
-## Basic usage
+## Schedule calendar
 
-<ComponentExample title="Basic usage" preview={<CalendarBasic />} fileName="basic.tsx">
+<ComponentExample title="Schedule calendar" preview={<CalendarBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/basic.tsx"
 ```
 
 </ComponentExample>
 
+## Compact calendar and disabled dates
+
+<ComponentExample title="Compact calendar and disabled dates" preview={<CalendarCompact />} fileName="compact.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/calendar/compact.tsx"
+```
+
+</ComponentExample>
+
+## Choose a month
+
+<ComponentExample title="Choose a month" preview={<CalendarMonth />} fileName="month.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/calendar/month.tsx"
+```
+
+</ComponentExample>
+
 ## Calendar API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `Date` | — | Controlled / initially selected date |
-| `onChange` | `(date: Date) => void` | — | Called on date selection |
-| `visibleDate` | `Date` | — | Controlled visible month or year |
-| `onVisibleChange` | `(date: Date) => void` | — | Visible period change |
-| `mode` | `'date' \| 'month'` | `'date'` | Choose days or months |
-| `fullscreen` | `boolean` | `true` | Use a full calendar layout |
-| `minDate / maxDate` | `Date` | — | Selectable date boundaries |
+| `value / defaultValue` | `Date` | — | Controlled / initial selected date |
+| `onChange` | `(date: Date) => void` | — | Date selection |
+| `visibleDate` | `Date` | — | Controlled displayed period |
+| `onVisibleChange` | `(date: Date) => void` | — | Displayed period changes |
+| `mode` | `'date' \| 'month'` | `'date'` | Select dates or months |
+| `fullscreen` | `boolean` | `true` | Full calendar layout |
+| `minDate / maxDate` | `Date` | — | Date bounds |
 | `disabledDate` | `(date: Date) => boolean` | — | Disable specific dates |
-| `cellRender` | `(date: Date) => ReactNode` | — | Add content below a day or month |
+| `cellRender` | `(date: Date) => ReactNode` | — | Additional date content |
+| `headerExtra` | `ReactNode` | — | Additional header content |
+| `showToday` | `boolean` | `true` | Show a Today button in full layout to navigate to the current month |
+
 
 ## Types
 
-Import the component props and item types when preparing your own values.
+Import these types to define props or prepare data.
 
 ```ts
 import type { CalendarProps } from '@sudden3/leaf-ui';
@@ -38,6 +61,6 @@ import type { CalendarProps } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-Use the full layout for schedules and `fullscreen={false}` for a compact calendar. Render non-interactive text or Tags in `cellRender`, without nesting controls in date buttons. Arrow keys move between dates, Home / End move within a row, and PageUp / PageDown change months. For SSR, supply the same initial date on server and client; see the SSR guide.
+Use `fullscreen={false}` for a compact calendar. Place non-interactive text or icons in `cellRender`; avoid nested buttons. A disabled selection stays readable and cannot be selected again.
 
-[SSR usage](/en/guide/ssr)。
+Use arrow keys to move dates, Home/End to jump within a row and PageUp/PageDown to switch months. Provide consistent initial dates for SSR; see [SSR usage](/guide/ssr).

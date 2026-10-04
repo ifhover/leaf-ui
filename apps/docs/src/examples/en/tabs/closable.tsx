@@ -7,25 +7,28 @@ export function TabsClosable() {
     { key: '2', label: 'Second project', children: 'Second project content', closable: true },
   ]);
   return (
-    <Tabs
-      items={items}
-      type="card"
-      onClose={(key) => setItems((list) => list.filter((item) => item.key !== key))}
-      extra={
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            const key = String(++sequence.current);
-            setItems((list) => [
-              ...list,
-              { key, label: `Project ${key}`, children: `Project ${key}`, closable: true },
-            ]);
-          }}
-        >
-          Add
-        </Button>
-      }
-    />
+    <div className="leaf-demo-case">
+      <span className="leaf-demo-label">Card tabs</span>
+      <Tabs
+        items={items}
+        type="card"
+        onClose={(key) => setItems((list) => list.filter((item) => item.key !== key))}
+        extra={
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              const key = String(++sequence.current);
+              setItems((list) => [
+                ...list,
+                { key, label: `Project ${key}`, children: `Project ${key}`, closable: true },
+              ]);
+            }}
+          >
+            Add
+          </Button>
+        }
+      />
+    </div>
   );
 }

@@ -1008,6 +1008,40 @@ html.rp-dark {
   display: grid;
   gap: 4px;
 }
+.leaf-demo-case {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  min-width: 0;
+  gap: 10px;
+}
+.leaf-demo-label {
+  color: var(--leaf-site-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.leaf-demo-stack > .leaf-demo-case {
+  justify-items: stretch;
+}
+.leaf-demo-row > .leaf-demo-case {
+  max-width: 100%;
+}
+.leaf-demo-calendar-event {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  white-space: nowrap;
+  font-size: 10px;
+  i {
+    width: 5px;
+    height: 5px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
 .leaf-demo-row {
   display: flex;
   min-width: 0;

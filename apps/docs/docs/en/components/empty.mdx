@@ -1,36 +1,3 @@
-import { ComponentExample } from '../../../src/components/component-example';
-import { EmptyBasic } from '../../../src/examples/en/empty/basic';
-
 # Empty
 
-Explain empty content and provide a next action.
-
-## Basic usage
-
-<ComponentExample title="Basic usage" preview={<EmptyBasic />} fileName="basic.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/empty/basic.tsx"
-```
-
-</ComponentExample>
-
-## Empty API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `image` | `ReactNode` | Inbox icon | Custom image; null hides it |
-| `description` | `ReactNode` | No data | Description; null hides it |
-| `children` | `ReactNode` | — | Actions |
-| `size` | `'sm' \| 'md'` | `'md'` | Display size |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { EmptyProps } from '@sudden3/leaf-ui';
-```
-
-## Usage notes
-
-Explain why content is empty and place action buttons in children when useful.
+Empty states are now part of [Result](/components/result). Use Result with status="empty". The Empty export remains as a compatibility entry.

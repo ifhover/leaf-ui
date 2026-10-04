@@ -4,22 +4,46 @@ export function BadgeBasic() {
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-row">
-        <Badge count={8} aria-label="8 notifications">
-          <Button variant="outline" startIcon={<Bell />} aria-label="Notifications" />
-        </Badge>
-        <Badge count={120}>
-          <Button variant="outline">Inbox</Button>
-        </Badge>
-        <Badge dot aria-label="New messages">
-          <Button variant="ghost" startIcon={<Mail />} aria-label="Messages" />
-        </Badge>
-        <Badge count={0} showZero color="#7654c6" />
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">8 notifications</span>
+          <Badge count={8} aria-label="8 notifications">
+            <Button variant="outline" startIcon={<Bell />} aria-label="Notifications" />
+          </Badge>
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Overflow count</span>
+          <Badge count={120}>
+            <Button variant="outline">Inbox</Button>
+          </Badge>
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">New messages</span>
+          <Badge dot aria-label="New messages">
+            <Button variant="ghost" startIcon={<Mail />} aria-label="Messages" />
+          </Badge>
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Show zero</span>
+          <Badge count={0} showZero color="#7654c6" />
+        </div>
       </div>
       <div className="leaf-demo-row">
-        <Badge status="success" text="Running" />
-        <Badge status="warning" text="Pending" />
-        <Badge status="error" text="Stopped" />
-        <Badge status="info" text="Updating" />
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Notification count</span>
+          <Badge status="success" text="Running" />
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Warning feedback</span>
+          <Badge status="warning" text="Pending" />
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Error feedback</span>
+          <Badge status="error" text="Stopped" />
+        </div>
+        <div className="leaf-demo-case">
+          <span className="leaf-demo-label">Notification count</span>
+          <Badge status="info" text="Updating" />
+        </div>
       </div>
     </div>
   );

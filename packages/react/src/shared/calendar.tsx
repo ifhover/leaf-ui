@@ -70,6 +70,7 @@ interface CalendarPanelProps {
   showOutsideDays?: boolean;
   disabledDate?: (date: Date) => boolean;
   cellRender?: (date: Date) => ReactNode;
+  showToday?: boolean;
 }
 export function CalendarPanel({
   value,
@@ -87,6 +88,7 @@ export function CalendarPanel({
   showOutsideDays = true,
   disabledDate,
   cellRender,
+  showToday = false,
 }: CalendarPanelProps) {
   const { locale, messages } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
@@ -254,7 +256,11 @@ export function CalendarPanel({
   const start = times.length === 2 ? Math.min(...times) : undefined;
   const end = times.length === 2 ? Math.max(...times) : undefined;
   return (
-    <div ref={root} className={classes('leaf-calendar', range && 'leaf-calendar--range')}>
+    <div
+      ref={root}
+      data-view={view}
+      className={classes('leaf-calendar', range && 'leaf-calendar--range')}
+    >
       <div className="leaf-date-picker__header">
         <button
           type="button"
@@ -305,7 +311,20 @@ export function CalendarPanel({
         >
           <ChevronRight size={16} aria-hidden="true" />
         </button>
-        {headerExtra}
+        {showToday && (
+          <button
+            type="button"
+            className="leaf-calendar__today"
+            onClick={() => {
+              const today = new Date();
+              setVisible(today);
+              setActive(today);
+            }}
+          >
+            {messages.today}
+          </button>
+        )}
+        {headerExtra != null && <span className="leaf-calendar__extra">{headerExtra}</span>}
       </div>
       {view === 'date' && (
         <div className="leaf-calendar__weekdays">
@@ -377,11 +396,13 @@ export function CalendarPanel({
                 onClick={() => choose(date)}
                 onKeyDown={(event) => move(date, event)}
               >
-                {view === 'date'
-                  ? date.getDate()
-                  : view === 'month'
-                    ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
-                    : date.getFullYear()}
+                <span className="leaf-calendar__cell-label">
+                  {view === 'date'
+                    ? date.getDate()
+                    : view === 'month'
+                      ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
+                      : date.getFullYear()}
+                </span>
                 {cellRender && view === picker && (
                   <span className="leaf-calendar__cell-content">{cellRender(date)}</span>
                 )}

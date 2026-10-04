@@ -16,7 +16,10 @@ export function TextareaControlled() {
         />
         <span className="leaf-demo-note">{value.length} / 120</span>
       </div>
-      <Textarea aria-label="Comment error" status="error" placeholder="Add a description" />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Comment error · Error</span>
+        <Textarea aria-label="Comment error" status="error" placeholder="Add a description" />
+      </div>
     </div>
   );
 }

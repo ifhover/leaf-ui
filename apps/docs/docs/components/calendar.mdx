@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { CalendarBasic } from '../../src/examples/calendar/basic';
+import { CalendarCompact } from '../../src/examples/calendar/compact';
+import { CalendarMonth } from '../../src/examples/calendar/month';
 
 # Calendar 日历
 
-查看日期、选择时间安排并展示日程。
+查看日期、选择日期并展示日程安排。
 
-## 基础用法
+## 日程日历
 
-<ComponentExample title="基础用法" preview={<CalendarBasic />} fileName="basic.tsx">
+<ComponentExample title="日程日历" preview={<CalendarBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/calendar/basic.tsx"
+```
+
+</ComponentExample>
+
+## 紧凑日历与禁用日期
+
+<ComponentExample title="紧凑日历与禁用日期" preview={<CalendarCompact />} fileName="compact.tsx">
+
+```tsx lineNumbers file="../../src/examples/calendar/compact.tsx"
+```
+
+</ComponentExample>
+
+## 选择月份
+
+<ComponentExample title="选择月份" preview={<CalendarMonth />} fileName="month.tsx">
+
+```tsx lineNumbers file="../../src/examples/calendar/month.tsx"
 ```
 
 </ComponentExample>
@@ -18,19 +38,22 @@ import { CalendarBasic } from '../../src/examples/calendar/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `Date` | — | 受控日期 / 初始选中日期 |
-| `onChange` | `(date: Date) => void` | — | 选中日期后触发 |
-| `visibleDate` | `Date` | — | 受控展示的月份或年份 |
+| `value / defaultValue` | `Date` | — | 受控 / 初始选中日期 |
+| `onChange` | `(date: Date) => void` | — | 选择日期后触发 |
+| `visibleDate` | `Date` | — | 受控展示范围 |
 | `onVisibleChange` | `(date: Date) => void` | — | 展示范围变化 |
 | `mode` | `'date' \| 'month'` | `'date'` | 选择日期或月份 |
-| `fullscreen` | `boolean` | `true` | 使用完整日历布局 |
-| `minDate / maxDate` | `Date` | — | 可选择日期边界 |
+| `fullscreen` | `boolean` | `true` | 完整日历布局 |
+| `minDate / maxDate` | `Date` | — | 日期边界 |
 | `disabledDate` | `(date: Date) => boolean` | — | 禁用指定日期 |
-| `cellRender` | `(date: Date) => ReactNode` | — | 在日期或月份下补充内容 |
+| `cellRender` | `(date: Date) => ReactNode` | — | 补充日程内容 |
+| `headerExtra` | `ReactNode` | — | 标题区域补充内容 |
+| `showToday` | `boolean` | `true` | 完整日历展示今天按钮，跳至当前月份 |
+
 
 ## 类型
 
-定义组件属性或组装列表时可导入相关类型。
+可导入以下类型定义属性、组装数据或处理回调。
 
 ```ts
 import type { CalendarProps } from '@sudden3/leaf-ui';
@@ -38,6 +61,6 @@ import type { CalendarProps } from '@sudden3/leaf-ui';
 
 ## 使用说明
 
-完整日历适合展示日程，`fullscreen={false}` 可展示紧凑日历。`cellRender` 中使用文字、Tag 等非交互内容，避免在日期按钮内再嵌套按钮。方向键移动日期，Home / End 跳至一行首尾，PageUp / PageDown 切换月份。SSR 页面应为服务端和客户端提供相同的初始日期，详见 SSR 使用指南。
+`fullscreen={false}` 展示紧凑日历。`cellRender` 中使用文字、图标等非交互内容，避免在日期按钮内嵌套按钮。禁用选中项保留清晰的灰色状态，不会再次触发选择。
 
-[SSR 使用](/guide/ssr)。
+方向键移动日期，Home / End 跳至一行首尾，PageUp / PageDown 切换月份。SSR 页面应提供一致的初始日期，详见 [SSR 使用](/guide/ssr)。

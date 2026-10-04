@@ -1,0 +1,75 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ColorPickerBasic } from '../../src/examples/color-picker/basic';
+import { ColorPickerFormats } from '../../src/examples/color-picker/formats';
+import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
+
+# ColorPicker 颜色选择器
+
+选择颜色，为内容和品牌增添个性。
+
+## 选择颜色
+
+<ComponentExample title="选择颜色" preview={<ColorPickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/color-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## 颜色格式与透明度
+
+<ComponentExample title="颜色格式与透明度" preview={<ColorPickerFormats />} fileName="formats.tsx">
+
+```tsx lineNumbers file="../../src/examples/color-picker/formats.tsx"
+```
+
+</ComponentExample>
+
+## 预设与状态
+
+<ComponentExample title="预设与状态" preview={<ColorPickerPresets />} fileName="presets.tsx">
+
+```tsx lineNumbers file="../../src/examples/color-picker/presets.tsx"
+```
+
+</ComponentExample>
+
+## ColorPicker API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `string` | `'#20834a'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
+| `onChange / onChangeComplete` | `(color: string) => void` | — | 实时变化 / 一次调色操作结束；清除时返回空字符串 |
+| `format / defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 受控 / 初始显示及输出格式 |
+| `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | 格式切换 |
+| `disableAlpha` | `boolean` | `false` | 隐藏透明度并输出不透明颜色 |
+| `showText` | `boolean \| ((color: string) => ReactNode)` | `false` | 展示颜色文字或自定义文字 |
+| `presets` | [`readonly ColorPreset[]`](#colorpreset) | 内置颜色 | 分组预设，空数组隐藏预设 |
+| `allowClear` | `boolean` | `false` | 允许清除颜色 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 触发控件尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验反馈 |
+| `disabled / required` | `boolean` | `false` | 禁用 / 必填 |
+| `name / form` | `string` | — | 表单字段名 / 关联表单 |
+| `popupWidth` | `number \| string` | `280` | 浮层宽度 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+
+## ColorPreset
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `label` | `ReactNode` | 分组标题 |
+| `colors` | `readonly string[]` | 该组的颜色值 |
+
+## 类型
+
+可导入以下类型定义属性、组装数据或处理回调。
+
+```ts
+import type { ColorPickerProps, ColorPreset } from '@sudden3/leaf-ui';
+```
+
+## 使用说明
+
+颜色值以字符串传递，开启透明度时 HEX 可能为 8 位。格式切换不会修改已提交值，下一次调色按所选格式输出。拖动时触发 `onChange`，释放指针、键盘调整、输入提交或选择预设时触发 `onChangeComplete`。
+
+调色区域支持方向键，按住 Shift 加大调整幅度；左右调整饱和度，上下调整亮度。颜色输入通过 Enter 或移走焦点提交，无效输入保留错误提示。支持 FormData、必填校验与非受控表单 reset；受控字段需同步重置自己的值。

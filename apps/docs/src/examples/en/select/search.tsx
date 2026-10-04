@@ -10,22 +10,28 @@ export function SelectSearch() {
   const [teams, setTeams] = useState<string[]>(['design']);
   return (
     <div className="leaf-demo-stack">
-      <Select
-        aria-label="Search teams"
-        showSearch
-        allowClear
-        options={options}
-        placeholder="Type to search"
-      />
-      <Select
-        aria-label="Choose several teams"
-        multiple
-        showSearch
-        allowClear
-        options={options}
-        value={teams}
-        onChange={setTeams}
-      />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Search teams</span>
+        <Select
+          aria-label="Search teams"
+          showSearch
+          allowClear
+          options={options}
+          placeholder="Type to search"
+        />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">Choose several teams</span>
+        <Select
+          aria-label="Choose several teams"
+          multiple
+          showSearch
+          allowClear
+          options={options}
+          value={teams}
+          onChange={setTeams}
+        />
+      </div>
       <output className="leaf-demo-note">{teams.join(', ') || '—'}</output>
     </div>
   );

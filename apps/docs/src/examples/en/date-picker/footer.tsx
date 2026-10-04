@@ -9,16 +9,19 @@ export function DatePickerFooter() {
     setValue(next);
   };
   return (
-    <DatePicker
-      aria-label="Custom date shortcuts"
-      value={value}
-      onChange={setValue}
-      todayText="Today"
-      renderExtraFooter={
-        <Button variant="ghost" size="sm" onClick={tomorrow}>
-          Tomorrow
-        </Button>
-      }
-    />
+    <div className="leaf-demo-case">
+      <span className="leaf-demo-label">Custom date shortcuts</span>
+      <DatePicker
+        aria-label="Custom date shortcuts"
+        value={value}
+        onChange={setValue}
+        todayText="Today"
+        renderExtraFooter={
+          <Button variant="ghost" size="sm" onClick={tomorrow}>
+            Tomorrow
+          </Button>
+        }
+      />
+    </div>
   );
 }

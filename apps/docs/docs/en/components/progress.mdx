@@ -1,15 +1,35 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ProgressBasic } from '../../../src/examples/en/progress/basic';
+import { ProgressStates } from '../../../src/examples/en/progress/states';
+import { ProgressCircles } from '../../../src/examples/en/progress/circles';
 
 # Progress
 
-Display how much of a task is complete.
+Display task completion.
 
-## Basic usage
+## Interactive progress
 
-<ComponentExample title="Basic usage" preview={<ProgressBasic />} fileName="basic.tsx">
+<ComponentExample title="Interactive progress" preview={<ProgressBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/progress/basic.tsx"
+```
+
+</ComponentExample>
+
+## Progress states
+
+<ComponentExample title="Progress states" preview={<ProgressStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/progress/states.tsx"
+```
+
+</ComponentExample>
+
+## Circular progress
+
+<ComponentExample title="Circular progress" preview={<ProgressCircles />} fileName="circles.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/progress/circles.tsx"
 ```
 
 </ComponentExample>

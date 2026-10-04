@@ -1,6 +1,6 @@
 .leaf-rate {
   --leaf-rate-size: 24px;
-  --leaf-rate-color: var(--leaf-color-warning);
+  --leaf-rate-color: #ffc53d;
   position: relative;
   display: inline-flex;
   flex-wrap: wrap;
@@ -37,9 +37,11 @@
     overflow: hidden;
     pointer-events: none;
     color: var(--leaf-rate-color);
-    transition: width var(--leaf-motion-duration);
+    transition:
+      width var(--leaf-motion-duration),
+      color var(--leaf-motion-duration);
     svg {
-      fill: var(--leaf-rate-color);
+      fill: currentColor;
     }
   }
   &__option {

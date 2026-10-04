@@ -23,9 +23,18 @@ const options = [
 export function CascaderBasic() {
   return (
     <div className="leaf-demo-stack">
-      <Cascader aria-label="项目分类" options={options} placeholder="选择项目分类" />
-      <Cascader aria-label="默认分类" options={options} defaultValue={['design', 'interface']} />
-      <Cascader aria-label="禁用分类" options={options} disabled />
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">项目分类</span>
+        <Cascader aria-label="项目分类" options={options} placeholder="选择项目分类" />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">默认分类</span>
+        <Cascader aria-label="默认分类" options={options} defaultValue={['design', 'interface']} />
+      </div>
+      <div className="leaf-demo-case">
+        <span className="leaf-demo-label">禁用分类</span>
+        <Cascader aria-label="禁用分类" options={options} disabled />
+      </div>
     </div>
   );
 }

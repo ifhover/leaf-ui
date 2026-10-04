@@ -16,6 +16,8 @@ export interface CalendarProps
   maxDate?: Date;
   disabledDate?: (date: Date) => boolean;
   cellRender?: (date: Date) => ReactNode;
+  headerExtra?: ReactNode;
+  showToday?: boolean;
 }
 export function Calendar({
   value,
@@ -29,6 +31,8 @@ export function Calendar({
   maxDate,
   disabledDate,
   cellRender,
+  headerExtra,
+  showToday = true,
   className,
   'aria-label': label,
   ...props
@@ -62,6 +66,8 @@ export function Calendar({
         maxDate={maxDate}
         disabledDate={disabledDate}
         cellRender={cellRender}
+        headerExtra={headerExtra}
+        showToday={fullscreen && showToday}
         onChange={(next) => {
           if (value === undefined) setInternal(next);
           changeVisible(next);

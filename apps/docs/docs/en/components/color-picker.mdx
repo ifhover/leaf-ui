@@ -1,0 +1,75 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ColorPickerBasic } from '../../../src/examples/en/color-picker/basic';
+import { ColorPickerFormats } from '../../../src/examples/en/color-picker/formats';
+import { ColorPickerPresets } from '../../../src/examples/en/color-picker/presets';
+
+# ColorPicker
+
+Choose colors for content and branding.
+
+## Choose a color
+
+<ComponentExample title="Choose a color" preview={<ColorPickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## Formats and transparency
+
+<ComponentExample title="Formats and transparency" preview={<ColorPickerFormats />} fileName="formats.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/formats.tsx"
+```
+
+</ComponentExample>
+
+## Presets and states
+
+<ComponentExample title="Presets and states" preview={<ColorPickerPresets />} fileName="presets.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/presets.tsx"
+```
+
+</ComponentExample>
+
+## ColorPicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value / defaultValue` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
+| `onChange / onChangeComplete` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
+| `format / defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Controlled / initial display and output format |
+| `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | Format changes |
+| `disableAlpha` | `boolean` | `false` | Hide opacity and output opaque colors |
+| `showText` | `boolean \| ((color: string) => ReactNode)` | `false` | Show color text or custom content |
+| `presets` | [`readonly ColorPreset[]`](#colorpreset) | Built-in colors | Grouped presets; an empty array hides them |
+| `allowClear` | `boolean` | `false` | Allow clearing |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Trigger size |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `disabled / required` | `boolean` | `false` | Disabled / required |
+| `name / form` | `string` | — | Field name / associated form |
+| `popupWidth` | `number \| string` | `280` | Panel width |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+
+## ColorPreset
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `label` | `ReactNode` | Group heading |
+| `colors` | `readonly string[]` | Color values in the group |
+
+## Types
+
+Import these types to define props or prepare data.
+
+```ts
+import type { ColorPickerProps, ColorPreset } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Colors are strings; HEX may contain eight digits when opacity is enabled. Changing format preserves the submitted value; the next adjustment outputs the selected format. `onChange` reports live changes, while `onChangeComplete` reports pointer release, keyboard adjustment, input submission or preset selection.
+
+Use arrow keys in the color plane, with Shift for larger steps. Left/right adjust saturation; up/down adjust brightness. Enter or blur submits color text; invalid text displays an error. Supports FormData, required validation and uncontrolled form reset. Reset controlled state in your application.

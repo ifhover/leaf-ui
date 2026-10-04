@@ -1,0 +1,90 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TreeSelectBasic } from '../../../src/examples/en/tree-select/basic';
+import { TreeSelectMultiple } from '../../../src/examples/en/tree-select/multiple';
+import { TreeSelectStates } from '../../../src/examples/en/tree-select/states';
+
+# TreeSelect
+
+Choose one or more values from hierarchical data.
+
+## Selection and search
+
+<ComponentExample title="Selection and search" preview={<TreeSelectBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/basic.tsx"
+```
+
+</ComponentExample>
+
+## Multiple selection and checks
+
+<ComponentExample title="Multiple selection and checks" preview={<TreeSelectMultiple />} fileName="multiple.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/multiple.tsx"
+```
+
+</ComponentExample>
+
+## States and panel width
+
+<ComponentExample title="States and panel width" preview={<TreeSelectStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/states.tsx"
+```
+
+</ComponentExample>
+
+## TreeSelect API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly TreeSelectOption[]`](#treeselectoption) | Required | Hierarchical options |
+| `value / defaultValue` | `string \| readonly string[] \| null` | `null` | Controlled / initial value; use an array for multiple selection |
+| `onChange` | `(value: string \| readonly string[] \| null) => void` | — | Selection changes; clearing returns null for single mode or [] for multiple |
+| `multiple / treeCheckable` | `boolean` | `false` | Multiple / checkbox mode, which automatically enables multiple selection |
+| `checkStrictly` | `boolean` | `false` | Check parents and children independently |
+| `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | Display and output children, consolidated parents or all checked nodes |
+| `showSearch` | `boolean` | `true` | Filter nodes by typing |
+| `onSearch` | `(query: string) => void` | — | Search changes |
+| `allowClear` | `boolean` | `true` | Allow clearing enabled selections |
+| `defaultExpandAll` | `boolean` | `false` | Expand all initially |
+| `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | Values expanded initially |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `disabled / required` | `boolean` | `false` | Disabled / required |
+| `name / form` | `string` | — | Field name / associated form |
+| `popupWidth / popupMaxWidth` | `number \| string` | Content width / 420 | Panel width / maximum width; at least as wide as the trigger |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `notFoundContent` | `ReactNode` | No options | Content when no options match |
+
+## TreeSelectOption
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `value` | `string` | Unique value, required |
+| `label` | `ReactNode` | Display label, required |
+| `children` | [`readonly TreeSelectOption[]`](#treeselectoption) | Child options using the same structure |
+| `disabled` | `boolean` | Prevent selection/checking |
+| `selectable` | `boolean` | Set false to make a category non-selectable |
+| `disableCheckbox` | `boolean` | Disable checks and stop propagation |
+| `icon` | `ReactNode` | Node icon |
+| `searchLabel` | `string` | Search and accessible text for non-text labels |
+
+## Types
+
+Import these types to define props or prepare data.
+
+```ts
+import type { TreeSelectProps, TreeSelectOption, TreeSelectValue } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Option values must be unique and stable. Example data:
+
+```ts lineNumbers file="../../../src/examples/en/tree-select/options.ts"
+```
+
+`TreeSelectValue` is `string | readonly string[] | null` and can be used for controlled state. Checkbox mode submits checked leaves by default; `showCheckedStrategy` controls both display and callback values. Disabled existing selections are preserved by clear and linked checks.
+
+ArrowDown enters the tree, Enter selects, Space checks and Escape closes. With an empty search in multiple mode, Backspace removes the last enabled selection. FormData submits repeated values under one field name; use `getAll(name)` to read them. Uncontrolled fields respond to form reset.

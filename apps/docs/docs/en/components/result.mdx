@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ResultBasic } from '../../../src/examples/en/result/basic';
+import { ResultStates } from '../../../src/examples/en/result/states';
+import { ResultCustom } from '../../../src/examples/en/result/custom';
+
+# Result
+
+Present operation results, empty content and other states.
+
+## Operation results
+
+<ComponentExample title="Operation results" preview={<ResultBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/result/basic.tsx"
+```
+
+</ComponentExample>
+
+## Empty content and other states
+
+<ComponentExample title="Empty content and other states" preview={<ResultStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/result/states.tsx"
+```
+
+</ComponentExample>
+
+## Custom content
+
+<ComponentExample title="Custom content" preview={<ResultCustom />} fileName="custom.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/result/custom.tsx"
+```
+
+</ComponentExample>
+
+## Result API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `'empty' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'empty'` | Result status |
+| `title / description` | `ReactNode` | Localized title / — | Title / description; null hides them |
+| `icon` | `ReactNode` | Status icon | Custom icon; null hides it |
+| `extra` | `ReactNode` | — | Action buttons or links |
+| `children` | `ReactNode` | — | Additional information |
+| `size` | `'sm' \| 'md'` | `'md'` | Content spacing and icon size |
+
+
+## Types
+
+Import these types to define props or prepare data.
+
+```ts
+import type { ResultProps } from '@sudden3/leaf-ui';
+```
+
+## Usage notes
+
+Use `status="empty"` for empty content. Success, warning, error and information have matching icons and colors. Customize `icon`, `title`, `description` and `extra` as needed.
+
+The original `Empty` remains as a compatibility entry. Migrate to `Result`: rename `image` to `icon`, `description` to `title`, and move action buttons to `extra`.
