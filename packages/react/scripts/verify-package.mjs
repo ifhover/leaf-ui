@@ -111,6 +111,7 @@ const components = [
   ['Modal', { open: false, title: 'Details' }, null, /<span/, false],
   ['Confirm', { open: false, title: 'Remove' }, null, /<span/, false],
   ['Message', { open: false, content: 'Saved' }, null, /<span/, false],
+  ['MessageProvider', {}, 'Content', /Content/, false],
 ];
 for (const [format, api] of [
   ['ESM', esm],
@@ -129,7 +130,17 @@ for (const [format, api] of [
     const message = api.useMessage();
     return createElement(Fragment, null, confirm.contextHolder, message.contextHolder);
   }
-  assert.match(renderToStaticMarkup(createElement(HookHolders)), /<span/);
+  assert.equal(renderToStaticMarkup(createElement(HookHolders)), '');
+  function ManagedMessage() {
+    const { message, contextHolder } = api.useMessage();
+    assert.equal(contextHolder, null);
+    assert.equal(typeof message.success, 'function');
+    return createElement('span', null, 'Ready');
+  }
+  assert.match(
+    renderToStaticMarkup(createElement(api.ConfigProvider, null, createElement(ManagedMessage))),
+    /Ready/,
+  );
   const themed = renderToStaticMarkup(
     createElement(
       api.ConfigProvider,

@@ -9,15 +9,12 @@ const items: DropdownItem[] = [
   { key: 'delete', label: '删除', icon: <Trash2 size={15} />, danger: true },
 ];
 export function DropdownBasic() {
-  const { message, contextHolder } = useMessage();
+  const { message } = useMessage();
   return (
-    <>
-      <Dropdown items={items} onSelect={(key) => message.info(key)}>
-        <Button variant="outline" endIcon={<ChevronDown size={16} />}>
-          更多操作
-        </Button>
-      </Dropdown>
-      {contextHolder}
-    </>
+    <Dropdown items={items} onSelect={(key) => message.info(key)}>
+      <Button variant="outline" endIcon={<ChevronDown size={16} />}>
+        更多操作
+      </Button>
+    </Dropdown>
   );
 }

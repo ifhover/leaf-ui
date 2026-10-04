@@ -64,7 +64,22 @@ import { ConfigProvider, Button } from '@sudden3/leaf-ui';
 </ConfigProvider>
 ```
 
-Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Place message and confirm context holders within the desired ConfigProvider region.
+Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Messages follow the calling ConfigProvider region; place confirm context holders within the desired region.
+
+## Messages
+
+ConfigProvider manages the message queue once at your application entry. Descendants call useMessage without rendering a contextHolder:
+
+```tsx
+import { Button, useMessage } from '@sudden3/leaf-ui';
+
+export function SaveButton() {
+  const { message } = useMessage();
+  return <Button onClick={() => message.success('Saved')}>Save</Button>;
+}
+```
+
+If you do not use ConfigProvider, wrap your application in MessageProvider instead. Components share one queue and can update a message using the same key. The legacy holder pattern remains supported.
 
 Custom components can read var(--leaf-color-primary), var(--leaf-radius), var(--leaf-control-height) and other shared variables inside the region. Use ConfigProvider to change library styles, and CSS variables to reuse the resulting values. See [theming](https://ifhover.github.io/leaf-ui/guide/theming.html).
 

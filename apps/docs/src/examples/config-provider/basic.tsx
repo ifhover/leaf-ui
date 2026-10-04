@@ -2,13 +2,12 @@ import { Button, ConfigProvider, DatePicker, Select, Switch, useMessage } from '
 import { useState } from 'react';
 
 function Region() {
-  const { message, contextHolder } = useMessage();
+  const { message } = useMessage();
   return (
     <div className="leaf-demo-row">
       <Select aria-label="选项" options={[]} />
       <DatePicker aria-label="日期" />
       <Button onClick={() => message.success('Success / 操作成功')}>Message</Button>
-      {contextHolder}
     </div>
   );
 }

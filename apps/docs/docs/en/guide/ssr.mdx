@@ -142,4 +142,6 @@ Date pickers display local dates and times. Different server and browser time zo
 
 Modal, Confirm, Message and floating panels create their portals after client mounting. Form controls themselves can render on the server; initially open overlays appear after hydration.
 
+The entry `ConfigProvider` manages messages automatically. Client descendants call `useMessage` without adding a `contextHolder`. The server renders no message container, and queues belong to individual application roots rather than being shared between SSR requests.
+
 Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.

@@ -1,16 +1,43 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { MessageBasic } from '../../src/examples/message/basic';
 import { MessageStack } from '../../src/examples/message/stack';
+import { MessageShared } from '../../src/examples/message/shared';
 
 # Message 消息提示
 
 以短暂提示反馈操作结果。
+
+## 入口配置一次
+
+在应用入口使用 `ConfigProvider`，它会自动管理消息。页面和业务组件调用 `useMessage` 后即可显示消息，无需渲染 `contextHolder`。
+
+```tsx
+import { ConfigProvider } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
+已经使用 `ConfigProvider` 的应用无需新增配置。`useMessage` 应在它的子组件中调用，返回的 `message` 也可以作为参数传给业务方法。
 
 ## 消息与更新
 
 <ComponentExample title="消息与更新" preview={<MessageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## 跨组件共享
+
+下面两个按钮来自不同子组件。相同的 `key` 可以更新同一条消息，页面切换后也能继续反馈操作结果。
+
+<ComponentExample title="跨组件共享" preview={<MessageShared />} fileName="shared.tsx">
+
+```tsx lineNumbers file="../../src/examples/message/shared.tsx"
 ```
 
 </ComponentExample>
@@ -30,8 +57,24 @@ import { MessageStack } from '../../src/examples/message/stack';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `message` | [`MessageApi`](#messageapi) | — | 调用消息方法 |
-| `contextHolder` | `ReactNode` | — | 放在目标主题、语言区域中 |
+| `message` | [`MessageApi`](#messageapi) | — | 调用入口托管的消息队列 |
+| `contextHolder` | `ReactNode` | — | 兼容旧写法；有 provider 时为 null，无需渲染 |
+
+## MessageProvider API
+
+未使用 `ConfigProvider` 时，可在入口使用 `MessageProvider`。显式添加它也可以为某个区域建立独立的消息队列。
+
+```tsx
+import { MessageProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <MessageProvider><App /></MessageProvider>;
+}
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 共用此消息队列的组件 |
 
 ## MessageApi
 
@@ -69,11 +112,15 @@ import { MessageStack } from '../../src/examples/message/stack';
 定义组件属性或组装变量时可导入相关类型。
 
 ```ts
-import type { MessageProps, MessageOptions, MessageApi } from '@sudden3/leaf-ui';
+import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@sudden3/leaf-ui';
 ```
 
 ## 使用说明
 
-推荐通过 useMessage 使用，同一 key 可以把加载消息更新为结果。鼠标停留或焦点位于消息中时暂停计时，离开后按剩余时间继续。
+推荐通过 `useMessage` 使用，同一 `key` 可以把加载消息更新为结果。鼠标停留或焦点位于消息中时暂停计时，离开后按剩余时间继续。
 
-也支持直接渲染 Message；收到 onClose 后由应用设置 open=false。将 contextHolder 放到 ConfigProvider 中，消息跟随区域主题与语言。
+同一入口下的组件共享队列；`close()` 关闭该队列的全部消息，`close(key)` 仅关闭指定消息。嵌套的 `ConfigProvider` 沿用同一个队列，每条消息仍使用调用组件所在区域的主题和语言。
+
+调用组件卸载后，已有消息继续按时关闭，异步任务也可通过同一 `message` 更新结果。入口 provider 卸载后，其消息和计时器一起清理。不同 React 应用及 SSR 请求各自拥有队列。
+
+也支持直接渲染 `Message`；收到 `onClose` 后由应用设置 `open=false`。旧的本地 `contextHolder` 写法仍可使用，入口托管方式下它返回 `null`。

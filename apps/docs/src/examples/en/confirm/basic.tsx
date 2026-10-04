@@ -42,7 +42,6 @@ export function ConfirmBasic() {
         ))}
       </div>
       {contextHolder}
-      {feedback.contextHolder}
     </>
   );
 }

@@ -1,16 +1,43 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MessageBasic } from '../../../src/examples/en/message/basic';
 import { MessageStack } from '../../../src/examples/en/message/stack';
+import { MessageShared } from '../../../src/examples/en/message/shared';
 
 # Message
 
 Provide brief feedback about an operation.
+
+## Set up once
+
+Wrap your application in `ConfigProvider`. It manages messages automatically, so pages and business components can call `useMessage` without rendering a `contextHolder`.
+
+```tsx
+import { ConfigProvider } from '@sudden3/leaf-ui';
+import '@sudden3/leaf-ui/styles.css';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
+Applications already using `ConfigProvider` need no additional setup. Call `useMessage` in its descendants; the returned `message` can also be passed to business functions.
 
 ## Messages and updates
 
 <ComponentExample title="Messages and updates" preview={<MessageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/message/basic.tsx"
+```
+
+</ComponentExample>
+
+## Share between components
+
+These two buttons belong to different components. Use the same `key` to update one message, even when switching pages.
+
+<ComponentExample title="Share between components" preview={<MessageShared />} fileName="shared.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/message/shared.tsx"
 ```
 
 </ComponentExample>
@@ -30,8 +57,24 @@ When a message closes, those below it move up smoothly. Content of different hei
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `message` | [`MessageApi`](#messageapi) | — | Call message methods |
-| `contextHolder` | `ReactNode` | — | Render inside the desired theme and language region |
+| `message` | [`MessageApi`](#messageapi) | — | Call the queue managed by the application provider |
+| `contextHolder` | `ReactNode` | — | Legacy compatibility; null inside a provider, no need to render |
+
+## MessageProvider API
+
+If your application has no `ConfigProvider`, add `MessageProvider` at the entry point. An explicit `MessageProvider` also creates an independent queue for a region.
+
+```tsx
+import { MessageProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <MessageProvider><App /></MessageProvider>;
+}
+```
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Components sharing this queue |
 
 ## MessageApi
 
@@ -69,11 +112,15 @@ When a message closes, those below it move up smoothly. Content of different hei
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { MessageProps, MessageOptions, MessageApi } from '@sudden3/leaf-ui';
+import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@sudden3/leaf-ui';
 ```
 
 ## Usage notes
 
-Prefer useMessage. Update a loading message with its key to show the result. Timers pause while a message is hovered or focused and resume with the remaining time.
+Prefer `useMessage`. Update a loading message with its `key` to show the result. Timers pause while a message is hovered or focused and resume with the remaining time.
 
-Message also supports declarative rendering; set open=false after onClose. Place contextHolder inside ConfigProvider so messages follow its theme and language.
+Components under the same entry provider share a queue. `close()` closes all its messages; `close(key)` closes one. Nested `ConfigProvider` regions share that queue, while each message keeps the theme and language of the calling component.
+
+Messages continue after the calling component unmounts, and asynchronous work can update them through the same `message` instance. Unmounting the entry provider clears its messages and timers. Separate React applications and SSR requests have independent queues.
+
+`Message` also supports declarative rendering; set `open=false` after `onClose`. The legacy local `contextHolder` pattern remains supported and returns `null` when the entry provider handles messages.

@@ -88,7 +88,18 @@ import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-u
 </ConfigProvider>
 ```
 
-嵌套配置继承未设置的选项；浮层与放在区域内的 message / confirm contextHolder 沿用主题和语言。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
+嵌套配置继承未设置的选项；浮层、消息与区域内的 confirm contextHolder 沿用主题和语言。ConfigProvider 自动托管消息，页面无需重复放置 contextHolder：
+
+```tsx
+import { Button, useMessage } from '@sudden3/leaf-ui';
+
+export function SaveButton() {
+  const { message } = useMessage();
+  return <Button onClick={() => message.success('保存成功')}>保存</Button>;
+}
+```
+
+将 SaveButton 放在应用入口的 ConfigProvider 下即可。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
 
 ## 主题定制
 

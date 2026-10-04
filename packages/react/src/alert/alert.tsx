@@ -1,6 +1,6 @@
 import { CheckCircle2, CircleX, Info, LoaderCircle, TriangleAlert, X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 export type FeedbackType = 'success' | 'info' | 'warning' | 'error';
 export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {

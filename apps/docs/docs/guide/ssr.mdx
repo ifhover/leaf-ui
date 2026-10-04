@@ -142,4 +142,6 @@ Remix、React Router 框架模式或自建 React SSR 服务使用相同方式：
 
 Modal、Confirm、Message 与选择浮层会在客户端挂载后创建 Portal。表单控件本身可以服务端渲染；已打开的弹层在客户端接管后展示。
 
+入口的 `ConfigProvider` 会自动托管消息，客户端子组件通过 `useMessage` 调用即可，无需放置 `contextHolder`。服务端不输出消息容器；每个应用入口的队列相互独立，不会在 SSR 请求之间共享消息。
+
 这些交互组件需要客户端 JavaScript 才能响应操作。样式复用与高级主题配置见[定制主题](/guide/theming)。

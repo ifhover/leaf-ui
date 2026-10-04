@@ -59,7 +59,7 @@ ConfigProvider 可以包裹整个应用，也可以只包裹一个区域。内�
 </ConfigProvider>
 ```
 
-浮层、Modal 和区域内的 message / confirm contextHolder 会继承相同的主题。语言通过 ConfigProvider 的 `locale` 单独设置。
+浮层、Modal、消息和区域内的 confirm contextHolder 会继承相同的主题。消息由 ConfigProvider 自动托管，无需在页面放置 contextHolder。语言通过 ConfigProvider 的 `locale` 单独设置。
 
 ## 深色外观与动态切换
 
