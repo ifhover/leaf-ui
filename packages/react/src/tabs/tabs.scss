@@ -8,7 +8,6 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    border-bottom: 1px solid var(--leaf-color-border);
   }
   &__list {
     display: flex;
@@ -122,8 +121,7 @@
   }
   &--card .leaf-tabs__entry {
     border: 1px solid var(--leaf-color-border);
-    border-bottom: 0;
-    border-radius: var(--leaf-radius-sm) var(--leaf-radius-sm) 0 0;
+    border-radius: var(--leaf-radius-sm);
     background: var(--leaf-color-surface-muted);
     &[data-active='true'] {
       background: var(--leaf-color-surface);
@@ -138,8 +136,6 @@
     .leaf-tabs__header {
       flex-direction: column;
       align-items: stretch;
-      border-bottom: 0;
-      border-inline-end: 1px solid var(--leaf-color-border);
     }
     .leaf-tabs__list {
       flex-direction: column;

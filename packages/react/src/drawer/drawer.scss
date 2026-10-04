@@ -74,8 +74,7 @@
     flex-shrink: 0;
     align-items: center;
     gap: 12px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--leaf-color-border);
+    padding: 24px 24px 12px;
     h2 {
       flex: 1;
       margin: 0;
@@ -89,8 +88,11 @@
   &__body {
     flex: 1;
     overflow: auto;
-    padding: 22px;
+    padding: 24px;
     overscroll-behavior: contain;
+  }
+  &__header + &__body {
+    padding-block-start: 12px;
   }
   &__footer {
     display: flex;
@@ -99,8 +101,7 @@
     justify-content: flex-end;
     flex-wrap: wrap;
     gap: 6px;
-    padding: 14px 22px;
-    border-top: 1px solid var(--leaf-color-border);
+    padding: 0 24px 24px;
   }
 }
 .leaf-drawer-mask[data-state='closing'] .leaf-drawer {

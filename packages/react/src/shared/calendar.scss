@@ -82,8 +82,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding: 8px;
-  border-top: 1px solid var(--leaf-color-border);
+  padding: 4px 12px 12px;
   font-size: 12px;
   color: var(--leaf-color-text-muted);
   &__extra {
@@ -136,23 +135,22 @@
   &__calendars {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     min-width: 0;
     padding: 0;
     margin: 0;
     border: 0;
   }
-  &__calendar + &__calendar {
-    border-left: 1px solid var(--leaf-color-border);
-  }
   &__endpoints {
     display: flex;
-    border-bottom: 1px solid var(--leaf-color-border);
+    gap: 8px;
+    padding: 8px;
     > button {
       flex: 1;
       min-width: 0;
       padding: 8px;
       border: 0;
-      border-bottom: 2px solid transparent;
+      border-radius: var(--leaf-radius-sm);
       background: transparent;
       color: var(--leaf-color-text-muted);
       font: inherit;
@@ -160,7 +158,7 @@
       cursor: pointer;
       &[aria-pressed='true'] {
         color: var(--leaf-color-primary);
-        border-bottom-color: var(--leaf-color-primary);
+        background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
       }
       > span {
         display: block;
@@ -181,10 +179,6 @@
   }
   .leaf-range-panel__calendars {
     grid-template-columns: 1fr;
-  }
-  .leaf-range-panel__calendar + .leaf-range-panel__calendar {
-    border-left: 0;
-    border-top: 1px solid var(--leaf-color-border);
   }
 }
 @media (prefers-reduced-motion: reduce) {

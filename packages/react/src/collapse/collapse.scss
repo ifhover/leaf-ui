@@ -9,9 +9,6 @@
   &--bordered {
     border: 1px solid var(--leaf-color-border);
   }
-  &__item + &__item {
-    border-block-start: 1px solid var(--leaf-color-border);
-  }
   &__header {
     display: flex;
     align-items: center;

@@ -77,7 +77,6 @@ const images = {
     icon(CalendarDays, 25, 19) +
     text(46, 30, '2026-10-03  —  2026-10-15') +
     rect(15, 45, 210, 73) +
-    '<path d="M120 45v73" stroke="#dce5de"/>' +
     text(32, 61, 'October 2026', '#203329', 9) +
     text(134, 61, 'November 2026', '#203329', 9) +
     rect(24, 74, 87, 18, '#eaf4ed', 'none', 2) +

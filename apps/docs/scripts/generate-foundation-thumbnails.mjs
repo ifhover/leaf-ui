@@ -34,7 +34,6 @@ const images = {
   card:
     rect(25, 15, 190, 98) +
     text(39, 37, 'Leaf Garden', '#203329', 11) +
-    '<path d="M25 47h190" stroke="#dce5de"/>' +
     text(39, 70, 'Projects, people and plans', '#6c7c71', 9) +
     rect(39, 88, 52, 16, '#eaf4ed', 'none', 4) +
     text(49, 100, 'Details', '#20834a', 8),
@@ -56,7 +55,6 @@ const images = {
     icon(ChevronDown, 37, 25, '#20834a') +
     text(60, 36, 'About this project', '#203329', 10) +
     text(60, 59, 'Keep your plans together.', '#6c7c71', 9) +
-    '<path d="M25 75h190" stroke="#dce5de"/>' +
     icon(ChevronRight, 37, 87, '#6c7c71') +
     text(60, 98, 'Settings', '#203329', 10),
   popover:
@@ -185,7 +183,7 @@ const images = {
     text(34, 45, 'Overview', '#20834a') +
     text(104, 45, 'Settings', '#6c7c71') +
     text(166, 45, 'History', '#9cab9f') +
-    '<path d="M22 55h196" stroke="#dce5de"/><path d="M32 55h52" stroke="#20834a" stroke-width="2"/>' +
+    '<path d="M32 55h52" stroke="#20834a" stroke-width="2"/>' +
     text(34, 77, 'Your project at a glance.', '#6c7c71', 9) +
     rect(34, 88, 112, 5, '#e7ece8', 'none', 2),
   'input-number':

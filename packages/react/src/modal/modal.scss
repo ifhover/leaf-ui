@@ -49,7 +49,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 18px 22px 10px;
+    padding: 24px 24px 12px;
   }
   &__header h2 {
     flex: 1;
@@ -77,15 +77,14 @@
   }
   &__body {
     overflow: auto;
-    padding: 10px 22px 20px;
+    padding: 12px 24px 20px;
   }
   &__footer {
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
     gap: 6px;
-    padding: 12px 22px 18px;
-    border-top: 1px solid var(--leaf-color-border);
+    padding: 0 24px 24px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

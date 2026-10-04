@@ -1,4 +1,4 @@
-import { Button } from '@sudden3/leaf-ui';
+import { Button, Card } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 import { componentCatalog } from './component-catalog';
 import { CopyButton } from './copy-button';
@@ -98,7 +98,7 @@ export function HomeLayout() {
         <div className="leaf-hero__visual">
           <div className="leaf-orbit leaf-orbit--one" />
           <div className="leaf-orbit leaf-orbit--two" />
-          <div className="leaf-hero-card">
+          <Card className="leaf-hero-card">
             <div className="leaf-hero-card__header">
               <span className="leaf-hero-card__logo">
                 <Icon name="leaf" />
@@ -149,7 +149,7 @@ export function HomeLayout() {
                 />
               </div>
             </div>
-          </div>
+          </Card>
           <div className="leaf-floating-note leaf-floating-note--top">
             <span className="leaf-floating-note__icon">
               <Icon name="check" width="15" height="15" />

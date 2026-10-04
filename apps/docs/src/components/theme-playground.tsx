@@ -1,4 +1,4 @@
-import { Button, ConfigProvider } from '@sudden3/leaf-ui';
+import { Button, Card, ConfigProvider } from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -59,7 +59,16 @@ export function ThemePlayground() {
             {t('实时预览', 'Live preview')}
           </span>
         </div>
-        <div className="leaf-preview-card">
+        <Card
+          className="leaf-preview-card"
+          footer={
+            <div className="leaf-preview-card__footer">
+              <span className="leaf-preview-avatar">L</span>
+              <span>{t('为下一个好想法，留一点空间。', 'Make room for the next good idea.')}</span>
+              <Icon name="sparkles" width="16" height="16" />
+            </div>
+          }
+        >
           <div className="leaf-preview-card__icon">
             <Icon name="leaf" width="28" height="28" />
           </div>
@@ -82,12 +91,7 @@ export function ThemePlayground() {
               {t('重新开始', 'Start again')}
             </Button>
           </div>
-          <div className="leaf-preview-card__footer">
-            <span className="leaf-preview-avatar">L</span>
-            <span>{t('为下一个好想法，留一点空间。', 'Make room for the next good idea.')}</span>
-            <Icon name="sparkles" width="16" height="16" />
-          </div>
-        </div>
+        </Card>
         <div className="leaf-preview-variants">
           <div>
             <Button size="sm">{t('主要按钮', 'Primary')}</Button>

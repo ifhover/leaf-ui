@@ -237,12 +237,11 @@ html.rp-dark {
 .leaf-hero-card {
   position: relative;
   width: 310px;
-  padding: 17px;
-  background: var(--leaf-site-panel);
-  border: 1px solid var(--leaf-site-border);
-  border-radius: 15px;
   box-shadow: 0 16px 40px #2343210b;
   transform: rotate(-3deg);
+}
+.leaf-hero-card > .leaf-card__body {
+  padding: 17px;
 }
 .leaf-hero-card__header {
   display: flex;
@@ -466,11 +465,6 @@ html.rp-dark {
 .leaf-preview-card {
   max-width: 360px;
   margin: 0 auto;
-  background: var(--leaf-color-surface);
-  border: 1px solid var(--leaf-color-border);
-  border-radius: calc(var(--leaf-radius) + 6px);
-  padding: 27px 27px 0;
-  box-shadow: 0 7px 20px #192e2110;
 }
 .leaf-preview-card__icon {
   display: grid;
@@ -504,20 +498,17 @@ html.rp-dark {
   display: flex;
   align-items: center;
   gap: 9px;
-  margin: 22px 0 26px;
+  margin: 22px 0 0;
   flex-wrap: wrap;
 }
 .leaf-preview-card__actions .leaf-button {
   font-size: 12px;
-  min-height: 36px;
   padding: 0 14px;
 }
 .leaf-preview-card__footer {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 15px 0;
-  border-top: 1px solid var(--leaf-color-border);
   font-size: 9px;
   color: var(--leaf-color-text-muted);
 }
