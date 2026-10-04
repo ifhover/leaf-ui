@@ -8,7 +8,7 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
-## 0.2.0 - 2026-10-04
+## 0.2.0 - 2026-10-05
 
 More everyday components, consistent theme configuration and simpler message usage.
 
