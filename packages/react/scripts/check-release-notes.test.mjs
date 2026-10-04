@@ -2,10 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { getReleaseDate } from './check-release-notes.mjs';
 
-test('accepts release notes with an unreleased section and older releases', () => {
+test('accepts release notes with older releases', () => {
   const source = `# Changelog
-## Unreleased
-- Future change.
 ## 0.2.0 - 2026-10-04
 ### Fixed
 - Fix popup positioning.
@@ -23,6 +21,12 @@ test('accepts prerelease versions and Windows line endings', () => {
 });
 
 const invalidCases = [
+  ['unreleased section', '## Unreleased\n- Future change.\n## 0.2.0 - 2026-10-04\n- A change.'],
+  ['Chinese draft section', '## 未发布\n- 未来变更。\n## 0.2.0 - 2026-10-04\n- A change.'],
+  [
+    'bracketed draft section',
+    '## [Unreleased]\n- Future change.\n## 0.2.0 - 2026-10-04\n- A change.',
+  ],
   ['missing current version', '## 0.1.0 - 2026-10-03\n- Initial release.'],
   [
     'duplicate current versions',

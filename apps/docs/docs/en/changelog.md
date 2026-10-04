@@ -8,9 +8,9 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
-## Unreleased
+## 0.2.0 - 2026-10-04
 
-These changes are not yet available on npm.
+More everyday components, consistent theme configuration and simpler message usage.
 
 ### Added
 
@@ -39,7 +39,9 @@ These changes are not yet available on npm.
 ### Usage notes
 
 - Use `ConfigProvider` to customize themes. CSS variables let application components reuse styles from their current region.
+- Place a `ConfigProvider` or `MessageProvider` at the application entry, then call `useMessage()` in your components. Existing `contextHolder` usage remains compatible.
 - `Result` supports empty, success, warning and other states. Existing `Empty` usage remains compatible.
+- TimePicker accepts manual input. Selections in its popup are committed after confirmation; date-time and date-range pickers use the same interaction.
 
 ## 0.1.0 - 2026-10-03
 

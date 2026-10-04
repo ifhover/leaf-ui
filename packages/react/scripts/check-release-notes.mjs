@@ -3,6 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export function getReleaseDate(source, version) {
+  if (/^#{1,6}[ \t]+\[?(?:未发布|unreleased)\]?(?:[ \t]|[（(]|\r?$)/imu.test(source)) {
+    throw new Error('在线更新记录只展示正式发布版本，未发布草稿请保留在 docs 目录之外。');
+  }
   const releases = [
     ...source.matchAll(/^## (\d+\.\d+\.\d+(?:-[\w.-]+)?) - (\d{4}-\d{2}-\d{2})[ \t]*\r?$/gm),
   ];
