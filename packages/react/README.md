@@ -8,7 +8,7 @@ A lightweight React component library with a green default theme, ConfigProvider
 npm install @sudden3/leaf-ui
 ```
 
-[Documentation](https://ifhover.github.io/leaf-ui/) · [Source](https://github.com/ifhover/leaf-ui) · [Issues](https://github.com/ifhover/leaf-ui/issues)
+[Documentation](https://ifhover.github.io/leaf-ui/) · [Changelog](https://ifhover.github.io/leaf-ui/en/changelog.html) · [Source](https://github.com/ifhover/leaf-ui) · [Issues](https://github.com/ifhover/leaf-ui/issues)
 
 ```tsx
 import { Button, Input, Select } from '@sudden3/leaf-ui';

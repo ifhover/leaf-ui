@@ -17,9 +17,11 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && prettier --check \"**/*.scss\"",
     "format": "biome check --write . && prettier --write \"**/*.scss\"",
-    "test": "pnpm --filter @sudden3/leaf-ui test",
+    "test": "pnpm --filter @sudden3/leaf-ui test && pnpm test:release",
+    "test:release": "node --test packages/react/scripts/check-release-notes.test.mjs",
     "test:watch": "pnpm --filter @sudden3/leaf-ui test:watch",
-    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "check": "pnpm check:release && pnpm lint && pnpm typecheck && pnpm test",
+    "check:release": "node packages/react/scripts/check-release-notes.mjs",
     "format:scss": "prettier --write \"**/*.scss\""
   },
   "devDependencies": {

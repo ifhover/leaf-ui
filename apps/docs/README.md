@@ -38,10 +38,13 @@ pnpm preview
 
 - `docs/guide/`：面向使用者的介绍、安装、快速开始、主题定制。
 - `docs/components/`：组件总览与各组件的使用/API 文档。
+- `docs/changelog.md` 与 `docs/en/changelog.md`：中英文版本更新记录。
 - `src/components/`：首页、主题编辑器、交互示例与示例容器。
 - `theme/`：Rspress 主题扩展和站点样式。
 
 `rspress.config.ts` 按路径分别配置指南和组件侧边栏。添加组件时同时更新总览、组件侧边栏和对应 MDX 页面。
+
+顶部版本号通过 Rspress 的 `afterNavTitle` 插槽展示，直接读取 `packages/react/package.json`；点击版本号可进入当前语言的更新记录。每次 npm 发布都必须更新两份记录，具体步骤见 [发布文档](../../packages/react/RELEASING.md)。正式版本记录的标题格式由 `pnpm check:release` 校验，页面只记录面向使用者的变化。
 
 组件项的 text 使用实际导入名称，例如 DatePicker；tag 作为同一行的中文副标题，站点 SCSS 将其设置为更小、更浅的文字。不要在标题中拼接两种字号，或运行时修改 Rspress 的 DOM。
 

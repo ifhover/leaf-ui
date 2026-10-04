@@ -80,6 +80,8 @@ pnpm --dir packages/react pack
 
 在线文档只包含组件使用说明。文档站运行与维护说明见 [apps/docs/README.md](apps/docs/README.md)，组件开发流程见 [packages/react/DEVELOPMENT.md](packages/react/DEVELOPMENT.md)。
 
+每次 npm 升版发布都需维护中英文更新记录，并同步部署文档。具体步骤见 [发布文档](packages/react/RELEASING.md)；`pnpm check:release` 会校验组件包当前版本的记录，导航版本号自动读取组件包版本。
+
 ## 样式与图标
 
 源码统一使用 SCSS，通过 @rsbuild/plugin-sass 构建。公共尺寸和样式 mixin 在 packages/react/src/styles；34px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。

@@ -172,6 +172,7 @@ export default defineConfig({
         nav: [
           { text: 'Guide', link: '/guide/introduction', activeMatch: '^/en/guide/' },
           { text: 'Components', link: '/components/', activeMatch: '^/en/components/' },
+          { text: 'Changelog', link: '/changelog', activeMatch: '^/en/changelog' },
         ],
         sidebar: {
           '/en/guide/': englishSidebar(guideSidebar),
@@ -182,6 +183,7 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/guide/introduction', activeMatch: '^/guide/' },
       { text: '组件', link: '/components/', activeMatch: '^/components/' },
+      { text: '更新记录', link: '/changelog', activeMatch: '^/changelog' },
     ],
     sidebar: { '/guide/': guideSidebar, '/components/': componentSidebar },
     socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/ifhover/leaf-ui' }],

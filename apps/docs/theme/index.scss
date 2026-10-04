@@ -72,6 +72,38 @@ html.rp-dark {
   font-size: 13px;
 }
 
+.leaf-nav-version {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 26px;
+  margin-left: 12px;
+  padding: 3px 8px;
+  border: 1px solid var(--leaf-site-border);
+  border-radius: 7px;
+  color: var(--leaf-site-muted);
+  background: var(--leaf-site-soft);
+  font-family: var(--rp-font-family-mono);
+  font-size: 11px;
+  line-height: 18px;
+  white-space: nowrap;
+  transition:
+    color 160ms,
+    background 160ms,
+    border-color 160ms;
+
+  &:hover {
+    border-color: var(--leaf-site-accent);
+    color: var(--leaf-site-accent);
+    background: var(--rp-c-brand-tint);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--leaf-site-accent);
+    outline-offset: 3px;
+  }
+}
+
 .rp-doc td > a.rp-link {
   display: inline-block;
 }
@@ -952,7 +984,8 @@ html.rp-dark {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .leaf-home-link {
+  .leaf-home-link,
+  .leaf-nav-version {
     transition: none;
   }
 }

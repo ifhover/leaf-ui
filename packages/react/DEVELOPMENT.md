@@ -65,4 +65,4 @@ DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 支持分钟�
 
 ## 发布 npm
 
-在根目录执行 `pnpm check` 和 `pnpm build:lib`，确认当前版本尚未发布。发布包名为 @sudden3/leaf-ui，账户必须具备 @sudden3 作用域的写入权限，以及 npm 要求的双因素认证。检查打包文件后，在 packages/react 目录运行 `npm publish --access public`。浏览器验证由维护者在已登录的浏览器中完成，不将令牌写入仓库。
+每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
