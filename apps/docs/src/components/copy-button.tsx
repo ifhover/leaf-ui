@@ -3,7 +3,15 @@ import { useEffect, useState } from 'react';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 
-export function CopyButton({ text, label }: { text: string | (() => string); label?: string }) {
+export function CopyButton({
+  text,
+  label,
+  iconOnly = false,
+}: {
+  text: string | (() => string);
+  label?: string;
+  iconOnly?: boolean;
+}) {
   const { t } = useDocsLocale();
   const [status, setStatus] = useState<'idle' | 'copied' | 'error'>('idle');
 
@@ -22,6 +30,13 @@ export function CopyButton({ text, label }: { text: string | (() => string); lab
     }
   }
 
+  const description =
+    status === 'copied'
+      ? t('已复制', 'Copied')
+      : status === 'error'
+        ? t('复制失败，请手动复制', 'Copy failed; copy manually')
+        : (label ?? t('复制', 'Copy'));
+
   return (
     <Button
       variant="ghost"
@@ -29,12 +44,10 @@ export function CopyButton({ text, label }: { text: string | (() => string); lab
       onClick={copy}
       startIcon={<Icon name={status === 'copied' ? 'check' : 'copy'} />}
       aria-live="polite"
+      aria-label={iconOnly ? description : undefined}
+      title={iconOnly ? description : undefined}
     >
-      {status === 'copied'
-        ? t('已复制', 'Copied')
-        : status === 'error'
-          ? t('复制失败，请手动复制', 'Copy failed; copy manually')
-          : (label ?? t('复制', 'Copy'))}
+      {iconOnly ? undefined : description}
     </Button>
   );
 }

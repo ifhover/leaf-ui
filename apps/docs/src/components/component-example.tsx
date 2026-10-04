@@ -1,4 +1,5 @@
 import './component-example.scss';
+import { Button } from '@sudden3/leaf-ui';
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -63,16 +64,16 @@ export function ComponentExample({
           {fileName}
         </span>
         <div>
-          <button
-            type="button"
+          <Button
+            size="sm"
+            variant="ghost"
             className="leaf-component-example__wrap"
             aria-label={t('切换代码换行', 'Toggle line wrapping')}
             title={t('切换代码换行', 'Toggle line wrapping')}
             aria-pressed={wrapCode}
             onClick={() => setWrapCode(!wrapCode)}
-          >
-            <Icon name="wrap" width="16" height="16" />
-          </button>
+            startIcon={<Icon name="wrap" />}
+          />
           <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
         </div>
       </div>
@@ -83,15 +84,16 @@ export function ComponentExample({
       </div>
       {collapsible && (
         <div className="leaf-component-example__expand">
-          <button
-            type="button"
+          <Button
+            size="sm"
+            variant="outline"
             aria-expanded={expanded}
             aria-controls={codeId}
             onClick={() => setExpanded(!expanded)}
+            endIcon={<Icon name="chevron" />}
           >
             {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}
-            <Icon name="chevron" width="14" height="14" />
-          </button>
+          </Button>
         </div>
       )}
     </section>

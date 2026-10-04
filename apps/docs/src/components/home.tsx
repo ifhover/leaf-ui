@@ -1,5 +1,6 @@
-import { Button, Card } from '@sudden3/leaf-ui';
+import { Badge, Button, Card } from '@sudden3/leaf-ui';
 import { useState } from 'react';
+import { ButtonLink } from './button-link';
 import { componentCatalog } from './component-catalog';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -44,13 +45,15 @@ export function HomeLayout() {
     <main className="leaf-home">
       <section className="leaf-hero">
         <div className="leaf-hero__content">
-          <div className="leaf-release">
-            <span />
-            {t(
+          <Badge
+            className="leaf-release"
+            status="success"
+            color="var(--leaf-color-primary)"
+            text={t(
               `${componentCatalog.length} 个组件，持续生长`,
               `${componentCatalog.length} components, growing together`,
             )}
-          </div>
+          />
           <h1>
             {t('为你的界面，', 'For your interface,')}
             <br />
@@ -66,20 +69,21 @@ export function HomeLayout() {
             {t('让每一个好想法，都有舒适的表达。', 'A comfortable home for every good idea.')}
           </p>
           <div className="leaf-hero__actions">
-            <a
-              className="leaf-home-link leaf-home-link--primary"
+            <ButtonLink
+              size="lg"
               href={url('/guide/getting-started.html')}
+              endIcon={<Icon name="arrow" />}
             >
               {t('开始使用', 'Get started')}
-              <Icon name="arrow" width="18" height="18" />
-            </a>
-            <a
-              className="leaf-home-link leaf-home-link--secondary"
+            </ButtonLink>
+            <ButtonLink
+              size="lg"
+              variant="outline"
               href={url('/components/index.html')}
+              startIcon={<Icon name="code" />}
             >
-              <Icon name="code" width="18" height="18" />
               {t('探索组件', 'Explore components')}
-            </a>
+            </ButtonLink>
           </div>
           <div className="leaf-install">
             <span className="leaf-install__prompt">
@@ -193,10 +197,14 @@ export function HomeLayout() {
               )}
             </p>
           </div>
-          <a href={url('/guide/theming.html')}>
+          <ButtonLink
+            variant="ghost"
+            size="sm"
+            href={url('/guide/theming.html')}
+            endIcon={<Icon name="arrow" />}
+          >
             {t('了解主题定制', 'Explore theming')}
-            <Icon name="arrow" width="16" height="16" />
-          </a>
+          </ButtonLink>
         </div>
         <ThemePlayground />
       </section>
@@ -214,13 +222,13 @@ export function HomeLayout() {
             )}
           </p>
         </div>
-        <a
-          className="leaf-home-link leaf-home-link--secondary"
+        <ButtonLink
+          variant="outline"
           href={url('/components/index.html')}
+          endIcon={<Icon name="arrow" />}
         >
           {t('探索基础组件', 'Explore components')}
-          <Icon name="arrow" width="18" height="18" />
-        </a>
+        </ButtonLink>
       </section>
       <footer className="leaf-home-footer">
         <span>

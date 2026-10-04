@@ -97,29 +97,15 @@ html.rp-dark .leaf-component-example {
 
 .leaf-component-example__code-header .leaf-button {
   color: var(--leaf-site-muted);
-  font-size: 10px;
-  padding: 0 8px;
-  min-height: 28px;
 }
 
 .leaf-component-example__wrap {
-  display: grid;
-  place-items: center;
   flex: none;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: 6px;
-  color: var(--leaf-site-muted);
-  background: transparent;
-  cursor: pointer;
 }
 
-.leaf-component-example__wrap:hover,
 .leaf-component-example__wrap[aria-pressed='true'] {
-  color: var(--leaf-site-accent);
-  background: var(--leaf-site-panel);
+  color: var(--leaf-color-primary);
+  background: var(--leaf-button-soft);
 }
 
 .leaf-component-example__code-viewport {
@@ -187,30 +173,11 @@ html.rp-dark .leaf-component-example {
 }
 
 .leaf-component-example__expand > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 33px;
-  padding: 0 14px;
-  border: 1px solid var(--leaf-site-border);
-  border-radius: 20px;
-  color: var(--leaf-site-text);
   background: var(--leaf-site-panel);
-  box-shadow: 0 1px 3px #203c2b05;
-  font-size: 11px;
-  cursor: pointer;
 }
 
-.leaf-component-example__expand > button:hover {
-  border-color: var(--leaf-site-accent);
-}
 .leaf-component-example[data-expanded='true'] .leaf-component-example__expand svg {
   transform: rotate(180deg);
-}
-
-.leaf-component-example button:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--leaf-site-accent) 42%, transparent);
-  outline-offset: 3px;
 }
 
 @media (max-width: 640px) {

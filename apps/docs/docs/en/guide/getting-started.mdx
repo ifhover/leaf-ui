@@ -2,9 +2,31 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { GettingStartedExample } from '../../../src/examples/en/guide/getting-started';
 import { FormBasic } from '../../../src/examples/en/form/basic';
 
-# Quick start
+# Installation & quick start
 
-[Install the package](/en/guide/installation) and import its stylesheet once in your application entry point.
+Install Leaf UI and import its stylesheet to start using components in your React application.
+
+## Install the package
+
+```bash
+pnpm add @sudden3/leaf-ui
+# or
+npm install @sudden3/leaf-ui
+# or
+yarn add @sudden3/leaf-ui
+```
+
+React 18 or 19 and the matching React DOM version must be installed in your application. If needed, run `pnpm add react react-dom`. See the current release on [npm](https://www.npmjs.com/package/@sudden3/leaf-ui).
+
+## Styles
+
+Import the compiled stylesheet once in the application entry:
+
+```tsx
+import '@sudden3/leaf-ui/styles.css';
+```
+
+Consuming Leaf UI does not require Sass. Configure colors, shapes and sizes through [ConfigProvider](/en/components/config-provider). Custom components can read the resulting CSS variables. See [SSR usage](/en/guide/ssr) for framework entry points.
 
 ## Your first button
 
@@ -17,7 +39,7 @@ import { FormBasic } from '../../../src/examples/en/form/basic';
 
 ## Build a form
 
-Use FormField for labels and validation feedback. Read named values with FormData in the submission handler. Button defaults to type="button"; specify type="submit" when submitting a form.
+Use `FormField` for labels and validation feedback. Read named values with `FormData` in the submission handler. `Button` defaults to `type="button"`; specify `type="submit"` when submitting a form.
 
 <ComponentExample title="Form submission" preview={<FormBasic />} fileName="basic.tsx">
 
@@ -35,5 +57,24 @@ import { ConfigProvider, DatePicker } from '@sudden3/leaf-ui';
   <DatePicker aria-label="Deadline" />
 </ConfigProvider>
 ```
+
+## Icons
+
+When importing Lucide icons in your application, install the dependency:
+
+```bash
+pnpm add lucide-react
+```
+
+See [icons](/en/guide/icons) for examples.
+
+## Compatibility
+
+- React 18 / 19.
+- TypeScript declarations included.
+- ESM and CommonJS entry points.
+- Modern browsers with CSS variables and `color-mix()`.
+
+## Next steps
 
 Explore [components](/en/components/), [icons](/en/guide/icons) and [theming](/en/guide/theming).

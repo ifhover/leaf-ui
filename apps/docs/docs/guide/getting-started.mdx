@@ -1,9 +1,37 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { GettingStartedExample, GettingStartedForm } from '../../src/components/guide-examples';
 
-# 快速开始
+# 安装&快速开始
 
-[安装组件包](/guide/installation)并引入样式后，就可以在 React 页面中使用 Leaf UI。
+Leaf UI 的 React 组件包名为 `@sudden3/leaf-ui`，支持 React 18 与 React 19。安装组件包并引入样式后，就可以在 React 页面中使用。
+
+## 安装组件包
+
+在你的 React 项目目录下执行：
+
+```bash
+pnpm add @sudden3/leaf-ui
+```
+
+也可以使用 npm 或 Yarn：
+
+```bash
+npm install @sudden3/leaf-ui
+# 或者
+yarn add @sudden3/leaf-ui
+```
+
+React 和 React DOM 由你的应用提供。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@sudden3/leaf-ui) 查看最新版本。
+
+## 引入样式
+
+在应用入口导入一次 Leaf UI 样式：
+
+```tsx title="src/main.tsx"
+import '@sudden3/leaf-ui/styles.css';
+```
+
+样式已编译为 CSS，使用组件无需安装 Sass。调整颜色、圆角或尺寸时使用 [ConfigProvider](/components/config-provider)，业务 CSS 可以读取主题变量复用样式。Next.js 等框架的入口配置见 [SSR 使用](/guide/ssr)。
 
 ## 使用第一个组件
 
@@ -15,8 +43,6 @@ import { GettingStartedExample, GettingStartedForm } from '../../src/components/
 ```
 
 </ComponentExample>
-
-样式只需在应用入口导入一次。如果多个页面使用组件，不必重复引入。
 
 ## 使用原生属性
 
@@ -32,7 +58,7 @@ import { GettingStartedExample, GettingStartedForm } from '../../src/components/
 
 ## 组合一个表单
 
-按钮、输入框和选择器默认都是 **34px** 高。name、required 和表单提交沿用原生 HTML 行为，可以直接用 FormData 读取内容。
+用输入框、选择器和按钮组合表单，通过 `name` 命名字段，用 `required` 标记必填项，提交时使用 `FormData` 读取内容。
 
 <ComponentExample title="组合一个表单" preview={<GettingStartedForm />} fileName="form.tsx">
 
@@ -54,6 +80,17 @@ import { Button, ConfigProvider } from '@sudden3/leaf-ui';
 ```
 
 更多配置与样式复用见[定制主题](/guide/theming)。使用 Next.js 等框架时，可阅读 [SSR 使用](/guide/ssr)。
+
+## 添加图标
+
+在自己的应用代码中导入 Lucide 图标时，执行 `pnpm add lucide-react` 将它声明为应用依赖。具体示例见[使用图标](/guide/icons)。
+
+## 兼容性
+
+- React 18 / 19。
+- TypeScript 项目可以直接使用随包提供的类型声明。
+- 提供 ESM 和 CommonJS 模块入口。
+- 样式面向支持 CSS 变量和 `color-mix()` 的现代浏览器。
 
 ## 接下来
 

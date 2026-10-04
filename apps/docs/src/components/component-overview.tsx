@@ -32,6 +32,7 @@ export function ComponentOverview() {
                 >
                   <div className="leaf-component-card__preview">
                     <img
+                      data-no-zoom
                       src={withBase(`/components/${component.slug}.svg`)}
                       alt=""
                       width={240}

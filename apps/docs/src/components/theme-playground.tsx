@@ -1,4 +1,13 @@
-import { Button, Card, ConfigProvider } from '@sudden3/leaf-ui';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  ColorPicker,
+  ConfigProvider,
+  RadioGroup,
+  Slider,
+} from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -6,13 +15,7 @@ import { Icon } from './icon';
 
 export function ThemePlayground() {
   const { t } = useDocsLocale();
-  const palettes = [
-    { name: t('苔绿', 'Moss'), color: '#20834a' },
-    { name: t('湖蓝', 'Lake'), color: '#087f8c' },
-    { name: t('晴蓝', 'Sky'), color: '#3264d9' },
-    { name: t('鸢紫', 'Iris'), color: '#7654c6' },
-    { name: t('陶橙', 'Clay'), color: '#b75b1c' },
-  ];
+  const palettes = ['#20834a', '#087f8c', '#3264d9', '#7654c6', '#b75b1c'];
 
   const [color, setColor] = useState('#20834a');
   const [radius, setRadius] = useState(10);
@@ -54,24 +57,31 @@ export function ThemePlayground() {
       >
         <div className="leaf-playground__preview-header">
           <span className="leaf-eyebrow">LIVE PREVIEW</span>
-          <span className="leaf-preview-tag">
-            <span />
-            {t('实时预览', 'Live preview')}
-          </span>
+          <Badge
+            status="success"
+            color="var(--leaf-color-primary)"
+            text={t('实时预览', 'Live preview')}
+          />
         </div>
         <Card
           className="leaf-preview-card"
           footer={
             <div className="leaf-preview-card__footer">
-              <span className="leaf-preview-avatar">L</span>
+              <Avatar size={24} alt="Leaf UI">
+                L
+              </Avatar>
               <span>{t('为下一个好想法，留一点空间。', 'Make room for the next good idea.')}</span>
               <Icon name="sparkles" width="16" height="16" />
             </div>
           }
         >
-          <div className="leaf-preview-card__icon">
-            <Icon name="leaf" width="28" height="28" />
-          </div>
+          <Avatar
+            className="leaf-preview-card__icon"
+            size={48}
+            shape="square"
+            alt={t('叶子', 'Leaf')}
+            icon={<Icon name="leaf" width="28" height="28" />}
+          />
           <span className="leaf-preview-card__tag">LESS, BUT BETTER</span>
           <h3>{t('一点绿意，很多可能。', 'A little green. Many possibilities.')}</h3>
           <p>
@@ -130,32 +140,15 @@ export function ThemePlayground() {
             {t('主题色', 'Primary color')}
             <span>Primary color</span>
           </legend>
-          <div className="leaf-color-swatches">
-            {palettes.map((palette) => (
-              <button
-                key={palette.color}
-                type="button"
-                className="leaf-color-swatch"
-                aria-label={t(`使用${palette.name}主题`, `Use ${palette.name} theme`)}
-                aria-pressed={color === palette.color}
-                title={palette.name}
-                onClick={() => setColor(palette.color)}
-                style={{ backgroundColor: palette.color }}
-              >
-                {color === palette.color && <Icon name="check" width="18" height="18" />}
-              </button>
-            ))}
-          </div>
-          <label className="leaf-color-input" htmlFor={`${id}-color`}>
-            <input
-              id={`${id}-color`}
-              type="color"
-              value={color}
-              onChange={(event) => setColor(event.target.value)}
-            />
-            <span>{color.toUpperCase()}</span>
-            <span className="leaf-color-input__hint">{t('自定义', 'Custom')}</span>
-          </label>
+          <ColorPicker
+            className="leaf-playground__color-picker"
+            aria-label={t('主题色', 'Primary color')}
+            value={color}
+            onChange={setColor}
+            showText={(value) => value.toUpperCase()}
+            disableAlpha
+            presets={[{ label: t('推荐配色', 'Suggested colors'), colors: palettes }]}
+          />
         </fieldset>
         <div className="leaf-control-radius">
           <label htmlFor={`${id}-radius`}>
@@ -163,16 +156,16 @@ export function ThemePlayground() {
             <span>Border radius</span>
             <output htmlFor={`${id}-radius`}>{radius}px</output>
           </label>
-          <input
+          <Slider
             id={`${id}-radius`}
-            type="range"
-            min="0"
-            max="24"
-            step="1"
+            aria-label={t('圆角', 'Radius')}
+            min={0}
+            max={24}
             value={radius}
-            onChange={(event) => setRadius(Number(event.target.value))}
+            onChange={setRadius}
+            showValue={false}
           />
-          <div>
+          <div className="leaf-control-hints">
             <span>{t('利落', 'Sharp')}</span>
             <span>{t('圆润', 'Rounded')}</span>
           </div>
@@ -182,16 +175,20 @@ export function ThemePlayground() {
             {t('外观', 'Appearance')}
             <span>Appearance</span>
           </legend>
-          <div className="leaf-mode-toggle">
-            <button type="button" aria-pressed={mode === 'light'} onClick={() => setMode('light')}>
-              <Icon name="sun" width="16" height="16" />
-              {t('浅色', 'Light')}
-            </button>
-            <button type="button" aria-pressed={mode === 'dark'} onClick={() => setMode('dark')}>
-              <Icon name="moon" width="16" height="16" />
-              {t('深色', 'Dark')}
-            </button>
-          </div>
+          <RadioGroup
+            aria-label={t('外观', 'Appearance')}
+            size="sm"
+            value={mode}
+            options={[
+              { label: t('浅色', 'Light'), value: 'light' },
+              { label: t('深色', 'Dark'), value: 'dark' },
+            ]}
+            onChange={(event) => {
+              if (event.target.value === 'light' || event.target.value === 'dark') {
+                setMode(event.target.value);
+              }
+            }}
+          />
         </fieldset>
         <div className="leaf-control-radius">
           <label htmlFor={`${id}-height`}>
@@ -199,16 +196,16 @@ export function ThemePlayground() {
             <span>Control height</span>
             <output htmlFor={`${id}-height`}>{height}px</output>
           </label>
-          <input
+          <Slider
             id={`${id}-height`}
-            type="range"
-            min="28"
-            max="44"
-            step="1"
+            aria-label={t('控件高度', 'Control height')}
+            min={28}
+            max={44}
             value={height}
-            onChange={(event) => setHeight(Number(event.target.value))}
+            onChange={setHeight}
+            showValue={false}
           />
-          <div>
+          <div className="leaf-control-hints">
             <span>{t('紧凑', 'Compact')}</span>
             <span>{t('宽松', 'Spacious')}</span>
           </div>

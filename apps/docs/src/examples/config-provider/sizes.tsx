@@ -1,21 +1,21 @@
-import { Button, ConfigProvider, Input } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, Input, Slider } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 export function ConfigProviderSizes() {
   const [height, setHeight] = useState(34);
   return (
     <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <label>
-        基础高度：{height}px
-        <input
+      <div>
+        <p>基础高度：{height}px</p>
+        <Slider
           aria-label="基础控件高度"
-          type="range"
-          min="28"
-          max="44"
+          min={28}
+          max={44}
           value={height}
-          onChange={(event) => setHeight(Number(event.target.value))}
+          onChange={setHeight}
+          showValue={false}
         />
-      </label>
+      </div>
       <ConfigProvider
         className="leaf-demo-stack"
         theme={{ controlHeight: height, borderRadius: 8 }}

@@ -10,8 +10,7 @@ const guideSidebar = [
     text: '开始使用',
     items: [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
-      { text: '安装', link: '/guide/installation' },
-      { text: '快速开始', link: '/guide/getting-started' },
+      { text: '安装&快速开始', link: '/guide/getting-started' },
       { text: 'SSR 使用', link: '/guide/ssr' },
     ],
   },
@@ -111,8 +110,7 @@ const componentSidebar = [
 const englishLabels: Record<string, string> = {
   开始使用: 'Getting started',
   '认识 Leaf UI': 'Introduction',
-  安装: 'Installation',
-  快速开始: 'Quick start',
+  '安装&快速开始': 'Installation & quick start',
   'SSR 使用': 'SSR usage',
   个性化: 'Personalization',
   定制主题: 'Theming',
@@ -157,6 +155,7 @@ export default defineConfig({
   logo: '/leaf.svg',
   logoText: 'Leaf UI',
   outDir: 'doc_build',
+  mediumZoom: { selector: '.rspress-doc img:not([data-no-zoom])' },
   markdown: { link: { checkDeadLinks: true } },
   themeConfig: {
     darkMode: 'light',

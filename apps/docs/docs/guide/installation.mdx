@@ -1,44 +1,8 @@
-# 安装
+---
+title: 安装&快速开始
+search: false
+---
 
-Leaf UI 的 React 组件包名为 `@sudden3/leaf-ui`，支持 React 18 与 React 19。React 和 React DOM 由你的应用提供。
+import { InstallationRedirect } from '../../src/components/installation-redirect';
 
-## 安装组件包
-
-在你的 React 项目目录下执行：
-
-```bash
-pnpm add @sudden3/leaf-ui
-```
-
-也可以使用 npm 或 Yarn：
-
-```bash
-npm install @sudden3/leaf-ui
-# 或者
-yarn add @sudden3/leaf-ui
-```
-
-React 和 React DOM 是组件包的对等依赖。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@sudden3/leaf-ui) 查看组件包的最新版本。
-
-## 引入样式
-
-在应用入口导入一次 Leaf UI 样式：
-
-```tsx title="src/main.tsx"
-import '@sudden3/leaf-ui/styles.css';
-```
-
-样式已经编译为 CSS；使用 Leaf UI 无需安装 Sass。调整颜色、圆角或尺寸时使用 [ConfigProvider](/components/config-provider)，业务 CSS 可以读取主题变量复用样式。服务端框架的入口配置见 [SSR 使用](/guide/ssr)。
-
-## 添加图标
-
-在自己的应用代码中导入 Lucide 图标时，执行 `pnpm add lucide-react` 将它声明为应用依赖。具体示例见[使用图标](/guide/icons)。
-
-## 兼容性
-
-- React 18 / 19。
-- TypeScript 项目可以直接使用随包提供的类型声明。
-- 提供 ESM 和 CommonJS 模块入口。
-- 样式面向支持 CSS 变量和 `color-mix()` 的现代浏览器。
-
-完成安装后，继续阅读[快速开始](/guide/getting-started)。
+<InstallationRedirect />
