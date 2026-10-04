@@ -1,0 +1,65 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TimeRangePickerBasic } from '../../../src/examples/en/time-range-picker/basic';
+import { TimeRangePickerOptions } from '../../../src/examples/en/time-range-picker/advanced';
+
+# TimeRangePicker
+
+Choose a start and end time.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TimeRangePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/time-range-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<TimeRangePickerOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/time-range-picker/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Confirm to submit the draft. Type 09:00 ~ 18:00 and press Enter. allowOvernight allows an earlier end time to represent the following day.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { TimeRangePickerProps, TimeRange, TimeParts } from '@sudden3/leaf-ui';
+```
+
+The exported `TimeRange` type is `readonly [string, string]`, using 24-hour time strings.
+
+## TimeRangePickerProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `status` | `'error' \| 'warning'` | — | Display state |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `value` | `readonly [string, string] \| null` | — | Controlled value |
+| `defaultValue` | `readonly [string, string] \| null` | `null` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(value: readonly [string, string] \| null) => void` | — | Value change callback |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `showSeconds` | `boolean` | `false` | Show seconds |
+| `use12Hours` | `boolean` | `false` | 12-hour display |
+| `minuteStep` | `number` | `5` | Minute interval |
+| `secondStep` | `number` | `1` | Second interval |
+| `allowOvernight` | `boolean` | `false` | Allow overnight ranges |
+| `disabledTime` | [`(parts: TimeParts, position: 'start' \| 'end') => boolean`](#timeparts-api) | — | Restrict start and end times |
+
+## TimeParts API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `hour` | `number` | Required | Hour, 0–23 |
+| `minute` | `number` | Required | Minute, 0–59 |
+| `second` | `number` | Required | Set second |

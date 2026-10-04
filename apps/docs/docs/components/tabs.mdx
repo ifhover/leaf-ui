@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/tabs/extensions';
 import { TabsClosable } from '../../src/examples/tabs/closable';
 import { ComponentExample } from '../../src/components/component-example';
 import { TabsBasic } from '../../src/examples/tabs/basic';
@@ -24,6 +25,15 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Tabs API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -38,6 +48,11 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
 | `extra` | `ReactNode` | — | 标签栏附加内容 |
 | `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除 items 中的项；可阻止默认切换 |
+| `onAdd` | `() => void` | — | 添加页签，传入后显示添加按钮 |
+| `addLabel` | `string` | — | 添加按钮的可访问名称 |
+| `overflow` | `boolean` | `true` | 溢出页签收进更多菜单 |
+| `sortable` | `boolean` | `false` | 启用排序，配合 onReorder 使用 |
+| `onReorder` | [`(items: TabItem[]) => void`](#tabitem) | — | 返回排序后的页签 |
 
 ## TabItem
 

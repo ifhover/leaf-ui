@@ -1,0 +1,24 @@
+.leaf-qr-code {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  &__image {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--leaf-radius);
+    background: var(--leaf-color-surface);
+    > svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--leaf-color-surface) 90%, transparent);
+  }
+}

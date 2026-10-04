@@ -1,0 +1,47 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SpaceBasic } from '../../src/examples/space/basic';
+import { SpaceVertical } from '../../src/examples/space/advanced';
+
+# Space 间距
+
+统一一组元素之间的间距。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<SpaceBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/space/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<SpaceVertical />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/space/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+size 可使用预设、像素值或 [纵向, 横向] 间距。wrap 允许换行，split 在相邻内容之间插入分隔符。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { SpaceProps } from '@sudden3/leaf-ui';
+```
+
+## SpaceProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向或移动方向 |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | 尺寸或间距预设 |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | 对齐方式 |
+| `wrap` | `boolean` | `false` | 空间不足时换行 |
+| `split` | `ReactNode` | — | 相邻元素分隔内容 |

@@ -1,0 +1,64 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { GridBasic } from '../../src/examples/grid/basic';
+import { GridColumns } from '../../src/examples/grid/advanced';
+
+# Grid 栅格
+
+根据屏幕宽度排列内容。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<GridBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/grid/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<GridColumns />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/grid/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+Grid 使用 columns 设置等宽列；Row / Col 使用 24 栅格跨度与 offset。响应式配置按浏览器宽度生效，较大断点继承较小断点的设置。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { ColProps, GridProps, RowProps } from '@sudden3/leaf-ui';
+```
+
+## ColProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `span` | `number` | `24` | 跨列数，Col 的 0 表示隐藏 |
+| `offset` | `number` | `0` | 前方空出的列数 |
+| `xs` | `number` | — | 小屏配置 |
+| `sm` | `number` | — | ≥ 576px 配置 |
+| `md` | `number` | — | ≥ 768px 配置 |
+| `lg` | `number` | — | ≥ 992px 配置 |
+| `xl` | `number` | — | ≥ 1200px 配置 |
+
+## GridProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | 列数；较大断点继承较小断点 |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | 间距；数组为 [纵向, 横向] |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
+
+## RowProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
+| `gutter` | [`GridProps['gap']`](#gridprops-api) | `16` | 栅格间距；数组为 [纵向, 横向] |

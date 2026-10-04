@@ -1,0 +1,84 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SignaturePadBasic } from '../../src/examples/signature-pad/basic';
+import { SignaturePadControlled } from '../../src/examples/signature-pad/advanced';
+
+# SignaturePad 签名板
+
+手写签名并导出图片。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<SignaturePadBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/signature-pad/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<SignaturePadControlled />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/signature-pad/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+value / onChange 保存可恢复编辑的笔画，ref.export() 返回 PNG、JPEG 或 SVG Blob。按设备像素比绘制，并在尺寸变化时保留笔画。请提供无法手写时的替代签署方式。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { SignaturePadHandle, SignaturePadProps, SignaturePoint, SignatureStroke } from '@sudden3/leaf-ui';
+```
+
+## SignaturePadHandle API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `clear` | `() => void` | 必填 | 清空笔迹 |
+| `undo` | `() => void` | 必填 | 撤销最后一笔 |
+| `isEmpty` | `() => boolean` | 必填 | 是否没有笔迹 |
+| `getData` | [`() => SignatureStroke[]`](#signaturestroke-api) | 必填 | 获取可编辑笔画 |
+| `export` | `(type?: 'image/png' \| 'image/jpeg' \| 'image/svg+xml') => Promise<Blob>` | 必填 | 导出为 Blob |
+
+## SignaturePadProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | [`readonly SignatureStroke[]`](#signaturestroke-api) | — | 受控值 |
+| `defaultValue` | [`readonly SignatureStroke[]`](#signaturestroke-api) | `[]` | 非受控模式的初始笔画 |
+| `onChange` | [`(strokes: SignatureStroke[]) => void`](#signaturestroke-api) | — | 值变化回调 |
+| `onError` | `(error: Error) => void` | — | 异常回调 |
+| `penColor` | `string` | `'#203329'` | 笔迹颜色 |
+| `backgroundColor` | `string` | `'#ffffff'` | 背景颜色 |
+| `minWidth` | `number` | `0.5` | 最细笔迹宽度 |
+| `maxWidth` | `number` | `2.5` | 最粗笔迹宽度 |
+| `height` | `number` | `220` | 高度，数字按像素计算 |
+| `disabled` | `boolean` | `false` | 禁止交互 |
+| `controls` | `boolean` | `true` | 显示操作栏 |
+
+## SignaturePoint API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `x` | `number` | 必填 | 横坐标 |
+| `y` | `number` | 必填 | 纵坐标 |
+| `pressure` | `number` | 必填 | 笔压，0–1 |
+| `time` | `number` | 必填 | 点的时间戳 |
+
+## SignatureStroke API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `points` | [`SignaturePoint[]`](#signaturepoint-api) | 必填 | 笔画的点序列 |
+| `penColor` | `string` | 必填 | 笔迹颜色 |
+| `minWidth` | `number` | 必填 | 最细笔迹宽度 |
+| `maxWidth` | `number` | 必填 | 最粗笔迹宽度 |
+| `dotSize` | `number` | 必填 | 单点尺寸 |
+| `velocityFilterWeight` | `number` | 必填 | 速度平滑系数 |
+| `compositeOperation` | `GlobalCompositeOperation` | 必填 | Canvas 合成模式 |

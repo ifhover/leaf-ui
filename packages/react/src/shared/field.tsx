@@ -15,7 +15,7 @@ export function useMergedRef<T>(local: RefObject<T | null>, forwarded?: Ref<T>) 
 export function useFieldValue<T>(
   value: T | undefined,
   defaultValue: T,
-  ref: RefObject<HTMLButtonElement | HTMLInputElement | null>,
+  ref: RefObject<HTMLButtonElement | HTMLInputElement | HTMLTextAreaElement | null>,
   formId?: string,
 ) {
   const [internal, setInternal] = useState(defaultValue);

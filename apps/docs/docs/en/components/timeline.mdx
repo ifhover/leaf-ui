@@ -1,0 +1,56 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TimelineBasic } from '../../../src/examples/en/timeline/basic';
+import { TimelineAlternate } from '../../../src/examples/en/timeline/advanced';
+
+# Timeline
+
+Present events and progress in sequence.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TimelineBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/timeline/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<TimelineAlternate />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/timeline/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+items presents events with individual colors and icons. mode controls alignment, reverse flips the order, and pending indicates an event is still in progress.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { TimelineItem, TimelineProps } from '@sudden3/leaf-ui';
+```
+
+## TimelineItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `label` | `ReactNode` | — | Display label |
+| `children` | `ReactNode` | Required | Content or child items |
+| `dot` | `ReactNode` | — | Custom timeline dot |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| (string & {})` | — | Color |
+
+## TimelineProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly TimelineItem[]`](#timelineitem-api) | Required | Items; keep keys unique and stable |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Display mode or allowed characters |
+| `reverse` | `boolean` | `false` | Reverse order |
+| `pending` | `ReactNode` | — | Pending content |

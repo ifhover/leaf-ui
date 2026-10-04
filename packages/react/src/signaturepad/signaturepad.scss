@@ -1,0 +1,36 @@
+.leaf-signature-pad {
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size) var(--leaf-font-family);
+  &__surface {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--leaf-color-border);
+    border-radius: var(--leaf-radius);
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+  &__placeholder {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #7b857f;
+    pointer-events: none;
+  }
+  &__controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  &[data-disabled] {
+    opacity: 0.6;
+    canvas {
+      touch-action: auto;
+    }
+  }
+}

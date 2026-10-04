@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { VirtualListBasic } from '../../src/examples/virtual-list/basic';
+import { VirtualListDynamic } from '../../src/examples/virtual-list/advanced';
+
+# VirtualList 虚拟列表
+
+流畅浏览大量列表内容。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<VirtualListBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/virtual-list/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<VirtualListDynamic />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/virtual-list/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+itemKey 必须稳定。estimateSize 用于初始估计，之后自动测量行高。SSR 输出确定的初始窗口，挂载后根据容器调整。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { VirtualListHandle, VirtualListProps } from '@sudden3/leaf-ui';
+```
+
+## VirtualListHandle API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `element` | `HTMLDivElement \| null` | 必填 | 滚动容器元素 |
+| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | 必填 | 滚动至项目 |
+| `scrollToOffset` | `(offset: number) => void` | 必填 | 滚动至偏移量 |
+
+## VirtualListProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly T[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `itemKey` | `(item: T, index: number) => Key` | 必填 | 提取稳定的项目标识 |
+| `renderItem` | `(item: T, index: number) => ReactNode` | 必填 | 自定义项目内容 |
+| `height` | `number` | `320` | 高度，数字按像素计算 |
+| `estimateSize` | `number \| ((item: T, index: number) => number)` | `40` | 预估项目尺寸，挂载后测量实际尺寸 |
+| `overscan` | `number` | `5` | 可见区域外预渲染数量 |
+| `emptyContent` | `ReactNode` | — | 空列表内容 |
+| `horizontal` | `boolean` | `false` | 横向虚拟列表 |

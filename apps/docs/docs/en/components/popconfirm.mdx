@@ -1,0 +1,79 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { PopconfirmBasic } from '../../../src/examples/en/popconfirm/basic';
+import { PopconfirmAsync } from '../../../src/examples/en/popconfirm/advanced';
+
+# Popconfirm
+
+Confirm important actions near their triggers.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<PopconfirmBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/popconfirm/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<PopconfirmAsync />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/popconfirm/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+onConfirm can return a Promise. Pending operations display loading and prevent duplicate submissions. The popup closes on success and stays open on failure; use onError for feedback. The trigger must accept a ref and button interactions.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { PopconfirmProps, ButtonProps } from '@sudden3/leaf-ui';
+```
+
+## PopconfirmProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Content or child items |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Placement |
+| `open` | `boolean` | — | Controlled visibility |
+| `defaultOpen` | `boolean` | `false` | Initial visibility |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `disabled` | `boolean` | — | Disable interactions |
+| `enterDelay` | `number` | `100` | Pointer opening delay in milliseconds |
+| `leaveDelay` | `number` | `100` | Pointer closing delay in milliseconds |
+| `width` | `number \| string` | — | Width, numbers are in pixels |
+| `maxWidth` | `number \| string` | — | Maximum popup width |
+| `className` | `string` | — | Container class name |
+| `style` | `CSSProperties` | — | Container inline styles |
+| `aria-label` | `string` | — | Accessible name when no visible label is provided |
+| `title` | `ReactNode` | Required | Title content |
+| `description` | `ReactNode` | — | Supporting description |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'default'` | `'warning'` | Visual or item type |
+| `icon` | `ReactNode` | — | Custom icon |
+| `confirmText` | `ReactNode` | — | Confirm button content |
+| `cancelText` | `ReactNode` | — | Cancel button content |
+| `confirmButtonProps` | [`ButtonProps`](#buttonprops-api) | — | Confirm button props |
+| `cancelButtonProps` | [`ButtonProps`](#buttonprops-api) | — | Cancel button props |
+| `showCancel` | `boolean` | `true` | Show cancel button |
+| `onConfirm` | `() => void \| Promise<void>` | — | Confirm action; supports async completion |
+| `onCancel` | `() => void` | — | Cancel action |
+| `onError` | `(error: unknown) => void` | — | Error callback |
+
+## ButtonProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | Button appearance |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `danger` | `boolean` | `false` | Danger colors |
+| `loading` | `boolean` | `false` | Loading state |
+| `fullWidth` | `boolean` | `false` | Fill available width |
+| `startIcon` | `ReactNode` | — | Leading icon |
+| `endIcon` | `ReactNode` | — | Trailing icon |

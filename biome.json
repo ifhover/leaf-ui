@@ -7,7 +7,8 @@
       "!**/doc_build",
       "!**/node_modules",
       "!**/.rspress",
-      "!**/pnpm-lock.yaml"
+      "!**/pnpm-lock.yaml",
+      "!apps/docs/docs/public/media/pdf.worker.min.mjs"
     ]
   },
   "formatter": {

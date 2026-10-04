@@ -7,3 +7,4 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 *.log
+apps/docs/docs/public/media/pdf.worker.min.mjs

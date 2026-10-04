@@ -1,0 +1,84 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SignaturePadBasic } from '../../../src/examples/en/signature-pad/basic';
+import { SignaturePadControlled } from '../../../src/examples/en/signature-pad/advanced';
+
+# SignaturePad
+
+Capture handwritten signatures and export images.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SignaturePadBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/signature-pad/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<SignaturePadControlled />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/signature-pad/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Persist editable strokes with value / onChange. ref.export() returns PNG, JPEG or SVG Blobs. Uses the device pixel ratio and preserves strokes across resize. Provide an alternative for users who cannot draw.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { SignaturePadHandle, SignaturePadProps, SignaturePoint, SignatureStroke } from '@sudden3/leaf-ui';
+```
+
+## SignaturePadHandle API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clear` | `() => void` | Required | Clear strokes |
+| `undo` | `() => void` | Required | Undo last stroke |
+| `isEmpty` | `() => boolean` | Required | Whether the pad is empty |
+| `getData` | [`() => SignatureStroke[]`](#signaturestroke-api) | Required | Get editable strokes |
+| `export` | `(type?: 'image/png' \| 'image/jpeg' \| 'image/svg+xml') => Promise<Blob>` | Required | Export as Blob |
+
+## SignaturePadProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | [`readonly SignatureStroke[]`](#signaturestroke-api) | — | Controlled value |
+| `defaultValue` | [`readonly SignatureStroke[]`](#signaturestroke-api) | `[]` | Initial strokes in uncontrolled mode |
+| `onChange` | [`(strokes: SignatureStroke[]) => void`](#signaturestroke-api) | — | Value change callback |
+| `onError` | `(error: Error) => void` | — | Error callback |
+| `penColor` | `string` | `'#203329'` | Stroke color |
+| `backgroundColor` | `string` | `'#ffffff'` | Background color |
+| `minWidth` | `number` | `0.5` | Minimum stroke width |
+| `maxWidth` | `number` | `2.5` | Maximum stroke width |
+| `height` | `number` | `220` | Height, numbers are in pixels |
+| `disabled` | `boolean` | `false` | Disable interactions |
+| `controls` | `boolean` | `true` | Show controls |
+
+## SignaturePoint API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `x` | `number` | Required | X coordinate |
+| `y` | `number` | Required | Y coordinate |
+| `pressure` | `number` | Required | Pressure, 0–1 |
+| `time` | `number` | Required | Point timestamp |
+
+## SignatureStroke API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `points` | [`SignaturePoint[]`](#signaturepoint-api) | Required | Stroke points |
+| `penColor` | `string` | Required | Stroke color |
+| `minWidth` | `number` | Required | Minimum stroke width |
+| `maxWidth` | `number` | Required | Maximum stroke width |
+| `dotSize` | `number` | Required | Dot size |
+| `velocityFilterWeight` | `number` | Required | Velocity smoothing |
+| `compositeOperation` | `GlobalCompositeOperation` | Required | Canvas compositing mode |

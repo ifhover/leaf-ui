@@ -1,0 +1,81 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ImageCropperBasic } from '../../src/examples/image-cropper/basic';
+import { ImageCropperAvatar } from '../../src/examples/image-cropper/advanced';
+
+# ImageCropper 图片裁剪
+
+调整图片位置、缩放与裁剪范围。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<ImageCropperBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/image-cropper/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<ImageCropperAvatar />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/image-cropper/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+支持鼠标、触摸、键盘调整位置，缩放、旋转和重置。导出返回 Blob。远程图片服务器须允许 CORS；圆形 PNG 保留透明边角，JPEG 使用白底。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { CropArea, ImageCropperHandle, ImageCropperProps, ImageCropResult } from '@sudden3/leaf-ui';
+```
+
+## CropArea API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `x` | `number` | 必填 | 横坐标 |
+| `y` | `number` | 必填 | 纵坐标 |
+| `width` | `number` | 必填 | 宽度，数字按像素计算 |
+| `height` | `number` | 必填 | 高度，数字按像素计算 |
+
+## ImageCropperHandle API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `export` | [`() => Promise<ImageCropResult>`](#imagecropresult-api) | 必填 | 导出为 Blob |
+| `reset` | `() => void` | 必填 | 重置状态或重试 |
+
+## ImageCropperProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `src` | `string` | 必填 | 图片地址 |
+| `aspect` | `number` | `1` | 裁剪宽高比 |
+| `shape` | `'rect' \| 'round'` | `'rect'` | 裁剪形状 |
+| `minZoom` | `number` | `1` | 最小缩放比例 |
+| `maxZoom` | `number` | `3` | 最大缩放比例 |
+| `showGrid` | `boolean` | `true` | 裁剪辅助线 |
+| `controls` | `boolean` | `true` | 显示操作栏 |
+| `rotation` | `boolean` | `true` | 显示旋转操作 |
+| `crossOrigin` | `'anonymous' \| 'use-credentials'` | `'anonymous'` | 图片跨域模式，导出需要服务器允许 CORS |
+| `type` | `'image/png' \| 'image/jpeg' \| 'image/webp'` | `'image/png'` | 导出图片格式 |
+| `quality` | `number` | `0.92` | 导出质量，0–1 |
+| `onChange` | [`(area: CropArea) => void`](#croparea-api) | — | 裁剪区域变化，坐标按原图像素计算 |
+| `onExport` | [`(result: ImageCropResult) => void`](#imagecropresult-api) | — | 导出成功 |
+| `onError` | `(error: Error) => void` | — | 异常回调 |
+| `extra` | `ReactNode` | — | 补充内容或操作 |
+
+## ImageCropResult API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `blob` | `Blob` | 必填 | 导出的 Blob |
+| `width` | `number` | 必填 | 宽度，数字按像素计算 |
+| `height` | `number` | 必填 | 高度，数字按像素计算 |

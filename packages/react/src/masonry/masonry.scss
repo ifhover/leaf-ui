@@ -1,0 +1,21 @@
+.leaf-masonry {
+  column-count: var(--leaf-masonry-columns-xs, var(--leaf-masonry-columns, 1));
+  column-gap: var(--leaf-masonry-gap);
+  &__item {
+    break-inside: avoid;
+    margin-bottom: var(--leaf-masonry-gap);
+  }
+}
+@each $point, $width in (sm: 576px, md: 768px, lg: 992px, xl: 1200px) {
+  @media (min-width: $width) {
+    .leaf-masonry {
+      column-count: var(
+        --leaf-masonry-columns-#{$point},
+        var(
+          --leaf-masonry-columns-sm,
+          var(--leaf-masonry-columns-xs, var(--leaf-masonry-columns, 1))
+        )
+      );
+    }
+  }
+}

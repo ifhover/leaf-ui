@@ -4,13 +4,14 @@ import { useLeafConfig } from '../config-provider/config-provider';
 import { classes } from './classes';
 import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from './date';
 
-export type CalendarMode = 'year' | 'month' | 'week' | 'date' | 'datetime';
+export type CalendarMode = 'year' | 'quarter' | 'month' | 'week' | 'date' | 'datetime';
 export function startOfPeriod(date: Date, mode: CalendarMode) {
   const next = new Date(date);
   next.setMilliseconds(0);
   if (mode !== 'datetime') next.setHours(0, 0, 0, 0);
   if (mode === 'year') next.setMonth(0, 1);
   if (mode === 'month') next.setDate(1);
+  if (mode === 'quarter') next.setMonth(Math.floor(next.getMonth() / 3) * 3, 1);
   if (mode === 'week') next.setDate(next.getDate() - ((next.getDay() + 6) % 7));
   return next;
 }
@@ -26,6 +27,7 @@ export function dateTimeKey(date: Date, showSeconds = true) {
 export function periodKey(date: Date, mode: CalendarMode) {
   if (mode === 'year') return String(date.getFullYear());
   if (mode === 'month') return dateKey(date).slice(0, 7);
+  if (mode === 'quarter') return `${date.getFullYear()}-Q${Math.floor(date.getMonth() / 3) + 1}`;
   if (mode === 'datetime') return dateTimeKey(date);
   if (mode === 'week') {
     const monday = startOfPeriod(date, 'week');
@@ -51,7 +53,7 @@ export function withinPeriod(date: Date, mode: CalendarMode, min?: Date, max?: D
 }
 export function shiftCalendar(date: Date, mode: CalendarMode, amount: number) {
   if (mode === 'year') return new Date(date.getFullYear() + amount * 12, 0, 1);
-  if (mode === 'month') return new Date(date.getFullYear() + amount, 0, 1);
+  if (mode === 'month' || mode === 'quarter') return new Date(date.getFullYear() + amount, 0, 1);
   return shiftMonth(date, amount);
 }
 interface CalendarPanelProps {
@@ -92,11 +94,11 @@ export function CalendarPanel({
 }: CalendarPanelProps) {
   const { locale, messages } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
-  const [view, setView] = useState<'year' | 'month' | 'date'>(
-    picker === 'year' || picker === 'month' ? picker : 'date',
+  const [view, setView] = useState<'year' | 'quarter' | 'month' | 'date'>(
+    picker === 'year' || picker === 'month' || picker === 'quarter' ? picker : 'date',
   );
   useEffect(() => {
-    setView(picker === 'year' || picker === 'month' ? picker : 'date');
+    setView(picker === 'year' || picker === 'month' || picker === 'quarter' ? picker : 'date');
   }, [picker]);
   const [internalVisible, setInternalVisible] = useState(initial);
   const visible = visibleDate ?? internalVisible;
@@ -132,9 +134,11 @@ export function CalendarPanel({
   const cells =
     view === 'year'
       ? Array.from({ length: 12 }, (_, i) => new Date(decade + i, 0, 1))
-      : view === 'month'
-        ? Array.from({ length: 12 }, (_, i) => new Date(visible.getFullYear(), i, 1))
-        : calendarDays(visible);
+      : view === 'quarter'
+        ? Array.from({ length: 4 }, (_, i) => new Date(visible.getFullYear(), i * 3, 1))
+        : view === 'month'
+          ? Array.from({ length: 12 }, (_, i) => new Date(visible.getFullYear(), i, 1))
+          : calendarDays(visible);
   const cellMode = view === 'date' ? (picker === 'datetime' ? 'date' : picker) : view;
   const focusableCells = cells.filter(
     (date) =>
@@ -157,7 +161,7 @@ export function CalendarPanel({
     if (view === 'year' && picker !== 'year') {
       setVisible(date);
       setActive(date);
-      setView('month');
+      setView(picker === 'quarter' ? 'quarter' : 'month');
       focusRequested.current = true;
     } else if (view === 'month' && picker !== 'month') {
       setVisible(date);
@@ -185,6 +189,7 @@ export function CalendarPanel({
     if (delta) {
       if (view === 'date') next.setDate(next.getDate() + delta);
       else if (view === 'month') next.setMonth(next.getMonth() + delta);
+      else if (view === 'quarter') next.setMonth(next.getMonth() + delta * 3);
       else next.setFullYear(next.getFullYear() + delta);
     } else if (event.key === 'Home' || event.key === 'End') {
       if (view === 'date')
@@ -221,6 +226,7 @@ export function CalendarPanel({
       while (disabledDate(next) && attempts < 366) {
         if (view === 'date') next.setDate(next.getDate() + step);
         else if (view === 'month') next.setMonth(next.getMonth() + step);
+        else if (view === 'quarter') next.setMonth(next.getMonth() + step * 3);
         else next.setFullYear(next.getFullYear() + step);
         if (!withinPeriod(next, cellMode, minDate, maxDate)) return;
         attempts += 1;
@@ -377,7 +383,9 @@ export function CalendarPanel({
                     ? dateKey(date)
                     : view === 'month'
                       ? dateKey(date).slice(0, 7)
-                      : String(date.getFullYear())
+                      : view === 'quarter'
+                        ? periodKey(date, 'quarter')
+                        : String(date.getFullYear())
                 }
                 aria-pressed={checked}
                 aria-current={sameDate(date, new Date()) ? 'date' : undefined}
@@ -401,7 +409,9 @@ export function CalendarPanel({
                     ? date.getDate()
                     : view === 'month'
                       ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
-                      : date.getFullYear()}
+                      : view === 'quarter'
+                        ? `Q${Math.floor(date.getMonth() / 3) + 1}`
+                        : date.getFullYear()}
                 </span>
                 {cellRender && view === picker && (
                   <span className="leaf-calendar__cell-content">{cellRender(date)}</span>

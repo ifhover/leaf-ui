@@ -2,8 +2,7 @@ import { forwardRef, type ReactNode, useRef } from 'react';
 import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/config-provider';
 import { useFormField } from '../form/form';
-import { CalendarPanel, withinPeriod } from '../shared/calendar';
-import { dateKey } from '../shared/date';
+import { CalendarPanel, periodKey, startOfPeriod, withinPeriod } from '../shared/calendar';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
@@ -14,6 +13,8 @@ export interface DatePickerProps extends PickerFieldProps {
   defaultValue?: Date | null;
   minDate?: Date;
   maxDate?: Date;
+  picker?: 'date' | 'year' | 'quarter' | 'month' | 'week';
+  disabledDate?: (date: Date) => boolean;
   showToday?: boolean;
   todayText?: ReactNode;
   renderExtraFooter?: ReactNode;
@@ -26,6 +27,8 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
     defaultValue = null,
     minDate,
     maxDate,
+    picker = 'date',
+    disabledDate,
     showToday = true,
     todayText,
     renderExtraFooter,
@@ -42,8 +45,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
   const [selected, setSelected] = useFieldValue(value, defaultValue, trigger, props.form);
   const [open, setOpen] = usePopupState(props.disabled ?? field?.disabled, onOpenChange);
   const change = (next: Date | null) => {
-    setSelected(next);
-    onChange?.(next, next ? dateKey(next) : '');
+    const normalized = next ? startOfPeriod(next, picker) : null;
+    setSelected(normalized);
+    onChange?.(normalized, normalized ? periodKey(normalized, picker) : '');
   };
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -51,8 +55,8 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
     <DateInput
       {...props}
       ref={merged}
-      displayValue={selected ? dateKey(selected) : ''}
-      formValue={selected ? dateKey(selected) : ''}
+      displayValue={selected ? periodKey(selected, picker) : ''}
+      formValue={selected ? periodKey(selected, picker) : ''}
       open={open}
       onOpenChange={setOpen}
       onOpening={() => {}}
@@ -62,8 +66,9 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
           change(null);
           return true;
         }
-        const parsed = parseDateText(text);
-        if (!parsed || !withinPeriod(parsed, 'date', minDate, maxDate)) return false;
+        const parsed = parseDateText(text, picker);
+        if (!parsed || !withinPeriod(parsed, picker, minDate, maxDate) || disabledDate?.(parsed))
+          return false;
         change(parsed);
         return true;
       }}
@@ -71,6 +76,8 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
       renderPanel={(close) => (
         <>
           <CalendarPanel
+            picker={picker}
+            disabledDate={disabledDate}
             value={selected}
             minDate={minDate}
             maxDate={maxDate}
@@ -86,7 +93,10 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
                   <Button
                     variant="ghost"
                     size="sm"
-                    disabled={!withinPeriod(today, 'date', minDate, maxDate)}
+                    disabled={
+                      !withinPeriod(today, picker, minDate, maxDate) ||
+                      disabledDate?.(startOfPeriod(today, picker))
+                    }
                     onClick={() => {
                       change(today);
                       close();

@@ -1,0 +1,64 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { MenuBasic } from '../../../src/examples/en/menu/basic';
+import { MenuHorizontal } from '../../../src/examples/en/menu/advanced';
+
+# Menu
+
+Organize hierarchical navigation.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<MenuBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/menu/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<MenuHorizontal />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/menu/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+items supports nesting, groups, dividers and links. selectedKey controls the current item and openKeys controls expanded items. Horizontal and collapsed modes display submenus in floating panels.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { MenuItem, MenuProps } from '@sudden3/leaf-ui';
+```
+
+## MenuItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `label` | `ReactNode` | Required | Display label |
+| `icon` | `ReactNode` | — | Custom icon |
+| `href` | `string` | — | Destination URL |
+| `disabled` | `boolean` | — | Disable interactions |
+| `danger` | `boolean` | — | Danger colors |
+| `children` | [`readonly MenuItem[]`](#menuitem-api) | — | Content or child items |
+| `type` | `'item' \| 'group' \| 'divider'` | — | Visual or item type |
+
+## MenuProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly MenuItem[]`](#menuitem-api) | Required | Items; keep keys unique and stable |
+| `mode` | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` | Menu orientation and behavior |
+| `selectedKey` | `string` | — | Controlled selected key |
+| `defaultSelectedKey` | `string` | `''` | Initial selected key |
+| `onSelect` | [`(key: string, item: MenuItem) => void`](#menuitem-api) | — | Select an item |
+| `openKeys` | `readonly string[]` | — | Controlled open keys |
+| `defaultOpenKeys` | `readonly string[]` | `[]` | Initially open keys |
+| `onOpenChange` | `(keys: string[]) => void` | — | Open state changes |
+| `collapsed` | `boolean` | `false` | Controlled collapsed state |

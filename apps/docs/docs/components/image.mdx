@@ -1,0 +1,85 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ImageBasic } from '../../src/examples/image/basic';
+import { ImageGallery } from '../../src/examples/image/advanced';
+
+# Image 图片
+
+展示图片并放大浏览图片组。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<ImageBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<ImageGallery />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+支持键盘翻页、触摸滑动、缩放、缩略图和全屏。ImagePreviewGroup 自动收集子 Image，也可传入 items 与受控 open / index。纯展示的图片可设置 `preview={false}`。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, ImageProps } from '@sudden3/leaf-ui';
+```
+
+## ImagePreviewGroupProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 内容或下级项目 |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | 数据项目，保持 key 唯一且稳定 |
+| `open` | `boolean` | — | 受控展示状态 |
+| `defaultOpen` | `boolean` | `false` | 初始展示状态 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `index` | `number` | — | 当前索引，从 0 开始 |
+| `defaultIndex` | `number` | `0` | 初始索引 |
+| `onIndexChange` | `(index: number) => void` | — | 图片切换 |
+| `thumbnails` | `boolean` | `true` | 缩略图导航 |
+| `downloadable` | `boolean` | `false` | 显示下载操作 |
+
+## ImagePreviewItem API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `src` | `string` | 必填 | 图片地址 |
+| `alt` | `string` | `''` | 图片文字说明 |
+| `width` | `number` | — | 宽度，数字按像素计算 |
+| `height` | `number` | — | 高度，数字按像素计算 |
+| `download` | `string \| boolean` | — | 下载地址或是否允许下载 |
+
+## ImagePreviewProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `open` | `boolean` | 必填 | 受控展示状态 |
+| `index` | `number` | `0` | 当前索引，从 0 开始 |
+| `onClose` | `() => void` | 必填 | 关闭时触发 |
+| `onIndexChange` | `(index: number) => void` | — | 图片切换 |
+| `thumbnails` | `boolean` | `true` | 缩略图导航 |
+| `downloadable` | `boolean` | `false` | 显示下载操作 |
+
+## ImageProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `preview` | `boolean` | `true` | 允许放大预览 |
+| `previewSrc` | `string` | — | 高清预览地址 |
+| `fallback` | `ReactNode` | — | 加载失败时的内容 |
+| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | 图片缩放方式 |
+
+Image 支持 src、alt、width、height、loading、onLoad、onError 等原生图片属性。

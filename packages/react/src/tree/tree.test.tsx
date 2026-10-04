@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider, Tree, type TreeNode } from '../index';
@@ -61,5 +61,50 @@ describe('Tree', () => {
     expect(screen.getByRole('treeitem', { name: 'Code' })).toBeInTheDocument();
     expect(within(screen.getByRole('tree')).queryByText('Design')).toBeNull();
     expect(screen.queryByText('Archive')).toBeNull();
+  });
+  it('keeps focus on the drag handle and moves a node before a keyboard-selected target', async () => {
+    const keys = ['team', 'design', 'code', 'locked', 'archive', 'past'];
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      const key = this.closest('[data-node-key]')?.getAttribute('data-node-key');
+      const top = key
+        ? Math.max(0, keys.indexOf(key)) * 40
+        : Number.parseFloat(this.style.top) || 0;
+      return new DOMRect(0, top, 300, 40);
+    });
+    const drop = vi.fn();
+    const select = vi.fn();
+    render(
+      <ConfigProvider locale="en-US">
+        <Tree data={data} defaultExpandAll draggable onDrop={drop} onSelect={select} />
+      </ConfigProvider>,
+    );
+    const handle = screen.getByRole('button', { name: 'Move node Code' });
+    handle.focus();
+    await userEvent.keyboard('[Space]');
+    await waitFor(() => expect(handle).toHaveAttribute('aria-pressed', 'true'));
+    await userEvent.keyboard('[ArrowDown]');
+    const target = screen
+      .getByRole('treeitem', { name: 'Archive' })
+      .querySelector('.leaf-tree__drag-row');
+    await waitFor(() => expect(target).toHaveAttribute('data-drop', 'inside'));
+    expect(handle).toHaveFocus();
+    await userEvent.keyboard('[ArrowLeft]');
+    await waitFor(() => expect(target).toHaveAttribute('data-drop', 'before'));
+    await userEvent.keyboard('[Space]');
+    expect(drop).toHaveBeenCalledOnce();
+    expect(drop.mock.lastCall?.[0]).toMatchObject({
+      node: { key: 'code' },
+      target: { key: 'archive' },
+      position: 'before',
+    });
+    expect(drop.mock.lastCall?.[0].data.map((node: TreeNode) => node.key)).toEqual([
+      'team',
+      'code',
+      'archive',
+    ]);
+    expect(data[0]?.children?.map((node) => node.key)).toEqual(['design', 'code', 'locked']);
+    expect(select).not.toHaveBeenCalled();
   });
 });

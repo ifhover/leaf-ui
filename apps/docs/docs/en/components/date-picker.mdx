@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/date-picker/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DatePickerBasic, DatePickerControlled } from '../../../src/components/en-form-examples';
 import { DatePickerFooter } from '../../../src/examples/en/date-picker/footer';
@@ -8,7 +9,7 @@ Choose a date from a calendar.
 
 ## Examples
 
-Values are Date objects in local time. onChange also supplies a YYYY-MM-DD string. Named fields submit this string. Arrow keys move days, Home / End move within a week, and PageUp / PageDown move months. Use [DateTimePicker](/en/components/date-time-picker) for time, or [DateRangePicker](/en/components/date-range-picker) for a range.
+Values are Date objects in local time. onChange also supplies the formatted string for the current picker mode; named fields submit this string. Arrow keys move days, Home / End move within a week, and PageUp / PageDown move months. Use [DateTimePicker](/en/components/date-time-picker) for time, or [DateRangePicker](/en/components/date-range-picker) for a range.
 
 <ComponentExample title="Basic selection" preview={<DatePickerBasic />} fileName="basic.tsx">
 
@@ -35,6 +36,15 @@ Customize Today with todayText, add shortcuts with renderExtraFooter, or hide To
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## DatePicker API
 
 | Property | Type | Default | Description |
@@ -54,6 +64,8 @@ Customize Today with todayText, add shortcuts with renderExtraFooter, or hide To
 | `required` | `boolean` | `false` | Require a date |
 | `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Select date, year, quarter, month or week |
+| `disabledDate` | `(date: Date) => boolean` | — | Restrict selectable dates |
 
 ## Types
 
@@ -70,3 +82,5 @@ Use name to include values in FormData. Uncontrolled fields follow form reset; r
 Type `YYYY-MM-DD` and press Enter or move focus away to submit. Invalid dates and values outside minDate/maxDate are rejected. Click the month or year heading to switch panels. Today selects the current date. Use showToday, todayText and renderExtraFooter to customize shortcuts.
 
 Clicking the field keeps typing focus; ArrowDown moves into the calendar, and Escape discards pending text. Other input attributes and aria-* target the input; className/style target the wrapper.
+
+Picker formats: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YYYY-QN`, `month → YYYY-MM`, `week → YYYY-Www`. These formats apply to display, manual input, the onChange string and FormData.

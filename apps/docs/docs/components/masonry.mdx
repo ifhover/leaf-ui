@@ -1,0 +1,44 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { MasonryBasic } from '../../src/examples/masonry/basic';
+import { MasonryImages } from '../../src/examples/masonry/advanced';
+
+# Masonry 瀑布流
+
+排列高度不一的卡片与图片。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<MasonryBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/masonry/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<MasonryImages />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/masonry/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+按列从上到下排列；按行阅读或固定焦点顺序的内容建议使用 Grid。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { MasonryProps } from '@sudden3/leaf-ui';
+```
+
+## MasonryProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | 列数；较大断点继承较小断点 |
+| `gap` | `number \| string` | `16` | 间距；数组为 [纵向, 横向] |

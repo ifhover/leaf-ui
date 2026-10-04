@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/tag/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
 
@@ -10,6 +11,15 @@ Label content categories or statuses.
 <ComponentExample title="Basic usage" preview={<TagBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/basic.tsx"
+```
+
+</ComponentExample>
+
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -37,3 +47,40 @@ import type { TagProps } from '@sudden3/leaf-ui';
 ## Usage notes
 
 Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
+
+## Extension types
+
+```ts
+import type { CheckableTagProps, TagGroupProps, TagOption } from '@sudden3/leaf-ui';
+```
+
+## CheckableTagProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `checked` | `boolean` | — | Controlled checked state |
+| `defaultChecked` | `boolean` | `false` | Initial checked state |
+| `onChange` | `(checked: boolean) => void` | — | Value change callback |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+
+## TagGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly TagOption[]`](#tagoption-api) | Required | Available options |
+| `value` | `readonly string[]` | — | Controlled value |
+| `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(values: string[]) => void` | — | Value change callback |
+| `disabled` | `boolean` | — | Disable interactions |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `name` | `string` | — | Form field name |
+| `form` | `string` | — | Associated form ID |
+| `required` | `boolean` | — | Required form validation |
+
+## TagOption API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Controlled value |
+| `label` | `ReactNode` | Required | Display label |
+| `disabled` | `boolean` | — | Disable interactions |

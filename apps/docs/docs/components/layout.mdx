@@ -1,0 +1,56 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { LayoutBasic } from '../../src/examples/layout/basic';
+import { LayoutResponsive } from '../../src/examples/layout/advanced';
+
+# Layout 布局
+
+组织页面的头部、侧栏、内容与底部。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<LayoutBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/layout/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<LayoutResponsive />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/layout/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+用 Layout.Header、Layout.Sider、Layout.Content、Layout.Footer 组合页面；横向区域使用 direction="horizontal"。侧栏可受控折叠，也可通过 breakpoint 自动收起。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { LayoutProps, LayoutSiderProps } from '@sudden3/leaf-ui';
+```
+
+## LayoutProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `direction` | `'horizontal' \| 'vertical'` | `'vertical'` | 排列方向或移动方向 |
+
+## LayoutSiderProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `width` | `number \| string` | `220` | 宽度，数字按像素计算 |
+| `collapsedWidth` | `number \| string` | `64` | 收起后的宽度 |
+| `collapsed` | `boolean` | — | 受控收起状态 |
+| `defaultCollapsed` | `boolean` | `false` | 初始收起状态 |
+| `collapsible` | `boolean` | `false` | 显示收起操作 |
+| `breakpoint` | `number` | — | 自动收起的屏幕宽度阈值 |
+| `onCollapse` | `(collapsed: boolean) => void` | — | 收起状态变化 |
+| `trigger` | `ReactNode` | — | 自定义触发内容 |

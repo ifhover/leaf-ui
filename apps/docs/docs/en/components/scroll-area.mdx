@@ -1,0 +1,46 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ScrollAreaBasic } from '../../../src/examples/en/scroll-area/basic';
+import { ScrollAreaHorizontal } from '../../../src/examples/en/scroll-area/advanced';
+
+# ScrollArea
+
+Browse content inside a bounded scroll area.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ScrollAreaBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/scroll-area/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/scroll-area/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Constrain the region with height or maxHeight. orientation controls the axes and scrollbar controls visibility. Wheel, touch and keyboard scrolling use native scrolling behavior.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { ScrollAreaProps } from '@sudden3/leaf-ui';
+```
+
+## ScrollAreaProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `height` | `number \| string` | — | Height, numbers are in pixels |
+| `maxHeight` | `number \| string` | — | Maximum height |
+| `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Scrolling direction |
+| `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | Scrollbar visibility |

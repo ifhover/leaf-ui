@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/select/extensions';
 import { SelectPopup } from '../../../src/examples/en/select/popup';
 import { SelectSearch } from '../../../src/examples/en/select/search';
 import { ComponentExample } from '../../../src/components/component-example';
@@ -60,13 +61,22 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `options` | [`readonly SelectOption[]`](#selectoption) | Required | Options |
+| `options` | [`readonly (SelectOption \| SelectOptionGroup)[]`](#selectoptiongroup-api) | Required | Options |
 | `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
 | `value` / `defaultValue` | `string \| readonly string[]` | `''` | Controlled value / initial uncontrolled value |
 | `onChange` | [`(value: string, option?: SelectOption) => void` or `(values: string[], options: SelectOption[]) => void`](#selectoption) | — | Returns value and option; clearing returns an empty string and undefined |
@@ -97,6 +107,11 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 | `searchLabel` | `string` | — | Search text for node labels; falls back to value |
 | `label` | `ReactNode` | Required | Option content; a string or React node |
 | `disabled` | `boolean` | `false` | Disable the option |
+| `allowCreate` | `boolean` | `false` | Allow creating unmatched search text |
+| `onCreate` | [`(option: SelectOption) => void`](#selectoption) | — | Created option callback |
+| `virtual` | `boolean` | More than 100 options | Render visible items only |
+| `listHeight` | `number` | `248` | List height |
+| `optionHeight` | `number` | `36` | Estimated option height |
 
 ## Types
 
@@ -113,3 +128,16 @@ Use name to include values in FormData. Uncontrolled fields follow form reset; r
 In multiple mode, clearing returns []. FormData submits repeated values under the same name; read them with `formData.getAll(name)`. Empty-query Backspace removes the last enabled tag. Leaving clears the query; searches never create values. For node labels, supply searchLabel. The ref and other input attributes target the input.
 
 The field keeps its layout width. The popup is at least as wide as the field and grows to fit its options, up to popupMaxWidth. Use `popupWidth="trigger"` for a matching width or set `popupWidth={300}` for a fixed width. Content wraps only after reaching its width limit.
+
+## Extension types
+
+```ts
+import type { SelectOptionGroup } from '@sudden3/leaf-ui';
+```
+
+## SelectOptionGroup API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | Required | Display label |
+| `options` | [`readonly SelectOption[]`](#selectoption) | Required | Available options |

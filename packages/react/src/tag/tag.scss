@@ -86,3 +86,24 @@
     transition: none;
   }
 }
+
+.leaf-checkable-tag {
+  cursor: pointer;
+  transition:
+    color var(--leaf-motion-duration),
+    background var(--leaf-motion-duration),
+    border-color var(--leaf-motion-duration);
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+.leaf-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

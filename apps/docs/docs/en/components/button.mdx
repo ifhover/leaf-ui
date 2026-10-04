@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/button/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../../src/components/en-button-examples';
 
@@ -58,6 +59,15 @@ Use solid for primary actions, soft for subtle emphasis, outline for secondary a
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Button API
 
 | Property | Type | Default | Description |
@@ -84,3 +94,32 @@ import type { ButtonProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## Extension types
+
+```ts
+import type { ButtonGroupProps, SplitButtonProps } from '@sudden3/leaf-ui';
+```
+
+## ButtonGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `disabled` | `boolean` | — | Disable interactions |
+| `attached` | `boolean` | `true` | Join adjacent buttons |
+
+## SplitButtonProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | — | Button appearance |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `danger` | `boolean` | — | Danger colors |
+| `loading` | `boolean` | — | Loading state |
+| `fullWidth` | `boolean` | — | Fill available width |
+| `startIcon` | `ReactNode` | — | Leading icon |
+| `endIcon` | `ReactNode` | — | Trailing icon |
+| `items` | [`readonly DropdownItem[]`](/en/components/dropdown#dropdownitem) | Required | Items; keep keys unique and stable |
+| `menuLabel` | `string` | — | Accessible menu button label |
+| `dropdownProps` | [`Omit<DropdownProps, 'items' \| 'children' \| 'disabled'>`](/en/components/dropdown#dropdown-api) | — | Action menu props |

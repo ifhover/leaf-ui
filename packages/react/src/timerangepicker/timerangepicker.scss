@@ -1,0 +1,11 @@
+.leaf-time-range-picker__panel {
+  min-width: 310px;
+}
+.leaf-time-range-picker__tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 4px 12px;
+  color: var(--leaf-color-text-muted);
+}

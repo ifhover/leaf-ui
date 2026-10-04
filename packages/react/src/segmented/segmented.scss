@@ -1,0 +1,60 @@
+@use '../styles/mixins' as mixins;
+.leaf-segmented {
+  @include mixins.control-size;
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface-muted);
+  box-sizing: border-box;
+  &--block {
+    display: flex;
+    > button {
+      flex: 1;
+    }
+  }
+  > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: calc(var(--leaf-current-control-height) - 6px);
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    font: var(--leaf-current-font-size)/1.5 var(--leaf-font-family);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration),
+      background var(--leaf-motion-duration),
+      box-shadow var(--leaf-motion-duration);
+    &[aria-checked='true'] {
+      color: var(--leaf-color-primary);
+      background: var(--leaf-color-surface);
+      box-shadow: 0 1px 4px #00000012;
+    }
+    &:hover:not(:disabled) {
+      color: var(--leaf-color-primary);
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    svg {
+      display: block;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-segmented > button {
+    transition: none;
+  }
+}

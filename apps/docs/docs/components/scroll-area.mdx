@@ -1,0 +1,46 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ScrollAreaBasic } from '../../src/examples/scroll-area/basic';
+import { ScrollAreaHorizontal } from '../../src/examples/scroll-area/advanced';
+
+# ScrollArea 滚动区域
+
+在限定区域内浏览内容。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<ScrollAreaBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scroll-area/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/scroll-area/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+通过 height 或 maxHeight 限制滚动区域。orientation 控制方向，scrollbar 控制滚动条显示；支持原生滚轮、触摸和键盘滚动。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { ScrollAreaProps } from '@sudden3/leaf-ui';
+```
+
+## ScrollAreaProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `height` | `number \| string` | — | 高度，数字按像素计算 |
+| `maxHeight` | `number \| string` | — | 最大高度 |
+| `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | 滚动方向 |
+| `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | 滚动条显示方式 |

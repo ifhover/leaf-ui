@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { OrgChartBasic } from '../../src/examples/org-chart/basic';
+import { OrgChartCustom } from '../../src/examples/org-chart/advanced';
+
+# OrgChart 组织结构图
+
+展示组织与成员之间的层级。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<OrgChartBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/org-chart/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<OrgChartCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/org-chart/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+data 描述树形组织关系；节点 key 保持唯一。支持展开收起、缩放与区域滚动，renderNode 可定制节点内容。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { OrgChartNode, OrgChartProps } from '@sudden3/leaf-ui';
+```
+
+## OrgChartNode API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `children` | [`readonly OrgChartNode[]`](#orgchartnode-api) | — | 内容或下级项目 |
+
+## OrgChartProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `data` | [`OrgChartNode \| readonly OrgChartNode[]`](#orgchartnode-api) | 必填 | 层级数据 |
+| `collapsedKeys` | `readonly string[]` | — | 受控收起节点 |
+| `defaultCollapsedKeys` | `readonly string[]` | `[]` | 初始收起节点 |
+| `onCollapseChange` | `(keys: string[]) => void` | — | 收起节点变化 |
+| `renderNode` | [`(node: OrgChartNode) => ReactNode`](#orgchartnode-api) | — | 自定义节点内容 |
+| `onNodeClick` | [`(node: OrgChartNode) => void`](#orgchartnode-api) | — | 节点点击 |
+| `zoomable` | `boolean` | `true` | 显示缩放工具 |
+| `minZoom` | `number` | `0.5` | 最小缩放比例 |
+| `maxZoom` | `number` | `2` | 最大缩放比例 |

@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { OrgChartBasic } from '../../../src/examples/en/org-chart/basic';
+import { OrgChartCustom } from '../../../src/examples/en/org-chart/advanced';
+
+# OrgChart
+
+Display hierarchies between teams and members.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<OrgChartBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/org-chart/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<OrgChartCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/org-chart/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+data describes the organization tree; keep node keys unique. Expand and collapse nodes, zoom and scroll the viewport, and customize content with renderNode.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { OrgChartNode, OrgChartProps } from '@sudden3/leaf-ui';
+```
+
+## OrgChartNode API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `label` | `ReactNode` | Required | Display label |
+| `description` | `ReactNode` | — | Supporting description |
+| `children` | [`readonly OrgChartNode[]`](#orgchartnode-api) | — | Content or child items |
+
+## OrgChartProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | [`OrgChartNode \| readonly OrgChartNode[]`](#orgchartnode-api) | Required | Hierarchical data |
+| `collapsedKeys` | `readonly string[]` | — | Controlled collapsed nodes |
+| `defaultCollapsedKeys` | `readonly string[]` | `[]` | Initially collapsed nodes |
+| `onCollapseChange` | `(keys: string[]) => void` | — | Collapsed node changes |
+| `renderNode` | [`(node: OrgChartNode) => ReactNode`](#orgchartnode-api) | — | Custom node content |
+| `onNodeClick` | [`(node: OrgChartNode) => void`](#orgchartnode-api) | — | Node click |
+| `zoomable` | `boolean` | `true` | Show zoom controls |
+| `minZoom` | `number` | `0.5` | Minimum zoom |
+| `maxZoom` | `number` | `2` | Maximum zoom |

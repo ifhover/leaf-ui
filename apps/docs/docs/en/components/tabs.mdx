@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
 import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TabsBasic } from '../../../src/examples/en/tabs/basic';
@@ -24,6 +25,15 @@ Switch between content views within the same region.
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Tabs API
 
 | Prop | Type | Default | Description |
@@ -38,6 +48,11 @@ Switch between content views within the same region.
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
 | `extra` | `ReactNode` | — | Extra tab bar content |
 | `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | Close request: remove the item in the application; preventDefault cancels selection changes |
+| `onAdd` | `() => void` | — | Add tab; enables add button |
+| `addLabel` | `string` | — | Accessible add button label |
+| `overflow` | `boolean` | `true` | Collect overflow tabs in a menu |
+| `sortable` | `boolean` | `false` | Enable sorting; use with onReorder |
+| `onReorder` | [`(items: TabItem[]) => void`](#tabitem) | — | Reordered tabs |
 
 ## TabItem
 

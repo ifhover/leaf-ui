@@ -1,0 +1,111 @@
+.leaf-notification-region {
+  position: fixed;
+  z-index: var(--leaf-z-index-message);
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: none;
+  &--top-right {
+    top: 24px;
+    right: 24px;
+  }
+  &--top-left {
+    top: 24px;
+    left: 24px;
+  }
+  &--bottom-right {
+    bottom: 24px;
+    right: 24px;
+  }
+  &--bottom-left {
+    bottom: 24px;
+    left: 24px;
+  }
+}
+.leaf-notification-slot {
+  display: grid;
+  grid-template-rows: 1fr;
+  margin-bottom: 12px;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--leaf-motion-duration),
+    margin-bottom var(--leaf-motion-duration),
+    opacity var(--leaf-motion-duration);
+  @starting-style {
+    opacity: 0;
+  }
+  &__content {
+    min-height: 0;
+  }
+  &[data-state='closing'] {
+    grid-template-rows: 0fr;
+    margin-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    .leaf-notification-slot__content {
+      overflow: hidden;
+    }
+  }
+}
+.leaf-notification {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius-lg);
+  background: var(--leaf-color-surface);
+  box-shadow: 0 8px 32px #00000014;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  pointer-events: auto;
+  transform: translateX(0);
+  transition: transform var(--leaf-motion-duration);
+  @starting-style {
+    transform: translateX(16px);
+  }
+  &__icon {
+    display: flex;
+    padding-top: 3px;
+    color: var(--leaf-notification-color);
+  }
+  &__body {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  &__title {
+    font-weight: 600;
+  }
+  &__description {
+    margin-top: 5px;
+    color: var(--leaf-color-text-muted);
+  }
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  &__close {
+    align-self: flex-start;
+    display: flex;
+    padding: 3px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: var(--leaf-color-text-muted);
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+    }
+  }
+  @each $type in info, success, warning, error {
+    &--#{$type} {
+      --leaf-notification-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-notification-slot,
+  .leaf-notification {
+    transition: none;
+  }
+}

@@ -1,4 +1,5 @@
-import { Check, ChevronDown, LoaderCircle, X } from 'lucide-react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { Check, ChevronDown, LoaderCircle, Plus, X } from 'lucide-react';
 import {
   type CSSProperties,
   forwardRef,
@@ -6,6 +7,7 @@ import {
   type ReactNode,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,6 +23,7 @@ import {
   usePopupState,
 } from '../shared/floating';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { useText } from '../shared/use-text';
 
 export interface SelectOption {
   value: string;
@@ -28,12 +31,16 @@ export interface SelectOption {
   disabled?: boolean;
   searchLabel?: string;
 }
+export interface SelectOptionGroup {
+  label: ReactNode;
+  options: readonly SelectOption[];
+}
 interface SelectBaseProps
   extends Omit<
     InputHTMLAttributes<HTMLInputElement>,
     'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children' | 'multiple'
   > {
-  options: readonly SelectOption[];
+  options: readonly (SelectOption | SelectOptionGroup)[];
   size?: ControlSize;
   status?: ControlStatus;
   allowClear?: boolean;
@@ -50,6 +57,11 @@ interface SelectBaseProps
   optionRender?: (option: SelectOption) => ReactNode;
   maxCount?: number;
   maxTagCount?: number;
+  allowCreate?: boolean;
+  onCreate?: (option: SelectOption) => void;
+  virtual?: boolean;
+  listHeight?: number;
+  optionHeight?: number;
 }
 export type SelectProps = SelectBaseProps &
   (
@@ -75,7 +87,7 @@ const searchText = (option: SelectOption) =>
 export const Select = forwardRef<HTMLInputElement, SelectProps>(
   function Select(props, forwardedRef) {
     const {
-      options,
+      options: suppliedOptions,
       size = 'md',
       status: statusProp,
       placeholder,
@@ -94,7 +106,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       onKeyDown,
       onBlur,
       multiple = false,
-      showSearch = false,
+      showSearch: searchProp = false,
       filterOption = true,
       onSearch,
       popupWidth = 'auto',
@@ -106,9 +118,40 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       optionRender,
       maxCount,
       maxTagCount,
+      allowCreate = false,
+      onCreate,
+      virtual: virtualProp,
+      listHeight = 248,
+      optionHeight = 36,
       onChange: _onChange,
       ...inputProps
     } = props;
+    const t = useText();
+    const showSearch = searchProp || allowCreate;
+    const [created, setCreated] = useState<SelectOption[]>([]);
+    const baseOptions = useMemo(
+      () => suppliedOptions.flatMap((entry) => ('options' in entry ? [...entry.options] : [entry])),
+      [suppliedOptions],
+    );
+    const options = useMemo(
+      () => [
+        ...baseOptions,
+        ...created.filter((entry) => !baseOptions.some((option) => option.value === entry.value)),
+      ],
+      [baseOptions, created],
+    );
+    const optionGroups = useMemo(
+      () =>
+        new Map(
+          suppliedOptions.flatMap((entry) =>
+            'options' in entry
+              ? entry.options.map((option) => [option.value, entry.label] as const)
+              : [],
+          ),
+        ),
+      [suppliedOptions],
+    );
+    const virtual = virtualProp ?? options.length > 100;
     const { messages } = useLeafConfig();
     const field = useFormField();
     const disabled = disabledProp ?? field?.disabled;
@@ -136,7 +179,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     const [query, setQuery] = useState('');
     const [open, setOpen] = usePopupState(disabled, onOpenChange);
     const [highlighted, setHighlighted] = useState(-1);
-    const filtered =
+    const matched =
       !query || !showSearch || filterOption === false
         ? options
         : options.filter((option) =>
@@ -144,6 +187,42 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
               ? filterOption(query, option)
               : searchText(option).toLocaleLowerCase().includes(query.toLocaleLowerCase()),
           );
+    const newValue = query.trim();
+    const createOption =
+      allowCreate &&
+      newValue &&
+      !options.some((option) => option.value === newValue || searchText(option) === newValue)
+        ? { value: newValue, label: newValue }
+        : null;
+    const filtered = createOption ? [...matched, createOption] : matched;
+    const rows = useMemo(() => {
+      const entries: { key: string; option?: SelectOption; group?: ReactNode; index: number }[] =
+        [];
+      let previousGroup: ReactNode;
+      filtered.forEach((option, index) => {
+        const group = optionGroups.get(option.value);
+        if (group !== undefined && group !== previousGroup)
+          entries.push({ key: `group-${option.value}`, group, index: -1 });
+        entries.push({ key: option.value, option, index });
+        previousGroup = group;
+      });
+      return entries;
+    }, [filtered, optionGroups]);
+    const virtualizer = useVirtualizer({
+      count: rows.length,
+      getScrollElement: () => panel.current,
+      estimateSize: () => Math.max(24, optionHeight),
+      overscan: 5,
+      getItemKey: (index) => rows[index]?.key ?? index,
+      enabled: open && virtual,
+      initialRect: { height: listHeight, width: 240 },
+    });
+    useEffect(() => {
+      if (open && virtual && highlighted >= 0) {
+        const index = rows.findIndex((row) => row.index === highlighted);
+        if (index >= 0) virtualizer.scrollToIndex(index, { align: 'auto' });
+      }
+    }, [open, virtual, highlighted, rows, virtualizer]);
     const updateQuery = (next: string) => {
       setQuery(next);
       onSearch?.(next);
@@ -162,12 +241,16 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       if (props.multiple)
         props.onChange?.(
           [...next],
-          options.filter((option) => next.includes(option.value)),
+          [...options, ...(createOption ? [createOption] : [])].filter((option) =>
+            next.includes(option.value),
+          ),
         );
       else
         props.onChange?.(
           next[0] ?? '',
-          options.find((option) => option.value === next[0]),
+          [...options, ...(createOption ? [createOption] : [])].find(
+            (option) => option.value === next[0],
+          ),
         );
     };
     const openMenu = () => {
@@ -179,7 +262,11 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       setOpen(true);
     };
     const selectOption = (option: SelectOption) => {
-      if (unavailable(option)) return;
+      if (unavailable(option) || inputProps.readOnly) return;
+      if (createOption && option.value === createOption.value) {
+        setCreated((previous) => [...previous, option]);
+        onCreate?.(option);
+      }
       change(
         multiple
           ? values.includes(option.value)
@@ -203,6 +290,44 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         }
       }
     };
+    const renderOption = (option: SelectOption, index: number) => (
+      <button
+        key={option.value}
+        id={`${panelId}-${index}`}
+        aria-posinset={index + 1}
+        aria-setsize={filtered.length}
+        type="button"
+        role="option"
+        aria-selected={values.includes(option.value)}
+        aria-disabled={option.disabled || (atLimit && !values.includes(option.value)) || undefined}
+        data-highlighted={highlighted === index || undefined}
+        className="leaf-floating__option"
+        disabled={option.disabled || (atLimit && !values.includes(option.value))}
+        tabIndex={-1}
+        onMouseEnter={() => {
+          if (!unavailable(option)) setHighlighted(index);
+        }}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => selectOption(option)}
+      >
+        <span className="leaf-select__option-label">
+          {createOption?.value === option.value ? (
+            <>
+              <Plus size={14} aria-hidden="true" /> {t('创建', 'Create')} “{option.label}”
+            </>
+          ) : optionRender ? (
+            optionRender(option)
+          ) : (
+            option.label
+          )}
+        </span>
+        <Check
+          size={15}
+          aria-hidden="true"
+          style={{ opacity: values.includes(option.value) ? 1 : 0 }}
+        />
+      </button>
+    );
     const displayLabel = selectedOptions[0]?.label ?? (!multiple ? values[0] : undefined);
     const textLabel =
       typeof displayLabel === 'string' || typeof displayLabel === 'number'
@@ -434,7 +559,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           maxWidth={popupMaxWidth}
           id={panelId}
           className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}
-          style={popupStyle}
+          style={{ maxHeight: listHeight, ...popupStyle }}
           role="listbox"
           aria-busy={loading || undefined}
           aria-label={inputProps['aria-label'] ?? messages.select}
@@ -443,36 +568,50 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           {loading && !filtered.length ? (
             <div className="leaf-floating__empty">{messages.loading}</div>
           ) : filtered.length ? (
-            filtered.map((option, index) => (
-              <button
-                key={option.value}
-                id={`${panelId}-${index}`}
-                type="button"
-                role="option"
-                aria-selected={values.includes(option.value)}
-                aria-disabled={
-                  option.disabled || (atLimit && !values.includes(option.value)) || undefined
-                }
-                data-highlighted={highlighted === index || undefined}
-                className="leaf-floating__option"
-                disabled={option.disabled || (atLimit && !values.includes(option.value))}
-                tabIndex={-1}
-                onMouseEnter={() => {
-                  if (!unavailable(option)) setHighlighted(index);
+            virtual ? (
+              <div
+                style={{
+                  height: virtualizer.getTotalSize(),
+                  position: 'relative',
+                  minWidth: '100%',
                 }}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => selectOption(option)}
               >
-                <span className="leaf-select__option-label">
-                  {optionRender ? optionRender(option) : option.label}
-                </span>
-                <Check
-                  size={15}
-                  aria-hidden="true"
-                  style={{ opacity: values.includes(option.value) ? 1 : 0 }}
-                />
-              </button>
-            ))
+                {virtualizer.getVirtualItems().map((item) => {
+                  const row = rows[item.index];
+                  if (!row) return null;
+                  return (
+                    <div
+                      key={row.key}
+                      ref={virtualizer.measureElement}
+                      data-index={item.index}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        transform: `translateY(${item.start}px)`,
+                      }}
+                    >
+                      {row.option ? (
+                        renderOption(row.option, row.index)
+                      ) : (
+                        <div className="leaf-select__group">{row.group}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              rows.map((row) =>
+                row.option ? (
+                  renderOption(row.option, row.index)
+                ) : (
+                  <div key={row.key} className="leaf-select__group">
+                    {row.group}
+                  </div>
+                ),
+              )
+            )
           ) : (
             <div className="leaf-floating__empty">{notFoundContent ?? messages.empty}</div>
           )}

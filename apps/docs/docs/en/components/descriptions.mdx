@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DescriptionsBasic } from '../../../src/examples/en/descriptions/basic';
+import { DescriptionsVertical } from '../../../src/examples/en/descriptions/advanced';
+
+# Descriptions
+
+Present object details as labels and values.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<DescriptionsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/descriptions/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<DescriptionsVertical />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/descriptions/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Provide field labels and content in items. span controls column spans. Configure columns by viewport width and use layout for horizontal or vertical field arrangement.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { DescriptionItem, DescriptionsProps } from '@sudden3/leaf-ui';
+```
+
+## DescriptionItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `label` | `ReactNode` | Required | Display label |
+| `children` | `ReactNode` | Required | Content or child items |
+| `span` | `number` | — | Column span; Col span 0 hides a column |
+
+## DescriptionsProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly DescriptionItem[]`](#descriptionitem-api) | Required | Items; keep keys unique and stable |
+| `title` | `ReactNode` | — | Title content |
+| `extra` | `ReactNode` | — | Supplementary content or actions |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Columns; unspecified breakpoints inherit smaller ones |
+| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrangement of labels and values |
+| `bordered` | `boolean` | `false` | Show container outline |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |

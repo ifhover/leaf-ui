@@ -1,0 +1,50 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { InfiniteScrollBasic } from '../../../src/examples/en/infinite-scroll/basic';
+import { InfiniteScrollRetry } from '../../../src/examples/en/infinite-scroll/advanced';
+
+# InfiniteScroll
+
+Load more content when reaching the end of a list.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/infinite-scroll/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/infinite-scroll/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Return a Promise from onLoadMore; requests do not overlap. Update dataLength after appending. The signal aborts on unmount and failures can be retried.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { InfiniteScrollProps } from '@sudden3/leaf-ui';
+```
+
+## InfiniteScrollProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `dataLength` | `number` | Required | Loaded count; changes allow the next request |
+| `hasMore` | `boolean` | Required | More data remains |
+| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | Required | Load more; signal aborts the request |
+| `target` | `() => HTMLElement \| null` | — | Scroll target or link target |
+| `threshold` | `number` | `200` | Pixels from the end that trigger loading |
+| `loader` | `ReactNode` | — | Loading placeholder |
+| `endMessage` | `ReactNode` | — | Content after all items are loaded |
+| `onError` | `(error: unknown) => void` | — | Error callback |

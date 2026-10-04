@@ -1,0 +1,13 @@
+.leaf-infinite-scroll {
+  min-width: 0;
+  &__sentinel {
+    height: 1px;
+  }
+  &__status {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    color: var(--leaf-color-text-muted);
+    font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  }
+}

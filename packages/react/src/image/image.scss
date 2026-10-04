@@ -1,0 +1,65 @@
+@use 'yet-another-react-lightbox/styles.css';
+@use 'yet-another-react-lightbox/plugins/counter.css';
+@use 'yet-another-react-lightbox/plugins/thumbnails.css';
+.leaf-image {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  max-width: 100%;
+  border-radius: var(--leaf-radius);
+  vertical-align: middle;
+  background: var(--leaf-color-surface-muted);
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+.leaf-image__trigger {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: -3px;
+  }
+  &:hover .leaf-image__zoom,
+  &:focus-visible .leaf-image__zoom {
+    opacity: 1;
+  }
+}
+.leaf-image__zoom {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  transition: opacity var(--leaf-motion-duration);
+}
+.leaf-image__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: var(--leaf-color-text-muted);
+  background: var(--leaf-color-surface-muted);
+}
+.leaf-image[data-state='error'] img {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-image__zoom {
+    transition: none;
+  }
+  .leaf-image-viewer {
+    --yarl__fade_animation_duration: 0ms;
+    --yarl__swipe_animation_duration: 0ms;
+  }
+}

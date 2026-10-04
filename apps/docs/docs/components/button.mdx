@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/button/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
 
@@ -84,6 +85,15 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Button API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -124,3 +134,32 @@ import type { ButtonProps, ButtonVariant, ButtonSize } from '@sudden3/leaf-ui';
 ```
 
 配置选项与实时示例见[定制主题](/guide/theming)。
+
+## 扩展类型
+
+```ts
+import type { ButtonGroupProps, SplitButtonProps } from '@sudden3/leaf-ui';
+```
+
+## ButtonGroupProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `attached` | `boolean` | `true` | 连接相邻按钮 |
+
+## SplitButtonProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | — | 按钮样式 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `danger` | `boolean` | — | 危险操作颜色 |
+| `loading` | `boolean` | — | 加载状态 |
+| `fullWidth` | `boolean` | — | 占满宽度 |
+| `startIcon` | `ReactNode` | — | 前置图标 |
+| `endIcon` | `ReactNode` | — | 后置图标 |
+| `items` | [`readonly DropdownItem[]`](/components/dropdown#dropdownitem) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
+| `dropdownProps` | [`Omit<DropdownProps, 'items' \| 'children' \| 'disabled'>`](/components/dropdown#dropdown-api) | — | 操作菜单属性 |

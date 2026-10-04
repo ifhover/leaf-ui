@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/textarea/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TextareaBasic, TextareaControlled } from '../../../src/components/en-form-examples';
 
@@ -23,6 +24,15 @@ Use rows for initial height and resize for manual resizing. Standard maxLength, 
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Textarea API
 
 | Property | Type | Default | Description |
@@ -35,6 +45,8 @@ Use rows for initial height and resize for manual resizing. Standard maxLength, 
 | `onChange` | `ChangeEventHandler<HTMLTextAreaElement>` | — | Read event.target.value |
 | `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only |
 | `ref` | `Ref<HTMLTextAreaElement>` | — | DOM reference |
+| `autoSize` | [`boolean \| TextareaAutoSize`](#textareaautosize-api) | `false` | Resize to content with optional row limits |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display count or a custom renderer |
 
 ## Types
 
@@ -47,3 +59,16 @@ import type { TextareaProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## Extension types
+
+```ts
+import type { TextareaAutoSize } from '@sudden3/leaf-ui';
+```
+
+## TextareaAutoSize API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `minRows` | `number` | — | Minimum rows |
+| `maxRows` | `number` | — | Maximum rows |

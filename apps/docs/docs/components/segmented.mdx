@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SegmentedBasic } from '../../src/examples/segmented/basic';
+import { SegmentedOptions } from '../../src/examples/segmented/advanced';
+
+# Segmented 分段控制器
+
+快速切换一组相关选项。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<SegmentedBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/segmented/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<SegmentedOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/segmented/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+options 可使用字符串或带图标的选项。value / onChange 控制选中值，方向键切换选项；name 让选中值参与原生表单提交。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { SegmentedOption, SegmentedProps } from '@sudden3/leaf-ui';
+```
+
+## SegmentedOption API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 必填 | 受控值 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `disabled` | `boolean` | — | 禁止交互 |
+
+## SegmentedProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `options` | [`readonly (string \| SegmentedOption)[]`](#segmentedoption-api) | 必填 | 可用选项 |
+| `value` | `string` | — | 受控值 |
+| `defaultValue` | `string` | — | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | `(value: string) => void` | — | 值变化回调 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `block` | `boolean` | `false` | 填满容器宽度 |
+| `name` | `string` | — | 表单字段名称 |
+| `form` | `string` | — | 关联表单 ID |

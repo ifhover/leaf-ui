@@ -1,0 +1,23 @@
+.leaf-back-top {
+  position: fixed;
+  z-index: var(--leaf-z-index-popup);
+  inset-inline-end: 24px;
+  bottom: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity var(--leaf-motion-duration),
+    transform var(--leaf-motion-duration),
+    visibility var(--leaf-motion-duration);
+  &[data-visible] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-back-top {
+    transition: none;
+  }
+}

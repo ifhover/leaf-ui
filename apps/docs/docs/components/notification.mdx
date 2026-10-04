@@ -1,0 +1,86 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { NotificationBasic } from '../../src/examples/notification/basic';
+import { NotificationOptions } from '../../src/examples/notification/advanced';
+
+# Notification 通知提醒
+
+在页面角落展示通知与后续操作。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<NotificationBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/notification/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<NotificationOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/notification/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+在应用外层放置 ConfigProvider 后，在子组件直接调用 useNotification()，无需 contextHolder。单独使用时放置 NotificationProvider。相同 key 更新通知，`duration={0}` 持续展示。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { NotificationApi, NotificationOptions, NotificationProps, NotificationProviderProps } from '@sudden3/leaf-ui';
+```
+
+## NotificationApi API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | [`(options: NotificationOptions) => string`](#notificationoptions-api) | 必填 | 显示通知并返回标识 |
+| `success` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示成功通知 |
+| `info` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示信息通知 |
+| `warning` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示警告通知 |
+| `error` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示错误通知 |
+| `close` | `(key?: string) => void` | 必填 | 关闭指定标识；省略则关闭全部 |
+
+## NotificationOptions API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 唯一且稳定的标识 |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | 显示或选项类型 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `actions` | `ReactNode` | — | 通知操作 |
+| `duration` | `number` | `4.5` | 显示秒数，0 表示持续展示 |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
+| `closable` | `boolean` | `true` | 显示关闭操作 |
+| `onClose` | `() => void` | — | 关闭时触发 |
+
+## NotificationProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | 显示或选项类型 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `actions` | `ReactNode` | — | 通知操作 |
+| `duration` | `number` | `4.5` | 显示秒数，0 表示持续展示 |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
+| `closable` | `boolean` | `true` | 显示关闭操作 |
+| `onClose` | `() => void` | — | 关闭时触发 |
+| `open` | `boolean` | 必填 | 受控展示状态 |
+| `afterClose` | `() => void` | — | 离场动画结束 |
+
+## NotificationProviderProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 内容或下级项目 |
+| `maxCount` | `number` | `5` | 最多同时展示的通知数 |

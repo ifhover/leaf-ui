@@ -1,0 +1,130 @@
+@use '../styles/mixins' as mixins;
+.leaf-org-chart {
+  width: 100%;
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 6px;
+    margin-bottom: 12px;
+    output {
+      min-width: 48px;
+      text-align: center;
+      color: var(--leaf-color-text-muted);
+    }
+  }
+  &__viewport {
+    overflow: auto;
+    min-width: 0;
+    max-height: 600px;
+    padding: 24px;
+    background: var(--leaf-color-surface-muted);
+    border-radius: var(--leaf-radius-lg);
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+  }
+  &__canvas {
+    width: max-content;
+    min-width: 100%;
+  }
+  ul {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: flex;
+    position: relative;
+    align-items: center;
+    flex-direction: column;
+    padding: 0;
+    list-style: none;
+  }
+  li > ul {
+    padding-top: 32px;
+    > li::before {
+      content: '';
+      position: absolute;
+      top: -16px;
+      height: 16px;
+      border-inline-start: 1px solid var(--leaf-color-border);
+    }
+    > li::after {
+      content: '';
+      position: absolute;
+      top: -16px;
+      left: -12px;
+      right: -12px;
+      border-top: 1px solid var(--leaf-color-border);
+    }
+    > li:first-child::after {
+      left: 50%;
+    }
+    > li:last-child::after {
+      right: 50%;
+    }
+    > li:only-child::after {
+      display: none;
+    }
+  }
+  li:has(> ul) > .leaf-org-chart__node::after {
+    content: '';
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    height: 16px;
+    border-inline-start: 1px solid var(--leaf-color-border);
+  }
+  &__node {
+    position: relative;
+    min-width: 150px;
+    border: 1px solid var(--leaf-color-border);
+    border-radius: var(--leaf-radius);
+    background: var(--leaf-color-surface);
+    box-shadow: 0 2px 6px #00000005;
+  }
+  &__node-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    padding: 16px 20px;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    color: inherit;
+    text-align: center;
+    font: inherit;
+    box-sizing: border-box;
+    > span {
+      color: var(--leaf-color-text-muted);
+      font-size: 12px;
+    }
+  }
+  button.leaf-org-chart__node-content {
+    cursor: pointer;
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+  }
+  &__toggle {
+    position: absolute;
+    bottom: -12px;
+    left: calc(50% - 12px);
+    z-index: 1;
+    width: 24px;
+    min-height: 24px;
+    border-radius: 50%;
+    background: var(--leaf-color-surface);
+    &[aria-expanded='false'] svg {
+      transform: rotate(-90deg);
+    }
+  }
+}

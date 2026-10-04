@@ -174,3 +174,25 @@
     transition: none;
   }
 }
+
+.leaf-tabs__list {
+  flex: 1;
+}
+.leaf-tabs__drag {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--leaf-color-text-muted);
+  cursor: grab;
+  touch-action: none;
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+  }
+}
+.leaf-tabs__entry[data-dragging] {
+  z-index: 1;
+  background: var(--leaf-color-surface);
+  opacity: 0.8;
+}

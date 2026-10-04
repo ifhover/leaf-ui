@@ -1,0 +1,65 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SortableBasic } from '../../../src/examples/en/sortable/basic';
+import { SortableGrid } from '../../../src/examples/en/sortable/advanced';
+
+# Sortable
+
+Reorder items with dragging or the keyboard.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SortableBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/sortable/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<SortableGrid />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/sortable/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Place the handle from info.handle. Supports pointer, touch, Space to pick up/drop, arrows to move and Escape to cancel. Update items with the new array from onChange.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { SortableChangeInfo, SortableProps, SortableRenderInfo } from '@sudden3/leaf-ui';
+```
+
+## SortableChangeInfo API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `fromIndex` | `number` | Required | Previous index |
+| `toIndex` | `number` | Required | Destination index |
+| `activeKey` | `string` | Required | Dragged key |
+| `overKey` | `string` | Required | Target key |
+
+## SortableProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly T[]` | Required | Items; keep keys unique and stable |
+| `itemKey` | `(item: T) => string` | Required | Return a stable identifier |
+| `renderItem` | [`(item: T, info: SortableRenderInfo) => ReactNode`](#sortablerenderinfo-api) | Required | Custom item renderer |
+| `onChange` | [`(items: T[], info: SortableChangeInfo) => void`](#sortablechangeinfo-api) | Required | Value change callback |
+| `disabled` | `boolean` | — | Disable interactions |
+| `itemDisabled` | `(item: T) => boolean` | — | Whether dragging this item is disabled |
+| `activationDistance` | `number` | `6` | Pointer distance before dragging, in pixels |
+
+## SortableRenderInfo API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `handle` | `ReactNode` | Required | Drag handle with pointer, touch and keyboard bindings |
+| `dragging` | `boolean` | Required | Item is being dragged |

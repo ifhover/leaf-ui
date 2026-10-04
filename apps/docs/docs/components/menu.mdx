@@ -1,0 +1,64 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { MenuBasic } from '../../src/examples/menu/basic';
+import { MenuHorizontal } from '../../src/examples/menu/advanced';
+
+# Menu 菜单
+
+按层级组织页面导航。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<MenuBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/menu/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<MenuHorizontal />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/menu/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+items 支持嵌套、分组、分隔线与链接。selectedKey 管理当前选中项，openKeys 管理展开项；横向模式与折叠模式使用浮层展示子菜单。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { MenuItem, MenuProps } from '@sudden3/leaf-ui';
+```
+
+## MenuItem API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `href` | `string` | — | 目标链接 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `danger` | `boolean` | — | 危险操作颜色 |
+| `children` | [`readonly MenuItem[]`](#menuitem-api) | — | 内容或下级项目 |
+| `type` | `'item' \| 'group' \| 'divider'` | — | 显示或选项类型 |
+
+## MenuProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly MenuItem[]`](#menuitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `mode` | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` | 菜单排列方式 |
+| `selectedKey` | `string` | — | 受控选中项目 |
+| `defaultSelectedKey` | `string` | `''` | 初始选中项目 |
+| `onSelect` | [`(key: string, item: MenuItem) => void`](#menuitem-api) | — | 选择项目 |
+| `openKeys` | `readonly string[]` | — | 受控展开项目 |
+| `defaultOpenKeys` | `readonly string[]` | `[]` | 初始展开项目 |
+| `onOpenChange` | `(keys: string[]) => void` | — | 展开状态变化 |
+| `collapsed` | `boolean` | `false` | 受控收起状态 |

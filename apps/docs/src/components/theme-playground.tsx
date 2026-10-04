@@ -1,3 +1,4 @@
+import { CodeBlockRuntime } from '@rspress/core/theme-original';
 import {
   Avatar,
   Badge,
@@ -15,12 +16,18 @@ import { Icon } from './icon';
 
 export function ThemePlayground() {
   const { t } = useDocsLocale();
-  const palettes = ['#20834a', '#087f8c', '#3264d9', '#7654c6', '#b75b1c'];
+  const palettes = [
+    { color: '#20834a', label: t('森林绿', 'Forest green') },
+    { color: '#087f8c', label: t('湖水青', 'Lake teal') },
+    { color: '#3264d9', label: t('晴空蓝', 'Sky blue') },
+    { color: '#7654c6', label: t('鸢尾紫', 'Iris purple') },
+    { color: '#b75b1c', label: t('暖陶橙', 'Terracotta') },
+  ];
 
   const [color, setColor] = useState('#20834a');
   const [radius, setRadius] = useState(10);
-  const [height, setHeight] = useState(34);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [showCode, setShowCode] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const id = useId();
   const source = [
@@ -29,7 +36,6 @@ export function ThemePlayground() {
     '<ConfigProvider theme={{',
     `  primaryColor: '${color}',`,
     `  borderRadius: ${radius},`,
-    `  controlHeight: ${height},`,
     `  appearance: '${mode}',`,
     '}}>',
     `  <Button>${t('保存', 'Save')}</Button>`,
@@ -39,7 +45,6 @@ export function ThemePlayground() {
   function reset() {
     setColor('#20834a');
     setRadius(10);
-    setHeight(34);
     setMode('light');
     setSubscribed(false);
   }
@@ -51,7 +56,6 @@ export function ThemePlayground() {
         theme={{
           primaryColor: color,
           borderRadius: radius,
-          controlHeight: height,
           appearance: mode,
         }}
       >
@@ -131,6 +135,9 @@ export function ThemePlayground() {
         <div className="leaf-playground__controls-header">
           <Icon name="sliders" width="18" height="18" />
           <h3>{t('你的风格，你来定义', 'Your style, your choice')}</h3>
+          <Button className="leaf-playground__reset" size="sm" variant="ghost" onClick={reset}>
+            {t('重置', 'Reset')}
+          </Button>
         </div>
         <p className="leaf-control-description">
           {t('几个设置，就能长成你喜欢的样子。', 'A few settings shape the look you want.')}
@@ -140,6 +147,28 @@ export function ThemePlayground() {
             {t('主题色', 'Primary color')}
             <span>Primary color</span>
           </legend>
+          <fieldset
+            className="leaf-playground__palettes"
+            aria-label={t('配色预设', 'Color presets')}
+          >
+            {palettes.map((palette) => {
+              const selected = color.toLowerCase() === palette.color;
+              return (
+                <button
+                  key={palette.color}
+                  type="button"
+                  className="leaf-playground__swatch"
+                  style={{ backgroundColor: palette.color }}
+                  aria-label={palette.label}
+                  aria-pressed={selected}
+                  title={`${palette.label} ${palette.color.toUpperCase()}`}
+                  onClick={() => setColor(palette.color)}
+                >
+                  {selected && <Icon name="check" width="16" height="16" />}
+                </button>
+              );
+            })}
+          </fieldset>
           <ColorPicker
             className="leaf-playground__color-picker"
             aria-label={t('主题色', 'Primary color')}
@@ -147,7 +176,6 @@ export function ThemePlayground() {
             onChange={setColor}
             showText={(value) => value.toUpperCase()}
             disableAlpha
-            presets={[{ label: t('推荐配色', 'Suggested colors'), colors: palettes }]}
           />
         </fieldset>
         <div className="leaf-control-radius">
@@ -190,38 +218,27 @@ export function ThemePlayground() {
             }}
           />
         </fieldset>
-        <div className="leaf-control-radius">
-          <label htmlFor={`${id}-height`}>
-            {t('控件高度', 'Control height')}
-            <span>Control height</span>
-            <output htmlFor={`${id}-height`}>{height}px</output>
-          </label>
-          <Slider
-            id={`${id}-height`}
-            aria-label={t('控件高度', 'Control height')}
-            min={28}
-            max={44}
-            value={height}
-            onChange={setHeight}
-            showValue={false}
-          />
-          <div className="leaf-control-hints">
-            <span>{t('紧凑', 'Compact')}</span>
-            <span>{t('宽松', 'Spacious')}</span>
-          </div>
+      </div>
+      <div className="leaf-playground__code">
+        <div className="leaf-playground__code-header">
+          <Button
+            className="leaf-playground__code-toggle"
+            size="sm"
+            variant="ghost"
+            startIcon={<Icon name="code" width="15" height="15" />}
+            endIcon={<Icon name="chevron" width="14" height="14" />}
+            aria-expanded={showCode}
+            aria-controls={`${id}-code`}
+            onClick={() => setShowCode(!showCode)}
+          >
+            {t('主题代码', 'Theme code')}
+          </Button>
+          <span>theme.tsx</span>
+          <CopyButton text={source} label={t('复制代码', 'Copy code')} />
         </div>
-        <div className="leaf-playground__code">
-          <div>
-            <span>theme.tsx</span>
-            <CopyButton text={source} />
-          </div>
-          <pre>
-            <code>{source}</code>
-          </pre>
+        <div id={`${id}-code`} hidden={!showCode}>
+          {showCode && <CodeBlockRuntime lang="tsx" code={source} />}
         </div>
-        <Button className="leaf-playground__reset" size="sm" variant="ghost" onClick={reset}>
-          {t('恢复默认', 'Reset theme')}
-        </Button>
       </div>
     </div>
   );

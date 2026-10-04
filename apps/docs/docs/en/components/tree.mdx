@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/tree/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TreeBasic } from '../../../src/examples/en/tree/basic';
 import { TreeCheckable } from '../../../src/examples/en/tree/checkable';
@@ -46,6 +47,17 @@ Parents and children are checked independently.
 
 </ComponentExample>
 
+## Extended features
+
+Drag a handle to the upper, middle or lower part of a target row to place a node before, inside or after it. With the keyboard, Space picks up or drops, Up/Down chooses a target, Left/Right places before/after it, and Escape cancels. Update `data` with the new tree returned by `onDrop`.
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Tree API
 
 | Property | Type | Default | Description |
@@ -64,6 +76,15 @@ Parents and children are checked independently.
 | `searchValue` | `string` | `''` | Filter nodes, retaining matches and ancestors |
 | `filterTreeNode` | [`(node: TreeNode, query: string) => boolean`](#treenode) | — | Custom search predicate |
 | `notFoundContent` | `ReactNode` | No options | Content when no nodes match |
+| `loadData` | [`(node: TreeNode, signal: AbortSignal) => Promise<readonly TreeNode[]>`](#treenode) | — | Load children on expansion; signal supports cancellation |
+| `onLoad` | [`(node: TreeNode, children: readonly TreeNode[]) => void`](#treenode) | — | Children loaded |
+| `onLoadError` | [`(error: unknown, node: TreeNode) => void`](#treenode) | — | Loading failed; expand again to retry |
+| `virtual` | `boolean` | `false` | Render visible items only |
+| `height` | `number` | `320` | Height, numbers are in pixels |
+| `itemHeight` | `number` | `34` | Estimated virtual row height |
+| `draggable` | [`boolean \| ((node: TreeNode) => boolean)`](#treenode) | `false` | Enable node drag handles |
+| `allowDrop` | [`(info: Omit<TreeDropInfo, 'data'>) => boolean`](#treedropinfo-api) | — | Restrict drop positions |
+| `onDrop` | [`(info: TreeDropInfo) => void`](#treedropinfo-api) | — | Drop result; update data in the caller |
 
 ## TreeNode
 
@@ -77,6 +98,7 @@ Parents and children are checked independently.
 | `disableCheckbox` | `boolean` | Disable checks and stop check propagation |
 | `icon` | `ReactNode` | Custom icon |
 | `searchLabel` | `string` | Search and accessible text for non-text titles |
+| `isLeaf` | `boolean` | false allows asynchronously loaded children |
 
 ## TreeSelectInfo
 
@@ -120,3 +142,36 @@ Each node needs a unique, stable `key`. Example data:
 Checking a parent checks enabled children; disabled nodes are unaffected. Partially checked children create a mixed parent. `checkStrictly` keeps checks independent. In multiple mode, clicking toggles selection; Shift selects a range of visible nodes.
 
 Use up/down to move, right/left to expand/collapse, Home/End to jump, Enter to select and Space to check. Typing locates nodes. Search temporarily reveals matching paths; clearing it restores the original expansion.
+
+## Extension types
+
+```ts
+import type { TreeDropInfo } from '@sudden3/leaf-ui';
+```
+
+## TreeDropInfo API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | Required | Operated node |
+| `target` | [`TreeNode`](#treenode) | Required | Target tree node |
+| `position` | `'before' \| 'inside' \| 'after'` | Required | Display or insertion position |
+| `data` | [`TreeNode[]`](#treenode) | Required | Hierarchical data |
+
+## moveTreeNode
+
+Move a node in a custom data operation. This pure function returns a new tree without changing its input. It returns `null` for missing targets, self moves or moves into descendants. Tree already includes the new data in its `onDrop` callback.
+
+```ts
+import { moveTreeNode } from '@sudden3/leaf-ui';
+
+const next = moveTreeNode(data, 'design', 'team', 'inside');
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `data` | [`readonly TreeNode[]`](#treenode) | Source tree |
+| `key` | `string` | Node key to move |
+| `target` | `string` | Target node key |
+| `position` | `'before' \| 'inside' \| 'after'` | Position relative to the target |
+| Return value | [`TreeNode[] \| null`](#treenode) | New tree, or null for an invalid move |

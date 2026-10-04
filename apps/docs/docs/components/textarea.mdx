@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/textarea/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { TextareaBasic, TextareaControlled } from '../../src/components/form-examples';
 
@@ -25,6 +26,15 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/textarea/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Textarea API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -37,6 +47,8 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 | `onChange` | `ChangeEventHandler<HTMLTextAreaElement>` | — | 从 `event.target.value` 读取内容 |
 | `disabled` / `readOnly` | `boolean` | `false` | 禁用 / 只读 |
 | `ref` | `Ref<HTMLTextAreaElement>` | — | 文本域引用 |
+| `autoSize` | [`boolean \| TextareaAutoSize`](#textareaautosize-api) | `false` | 根据内容调整高度，可限制行数 |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | 显示字数，可自定义渲染 |
 
 可通过 `rows` 调整行数，或通过 `style` 设置高度。支持其他 textarea 属性。通过 `label` 或 `aria-label` 提供名称，错误说明可用 `aria-describedby` 关联。
 
@@ -47,3 +59,16 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 ```ts
 import type { TextareaProps, ControlSize, ControlStatus } from '@sudden3/leaf-ui';
 ```
+
+## 扩展类型
+
+```ts
+import type { TextareaAutoSize } from '@sudden3/leaf-ui';
+```
+
+## TextareaAutoSize API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `minRows` | `number` | — | 最少行数 |
+| `maxRows` | `number` | — | 最多行数 |

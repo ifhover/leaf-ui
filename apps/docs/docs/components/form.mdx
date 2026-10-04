@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/form/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { FormBasic } from '../../src/examples/form/basic';
 import { FormLabelWidth } from '../../src/examples/form/label-width';
@@ -20,6 +21,15 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 <ComponentExample title="标签宽度" preview={<FormLabelWidth />} fileName="label-width.tsx">
 
 ```tsx lineNumbers file="../../src/examples/form/label-width.tsx"
+```
+
+</ComponentExample>
+
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/form/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -57,3 +67,85 @@ import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
 默认自动计算同一 Form 中最宽的标签。标签文本、字体或可见字段变化时更新；窄屏和 vertical 布局按纵向排列。支持 onSubmit、onReset、action、method 等表单属性。
 
 用 FormData 读取控件上的 name。简单校验使用 required、type、minLength 等属性，错误提示跟随字段显示；业务与服务端错误通过 error 传入。设置 noValidate 可以接管校验。FormData 返回字符串，不会自动转换为数字或嵌套对象，未勾选复选框不会提交 false。受控字段的重置由应用处理。
+
+## 扩展类型
+
+```ts
+import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@sudden3/leaf-ui';
+```
+
+## FormGroupProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `legend` | `ReactNode` | — | 字段组名称 |
+| `description` | `ReactNode` | — | 补充说明 |
+
+## FormListProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `name` | `string` | 必填 | 表单字段名称 |
+| `value` | `readonly T[]` | — | 受控值 |
+| `defaultValue` | `readonly T[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | `(values: T[]) => void` | — | 值变化回调 |
+| `itemKey` | `(value: T) => string` | — | 提取稳定的项目标识 |
+| `children` | [`(fields: readonly FormListField<T>[], operations: FormListOperations<T>) => ReactNode`](#formlistfield-api) [`FormListOperations`](#formlistoperations-api) | 必填 | 内容或下级项目 |
+
+## FormListField API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `index` | `number` | 必填 | 当前索引，从 0 开始 |
+| `name` | `string` | 必填 | 表单字段名称 |
+| `value` | `T` | 必填 | 受控值 |
+
+## FormListOperations API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `add` | `(value: T, index?: number) => void` | 必填 | 插入字段，省略 index 时追加 |
+| `remove` | `(index: number \| readonly number[]) => void` | 必填 | 移除一个或多个位置 |
+| `move` | `(from: number, to: number) => void` | 必填 | 移动字段并保留稳定 key |
+| `update` | `(index: number, value: T) => void` | 必填 | 更新字段值 |
+
+## FormErrorSummaryProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `errors` | [`readonly FormError[]`](#formerror-api) | — | 省略时汇总同一 Form 内字段错误 |
+| `title` | `ReactNode` | — | 标题内容 |
+
+## FormError API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `fieldId` | `string` | 必填 | 关联输入控件 id，点击错误后聚焦 |
+| `message` | `ReactNode` | 必填 | 错误内容 |
+| `label` | `ReactNode` | — | 显示内容 |
+
+## 接入 React Hook Form
+
+在应用中安装 react-hook-form。原生输入使用 register；onChange 返回业务值的组件使用 Controller。Leaf Form 负责布局，表单库负责状态与校验，使用 noValidate 接管校验。FormList 的点号 name 只是字段名，不会自动生成嵌套对象；使用 React Hook Form 管理数组时优先使用 useFieldArray。
+
+```tsx
+import { useForm, Controller } from 'react-hook-form';
+import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@sudden3/leaf-ui';
+
+export function AccountForm() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });
+  return <Form noValidate onSubmit={handleSubmit(values => console.log(values))}>
+    <FormErrorSummary />
+    <FormField label="Email" error={errors.email?.message}>
+      <Input {...register('email', { required: 'Enter an email' })} />
+    </FormField>
+    <Controller name="role" control={control} rules={{ required: 'Choose a role' }} render={({ field, fieldState }) =>
+      <FormField label="Role" error={fieldState.error?.message}>
+        <Select {...field} options={[{ value: 'editor', label: 'Editor' }]} />
+      </FormField>}
+    />
+    <Button type="submit">Save</Button>
+  </Form>;
+}
+```

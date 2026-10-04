@@ -1,0 +1,38 @@
+@use 'react-easy-crop/react-easy-crop.css';
+.leaf-image-cropper {
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size) var(--leaf-font-family);
+}
+.leaf-image-cropper__stage {
+  position: relative;
+  height: 340px;
+  min-height: 180px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border-radius: var(--leaf-radius);
+  background: #171a19;
+  .reactEasyCrop_CropArea {
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+}
+.leaf-image-cropper__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding-top: 16px;
+}
+.leaf-image-cropper__slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+  flex: 1;
+  .leaf-slider {
+    flex: 1;
+  }
+}
+.leaf-image-cropper__error {
+  color: var(--leaf-color-danger);
+}

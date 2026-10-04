@@ -1,0 +1,25 @@
+.leaf-loading-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: calc(var(--leaf-z-index-message) + 1);
+  pointer-events: none;
+  &--top {
+    top: 0;
+  }
+  &--bottom {
+    bottom: 0;
+  }
+  > span {
+    display: block;
+    height: 100%;
+    background: var(--leaf-color-primary);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--leaf-color-primary) 55%, transparent);
+    transition: width 240ms ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-loading-bar > span {
+    transition: none;
+  }
+}

@@ -150,3 +150,10 @@
     animation: none;
   }
 }
+
+.leaf-select__group {
+  padding: 10px 10px 5px;
+  font-size: var(--leaf-font-size-sm);
+  font-weight: 600;
+  color: var(--leaf-color-text-muted);
+}

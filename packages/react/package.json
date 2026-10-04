@@ -35,17 +35,20 @@
       }
     },
     "./styles.css": "./dist/esm/index.css",
+    "./pdf.worker.mjs": "./dist/esm/pdf.worker.min.mjs",
     "./package.json": "./package.json"
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "THIRD_PARTY.md",
+    "PDFJS-LICENSE"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
-    "build": "rslib build",
+    "build": "rslib build && node ./scripts/copy-assets.mjs",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
@@ -80,8 +83,19 @@
   },
   "dependencies": {
     "@ctrl/tinycolor": "^4.2.1",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@floating-ui/react-dom": "^2.1.9",
+    "@tanstack/react-virtual": "^3.14.13",
     "lucide-react": "^1.50.0",
-    "tabbable": "^6.5.0"
+    "pdfjs-dist": "5.4.296",
+    "qrcode.react": "^4.2.0",
+    "react-easy-crop": "^6.2.3",
+    "react-imask": "^7.6.1",
+    "react-pdf": "^10.5.0",
+    "signature_pad": "^5.1.4",
+    "tabbable": "^6.5.0",
+    "yet-another-react-lightbox": "^3.32.2"
   }
 }

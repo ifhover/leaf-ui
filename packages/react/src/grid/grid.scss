@@ -1,0 +1,43 @@
+.leaf-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(
+    var(--leaf-grid-columns-xs, var(--leaf-grid-columns, 1)),
+    minmax(0, 1fr)
+  );
+}
+.leaf-col {
+  display: var(--leaf-col-display-xs, block);
+  min-width: 0;
+  grid-column-end: span var(--leaf-col-span-xs, 24);
+}
+.leaf-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: calc(var(--leaf-row-gutter, 16px) / -2);
+  > .leaf-col {
+    box-sizing: border-box;
+    flex: 0 0 calc(var(--leaf-col-span-xs, 24) / 24 * 100%);
+    padding-inline: calc(var(--leaf-row-gutter, 16px) / 2);
+  }
+}
+@each $point, $width in (sm: 576px, md: 768px, lg: 992px, xl: 1200px) {
+  @media (min-width: $width) {
+    .leaf-grid {
+      grid-template-columns: repeat(
+        var(
+          --leaf-grid-columns-#{$point},
+          var(--leaf-grid-columns-xs, var(--leaf-grid-columns, 1))
+        ),
+        minmax(0, 1fr)
+      );
+    }
+    .leaf-col {
+      display: var(--leaf-col-display-#{$point}, block);
+      grid-column-end: span var(--leaf-col-span-#{$point}, 24);
+    }
+    .leaf-row > .leaf-col {
+      flex-basis: calc(var(--leaf-col-span-#{$point}, 24) / 24 * 100%);
+    }
+  }
+}

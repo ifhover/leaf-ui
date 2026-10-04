@@ -1,5 +1,7 @@
 import { type HTMLAttributes, useMemo } from 'react';
+import { LoadingBarScope } from '../loadingbar/loadingbar';
 import { MessageScope } from '../message/provider';
+import { NotificationScope } from '../notification/notification';
 import { type LeafTheme, leafThemeVariables, mergeLeafTheme } from '../theme';
 import { ConfigContext, type LeafLocale, localeMessages, useLeafConfig } from './context';
 
@@ -32,7 +34,11 @@ export function ConfigProvider({ locale, theme, style, children, ...props }: Con
         data-leaf-theme={merged.theme.appearance}
         style={{ ...variables, ...style }}
       >
-        <MessageScope>{children}</MessageScope>
+        <MessageScope>
+          <NotificationScope>
+            <LoadingBarScope>{children}</LoadingBarScope>
+          </NotificationScope>
+        </MessageScope>
       </div>
     </ConfigContext.Provider>
   );

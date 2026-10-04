@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { InputMaskBasic } from '../../src/examples/input-mask/basic';
+import { InputMaskFormats } from '../../src/examples/input-mask/advanced';
+
+# InputMask 格式输入
+
+按照指定格式填写信息。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<InputMaskBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-mask/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<InputMaskFormats />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-mask/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+格式字符 0 为数字、a 为字母、* 为字母或数字。格式输入只限制字符形态，业务校验由应用处理。unmask 影响组件值与回调；原生表单提交显示值。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { InputMaskProps } from '@sudden3/leaf-ui';
+```
+
+## InputMaskProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `status` | `'error' \| 'warning'` | — | 显示状态 |
+| `prefix` | `ReactNode` | — | 前置内容 |
+| `suffix` | `ReactNode` | — | 后置内容 |
+| `allowClear` | `boolean` | `false` | 显示清除按钮 |
+| `onClear` | `() => void` | — | 清除输入后触发 |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | 显示字数，可自定义渲染 |
+| `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | 按下 Enter 时触发 |
+| `mask` | `string` | 必填 | 格式模式：0 为数字，a 为字母，* 为字母或数字 |
+| `definitions` | `Record<string, RegExp>` | — | 自定义格式字符规则 |
+| `lazy` | `boolean` | `true` | 按需显示占位字符 |
+| `unmask` | `boolean` | `false` | 组件值与回调使用不含格式符的值 |
+| `value` | `string` | — | 受控值 |
+| `defaultValue` | `string` | `''` | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | `(value: string, formatted: string) => void` | — | 值变化回调 |
+| `onComplete` | `(value: string) => void` | — | 完整输入后触发 |

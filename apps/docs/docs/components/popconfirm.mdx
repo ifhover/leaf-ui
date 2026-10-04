@@ -1,0 +1,79 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { PopconfirmBasic } from '../../src/examples/popconfirm/basic';
+import { PopconfirmAsync } from '../../src/examples/popconfirm/advanced';
+
+# Popconfirm 气泡确认
+
+在操作位置附近确认重要操作。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<PopconfirmBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/popconfirm/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<PopconfirmAsync />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/popconfirm/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+onConfirm 可返回 Promise；等待期间显示加载并阻止重复提交。成功后关闭，失败时保持打开，可通过 onError 展示错误。触发元素应支持 ref 与按钮交互。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { PopconfirmProps, ButtonProps } from '@sudden3/leaf-ui';
+```
+
+## PopconfirmProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 内容或下级项目 |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 显示位置 |
+| `open` | `boolean` | — | 受控展示状态 |
+| `defaultOpen` | `boolean` | `false` | 初始展示状态 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `enterDelay` | `number` | `100` | 指针进入后的打开延迟，单位毫秒 |
+| `leaveDelay` | `number` | `100` | 指针离开后的关闭延迟，单位毫秒 |
+| `width` | `number \| string` | — | 宽度，数字按像素计算 |
+| `maxWidth` | `number \| string` | — | 浮层最大宽度 |
+| `className` | `string` | — | 容器类名 |
+| `style` | `CSSProperties` | — | 容器内联样式 |
+| `aria-label` | `string` | — | 无可见标题时的可访问名称 |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'default'` | `'warning'` | 显示或选项类型 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `confirmText` | `ReactNode` | — | 确认按钮内容 |
+| `cancelText` | `ReactNode` | — | 取消按钮内容 |
+| `confirmButtonProps` | [`ButtonProps`](#buttonprops-api) | — | 确认按钮属性 |
+| `cancelButtonProps` | [`ButtonProps`](#buttonprops-api) | — | 取消按钮属性 |
+| `showCancel` | `boolean` | `true` | 展示取消按钮 |
+| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作，支持异步等待 |
+| `onCancel` | `() => void` | — | 取消操作 |
+| `onError` | `(error: unknown) => void` | — | 异常回调 |
+
+## ButtonProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | 按钮样式 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `danger` | `boolean` | `false` | 危险操作颜色 |
+| `loading` | `boolean` | `false` | 加载状态 |
+| `fullWidth` | `boolean` | `false` | 占满宽度 |
+| `startIcon` | `ReactNode` | — | 前置图标 |
+| `endIcon` | `ReactNode` | — | 后置图标 |

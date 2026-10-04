@@ -1,0 +1,81 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ImageCropperBasic } from '../../../src/examples/en/image-cropper/basic';
+import { ImageCropperAvatar } from '../../../src/examples/en/image-cropper/advanced';
+
+# ImageCropper
+
+Position, zoom and crop images.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ImageCropperBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image-cropper/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<ImageCropperAvatar />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image-cropper/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Position with pointer, touch or keyboard; zoom, rotate and reset. Export returns a Blob. Remote servers must permit CORS. Round PNGs retain transparent corners; JPEG uses white.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { CropArea, ImageCropperHandle, ImageCropperProps, ImageCropResult } from '@sudden3/leaf-ui';
+```
+
+## CropArea API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `x` | `number` | Required | X coordinate |
+| `y` | `number` | Required | Y coordinate |
+| `width` | `number` | Required | Width, numbers are in pixels |
+| `height` | `number` | Required | Height, numbers are in pixels |
+
+## ImageCropperHandle API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `export` | [`() => Promise<ImageCropResult>`](#imagecropresult-api) | Required | Export as Blob |
+| `reset` | `() => void` | Required | Reset or retry |
+
+## ImageCropperProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `src` | `string` | Required | Image URL |
+| `aspect` | `number` | `1` | Crop aspect ratio |
+| `shape` | `'rect' \| 'round'` | `'rect'` | Crop shape |
+| `minZoom` | `number` | `1` | Minimum zoom |
+| `maxZoom` | `number` | `3` | Maximum zoom |
+| `showGrid` | `boolean` | `true` | Crop guides |
+| `controls` | `boolean` | `true` | Show controls |
+| `rotation` | `boolean` | `true` | Show rotation controls |
+| `crossOrigin` | `'anonymous' \| 'use-credentials'` | `'anonymous'` | Image cross-origin mode; export needs server CORS permission |
+| `type` | `'image/png' \| 'image/jpeg' \| 'image/webp'` | `'image/png'` | Export image format |
+| `quality` | `number` | `0.92` | Export quality, 0–1 |
+| `onChange` | [`(area: CropArea) => void`](#croparea-api) | — | Crop area change, measured in original image pixels |
+| `onExport` | [`(result: ImageCropResult) => void`](#imagecropresult-api) | — | Export completed |
+| `onError` | `(error: Error) => void` | — | Error callback |
+| `extra` | `ReactNode` | — | Supplementary content or actions |
+
+## ImageCropResult API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `blob` | `Blob` | Required | Exported Blob |
+| `width` | `number` | Required | Width, numbers are in pixels |
+| `height` | `number` | Required | Height, numbers are in pixels |

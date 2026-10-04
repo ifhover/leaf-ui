@@ -1,0 +1,76 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TransferBasic } from '../../src/examples/transfer/basic';
+import { TransferVirtual } from '../../src/examples/transfer/advanced';
+
+# Transfer 穿梭框
+
+在两个列表之间选择和移动项目。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<TransferBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/transfer/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<TransferVirtual />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/transfer/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+value 表示右侧列表的项目 key，selectedKeys 表示当前勾选项。支持搜索、批量移动、单向移动与虚拟列表；name 提交 JSON 数组字符串。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { TransferChangeInfo, TransferItem, TransferProps } from '@sudden3/leaf-ui';
+```
+
+## TransferChangeInfo API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `direction` | `'left' \| 'right'` | 必填 | 排列方向或移动方向 |
+| `movedKeys` | `string[]` | 必填 | 本次移动标识 |
+
+## TransferItem API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `description` | `string` | — | 补充说明 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `searchLabel` | `string` | — | 搜索使用的纯文字 |
+
+## TransferProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly TransferItem[]`](#transferitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `value` | `readonly string[]` | — | 受控值 |
+| `defaultValue` | `readonly string[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | [`(keys: string[], info: TransferChangeInfo) => void`](#transferchangeinfo-api) | — | 值变化回调 |
+| `selectedKeys` | `readonly string[]` | — | 待移动的勾选项目 |
+| `onSelectionChange` | `(keys: string[]) => void` | — | 待移动项目变化 |
+| `titles` | `readonly [ReactNode, ReactNode]` | — | 左、右标题 |
+| `searchable` | `boolean` | `true` | 显示搜索框 |
+| `filterOption` | [`(query: string, item: TransferItem) => boolean`](#transferitem-api) | — | 自定义搜索规则 |
+| `renderItem` | [`(item: TransferItem) => ReactNode`](#transferitem-api) | — | 自定义项目内容 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `height` | `number` | `260` | 高度，数字按像素计算 |
+| `virtual` | `boolean` | `false` | 仅渲染可见项目 |
+| `name` | `string` | — | 表单字段名称 |
+| `form` | `string` | — | 关联表单 ID |
+| `required` | `boolean` | — | 表单必填验证 |
+| `oneWay` | `boolean` | `false` | 只允许向右移入 |

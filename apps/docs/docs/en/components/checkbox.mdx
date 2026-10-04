@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/checkbox/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
 
@@ -19,6 +20,15 @@ Read event.target.checked in onChange. Use indeterminate to represent a partiall
 <ComponentExample title="Select all and indeterminate" preview={<CheckboxCheckAll />} fileName="check-all.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/check-all.tsx"
+```
+
+</ComponentExample>
+
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -46,3 +56,32 @@ import type { CheckboxProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## Extension types
+
+```ts
+import type { CheckboxGroupProps, CheckboxOption } from '@sudden3/leaf-ui';
+```
+
+## CheckboxGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly (CheckboxOption \| string)[]`](#checkboxoption-api) | Required | Available options |
+| `value` | `readonly string[]` | — | Controlled value |
+| `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(values: string[]) => void` | — | Value change callback |
+| `legend` | `ReactNode` | — | Field group title |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `minCount` | `number` | `0` | Minimum selection count |
+| `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
+| `required` | `boolean` | — | Required form validation |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout or movement direction |
+
+## CheckboxOption API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Controlled value |
+| `label` | `ReactNode` | Required | Display label |
+| `disabled` | `boolean` | — | Disable interactions |

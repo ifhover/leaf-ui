@@ -5,6 +5,7 @@ packages:
 allowBuilds:
   esbuild: true
   '@swc/core': true
+  core-js-pure: false
 
 minimumReleaseAgeExclude:
   - '@types/node@26.6.4'

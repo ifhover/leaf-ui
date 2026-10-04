@@ -1,0 +1,69 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { LoadingBarBasic } from '../../../src/examples/en/loading-bar/basic';
+import { LoadingBarProgress } from '../../../src/examples/en/loading-bar/advanced';
+
+# LoadingBar
+
+Show page or task loading progress.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<LoadingBarBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<LoadingBarProgress />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading-bar/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+ConfigProvider provides the bar. start() returns the completion function for that task; call it in finally. Concurrent tasks keep the bar active until all finish.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@sudden3/leaf-ui';
+```
+
+## LoadingBarApi API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `start` | `() => () => void` | Required | Start a task; returns its completion function |
+| `finish` | `() => void` | Required | Finish one task; hide after all finish |
+| `set` | `(progress: number) => void` | Required | Set displayed progress |
+| `reset` | `() => void` | Required | Reset or retry |
+
+## LoadingBarProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `active` | `boolean` | `false` | Loading is active |
+| `progress` | `number` | — | Progress 0–100; omitted estimates progress |
+| `color` | `string` | — | Color |
+| `height` | `number` | `3` | Height, numbers are in pixels |
+| `position` | `'top' \| 'bottom'` | `'top'` | Display or insertion position |
+| `className` | `string` | — | Container class name |
+| `style` | `CSSProperties` | — | Container inline styles |
+
+## LoadingBarProviderProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `string` | — | Color |
+| `height` | `number` | `3` | Height, numbers are in pixels |
+| `position` | `'top' \| 'bottom'` | `'top'` | Display or insertion position |
+| `className` | `string` | — | Container class name |
+| `style` | `CSSProperties` | — | Container inline styles |
+| `children` | `ReactNode` | — | Content or child items |

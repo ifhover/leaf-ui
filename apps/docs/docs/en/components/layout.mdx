@@ -1,0 +1,56 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { LayoutBasic } from '../../../src/examples/en/layout/basic';
+import { LayoutResponsive } from '../../../src/examples/en/layout/advanced';
+
+# Layout
+
+Organize headers, sidebars, content and footers.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<LayoutBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/layout/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<LayoutResponsive />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/layout/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Compose Layout.Header, Layout.Sider, Layout.Content and Layout.Footer. Use direction="horizontal" for side-by-side regions. Control the sidebar with collapsed, or set breakpoint for automatic collapse.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { LayoutProps, LayoutSiderProps } from '@sudden3/leaf-ui';
+```
+
+## LayoutProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `direction` | `'horizontal' \| 'vertical'` | `'vertical'` | Layout or movement direction |
+
+## LayoutSiderProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `width` | `number \| string` | `220` | Width, numbers are in pixels |
+| `collapsedWidth` | `number \| string` | `64` | Collapsed width |
+| `collapsed` | `boolean` | — | Controlled collapsed state |
+| `defaultCollapsed` | `boolean` | `false` | Initial collapsed state |
+| `collapsible` | `boolean` | `false` | Show collapse controls |
+| `breakpoint` | `number` | — | Viewport width that triggers collapse |
+| `onCollapse` | `(collapsed: boolean) => void` | — | Collapsed state changes |
+| `trigger` | `ReactNode` | — | Custom trigger content |

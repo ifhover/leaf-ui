@@ -1,0 +1,45 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { BackTopBasic } from '../../../src/examples/en/back-top/basic';
+import { BackTopCustom } from '../../../src/examples/en/back-top/advanced';
+
+# BackTop
+
+Return to the top of a page or scroll container.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<BackTopBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/back-top/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<BackTopCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/back-top/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+The default target is the window. Return a scrolling element from target to use a custom container. The button appears after visibilityHeight and respects reduced-motion preferences.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { BackTopProps } from '@sudden3/leaf-ui';
+```
+
+## BackTopProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `target` | `() => HTMLElement \| Window \| null` | — | Scroll target or link target |
+| `visibilityHeight` | `number` | `400` | Show after this scroll distance |
+| `behavior` | `ScrollBehavior` | `'smooth'` | Scroll behavior |

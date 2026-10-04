@@ -1,0 +1,54 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ErrorBoundaryBasic } from '../../../src/examples/en/error-boundary/basic';
+import { ErrorBoundaryCustom } from '../../../src/examples/en/error-boundary/advanced';
+
+# ErrorBoundary
+
+Provide a fallback when content fails to render.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ErrorBoundaryBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/error-boundary/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/error-boundary/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Catches descendant rendering and lifecycle errors. Handle event, async request and server errors in the operation or framework. Report through onError and avoid exposing internal stacks.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from '@sudden3/leaf-ui';
+```
+
+## ErrorBoundaryFallbackProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `error` | `Error` | Required | Error object or notification |
+| `reset` | `() => void` | Required | Reset or retry |
+
+## ErrorBoundaryProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Content or child items |
+| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | Loading error content |
+| `resetKeys` | `readonly unknown[]` | — | Reset errors when these values change |
+| `onError` | `(error: Error, info: ErrorInfo) => void` | — | Error callback |
+| `onReset` | `() => void` | — | Reset callback |

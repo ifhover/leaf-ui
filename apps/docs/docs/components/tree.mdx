@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/tree/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { TreeBasic } from '../../src/examples/tree/basic';
 import { TreeCheckable } from '../../src/examples/tree/checkable';
@@ -46,6 +47,17 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 </ComponentExample>
 
+## 扩展用法
+
+通过手柄拖动节点，移到目标行的上方、中央或下方，分别放在目标之前、内部或之后。键盘操作时，空格开始或放置，上下选择目标，左/右选择前方/后方，Escape 取消。`onDrop` 提供新数据，由调用方更新 `data`。
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Tree API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -64,6 +76,15 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `searchValue` | `string` | `''` | 过滤节点，保留匹配项和祖先 |
 | `filterTreeNode` | [`(node: TreeNode, query: string) => boolean`](#treenode) | — | 自定义搜索规则 |
 | `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
+| `loadData` | [`(node: TreeNode, signal: AbortSignal) => Promise<readonly TreeNode[]>`](#treenode) | — | 展开时加载子项，signal 用于取消 |
+| `onLoad` | [`(node: TreeNode, children: readonly TreeNode[]) => void`](#treenode) | — | 子项加载成功 |
+| `onLoadError` | [`(error: unknown, node: TreeNode) => void`](#treenode) | — | 加载失败，再次展开可重试 |
+| `virtual` | `boolean` | `false` | 仅渲染可见项目 |
+| `height` | `number` | `320` | 高度，数字按像素计算 |
+| `itemHeight` | `number` | `34` | 虚拟列表预估行高 |
+| `draggable` | [`boolean \| ((node: TreeNode) => boolean)`](#treenode) | `false` | 允许通过手柄移动节点 |
+| `allowDrop` | [`(info: Omit<TreeDropInfo, 'data'>) => boolean`](#treedropinfo-api) | — | 限制放置位置 |
+| `onDrop` | [`(info: TreeDropInfo) => void`](#treedropinfo-api) | — | 移动结果，调用方更新 data |
 
 ## TreeNode
 
@@ -77,6 +98,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `disableCheckbox` | `boolean` | 禁止勾选并阻断父子勾选联动 |
 | `icon` | `ReactNode` | 自定义图标 |
 | `searchLabel` | `string` | 标题为节点时提供用于搜索和读屏的文字 |
+| `isLeaf` | `boolean` | false 允许异步加载子项 |
 
 ## TreeSelectInfo
 
@@ -120,3 +142,36 @@ import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo
 勾选父节点会勾选可用子节点，禁用节点不会被联动修改。子节点部分选中时父节点呈半选；`checkStrictly` 让各节点独立勾选。多选时点击切换选择，Shift 可连续选择可见节点。
 
 方向键上下移动，左右展开或收起，Home / End 跳至首尾，Enter 选择，空格勾选。输入文字可快速定位节点。搜索时会暂时展开匹配路径，清空后恢复原展开状态。
+
+## 扩展类型
+
+```ts
+import type { TreeDropInfo } from '@sudden3/leaf-ui';
+```
+
+## TreeDropInfo API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | 必填 | 操作节点 |
+| `target` | [`TreeNode`](#treenode) | 必填 | 放置目标节点 |
+| `position` | `'before' \| 'inside' \| 'after'` | 必填 | 显示或插入位置 |
+| `data` | [`TreeNode[]`](#treenode) | 必填 | 层级数据 |
+
+## moveTreeNode
+
+需要自行调整树数据时可导入此纯函数。返回新树，不修改原数据；目标不存在、移动到自身或后代节点时返回 `null`。Tree 的 `onDrop` 已直接提供调整后的 data。
+
+```ts
+import { moveTreeNode } from '@sudden3/leaf-ui';
+
+const next = moveTreeNode(data, 'design', 'team', 'inside');
+```
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `data` | [`readonly TreeNode[]`](#treenode) | 原始树数据 |
+| `key` | `string` | 待移动的节点 key |
+| `target` | `string` | 目标节点 key |
+| `position` | `'before' \| 'inside' \| 'after'` | 相对目标的放置位置 |
+| 返回值 | [`TreeNode[] \| null`](#treenode) | 新的树；无法移动时返回 null |

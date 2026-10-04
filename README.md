@@ -69,10 +69,20 @@ export function App() {
 | `Dropdown` | 操作菜单与键盘导航 |
 | `Modal` / `Confirm` | 弹窗与异步确认 |
 | `Alert` / `Message` / `useMessage` | 页内提示与短暂消息 |
+| `Layout` / `Grid` / `Row` / `Col` / `Space` / `ScrollArea` / `Masonry` | 页面布局、响应式栅格、间距、滚动与瀑布流 |
+| `Segmented` / `Menu` / `BackTop` | 分段切换、嵌套导航和回到顶部 |
+| `Descriptions` / `Timeline` / `QRCode` / `OrgChart` | 详情、事件、二维码和组织关系 |
+| `Image` / `ImagePreviewGroup` / `ImagePreview` | 图片展示、缩放、图片组切换与全屏 |
+| `VirtualList` / `InfiniteScroll` / `Sortable` | 大量数据、分页加载和拖拽排序 |
+| `Transfer` / `InputOTP` / `InputMask` / `TimeRangePicker` | 穿梭选择、验证码、格式输入和时间范围 |
+| `Notification` / `useNotification` / `Popconfirm` / `ErrorBoundary` / `LoadingBar` / `useLoadingBar` | 通知、就地确认、异常恢复和任务进度 |
+| `FilePreview` / `ImageCropper` / `SignaturePad` | 文件阅读、图片裁剪和签名导出 |
 
-`Select` 的 onChange 返回字符串值与选项，多选时返回数组；`DatePicker` 返回 Date 或 null 及本地 `YYYY-MM-DD` 字符串；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
+`Select` 的 onChange 返回字符串值与选项，多选时返回数组；`DatePicker` 返回 Date 或 null 及当前模式的日期字符串，支持日期、年、季度、月、周；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
 
-设置 name 后，可通过 FormData 读取值。日期为 `YYYY-MM-DD`，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控组件支持表单 reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
+设置 name 后，可通过 FormData 读取值。日期模式为 `YYYY-MM-DD`，其他日期粒度使用对应格式，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控表单控件支持 form reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
+
+现有组件还提供 ButtonGroup / SplitButton、CheckboxGroup、AvatarGroup、CheckableTag / TagGroup、InputSearch / InputGroup、Textarea 自动高度、动态 FormList，以及 Select、Tree、TreeSelect、Tabs 的大数据、异步或排序能力。详细参数见组件文档。
 
 ## 区域主题与语言
 
@@ -100,6 +110,28 @@ export function SaveButton() {
 ```
 
 将 SaveButton 放在应用入口的 ConfigProvider 下即可。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
+
+通知和顶部加载条也由入口托管，子组件或自定义 hook 直接使用：
+
+```tsx
+import { useLoadingBar, useNotification } from '@sudden3/leaf-ui';
+
+export function useProjectSave(saveProject: () => Promise<void>) {
+  const notification = useNotification();
+  const loadingBar = useLoadingBar();
+  return async () => {
+    const finish = loadingBar.start();
+    try {
+      await saveProject();
+      notification.success({ title: '保存成功', description: '项目内容已更新。' });
+    } finally {
+      finish();
+    }
+  };
+}
+```
+
+每个任务的完成函数相互独立，并发任务全部完成后才收起加载条。FilePreview 支持图片、PDF、文本和音视频；Office 文件可以通过自定义展示接入转换后的 PDF。远程图片裁剪需要文件服务器允许跨域读取。
 
 ## 主题定制
 

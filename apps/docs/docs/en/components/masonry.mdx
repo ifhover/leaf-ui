@@ -1,0 +1,44 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { MasonryBasic } from '../../../src/examples/en/masonry/basic';
+import { MasonryImages } from '../../../src/examples/en/masonry/advanced';
+
+# Masonry
+
+Arrange cards and images of varying heights.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<MasonryBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/masonry/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<MasonryImages />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/masonry/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Flows down each column. Use Grid when row order matters for reading or focus.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { MasonryProps } from '@sudden3/leaf-ui';
+```
+
+## MasonryProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | Columns; unspecified breakpoints inherit smaller ones |
+| `gap` | `number \| string` | `16` | Gap; tuples use [vertical, horizontal] |

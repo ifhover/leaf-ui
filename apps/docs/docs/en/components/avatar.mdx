@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/avatar/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { AvatarBasic } from '../../../src/examples/en/avatar/basic';
 import { AvatarImage } from '../../../src/examples/en/avatar/image';
@@ -34,6 +35,15 @@ Display an avatar for a user, team or object.
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/avatar/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Avatar API
 
 | Property | Type | Default | Description |
@@ -58,3 +68,18 @@ import type { AvatarProps } from '@sudden3/leaf-ui';
 ## Usage notes
 
 Failed images fall back to children, icon or the default avatar. Changing the source retries loading. Alt provides an accessible name without duplicate image announcements. Use imageProps.style to customize cropping.
+
+## Extension types
+
+```ts
+import type { AvatarGroupProps } from '@sudden3/leaf-ui';
+```
+
+## AvatarGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | Size or spacing preset |
+| `shape` | `'circle' \| 'square'` | — | Crop shape |
+| `maxContent` | `(hiddenCount: number) => ReactNode` | — | Custom overflow count content |

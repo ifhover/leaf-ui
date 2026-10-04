@@ -1,0 +1,54 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ErrorBoundaryBasic } from '../../src/examples/error-boundary/basic';
+import { ErrorBoundaryCustom } from '../../src/examples/error-boundary/advanced';
+
+# ErrorBoundary 错误边界
+
+展示内容异常时的备用界面。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<ErrorBoundaryBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/error-boundary/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/error-boundary/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+捕获子组件渲染和生命周期错误。事件处理、异步请求与服务端渲染错误由操作或框架处理。通过 onError 上报异常，避免在用户界面显示内部堆栈。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from '@sudden3/leaf-ui';
+```
+
+## ErrorBoundaryFallbackProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `error` | `Error` | 必填 | 错误对象或错误通知 |
+| `reset` | `() => void` | 必填 | 重置状态或重试 |
+
+## ErrorBoundaryProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 内容或下级项目 |
+| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | 加载失败时的内容 |
+| `resetKeys` | `readonly unknown[]` | — | 值变化时重置错误 |
+| `onError` | `(error: Error, info: ErrorInfo) => void` | — | 异常回调 |
+| `onReset` | `() => void` | — | 重置回调 |

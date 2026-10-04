@@ -142,6 +142,12 @@ Date pickers display local dates and times. Different server and browser time zo
 
 Modal, Confirm, Message and floating panels create their portals after client mounting. Form controls themselves can render on the server; initially open overlays appear after hydration.
 
-The entry `ConfigProvider` manages messages automatically. Client descendants call `useMessage` without adding a `contextHolder`. The server renders no message container, and queues belong to individual application roots rather than being shared between SSR requests.
+The entry `ConfigProvider` manages messages, notifications and task loading bars automatically. Client descendants call `useMessage`, `useNotification` and `useLoadingBar` without adding a `contextHolder`. These containers do not render on the server. State belongs to individual application roots and is not shared between SSR requests.
+
+## Images and file interactions
+
+Image renders its image on the server. The enlarged viewer, ImageCropper engine, SignaturePad engine and FilePreview PDF reader load on demand in the browser. Stable containers and placeholders keep the server output consistent. Use these components in a Client Component without disabling SSR for the page.
+
+FilePreview can render a file URL on the server. Keep browser-selected `File` objects in client state. To self-host the PDF worker, copy `@sudden3/leaf-ui/pdf.worker.mjs` into your public directory and pass `workerSrc="/pdf.worker.mjs"`. See [file preview](/en/components/file-preview#self-hosting-the-pdf-worker) for the full example.
 
 Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.

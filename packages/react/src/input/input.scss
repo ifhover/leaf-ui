@@ -89,3 +89,42 @@
     transition: none;
   }
 }
+
+.leaf-input-search,
+.leaf-input-group {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  > .leaf-input {
+    flex: 1;
+    min-width: 0;
+  }
+  > .leaf-button {
+    flex: none;
+  }
+}
+.leaf-input-group--compact {
+  gap: 0;
+  > * {
+    position: relative;
+    &:not(:first-child) {
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      margin-left: -1px;
+    }
+    &:not(:last-child) {
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+    &:focus-within {
+      z-index: 1;
+    }
+  }
+}
+
+.leaf-input-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}

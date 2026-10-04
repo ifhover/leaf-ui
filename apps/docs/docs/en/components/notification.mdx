@@ -1,0 +1,86 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { NotificationBasic } from '../../../src/examples/en/notification/basic';
+import { NotificationOptions } from '../../../src/examples/en/notification/advanced';
+
+# Notification
+
+Present notifications and actions in a page corner.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<NotificationBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/notification/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<NotificationOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/notification/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Place ConfigProvider at the root and call useNotification() in descendants without a contextHolder. Use NotificationProvider for a standalone scope. Matching keys update notifications; `duration={0}` persists.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { NotificationApi, NotificationOptions, NotificationProps, NotificationProviderProps } from '@sudden3/leaf-ui';
+```
+
+## NotificationApi API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | [`(options: NotificationOptions) => string`](#notificationoptions-api) | Required | Open a notification and return its key |
+| `success` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show success |
+| `info` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show information |
+| `warning` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show warning |
+| `error` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show an error notification |
+| `close` | `(key?: string) => void` | Required | Close a key, or all when omitted |
+
+## NotificationOptions API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Unique stable identifier |
+| `title` | `ReactNode` | Required | Title content |
+| `description` | `ReactNode` | — | Supporting description |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
+| `icon` | `ReactNode` | — | Custom icon |
+| `actions` | `ReactNode` | — | Notification actions |
+| `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
+| `closable` | `boolean` | `true` | Show close action |
+| `onClose` | `() => void` | — | Called when closed |
+
+## NotificationProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | Title content |
+| `description` | `ReactNode` | — | Supporting description |
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
+| `icon` | `ReactNode` | — | Custom icon |
+| `actions` | `ReactNode` | — | Notification actions |
+| `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
+| `closable` | `boolean` | `true` | Show close action |
+| `onClose` | `() => void` | — | Called when closed |
+| `open` | `boolean` | Required | Controlled visibility |
+| `afterClose` | `() => void` | — | Closing animation completes |
+
+## NotificationProviderProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Content or child items |
+| `maxCount` | `number` | `5` | Maximum number of notifications |

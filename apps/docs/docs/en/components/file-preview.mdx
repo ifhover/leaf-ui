@@ -1,0 +1,73 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { FilePreviewBasic } from '../../../src/examples/en/file-preview/basic';
+import { FilePreviewTypes } from '../../../src/examples/en/file-preview/advanced';
+
+# FilePreview
+
+Preview images, PDFs, audio, video and text files.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<FilePreviewBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/file-preview/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<FilePreviewTypes />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/file-preview/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Supports images, PDFs, audio/video and text. Office files provide download or renderUnsupported; convert to PDF for online reading. HTML is displayed as text. Remote files must permit cross-origin reads.
+
+### Self-hosting the PDF worker
+
+Copy the worker bundled with Leaf UI to a public URL during your build and pass it as workerSrc. This keeps reader and worker versions aligned. The default worker uses the versioned unpkg CDN.
+
+```js
+import { createRequire } from 'node:module';
+import { copyFile, mkdir } from 'node:fs/promises';
+const require = createRequire(import.meta.url);
+await mkdir('public', { recursive: true });
+await copyFile(require.resolve('@sudden3/leaf-ui/pdf.worker.mjs'), 'public/pdf.worker.mjs');
+```
+
+```tsx
+<FilePreview file={{ url: '/report.pdf' }} workerSrc="/pdf.worker.mjs" />
+```
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { FilePreviewProps, FilePreviewSource } from '@sudden3/leaf-ui';
+```
+
+## FilePreviewProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `file` | [`FilePreviewSource \| File`](#filepreviewsource-api) | Required | File or URL and name |
+| `height` | `number \| string` | `460` | Height, numbers are in pixels |
+| `downloadable` | `boolean` | `true` | Show download action |
+| `workerSrc` | `string` | — | Version-matched PDF worker URL |
+| `maxTextBytes` | `number` | `1048576` | Maximum text bytes |
+| `onError` | `(error: Error) => void` | — | Error callback |
+| `renderUnsupported` | [`(source: FilePreviewSource) => ReactNode`](#filepreviewsource-api) | — | Custom unsupported file content |
+
+## FilePreviewSource API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `url` | `string` | Required | File URL |
+| `name` | `string` | — | File name |
+| `contentType` | `string` | `''` | MIME type |

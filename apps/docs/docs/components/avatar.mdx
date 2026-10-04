@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/avatar/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { AvatarBasic } from '../../src/examples/avatar/basic';
 import { AvatarImage } from '../../src/examples/avatar/image';
@@ -34,6 +35,15 @@ import { AvatarFallback } from '../../src/examples/avatar/fallback';
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/avatar/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Avatar API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -58,3 +68,18 @@ import type { AvatarProps } from '@sudden3/leaf-ui';
 ## 使用说明
 
 图片加载失败时自动显示 `children`、`icon` 或默认头像，图片地址变化后会重试。`alt` 为头像提供可访问名称；图片自身避免重复朗读。`imageProps.style` 可调整裁切方式。
+
+## 扩展类型
+
+```ts
+import type { AvatarGroupProps } from '@sudden3/leaf-ui';
+```
+
+## AvatarGroupProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `maxCount` | `number` | `Infinity` | 最多勾选或展示数量 |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | 尺寸或间距预设 |
+| `shape` | `'circle' \| 'square'` | — | 裁剪形状 |
+| `maxContent` | `(hiddenCount: number) => ReactNode` | — | 自定义溢出人数 |

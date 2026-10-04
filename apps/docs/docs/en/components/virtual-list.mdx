@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { VirtualListBasic } from '../../../src/examples/en/virtual-list/basic';
+import { VirtualListDynamic } from '../../../src/examples/en/virtual-list/advanced';
+
+# VirtualList
+
+Browse large lists smoothly.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<VirtualListBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/virtual-list/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<VirtualListDynamic />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/virtual-list/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Keep itemKey stable. estimateSize is used initially; rows are measured afterward. SSR outputs a deterministic initial window that adjusts after mounting.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { VirtualListHandle, VirtualListProps } from '@sudden3/leaf-ui';
+```
+
+## VirtualListHandle API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `element` | `HTMLDivElement \| null` | Required | Scroll container element |
+| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | Required | Scroll to an item |
+| `scrollToOffset` | `(offset: number) => void` | Required | Scroll to an offset |
+
+## VirtualListProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly T[]` | Required | Items; keep keys unique and stable |
+| `itemKey` | `(item: T, index: number) => Key` | Required | Return a stable identifier |
+| `renderItem` | `(item: T, index: number) => ReactNode` | Required | Custom item renderer |
+| `height` | `number` | `320` | Height, numbers are in pixels |
+| `estimateSize` | `number \| ((item: T, index: number) => number)` | `40` | Estimated item size; actual size is measured |
+| `overscan` | `number` | `5` | Items rendered outside the visible range |
+| `emptyContent` | `ReactNode` | — | Empty list content |
+| `horizontal` | `boolean` | `false` | Horizontal virtual list |

@@ -3,6 +3,14 @@ import { parseTime } from './time';
 
 /** Strict local parsing: never silently roll an invalid day into the next month. */
 export function parseDateText(text: string, mode: CalendarMode = 'date') {
+  if (mode === 'quarter') {
+    const match = /^(\d{4})-Q([1-4])$/i.exec(text);
+    if (!match) return null;
+    const date = new Date(0);
+    date.setFullYear(Number(match[1]), (Number(match[2]) - 1) * 3, 1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
   if (mode === 'week') {
     const match = /^(\d{4})-W(\d{2})$/i.exec(text);
     if (!match) return null;

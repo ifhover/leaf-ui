@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SegmentedBasic } from '../../../src/examples/en/segmented/basic';
+import { SegmentedOptions } from '../../../src/examples/en/segmented/advanced';
+
+# Segmented
+
+Switch between related options.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SegmentedBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/segmented/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<SegmentedOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/segmented/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+options accepts strings or labeled options with icons. Control selection with value / onChange and switch options using arrow keys. Set name to include the value in native form submissions.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { SegmentedOption, SegmentedProps } from '@sudden3/leaf-ui';
+```
+
+## SegmentedOption API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Controlled value |
+| `label` | `ReactNode` | Required | Display label |
+| `icon` | `ReactNode` | — | Custom icon |
+| `disabled` | `boolean` | — | Disable interactions |
+
+## SegmentedProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `options` | [`readonly (string \| SegmentedOption)[]`](#segmentedoption-api) | Required | Available options |
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | — | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(value: string) => void` | — | Value change callback |
+| `disabled` | `boolean` | — | Disable interactions |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `block` | `boolean` | `false` | Fill container width |
+| `name` | `string` | — | Form field name |
+| `form` | `string` | — | Associated form ID |

@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/form/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { FormBasic } from '../../../src/examples/en/form/basic';
 import { FormLabelWidth } from '../../../src/examples/en/form/label-width';
@@ -20,6 +21,15 @@ Organize fields, labels and validation feedback, and collect form data.
 <ComponentExample title="Label widths" preview={<FormLabelWidth />} fileName="label-width.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/form/label-width.tsx"
+```
+
+</ComponentExample>
+
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/form/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -57,3 +67,85 @@ import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
 By default, all labels in one Form use the width of its widest label. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
 
 Read named controls with FormData. Use required, type and minLength for basic validation; errors appear beside their fields. Pass application or server errors through error. Set noValidate when handling validation yourself. FormData contains strings, does not build nested objects, and omits unchecked checkboxes. Reset controlled fields in application state.
+
+## Extension types
+
+```ts
+import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@sudden3/leaf-ui';
+```
+
+## FormGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `legend` | `ReactNode` | — | Field group title |
+| `description` | `ReactNode` | — | Supporting description |
+
+## FormListProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `name` | `string` | Required | Form field name |
+| `value` | `readonly T[]` | — | Controlled value |
+| `defaultValue` | `readonly T[]` | `[]` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(values: T[]) => void` | — | Value change callback |
+| `itemKey` | `(value: T) => string` | — | Return a stable identifier |
+| `children` | [`(fields: readonly FormListField<T>[], operations: FormListOperations<T>) => ReactNode`](#formlistfield-api) [`FormListOperations`](#formlistoperations-api) | Required | Content or child items |
+
+## FormListField API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `index` | `number` | Required | Current index, starting at zero |
+| `name` | `string` | Required | Form field name |
+| `value` | `T` | Required | Controlled value |
+
+## FormListOperations API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `add` | `(value: T, index?: number) => void` | Required | Insert a field; omitted index appends |
+| `remove` | `(index: number \| readonly number[]) => void` | Required | Remove one or multiple indices |
+| `move` | `(from: number, to: number) => void` | Required | Move fields preserving stable keys |
+| `update` | `(index: number, value: T) => void` | Required | Update field value |
+
+## FormErrorSummaryProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `errors` | [`readonly FormError[]`](#formerror-api) | — | Omitted collects field errors in this Form |
+| `title` | `ReactNode` | — | Title content |
+
+## FormError API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `fieldId` | `string` | Required | Input id focused when error is clicked |
+| `message` | `ReactNode` | Required | Error content |
+| `label` | `ReactNode` | — | Display label |
+
+## React Hook Form integration
+
+Install react-hook-form in your application. Use register with native inputs and Controller with components whose onChange returns a value. Leaf Form handles layout; the form library owns validation and state. Use noValidate to take over validation. FormList names are plain field names; use useFieldArray when React Hook Form manages the collection.
+
+```tsx
+import { useForm, Controller } from 'react-hook-form';
+import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@sudden3/leaf-ui';
+
+export function AccountForm() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });
+  return <Form noValidate onSubmit={handleSubmit(values => console.log(values))}>
+    <FormErrorSummary />
+    <FormField label="Email" error={errors.email?.message}>
+      <Input {...register('email', { required: 'Enter an email' })} />
+    </FormField>
+    <Controller name="role" control={control} rules={{ required: 'Choose a role' }} render={({ field, fieldState }) =>
+      <FormField label="Role" error={fieldState.error?.message}>
+        <Select {...field} options={[{ value: 'editor', label: 'Editor' }]} />
+      </FormField>}
+    />
+    <Button type="submit">Save</Button>
+  </Form>;
+}
+```

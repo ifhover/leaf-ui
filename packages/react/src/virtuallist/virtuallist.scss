@@ -1,0 +1,27 @@
+@use '../styles/mixins' as mixins;
+.leaf-virtual-list {
+  overflow: auto;
+  min-width: 0;
+  position: relative;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--leaf-color-border) transparent;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+  &__canvas {
+    position: relative;
+  }
+  &__item {
+    position: absolute;
+    box-sizing: border-box;
+  }
+}
+
+.leaf-virtual-list__canvas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

@@ -1,0 +1,50 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { InfiniteScrollBasic } from '../../src/examples/infinite-scroll/basic';
+import { InfiniteScrollRetry } from '../../src/examples/infinite-scroll/advanced';
+
+# InfiniteScroll 无限滚动
+
+浏览到列表末尾时加载更多内容。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/infinite-scroll/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/infinite-scroll/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+onLoadMore 返回 Promise，一次请求期间不会重复触发。追加新数据后更新 dataLength。signal 在卸载时取消请求，失败后可重试。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { InfiniteScrollProps } from '@sudden3/leaf-ui';
+```
+
+## InfiniteScrollProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `dataLength` | `number` | 必填 | 已加载数量，变化后允许下一次请求 |
+| `hasMore` | `boolean` | 必填 | 还有后续数据 |
+| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | 必填 | 加载更多，signal 用于取消请求 |
+| `target` | `() => HTMLElement \| null` | — | 滚动目标或链接打开方式 |
+| `threshold` | `number` | `200` | 距离末尾触发加载的像素距离 |
+| `loader` | `ReactNode` | — | 加载占位内容 |
+| `endMessage` | `ReactNode` | — | 全部加载后的内容 |
+| `onError` | `(error: unknown) => void` | — | 异常回调 |

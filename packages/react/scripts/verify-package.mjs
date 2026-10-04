@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createElement, Fragment } from 'react';
@@ -15,6 +15,7 @@ for (const relativePath of [
   entry.require.types,
   entry.require.default,
   manifest.exports['./styles.css'],
+  manifest.exports['./pdf.worker.mjs'],
 ]) {
   assert.ok((await stat(new URL(relativePath, packageRoot))).isFile(), relativePath);
 }
@@ -112,6 +113,93 @@ const components = [
   ['Confirm', { open: false, title: 'Remove' }, null, /<span/, false],
   ['Message', { open: false, content: 'Saved' }, null, /<span/, false],
   ['MessageProvider', {}, 'Content', /Content/, false],
+  ['Layout', {}, 'Content', /leaf-layout/],
+  ['LayoutSider', { collapsible: true }, 'Navigation', /leaf-layout__sider/],
+  ['Grid', { columns: 3 }, 'Grid content', /leaf-grid/],
+  ['Row', {}, 'Row content', /leaf-row/],
+  ['Col', { md: 12 }, 'Column', /leaf-col/],
+  ['Space', {}, 'Actions', /leaf-space/],
+  ['ScrollArea', { height: 100 }, 'Content', /leaf-scroll-area/],
+  ['Masonry', {}, 'Cards', /leaf-masonry/],
+  ['Segmented', { options: ['Daily', 'Monthly'] }, null, /role="radiogroup"/],
+  ['Menu', { items: [{ key: 'home', label: 'Home' }] }, null, /role="menu"/],
+  ['BackTop', {}, null, /leaf-back-top/],
+  ['Descriptions', { items: [{ key: 'name', label: 'Name', children: 'Leaf' }] }, null, /<dl/],
+  ['Image', { src: '/test.png', alt: 'Preview' }, null, /leaf-image/],
+  [
+    'ImagePreview',
+    { items: [{ src: '/test.png' }], open: true, onClose: () => {} },
+    null,
+    /^$/,
+    false,
+  ],
+  ['ImagePreviewGroup', {}, 'Images', /Images/, false],
+  ['QRCode', { value: 'https://example.com' }, null, /<svg/],
+  ['Timeline', { items: [{ key: 'first', children: 'Created' }] }, null, /<ol/],
+  [
+    'VirtualList',
+    { items: ['A', 'B'], itemKey: (item) => item, renderItem: (item) => item },
+    null,
+    /leaf-virtual-list/,
+  ],
+  ['Transfer', { items: [{ key: 'a', label: 'Ada' }] }, null, /leaf-transfer/],
+  ['InputOTP', { name: 'otp', defaultValue: '123' }, null, /one-time-code/],
+  ['TimeRangePicker', { defaultValue: ['09:00', '18:00'] }, null, /role="combobox"/],
+  ['InputMask', { mask: '000-000', defaultValue: '123' }, null, /leaf-input/],
+  ['Notification', { title: 'Saved', open: true }, null, /<span/, false],
+  ['NotificationProvider', {}, 'Notifications', /Notifications/, false],
+  [
+    'Popconfirm',
+    { title: 'Delete?' },
+    createElement('button', { type: 'button' }, 'Delete'),
+    /aria-haspopup="dialog"/,
+    false,
+  ],
+  ['ErrorBoundary', {}, 'Stable', /Stable/, false],
+  ['LoadingBar', { active: true }, null, /<span/, false],
+  ['LoadingBarProvider', {}, 'Progress', /Progress/, false],
+  [
+    'InfiniteScroll',
+    { dataLength: 0, hasMore: true, onLoadMore: async () => {} },
+    'Items',
+    /leaf-infinite-scroll/,
+  ],
+  [
+    'Sortable',
+    { items: ['a', 'b'], itemKey: (item) => item, renderItem: (item) => item, onChange: () => {} },
+    null,
+    /leaf-sortable/,
+  ],
+  ['FilePreview', { file: { url: '/report.pdf' } }, null, /leaf-file-preview/],
+  ['ImageCropper', { src: '/image.png' }, null, /leaf-image-cropper/],
+  ['SignaturePad', {}, null, /<canvas/],
+  ['OrgChart', { data: { key: 'team', label: 'Team' } }, null, /leaf-org-chart/],
+  ['ButtonGroup', {}, createElement('button', { type: 'button' }, 'Save'), /<fieldset/],
+  ['SplitButton', { items: [{ key: 'copy', label: 'Copy' }] }, 'Save', /leaf-button-group/],
+  ['CheckboxGroup', { options: ['A', 'B'] }, null, /leaf-checkbox-group/],
+  ['AvatarGroup', {}, 'Team', /leaf-avatar-group/],
+  ['TagGroup', { options: [{ value: 'design', label: 'Design' }] }, null, /leaf-tag-group/],
+  ['CheckableTag', {}, 'Selected', /aria-pressed/],
+  ['InputSearch', {}, null, /leaf-input-search/],
+  ['InputGroup', {}, null, /<fieldset/],
+  ['FormGroup', { legend: 'Details' }, null, /<fieldset/],
+  [
+    'FormErrorSummary',
+    { errors: [{ fieldId: 'email', message: 'Invalid email' }] },
+    null,
+    /role="alert"/,
+  ],
+  [
+    'FormList',
+    {
+      name: 'contacts',
+      defaultValue: ['Ada'],
+      children: (fields) =>
+        fields.map((field) => createElement('span', { key: field.key }, field.value)),
+    },
+    undefined,
+    /leaf-form-list/,
+  ],
 ];
 for (const [format, api] of [
   ['ESM', esm],
@@ -119,11 +207,21 @@ for (const [format, api] of [
 ]) {
   for (const [name, props, children, expected, hasClass = true] of components) {
     assert.ok(api[name], `${format} must export ${name}`);
-    const markup = renderToStaticMarkup(createElement(api[name], props, children));
-    assert.match(markup, expected);
+    const markup = renderToStaticMarkup(
+      children === undefined
+        ? createElement(api[name], props)
+        : createElement(api[name], props, children),
+    );
+    assert.match(markup, expected, `${format}: ${name}`);
     if (hasClass) assert.ok(markup.includes('leaf-'), `${name} must include its component class`);
   }
-  for (const name of ['useConfirm', 'useMessage'])
+  for (const name of [
+    'useConfirm',
+    'useMessage',
+    'useNotification',
+    'useLoadingBar',
+    'moveTreeNode',
+  ])
     assert.equal(typeof api[name], 'function', `${format} must export ${name}`);
   function HookHolders() {
     const confirm = api.useConfirm();
@@ -213,6 +311,31 @@ for (const name of [
   'tree',
   'tree-select',
   'color-picker',
+  'layout',
+  'grid',
+  'space',
+  'scroll-area',
+  'masonry',
+  'segmented',
+  'menu',
+  'back-top',
+  'descriptions',
+  'image',
+  'qr-code',
+  'timeline',
+  'virtual-list',
+  'transfer',
+  'input-otp',
+  'time-range-picker',
+  'notification',
+  'popconfirm',
+  'loading-bar',
+  'infinite-scroll',
+  'sortable',
+  'file-preview',
+  'image-cropper',
+  'signature-pad',
+  'org-chart',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }
@@ -225,14 +348,27 @@ assert.match(
   /^\s*["']use client["'];/,
   'CommonJS must preserve the Next.js client boundary',
 );
-assert.ok(esmCode.includes('from "react"'), 'ESM must keep React external');
-assert.ok(cjsCode.includes('require("react")'), 'CommonJS must keep React external');
-assert.ok(esmCode.includes('from "lucide-react"'), 'Lucide must remain an external dependency');
-assert.ok(cjsCode.includes('require("lucide-react")'), 'CommonJS must keep Lucide external');
+async function compiledModules(format) {
+  const root = new URL(`dist/${format}/`, packageRoot);
+  const files = await readdir(root, { recursive: true });
+  return (
+    await Promise.all(
+      files
+        .filter((file) => file.endsWith(format === 'esm' ? '.js' : '.cjs'))
+        .map((file) => readFile(new URL(file.replaceAll('\\', '/'), root), 'utf8')),
+    )
+  ).join('\n');
+}
+const esmModules = await compiledModules('esm');
+const cjsModules = await compiledModules('cjs');
+assert.ok(esmModules.includes('from "react"'), 'ESM must keep React external');
+assert.ok(cjsModules.includes('require("react")'), 'CommonJS must keep React external');
+assert.ok(esmModules.includes('from "lucide-react"'), 'Lucide must remain an external dependency');
+assert.ok(cjsModules.includes('require("lucide-react")'), 'CommonJS must keep Lucide external');
 for (const dependency of ['react-dom', '@floating-ui/react-dom', 'tabbable']) {
-  assert.ok(esmCode.includes(`from "${dependency}"`), `ESM must keep ${dependency} external`);
+  assert.ok(esmModules.includes(`from "${dependency}"`), `ESM must keep ${dependency} external`);
   assert.ok(
-    cjsCode.includes(`require("${dependency}")`),
+    cjsModules.includes(`require("${dependency}")`),
     `CommonJS must keep ${dependency} external`,
   );
 }

@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../../src/examples/en/input/extensions';
 import { InputClear } from '../../../src/examples/en/input/clear';
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../../src/components/en-form-examples';
@@ -59,6 +60,15 @@ Use type="password" to mask input and show a visibility toggle. Customize the ic
 
 </ComponentExample>
 
+## Extended features
+
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Input API
 
 | Property | Type | Default | Description |
@@ -91,3 +101,36 @@ import type { InputProps } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## Extension types
+
+```ts
+import type { InputSearchProps, InputGroupProps } from '@sudden3/leaf-ui';
+```
+
+## InputSearchProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `status` | `'error' \| 'warning'` | — | Display state |
+| `prefix` | `ReactNode` | — | Content before the input |
+| `suffix` | `ReactNode` | — | Content after the input |
+| `allowClear` | `boolean` | `false` | Show the clear button |
+| `onClear` | `() => void` | — | Called after clearing the input |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display count or a custom renderer |
+| `visibilityToggle` | `boolean` | `true` | Show the password visibility toggle |
+| `visible` | `boolean` | — | Controlled password visibility |
+| `defaultVisible` | `boolean` | `false` | Initial password visibility |
+| `onVisibleChange` | `(visible: boolean) => void` | — | Password visibility change |
+| `visibilityIcon` | `(visible: boolean) => ReactNode` | — | Custom password visibility icon |
+| `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Called when Enter is pressed |
+| `onSearch` | `(value: string) => void` | — | Search or Enter callback |
+| `loading` | `boolean` | `false` | Loading state |
+| `enterButton` | `ReactNode` | — | Search button label; omitted shows an icon |
+
+## InputGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `compact` | `boolean` | — | Join adjacent controls |

@@ -22,3 +22,13 @@
     justify-content: flex-start;
   }
 }
+
+.leaf-dropdown__group {
+  padding: 8px 10px 4px;
+  color: var(--leaf-color-text-muted);
+  font-size: var(--leaf-font-size-sm);
+  font-weight: 600;
+}
+.leaf-dropdown__arrow {
+  margin-left: auto;
+}

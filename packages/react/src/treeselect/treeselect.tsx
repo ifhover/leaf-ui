@@ -27,6 +27,7 @@ export interface TreeSelectOption {
   disableCheckbox?: boolean;
   icon?: ReactNode;
   searchLabel?: string;
+  isLeaf?: boolean;
 }
 export type TreeSelectValue = string | readonly string[] | null;
 export interface TreeSelectProps
@@ -53,6 +54,14 @@ export interface TreeSelectProps
   popupMaxWidth?: number | string;
   notFoundContent?: ReactNode;
   onOpenChange?: (open: boolean) => void;
+  loadData?: (
+    option: TreeSelectOption,
+    signal: AbortSignal,
+  ) => Promise<readonly TreeSelectOption[]>;
+  onLoadError?: (error: unknown, option: TreeSelectOption) => void;
+  virtual?: boolean;
+  listHeight?: number;
+  itemHeight?: number;
 }
 const emptyKeys: readonly string[] = [];
 export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function TreeSelect(
@@ -78,6 +87,11 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
     popupMaxWidth = 420,
     notFoundContent,
     onOpenChange,
+    loadData,
+    onLoadError,
+    virtual = false,
+    listHeight = 256,
+    itemHeight = 34,
     name,
     form,
     className,
@@ -104,6 +118,28 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
   const [query, setQuery] = useState('');
   const [open, setOpen] = usePopupState(disabled, onOpenChange);
   const id = `${useId()}-tree-select`;
+  const [loadedOptions, setLoadedOptions] = useState<Map<string, readonly TreeSelectOption[]>>(
+    new Map(),
+  );
+  const allOptions = useMemo(() => {
+    const merge = (entries: readonly TreeSelectOption[]): TreeSelectOption[] =>
+      entries.map((option) => {
+        const children = option.children ?? loadedOptions.get(option.value);
+        return children ? { ...option, children: merge(children) } : option;
+      });
+    return merge(options);
+  }, [options, loadedOptions]);
+  const optionRecords = useMemo(() => {
+    const map = new Map<string, TreeSelectOption>();
+    const visit = (entries: readonly TreeSelectOption[]) => {
+      for (const option of entries) {
+        map.set(option.value, option);
+        if (option.children) visit(option.children);
+      }
+    };
+    visit(allOptions);
+    return map;
+  }, [allOptions]);
   const data = useMemo(() => {
     const convert = (nodes: readonly TreeSelectOption[]): TreeNode[] =>
       nodes.map(({ value: key, label: title, children, ...node }) => ({
@@ -112,8 +148,8 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         title,
         children: children ? convert(children) : undefined,
       }));
-    return convert(options);
-  }, [options]);
+    return convert(allOptions);
+  }, [allOptions]);
   const records = useMemo(() => treeModel(data), [data]);
   const close = () => {
     setOpen(false);
@@ -309,6 +345,32 @@ export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(function
         className="leaf-floating leaf-tree-select__panel"
       >
         <Tree
+          virtual={virtual}
+          height={listHeight}
+          itemHeight={itemHeight}
+          loadData={
+            loadData
+              ? async (node, signal) => {
+                  const option = optionRecords.get(node.key);
+                  if (!option) return [];
+                  const children = await loadData(option, signal);
+                  if (!signal.aborted)
+                    setLoadedOptions((previous) => new Map(previous).set(node.key, children));
+                  const convert = (entries: readonly TreeSelectOption[]): TreeNode[] =>
+                    entries.map(({ value: key, label: title, children, ...entry }) => ({
+                      ...entry,
+                      key,
+                      title,
+                      children: children ? convert(children) : undefined,
+                    }));
+                  return convert(children);
+                }
+              : undefined
+          }
+          onLoadError={(error, node) => {
+            const option = optionRecords.get(node.key);
+            if (option) onLoadError?.(error, option);
+          }}
           id={id}
           data={data}
           aria-label={label ?? messages.select}

@@ -1,0 +1,116 @@
+@use '../styles/mixins' as mixins;
+.leaf-menu {
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--leaf-control-height);
+    margin-bottom: 3px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    color: inherit;
+    text-decoration: none;
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition:
+      background var(--leaf-motion-duration),
+      color var(--leaf-motion-duration);
+    &:hover:not(:disabled):not([aria-disabled]) {
+      background: var(--leaf-color-surface-muted);
+    }
+    &[data-selected] {
+      color: var(--leaf-color-primary);
+      background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+    }
+    &[data-danger] {
+      color: var(--leaf-color-danger);
+    }
+    &:disabled,
+    &[aria-disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+  }
+  &__icon {
+    display: inline-flex;
+    flex: none;
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+  &__label {
+    flex: 1;
+    min-width: 0;
+  }
+  &__arrow {
+    flex: none;
+    transition: transform var(--leaf-motion-duration);
+  }
+  [aria-expanded='true'] &__arrow {
+    transform: rotate(180deg);
+  }
+  &__group-label {
+    padding: 12px;
+    font-size: 12px;
+    color: var(--leaf-color-text-muted);
+  }
+  &__divider {
+    height: 1px;
+    margin: 8px 12px;
+    background: var(--leaf-color-border);
+  }
+  &--horizontal > [role='menubar'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  &--horizontal &__entry {
+    position: relative;
+  }
+  &--horizontal &__submenu {
+    position: absolute;
+    z-index: var(--leaf-z-index-popup);
+    inset-inline-start: 0;
+    top: 100%;
+    min-width: 180px;
+    padding: 6px;
+    background: var(--leaf-color-surface);
+    border-radius: var(--leaf-radius);
+    box-shadow: 0 6px 24px #00000018;
+  }
+  &--collapsed &__label,
+  &--collapsed &__arrow {
+    display: none;
+  }
+  &--collapsed &__item {
+    justify-content: center;
+    padding-inline: 8px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-menu__item,
+  .leaf-menu__arrow {
+    transition: none;
+  }
+}
+
+.leaf-menu__group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.leaf-menu__divider {
+  border: 0;
+}

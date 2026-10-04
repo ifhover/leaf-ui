@@ -1,0 +1,76 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TransferBasic } from '../../../src/examples/en/transfer/basic';
+import { TransferVirtual } from '../../../src/examples/en/transfer/advanced';
+
+# Transfer
+
+Select and move items between two lists.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TransferBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/transfer/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<TransferVirtual />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/transfer/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+value contains the keys in the right panel, while selectedKeys contains the checked items. Search, bulk transfer, one-way transfer and virtualization are supported. name submits a JSON array string.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { TransferChangeInfo, TransferItem, TransferProps } from '@sudden3/leaf-ui';
+```
+
+## TransferChangeInfo API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `direction` | `'left' \| 'right'` | Required | Layout or movement direction |
+| `movedKeys` | `string[]` | Required | Moved keys |
+
+## TransferItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Unique stable identifier |
+| `label` | `ReactNode` | Required | Display label |
+| `description` | `string` | — | Supporting description |
+| `disabled` | `boolean` | — | Disable interactions |
+| `searchLabel` | `string` | — | Plain-text search label |
+
+## TransferProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly TransferItem[]`](#transferitem-api) | Required | Items; keep keys unique and stable |
+| `value` | `readonly string[]` | — | Controlled value |
+| `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
+| `onChange` | [`(keys: string[], info: TransferChangeInfo) => void`](#transferchangeinfo-api) | — | Value change callback |
+| `selectedKeys` | `readonly string[]` | — | Selected items to move |
+| `onSelectionChange` | `(keys: string[]) => void` | — | Selection changes |
+| `titles` | `readonly [ReactNode, ReactNode]` | — | Left and right titles |
+| `searchable` | `boolean` | `true` | Show search inputs |
+| `filterOption` | [`(query: string, item: TransferItem) => boolean`](#transferitem-api) | — | Custom search rule |
+| `renderItem` | [`(item: TransferItem) => ReactNode`](#transferitem-api) | — | Custom item renderer |
+| `disabled` | `boolean` | — | Disable interactions |
+| `height` | `number` | `260` | Height, numbers are in pixels |
+| `virtual` | `boolean` | `false` | Render visible items only |
+| `name` | `string` | — | Form field name |
+| `form` | `string` | — | Associated form ID |
+| `required` | `boolean` | — | Required form validation |
+| `oneWay` | `boolean` | `false` | Allow moving right only |

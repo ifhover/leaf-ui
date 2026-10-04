@@ -11,3 +11,15 @@
     opacity: 0.8;
   }
 }
+
+.leaf-textarea-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.leaf-textarea__count {
+  align-self: flex-end;
+  color: var(--leaf-color-text-muted);
+  font: var(--leaf-font-size-sm) var(--leaf-font-family);
+}

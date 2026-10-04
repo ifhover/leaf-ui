@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/select/extensions';
 import { SelectPopup } from '../../src/examples/select/popup';
 import { SelectSearch } from '../../src/examples/select/search';
 import { ComponentExample } from '../../src/components/component-example';
@@ -70,13 +71,22 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `options` | [`readonly SelectOption[]`](#selectoption) | 必填 | 选项列表 |
+| `options` | [`readonly (SelectOption \| SelectOptionGroup)[]`](#selectoptiongroup-api) | 必填 | 选项列表 |
 | `placeholder` | `string` | `'请选择'` | 未选择时的提示文字 |
 | `value` / `defaultValue` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |
 | `onChange` | [`(value: string, option?: SelectOption) => void` 或 `(values: string[], options: SelectOption[]) => void`](#selectoption) | — | 返回值与选项；清除时返回空字符串和 `undefined` |
@@ -98,6 +108,11 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 | `optionRender` | [`(option: SelectOption) => ReactNode`](#selectoption) | — | 自定义选项内容 |
 | `maxCount` | `number` | — | 多选数量上限，已选项可继续取消 |
 | `maxTagCount` | `number` | — | 展示的标签数量，其余用数量提示 |
+| `allowCreate` | `boolean` | `false` | 允许创建未匹配的选项 |
+| `onCreate` | [`(option: SelectOption) => void`](#selectoption) | — | 新选项创建回调 |
+| `virtual` | `boolean` | 选项超过 100 时启用 | 仅渲染可见项目 |
+| `listHeight` | `number` | `248` | 列表高度 |
+| `optionHeight` | `number` | `36` | 虚拟列表的预估选项高度 |
 
 支持 name、required、form 和非受控表单 reset；其余原生 input 属性及 aria-* 透传至输入框。className 与 style 作用于外层容器。选项 value 应唯一，不要将空字符串用作业务选项值。
 
@@ -119,7 +134,7 @@ const options: SelectOption[] = [
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string` | 必填 | 唯一选项值，不能使用空字符串 |
-| `searchLabel` | `string` | — | 节点标签的搜索文字；未指定时使用 value |
+| `searchLabel` | `string` | — | 搜索文字；默认使用文字 label，复杂节点使用 value |
 | `label` | `ReactNode` | 必填 | 选项内容，可以是文字或 React 节点 |
 | `disabled` | `boolean` | `false` | 禁用该选项 |
 
@@ -131,6 +146,19 @@ Enter、空格或方向键打开面板，↑ / ↓ 移动高亮并跳过禁用�
 
 浮层随页面滚动定位，并在视口边缘避让；长列表可滚动。支持单选、多选及搜索，适用于选项数量适中的场景。
 
-多选清除返回 `[]`；FormData 在同一个 name 下提交多个值，通过 `formData.getAll(name)` 读取。搜索文字为空时，Backspace 移除最后一个可用标签。离开控件会清空搜索文字，自由输入不会创建选项。label 为 React 节点时，用 searchLabel 指定搜索文字。ref 与原生 input 属性作用于输入框。
+多选清除返回 `[]`；FormData 在同一个 name 下提交多个值，通过 `formData.getAll(name)` 读取。搜索文字为空时，Backspace 移除最后一个可用标签。离开控件会清空搜索文字，默认不创建选项；设置 allowCreate 可创建未匹配的选项。label 为 React 节点时，用 searchLabel 指定搜索文字。ref 与原生 input 属性作用于输入框。
 
 控件保持页面中的布局宽度，浮层默认至少与控件等宽，并按选项内容扩宽，最多达到 popupMaxWidth。使用 `popupWidth="trigger"` 保持等宽，或通过 `popupWidth={300}` 指定宽度。内容超过最大宽度时才换行。
+
+## 扩展类型
+
+```ts
+import type { SelectOptionGroup } from '@sudden3/leaf-ui';
+```
+
+## SelectOptionGroup API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `options` | [`readonly SelectOption[]`](#selectoption) | 必填 | 可用选项 |

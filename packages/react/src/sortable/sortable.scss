@@ -1,0 +1,25 @@
+.leaf-sortable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  &__item {
+    position: relative;
+    &[data-dragging] {
+      z-index: 2;
+      opacity: 0.8;
+    }
+  }
+  &__handle {
+    cursor: grab;
+    touch-action: none;
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-sortable__item {
+    transition: none !important;
+  }
+}

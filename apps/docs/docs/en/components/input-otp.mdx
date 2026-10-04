@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { InputOTPBasic } from '../../../src/examples/en/input-otp/basic';
+import { InputOTPOptions } from '../../../src/examples/en/input-otp/advanced';
+
+# InputOTP
+
+Enter and paste verification codes.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<InputOTPBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-otp/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<InputOTPOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-otp/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Preserves one input for paste and one-time-code autofill. onComplete indicates complete input; validate the code on your server.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { InputOTPProps } from '@sudden3/leaf-ui';
+```
+
+## InputOTPProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `length` | `number` | `6` | Code character count |
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | `''` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(value: string) => void` | — | Value change callback |
+| `onComplete` | `(value: string) => void` | — | Called when input is complete |
+| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | Display mode or allowed characters |
+| `mask` | `boolean \| string` | `false` | Mask displayed characters |
+| `separator` | `(index: number) => ReactNode` | — | Separator by position |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `status` | `'error' \| 'warning'` | — | Display state |

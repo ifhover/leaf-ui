@@ -1,3 +1,4 @@
+import { ExtensionDemo } from '../../src/examples/date-picker/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { DatePickerBasic, DatePickerControlled } from '../../src/components/form-examples';
 import { DatePickerFooter } from '../../src/examples/date-picker/footer';
@@ -41,6 +42,15 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 
 </ComponentExample>
 
+## 扩展用法
+
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-picker/extensions.tsx"
+```
+
+</ComponentExample>
+
 ## DatePicker API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -60,6 +70,8 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 | `required` | `boolean` | `false` | 要求选择日期 |
 | `onOpenChange` | `(open: boolean) => void` | — | 日历展开或收起 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
+| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | 选择日期、年、季度、月或周 |
+| `disabledDate` | `(date: Date) => boolean` | — | 限制可选择日期 |
 
 其余原生 input 属性和 `aria-*` 透传至输入框；`className` / `style` 作用于外层容器。
 
@@ -75,7 +87,7 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@sudden3/leaf-
 
 传入有效 Date 对象，且 `minDate` 不晚于 `maxDate`。组件按本地日期处理：可用 `new Date(2026, 9, 15)` 表示 2026 年 10 月 15 日，月份从 0 开始。选择结果为本地当天零点；避免用 UTC 字符串转换代替本地日期构造。
 
-设置 `name` 后，FormData 中的值为 `YYYY-MM-DD`，清除后为空字符串。非受控组件支持表单 reset，受控组件需同步重置自己的状态。当前提供单日期选择，日历从周一开始。
+设置 `name` 后，FormData 提交当前 picker 模式的字符串，清除后为空字符串。非受控组件支持表单 reset，受控组件需同步重置自己的状态。年、季度、月、周模式的 Date 值为对应周期的起始日期，日历从周一开始。
 
 ## 键盘与主题
 
@@ -86,3 +98,5 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@sudden3/leaf-
 可以直接输入 `YYYY-MM-DD`，按 Enter 或移走焦点提交。无效日期和超出 minDate / maxDate 的值不会提交。点击日历顶部的月份、年份可切换选择面板；默认展示“今天”快捷按钮，可通过 `showToday`、`todayText` 与 `renderExtraFooter` 定制。
 
 点击输入框保留输入焦点；↓ 将焦点移入日历，Escape 放弃未完成输入。
+
+各模式格式：`date → YYYY-MM-DD`、`year → YYYY`、`quarter → YYYY-QN`、`month → YYYY-MM`、`week → YYYY-Www`。显示、手动输入、onChange 字符串和 FormData 使用相同格式。

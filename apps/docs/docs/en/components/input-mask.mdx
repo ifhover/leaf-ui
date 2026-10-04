@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { InputMaskBasic } from '../../../src/examples/en/input-mask/basic';
+import { InputMaskFormats } from '../../../src/examples/en/input-mask/advanced';
+
+# InputMask
+
+Enter information in a specified format.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<InputMaskBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-mask/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<InputMaskFormats />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-mask/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Mask characters are 0 for digits, a for letters and * for alphanumeric. Validate business rules in your application. unmask affects component values and callbacks; native form submission uses the display value.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { InputMaskProps } from '@sudden3/leaf-ui';
+```
+
+## InputMaskProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `status` | `'error' \| 'warning'` | — | Display state |
+| `prefix` | `ReactNode` | — | Content before the input |
+| `suffix` | `ReactNode` | — | Content after the input |
+| `allowClear` | `boolean` | `false` | Show the clear button |
+| `onClear` | `() => void` | — | Called after clearing the input |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display count or a custom renderer |
+| `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Called when Enter is pressed |
+| `mask` | `string` | Required | Pattern: 0 for digits, a for letters, * for alphanumeric |
+| `definitions` | `Record<string, RegExp>` | — | Custom character rules |
+| `lazy` | `boolean` | `true` | Show placeholders as needed |
+| `unmask` | `boolean` | `false` | Use unmasked values and callbacks |
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | `''` | Initial value, restored by uncontrolled form resets |
+| `onChange` | `(value: string, formatted: string) => void` | — | Value change callback |
+| `onComplete` | `(value: string) => void` | — | Called when input is complete |

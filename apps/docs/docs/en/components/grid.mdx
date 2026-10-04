@@ -1,0 +1,64 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { GridBasic } from '../../../src/examples/en/grid/basic';
+import { GridColumns } from '../../../src/examples/en/grid/advanced';
+
+# Grid
+
+Arrange content for different screen widths.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<GridBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/grid/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<GridColumns />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/grid/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Grid uses columns for equal-width columns. Row / Col use a 24-column span and offset. Responsive values follow viewport width and inherit values from smaller breakpoints.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { ColProps, GridProps, RowProps } from '@sudden3/leaf-ui';
+```
+
+## ColProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `span` | `number` | `24` | Column span; Col span 0 hides a column |
+| `offset` | `number` | `0` | Preceding empty columns |
+| `xs` | `number` | — | Base breakpoint |
+| `sm` | `number` | — | At 576px and above |
+| `md` | `number` | — | At 768px and above |
+| `lg` | `number` | — | At 992px and above |
+| `xl` | `number` | — | At 1200px and above |
+
+## GridProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | Columns; unspecified breakpoints inherit smaller ones |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | Gap; tuples use [vertical, horizontal] |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
+
+## RowProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
+| `gutter` | [`GridProps['gap']`](#gridprops-api) | `16` | Grid gap; tuples use [vertical, horizontal] |

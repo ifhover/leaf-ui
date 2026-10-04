@@ -1,0 +1,65 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { SortableBasic } from '../../src/examples/sortable/basic';
+import { SortableGrid } from '../../src/examples/sortable/advanced';
+
+# Sortable 拖拽排序
+
+通过拖动或键盘调整项目顺序。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<SortableBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/sortable/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<SortableGrid />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/sortable/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+通过 info.handle 放置手柄。支持鼠标、触摸以及 Space 开始 / 放置、方向键移动、Escape 取消。onChange 返回新数组，调用方更新 items。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { SortableChangeInfo, SortableProps, SortableRenderInfo } from '@sudden3/leaf-ui';
+```
+
+## SortableChangeInfo API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `fromIndex` | `number` | 必填 | 原索引 |
+| `toIndex` | `number` | 必填 | 目标索引 |
+| `activeKey` | `string` | 必填 | 拖动项目标识 |
+| `overKey` | `string` | 必填 | 目标项目标识 |
+
+## SortableProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly T[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `itemKey` | `(item: T) => string` | 必填 | 提取稳定的项目标识 |
+| `renderItem` | [`(item: T, info: SortableRenderInfo) => ReactNode`](#sortablerenderinfo-api) | 必填 | 自定义项目内容 |
+| `onChange` | [`(items: T[], info: SortableChangeInfo) => void`](#sortablechangeinfo-api) | 必填 | 值变化回调 |
+| `disabled` | `boolean` | — | 禁止交互 |
+| `itemDisabled` | `(item: T) => boolean` | — | 是否禁止拖动此项 |
+| `activationDistance` | `number` | `6` | 拖动启动距离，像素 |
+
+## SortableRenderInfo API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `handle` | `ReactNode` | 必填 | 具备鼠标、触摸、键盘操作的拖动手柄 |
+| `dragging` | `boolean` | 必填 | 正在拖动 |

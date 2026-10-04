@@ -1,0 +1,47 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SpaceBasic } from '../../../src/examples/en/space/basic';
+import { SpaceVertical } from '../../../src/examples/en/space/advanced';
+
+# Space
+
+Keep consistent spacing between elements.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SpaceBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/space/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<SpaceVertical />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/space/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Set size to a preset, pixel value or [vertical, horizontal] gap. Enable wrap for wrapping, and use split to insert separators between items.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { SpaceProps } from '@sudden3/leaf-ui';
+```
+
+## SpaceProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout or movement direction |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | Size or spacing preset |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | Alignment |
+| `wrap` | `boolean` | `false` | Wrap as needed |
+| `split` | `ReactNode` | — | Separator between elements |

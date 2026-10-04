@@ -11,7 +11,8 @@
     padding: 0;
     border: 0;
   }
-  &__item:focus-visible > .leaf-tree__row {
+  &__item:focus-visible > .leaf-tree__row,
+  &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
     outline: 2px solid var(--leaf-color-primary);
     outline-offset: -2px;
   }
@@ -99,4 +100,51 @@
   .leaf-tree__toggle svg {
     transition: none;
   }
+}
+
+.leaf-tree__spinner {
+  animation: leaf-feedback-spin 1s linear infinite;
+}
+.leaf-tree__drag-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  .leaf-tree__row {
+    flex: 1;
+    min-width: 0;
+  }
+  &[data-dragging] {
+    opacity: 0.4;
+  }
+  &[data-drop='inside'] {
+    background: color-mix(in srgb, var(--leaf-color-primary) 12%, transparent);
+    border-radius: var(--leaf-radius-sm);
+  }
+  &[data-drop='before']::before,
+  &[data-drop='after']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--leaf-color-primary);
+  }
+  &[data-drop='before']::before {
+    top: 0;
+  }
+  &[data-drop='after']::after {
+    bottom: 0;
+  }
+}
+.leaf-tree__drag-handle {
+  touch-action: none;
+  cursor: grab;
+  flex: none;
+}
+.leaf-tree__drag-preview {
+  padding: 8px 14px;
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+  box-shadow: 0 4px 20px #0002;
 }

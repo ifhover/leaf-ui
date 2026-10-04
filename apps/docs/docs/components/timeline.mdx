@@ -1,0 +1,56 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TimelineBasic } from '../../src/examples/timeline/basic';
+import { TimelineAlternate } from '../../src/examples/timeline/advanced';
+
+# Timeline 时间线
+
+按顺序展示事件与进展。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<TimelineBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/timeline/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<TimelineAlternate />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/timeline/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+items 按事件顺序展示内容，可分别指定颜色与图标。mode 控制内容排列，reverse 反转顺序，pending 表示后续事件仍在处理中。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { TimelineItem, TimelineProps } from '@sudden3/leaf-ui';
+```
+
+## TimelineItem API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `label` | `ReactNode` | — | 显示内容 |
+| `children` | `ReactNode` | 必填 | 内容或下级项目 |
+| `dot` | `ReactNode` | — | 自定义时间线节点 |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| (string & {})` | — | 颜色 |
+
+## TimelineProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly TimelineItem[]`](#timelineitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | 展示模式或允许的字符 |
+| `reverse` | `boolean` | `false` | 反向排列 |
+| `pending` | `ReactNode` | — | 末尾等待内容 |

@@ -1,0 +1,58 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { DescriptionsBasic } from '../../src/examples/descriptions/basic';
+import { DescriptionsVertical } from '../../src/examples/descriptions/advanced';
+
+# Descriptions 描述列表
+
+按名称和值展示对象详情。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<DescriptionsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/descriptions/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<DescriptionsVertical />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/descriptions/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+items 提供字段名称与内容，span 指定字段跨列数。columns 可按屏幕宽度配置列数，layout 可切换水平或垂直排列。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { DescriptionItem, DescriptionsProps } from '@sudden3/leaf-ui';
+```
+
+## DescriptionItem API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
+| `children` | `ReactNode` | 必填 | 内容或下级项目 |
+| `span` | `number` | — | 跨列数，Col 的 0 表示隐藏 |
+
+## DescriptionsProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | [`readonly DescriptionItem[]`](#descriptionitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `title` | `ReactNode` | — | 标题内容 |
+| `extra` | `ReactNode` | — | 补充内容或操作 |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | 列数；较大断点继承较小断点 |
+| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | 标签与内容排列方式 |
+| `bordered` | `boolean` | `false` | 显示容器外框 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |

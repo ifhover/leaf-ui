@@ -1,0 +1,85 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ImageBasic } from '../../../src/examples/en/image/basic';
+import { ImageGallery } from '../../../src/examples/en/image/advanced';
+
+# Image
+
+Display images and explore galleries.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ImageBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/basic.tsx"
+```
+
+</ComponentExample>
+
+## More examples
+
+<ComponentExample title="More examples" preview={<ImageGallery />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage
+
+Supports keyboard navigation, touch swiping, zoom, thumbnails and fullscreen. ImagePreviewGroup collects child Images or accepts items and controlled open / index. Use `preview={false}` for display-only images.
+
+## Types
+
+Import these types for data, callbacks and refs.
+
+```ts
+import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, ImageProps } from '@sudden3/leaf-ui';
+```
+
+## ImagePreviewGroupProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Content or child items |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | Items; keep keys unique and stable |
+| `open` | `boolean` | — | Controlled visibility |
+| `defaultOpen` | `boolean` | `false` | Initial visibility |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `index` | `number` | — | Current index, starting at zero |
+| `defaultIndex` | `number` | `0` | Initial index |
+| `onIndexChange` | `(index: number) => void` | — | Active image changes |
+| `thumbnails` | `boolean` | `true` | Thumbnail navigation |
+| `downloadable` | `boolean` | `false` | Show download action |
+
+## ImagePreviewItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `src` | `string` | Required | Image URL |
+| `alt` | `string` | `''` | Image description |
+| `width` | `number` | — | Width, numbers are in pixels |
+| `height` | `number` | — | Height, numbers are in pixels |
+| `download` | `string \| boolean` | — | Download URL or availability |
+
+## ImagePreviewProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | Required | Items; keep keys unique and stable |
+| `open` | `boolean` | Required | Controlled visibility |
+| `index` | `number` | `0` | Current index, starting at zero |
+| `onClose` | `() => void` | Required | Called when closed |
+| `onIndexChange` | `(index: number) => void` | — | Active image changes |
+| `thumbnails` | `boolean` | `true` | Thumbnail navigation |
+| `downloadable` | `boolean` | `false` | Show download action |
+
+## ImageProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `preview` | `boolean` | `true` | Allow enlarged preview |
+| `previewSrc` | `string` | — | Higher-resolution preview URL |
+| `fallback` | `ReactNode` | — | Loading error content |
+| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | Image fitting mode |
+
+Image supports native image attributes such as src, alt, width, height, loading, onLoad and onError.

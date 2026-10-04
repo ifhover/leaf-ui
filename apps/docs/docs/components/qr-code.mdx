@@ -1,0 +1,53 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { QRCodeBasic } from '../../src/examples/qr-code/basic';
+import { QRCodeStatus } from '../../src/examples/qr-code/advanced';
+
+# QRCode 二维码
+
+将文本和链接展示为二维码。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<QRCodeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/qr-code/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<QRCodeStatus />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/qr-code/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+value 为编码内容；status 可显示加载或过期状态。onRefresh 处理刷新操作，downloadable 提供 SVG 下载。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { QRCodeProps } from '@sudden3/leaf-ui';
+```
+
+## QRCodeProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 必填 | 受控值 |
+| `size` | `number` | `160` | 尺寸或间距预设 |
+| `color` | `string` | `'var(--leaf-color-text)'` | 颜色 |
+| `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | 背景颜色 |
+| `level` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | 二维码纠错等级 |
+| `logo` | `string` | — | 中央标志地址 |
+| `logoSize` | `number` | `32` | 中央标志尺寸 |
+| `status` | `'active' \| 'loading' \| 'expired'` | `'active'` | 显示状态 |
+| `onRefresh` | `() => void` | — | 刷新过期二维码 |
+| `downloadable` | `boolean` | `false` | 显示下载操作 |
+| `fileName` | `string` | `'qrcode.svg'` | 下载文件名 |

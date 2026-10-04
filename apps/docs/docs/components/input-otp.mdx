@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { InputOTPBasic } from '../../src/examples/input-otp/basic';
+import { InputOTPOptions } from '../../src/examples/input-otp/advanced';
+
+# InputOTP 验证码输入
+
+输入和粘贴验证码。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<InputOTPBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-otp/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<InputOTPOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-otp/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+保留一个输入控件以支持粘贴和 one-time-code 自动填充。onComplete 表示字符完整；验证码有效性由服务端验证。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { InputOTPProps } from '@sudden3/leaf-ui';
+```
+
+## InputOTPProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `length` | `number` | `6` | 验证码字符数量 |
+| `value` | `string` | — | 受控值 |
+| `defaultValue` | `string` | `''` | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | `(value: string) => void` | — | 值变化回调 |
+| `onComplete` | `(value: string) => void` | — | 完整输入后触发 |
+| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | 展示模式或允许的字符 |
+| `mask` | `boolean \| string` | `false` | 隐藏字符，可自定义替代字符 |
+| `separator` | `(index: number) => ReactNode` | — | 按位置插入分隔内容 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `status` | `'error' \| 'warning'` | — | 显示状态 |

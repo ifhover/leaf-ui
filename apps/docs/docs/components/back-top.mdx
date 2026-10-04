@@ -1,0 +1,45 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { BackTopBasic } from '../../src/examples/back-top/basic';
+import { BackTopCustom } from '../../src/examples/back-top/advanced';
+
+# BackTop 回到顶部
+
+快速返回页面或滚动容器顶部。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<BackTopBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/back-top/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<BackTopCustom />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/back-top/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+默认监听窗口滚动；target 可返回指定滚动容器。超过 visibilityHeight 后显示按钮，点击后返回顶部；尊重系统减少动画的偏好。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { BackTopProps } from '@sudden3/leaf-ui';
+```
+
+## BackTopProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `target` | `() => HTMLElement \| Window \| null` | — | 滚动目标或链接打开方式 |
+| `visibilityHeight` | `number` | `400` | 超过此滚动距离后显示 |
+| `behavior` | `ScrollBehavior` | `'smooth'` | 返回顶部的滚动方式 |

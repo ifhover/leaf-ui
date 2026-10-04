@@ -1,0 +1,69 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { LoadingBarBasic } from '../../src/examples/loading-bar/basic';
+import { LoadingBarProgress } from '../../src/examples/loading-bar/advanced';
+
+# LoadingBar 顶部加载条
+
+展示页面或任务的加载进度。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<LoadingBarBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<LoadingBarProgress />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading-bar/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+ConfigProvider 自动提供加载条。start() 返回对应任务的完成函数，适合在 finally 中调用。多个任务同时运行时，全部完成后才结束。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@sudden3/leaf-ui';
+```
+
+## LoadingBarApi API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `start` | `() => () => void` | 必填 | 开始任务，返回该任务完成函数 |
+| `finish` | `() => void` | 必填 | 完成一个任务，全部完成后收起 |
+| `set` | `(progress: number) => void` | 必填 | 设置显示进度 |
+| `reset` | `() => void` | 必填 | 重置状态或重试 |
+
+## LoadingBarProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `active` | `boolean` | `false` | 正在加载 |
+| `progress` | `number` | — | 进度 0–100，省略时自动估计 |
+| `color` | `string` | — | 颜色 |
+| `height` | `number` | `3` | 高度，数字按像素计算 |
+| `position` | `'top' \| 'bottom'` | `'top'` | 显示或插入位置 |
+| `className` | `string` | — | 容器类名 |
+| `style` | `CSSProperties` | — | 容器内联样式 |
+
+## LoadingBarProviderProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `color` | `string` | — | 颜色 |
+| `height` | `number` | `3` | 高度，数字按像素计算 |
+| `position` | `'top' \| 'bottom'` | `'top'` | 显示或插入位置 |
+| `className` | `string` | — | 容器类名 |
+| `style` | `CSSProperties` | — | 容器内联样式 |
+| `children` | `ReactNode` | — | 内容或下级项目 |

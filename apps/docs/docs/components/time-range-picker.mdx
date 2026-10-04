@@ -1,0 +1,65 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TimeRangePickerBasic } from '../../src/examples/time-range-picker/basic';
+import { TimeRangePickerOptions } from '../../src/examples/time-range-picker/advanced';
+
+# TimeRangePicker 时间范围
+
+选择一天内的起止时间。
+
+## 基本用法
+
+<ComponentExample title="基本用法" preview={<TimeRangePickerBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/time-range-picker/basic.tsx"
+```
+
+</ComponentExample>
+
+## 更多用法
+
+<ComponentExample title="更多用法" preview={<TimeRangePickerOptions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/time-range-picker/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 使用说明
+
+点击确定后提交草稿。可输入 09:00 ~ 18:00 并按 Enter。allowOvernight 允许结束时间早于开始时间，表示次日结束。
+
+## 类型
+
+组装数据、定义回调和使用 ref 时，可以导入这些类型。
+
+```ts
+import type { TimeRangePickerProps, TimeRange, TimeParts } from '@sudden3/leaf-ui';
+```
+
+导出的 `TimeRange` 为 `readonly [string, string]`，使用 24 小时制时间字符串。
+
+## TimeRangePickerProps API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `status` | `'error' \| 'warning'` | — | 显示状态 |
+| `allowClear` | `boolean` | `true` | 显示清除按钮 |
+| `value` | `readonly [string, string] \| null` | — | 受控值 |
+| `defaultValue` | `readonly [string, string] \| null` | `null` | 初始值；非受控表单 reset 时恢复 |
+| `onChange` | `(value: readonly [string, string] \| null) => void` | — | 值变化回调 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `showSeconds` | `boolean` | `false` | 显示秒 |
+| `use12Hours` | `boolean` | `false` | 12 小时制显示 |
+| `minuteStep` | `number` | `5` | 分钟选项间隔 |
+| `secondStep` | `number` | `1` | 秒选项间隔 |
+| `allowOvernight` | `boolean` | `false` | 允许跨过午夜的时间范围 |
+| `disabledTime` | [`(parts: TimeParts, position: 'start' \| 'end') => boolean`](#timeparts-api) | — | 分别限制开始与结束时间 |
+
+## TimeParts API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `hour` | `number` | 必填 | 小时，0–23 |
+| `minute` | `number` | 必填 | 分钟，0–59 |
+| `second` | `number` | 必填 | 秒，0–59 |

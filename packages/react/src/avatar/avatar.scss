@@ -44,3 +44,31 @@
     height: 1.25em;
   }
 }
+
+.leaf-avatar-group {
+  display: flex;
+  align-items: center;
+  padding-left: 3px;
+  > .leaf-avatar,
+  > button {
+    margin-left: -3px;
+    box-shadow: 0 0 0 3px var(--leaf-color-surface);
+    border-radius: 50%;
+  }
+  &__more {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 3px;
+    }
+  }
+  &__overflow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

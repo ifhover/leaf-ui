@@ -49,6 +49,16 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
 - Alert: inline success, info, warning and error feedback.
 - Message / useMessage: transient feedback, loading and keyed updates.
+- Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
+- Segmented / Menu / BackTop: compact selection, nested navigation and scroll-to-top.
+- Descriptions / Timeline / QRCode / OrgChart: details, event histories, QR codes and organization trees.
+- Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
+- VirtualList / InfiniteScroll / Sortable: measured virtual rows, abortable loading and pointer/touch/keyboard sorting.
+- Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
+- Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
+- FilePreview / ImageCropper / SignaturePad: PDF/text/media previews, crop exports and editable signature strokes.
+
+Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
 Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 

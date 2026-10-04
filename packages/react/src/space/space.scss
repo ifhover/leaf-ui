@@ -1,0 +1,9 @@
+.leaf-space {
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font-family: var(--leaf-font-family);
+  &__split {
+    flex: none;
+    color: var(--leaf-color-text-muted);
+  }
+}

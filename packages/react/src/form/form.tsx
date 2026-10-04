@@ -1,5 +1,6 @@
 import {
   createContext,
+  type FieldsetHTMLAttributes,
   type FormHTMLAttributes,
   forwardRef,
   type HTMLAttributes,
@@ -30,11 +31,18 @@ export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
   error?: ReactNode;
   labelWidth?: number;
 }
+export interface FormError {
+  fieldId: string;
+  message: ReactNode;
+  label?: ReactNode;
+}
 const FormContext = createContext({
   layout: 'horizontal' as 'horizontal' | 'vertical',
   labelAlign: 'right' as 'left' | 'right',
   disabled: false,
   measure: (_id: string, _width: number | null) => {},
+  errors: [] as readonly FormError[],
+  registerError: (_id: string, _error: FormError | null) => {},
 });
 interface FieldContextValue {
   id: string;
@@ -66,14 +74,24 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
   const invalidFocusTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(invalidFocusTimer.current), []);
   const [maximum, setMaximum] = useState(0);
+  const [errors, setErrors] = useState<readonly FormError[]>([]);
+  const registerError = useCallback((id: string, error: FormError | null) => {
+    setErrors((previous) =>
+      error
+        ? [...previous.filter((entry) => entry.fieldId !== id), error]
+        : previous.some((entry) => entry.fieldId === id)
+          ? previous.filter((entry) => entry.fieldId !== id)
+          : previous,
+    );
+  }, []);
   const measure = useCallback((id: string, width: number | null) => {
     if (width === null) widths.current.delete(id);
     else widths.current.set(id, Math.ceil(width));
     setMaximum(Math.max(0, ...widths.current.values()));
   }, []);
   const context = useMemo(
-    () => ({ layout, labelAlign, disabled, measure }),
-    [layout, labelAlign, disabled, measure],
+    () => ({ layout, labelAlign, disabled, measure, errors, registerError }),
+    [layout, labelAlign, disabled, measure, errors, registerError],
   );
   const variables: LeafThemeStyle = {
     '--leaf-form-label-width': `${labelWidth === 'auto' ? maximum : Math.max(0, labelWidth)}px`,
@@ -130,6 +148,13 @@ export function FormField({
   const labelRef = useRef<HTMLSpanElement>(null);
   const [validationError, setValidationError] = useState<string>();
   const displayedError = error ?? validationError;
+  useEffect(() => {
+    form.registerError(
+      inputId,
+      displayedError ? { fieldId: inputId, message: displayedError, label } : null,
+    );
+    return () => form.registerError(inputId, null);
+  }, [form.registerError, inputId, displayedError, label]);
   useEffect(() => {
     if (label == null) return;
     const element = labelRef.current;
@@ -222,5 +247,76 @@ export function FormField({
         </div>
       </div>
     </FieldContext.Provider>
+  );
+}
+
+export interface FormGroupProps extends FieldsetHTMLAttributes<HTMLFieldSetElement> {
+  legend?: ReactNode;
+  description?: ReactNode;
+}
+export function FormGroup({
+  legend,
+  description,
+  disabled,
+  children,
+  className,
+  ...props
+}: FormGroupProps) {
+  const inherited = useContext(FormContext);
+  const context = useMemo(
+    () => ({ ...inherited, disabled: inherited.disabled || Boolean(disabled) }),
+    [inherited, disabled],
+  );
+  return (
+    <FormContext.Provider value={context}>
+      <fieldset
+        {...props}
+        disabled={context.disabled}
+        className={classes('leaf-form-group', className)}
+      >
+        {legend && <legend>{legend}</legend>}
+        {description && <p className="leaf-form-group__description">{description}</p>}
+        {children}
+      </fieldset>
+    </FormContext.Provider>
+  );
+}
+export interface FormErrorSummaryProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  errors?: readonly FormError[];
+  title?: ReactNode;
+}
+export function FormErrorSummary({
+  errors: suppliedErrors,
+  title,
+  className,
+  ...props
+}: FormErrorSummaryProps) {
+  const context = useContext(FormContext);
+  const { locale } = useLeafConfig();
+  const errors = suppliedErrors ?? context.errors;
+  if (!errors.length) return null;
+  return (
+    <div {...props} role="alert" className={classes('leaf-form-error-summary', className)}>
+      <strong>
+        {title ?? (locale === 'en-US' ? 'Please check the following fields' : '请检查以下字段')}
+      </strong>
+      <ul>
+        {errors.map((error) => (
+          <li key={error.fieldId}>
+            <button
+              type="button"
+              onClick={() => {
+                const control = document.getElementById(error.fieldId);
+                control?.scrollIntoView?.({ block: 'center', behavior: 'auto' });
+                control?.focus();
+              }}
+            >
+              {error.label ? <>{error.label}: </> : null}
+              {error.message}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
