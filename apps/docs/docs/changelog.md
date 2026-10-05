@@ -8,6 +8,39 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.3.0 - 2026-10-05
+
+扩展布局、导航、媒体与业务组件，完善文件上传和图片预览，并统一反馈组件的入口配置。
+
+### 新增
+
+- 新增 `Layout`、`Grid`、`Row`、`Col`、`Space`、`ScrollArea` 和 `Masonry`，用于页面布局与内容排列。
+- 新增 `Segmented`、`Menu` 和 `BackTop`，用于视图切换、层级导航与回到顶部。
+- 新增 `Descriptions`、`Image`、`ImagePreview`、`ImagePreviewGroup`、`QRCode`、`Timeline`、`VirtualList` 和 `OrgChart`。
+- 新增 `Transfer`、`InputOTP`、`InputMask` 和 `TimeRangePicker`。
+- 新增 `Notification`、`Popconfirm`、`ErrorBoundary`、`LoadingBar`、`InfiniteScroll` 和 `Sortable`。
+- 新增 `Upload`、`FileList`、`ImageCropper` 和 `SignaturePad`；文件列表支持名称、可选大小、类型图标、下载及图片和视频预览。
+- 新增按钮组与分体按钮、输入框组与搜索框、头像组、可选标签与标签组、复选框组，以及 `FormGroup`、`FormList` 和 `FormErrorSummary`。
+
+### 改进
+
+- `Menu` 子菜单支持展开与收起过渡，侧栏宽度随折叠状态平滑变化；收起的子项退出键盘导航，并遵循系统减少动态效果的设置。
+- 图片预览优化工具栏、切换操作和缩略图列表；裁剪框支持拖动与边缘缩放，默认使用正方形容器。
+- `Confirm` 由 `ConfigProvider` 自动托管，业务组件直接调用 `useConfirm()`；多个确认请求依次展示，沿用调用区域的主题与语言。
+- `Select` 支持分组与创建选项；`DatePicker` 支持年份、季度、月份和周选择，以及自定义禁用日期。
+- `Tree` 支持异步加载与拖拽移动；`Tabs` 支持新增与关闭；`Textarea` 支持自动调整高度与字数统计。
+- 文档站更多交互使用 Leaf UI 组件，安装内容合并到“安装&快速开始”，组件总览图片不再触发放大预览。
+
+### 修复
+
+- 修复图片预览切换时画面抖动的问题。
+
+### 升级说明
+
+- `useConfirm()` 和 `useMessage()` 已移除 `contextHolder` 返回值与旧写法支持。删除相关解构和渲染，在应用入口使用一次 `ConfigProvider`，子组件分别通过 `{ confirm }` 和 `{ message }` 调用。
+- 未使用 `ConfigProvider` 时，可在入口配置 `ConfirmProvider` 或 `MessageProvider`；缺少对应入口配置时，hook 会提示明确错误。
+- 新增组件及其属性、数据类型均可从 `@sudden3/leaf-ui` 导入；样式入口仍为 `@sudden3/leaf-ui/styles.css`。
+
 ## 0.2.0 - 2026-10-05
 
 扩展常用组件，统一主题配置，并简化消息提示的使用。

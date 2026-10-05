@@ -8,6 +8,7 @@
   background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  transition: width var(--leaf-motion-duration) var(--leaf-motion-easing);
   &__item {
     width: 100%;
     display: flex;
@@ -27,7 +28,9 @@
     box-sizing: border-box;
     transition:
       background var(--leaf-motion-duration),
-      color var(--leaf-motion-duration);
+      color var(--leaf-motion-duration),
+      gap var(--leaf-motion-duration) var(--leaf-motion-easing),
+      padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled):not([aria-disabled]) {
       background: var(--leaf-color-surface-muted);
     }
@@ -70,10 +73,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
+    transition:
+      max-width var(--leaf-motion-duration) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__arrow {
     flex: none;
-    transition: transform var(--leaf-motion-duration);
+    width: 14px;
+    transition:
+      transform var(--leaf-motion-duration),
+      width var(--leaf-motion-duration) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   [aria-expanded='true'] &__arrow {
     transform: rotate(180deg);
@@ -114,23 +125,46 @@
     border-radius: var(--leaf-radius);
     box-shadow: 0 6px 24px #00000018;
   }
-  &--collapsed &__label,
+  &--collapsed &__label {
+    max-width: 0;
+    opacity: 0;
+  }
   &--collapsed &__arrow {
-    display: none;
+    width: 0;
+    opacity: 0;
   }
   &--collapsed &__item {
-    justify-content: center;
-    padding-inline: 8px !important;
+    gap: 0;
+    padding-inline: 14px !important;
   }
   &--collapsed {
     width: 60px;
   }
   &__submenu {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows var(--leaf-motion-duration) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &[data-open='true'] {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+  }
+  &__submenu-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  &__submenu-content {
     padding-block: 2px 4px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .leaf-menu,
   .leaf-menu__item,
+  .leaf-menu__label,
+  .leaf-menu__submenu,
   .leaf-menu__arrow {
     transition: none;
   }

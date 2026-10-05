@@ -2,6 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
 import { Dropdown, type DropdownItem } from '../dropdown';
 import { classes } from '../shared/classes';
+import { inertAttribute } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface MenuItem {
@@ -24,6 +25,35 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLElement>, 'onSelect'>
   defaultOpenKeys?: readonly string[];
   onOpenChange?: (keys: string[]) => void;
   collapsed?: boolean;
+}
+function MenuSubmenu({
+  open,
+  id,
+  label,
+  children,
+}: {
+  open: boolean;
+  id: string;
+  label?: string;
+  children: () => ReactNode;
+}) {
+  const [visited, setVisited] = useState(open);
+  if (open && !visited) setVisited(true);
+  return (
+    <div
+      id={id}
+      role="menu"
+      className="leaf-menu__submenu"
+      aria-label={label}
+      aria-hidden={!open || undefined}
+      inert={inertAttribute(!open)}
+      data-open={open || undefined}
+    >
+      <div className="leaf-menu__submenu-inner">
+        <div className="leaf-menu__submenu-content">{visited && children()}</div>
+      </div>
+    </div>
+  );
 }
 export function Menu({
   items,
@@ -168,15 +198,14 @@ export function Menu({
               {content}
             </button>
           )}
-          {hasChildren && expanded && (
-            <div
+          {hasChildren && (
+            <MenuSubmenu
               id={`${id}-${item.key}`}
-              role="menu"
-              className="leaf-menu__submenu"
-              aria-label={typeof item.label === 'string' ? item.label : undefined}
+              open={expanded}
+              label={typeof item.label === 'string' ? item.label : undefined}
             >
-              {renderItems(item.children ?? [], depth + 1)}
-            </div>
+              {() => renderItems(item.children ?? [], depth + 1)}
+            </MenuSubmenu>
           )}
         </div>
       );
@@ -214,7 +243,7 @@ export function Menu({
             ...(root.current?.querySelectorAll<HTMLElement>(
               '[role="menuitem"]:not([aria-disabled="true"])',
             ) ?? []),
-          ];
+          ].filter((node) => visibleItems.some((item) => item.key === node.dataset.menuKey));
           const position = choices.indexOf(target.closest('[role="menuitem"]') as HTMLElement);
           const key = choices[position]?.dataset.menuKey;
           const item = visibleItems.find((entry) => entry.key === key);
