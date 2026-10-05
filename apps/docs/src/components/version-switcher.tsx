@@ -110,6 +110,7 @@ export function VersionSwitcher() {
               location.pathname,
               location.hash,
               release,
+              manifest.latest,
             );
             return (
               <a

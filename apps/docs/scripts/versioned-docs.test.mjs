@@ -18,16 +18,44 @@ test('version switch preserves the page, language and anchor when available', ()
       '/leaf-ui/v/0.3.0/en/components/button.html',
       '#button-api',
       release,
+      '0.3.0',
     ),
     { href: '/leaf-ui/v/0.2.0/en/components/button.html#button-api', exact: true },
   );
   assert.equal(
-    versionTarget('/leaf-ui/', '/leaf-ui/en/components/button', '#button-api', release).href,
+    versionTarget('/leaf-ui/', '/leaf-ui/en/components/button', '#button-api', release, '0.3.0')
+      .href,
     '/leaf-ui/v/0.2.0/en/components/button.html#button-api',
   );
   assert.equal(
-    versionTarget('/', '/v/0.3.0/components/', '', release).href,
+    versionTarget('/', '/v/0.3.0/components/', '', release, '0.3.0').href,
     '/v/0.2.0/components/index.html',
+  );
+});
+
+test('latest version uses the root URL when returning from an older version', () => {
+  const release = {
+    version: '0.3.0',
+    pages: ['en/components/button.html', 'components/index.html', 'index.html'],
+  };
+  assert.deepEqual(
+    versionTarget(
+      '/leaf-ui/',
+      '/leaf-ui/v/0.2.0/en/components/button.html',
+      '#button-api',
+      release,
+      '0.3.0',
+    ),
+    { href: '/leaf-ui/en/components/button.html#button-api', exact: true },
+  );
+  assert.equal(
+    versionTarget('/leaf-ui/', '/leaf-ui/components/', '', release, '0.3.0').href,
+    '/leaf-ui/components/index.html',
+  );
+  assert.equal(
+    versionTarget('/leaf-ui/', '/leaf-ui/v/0.2.0/components/missing.html', '#api', release, '0.3.0')
+      .href,
+    '/leaf-ui/components/index.html',
   );
 });
 
@@ -42,15 +70,27 @@ test('missing pages fall back without an unrelated anchor; old Chinese-only rele
     ],
   };
   assert.deepEqual(
-    versionTarget('/leaf-ui/', '/leaf-ui/v/0.3.0/en/components/menu.html', '#menu-api', release),
+    versionTarget(
+      '/leaf-ui/',
+      '/leaf-ui/v/0.3.0/en/components/menu.html',
+      '#menu-api',
+      release,
+      '0.3.0',
+    ),
     { href: '/leaf-ui/v/0.1.0/components/index.html', exact: false },
   );
   assert.equal(
-    versionTarget('/leaf-ui/', '/leaf-ui/v/0.3.0/en/components/button.html', '#api', release).href,
+    versionTarget(
+      '/leaf-ui/',
+      '/leaf-ui/v/0.3.0/en/components/button.html',
+      '#api',
+      release,
+      '0.3.0',
+    ).href,
     '/leaf-ui/v/0.1.0/components/button.html',
   );
   assert.equal(
-    versionTarget('/leaf-ui/', '/leaf-ui/v/0.3.0/guide/ssr.html', '', release).href,
+    versionTarget('/leaf-ui/', '/leaf-ui/v/0.3.0/guide/ssr.html', '', release, '0.3.0').href,
     '/leaf-ui/v/0.1.0/guide/introduction.html',
   );
 });
@@ -75,10 +115,7 @@ test('versions are discovered from published npm metadata and source commits', (
     /published stable version/,
   );
   assert.throws(() => publishedReleases({ ...data, versions: { '0.2.0': {} } }), /reproducible/);
-  assert.match(
-    redirectPage('/leaf-ui/v/0.3.0/components/button.html'),
-    /location.search\+location.hash/,
-  );
+  assert.match(redirectPage('/leaf-ui/components/index.html'), /location.search\+location.hash/);
 });
 
 test('AI index comes from snapshot exports and maps nested types to component docs', async () => {

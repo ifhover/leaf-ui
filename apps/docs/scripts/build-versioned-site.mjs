@@ -168,8 +168,11 @@ export async function buildVersionedSite() {
   const output = path.join(repository, 'apps/docs/site_build');
   const staging = await mkdtemp(path.join(tmpdir(), 'leaf-ui-docs-'));
   try {
-    for (const release of manifest.versions) {
-      const cached = path.join(cache, `${release.version}-${release.sourceCommit}-${platformHash}`);
+    const buildSnapshot = async (release, docsBase, variant) => {
+      const cached = path.join(
+        cache,
+        `${variant}-${release.version}-${release.sourceCommit}-${platformHash}`,
+      );
       let validCache = false;
       try {
         const index = JSON.parse(await readFile(path.join(cached, 'api/index.json'), 'utf8'));
@@ -179,10 +182,12 @@ export async function buildVersionedSite() {
         // A cache miss builds the exact published commit below.
       }
       if (!validCache) {
-        console.log(`Building Leaf UI ${release.version} from npm gitHead ${release.sourceCommit}`);
+        console.log(
+          `Building Leaf UI ${release.version} at ${docsBase} from npm gitHead ${release.sourceCommit}`,
+        );
         await run('git', ['cat-file', '-e', `${release.sourceCommit}^{commit}`], repository);
-        const archive = path.join(staging, `${release.version}.tar`);
-        const snapshot = path.join(staging, release.version);
+        const archive = path.join(staging, `${variant}-${release.version}.tar`);
+        const snapshot = path.join(staging, `${variant}-${release.version}`);
         await mkdir(snapshot);
         await run(
           'git',
@@ -196,10 +201,10 @@ export async function buildVersionedSite() {
         if (info.version !== release.version)
           throw new Error(`Source version mismatch for ${release.version}`);
         await installPlatform(snapshot);
-        const log = path.join(staging, `${release.version}.log`);
+        const log = path.join(staging, `${variant}-${release.version}.log`);
         await run('pnpm', ['install', '--frozen-lockfile'], snapshot, log);
         await run('pnpm', ['build:docs'], snapshot, log, {
-          LEAF_DOCS_BASE: `${base}v/${release.version}/`,
+          LEAF_DOCS_BASE: docsBase,
           LEAF_DOCS_SITE_BASE: base,
           LEAF_DOCS_SOURCE_COMMIT: release.sourceCommit,
         });
@@ -207,8 +212,12 @@ export async function buildVersionedSite() {
         await rm(cached, { recursive: true, force: true });
         await cp(path.join(snapshot, 'apps/docs/doc_build'), cached, { recursive: true });
       } else {
-        console.log(`Using cached documentation for Leaf UI ${release.version}`);
+        console.log(`Using cached documentation for Leaf UI ${release.version} at ${docsBase}`);
       }
+      return cached;
+    };
+    for (const release of manifest.versions) {
+      const cached = await buildSnapshot(release, `${base}v/${release.version}/`, 'version');
       const destination = path.join(staging, 'site/v', release.version);
       await cp(cached, destination, { recursive: true });
       release.pages = (await walkFiles(destination))
@@ -217,6 +226,11 @@ export async function buildVersionedSite() {
         .sort();
     }
     const site = path.join(staging, 'site');
+    const latest = manifest.versions.find((release) => release.version === manifest.latest);
+    // Build the same published source with the root base so routes, assets and search
+    // use the default URL directly. Fixed /v/X.Y.Z/ copies remain available to skills.
+    const latestRoot = await buildSnapshot(latest, base, 'latest');
+    await cp(latestRoot, site, { recursive: true });
     await writeFile(
       path.join(site, 'versions.json'),
       `${JSON.stringify(
@@ -229,16 +243,14 @@ export async function buildVersionedSite() {
         2,
       )}\n`,
     );
-    const latest = manifest.versions.find((release) => release.version === manifest.latest);
     const entryPages = new Set(manifest.versions.flatMap((release) => release.pages));
     for (const page of entryPages) {
-      const target = latest.pages.includes(page) ? page : 'components/index.html';
+      if (latest.pages.includes(page)) continue;
+      const target = `${page.startsWith('en/') ? 'en/' : ''}components/index.html`;
       const destination = path.join(site, page);
       await mkdir(path.dirname(destination), { recursive: true });
-      await writeFile(destination, redirectPage(`${base}v/${manifest.latest}/${target}`));
+      await writeFile(destination, redirectPage(`${base}${target}`));
     }
-    for (const file of ['llm.txt', 'llms.txt', 'leaf.svg'])
-      await cp(path.join(site, 'v', manifest.latest, file), path.join(site, file));
     await writeFile(path.join(site, '.nojekyll'), '');
     // The only replaced output is this repository's fixed generated site directory.
     await rm(output, { recursive: true, force: true });

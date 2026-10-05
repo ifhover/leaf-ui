@@ -54,7 +54,7 @@ npm publish --access public
 1. 通过 `npm view @sudden3/leaf-ui@X.Y.Z version` 确认新版本已经存在。
 2. 为本次发布提交创建 `vX.Y.Z` Git 标签，将提交和标签推送到 GitHub。
 3. `main` 推送会自动构建并部署 GitHub Pages。构建器从 npm 的 `gitHead` 还原发布提交，因此该提交必须已推送到仓库，且 package.json 中版本必须与 npm 一致。
-4. 确认 `/v/X.Y.Z/`、其 `llm.txt`、`llms.txt`、`api/index.json` 和组件 Markdown 均能访问。顶部版本菜单应包含新版本，中英文更新记录应一致；根入口应指向 npm latest 的发布快照。
+4. 确认 `/v/X.Y.Z/`、其 `llm.txt`、`llms.txt`、`api/index.json` 和组件 Markdown 均能访问。顶部版本菜单应包含新版本，中英文更新记录应一致；默认根地址直接展示 npm latest 的已发布文档，不跳转到版本路径。
 5. 若 npm 发布失败，先处理失败原因。版本化部署只展示 npm 中实际发布的版本，准备中的源码文档可本地预览。
 
 若发布后没有新的 main 推送，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；各版示例与 API 必须始终使用对应的发布提交。文档基础设施更新可以通过构建器的公共 overlay 应用到旧快照，不能混入未发布组件 API。

@@ -48,6 +48,6 @@ Updating the skill does not upgrade Leaf UI. Your application's dependency still
 
 ## Documentation versions
 
-Use the version menu in the navigation bar to browse published versions. Each version retains its component demos, APIs and Markdown pages.
+The default URL shows the latest published version. Use the version menu in the navigation bar to browse older releases. Each version retains its component demos, APIs and Markdown pages.
 
 AI entry points are `llm.txt`, `llms.txt` and `api/index.json` at each version's root. Component pages also offer Markdown links. The skill and its query helper are maintained on [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui).

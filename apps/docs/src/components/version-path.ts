@@ -17,6 +17,7 @@ export function versionTarget(
   pathname: string,
   hash: string,
   release: PublishedDocsVersion,
+  latestVersion: string,
 ) {
   const base = `${siteBase.replace(/\/$/, '')}/`;
   let page = pathname.startsWith(base) ? pathname.slice(base.length) : '';
@@ -34,7 +35,7 @@ export function versionTarget(
     'index.html',
   ].find((candidate) => release.pages.includes(candidate));
   return {
-    href: `${base}v/${release.version}/${exact ? page : (fallback ?? 'index.html')}${exact ? hash : ''}`,
+    href: `${base}${release.version === latestVersion ? '' : `v/${release.version}/`}${exact ? page : (fallback ?? 'index.html')}${exact ? hash : ''}`,
     exact,
   };
 }

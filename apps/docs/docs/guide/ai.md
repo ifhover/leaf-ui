@@ -48,6 +48,6 @@ npx skills remove leaf-ui
 
 ## 文档版本
 
-顶部版本菜单可切换已发布版本。每个版本有独立的组件演示、API 与 Markdown 页面，旧版本内容保留。
+默认地址展示最新已发布版本，顶部菜单可切换旧版本。每个版本有独立的组件演示、API 与 Markdown 页面，旧版本内容保留。
 
 AI 查询入口包括版本根目录的 `llm.txt`、`llms.txt` 和 `api/index.json`。组件页面也提供 Markdown 链接。skill 的源码与查询工具见 [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui)。
