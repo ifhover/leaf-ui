@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pluginSass } from '@rsbuild/plugin-sass';
@@ -12,6 +13,7 @@ const guideSidebar = [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
       { text: '安装&快速开始', link: '/guide/getting-started' },
       { text: 'SSR 使用', link: '/guide/ssr' },
+      { text: 'AI 与 Skills', link: '/guide/ai' },
     ],
   },
   {
@@ -150,6 +152,7 @@ const englishLabels: Record<string, string> = {
   '认识 Leaf UI': 'Introduction',
   '安装&快速开始': 'Installation & quick start',
   'SSR 使用': 'SSR usage',
+  'AI 与 Skills': 'AI & Skills',
   个性化: 'Personalization',
   定制主题: 'Theming',
   使用图标: 'Icons',
@@ -178,6 +181,25 @@ const englishSidebar = (items: typeof guideSidebar | typeof componentSidebar): t
 
 export default defineConfig({
   base: process.env.LEAF_DOCS_BASE || '/',
+  siteOrigin: 'https://ifhover.github.io',
+  llms: true,
+  plugins: [
+    {
+      name: 'leaf-ui-ai-docs',
+      afterBuild(config, isProd) {
+        if (!isProd) return;
+        execFileSync(
+          process.execPath,
+          [
+            path.join(directory, 'scripts/export-ai-docs.mjs'),
+            path.resolve(directory, '../..'),
+            path.resolve(directory, config.outDir ?? 'doc_build'),
+          ],
+          { stdio: 'inherit' },
+        );
+      },
+    },
+  ],
   root: path.join(directory, 'docs'),
   themeDir: path.join(directory, 'theme'),
   title: 'Leaf UI',
@@ -198,6 +220,7 @@ export default defineConfig({
   mediumZoom: { selector: '.rspress-doc img:not([data-no-zoom])' },
   markdown: { link: { checkDeadLinks: true } },
   themeConfig: {
+    llmsUI: { placement: 'outline', viewOptions: ['markdownLink'] },
     darkMode: 'light',
     locales: [
       {
@@ -228,6 +251,13 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/ifhover/leaf-ui' }],
   },
   builderConfig: {
+    source: {
+      define: {
+        __LEAF_DOCS_SITE_BASE__: JSON.stringify(
+          process.env.LEAF_DOCS_SITE_BASE || process.env.LEAF_DOCS_BASE || '/',
+        ),
+      },
+    },
     plugins: [pluginSass()],
     resolve: {
       alias: {

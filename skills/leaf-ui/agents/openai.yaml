@@ -1,0 +1,6 @@
+interface:
+  display_name: "Leaf UI"
+  short_description: "Build React interfaces with installed-version Leaf UI APIs"
+  default_prompt: "Use $leaf-ui to implement this interface with the APIs and examples for the Leaf UI version installed in this application."
+policy:
+  allow_implicit_invocation: true

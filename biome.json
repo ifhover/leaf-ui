@@ -5,6 +5,8 @@
       "**",
       "!**/dist",
       "!**/doc_build",
+      "!**/site_build",
+      "!**/.version-cache",
       "!**/node_modules",
       "!**/.rspress",
       "!**/pnpm-lock.yaml",

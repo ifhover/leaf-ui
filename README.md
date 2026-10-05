@@ -4,6 +4,8 @@
 
 [在线文档](https://ifhover.github.io/leaf-ui/) · [更新记录](https://ifhover.github.io/leaf-ui/changelog.html) · [npm](https://www.npmjs.com/package/@sudden3/leaf-ui)
 
+使用 AI 编写界面时，可在应用目录安装按项目实际版本查询 API 的 Skill：`npx skills add ifhover/leaf-ui --skill leaf-ui`。安装与使用见 [AI 与 Skills](https://ifhover.github.io/leaf-ui/guide/ai.html)，文档顶部可切换已发布版本。
+
 ## 安装与使用
 
 在你的 React 应用中安装组件包：

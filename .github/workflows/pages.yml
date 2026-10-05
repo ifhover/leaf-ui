@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -30,10 +32,20 @@ jobs:
         run: pnpm build
         env:
           LEAF_DOCS_BASE: /leaf-ui/
+      - name: Cache published documentation snapshots
+        uses: actions/cache@v4
+        with:
+          path: apps/docs/.version-cache
+          key: leaf-ui-docs-${{ runner.os }}-${{ github.sha }}
+          restore-keys: leaf-ui-docs-${{ runner.os }}-
+      - name: Build versioned documentation from published npm commits
+        run: pnpm build:versions
+        env:
+          LEAF_DOCS_BASE: /leaf-ui/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/docs/doc_build
+          path: apps/docs/site_build
 
   deploy:
     needs: build

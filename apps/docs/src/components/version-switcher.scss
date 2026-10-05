@@ -1,0 +1,86 @@
+.leaf-docs-versions {
+  position: relative;
+  flex: 0 0 auto;
+  margin-inline-start: 8px;
+  &__trigger.leaf-button {
+    gap: 5px;
+    padding-inline: 8px;
+    color: var(--leaf-color-text-muted);
+    font-family: var(--rp-font-family-mono, monospace);
+    font-size: 11px;
+    background: var(--leaf-color-surface-muted);
+    border-radius: var(--leaf-radius-sm);
+  }
+  &__menu {
+    position: absolute;
+    z-index: var(--leaf-z-index-popup, 1000);
+    top: calc(100% + 8px);
+    inset-inline-start: 0;
+    width: 176px;
+    padding: 6px;
+    color: var(--leaf-color-text);
+    background: var(--leaf-color-surface);
+    border-radius: var(--leaf-radius);
+    box-shadow: 0 8px 28px #0000001f;
+    font: 13px/1.5 var(--leaf-font-family);
+    animation: leaf-docs-version-open 120ms ease-out;
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 10px;
+      margin-block: 2px;
+      border-radius: var(--leaf-radius-sm);
+      color: inherit;
+      text-decoration: none;
+      transition: background var(--leaf-motion-duration);
+      &:hover,
+      &:focus-visible {
+        background: var(--leaf-color-surface-muted);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-primary);
+        outline-offset: -2px;
+      }
+      &[aria-current] {
+        color: var(--leaf-color-primary);
+        background: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
+      }
+    }
+    small {
+      color: var(--leaf-color-text-muted);
+      font-size: 11px;
+    }
+  }
+  &__caption {
+    display: block;
+    padding: 6px 10px;
+    color: var(--leaf-color-text-muted);
+    font-size: 11px;
+  }
+}
+
+// Earlier release themes include a static version link; the switcher replaces it.
+.leaf-nav-version {
+  display: none !important;
+}
+
+@keyframes leaf-docs-version-open {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-docs-versions__menu {
+    animation: none;
+    a {
+      transition: none;
+    }
+  }
+}

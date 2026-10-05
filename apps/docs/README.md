@@ -22,11 +22,27 @@ pnpm build:docs
 pnpm preview
 ```
 
-静态产物位于 `apps/docs/doc_build`。`LEAF_DOCS_BASE` 控制部署路径，默认 `/`；GitHub Pages 使用 `/leaf-ui/`。自定义链接必须使用 withBase 并指向实际的 .html 文件，保证刷新和直接访问可用。
+当前源码的预览产物位于 `apps/docs/doc_build`。`LEAF_DOCS_BASE` 控制部署路径，默认 `/`。自定义链接必须使用 withBase 并指向实际的 .html 文件，保证刷新和直接访问可用。
 
 ## GitHub Pages
 
-在线站点：https://ifhover.github.io/leaf-ui/。仓库的 Pages 来源为 GitHub Actions，.github/workflows/pages.yml 在 main 推送或手动触发时检查源码、构建组件与文档，然后上传和部署静态产物。构建设置 `LEAF_DOCS_BASE=/leaf-ui/`，不需要提交 doc_build。
+在线站点：https://ifhover.github.io/leaf-ui/。仓库的 Pages 来源为 GitHub Actions，.github/workflows/pages.yml 在 main 推送或手动触发时检查源码、构建组件与当前文档，再构建已发布的历史版本，上传 `apps/docs/site_build`。构建设置 `LEAF_DOCS_BASE=/leaf-ui/`，不提交静态产物或缓存。
+
+## 版本快照与 AI 文档
+
+```bash
+pnpm build:versions
+```
+
+`scripts/build-versioned-site.mjs` 从 npm 注册表读取实际发布的稳定版本、发布日期和 `gitHead`。每个版本通过 `git archive` 在临时目录还原该发布提交，使用该提交的锁文件、组件源码、页面与示例独立构建。需要完整 Git 历史（CI 使用 `fetch-depth: 0`）；缺少提交、版本不匹配或构建失败会中止部署。
+
+最终路径为 `/leaf-ui/v/X.Y.Z/`。根入口和历史非版本化 HTML 地址跳转到 npm latest 指向的已发布快照，并保留 URL 查询与锚点。未发布的 main 内容不会覆盖线上旧版本。顶部菜单从 `versions.json` 获取已发布列表，切换时保留当前页面；目标没有该页面时回退对应指南或组件总览。
+
+旧快照只补充文档基础设施：版本菜单、AI 安装指南、Rspress Markdown 输出及 API 索引。组件实现、例子与组件文档保持在发布提交。生成缓存位于 `.version-cache`，缓存键包含发布提交、基础路径和基础设施文件摘要；修改基础设施会自动使缓存失效。
+
+Rspress `llms: true` 输出每页 Markdown，`scripts/export-ai-docs.mjs` 从各快照的公共导出建立 `api/index.json`，并为每页写入准确包版本、源码提交和浏览器地址。每版根目录提供 `llm.txt` 与标准 `llms.txt`，无需将完整手册放入 Skill。组件页面右侧的 Markdown 链接直接指向该版本的文本。
+
+维护 Skill 见 [skills/README.md](../../skills/README.md)。相关测试由 `pnpm test:docs` 和 `pnpm test:skills` 执行，均纳入 `pnpm check`。
 
 ## 中英文文档
 
@@ -44,7 +60,7 @@ pnpm preview
 
 `rspress.config.ts` 按路径分别配置指南和组件侧边栏。添加组件时同时更新总览、组件侧边栏和对应 MDX 页面。
 
-顶部版本号通过 Rspress 的 `afterNavTitle` 插槽展示，直接读取 `packages/react/package.json`；点击版本号可进入当前语言的更新记录。每次 npm 发布都必须更新两份记录，具体步骤见 [发布文档](../../packages/react/RELEASING.md)。正式版本记录的标题格式由 `pnpm check:release` 校验，页面只记录已发布且面向使用者的变化，未发布草稿保留在 `docs` 目录之外。
+顶部版本号通过 Rspress 的 `afterNavTitle` 插槽展示，读取快照中的 `packages/react/package.json`，点击可切换已发布版本。每次 npm 发布都必须更新两份记录，具体步骤见 [发布文档](../../packages/react/RELEASING.md)。正式版本记录的标题格式由 `pnpm check:release` 校验，页面只记录已发布且面向使用者的变化，未发布草稿保留在 `docs` 目录之外。
 
 组件项的 text 使用实际导入名称，例如 DatePicker；tag 作为同一行的中文副标题，站点 SCSS 将其设置为更小、更浅的文字。不要在标题中拼接两种字号，或运行时修改 Rspress 的 DOM。
 

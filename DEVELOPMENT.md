@@ -80,7 +80,7 @@ pnpm --dir packages/react pack
 
 在线文档只包含组件使用说明。文档站运行与维护说明见 [apps/docs/README.md](apps/docs/README.md)，组件开发流程见 [packages/react/DEVELOPMENT.md](packages/react/DEVELOPMENT.md)。
 
-每次 npm 升版发布都需维护中英文更新记录，并同步部署文档。具体步骤见 [发布文档](packages/react/RELEASING.md)；`pnpm check:release` 会校验组件包当前版本的记录，导航版本号自动读取组件包版本。
+每次 npm 升版发布都需维护中英文更新记录，并同步部署版本快照。具体步骤见 [发布文档](packages/react/RELEASING.md)；`pnpm check:release` 会校验组件包当前版本的记录。`pnpm build:versions` 使用 npm gitHead 独立构建每个已发布版本，导航和 AI 查询均以快照版本为准。版本构建与 AI 文档契约见 [文档站维护说明](apps/docs/README.md)，Skill 发行见 [skills/README.md](skills/README.md)。
 
 ## 样式与图标
 
