@@ -2,7 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import type { ControlSize } from '../shared/types';
 
 export interface CollapseItem {
@@ -109,7 +109,7 @@ export function Collapse({
               id={`${id}-panel-${index}`}
               aria-labelledby={`${id}-trigger-${index}`}
               aria-hidden={!open || undefined}
-              inert={inertAttribute(!open)}
+              {...inertProps(!open)}
               className="leaf-collapse__panel"
             >
               <div className="leaf-collapse__inner">

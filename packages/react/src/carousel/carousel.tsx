@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface CarouselHandle {
@@ -147,7 +147,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
               aria-roledescription="slide"
               aria-label={`${position + 1} / ${count}`}
               aria-hidden={position !== index || undefined}
-              inert={inertAttribute(position !== index)}
+              {...inertProps(position !== index)}
               className="leaf-carousel__slide"
             >
               {slide}

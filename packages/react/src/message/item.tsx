@@ -2,7 +2,7 @@ import { X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeedbackIcon } from '../alert/alert';
 import { ConfigContext, useLeafConfig } from '../config-provider/context';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import { usePresence } from '../shared/presence';
 import { leafThemeVariables } from '../theme';
 import type { MessageEntry } from './store';
@@ -65,7 +65,7 @@ export function MessageItem({
         style={variables}
         data-state={entry.open ? 'open' : 'closing'}
         aria-hidden={!entry.open || undefined}
-        inert={inertAttribute(!entry.open)}
+        {...inertProps(!entry.open)}
       >
         <div className="leaf-message-slot__content">
           {/* biome-ignore lint/a11y/noStaticElementInteractions: These events pause dismissal; the message must retain its live-region role. */}

@@ -304,7 +304,7 @@ function MenuPanel({
 }: PanelProps) {
   const { direction } = useLeafConfig();
   const panel = useRef<HTMLDivElement>(null);
-  const submenuTrigger = useRef<HTMLElement>(null);
+  const submenuTrigger = useRef<HTMLElement | null>(null);
   const rows = flatten(items);
   const enabled = rows.filter(
     (item) => !item.disabled && item.type !== 'group' && item.type !== 'divider',

@@ -1,11 +1,16 @@
 import { type Ref, type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
+/** React 18 exposes RefObject.current as readonly, although React owns this assignment. */
+export function assignRef<T>(ref: Ref<T> | undefined, node: T | null) {
+  if (typeof ref === 'function') ref(node);
+  else if (ref) (ref as { current: T | null }).current = node;
+}
+
 export function useMergedRef<T>(local: RefObject<T | null>, forwarded?: Ref<T>) {
   return useCallback(
     (node: T | null) => {
-      local.current = node;
-      if (typeof forwarded === 'function') forwarded(node);
-      else if (forwarded) forwarded.current = node;
+      assignRef(local, node);
+      assignRef(forwarded, node);
     },
     [local, forwarded],
   );

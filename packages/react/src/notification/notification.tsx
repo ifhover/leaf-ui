@@ -12,7 +12,7 @@ import {
 } from 'react';
 import { FeedbackIcon, type FeedbackType } from '../alert/alert';
 import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { leafThemeVariables } from '../theme';
@@ -225,7 +225,7 @@ function NotificationItem({
         className="leaf-notification-slot"
         data-state={entry.open ? 'open' : 'closing'}
         style={entry.config ? leafThemeVariables(config.theme) : undefined}
-        inert={inertAttribute(!entry.open)}
+        {...inertProps(!entry.open)}
         aria-hidden={!entry.open || undefined}
       >
         <div className="leaf-notification-slot__content">

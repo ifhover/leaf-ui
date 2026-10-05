@@ -3,7 +3,7 @@ import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 're
 import { useLeafConfig } from '../config-provider/context';
 import { Dropdown, type DropdownItem } from '../dropdown';
 import { classes } from '../shared/classes';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface MenuItem {
@@ -50,7 +50,7 @@ function MenuSubmenu({
       className="leaf-menu__submenu"
       aria-label={label}
       aria-hidden={!open || undefined}
-      inert={inertAttribute(!open)}
+      {...inertProps(!open)}
       data-open={open || undefined}
     >
       <div className="leaf-menu__submenu-inner">

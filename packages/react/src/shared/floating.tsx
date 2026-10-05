@@ -25,7 +25,8 @@ import { tabbable } from 'tabbable';
 import { useLeafConfig } from '../config-provider/context';
 import type { LeafThemeStyle } from '../theme';
 import { composedEventTarget, composedParent, deepActiveElement } from './dom';
-import { inertAttribute } from './inert';
+import { assignRef } from './field';
+import { inertProps } from './inert';
 import { OverlayOwner } from './overlay-owner';
 import { usePresence } from './presence';
 
@@ -175,7 +176,7 @@ export function FloatingPanel({
     (node: HTMLDivElement | null) => {
       if (node) popupNodes.set(popupId, node);
       else popupNodes.delete(popupId);
-      panelRef.current = node;
+      assignRef(panelRef, node);
       refs.setFloating(node);
     },
     [panelRef, refs.setFloating, popupId],
@@ -238,7 +239,7 @@ export function FloatingPanel({
         data-state={open ? 'open' : 'closing'}
         data-positioned={isPositioned || !open}
         aria-hidden={!open || undefined}
-        inert={inertAttribute(!open)}
+        {...inertProps(!open)}
         style={{ ...theme, ...style, ...(open ? floatingStyles : previousPosition.current) }}
       >
         {render

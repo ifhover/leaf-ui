@@ -4,3 +4,8 @@ import { version } from 'react';
 export function inertAttribute(inactive: boolean): boolean | undefined {
   return (inactive ? (version.startsWith('18.') ? '' : true) : undefined) as boolean | undefined;
 }
+
+/** Spread avoids requiring a global React 18 HTMLAttributes augmentation. */
+export function inertProps(inactive: boolean) {
+  return { inert: inertAttribute(inactive) };
+}

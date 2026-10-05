@@ -11,7 +11,7 @@ import {
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
-import { inertAttribute } from '../shared/inert';
+import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
 import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
@@ -116,7 +116,7 @@ function DrawerSurface({
       className={classes('leaf-drawer-mask', `leaf-drawer-mask--${placement}`)}
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
-      inert={inertAttribute(!open)}
+      {...inertProps(!open)}
     >
       <button
         type="button"

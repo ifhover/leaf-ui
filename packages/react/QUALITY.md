@@ -44,7 +44,7 @@ GitHub 的 Component quality 工作流在 PR、main 推送及手动触发时运�
 | 引入场景 | JavaScript gzip | CSS gzip |
 | --- | --- | --- |
 | Button 子路径与样式 | 2.17 KiB | 2.58 KiB |
-| 常见表单及 ConfigProvider | 49.16 KiB | 5.22 KiB |
+| 常见表单及 ConfigProvider | 49.18 KiB | 5.22 KiB |
 | 整库 | 192.59 KiB | 25.07 KiB |
 
 脚本检查 Button 不会拉入裁剪、签名、二维码或图片预览引擎，并设有体积回归上限：Button JS / CSS 为 5 / 4 KiB，表单为 64 / 10 KiB，整库为 250 / 35 KiB。需要调整预算时应附构建报告和原因。
@@ -56,5 +56,7 @@ GitHub 的 Component quality 工作流在 PR、main 推送及手动触发时运�
 本机完整检查通过：45 个组件测试文件、234 项行为测试，另有 13 项发布规则、7 项文档、7 项 Skill 测试；84 个公开 JavaScript 子路径及各 CSS 入口通过产物检查。Chromium / WebKit 完整 36 项浏览器测试通过；针对截图发现的颜色控件收缩问题补充视觉回归后，视觉与大数据子集 16 项也全部通过。
 
 本机 Windows 的 Playwright Firefox 启动返回 `spawn UNKNOWN`，由 Linux CI 完成 Firefox 验证。最终跨平台结果以此次提交的 Component quality 工作流为准。
+
+补充验证：React 18.3.1 与对应类型声明的本地类型检查及全部 234 项组件测试通过。兼容层用属性 spread 处理 inert，集中赋值 ref，不全局扩展 React 的 HTMLAttributes。测试页的类型路径直接映射源码，干净检出无需先构建 dist。Linux CI 已确认 Firefox 与 Chromium 的 18 项浏览器测试分别通过。
 
 日期维持本地 Date 模型，业务时区在数据边界转换；表单使用原生 FormData 和外部 Schema / RHF 适配；分片续传放在 Upload 的 transport 适配中。Table / DataGrid 及表格业务场景按本次要求排除。
