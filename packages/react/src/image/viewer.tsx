@@ -11,7 +11,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import Lightbox, {
   type FullscreenRef,
   useController,
@@ -327,7 +327,26 @@ function Viewer({
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const [zoomControl, setZoomControl] = useState<ZoomRef | null>(null);
   const [fullscreenControl, setFullscreenControl] = useState<FullscreenRef | null>(null);
-  const slides = useMemo(() => items.map((item) => ({ ...item })), [items]);
+  const [slides, setSlides] = useState(() => items.map((item) => ({ ...item })));
+  // A new array with the same images must not reset the carousel's navigation animation.
+  if (
+    items.length !== slides.length ||
+    items.some((item, position) => {
+      const slide = slides[position];
+      return (
+        !slide ||
+        item.src !== slide.src ||
+        item.alt !== slide.alt ||
+        item.width !== slide.width ||
+        item.height !== slide.height ||
+        item.thumbnailSrc !== slide.thumbnailSrc ||
+        item.download !== slide.download ||
+        item.downloadName !== slide.downloadName
+      );
+    })
+  ) {
+    setSlides(items.map((item) => ({ ...item })));
+  }
   const t = useText();
   return (
     <div ref={setRoot} className="leaf-image-viewer">

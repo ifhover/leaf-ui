@@ -58,11 +58,12 @@
     .yarl__toolbar {
       display: none;
     }
-    .yarl__carousel {
+    // The controller measures its content box for slide sizing and animation distance.
+    .yarl__container {
       padding: 76px 80px 100px;
       box-sizing: border-box;
     }
-    &:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__carousel {
+    &:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__container {
       padding-bottom: 168px;
     }
     .yarl__slide {
@@ -283,10 +284,10 @@
 }
 @media (max-width: 640px) {
   .leaf-image-viewer {
-    &__lightbox .yarl__carousel {
+    &__lightbox .yarl__container {
       padding: 72px 12px 100px;
     }
-    &__lightbox:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__carousel {
+    &__lightbox:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__container {
       padding-bottom: 158px;
     }
     &__header {
