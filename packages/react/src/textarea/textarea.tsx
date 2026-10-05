@@ -53,7 +53,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
     textarea,
     props.form,
   );
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const minRows = typeof autoSize === 'object' ? Math.max(1, autoSize.minRows ?? rows) : rows;
   const maxRows =

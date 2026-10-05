@@ -30,9 +30,13 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `locale` | `LeafLocale` | `'zh-CN'` | 内置文本语言，嵌套时继承 |
 | `theme` | [`LeafTheme`](#leaftheme) | — | 区域主题；未设置的字段继承上层 |
-| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | 内置文本语言，嵌套时继承 |
-| `children` | `ReactNode` | — | 区域中的内容 |
+| `messages` | `Partial<`[`LeafMessages`](#leafmessages)`>` | — | 覆盖内置组件的语言文本。 |
+| `textMessages` | `Record<string, string>` | — | 以英文原文为 key，覆盖扩展组件的文本。 |
+| `direction` | `'ltr' \| 'rtl'` | — | 文字和交互方向。 |
+| `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | 一周起始日，0 表示周日、1 表示周一。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 
 其余原生 div 属性、className 和 style 作用于区域容器。主题设置通过 theme 传入。
 
@@ -48,6 +52,12 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 | `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
 | `motion` | `boolean` | `true` | 是否启用过渡与加载图标旋转；尊重系统减少动态效果设置 |
 | `tokens` | [`LeafThemeTokens`](#leafthemetokens) | — | 可选的高级覆盖，不必配置全部字段 |
+| `spacing` | `number` | — | 基础间距，其他间距按比例派生。 |
+| `lineHeight` | `number` | — | 正文行高。 |
+| `headingWeight` | `number` | — | 标题字重。 |
+| `elevation` | `'none' \| 'soft' \| 'medium'` | — | 整体阴影强度。 |
+| `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | useBreakpoint 使用的响应式断点。 |
+| `components` | `Record<string, `[`LeafComponentTokens`](../guide/theming#leafcomponenttokens)`>` | — | 按组件名称覆盖局部样式。 |
 
 以上默认值适用于未配置的应用。嵌套区域继承上层显式设置；长度也支持 CSS 单位。小控件高度和字号的自动结果不会小于 1px。
 
@@ -58,25 +68,46 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `onPrimaryColor` | `string` | 按主题生成 | 主题背景上的文字色 |
-| `dangerColor / onDangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
-| `successColor / warningColor / infoColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
-| `textColor / mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
-| `surfaceColor / mutedSurfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
+| `dangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
+| `onDangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
+| `successColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
+| `warningColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
+| `infoColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
+| `textColor` | `string` | 按外观生成 | 主要 / 次要文字 |
+| `mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
+| `surfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
+| `mutedSurfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
 | `borderColor` | `string` | 按外观生成 | 中性边框 |
-| `borderRadiusSm / borderRadiusLg` | `number \| string` | 基础圆角 × 0.6 / 1.6 | 单独覆盖小 / 大圆角 |
-| `controlHeightSm / controlHeightLg` | `number \| string` | 基础高度 − / + 6px | 单独覆盖小 / 大高度 |
-| `fontSizeSm / fontSizeLg` | `number \| string` | 基础字号 − / + 2px | 单独覆盖小 / 大字号 |
+| `borderRadiusSm` | `number \| string` | `基础圆角 × 0.6` | 单独覆盖小 / 大圆角 |
+| `borderRadiusLg` | `number \| string` | `1.6` | 单独覆盖小 / 大圆角 |
+| `controlHeightSm` | `number \| string` | `基础高度 −` | 单独覆盖小 / 大高度 |
+| `controlHeightLg` | `number \| string` | `+ 6px` | 单独覆盖小 / 大高度 |
+| `fontSizeSm` | `number \| string` | `基础字号 −` | 单独覆盖小 / 大字号 |
+| `fontSizeLg` | `number \| string` | `+ 2px` | 单独覆盖小 / 大字号 |
 | `fontWeight` | `number` | `500` | 按钮等组件的字重 |
 | `motionDuration` | `number \| string` | `160` | 过渡时间；数字为 ms，也支持 `'0.2s'`；motion=false 时为 0 |
 | `motionEasing` | `string` | `'ease'` | 过渡曲线 |
-| `popupZIndex / modalZIndex / messageZIndex` | `number` | `1000 / 1100 / 1200` | 浮层 / 弹窗 / 消息层级 |
-| `buttonBorderRadius / buttonHeight` | `number \| string` | 当前控件尺寸 | 仅按钮的圆角 / 共用高度覆盖 |
+| `popupZIndex` | `number` | `1000` | 浮层 / 弹窗 / 消息层级 |
+| `modalZIndex` | `number` | `1100` | 浮层 / 弹窗 / 消息层级 |
+| `messageZIndex` | `number` | `1200` | 浮层 / 弹窗 / 消息层级 |
+| `buttonBorderRadius` | `number \| string` | 当前控件尺寸 | 仅按钮的圆角 / 共用高度覆盖 |
+| `buttonHeight` | `number \| string` | 当前控件尺寸 | 仅按钮的圆角 / 共用高度覆盖 |
 | `choiceBorderRadius` | `number \| string` | 基础圆角 × 0.5 | 复选框圆角 |
 | `focusColor` | `string` | 当前语义色自动生成 | 焦点轮廓颜色 |
-| `primaryHoverColor / primaryActiveColor` | `string` | 主题色自动生成 | 主色悬停 / 按下 |
-| `primarySoftColor / primarySoftHoverColor / primarySoftActiveColor` | `string` | 主题色自动生成 | 主色柔和背景与交互状态 |
+| `primaryHoverColor` | `string` | 主题色自动生成 | 主色悬停 / 按下 |
+| `primaryActiveColor` | `string` | 主题色自动生成 | 主色悬停 / 按下 |
+| `primarySoftColor` | `string` | 主题色自动生成 | 主色柔和背景与交互状态 |
+| `primarySoftHoverColor` | `string` | 主题色自动生成 | 主色柔和背景与交互状态 |
+| `primarySoftActiveColor` | `string` | 主题色自动生成 | 主色柔和背景与交互状态 |
 | `primaryBorderColor` | `string` | 主题色自动生成 | 主题色边框 |
-| `dangerHoverColor / dangerActiveColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
+| `dangerHoverColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
+| `dangerActiveColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
+| `spacingSm` | `number \| string` | — | 设置 spacingSm。 |
+| `spacingLg` | `number \| string` | — | 设置 spacingLg。 |
+| `shadowSm` | `string` | — | 设置 shadowSm。 |
+| `shadowMd` | `string` | — | 设置 shadowMd。 |
+| `shadowLg` | `string` | — | 设置 shadowLg。 |
+| `lineHeight` | `number` | — | 正文行高。 |
 
 ## 类型
 
@@ -98,3 +129,94 @@ const advanced: LeafThemeTokens = { controlHeightLg: 44 };
 语言覆盖内置提示、日期、时间、清除按钮和反馈组件；业务内容、label 和 options 由应用翻译。
 
 使用 ConfigProvider 调整主题，CSS 变量供业务组件读取和复用。入门示例见[定制主题](/guide/theming)，服务端接入见 [SSR 使用](/guide/ssr)。
+
+## LeafMessages
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `select` | `string` | — | 必需。设置 select。 |
+| `empty` | `string` | — | 必需。设置 empty。 |
+| `noMatches` | `string` | — | 必需。设置 noMatches。 |
+| `clearSelection` | `string` | — | 必需。设置 clearSelection。 |
+| `date` | `string` | — | 必需。设置 date。 |
+| `time` | `string` | — | 必需。设置 time。 |
+| `dateTime` | `string` | — | 必需。设置 dateTime。 |
+| `range` | `string` | — | 必需。设置 range。 |
+| `clearDate` | `string` | — | 必需。设置 clearDate。 |
+| `clearTime` | `string` | — | 必需。设置 clearTime。 |
+| `clearRange` | `string` | — | 必需。设置 clearRange。 |
+| `clearCascader` | `string` | — | 必需。设置 clearCascader。 |
+| `chooseDate` | `string` | — | 必需。设置 chooseDate。 |
+| `chooseTime` | `string` | — | 必需。设置 chooseTime。 |
+| `previousMonth` | `string` | — | 必需。设置 previousMonth。 |
+| `nextMonth` | `string` | — | 必需。设置 nextMonth。 |
+| `previousYear` | `string` | — | 必需。设置 previousYear。 |
+| `nextYear` | `string` | — | 必需。设置 nextYear。 |
+| `previousYears` | `string` | — | 必需。设置 previousYears。 |
+| `nextYears` | `string` | — | 必需。设置 nextYears。 |
+| `hours` | `string` | — | 必需。设置 hours。 |
+| `minutes` | `string` | — | 必需。设置 minutes。 |
+| `seconds` | `string` | — | 必需。设置 seconds。 |
+| `period` | `string` | — | 必需。设置 period。 |
+| `am` | `string` | — | 必需。设置 am。 |
+| `pm` | `string` | — | 必需。设置 pm。 |
+| `weekdays` | `string[]` | — | 必需。设置 weekdays。 |
+| `confirm` | `string` | — | 必需。设置 confirm。 |
+| `cancel` | `string` | — | 必需。取消当前请求。 |
+| `close` | `string` | — | 必需。设置 close。 |
+| `start` | `string` | — | 必需。设置 start。 |
+| `end` | `string` | — | 必需。设置 end。 |
+| `required` | `string` | — | 必需。要求整体值非空，复合控件只校验一次。 |
+| `invalid` | `string` | — | 必需。设置 invalid。 |
+| `useTime` | `string` | — | 必需。设置 useTime。 |
+| `year` | `string` | — | 必需。设置 year。 |
+| `month` | `string` | — | 必需。设置 month。 |
+| `week` | `string` | — | 必需。设置 week。 |
+| `dateMode` | `string` | — | 必需。设置 dateMode。 |
+| `loading` | `string` | — | 必需。展示加载状态。 |
+| `today` | `string` | — | 必需。设置 today。 |
+| `now` | `string` | — | 必需。设置 now。 |
+| `selectTime` | `string` | — | 必需。设置 selectTime。 |
+| `selectDate` | `string` | — | 必需。设置 selectDate。 |
+| `remove` | `string` | — | 必需。设置 remove。 |
+| `search` | `string` | — | 必需。设置 search。 |
+| `breadcrumb` | `string` | — | 必需。设置 breadcrumb。 |
+| `pagination` | `string` | — | 必需。设置 pagination。 |
+| `previousPage` | `string` | — | 必需。设置 previousPage。 |
+| `nextPage` | `string` | — | 必需。设置 nextPage。 |
+| `page` | `string` | — | 必需。设置 page。 |
+| `pageSize` | `string` | — | 必需。设置 pageSize。 |
+| `itemsPerPage` | `string` | — | 必需。设置 itemsPerPage。 |
+| `jumpTo` | `string` | — | 必需。设置 jumpTo。 |
+| `showPassword` | `string` | — | 必需。设置 showPassword。 |
+| `hidePassword` | `string` | — | 必需。设置 hidePassword。 |
+| `increase` | `string` | — | 必需。设置 increase。 |
+| `decrease` | `string` | — | 必需。设置 decrease。 |
+| `invalidNumber` | `string` | — | 必需。设置 invalidNumber。 |
+| `progress` | `string` | — | 必需。设置 progress。 |
+| `calendar` | `string` | — | 必需。设置 calendar。 |
+| `clearInput` | `string` | — | 必需。设置 clearInput。 |
+| `noData` | `string` | — | 必需。设置 noData。 |
+| `avatar` | `string` | — | 必需。前置头像或图标。 |
+| `rating` | `string` | — | 必需。设置 rating。 |
+| `resultSuccess` | `string` | — | 必需。设置 resultSuccess。 |
+| `resultWarning` | `string` | — | 必需。设置 resultWarning。 |
+| `resultError` | `string` | — | 必需。设置 resultError。 |
+| `resultInfo` | `string` | — | 必需。设置 resultInfo。 |
+| `color` | `string` | — | 必需。颜色或语义色。 |
+| `clearColor` | `string` | — | 必需。设置 clearColor。 |
+| `saturation` | `string` | — | 必需。设置 saturation。 |
+| `brightness` | `string` | — | 必需。设置 brightness。 |
+| `hue` | `string` | — | 必需。设置 hue。 |
+| `alpha` | `string` | — | 必需。设置 alpha。 |
+| `colorValue` | `string` | — | 必需。设置 colorValue。 |
+| `invalidColor` | `string` | — | 必需。设置 invalidColor。 |
+| `presets` | `string` | — | 必需。快捷选项；value 可以动态计算。 |
+| `tree` | `string` | — | 必需。设置 tree。 |
+| `expand` | `string` | — | 必需。设置 expand。 |
+| `collapseNode` | `string` | — | 必需。设置 collapseNode。 |
+| `collapse` | `string` | — | 必需。设置 collapse。 |
+| `slider` | `string` | — | 必需。设置 slider。 |
+| `pageBack` | `string` | — | 必需。设置 pageBack。 |
+| `pageForward` | `string` | — | 必需。设置 pageForward。 |
+| `closeTab` | `string` | — | 必需。设置 closeTab。 |

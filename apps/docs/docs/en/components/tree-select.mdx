@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/tree-select/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/tree-select/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TreeSelectBasic } from '../../../src/examples/en/tree-select/basic';
@@ -44,14 +45,25 @@ Choose one or more values from hierarchical data.
 
 </ComponentExample>
 
+## Selection limits and node rendering
+
+<ComponentExample title="Selection limits and node rendering" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/tree-select/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## TreeSelect API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | [`readonly TreeSelectOption[]`](#treeselectoption) | Required | Hierarchical options |
-| `value / defaultValue` | `string \| readonly string[] \| null` | `null` | Controlled / initial value; use an array for multiple selection |
-| `onChange` | `(value: string \| readonly string[] \| null) => void` | — | Selection changes; clearing returns null for single mode or [] for multiple |
-| `multiple / treeCheckable` | `boolean` | `false` | Multiple / checkbox mode, which automatically enables multiple selection |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | Required | Required. Hierarchical options |
 | `checkStrictly` | `boolean` | `false` | Check parents and children independently |
 | `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | Display and output children, consolidated parents or all checked nodes |
 | `showSearch` | `boolean` | `true` | Filter nodes by typing |
@@ -61,29 +73,48 @@ Choose one or more values from hierarchical data.
 | `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | Values expanded initially |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation status |
-| `disabled / required` | `boolean` | `false` | Disabled / required |
-| `name / form` | `string` | — | Field name / associated form |
-| `popupWidth / popupMaxWidth` | `number \| string` | Content width / 420 | Panel width / maximum width; at least as wide as the trigger |
-| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `popupWidth` | `number \| string` | `Content width` | Panel width / maximum width; at least as wide as the trigger |
+| `popupMaxWidth` | `number \| string` | `420` | Panel width / maximum width; at least as wide as the trigger |
 | `notFoundContent` | `ReactNode` | No options | Content when no options match |
-| `loadData` | [`( option: TreeSelectOption, signal: AbortSignal, ) => Promise<readonly TreeSelectOption[]>`](#treeselectoption) | — | Load children on expansion; signal supports cancellation |
-| `onLoadError` | [`(error: unknown, option: TreeSelectOption) => void`](#treeselectoption) | — | Loading failed; expand again to retry |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | Load children on expansion; signal supports cancellation |
+| `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | Loading failed; expand again to retry |
 | `virtual` | `boolean` | `false` | Render visible items only |
 | `listHeight` | `number` | `256` | List height |
 | `itemHeight` | `number` | `34` | Estimated virtual row height |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `maxTagCount` | `number` | — | Maximum visible tags; responsive collapses tags to available width. |
+| `maxCount` | `number` | — | Maximum selection count. |
+| `treeExpandedKeys` | `readonly string[]` | — | Controlled expanded nodes. |
+| `onExpand` | `(keys: string[]) => void` | — | Called when expanded nodes change. |
+| `filterTreeNode` | `(option: `[`TreeSelectOption`](#treeselectoption)`, query: string) => boolean` | — | Customize search matching for nodes. |
+| `nodeRender` | `(option: `[`TreeSelectOption`](#treeselectoption)`) => ReactNode` | — | Customize node content. |
+| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `multiple` | `false \| true \| boolean` | `false` | Multiple / checkbox mode, which automatically enables multiple selection |
+| `treeCheckable` | `false \| boolean \| true` | `false` | Multiple / checkbox mode, which automatically enables multiple selection |
+| `value` | `string \| null \| readonly string[] \| readonly string[]` | `null` | Controlled / initial value; use an array for multiple selection |
+| `defaultValue` | `string \| null \| readonly string[] \| readonly string[]` | `null` | Controlled / initial value; use an array for multiple selection |
+| `onChange` | `(((value: string \| null) => void) \| ((value: readonly string[]) => void)) \| ((value: readonly string[]) => void)` | — | Selection changes; clearing returns null for single mode or [] for multiple |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
 
 ## TreeSelectOption
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `value` | `string` | Unique value, required |
-| `label` | `ReactNode` | Display label, required |
-| `children` | [`readonly TreeSelectOption[]`](#treeselectoption) | Child options using the same structure |
-| `disabled` | `boolean` | Prevent selection/checking |
-| `selectable` | `boolean` | Set false to make a category non-selectable |
-| `disableCheckbox` | `boolean` | Disable checks and stop propagation |
-| `icon` | `ReactNode` | Node icon |
-| `searchLabel` | `string` | Search and accessible text for non-text labels |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Required. Unique value, required |
+| `label` | `ReactNode` | — | Required. Display label, required |
+| `children` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | — | Child options using the same structure |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `selectable` | `boolean` | — | Set false to make a category non-selectable |
+| `disableCheckbox` | `boolean` | — | Disable checks and stop propagation |
+| `icon` | `ReactNode` | — | Node icon |
+| `searchLabel` | `string` | — | Search and accessible text for non-text labels |
+| `isLeaf` | `boolean` | — | Identify a leaf node, including in lazy data. |
 
 ## Types
 

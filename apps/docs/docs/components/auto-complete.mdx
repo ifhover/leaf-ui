@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/auto-complete/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form-examples';
 
@@ -29,19 +30,46 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 
 异步搜索时，在应用中处理请求防抖和响应顺序，避免旧查询覆盖新结果。输入过程中允许保留自由文本。
 
+## 富文本分组与加载状态
+
+<ComponentExample title="富文本分组与加载状态" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/auto-complete/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## AutoComplete API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | [`readonly AutoCompleteOption[]`](#autocompleteoption) | 必填 | 建议列表 |
-| `value` / `defaultValue` | `string` | `''` | 受控文本 / 非受控初始文本 |
-| `onChange` | `(value: string) => void` | — | 输入或选择后的文本 |
-| `onSelect` | [`(value: string, option: AutoCompleteOption) => void`](#autocompleteoption) | — | 选择建议时触发 |
-| `onSearch` | `(query: string) => void` | — | 用户输入时触发，选择建议时不触发 |
-| `filterOption` | [`false \| ((query: string, option: AutoCompleteOption) => boolean)`](#autocompleteoption) | 包含匹配 | `false` 关闭本地过滤；函数可定制过滤 |
+| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | 必填 | 必需。建议列表 |
+| `value` | `string` | `''` | 受控文本 / 非受控初始文本 |
+| `defaultValue` | `string` | `''` | 受控文本 / 非受控初始文本 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `disabled` / `readOnly` | `boolean` | `false` | 禁用 / 只读时不打开建议面板 |
+| `filterOption` | `false \| ((query: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => boolean)` | 包含匹配 | `false` 关闭本地过滤；函数可定制过滤 |
+| `onChange` | `(value: string) => void` | — | 输入或选择后的文本 |
+| `onSelect` | `(value: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => void` | — | 选择建议时触发 |
+| `onSearch` | `(query: string) => void` | — | 用户输入时触发，选择建议时不触发 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起时调用。 |
+| `loading` | `boolean` | — | 展示加载状态。 |
+| `notFoundContent` | `ReactNode` | — | 没有匹配选项时的内容。 |
+| `errorContent` | `ReactNode` | — | 展示加载错误和重试内容。 |
+| `optionRender` | `(option: `[`AutoCompleteOption`](#autocompleteoption)`) => ReactNode` | — | 自定义选项内容。 |
+| `allowClear` | `boolean` | — | 展示清除操作。 |
+| `virtual` | `boolean` | — | 启用虚拟滚动；大量选项默认启用。 |
+| `listHeight` | `number` | `248` | 可视列表高度。 |
+| `optionHeight` | `number` | `36` | 虚拟选项的估算高度；实际行会被测量。 |
+| `popupPlacement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupStyle']` | — | 浮层的自定义样式。 |
+| `popupRender` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupRender']` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `readOnly` | `boolean` | `false` | 锁定业务值，禁止输入、选择、清除和删除。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 label 默认为 value；选中后输入框中的文本始终是 value。`placeholder`、`name`、`required`、`form`、`maxLength`、`aria-*` 等原生文本框属性直接透传，`className` / `style` 作用于外层容器。
@@ -72,3 +100,19 @@ const options: AutoCompleteOption[] = [
 输入框聚焦或输入时展开建议。↑ / ↓ 高亮可用选项，Enter 选择，Escape 收起，Tab 继续访问后续控件。中文输入法合成期间的 Enter 不会选择建议。没有匹配项时可以继续填写。
 
 输入框可以直接参与 FormData、原生必填校验和表单 reset。建议面板跟随输入框宽度并继承局部主题；为输入框提供 label 或 aria-label。
+
+## AutoCompleteOption
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | — | 必需。受控值。 |
+| `label` | `ReactNode` | — | 展示文字或内容。 |
+| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+
+## AutoCompleteOptionGroup
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
+| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | — | 必需。可供选择的选项。 |

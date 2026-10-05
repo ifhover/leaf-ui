@@ -1,0 +1,63 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { AnchorBasic, AnchorAffix } from '../../../src/examples/anchor/basic';
+
+# Anchor
+
+Navigate long pages and keep important actions visible.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<AnchorBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/anchor/basic.tsx"
+```
+
+</ComponentExample>
+
+## Custom scroll container
+
+<ComponentExample title="Custom scroll container" preview={<AnchorAffix english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/anchor/basic.tsx"
+```
+
+</ComponentExample>
+
+## AnchorItem
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Stable, unique identifier. |
+| `title` | `ReactNode` | — | Required. Title content. |
+| `href` | `string` | — | Required. Link destination. |
+| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Content, or child nodes for hierarchical records. |
+
+## Anchor API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Required. Items to display. |
+| `container` | `() => HTMLElement \| Window` | — | Custom portal or scroll container. |
+| `offset` | `number` | `12` | Scroll-target distance from the container top in pixels. |
+| `activeKey` | `string` | — | Controlled active section. |
+| `onActiveChange` | `(key: string) => void` | — | Called when the active section changes. |
+| `smooth` | `boolean` | `true` | Enable smooth scrolling, respecting reduced motion. |
+
+## Affix API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `offsetTop` | `number` | `0` | Distance from the container top in pixels. |
+| `offsetBottom` | `number` | — | Distance from the container bottom in pixels. |
+| `container` | `() => HTMLElement \| Window` | — | Custom portal or scroll container. |
+| `onAffixChange` | `(affixed: boolean) => void` | — | Called when the affixed state changes. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { AnchorItem, AnchorProps, AffixProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

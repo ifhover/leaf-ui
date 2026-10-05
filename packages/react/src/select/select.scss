@@ -1,11 +1,11 @@
 @use '../styles/mixins' as mixins;
 .leaf-select {
-  @include mixins.field;
+  @include mixins.field('select');
   display: inline-flex;
   position: relative;
   align-items: center;
   min-height: var(--leaf-current-control-height);
-  padding: 0 30px 0 10px;
+  padding: var(--leaf-component-select-padding, 0 30px 0 10px);
   cursor: pointer;
   &[data-searchable] {
     cursor: text;
@@ -14,7 +14,7 @@
     cursor: not-allowed;
   }
   &[data-clearable] {
-    padding-right: 54px;
+    padding-inline-end: 54px;
   }
   &__content {
     display: flex;
@@ -65,7 +65,7 @@
   }
   &__arrow {
     position: absolute;
-    right: 8px;
+    inset-inline-end: 8px;
     top: 50%;
     transform: translateY(-50%);
     display: inline-flex;
@@ -156,4 +156,23 @@
   font-size: var(--leaf-font-size-sm);
   font-weight: 600;
   color: var(--leaf-color-text-muted);
+}
+
+.leaf-select {
+  --leaf-current-control-height: var(--leaf-component-select-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-select-font-size, var(--leaf-font-size));
+}
+.leaf-select--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-select-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-select--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-select-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

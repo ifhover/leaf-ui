@@ -1,9 +1,9 @@
 .leaf-form {
   display: grid;
-  gap: 18px;
-  color: var(--leaf-color-text);
+  gap: var(--leaf-component-form-gap, 18px);
+  color: var(--leaf-component-form-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
-  font-size: var(--leaf-font-size);
+  font-size: var(--leaf-component-form-font-size, var(--leaf-font-size));
 }
 .leaf-form-field {
   display: grid;

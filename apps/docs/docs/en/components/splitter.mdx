@@ -1,0 +1,56 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { SplitterBasic, SplitterVertical } from '../../../src/examples/splitter/basic';
+
+# Splitter
+
+Resize panels in a workspace.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<SplitterBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/splitter/basic.tsx"
+```
+
+</ComponentExample>
+
+## Vertical panels
+
+<ComponentExample title="Vertical panels" preview={<SplitterVertical english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/splitter/basic.tsx"
+```
+
+</ComponentExample>
+
+## SplitterPanel
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Stable, unique identifier. |
+| `children` | `ReactNode` | — | Required. Content, or child nodes for hierarchical records. |
+| `min` | `number` | — | Minimum panel percentage. |
+| `max` | `number` | — | Maximum panel percentage. |
+| `collapsible` | `boolean` | — | Allow collapsing and restoring a panel. |
+| `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
+
+## Splitter API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | — | Required. Workspace panels. |
+| `sizes` | `readonly number[]` | — | Controlled panel proportions, normalized to 100. |
+| `defaultSizes` | `readonly number[]` | — | Initial panel proportions. |
+| `onResize` | `(sizes: number[]) => void` | — | Called while resizing. |
+| `onResizeEnd` | `(sizes: number[]) => void` | — | Called when resizing ends. |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrange panels horizontally or vertically. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { SplitterPanel, SplitterProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/breadcrumb/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 
@@ -14,12 +15,25 @@ import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 
 </ComponentExample>
 
+## 折叠长路径
+
+<ComponentExample title="折叠长路径" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/breadcrumb/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Breadcrumb API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly BreadcrumbItem[]`](#breadcrumbitem) | 必填 | 路径列表 |
+| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | 必填 | 必需。路径列表 |
 | `separator` | `ReactNode` | ChevronRight | 分隔内容 |
+| `maxItems` | `number` | — | 路径折叠前最多展示的项数。 |
+| `itemsBeforeCollapse` | `number` | `1` | 折叠后保留的起始项数。 |
+| `itemsAfterCollapse` | `number` | `1` | 折叠后保留的末尾项数。 |
+| `itemRender` | `(item: `[`BreadcrumbItem`](#breadcrumbitem)`, index: number) => ReactNode` | — | 自定义条目内容。 |
 | `aria-label` | `string` | 语言默认值 | 导航名称 |
 
 ## BreadcrumbItem
@@ -27,11 +41,11 @@ import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定标识 |
-| `title` | `ReactNode` | 必填 | 页面名称 |
+| `title` | `ReactNode` | 必填 | 必需。页面名称 |
 | `icon` | `ReactNode` | — | 前置图标 |
-| `href` | `string` | — | 跳转地址；省略时显示文本 |
-| `target` | `string` | — | 链接打开方式 |
-| `onClick` | `MouseEventHandler<HTMLAnchorElement>` | — | 链接点击事件 |
+| `menu` | `readonly `[`DropdownItem`](../components/dropdown#dropdownitem)`[]` | — | 该路径项的下拉菜单。 |
+| `href` | `string` | — | 链接目标。 |
+| `target` | `string` | — | 目标的选择器或返回元素的函数；省略时居中。 |
 
 ## 类型
 

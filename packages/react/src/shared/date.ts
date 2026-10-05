@@ -13,9 +13,9 @@ export function monthKey(date: Date) {
   return `${date.getFullYear()}-${date.getMonth()}`;
 }
 
-export function calendarDays(month: Date) {
+export function calendarDays(month: Date, weekStartsOn = 1) {
   const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
-  const mondayOffset = (firstDay.getDay() + 6) % 7;
+  const mondayOffset = (firstDay.getDay() - weekStartsOn + 7) % 7;
   return Array.from({ length: 42 }, (_, index) => {
     const day = new Date(firstDay);
     day.setDate(1 - mondayOffset + index);

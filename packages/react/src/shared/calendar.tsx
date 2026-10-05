@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from './classes';
 import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from './date';
 
@@ -58,6 +58,7 @@ export function shiftCalendar(date: Date, mode: CalendarMode, amount: number) {
 }
 interface CalendarPanelProps {
   value?: Date | null;
+  values?: readonly Date[];
   onChange: (date: Date) => void;
   picker?: CalendarMode;
   minDate?: Date;
@@ -76,6 +77,7 @@ interface CalendarPanelProps {
 }
 export function CalendarPanel({
   value,
+  values,
   onChange,
   picker = 'date',
   minDate,
@@ -92,7 +94,7 @@ export function CalendarPanel({
   cellRender,
   showToday = false,
 }: CalendarPanelProps) {
-  const { locale, messages } = useLeafConfig();
+  const { locale, messages, weekStartsOn, direction } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
   const [view, setView] = useState<'year' | 'quarter' | 'month' | 'date'>(
     picker === 'year' || picker === 'month' || picker === 'quarter' ? picker : 'date',
@@ -138,13 +140,15 @@ export function CalendarPanel({
         ? Array.from({ length: 4 }, (_, i) => new Date(visible.getFullYear(), i * 3, 1))
         : view === 'month'
           ? Array.from({ length: 12 }, (_, i) => new Date(visible.getFullYear(), i, 1))
-          : calendarDays(visible);
+          : calendarDays(visible, weekStartsOn);
   const cellMode = view === 'date' ? (picker === 'datetime' ? 'date' : picker) : view;
+  const selecting =
+    view === picker || (view === 'date' && (picker === 'week' || picker === 'datetime'));
   const focusableCells = cells.filter(
     (date) =>
       (showOutsideDays || view !== 'date' || date.getMonth() === visible.getMonth()) &&
       withinPeriod(date, cellMode, minDate, maxDate) &&
-      !(view === picker && disabledDate?.(date)),
+      !(selecting && disabledDate?.(date)),
   );
   const activeCell =
     focusableCells.find((date) =>
@@ -173,9 +177,9 @@ export function CalendarPanel({
   const move = (date: Date, event: KeyboardEvent<HTMLButtonElement>) => {
     const next = new Date(date);
     const delta =
-      event.key === 'ArrowLeft'
+      event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft')
         ? -1
-        : event.key === 'ArrowRight'
+        : event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')
           ? 1
           : event.key === 'ArrowUp'
             ? view === 'date'
@@ -195,7 +199,9 @@ export function CalendarPanel({
       if (view === 'date')
         next.setDate(
           next.getDate() +
-            (event.key === 'Home' ? -((next.getDay() + 6) % 7) : 6 - ((next.getDay() + 6) % 7)),
+            (event.key === 'Home'
+              ? -((next.getDay() - weekStartsOn + 7) % 7)
+              : 6 - ((next.getDay() - weekStartsOn + 7) % 7)),
         );
       else
         next.setTime((event.key === 'Home' ? cells[0] : cells.at(-1))?.getTime() ?? next.getTime());
@@ -220,7 +226,7 @@ export function CalendarPanel({
       next.setTime(startOfPeriod(minDate, cellMode).getTime());
     if (maxDate && next > startOfPeriod(maxDate, cellMode))
       next.setTime(startOfPeriod(maxDate, cellMode).getTime());
-    if (view === picker && disabledDate?.(next)) {
+    if (selecting && disabledDate?.(next)) {
       const step = delta || (event.key === 'End' || event.key === 'PageDown' ? 1 : -1);
       let attempts = 0;
       while (disabledDate(next) && attempts < 366) {
@@ -334,7 +340,10 @@ export function CalendarPanel({
       </div>
       {view === 'date' && (
         <div className="leaf-calendar__weekdays">
-          {messages.weekdays.map((day) => (
+          {Array.from(
+            { length: 7 },
+            (_, index) => messages.weekdays[(index + weekStartsOn + 6) % 7] ?? String(index),
+          ).map((day) => (
             <span key={day}>{day}</span>
           ))}
         </div>
@@ -355,7 +364,9 @@ export function CalendarPanel({
           const time = startOfPeriod(date, cellMode).getTime();
           const checked = range
             ? range.some((endpoint) => samePeriod(date, endpoint))
-            : samePeriod(date, value);
+            : values
+              ? values.some((value) => samePeriod(date, value))
+              : samePeriod(date, value);
           const hovered = Boolean(range?.[0] && !range[1] && samePeriod(date, hoverDate));
           const isActive = Boolean(
             activeCell &&
@@ -391,7 +402,7 @@ export function CalendarPanel({
                 aria-current={sameDate(date, new Date()) ? 'date' : undefined}
                 disabled={
                   !withinPeriod(date, cellMode, minDate, maxDate) ||
-                  Boolean(view === picker && disabledDate?.(date))
+                  Boolean(selecting && disabledDate?.(date))
                 }
                 className={classes(
                   'leaf-date-picker__day',
@@ -399,7 +410,11 @@ export function CalendarPanel({
                   (checked || hovered) && 'leaf-date-picker__day--selected',
                 )}
                 onMouseEnter={() => {
-                  if (withinPeriod(date, cellMode, minDate, maxDate)) onHover?.(date);
+                  if (
+                    withinPeriod(date, cellMode, minDate, maxDate) &&
+                    !(selecting && disabledDate?.(date))
+                  )
+                    onHover?.(date);
                 }}
                 onClick={() => choose(date)}
                 onKeyDown={(event) => move(date, event)}
@@ -413,7 +428,7 @@ export function CalendarPanel({
                         ? `Q${Math.floor(date.getMonth() / 3) + 1}`
                         : date.getFullYear()}
                 </span>
-                {cellRender && view === picker && (
+                {cellRender && selecting && (
                   <span className="leaf-calendar__cell-content">{cellRender(date)}</span>
                 )}
               </button>

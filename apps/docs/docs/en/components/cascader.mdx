@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/cascader/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CascaderBasic, CascaderControlled } from '../../../src/components/en-form-examples';
 
@@ -23,21 +24,48 @@ A selection is committed at a leaf option. onChange supplies both the path and i
 
 </ComponentExample>
 
+## Search, multiple paths and lazy loading
+
+<ComponentExample title="Search, multiple paths and lazy loading" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/cascader/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Cascader API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | [`readonly CascaderOption[]`](#cascaderoption) | Required | Hierarchical options |
-| `value` / `defaultValue` | `readonly string[]` | `[]` | Controlled path / initial uncontrolled path |
-| `onChange` | [`(value: string[], selectedOptions: CascaderOption[]) => void`](#cascaderoption) | — | Runs when a leaf is selected or the path is cleared |
-| `allowClear` | `boolean` | `true` | Clearing returns two empty arrays |
-| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `options` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | Required | Required. Hierarchical options |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled` | `boolean` | `false` | Disable the control |
-| `name` / `form` | `string` | — | Field name / associated form ID |
-| `required` | `boolean` | `false` | Require a selection |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `name` | `string` | — | Field name / associated form ID |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `allowClear` | `boolean` | `true` | Clearing returns two empty arrays |
 | `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `readOnly` | `boolean` | — | Lock the value against typing, selection, clearing and removal. |
+| `showSearch` | `boolean` | — | Enable search input. |
+| `changeOnSelect` | `boolean` | — | Allow selecting intermediate levels. |
+| `displayRender` | `(labels: ReactNode[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => ReactNode` | — | Customize displayed paths. |
+| `optionRender` | `(option: `[`CascaderOption`](#cascaderoption)`) => ReactNode` | — | Customize option content. |
+| `loadData` | `(option: `[`CascaderOption`](#cascaderoption)`, signal: AbortSignal) => Promise<readonly `[`CascaderOption`](#cascaderoption)`[]>` | — | Load child nodes asynchronously and respect AbortSignal. |
+| `onLoadError` | `(error: unknown, option: `[`CascaderOption`](#cascaderoption)`) => void` | — | Called on loading failure, for retry feedback. |
+| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `multiple` | `false \| true` | `false` | Enable multiple selection; value and callback types change accordingly. |
+| `value` | `readonly string[] \| readonly (readonly string[])[]` | Required | Value; unique at the same level |
+| `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | Controlled path / initial uncontrolled path |
+| `onChange` | `((value: string[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => void) \| ((value: string[][], selectedOptions: `[`CascaderOption`](#cascaderoption)`[][]) => void)` | — | Runs when a leaf is selected or the path is cleared |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
 ### CascaderOption
 
@@ -59,3 +87,24 @@ import type { CascaderProps, CascaderOption } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## CascaderOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Required. Controlled value. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `searchLabel` | `string` | — | Plain text used for searching. |
+| `isLeaf` | `boolean` | — | Identify a leaf node, including in lazy data. |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `children` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | — | Content, or child nodes for hierarchical records. |
+
+## CascaderFieldNames
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Controlled value. |
+| `label` | `string` | — | Visible label or content. |
+| `children` | `string` | — | Content, or child nodes for hierarchical records. |
+| `disabled` | `string` | — | Disable interaction. |
+| `isLeaf` | `string` | — | Identify a leaf node, including in lazy data. |

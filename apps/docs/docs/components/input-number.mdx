@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/input-number/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { InputNumberBasic } from '../../src/examples/input-number/basic';
 
@@ -14,21 +15,39 @@ import { InputNumberBasic } from '../../src/examples/input-number/basic';
 
 </ComponentExample>
 
+## 格式化与高精度
+
+<ComponentExample title="格式化与高精度" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-number/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## InputNumber API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `number \| null` | `null` | 受控值 / 初始值，空值为 null |
-| `onChange` | `(value: number \| null) => void` | — | 有效数字变化或清空时触发 |
-| `min / max` | `number` | 无限制 | 可输入数字的范围 |
-| `step` | `number` | `1` | 增减步长 |
+| `value` | `number \| null \| string \| null` | `null` | 受控值 / 初始值，空值为 null |
+| `defaultValue` | `number \| null \| string \| null` | `null` | 受控值 / 初始值，空值为 null |
+| `onChange` | `((value: number \| null) => void) \| ((value: string \| null) => void)` | — | 有效数字变化或清空时触发 |
+| `min` | `number \| string` | 无限制 | 可输入数字的范围 |
+| `max` | `number \| string` | 无限制 | 可输入数字的范围 |
+| `step` | `number \| string` | `1` | 增减步长 |
 | `precision` | `number` | — | 小数精度，范围 0–15 |
 | `controls` | `boolean` | `true` | 展示增减按钮 |
 | `keyboard` | `boolean` | `true` | 支持上下方向键增减 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `prefix / suffix` | `ReactNode` | — | 前后装饰内容 |
-| `disabled / readOnly` | `boolean` | `false` | 禁用 / 只读 |
+| `prefix` | `ReactNode` | — | 前后装饰内容 |
+| `suffix` | `ReactNode` | — | 前后装饰内容 |
+| `stringMode` | `false \| true` | — | 使用字符串处理高精度数值、步长和边界。 |
+| `formatter` | `( value: number \| string \| null, info: { userTyping: boolean; input: string }, ) => string` | — | 格式化显示文字，不改变表单的原始值。 |
+| `parser` | `(text: string) => number \| string` | — | 把显示文字还原为数值。 |
+| `grouping` | `boolean` | — | 启用本地化数字分组。 |
+| `locale` | `string` | — | 语言或数字格式的区域标识。 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `readOnly` | `boolean` | `false` | 锁定业务值，禁止输入、选择、清除和删除。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 ## 类型
@@ -42,3 +61,49 @@ import type { InputNumberProps } from '@sudden3/leaf-ui';
 ## 使用说明
 
 输入中的负号或小数点会暂时保留。失焦或回车时校正范围和精度；增减操作避免常见的小数累加误差。设置 name 可通过 FormData 提交，required、form、autoComplete 等属性传给输入元素，并支持表单 reset。className 与 style 作用于外层容器。
+
+## NumericInputNumber API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `number \| null` | — | 受控值。 |
+| `defaultValue` | `number \| null` | `null` | 初始值；非受控模式支持表单重置。 |
+| `onChange` | `(value: number \| null) => void` | — | 值发生变化时调用。 |
+| `min` | `number` | — | 允许的最小值。 |
+| `max` | `number` | — | 允许的最大值。 |
+| `step` | `number` | `1` | 步长；Slider 设为 null 时仅选择刻度值。 |
+| `precision` | `number` | — | 小数位数。 |
+| `controls` | `boolean` | `true` | 设置 controls。 |
+| `keyboard` | `boolean` | `true` | 设置 keyboard。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 设置 status。 |
+| `prefix` | `ReactNode` | — | 前置内容。 |
+| `suffix` | `ReactNode` | — | 后置内容。 |
+| `stringMode` | `false` | — | 使用字符串处理高精度数值、步长和边界。 |
+| `formatter` | `( value: number \| string \| null, info: { userTyping: boolean; input: string }, ) => string` | — | 格式化显示文字，不改变表单的原始值。 |
+| `parser` | `(text: string) => number \| string` | — | 把显示文字还原为数值。 |
+| `grouping` | `boolean` | — | 启用本地化数字分组。 |
+| `locale` | `string` | — | 语言或数字格式的区域标识。 |
+
+## StringInputNumber API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `precision` | `number` | — | 小数位数。 |
+| `controls` | `boolean` | `true` | 设置 controls。 |
+| `keyboard` | `boolean` | `true` | 设置 keyboard。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 设置 status。 |
+| `prefix` | `ReactNode` | — | 前置内容。 |
+| `suffix` | `ReactNode` | — | 后置内容。 |
+| `formatter` | `( value: number \| string \| null, info: { userTyping: boolean; input: string }, ) => string` | — | 格式化显示文字，不改变表单的原始值。 |
+| `parser` | `(text: string) => number \| string` | — | 把显示文字还原为数值。 |
+| `grouping` | `boolean` | — | 启用本地化数字分组。 |
+| `locale` | `string` | — | 语言或数字格式的区域标识。 |
+| `stringMode` | `true` | — | 必需。使用字符串处理高精度数值、步长和边界。 |
+| `value` | `string \| null` | — | 受控值。 |
+| `defaultValue` | `string \| null` | `null` | 初始值；非受控模式支持表单重置。 |
+| `onChange` | `(value: string \| null) => void` | — | 值发生变化时调用。 |
+| `min` | `string` | — | 允许的最小值。 |
+| `max` | `string` | — | 允许的最大值。 |
+| `step` | `string` | `'1'` | 步长；Slider 设为 null 时仅选择刻度值。 |

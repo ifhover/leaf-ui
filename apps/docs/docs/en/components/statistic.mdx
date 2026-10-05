@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { StatisticBasic, StatisticCountdown } from '../../../src/examples/statistic/basic';
+
+# Statistic
+
+Display metrics and countdowns.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<StatisticBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/statistic/basic.tsx"
+```
+
+</ComponentExample>
+
+## Countdown
+
+<ComponentExample title="Countdown" preview={<StatisticCountdown english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/statistic/basic.tsx"
+```
+
+</ComponentExample>
+
+## Statistic API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | Title content. |
+| `value` | `number \| string` | — | Required. Controlled value. |
+| `precision` | `number` | — | Decimal precision. |
+| `grouping` | `boolean` | `true` | Use localized digit grouping. |
+| `prefix` | `ReactNode` | — | Leading content. |
+| `suffix` | `ReactNode` | — | Trailing content. |
+| `formatter` | `(value: number \| string) => ReactNode` | — | Customize the displayed metric value. |
+| `loading` | `boolean` | — | Show a loading state. |
+
+## Countdown API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | Title content. |
+| `prefix` | `ReactNode` | — | Leading content. |
+| `suffix` | `ReactNode` | — | Trailing content. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `value` | `number \| Date` | — | Required. Deadline as a Date or a millisecond timestamp. |
+| `format` | `string` | `'HH:mm:ss'` | Format using DD, HH, mm, ss, SSS; HH can show total hours. |
+| `onFinish` | `() => void` | — | Called once on completion. |
+| `onChange` | `(remaining: number) => void` | — | Called when the value changes. |
+| `initialRemaining` | `number` | — | Remaining milliseconds for SSR; updates from the deadline after mounting. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { StatisticProps, CountdownProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

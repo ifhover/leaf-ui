@@ -4,9 +4,9 @@
   display: inline-flex;
   overflow: hidden;
   max-width: 100%;
-  border-radius: var(--leaf-radius);
+  border-radius: var(--leaf-component-image-radius, var(--leaf-radius));
   vertical-align: middle;
-  background: var(--leaf-color-surface-muted);
+  background: var(--leaf-component-image-background, var(--leaf-color-surface-muted));
   img {
     display: block;
     width: 100%;

@@ -1,6 +1,6 @@
 @use '../styles/mixins' as mixins;
 .leaf-cascader {
-  @include mixins.field;
+  @include mixins.field('cascader');
   display: inline-flex;
   position: relative;
   height: var(--leaf-current-control-height);
@@ -60,4 +60,23 @@
   &__column .leaf-floating__option {
     justify-content: space-between;
   }
+}
+
+.leaf-cascader {
+  --leaf-current-control-height: var(--leaf-component-cascader-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-cascader-font-size, var(--leaf-font-size));
+}
+.leaf-cascader--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-cascader-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-cascader--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-cascader-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

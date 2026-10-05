@@ -98,3 +98,11 @@ import { Button } from '@sudden3/leaf-ui';
 总览位于 src/components/component-overview.tsx，采用静态 SVG 图片，资源保存在 docs/public/components。新增组件时更新卡片元数据和对应缩略图，无需在总览挂载交互组件。图标统一使用 lucide-react。
 
 选择类组件缩略图由 scripts/generate-picker-thumbnails.mjs 生成，包含静态控件与浮层示意，并复用 Lucide 图标；在此目录运行 `node scripts/generate-picker-thumbnails.mjs` 可重建。
+
+## API 与审计场景维护
+
+`node apps/docs/scripts/sync-component-api.mjs` 从公共 TypeScript 导出更新中英 API：简单联合类型直接展开，项目内对象类型链接到详细表格。生成器保留当前页面的人工说明与默认值，能够识别三列 / 四列表格与组合属性；`--from-ref=<git-ref>` 可恢复指定提交的说明。新增家族元数据在 scripts/component-metadata.mjs，AI 导出与 API 使用同一套页面映射。
+
+文档中的 API 表格默认值只写实际默认值；节点结构和回调信息无需制造默认值。每种示例要给出目的明确的标题或说明，不把不同状态挤成没有标识的一行。完整业务示例位于 src/examples/scenarios，包括复合字段 / 动态表单、Zod 校验与服务端错误、远程选项竞态。
+
+历史快照只复制版本导航和 AI 基础设施及其直接依赖。修改 export-ai-docs.mjs 的 import 后必须同步 build-versioned-site.mjs 的 platformFiles，并通过独立快照测试。未发布的新组件只进入工作区文档构建；线上与 `/v/` 仍按 npm gitHead 构建。

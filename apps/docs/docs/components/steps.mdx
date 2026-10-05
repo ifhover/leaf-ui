@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/steps/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { StepsBasic } from '../../src/examples/steps/basic';
 
@@ -14,28 +15,39 @@ import { StepsBasic } from '../../src/examples/steps/basic';
 
 </ComponentExample>
 
+## 点状与进度模式
+
+<ComponentExample title="点状与进度模式" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/steps/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Steps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly StepItem[]`](#stepitem) | 必填 | 步骤列表 |
+| `items` | `readonly `[`StepItem`](#stepitem)`[]` | 必填 | 必需。步骤列表 |
 | `current` | `number` | `0` | 当前步骤的索引，从 0 开始 |
 | `status` | `'process' \| 'finish' \| 'error'` | `'process'` | 当前步骤状态 |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 步骤尺寸 |
 | `loading` | `boolean` | `false` | 当前步骤展示加载图标 |
 | `onChange` | `(current: number) => void` | — | 设置后可点击步骤 |
+| `progressDot` | `boolean \| ((dot: ReactNode, info: { index: number; status: string }) => ReactNode)` | — | 使用点状步骤，可自定义点的内容。 |
+| `percent` | `number` | — | 完成百分比。 |
 
 ## StepItem
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定标识 |
-| `title` | `ReactNode` | 必填 | 步骤名称 |
+| `title` | `ReactNode` | 必填 | 必需。步骤名称 |
 | `description` | `ReactNode` | — | 补充说明 |
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | 覆盖该步骤状态 |
-| `disabled` | `boolean` | `false` | 禁止点击该步骤 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
 
 ## 类型
 

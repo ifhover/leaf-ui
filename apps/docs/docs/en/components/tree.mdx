@@ -1,4 +1,5 @@
 import { ExtensionDemo } from '../../../src/examples/en/tree/extensions';
+import { TreeCacheRefresh } from '../../../src/examples/tree/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TreeBasic } from '../../../src/examples/en/tree/basic';
 import { TreeCheckable } from '../../../src/examples/en/tree/checkable';
@@ -58,71 +59,92 @@ Drag a handle to the upper, middle or lower part of a target row to place a node
 
 </ComponentExample>
 
+## Refreshing asynchronous data
+
+Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data` or `loadData` also clears caches; keep their references stable across unrelated renders. Cancelled requests cannot overwrite the new data.
+
+<ComponentExample title="Refreshing asynchronous data" preview={<TreeCacheRefresh english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/tree/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Tree API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `data` | [`readonly TreeNode[]`](#treenode) | Required | Tree nodes |
-| `selectedKeys / defaultSelectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
-| `onSelect` | [`(keys: string[], info: TreeSelectInfo) => void`](#treeselectinfo) | — | Selection changes |
-| `multiple / selectable` | `boolean` | `false / true` | Multiple selection / allow selection |
-| `checkedKeys / defaultCheckedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
-| `onCheck` | [`(keys: string[], info: TreeCheckInfo) => void`](#treecheckinfo) | — | Check changes, including linked results |
-| `checkable / checkStrictly` | `boolean` | `false / false` | Show checkboxes / disable linked checks |
-| `expandedKeys / defaultExpandedKeys` | `readonly string[]` | `[]` | Controlled / initial expanded keys |
+| `data` | `readonly `[`TreeNode`](#treenode)`[]` | Required | Required. Tree nodes |
+| `selectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
+| `defaultSelectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
+| `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | Selection changes |
+| `multiple` | `boolean` | `false` | Multiple selection / allow selection |
+| `selectable` | `boolean` | `true` | Multiple selection / allow selection |
+| `checkable` | `boolean` | `false` | Show checkboxes / disable linked checks |
+| `checkStrictly` | `boolean` | `false` | Show checkboxes / disable linked checks |
+| `checkedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
+| `defaultCheckedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
+| `onCheck` | `(keys: string[], info: `[`TreeCheckInfo`](#treecheckinfo)`) => void` | — | Check changes, including linked results |
+| `expandedKeys` | `readonly string[]` | `[]` | Controlled / initial expanded keys |
+| `defaultExpandedKeys` | `readonly string[]` | `[]` | Controlled / initial expanded keys |
 | `defaultExpandAll` | `boolean` | `false` | Expand all nodes initially |
-| `onExpand` | [`(keys: string[], info: TreeExpandInfo) => void`](#treeexpandinfo) | — | Expansion changes |
-| `disabled / showIcon / showLine` | `boolean` | `false` | Disable interaction / show icons / show connecting lines |
+| `onExpand` | `(keys: string[], info: `[`TreeExpandInfo`](#treeexpandinfo)`) => void` | — | Expansion changes |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `showLine` | `boolean` | `false` | Disable interaction / show icons / show connecting lines |
+| `showIcon` | `boolean` | `false` | Disable interaction / show icons / show connecting lines |
 | `searchValue` | `string` | `''` | Filter nodes, retaining matches and ancestors |
-| `filterTreeNode` | [`(node: TreeNode, query: string) => boolean`](#treenode) | — | Custom search predicate |
+| `filterTreeNode` | `(node: `[`TreeNode`](#treenode)`, query: string) => boolean` | — | Custom search predicate |
 | `notFoundContent` | `ReactNode` | No options | Content when no nodes match |
-| `loadData` | [`(node: TreeNode, signal: AbortSignal) => Promise<readonly TreeNode[]>`](#treenode) | — | Load children on expansion; signal supports cancellation |
-| `onLoad` | [`(node: TreeNode, children: readonly TreeNode[]) => void`](#treenode) | — | Children loaded |
-| `onLoadError` | [`(error: unknown, node: TreeNode) => void`](#treenode) | — | Loading failed; expand again to retry |
-| `virtual` | `boolean` | `false` | Render visible items only |
+| `loadData` | `(node: `[`TreeNode`](#treenode)`, signal: AbortSignal) => Promise<readonly `[`TreeNode`](#treenode)`[]>` | — | Load children on expansion; signal supports cancellation |
+| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `nodeRender` | `(node: `[`TreeNode`](#treenode)`) => ReactNode` | — | Customize node content. |
+| `onLoad` | `(node: `[`TreeNode`](#treenode)`, children: readonly `[`TreeNode`](#treenode)`[]) => void` | — | Children loaded |
+| `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | Loading failed; expand again to retry |
+| `virtual` | `boolean` | `false` | Render visible nodes only; enable for large trees. |
 | `height` | `number` | `320` | Height, numbers are in pixels |
 | `itemHeight` | `number` | `34` | Estimated virtual row height |
-| `draggable` | [`boolean \| ((node: TreeNode) => boolean)`](#treenode) | `false` | Enable node drag handles |
-| `allowDrop` | [`(info: Omit<TreeDropInfo, 'data'>) => boolean`](#treedropinfo-api) | — | Restrict drop positions |
-| `onDrop` | [`(info: TreeDropInfo) => void`](#treedropinfo-api) | — | Drop result; update data in the caller |
+| `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | Enable node drag handles |
+| `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | Restrict drop positions |
+| `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | Drop result; update data in the caller |
 
 ## TreeNode
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `key` | `string` | Unique key, required |
-| `title` | `ReactNode` | Node content, required |
-| `children` | [`readonly TreeNode[]`](#treenode) | Child nodes using this same structure |
-| `disabled` | `boolean` | Prevent selection/checking while keeping descendants browsable |
-| `selectable / checkable` | `boolean` | Allow selection / display a checkbox; enabled by default |
-| `disableCheckbox` | `boolean` | Disable checks and stop check propagation |
-| `icon` | `ReactNode` | Custom icon |
-| `searchLabel` | `string` | Search and accessible text for non-text titles |
-| `isLeaf` | `boolean` | false allows asynchronously loaded children |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Unique key, required |
+| `title` | `ReactNode` | — | Required. Node content, required |
+| `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | Child nodes using this same structure |
+| `icon` | `ReactNode` | — | Custom icon |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `selectable` | `boolean` | — | Allow selection / display a checkbox; enabled by default |
+| `checkable` | `boolean` | — | Allow selection / display a checkbox; enabled by default |
+| `disableCheckbox` | `boolean` | — | Disable checks and stop check propagation |
+| `searchLabel` | `string` | — | Search and accessible text for non-text titles |
+| `isLeaf` | `boolean` | — | false allows asynchronously loaded children |
 
 ## TreeSelectInfo
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | Operated node |
-| `selected` | `boolean` | Whether the node is now selected |
-| `selectedNodes` | [`readonly TreeNode[]`](#treenode) | All selected nodes |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
+| `selected` | `boolean` | — | Required. Whether the node is now selected |
+| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | Required. All selected nodes |
 
 ## TreeCheckInfo
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | Operated node |
-| `checked` | `boolean` | Whether the node is now checked |
-| `checkedNodes` | [`readonly TreeNode[]`](#treenode) | All fully checked nodes |
-| `halfCheckedKeys` | `readonly string[]` | Partially checked keys |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
+| `checked` | `boolean` | — | Required. Whether the node is now checked |
+| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | Required. All fully checked nodes |
+| `halfCheckedKeys` | `readonly string[]` | — | Required. Partially checked keys |
 
 ## TreeExpandInfo
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | Operated node |
-| `expanded` | `boolean` | Whether the node is now expanded |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
+| `expanded` | `boolean` | — | Required. Whether the node is now expanded |
 
 ## Types
 
@@ -153,10 +175,10 @@ import type { TreeDropInfo } from '@sudden3/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | Required | Operated node |
-| `target` | [`TreeNode`](#treenode) | Required | Target tree node |
-| `position` | `'before' \| 'inside' \| 'after'` | Required | Display or insertion position |
-| `data` | [`TreeNode[]`](#treenode) | Required | Hierarchical data |
+| `node` | [`TreeNode`](#treenode) | Required | Required. Operated node |
+| `target` | [`TreeNode`](#treenode) | Required | Required. Target node receiving the drop. |
+| `position` | `'before' \| 'inside' \| 'after'` | Required | Required. Place before, inside or after the target node. |
+| `data` | [`TreeNode`](#treenode)`[]` | Required | Required. Hierarchical data |
 
 ## moveTreeNode
 

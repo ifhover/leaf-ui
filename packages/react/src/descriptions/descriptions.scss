@@ -1,6 +1,7 @@
 .leaf-descriptions {
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  color: var(--leaf-component-descriptions-color, var(--leaf-color-text));
+  font: var(--leaf-component-descriptions-font-size, var(--leaf-font-size))/1.6
+    var(--leaf-font-family);
   &__header {
     display: flex;
     align-items: center;

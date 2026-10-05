@@ -28,8 +28,10 @@
     "format:scss": "prettier --write \"**/*.scss\""
   },
   "devDependencies": {
+    "@babel/parser": "^7.29.9",
     "@biomejs/biome": "^2.5.15",
     "@types/node": "^26.6.4",
+    "opencc-js": "^1.4.2",
     "prettier": "^3.9.9",
     "typescript": "^7.0.2"
   }

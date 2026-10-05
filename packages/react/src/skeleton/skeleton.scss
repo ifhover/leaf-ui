@@ -1,7 +1,7 @@
 .leaf-skeleton {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: var(--leaf-component-skeleton-gap, 16px);
   min-width: 0;
   &__content {
     flex: 1;

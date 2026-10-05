@@ -1,9 +1,18 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useLeafConfig } from '../config-provider/context';
 import type { LeafThemeStyle } from '../theme';
+import { composedParent } from './dom';
 
 /** Transfer inherited variables into a portal without moving the React context. */
-export function ScopedPortal({ children }: { children: ReactNode }) {
+export function ScopedPortal({
+  children,
+  container,
+}: {
+  children: ReactNode;
+  container?: Element | DocumentFragment | (() => Element | DocumentFragment);
+}) {
+  const config = useLeafConfig();
   const anchor = useRef<HTMLSpanElement>(null);
   const [style, setStyle] = useState<LeafThemeStyle>();
   useEffect(() => {
@@ -11,7 +20,10 @@ export function ScopedPortal({ children }: { children: ReactNode }) {
     if (!node) return;
     const sync = () => {
       const computed = getComputedStyle(node);
-      const next: LeafThemeStyle = { colorScheme: computed.colorScheme };
+      const next: LeafThemeStyle = {
+        colorScheme: computed.colorScheme,
+        direction: computed.direction as LeafThemeStyle['direction'],
+      };
       for (let i = 0; i < computed.length; i++) {
         const key = computed.item(i);
         if (key.startsWith('--leaf-'))
@@ -25,9 +37,9 @@ export function ScopedPortal({ children }: { children: ReactNode }) {
     while (parent) {
       observer.observe(parent, {
         attributes: true,
-        attributeFilter: ['style', 'class', 'data-leaf-theme'],
+        attributeFilter: ['style', 'class', 'data-leaf-theme', 'dir'],
       });
-      parent = parent.parentElement;
+      parent = composedParent(parent);
     }
     return () => observer.disconnect();
   }, []);
@@ -40,7 +52,9 @@ export function ScopedPortal({ children }: { children: ReactNode }) {
           <div className="leaf-portal-scope" style={style}>
             {children}
           </div>,
-          document.body,
+          (typeof container === 'function' ? container() : container) ??
+            config.getPopupContainer?.() ??
+            document.body,
         )}
     </>
   );

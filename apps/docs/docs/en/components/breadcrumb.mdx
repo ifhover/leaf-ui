@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/breadcrumb/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { BreadcrumbBasic } from '../../../src/examples/en/breadcrumb/basic';
 
@@ -14,24 +15,37 @@ Show the current page within a navigation hierarchy.
 
 </ComponentExample>
 
+## Collapse long paths
+
+<ComponentExample title="Collapse long paths" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/breadcrumb/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Breadcrumb API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly BreadcrumbItem[]`](#breadcrumbitem) | Required | Path items |
+| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | Required | Required. Path items |
 | `separator` | `ReactNode` | ChevronRight | Separator |
+| `maxItems` | `number` | — | Maximum items before collapsing a path. |
+| `itemsBeforeCollapse` | `number` | `1` | Leading items retained after collapse. |
+| `itemsAfterCollapse` | `number` | `1` | Trailing items retained after collapse. |
+| `itemRender` | `(item: `[`BreadcrumbItem`](#breadcrumbitem)`, index: number) => ReactNode` | — | Customize item content. |
 | `aria-label` | `string` | Locale default | Navigation label |
 
 ## BreadcrumbItem
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable identifier |
-| `title` | `ReactNode` | Required | Page title |
+| `title` | `ReactNode` | Required | Required. Page title |
 | `icon` | `ReactNode` | — | Leading icon |
-| `href` | `string` | — | Link destination; omit for plain text |
-| `target` | `string` | — | Link target |
-| `onClick` | `MouseEventHandler<HTMLAnchorElement>` | — | Link click handler |
+| `menu` | `readonly `[`DropdownItem`](../components/dropdown#dropdownitem)`[]` | — | Dropdown items for a breadcrumb. |
+| `href` | `string` | — | Link destination. |
+| `target` | `string` | — | Target selector or element getter; omit to center the step. |
 
 ## Types
 

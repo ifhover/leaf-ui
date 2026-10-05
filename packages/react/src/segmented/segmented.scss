@@ -5,10 +5,10 @@
   width: max-content;
   max-width: 100%;
   align-self: flex-start;
-  gap: 3px;
-  padding: 3px;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface-muted);
+  gap: var(--leaf-component-segmented-gap, 3px);
+  padding: var(--leaf-component-segmented-padding, 3px);
+  border-radius: var(--leaf-component-segmented-radius, var(--leaf-radius));
+  background: var(--leaf-component-segmented-background, var(--leaf-color-surface-muted));
   box-sizing: border-box;
   &--block {
     display: flex;
@@ -62,4 +62,23 @@
   .leaf-segmented > button {
     transition: none;
   }
+}
+
+.leaf-segmented {
+  --leaf-current-control-height: var(--leaf-component-segmented-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-segmented-font-size, var(--leaf-font-size));
+}
+.leaf-segmented--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-segmented-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-segmented--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-segmented-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

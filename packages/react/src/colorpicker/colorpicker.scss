@@ -1,7 +1,8 @@
 @use '../styles/mixins' as mixins;
 .leaf-color-picker {
-  @include mixins.field;
+  @include mixins.field('color-picker');
   display: inline-flex;
+  flex: none;
   align-items: center;
   width: auto;
   vertical-align: middle;
@@ -221,4 +222,68 @@
       outline-offset: 2px;
     }
   }
+}
+
+.leaf-color-picker__gradient {
+  padding: 16px;
+}
+.leaf-color-picker__gradient-preview {
+  height: 64px;
+  border-radius: var(--leaf-radius);
+  margin-block-end: 12px;
+}
+.leaf-color-picker__stops {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block-end: 16px;
+  > button:not(.leaf-button) {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--leaf-color-surface);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--leaf-color-border);
+    cursor: pointer;
+    &[aria-pressed='true'] {
+      box-shadow: 0 0 0 2px var(--leaf-color-primary);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 3px;
+    }
+  }
+}
+.leaf-color-picker__gradient-field {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-block: 12px;
+  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+}
+.leaf-color-picker__gradient .leaf-color-picker {
+  width: 100%;
+}
+
+.leaf-color-picker {
+  --leaf-current-control-height: var(
+    --leaf-component-color-picker-height,
+    var(--leaf-control-height)
+  );
+  --leaf-current-font-size: var(--leaf-component-color-picker-font-size, var(--leaf-font-size));
+}
+.leaf-color-picker--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-color-picker-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-color-picker--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-color-picker-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

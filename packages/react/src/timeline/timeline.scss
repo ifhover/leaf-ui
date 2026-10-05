@@ -1,9 +1,9 @@
 .leaf-timeline {
   list-style: none;
   margin: 0;
-  padding: 0;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  padding: var(--leaf-component-timeline-padding, 0);
+  color: var(--leaf-component-timeline-color, var(--leaf-color-text));
+  font: var(--leaf-component-timeline-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   &__item {
     position: relative;
     padding: 0 0 24px 26px;

@@ -32,13 +32,13 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--leaf-component-button-gap, 6px);
   min-height: var(--leaf-button-height, var(--leaf-current-control-height));
-  padding: 0 14px;
+  padding: var(--leaf-component-button-padding, 0 14px);
   border: 1px solid transparent;
-  border-radius: var(--leaf-button-radius, var(--leaf-radius));
+  border-radius: var(--leaf-component-button-radius, var(--leaf-button-radius, var(--leaf-radius)));
   font-family: var(--leaf-font-family);
-  font-size: var(--leaf-current-font-size);
+  font-size: var(--leaf-component-button-font-size, var(--leaf-current-font-size));
   font-weight: var(--leaf-font-weight);
   line-height: 1.5;
   text-decoration: none;
@@ -213,4 +213,23 @@
   padding: 0;
   margin: 0;
   min-width: 0;
+}
+
+.leaf-button {
+  --leaf-current-control-height: var(--leaf-component-button-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-button-font-size, var(--leaf-font-size));
+}
+.leaf-button--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-button-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-button--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-button-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

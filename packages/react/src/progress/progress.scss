@@ -25,6 +25,31 @@
       width var(--leaf-motion-duration),
       background-color var(--leaf-motion-duration);
   }
+  &--dashboard {
+    .leaf-progress__arc {
+      stroke-linecap: butt;
+    }
+  }
+  &--steps {
+    width: 100%;
+    .leaf-progress__track {
+      display: flex;
+      gap: 4px;
+      background: transparent;
+    }
+    .leaf-progress__step {
+      height: 100%;
+      flex: 1;
+      background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+      border-radius: 100px;
+      &[data-filled] {
+        background: var(--leaf-progress-color);
+      }
+    }
+  }
+  &__arc--success {
+    stroke: var(--leaf-color-success);
+  }
   &__info {
     flex-shrink: 0;
     min-width: 36px;
@@ -105,4 +130,8 @@
       animation: none;
     }
   }
+}
+
+.leaf-progress .leaf-progress__arc--success {
+  stroke: var(--leaf-color-success);
 }

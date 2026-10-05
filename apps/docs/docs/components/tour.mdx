@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
+
+# Tour 引导
+
+分步骤介绍页面上的功能。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<TourBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
+```
+
+</ComponentExample>
+
+## 欢迎说明
+
+<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
+```
+
+</ComponentExample>
+
+## TourStep
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 稳定且唯一的标识。 |
+| `title` | `ReactNode` | — | 必需。标题内容。 |
+| `description` | `ReactNode` | — | 补充说明。 |
+| `target` | `string \| (() => HTMLElement \| null)` | — | 目标的选择器或返回元素的函数；省略时居中。 |
+| `placement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | 布局或展示位置。 |
+
+## Tour API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | — | 必需。控制面板是否展开。 |
+| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | — | 必需。引导的步骤列表。 |
+| `current` | `number` | — | 受控的当前步骤索引。 |
+| `defaultCurrent` | `number` | `0` | 初始步骤索引。 |
+| `onChange` | `(current: number) => void` | — | 值发生变化时调用。 |
+| `onClose` | `() => void` | — | 请求关闭时调用。 |
+| `onFinish` | `() => void` | — | 完成时调用一次。 |
+| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | 目标缺失时居中、跳过或关闭。 |
+| `mask` | `boolean` | `true` | 展示引导遮罩。 |
+| `padding` | `number` | `8` | 内容或高亮目标的内边距。 |
+| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { TourStep, TourProps } from '@sudden3/leaf-ui';
+```
+
+为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

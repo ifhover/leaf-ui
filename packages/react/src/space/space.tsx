@@ -22,7 +22,11 @@ export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
   },
   ref,
 ) {
-  const sizes = { sm: 8, md: 16, lg: 24 };
+  const sizes = {
+    sm: 'var(--leaf-spacing-sm, 8px)',
+    md: 'var(--leaf-spacing-md, 16px)',
+    lg: 'var(--leaf-spacing-lg, 24px)',
+  };
   const gap =
     typeof size === 'string'
       ? sizes[size]

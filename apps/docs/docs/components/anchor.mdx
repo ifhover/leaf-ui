@@ -1,0 +1,63 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { AnchorBasic, AnchorAffix } from '../../src/examples/anchor/basic';
+
+# Anchor 锚点与固钉
+
+浏览长页目录并保持重要操作可见。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<AnchorBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/anchor/basic.tsx"
+```
+
+</ComponentExample>
+
+## 自定义滚动区域
+
+<ComponentExample title="自定义滚动区域" preview={<AnchorAffix />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/anchor/basic.tsx"
+```
+
+</ComponentExample>
+
+## AnchorItem
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 必需。稳定且唯一的标识。 |
+| `title` | `ReactNode` | — | 必需。标题内容。 |
+| `href` | `string` | — | 必需。链接目标。 |
+| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | 子内容；嵌套数据类型表示子节点。 |
+
+## Anchor API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | 必需。展示的条目。 |
+| `container` | `() => HTMLElement \| Window` | — | 自定义挂载或滚动容器。 |
+| `offset` | `number` | `12` | 滚动目标距离容器顶部的像素数。 |
+| `activeKey` | `string` | — | 受控的当前章节。 |
+| `onActiveChange` | `(key: string) => void` | — | 当前章节变化时调用。 |
+| `smooth` | `boolean` | `true` | 启用平滑滚动，减少动画设置下会自动关闭。 |
+
+## Affix API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `offsetTop` | `number` | `0` | 固定位置距离容器顶部的像素数。 |
+| `offsetBottom` | `number` | — | 固定位置距离容器底部的像素数。 |
+| `container` | `() => HTMLElement \| Window` | — | 自定义挂载或滚动容器。 |
+| `onAffixChange` | `(affixed: boolean) => void` | — | 固定状态变化时调用。 |
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { AnchorItem, AnchorProps, AffixProps } from '@sudden3/leaf-ui';
+```
+
+为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

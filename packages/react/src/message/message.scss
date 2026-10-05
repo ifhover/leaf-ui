@@ -39,16 +39,16 @@
 .leaf-message {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--leaf-component-message-gap, 9px);
   max-width: 100%;
   box-sizing: border-box;
-  padding: 11px 16px;
+  padding: var(--leaf-component-message-padding, 11px 16px);
   border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface);
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
-  box-shadow: 0 6px 24px #14201918;
+  border-radius: var(--leaf-component-message-radius, var(--leaf-radius));
+  background: var(--leaf-component-message-background, var(--leaf-color-surface));
+  color: var(--leaf-component-message-color, var(--leaf-color-text));
+  font: var(--leaf-component-message-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  box-shadow: var(--leaf-component-message-shadow, 0 6px 24px #14201918);
   pointer-events: auto;
   transform: translateY(0);
   transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);

@@ -14,9 +14,9 @@ import {
 import { tabbable } from 'tabbable';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
-import { FloatingPanel, useFloatingDismiss } from '../shared/floating';
+import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
 
-export interface PopoverProps {
+export interface PopoverProps extends PopupOptions {
   children: ReactElement<
     HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean }
   >;
@@ -65,6 +65,11 @@ export function Popover({
   width = 'max-content',
   maxWidth = 320,
   className,
+  popupPlacement,
+  popupClassName,
+  popupStyle,
+  popupRender,
+  getPopupContainer,
   style,
   'aria-label': label,
 }: PopoverProps) {
@@ -170,16 +175,18 @@ export function Popover({
       })}
       <FloatingPanel
         open={open}
+        render={popupRender}
+        container={getPopupContainer}
         triggerRef={trigger}
         panelRef={panel}
         id={id}
         role={mode === 'click' ? 'dialog' : 'tooltip'}
         tabIndex={-1}
-        placement={placement}
+        placement={popupPlacement ?? placement}
         width={width}
         maxWidth={maxWidth}
-        className={classes('leaf-floating', 'leaf-popover', className)}
-        style={style}
+        className={classes('leaf-floating', 'leaf-popover', className, popupClassName)}
+        style={{ ...style, ...popupStyle }}
         aria-label={label ?? (typeof title === 'string' ? title : undefined)}
         aria-labelledby={title != null ? `${id}-title` : undefined}
         onPointerEnter={() => {

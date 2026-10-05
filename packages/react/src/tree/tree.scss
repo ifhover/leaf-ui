@@ -1,7 +1,7 @@
 .leaf-tree {
   min-width: 0;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  color: var(--leaf-component-tree-color, var(--leaf-color-text));
+  font: var(--leaf-component-tree-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
   &__item {
     outline: none;
   }

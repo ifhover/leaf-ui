@@ -70,6 +70,7 @@ export function FormValue({ value, name, form, disabled, required, triggerRef }:
       disabled={disabled}
       required={required}
       onChange={() => {}}
+      onFocus={() => triggerRef.current?.focus()}
       onInvalid={(event) => {
         event.preventDefault();
         triggerRef.current?.focus();

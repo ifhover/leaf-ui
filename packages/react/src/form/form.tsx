@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
 
@@ -45,7 +45,7 @@ const FormContext = createContext({
   registerError: (_id: string, _error: FormError | null) => {},
 });
 interface FieldContextValue {
-  id: string;
+  id?: string;
   labelId?: string;
   descriptionId?: string;
   error?: ReactNode;
@@ -54,7 +54,14 @@ interface FieldContextValue {
 }
 const FieldContext = createContext<FieldContextValue | undefined>(undefined);
 export function useFormField() {
-  return useContext(FieldContext);
+  const field = useContext(FieldContext);
+  const form = useContext(FormContext);
+  return form.disabled ? { ...field, disabled: true } : field;
+}
+
+/** Internal controls belong to the composite value, not to the outer field. */
+export function FieldScope({ children }: { children: ReactNode }) {
+  return <FieldContext.Provider value={undefined}>{children}</FieldContext.Provider>;
 }
 
 export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(

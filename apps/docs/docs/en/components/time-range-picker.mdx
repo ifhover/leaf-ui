@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/time-range-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TimeRangePickerBasic } from '../../../src/examples/en/time-range-picker/basic';
 import { TimeRangePickerOptions } from '../../../src/examples/en/time-range-picker/advanced';
@@ -38,13 +39,30 @@ import type { TimeRangePickerProps, TimeRange, TimeParts } from '@sudden3/leaf-u
 
 The exported `TimeRange` type is `readonly [string, string]`, using 24-hour time strings.
 
+## Restrict available times
+
+<ComponentExample title="Restrict available times" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/time-range-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## TimeRangePickerProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
 | `status` | `'error' \| 'warning'` | — | Display state |
 | `allowClear` | `boolean` | `true` | Show the clear button |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
 | `value` | `readonly [string, string] \| null` | — | Controlled value |
 | `defaultValue` | `readonly [string, string] \| null` | `null` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(value: readonly [string, string] \| null) => void` | — | Value change callback |
@@ -54,7 +72,7 @@ The exported `TimeRange` type is `readonly [string, string]`, using 24-hour time
 | `minuteStep` | `number` | `5` | Minute interval |
 | `secondStep` | `number` | `1` | Second interval |
 | `allowOvernight` | `boolean` | `false` | Allow overnight ranges |
-| `disabledTime` | [`(parts: TimeParts, position: 'start' \| 'end') => boolean`](#timeparts-api) | — | Restrict start and end times |
+| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end') => boolean` | — | Restrict start and end times |
 
 ## TimeParts API
 

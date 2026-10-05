@@ -47,14 +47,15 @@
 }
 .leaf-notification {
   display: flex;
-  gap: 12px;
-  padding: 18px;
+  gap: var(--leaf-component-notification-gap, 12px);
+  padding: var(--leaf-component-notification-padding, 18px);
   border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius-lg);
-  background: var(--leaf-color-surface);
-  box-shadow: 0 8px 32px #00000014;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
+  background: var(--leaf-component-notification-background, var(--leaf-color-surface));
+  box-shadow: var(--leaf-component-notification-shadow, 0 8px 32px #00000014);
+  color: var(--leaf-component-notification-color, var(--leaf-color-text));
+  font: var(--leaf-component-notification-font-size, var(--leaf-font-size))/1.6
+    var(--leaf-font-family);
   pointer-events: auto;
   transform: translateX(0);
   transition: transform var(--leaf-motion-duration);

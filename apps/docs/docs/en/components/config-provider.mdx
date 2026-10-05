@@ -30,9 +30,13 @@ Small and large controls follow the base height. Use tokens only when a particul
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `locale` | `LeafLocale` | `'zh-CN'` | Built-in language; nested providers inherit |
 | `theme` | [`LeafTheme`](#leaftheme) | — | Regional settings; omitted fields inherit |
-| `locale` | `'zh-CN' \| 'en-US'` | `'zh-CN'` | Built-in language; nested providers inherit |
-| `children` | `ReactNode` | — | Content in the region |
+| `messages` | `Partial<`[`LeafMessages`](#leafmessages)`>` | — | Override built-in component messages. |
+| `textMessages` | `Record<string, string>` | — | Override extended component labels using the English source text as the key. |
+| `direction` | `'ltr' \| 'rtl'` | — | Text and interaction direction. |
+| `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | First day of the week; 0 is Sunday and 1 is Monday. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
 
 Other native div attributes, className and style apply to the container. Configure themes through theme.
 
@@ -48,6 +52,12 @@ Other native div attributes, className and style apply to the container. Configu
 | `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
 | `motion` | `boolean` | `true` | Enable transitions and loading icon rotation; respects reduced motion |
 | `tokens` | [`LeafThemeTokens`](#leafthemetokens) | — | Optional advanced overrides |
+| `spacing` | `number` | — | Base spacing; other spacing values are derived. |
+| `lineHeight` | `number` | — | Body line height. |
+| `headingWeight` | `number` | — | Heading weight. |
+| `elevation` | `'none' \| 'soft' \| 'medium'` | — | Overall shadow strength. |
+| `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Responsive thresholds used by useBreakpoint. |
+| `components` | `Record<string, `[`LeafComponentTokens`](../guide/theming#leafcomponenttokens)`>` | — | Override local styles by component name. |
 
 Defaults apply to an unconfigured application. Nested providers inherit supplied ancestor settings. CSS lengths are accepted; derived small height and font values stay at or above 1px.
 
@@ -58,25 +68,46 @@ All fields are optional. Explicit values take precedence over generated values.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `onPrimaryColor` | `string` | Theme | Text on primary backgrounds |
-| `dangerColor / onDangerColor` | `string` | Appearance | Danger background / foreground |
-| `successColor / warningColor / infoColor` | `string` | Appearance | Success / warning / information |
-| `textColor / mutedTextColor` | `string` | Appearance | Main / secondary text |
-| `surfaceColor / mutedSurfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `dangerColor` | `string` | Appearance | Danger background / foreground |
+| `onDangerColor` | `string` | Appearance | Danger background / foreground |
+| `successColor` | `string` | Appearance | Success / warning / information |
+| `warningColor` | `string` | Appearance | Success / warning / information |
+| `infoColor` | `string` | Appearance | Success / warning / information |
+| `textColor` | `string` | Appearance | Main / secondary text |
+| `mutedTextColor` | `string` | Appearance | Main / secondary text |
+| `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `mutedSurfaceColor` | `string` | Appearance | Main / subtle surfaces |
 | `borderColor` | `string` | Appearance | Neutral borders |
-| `borderRadiusSm / borderRadiusLg` | `number \| string` | Base × 0.6 / 1.6 | Small / large radius override |
-| `controlHeightSm / controlHeightLg` | `number \| string` | Base − / + 6px | Small / large height override |
-| `fontSizeSm / fontSizeLg` | `number \| string` | Base − / + 2px | Small / large font override |
+| `borderRadiusSm` | `number \| string` | `Base × 0.6` | Small / large radius override |
+| `borderRadiusLg` | `number \| string` | `1.6` | Small / large radius override |
+| `controlHeightSm` | `number \| string` | `Base −` | Small / large height override |
+| `controlHeightLg` | `number \| string` | `+ 6px` | Small / large height override |
+| `fontSizeSm` | `number \| string` | `Base −` | Small / large font override |
+| `fontSizeLg` | `number \| string` | `+ 2px` | Small / large font override |
 | `fontWeight` | `number` | `500` | Weight used by buttons |
 | `motionDuration` | `number \| string` | `160` | Numbers are ms; CSS times also accepted; motion=false forces 0 |
 | `motionEasing` | `string` | `'ease'` | Transition timing function |
-| `popupZIndex / modalZIndex / messageZIndex` | `number` | `1000 / 1100 / 1200` | Popup / modal / message stacking |
-| `buttonBorderRadius / buttonHeight` | `number \| string` | Control size | Button-only radius / shared height override |
+| `popupZIndex` | `number` | `1000` | Popup / modal / message stacking |
+| `modalZIndex` | `number` | `1100` | Popup / modal / message stacking |
+| `messageZIndex` | `number` | `1200` | Popup / modal / message stacking |
+| `buttonBorderRadius` | `number \| string` | Control size | Button-only radius / shared height override |
+| `buttonHeight` | `number \| string` | Control size | Button-only radius / shared height override |
 | `choiceBorderRadius` | `number \| string` | Base × 0.5 | Checkbox radius |
 | `focusColor` | `string` | Semantic color | Focus outlines |
-| `primaryHoverColor / primaryActiveColor` | `string` | Primary color | Hover / pressed primary states |
-| `primarySoftColor / primarySoftHoverColor / primarySoftActiveColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primaryHoverColor` | `string` | Primary color | Hover / pressed primary states |
+| `primaryActiveColor` | `string` | Primary color | Hover / pressed primary states |
+| `primarySoftColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primarySoftHoverColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primarySoftActiveColor` | `string` | Primary color | Soft primary backgrounds and states |
 | `primaryBorderColor` | `string` | Primary color | Primary border |
-| `dangerHoverColor / dangerActiveColor` | `string` | Danger color | Hover / pressed danger states |
+| `dangerHoverColor` | `string` | Danger color | Hover / pressed danger states |
+| `dangerActiveColor` | `string` | Danger color | Hover / pressed danger states |
+| `spacingSm` | `number \| string` | — | Configure spacing sm. |
+| `spacingLg` | `number \| string` | — | Configure spacing lg. |
+| `shadowSm` | `string` | — | Configure shadow sm. |
+| `shadowMd` | `string` | — | Configure shadow md. |
+| `shadowLg` | `string` | — | Configure shadow lg. |
+| `lineHeight` | `number` | — | Body line height. |
 
 ## Types
 
@@ -94,3 +125,94 @@ const advanced: LeafThemeTokens = { controlHeightLg: 44 };
 Nested regions merge tokens by field; explicit derived-size overrides remain inherited. Floating panels, Modal, confirmations and messages inherit the calling region’s configuration. ConfigProvider manages confirmations, messages, notifications and loading bars automatically; descendants call the corresponding hooks. See [Confirm](/en/components/confirm) and [Message](/en/components/message).
 
 Translate application content, labels and options yourself. Configure themes through ConfigProvider and consume CSS variables in custom components. See [theming](/en/guide/theming) and [SSR usage](/en/guide/ssr).
+
+## LeafMessages
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `select` | `string` | — | Required. Configure select. |
+| `empty` | `string` | — | Required. Configure empty. |
+| `noMatches` | `string` | — | Required. Configure no matches. |
+| `clearSelection` | `string` | — | Required. Configure clear selection. |
+| `date` | `string` | — | Required. Configure date. |
+| `time` | `string` | — | Required. Configure time. |
+| `dateTime` | `string` | — | Required. Configure date time. |
+| `range` | `string` | — | Required. Configure range. |
+| `clearDate` | `string` | — | Required. Configure clear date. |
+| `clearTime` | `string` | — | Required. Configure clear time. |
+| `clearRange` | `string` | — | Required. Configure clear range. |
+| `clearCascader` | `string` | — | Required. Configure clear cascader. |
+| `chooseDate` | `string` | — | Required. Configure choose date. |
+| `chooseTime` | `string` | — | Required. Configure choose time. |
+| `previousMonth` | `string` | — | Required. Configure previous month. |
+| `nextMonth` | `string` | — | Required. Configure next month. |
+| `previousYear` | `string` | — | Required. Configure previous year. |
+| `nextYear` | `string` | — | Required. Configure next year. |
+| `previousYears` | `string` | — | Required. Configure previous years. |
+| `nextYears` | `string` | — | Required. Configure next years. |
+| `hours` | `string` | — | Required. Configure hours. |
+| `minutes` | `string` | — | Required. Configure minutes. |
+| `seconds` | `string` | — | Required. Configure seconds. |
+| `period` | `string` | — | Required. Configure period. |
+| `am` | `string` | — | Required. Configure am. |
+| `pm` | `string` | — | Required. Configure pm. |
+| `weekdays` | `string[]` | — | Required. Configure weekdays. |
+| `confirm` | `string` | — | Required. Configure confirm. |
+| `cancel` | `string` | — | Required. Cancel the current request. |
+| `close` | `string` | — | Required. Configure close. |
+| `start` | `string` | — | Required. Configure start. |
+| `end` | `string` | — | Required. Configure end. |
+| `required` | `string` | — | Required. Require a non-empty value; compound controls validate once. |
+| `invalid` | `string` | — | Required. Configure invalid. |
+| `useTime` | `string` | — | Required. Configure use time. |
+| `year` | `string` | — | Required. Configure year. |
+| `month` | `string` | — | Required. Configure month. |
+| `week` | `string` | — | Required. Configure week. |
+| `dateMode` | `string` | — | Required. Configure date mode. |
+| `loading` | `string` | — | Required. Show a loading state. |
+| `today` | `string` | — | Required. Configure today. |
+| `now` | `string` | — | Required. Configure now. |
+| `selectTime` | `string` | — | Required. Configure select time. |
+| `selectDate` | `string` | — | Required. Configure select date. |
+| `remove` | `string` | — | Required. Configure remove. |
+| `search` | `string` | — | Required. Configure search. |
+| `breadcrumb` | `string` | — | Required. Configure breadcrumb. |
+| `pagination` | `string` | — | Required. Configure pagination. |
+| `previousPage` | `string` | — | Required. Configure previous page. |
+| `nextPage` | `string` | — | Required. Configure next page. |
+| `page` | `string` | — | Required. Configure page. |
+| `pageSize` | `string` | — | Required. Configure page size. |
+| `itemsPerPage` | `string` | — | Required. Configure items per page. |
+| `jumpTo` | `string` | — | Required. Configure jump to. |
+| `showPassword` | `string` | — | Required. Configure show password. |
+| `hidePassword` | `string` | — | Required. Configure hide password. |
+| `increase` | `string` | — | Required. Configure increase. |
+| `decrease` | `string` | — | Required. Configure decrease. |
+| `invalidNumber` | `string` | — | Required. Configure invalid number. |
+| `progress` | `string` | — | Required. Configure progress. |
+| `calendar` | `string` | — | Required. Configure calendar. |
+| `clearInput` | `string` | — | Required. Configure clear input. |
+| `noData` | `string` | — | Required. Configure no data. |
+| `avatar` | `string` | — | Required. Leading avatar or icon. |
+| `rating` | `string` | — | Required. Configure rating. |
+| `resultSuccess` | `string` | — | Required. Configure result success. |
+| `resultWarning` | `string` | — | Required. Configure result warning. |
+| `resultError` | `string` | — | Required. Configure result error. |
+| `resultInfo` | `string` | — | Required. Configure result info. |
+| `color` | `string` | — | Required. Color or semantic tone. |
+| `clearColor` | `string` | — | Required. Configure clear color. |
+| `saturation` | `string` | — | Required. Configure saturation. |
+| `brightness` | `string` | — | Required. Configure brightness. |
+| `hue` | `string` | — | Required. Configure hue. |
+| `alpha` | `string` | — | Required. Configure alpha. |
+| `colorValue` | `string` | — | Required. Configure color value. |
+| `invalidColor` | `string` | — | Required. Configure invalid color. |
+| `presets` | `string` | — | Required. Presets; value may be computed on demand. |
+| `tree` | `string` | — | Required. Configure tree. |
+| `expand` | `string` | — | Required. Configure expand. |
+| `collapseNode` | `string` | — | Required. Configure collapse node. |
+| `collapse` | `string` | — | Required. Configure collapse. |
+| `slider` | `string` | — | Required. Configure slider. |
+| `pageBack` | `string` | — | Required. Configure page back. |
+| `pageForward` | `string` | — | Required. Configure page forward. |
+| `closeTab` | `string` | — | Required. Configure close tab. |

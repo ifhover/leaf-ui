@@ -1,6 +1,6 @@
 @use '../styles/mixins' as mixins;
 .leaf-date-picker {
-  @include mixins.field;
+  @include mixins.field('date-picker');
   display: inline-flex;
   position: relative;
   align-items: center;
@@ -136,4 +136,24 @@
       opacity: 1;
     }
   }
+}
+
+.leaf-picker__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface-muted);
+  margin: 6px;
+}
+
+.leaf-picker-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px;
+  padding: 6px;
+  background: var(--leaf-color-surface-muted);
+  border-radius: var(--leaf-radius);
 }

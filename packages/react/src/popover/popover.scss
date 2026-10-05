@@ -1,5 +1,5 @@
 .leaf-popover {
-  padding: 14px 16px;
+  padding: var(--leaf-component-popover-padding, 14px 16px);
   outline: none;
   overflow-wrap: anywhere;
   &__title {

@@ -26,7 +26,7 @@ import {
   useState,
 } from 'react';
 import { Button } from '../button';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { Dropdown } from '../dropdown';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -46,7 +46,7 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   defaultActiveKey?: string;
   onChange?: (key: string) => void;
   type?: 'line' | 'card';
-  placement?: 'top' | 'left';
+  placement?: 'top' | 'bottom' | 'left' | 'right';
   size?: ControlSize;
   activationMode?: 'automatic' | 'manual';
   destroyInactive?: boolean;
@@ -79,7 +79,7 @@ export function Tabs({
   'aria-label': label,
   ...props
 }: TabsProps) {
-  const { messages } = useLeafConfig();
+  const { messages, direction } = useLeafConfig();
   const t = useText();
   const enabled = items.filter((item) => !item.disabled);
   const [internal, setInternal] = useState(defaultActiveKey ?? enabled[0]?.key);
@@ -103,7 +103,7 @@ export function Tabs({
       return;
     }
     const measure = () => {
-      const horizontal = placement === 'top';
+      const horizontal = placement === 'top' || placement === 'bottom';
       const entries = Array.from(node.querySelectorAll<HTMLElement>('[data-tab-key]'));
       const more = container.querySelector<HTMLElement>('[data-tabs-more]');
       const fullSize =
@@ -166,13 +166,17 @@ export function Tabs({
             }}
             role="tablist"
             aria-label={label}
-            aria-orientation={placement === 'left' ? 'vertical' : 'horizontal'}
+            aria-orientation={
+              placement === 'left' || placement === 'right' ? 'vertical' : 'horizontal'
+            }
             className="leaf-tabs__list"
           >
             <SortableContext
               items={items.map((item) => item.key)}
               strategy={
-                placement === 'top' ? horizontalListSortingStrategy : verticalListSortingStrategy
+                placement === 'top' || placement === 'bottom'
+                  ? horizontalListSortingStrategy
+                  : verticalListSortingStrategy
               }
             >
               {items.map((item, index) => (
@@ -197,8 +201,18 @@ export function Tabs({
                     onKeyDown={(event) => {
                       let next: string | undefined;
                       const position = enabled.findIndex((entry) => entry.key === item.key);
-                      const forward = placement === 'left' ? 'ArrowDown' : 'ArrowRight';
-                      const backward = placement === 'left' ? 'ArrowUp' : 'ArrowLeft';
+                      const forward =
+                        placement === 'left' || placement === 'right'
+                          ? 'ArrowDown'
+                          : direction === 'rtl'
+                            ? 'ArrowLeft'
+                            : 'ArrowRight';
+                      const backward =
+                        placement === 'left' || placement === 'right'
+                          ? 'ArrowUp'
+                          : direction === 'rtl'
+                            ? 'ArrowRight'
+                            : 'ArrowLeft';
                       if (event.key === forward)
                         next = enabled[(position + 1) % enabled.length]?.key;
                       else if (event.key === backward)

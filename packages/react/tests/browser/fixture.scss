@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+}
+main {
+  padding: 24px;
+  max-width: 900px;
+  margin: auto;
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+}
+[data-leaf-theme] {
+  min-height: 100vh;
+  background: var(--leaf-color-surface);
+}
+.slide {
+  display: grid;
+  place-items: center;
+  height: 150px;
+  background: var(--leaf-color-primary-soft);
+}
+.leaf-tabs,
+.leaf-list,
+.leaf-calendar-view,
+.leaf-slider,
+.leaf-menu {
+  margin-block: 16px;
+}
+form {
+  max-width: 620px;
+}
+.fixture-control-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}

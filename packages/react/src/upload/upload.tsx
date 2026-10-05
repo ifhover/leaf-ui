@@ -1,9 +1,20 @@
 import { CloudUpload, RotateCw, Upload as UploadIcon, X } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from '../button';
 import { type FileItem, FileList } from '../filelist';
 import { fileName } from '../filelist/model';
+import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
+import { FormValue } from '../shared/field';
 import { useText } from '../shared/use-text';
 import { acceptsFile, type UploadRequest, type UploadResult, uploadRequest } from './request';
 
@@ -38,51 +49,113 @@ export interface UploadProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onCha
   data?: Readonly<Record<string, string | Blob>>;
   withCredentials?: boolean;
   fieldName?: string;
-  customRequest?: (request: UploadRequest) => Promise<UploadResult> | Promise<void>;
+  // biome-ignore lint/suspicious/noConfusingVoidType: Custom transports may finish via callbacks without returning a result.
+  customRequest?: (request: UploadRequest) => Promise<UploadResult | void>;
   onRemove?: (file: UploadFile) => boolean | void | Promise<boolean> | Promise<void>;
   showFileList?: boolean;
   hint?: ReactNode;
   children?: ReactNode;
+  name?: string;
+  form?: string;
+  required?: boolean;
+  autoUpload?: boolean;
+  concurrency?: number;
+  directory?: boolean;
+  paste?: boolean;
+  listType?: 'text' | 'picture' | 'picture-card';
 }
-export function Upload({
-  fileList,
-  defaultFileList = [],
-  onChange,
-  accept,
-  multiple = false,
-  disabled = false,
-  drag = false,
-  maxCount,
-  maxSize,
-  beforeUpload,
-  onReject,
-  action,
-  method = 'POST',
-  headers,
-  data,
-  withCredentials = false,
-  fieldName = 'file',
-  customRequest,
-  onRemove,
-  showFileList = true,
-  hint,
-  children,
-  className,
-  onDragEnter,
-  onDragLeave,
-  onDragOver,
-  onDrop,
-  ...props
-}: UploadProps) {
+export interface UploadHandle {
+  upload: (uid?: string) => void;
+  abort: (uid?: string) => void;
+  focus: () => void;
+}
+export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
+  {
+    fileList,
+    defaultFileList = [],
+    onChange,
+    accept,
+    multiple = false,
+    disabled: disabledProp,
+    drag = false,
+    maxCount,
+    maxSize,
+    beforeUpload,
+    onReject,
+    action,
+    method = 'POST',
+    headers,
+    data,
+    withCredentials = false,
+    fieldName = 'file',
+    customRequest,
+    onRemove,
+    showFileList = true,
+    hint,
+    children,
+    name,
+    form,
+    required,
+    autoUpload = true,
+    concurrency = 3,
+    directory,
+    paste,
+    listType = 'text',
+    id: idProp,
+    className,
+    onDragEnter,
+    onDragLeave,
+    onDragOver,
+    onDrop,
+    ...props
+  }: UploadProps,
+  ref,
+) {
+  const field = useFormField();
+  const disabled = disabledProp || field?.disabled;
   const t = useText();
   const id = useId();
   const count = useRef(0);
   const input = useRef<HTMLInputElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const waiting = useRef(new Map<string, UploadFile>());
+  const generation = useRef(0);
   const [internal, setInternal] = useState<readonly UploadFile[]>(defaultFileList);
   const [dragging, setDragging] = useState(false);
   const [validating, setValidating] = useState(false);
   const [errors, setErrors] = useState<readonly UploadRejection[]>([]);
   const current = fileList ?? internal;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The form prop can reassign the input to another native form.
+  useEffect(() => {
+    const owner = input.current?.form;
+    const reset = (event: Event) =>
+      queueMicrotask(() => {
+        if (event.defaultPrevented) return;
+        generation.current++;
+        for (const job of jobs.current.values()) job.abort();
+        jobs.current.clear();
+        waiting.current.clear();
+        if (fileList === undefined) {
+          setInternal(defaultFileList);
+          latest.current.current = defaultFileList;
+        }
+        setErrors([]);
+        setValidating(false);
+      });
+    const serialize = (event: FormDataEvent) => {
+      if (!name || disabled) return;
+      for (const file of latest.current.current) {
+        if (file.originFile) event.formData.append(name, file.originFile, file.name);
+        else if (file.url) event.formData.append(name, file.url);
+      }
+    };
+    owner?.addEventListener('reset', reset);
+    owner?.addEventListener('formdata', serialize);
+    return () => {
+      owner?.removeEventListener('reset', reset);
+      owner?.removeEventListener('formdata', serialize);
+    };
+  }, [fileList, defaultFileList, form, name, disabled]);
   const latest = useRef({
     current,
     fileList,
@@ -150,7 +223,19 @@ export function Upload({
     );
   };
   const start = async (file: UploadFile) => {
-    if (!file.originFile || jobs.current.has(file.uid) || !mounted.current) return;
+    if (
+      disabled ||
+      !file.originFile ||
+      jobs.current.has(file.uid) ||
+      !mounted.current ||
+      !latest.current.current.some((item) => item.uid === file.uid)
+    )
+      return;
+    if (jobs.current.size >= Math.max(1, Math.floor(concurrency))) {
+      waiting.current.set(file.uid, file);
+      return;
+    }
+    waiting.current.delete(file.uid);
     const config = latest.current;
     if (!config.action && !config.customRequest) return;
     const request = new AbortController();
@@ -216,13 +301,37 @@ export function Upload({
         );
     } finally {
       if (jobs.current.get(file.uid) === request) jobs.current.delete(file.uid);
+      const next = waiting.current.values().next().value;
+      if (next) void start(next);
     }
   };
+  useImperativeHandle(ref, () => ({
+    upload: (uid) => {
+      for (const file of latest.current.current)
+        if (
+          (!uid || file.uid === uid) &&
+          ['ready', 'error', 'cancelled'].includes(file.status ?? 'ready')
+        )
+          void start(file);
+    },
+    abort: (uid) => {
+      for (const [key, job] of jobs.current)
+        if (!uid || key === uid) {
+          job.abort();
+          jobs.current.delete(key);
+          update(key, { status: 'cancelled' }, 'cancel');
+        }
+      if (uid) waiting.current.delete(uid);
+      else waiting.current.clear();
+    },
+    focus: () => trigger.current?.focus(),
+  }));
   const addFiles = (files: readonly File[]) => {
     if (disabled || !files.length) return;
+    const batchGeneration = generation.current;
     serial.current = serial.current
       .then(async () => {
-        if (!mounted.current) return;
+        if (!mounted.current || batchGeneration !== generation.current) return;
         setValidating(true);
         setErrors([]);
         const rejected: UploadRejection[] = [];
@@ -252,7 +361,7 @@ export function Upload({
           }
           try {
             const result = await beforeUpload?.(file);
-            if (!mounted.current) return;
+            if (!mounted.current || batchGeneration !== generation.current) return;
             if (result === false) {
               reject('validation', t('文件未通过校验', 'File validation failed'));
               continue;
@@ -267,7 +376,7 @@ export function Upload({
             );
             continue;
           }
-          if (!mounted.current) return;
+          if (!mounted.current || batchGeneration !== generation.current) return;
           const uid = `${id}-${++count.current}`;
           let url: string | undefined;
           if (/^(image|video|audio)\//.test(file.type)) {
@@ -284,13 +393,13 @@ export function Upload({
             url,
           });
         }
-        if (!mounted.current) return;
+        if (!mounted.current || batchGeneration !== generation.current) return;
         if (accepted.length) {
           commit([...latest.current.current, ...accepted], {
             file: accepted.at(-1),
             reason: 'add',
           });
-          for (const file of accepted) void start(file);
+          if (autoUpload) for (const file of accepted) void start(file);
         }
         setErrors(rejected);
         setValidating(false);
@@ -304,10 +413,12 @@ export function Upload({
       });
   };
   const remove = async (file: FileItem) => {
+    if (disabled) return;
     const entry = latest.current.current.find((item) => item.uid === file.uid);
     if (!entry || (await onRemove?.(entry)) === false || !mounted.current) return;
     jobs.current.get(entry.uid)?.abort();
     jobs.current.delete(entry.uid);
+    waiting.current.delete(entry.uid);
     const url = urls.current.get(entry.uid);
     if (url) {
       URL.revokeObjectURL(url);
@@ -322,9 +433,21 @@ export function Upload({
     // biome-ignore lint/a11y/noStaticElementInteractions: Drop handling augments the keyboard-accessible choose-file button inside this surface.
     <div
       {...props}
-      className={classes('leaf-upload', drag && 'leaf-upload--drag', className)}
+      className={classes(
+        'leaf-upload',
+        drag && 'leaf-upload--drag',
+        `leaf-upload--${listType}`,
+        className,
+      )}
       data-disabled={disabled || undefined}
       data-dragging={dragging || undefined}
+      onPaste={(event) => {
+        props.onPaste?.(event);
+        if (paste && !event.defaultPrevented && !disabled && event.clipboardData.files.length) {
+          event.preventDefault();
+          addFiles([...event.clipboardData.files]);
+        }
+      }}
       onDragEnter={(event) => {
         onDragEnter?.(event);
         if (!event.defaultPrevented && !disabled) {
@@ -353,6 +476,8 @@ export function Upload({
     >
       <input
         ref={input}
+        form={form}
+        {...(directory ? { webkitdirectory: '', directory: '' } : {})}
         hidden
         type="file"
         className="leaf-upload__input"
@@ -368,6 +493,8 @@ export function Upload({
       />
       {drag ? (
         <button
+          ref={trigger}
+          id={idProp ?? field?.id}
           type="button"
           className="leaf-upload__dropzone"
           disabled={disabled || validating}
@@ -386,6 +513,8 @@ export function Upload({
       ) : (
         <div className="leaf-upload__trigger">
           <Button
+            ref={trigger}
+            id={idProp ?? field?.id}
             variant="outline"
             disabled={disabled}
             loading={validating}
@@ -397,6 +526,13 @@ export function Upload({
           {hint && <span className="leaf-upload__hint">{hint}</span>}
         </div>
       )}
+      <FormValue
+        value={current.length ? 'selected' : ''}
+        required={required ?? field?.required}
+        form={form}
+        disabled={disabled}
+        triggerRef={trigger}
+      />
       {errors.length > 0 && (
         <ul className="leaf-upload__errors" role="alert">
           {errors.map((error) => (
@@ -407,45 +543,48 @@ export function Upload({
         </ul>
       )}
       {showFileList && current.length > 0 && (
-        <FileList
-          items={current}
-          disabled={disabled}
-          removable
-          onRemove={remove}
-          renderActions={(file, actions) => (
-            <>
-              {file.status === 'uploading' && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={disabled}
-                  startIcon={<X size={15} />}
-                  aria-label={`${t('取消上传', 'Cancel upload')} ${fileName(file)}`}
-                  onClick={() => {
-                    if (!file.uid) return;
-                    jobs.current.get(file.uid)?.abort();
-                    jobs.current.delete(file.uid);
-                    update(file.uid, { status: 'cancelled' }, 'cancel');
-                  }}
-                />
-              )}
-              {['error', 'cancelled', 'ready'].includes(file.status ?? '') &&
-                (action || customRequest) &&
-                file.originFile && (
+        <FieldScope>
+          <FileList
+            items={current}
+            listType={listType}
+            disabled={disabled}
+            removable
+            onRemove={remove}
+            renderActions={(file, actions) => (
+              <>
+                {file.status === 'uploading' && (
                   <Button
                     variant="ghost"
                     size="sm"
                     disabled={disabled}
-                    startIcon={<RotateCw size={15} />}
-                    aria-label={`${t('重新上传', 'Retry upload')} ${fileName(file)}`}
-                    onClick={() => void start(file as UploadFile)}
+                    startIcon={<X size={15} />}
+                    aria-label={`${t('取消上传', 'Cancel upload')} ${fileName(file)}`}
+                    onClick={() => {
+                      if (!file.uid) return;
+                      jobs.current.get(file.uid)?.abort();
+                      jobs.current.delete(file.uid);
+                      update(file.uid, { status: 'cancelled' }, 'cancel');
+                    }}
                   />
                 )}
-              {actions}
-            </>
-          )}
-        />
+                {['error', 'cancelled', 'ready'].includes(file.status ?? '') &&
+                  (action || customRequest) &&
+                  file.originFile && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={disabled}
+                      startIcon={<RotateCw size={15} />}
+                      aria-label={`${t('重新上传', 'Retry upload')} ${fileName(file)}`}
+                      onClick={() => void start(file as UploadFile)}
+                    />
+                  )}
+                {actions}
+              </>
+            )}
+          />
+        </FieldScope>
       )}
     </div>
   );
-}
+});

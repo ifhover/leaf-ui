@@ -1,0 +1,70 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { FloatButtonBasic, FloatButtonActions } from '../../../src/examples/float-button/basic';
+
+# FloatButton
+
+Keep quick actions within reach.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<FloatButtonBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/float-button/basic.tsx"
+```
+
+</ComponentExample>
+
+## Action group
+
+<ComponentExample title="Action group" preview={<FloatButtonActions english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/float-button/basic.tsx"
+```
+
+</ComponentExample>
+
+## FloatButton API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | — | Configure variant. |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
+| `danger` | `boolean` | — | Configure danger. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `fullWidth` | `boolean` | — | Configure full width. |
+| `startIcon` | `ReactNode` | — | Configure start icon. |
+| `endIcon` | `ReactNode` | — | Configure end icon. |
+| `tooltip` | `ReactNode` | — | Show a thumb tooltip, optionally with custom formatting. |
+| `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
+
+## FloatButtonAction
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Stable, unique identifier. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `onClick` | `() => void` | — | Called on click. |
+| `disabled` | `boolean` | — | Disable interaction. |
+
+## FloatButtonGroup API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | — | Required. Actions for the item. |
+| `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | `false` | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `className` | `string` | — | Configure class name. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { FloatButtonProps, FloatButtonAction, FloatButtonGroupProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

@@ -5,9 +5,9 @@
   align-self: flex-start;
   box-sizing: border-box;
   align-items: center;
-  gap: 8px;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size) var(--leaf-font-family);
+  gap: var(--leaf-component-transfer-gap, 8px);
+  color: var(--leaf-component-transfer-color, var(--leaf-color-text));
+  font: var(--leaf-component-transfer-font-size, var(--leaf-font-size)) var(--leaf-font-family);
 }
 .leaf-transfer__panel {
   flex: 1;

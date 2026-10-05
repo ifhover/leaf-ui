@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/upload/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { UploadBasic } from '../../../src/examples/en/upload/basic';
 import { UploadDrag } from '../../../src/examples/en/upload/advanced';
@@ -34,28 +35,49 @@ Without action or customRequest, files remain ready for business-managed submiss
 import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, UploadRequest, UploadResult, FileItem } from '@sudden3/leaf-ui';
 ```
 
+## Manual upload and picture cards
+
+<ComponentExample title="Manual upload and picture cards" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/upload/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## UploadProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `fileList / defaultFileList` | [`readonly UploadFile[]`](#uploadfile-api) | `[]` | Controlled / initial file list |
-| `onChange` | [`(files: UploadFile[], info: UploadChangeInfo) => void`](#uploadchangeinfo-api) | — | File list and status changes |
+| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Controlled / initial file list |
+| `defaultFileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Controlled / initial file list |
+| `onChange` | `(files: `[`UploadFile`](#uploadfile-api)`[], info: `[`UploadChangeInfo`](#uploadchangeinfo-api)`) => void` | — | File list and status changes |
 | `accept` | `string` | — | Accepted MIME types or extensions, e.g. image/*,.pdf |
-| `multiple / disabled / drag` | `boolean` | `false` | Multiple selection / disabled / dropzone |
+| `multiple` | `boolean` | `false` | Multiple selection / disabled / dropzone |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `drag` | `boolean` | `false` | Multiple selection / disabled / dropzone |
 | `maxCount` | `number` | — | Maximum total file count |
 | `maxSize` | `number` | — | Maximum bytes per file |
 | `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | Validate before upload; false rejects, File transforms it |
-| `onReject` | [`(rejections: readonly UploadRejection[]) => void`](#uploadrejection-api) | — | Type, size, count or validation rejections |
+| `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | Type, size, count or validation rejections |
 | `action` | `string \| ((file: File) => string \| Promise<string>)` | — | Upload URL; omitted configuration selects files only |
 | `method` | `'POST' \| 'PUT'` | `'POST'` | POST sends FormData; PUT sends the raw file |
 | `headers` | `Readonly<Record<string, string>>` | — | Request headers |
 | `data` | `Readonly<Record<string, string \| Blob>>` | — | Additional POST form data |
 | `withCredentials` | `boolean` | `false` | Include credentials in cross-origin requests |
 | `fieldName` | `string` | `'file'` | File field name for POST |
-| `customRequest` | [`(request: UploadRequest) => Promise<UploadResult> \| Promise<void>`](#uploadrequest-api) | — | Custom async upload; use signal for cancellation |
-| `onRemove` | [`(file: UploadFile) => boolean \| void \| Promise<boolean> \| Promise<void>`](#uploadfile-api) | — | Before removal; return false to keep the file |
+| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | Custom async upload; use signal for cancellation |
+| `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | Before removal; return false to keep the file |
 | `showFileList` | `boolean` | `true` | Display the file list |
-| `hint / children` | `ReactNode` | — | Hint / chooser button or dropzone title |
+| `hint` | `ReactNode` | — | Hint / chooser button or dropzone title |
+| `children` | `ReactNode` | — | Hint / chooser button or dropzone title |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
+| `autoUpload` | `boolean` | `true` | Start after validation; use ref.upload() when false. |
+| `concurrency` | `number` | `3` | Maximum concurrent upload requests. |
+| `directory` | `boolean` | — | Choose a directory and its files, subject to browser support. |
+| `paste` | `boolean` | — | Accept files from the clipboard. |
+| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
 
 ## UploadFile API
 
@@ -63,7 +85,15 @@ Extends [`FileItem`](#fileitem-api) and adds the fields below.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `uid` | `string` | Required | Unique identifier |
+| `uid` | `string` | Required | Required. Unique identifier |
+| `url` | `string` | — | Configure url. |
+| `name` | `string` | — | Field name in native FormData. |
+| `size` | `number` | — | Presentation size. |
+| `type` | `string` | — | Configure type. |
+| `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Configure status. |
+| `percent` | `number` | — | Completion percentage. |
+| `error` | `string` | — | Configure error. |
+| `originFile` | `globalThis.File` | — | Configure origin file. |
 | `response` | `unknown` | — | Server response |
 
 ## UploadChangeInfo API
@@ -71,29 +101,30 @@ Extends [`FileItem`](#fileitem-api) and adds the fields below.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `file` | [`UploadFile`](#uploadfile-api) | — | File that changed |
-| `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | Required | Change reason |
+| `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | Required | Required. Change reason |
 
 ## UploadRejection API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `file` | `File` | Required | Rejected file |
-| `reason` | `'type' \| 'size' \| 'count' \| 'validation'` | Required | Rejection reason |
-| `message` | `string` | Required | User-readable explanation |
+| `file` | `File` | Required | Required. Rejected file |
+| `reason` | `'type' \| 'size' \| 'count' \| 'validation'` | Required | Required. Rejection reason |
+| `message` | `string` | Required | Required. User-readable explanation |
 
 ## UploadRequest API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `file` | `File` | Required | File to upload |
-| `signal` | `AbortSignal` | Required | Cancellation signal, including removal or unmount |
-| `onProgress` | `(percent: number) => void` | Required | Report upload progress |
+| `file` | `File` | Required | Required. File to upload |
+| `signal` | `AbortSignal` | Required | Required. Cancellation signal, including removal or unmount |
+| `onProgress` | `(percent: number) => void` | Required | Required. Report upload progress |
 
 ## UploadResult API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `url / name` | `string` | — | Uploaded URL / name |
+| `url` | `string` | — | Uploaded URL / name |
+| `name` | `string` | — | Uploaded URL / name |
 | `response` | `unknown` | — | Application response |
 
 ## FileItem API
@@ -109,3 +140,11 @@ Extends [`FileItem`](#fileitem-api) and adds the fields below.
 | `percent` | `number` | — | Upload progress from 0 to 100 |
 | `error` | `string` | — | Error description |
 | `originFile` | `File` | — | Original browser File |
+
+## UploadHandle
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `upload` | `(uid?: string) => void` | — | Required. Start a specified upload or all pending files. |
+| `abort` | `(uid?: string) => void` | — | Required. Abort a specified upload or all uploads. |
+| `focus` | `() => void` | — | Required. Focus the control. |

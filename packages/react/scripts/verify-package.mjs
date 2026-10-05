@@ -9,6 +9,39 @@ const require = createRequire(import.meta.url);
 const packageRoot = new URL('../', import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('package.json', packageRoot), 'utf8'));
 const entry = manifest.exports['.'];
+let subpathCount = 0;
+for (const [subpath, targets] of Object.entries(manifest.exports)) {
+  if (subpath === '.' || subpath === './package.json') continue;
+  if (typeof targets === 'string') {
+    const file = new URL(targets, packageRoot);
+    assert.ok((await stat(file)).isFile(), `${subpath} target exists`);
+    if (subpath.endsWith('.css')) {
+      const styles = await readFile(file, 'utf8');
+      assert.ok(styles.includes('--leaf-control-height'), `${subpath} includes shared tokens`);
+      assert.ok(!styles.includes('@use'), `${subpath} is compiled CSS`);
+    }
+    continue;
+  }
+  for (const format of ['import', 'require']) {
+    for (const target of Object.values(targets[format]))
+      assert.ok((await stat(new URL(target, packageRoot))).isFile(), `${subpath}: ${target}`);
+  }
+  const specifier = `@sudden3/leaf-ui${subpath.slice(1)}`;
+  const imports = await import(specifier),
+    requires = require(specifier);
+  assert.deepEqual(
+    Object.keys(imports).sort(),
+    Object.keys(requires)
+      .filter((name) => name !== '__esModule')
+      .sort(),
+    `${subpath} ESM/CJS agree`,
+  );
+  for (const target of [targets.import.types, targets.require.types]) {
+    const code = await readFile(new URL(target, packageRoot), 'utf8');
+    assert.ok(!code.includes('.scss'), `${subpath} declarations have no SCSS dependency`);
+  }
+  subpathCount++;
+}
 for (const relativePath of [
   entry.import.types,
   entry.import.default,
@@ -21,6 +54,35 @@ for (const relativePath of [
 const esm = await import('@sudden3/leaf-ui');
 const cjs = require('@sudden3/leaf-ui');
 const components = [
+  ['Typography', {}, 'Text', /leaf-typography/],
+  ['Text', {}, 'Text', /leaf-text/],
+  ['Title', { level: 2 }, 'Heading', /<h2/],
+  ['Paragraph', {}, 'Paragraph', /<p/],
+  ['Link', { href: '/guide' }, 'Guide', /<a/],
+  ['List', {}, createElement('li', null, 'Item'), /<ul/],
+  ['ListItem', { title: 'Alice' }, null, /<li/],
+  ['Statistic', { title: 'Total', value: 1234 }, null, /1,234/],
+  ['Countdown', { value: Date.now() + 3600000 }, null, /leaf-statistic/],
+  ['Anchor', { items: [{ key: 'intro', title: 'Intro', href: '#intro' }] }, null, /<nav/],
+  ['Affix', {}, 'Fixed', /leaf-affix/],
+  [
+    'Splitter',
+    {
+      panels: [
+        { key: 'left', children: 'Left' },
+        { key: 'right', children: 'Right' },
+      ],
+    },
+    null,
+    /role="separator"/,
+  ],
+  ['Carousel', {}, ['A', 'B'], /aria-roledescription="carousel"/],
+  ['FloatButton', { label: 'Help' }, null, /<button/],
+  ['FloatButtonGroup', {}, 'Actions', /<fieldset/],
+  ['Mentions', { options: [{ value: 'alice' }] }, null, /<textarea/],
+  ['AppBar', {}, 'Header', /<header/],
+  ['Toolbar', {}, 'Actions', /role="toolbar"/],
+  ['BottomNavigation', { items: [{ key: 'home', label: 'Home' }] }, null, /<nav/],
   ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
   ['Card', { title: 'Project' }, 'Details', /leaf-card/],
   [
@@ -216,6 +278,13 @@ for (const [format, api] of [
     if (hasClass) assert.ok(markup.includes('leaf-'), `${name} must include its component class`);
   }
   for (const name of [
+    'colorContrast',
+    'useBreakpoint',
+    'useSystemAppearance',
+    'useFormValidation',
+    'mapCascaderOptions',
+    'parseGradient',
+    'gradientString',
     'useConfirm',
     'useMessage',
     'useNotification',
@@ -223,6 +292,10 @@ for (const [format, api] of [
     'moveTreeNode',
   ])
     assert.equal(typeof api[name], 'function', `${format} must export ${name}`);
+  assert.equal(typeof api.Tour, 'function');
+  assert.equal(typeof api.CommandPalette, 'function');
+  assert.equal(api.ResizablePanels, api.Splitter);
+  assert.equal(api.FAB, api.FloatButton);
   assert.equal(typeof api.ConfirmProvider, 'function', `${format} must export ConfirmProvider`);
   function ManagedFeedback() {
     const confirmation = api.useConfirm();
@@ -387,3 +460,4 @@ console.log(
   'All component exports, ESM/CommonJS rendering, declarations, compiled SCSS and dependencies verified.',
 );
 console.log('Package root:', fileURLToPath(packageRoot));
+console.log(`Verified ${subpathCount} public JS subpaths and every CSS export.`);

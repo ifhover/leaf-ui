@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/tabs/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
 import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
@@ -34,15 +35,25 @@ Switch between content views within the same region.
 
 </ComponentExample>
 
+## Bottom and right placement
+
+<ComponentExample title="Bottom and right placement" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/tabs/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Tabs API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly TabItem[]`](#tabitem) | Required | Tab items |
-| `activeKey / defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
+| `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Required. Tab items |
+| `activeKey` | `string` | First enabled item | Controlled / initial active key |
+| `defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card'` | `'line'` | Tab appearance |
-| `placement` | `'top' \| 'left'` | `'top'` | Tab bar placement |
+| `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tab bar placement |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
@@ -52,17 +63,17 @@ Switch between content views within the same region.
 | `addLabel` | `string` | — | Accessible add button label |
 | `overflow` | `boolean` | `true` | Collect overflow tabs in a menu |
 | `sortable` | `boolean` | `false` | Enable sorting; use with onReorder |
-| `onReorder` | [`(items: TabItem[]) => void`](#tabitem) | — | Reordered tabs |
+| `onReorder` | `(items: `[`TabItem`](#tabitem)`[]) => void` | — | Reordered tabs |
 
 ## TabItem
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Unique identifier |
-| `label` | `ReactNode` | Required | Tab label |
-| `children` | `ReactNode` | Required | Tab content |
+| `key` | `string` | Required | Required. Unique identifier |
+| `label` | `ReactNode` | Required | Required. Tab label |
+| `children` | `ReactNode` | Required | Required. Tab content |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `icon` | `ReactNode` | — | Leading icon |
-| `disabled` | `boolean` | `false` | Disable this tab |
 | `closable` | `boolean` | `false` | Show a close button; requires onClose |
 
 ## Types

@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/select/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/select/extensions';
 import { SelectPopup } from '../../../src/examples/en/select/popup';
 import { SelectSearch } from '../../../src/examples/en/select/search';
@@ -70,34 +71,59 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 
 </ComponentExample>
 
+## Selected content and controlled popup
+
+<ComponentExample title="Selected content and controlled popup" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/select/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Popup styling |
+| `popupStyle` | `CSSProperties` | — | Popup styling |
+| `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | Required | Required. Options |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `options` | [`readonly (SelectOption \| SelectOptionGroup)[]`](#selectoptiongroup-api) | Required | Options |
-| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
-| `value` / `defaultValue` | `string \| readonly string[]` | `''` | Controlled value / initial uncontrolled value |
-| `onChange` | [`(value: string, option?: SelectOption) => void` or `(values: string[], options: SelectOption[]) => void`](#selectoption) | — | Returns value and option; clearing returns an empty string and undefined |
-| `multiple` | `boolean` | `false` | Use arrays for multiple values; default [] |
-| `showSearch` | `boolean` | `false` | Allow typing to filter options |
-| `filterOption` | [`boolean \| ((query: string, option: SelectOption) => boolean)`](#selectoption) | `true` | Custom filtering; false supports external filtering |
-| `onSearch` | `(query: string) => void` | — | Search text changes |
 | `allowClear` | `boolean` | `false` | Show a clear button |
-| `disabled` | `boolean` | `false` | Disable the control |
-| `name` / `form` | `string` | — | Field name / associated form ID |
-| `required` | `boolean` | `false` | Require a selection |
+| `showSearch` | `boolean` | `false` | Allow typing to filter options |
+| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | Custom filtering; false supports external filtering |
+| `onSearch` | `(query: string) => void` | — | Search text changes |
 | `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
-| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Customize the selected value. |
+| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | Customize selected tags; use remove to request removal. |
+| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | Popup scroll event, useful for loading another page. |
 | `popupWidth` | `number \| string` | `'auto'` | Popup width: auto fits content, trigger matches the field, or use pixels / a CSS length |
 | `popupMaxWidth` | `number \| string` | `420` | Maximum width, also limited by the viewport |
-| `popupClassName / popupStyle` | `string / CSSProperties` | — | Popup styling |
 | `loading` | `boolean` | `false` | Loading indicator |
 | `notFoundContent` | `ReactNode` | — | Content when no options match |
-| `optionRender` | [`(option: SelectOption) => ReactNode`](#selectoption) | — | Custom option content |
+| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Custom option content |
 | `maxCount` | `number` | — | Maximum selections; selected items remain removable |
-| `maxTagCount` | `number` | — | Number of visible tags; the rest show as a count |
+| `maxTagCount` | `number \| 'responsive'` | — | Number of visible tags; the rest show as a count |
+| `allowCreate` | `boolean` | `false` | Allow creating unmatched search text |
+| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | Created option callback |
+| `virtual` | `boolean` | More than 100 options | Render visible items only |
+| `listHeight` | `number` | `248` | List height |
+| `optionHeight` | `number` | `36` | Estimated option height |
+| `multiple` | `false \| true` | `false` | Use arrays for multiple values; default [] |
+| `value` | `string \| readonly string[]` | Required | Unique option value; empty strings are reserved |
+| `defaultValue` | `string \| readonly string[]` | `''` | Controlled value / initial uncontrolled value |
+| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | Returns value and option; clearing returns an empty string and undefined |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ### SelectOption
 
@@ -139,5 +165,14 @@ import type { SelectOptionGroup } from '@sudden3/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | Required | Display label |
-| `options` | [`readonly SelectOption[]`](#selectoption) | Required | Available options |
+| `label` | `ReactNode` | Required | Required. Display label |
+| `options` | `readonly `[`SelectOption`](#selectoption)`[]` | Required | Required. Available options |
+
+## SelectOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Required. Controlled value. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `searchLabel` | `string` | — | Plain text used for searching. |

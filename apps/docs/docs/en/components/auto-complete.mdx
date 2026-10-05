@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/auto-complete/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { AutoCompleteBasic, AutoCompleteSearch } from '../../../src/components/en-form-examples';
 
@@ -23,19 +24,46 @@ Use options for suggestions and onChange for typed or selected text. onSelect fi
 
 </ComponentExample>
 
+## Rich groups and loading states
+
+<ComponentExample title="Rich groups and loading states" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/auto-complete/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## AutoComplete API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | [`readonly AutoCompleteOption[]`](#autocompleteoption) | Required | Suggestion options |
-| `value` / `defaultValue` | `string` | `''` | Controlled text / uncontrolled initial text |
-| `onChange` | `(value: string) => void` | — | Text after typing or selecting |
-| `onSelect` | [`(value: string, option: AutoCompleteOption) => void`](#autocompleteoption) | — | Runs when selecting a suggestion |
-| `onSearch` | `(query: string) => void` | — | Runs on typing, not on selection |
-| `filterOption` | [`false \| ((query: string, option: AutoCompleteOption) => boolean)`](#autocompleteoption) | Substring match | false disables local filtering; a function customizes matching |
+| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | Required | Required. Suggestion options |
+| `value` | `string` | Required | Unique suggestion value; inserted into the input on selection |
+| `defaultValue` | `string` | `''` | Controlled text / uncontrolled initial text |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled` / `readOnly` | `boolean` | `false` | Disabled / read-only fields do not open suggestions |
+| `filterOption` | `false \| ((query: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => boolean)` | Substring match | false disables local filtering; a function customizes matching |
+| `onChange` | `(value: string) => void` | — | Text after typing or selecting |
+| `onSelect` | `(value: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => void` | — | Runs when selecting a suggestion |
+| `onSearch` | `(query: string) => void` | — | Runs on typing, not on selection |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `notFoundContent` | `ReactNode` | — | Content when no options match. |
+| `errorContent` | `ReactNode` | — | Content for loading errors and retry actions. |
+| `optionRender` | `(option: `[`AutoCompleteOption`](#autocompleteoption)`) => ReactNode` | — | Customize option content. |
+| `allowClear` | `boolean` | — | Show a clear action. |
+| `virtual` | `boolean` | — | Enable virtual scrolling; enabled by default for large option sets. |
+| `listHeight` | `number` | `248` | Height of the visible list. |
+| `optionHeight` | `number` | `36` | Estimated virtual option height; actual rows are measured. |
+| `popupPlacement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupStyle']` | — | Custom popup styles. |
+| `popupRender` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupRender']` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 ### AutoCompleteOption
 
@@ -56,3 +84,19 @@ import type { AutoCompleteProps, AutoCompleteOption } from '@sudden3/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## AutoCompleteOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Required. Controlled value. |
+| `label` | `ReactNode` | — | Visible label or content. |
+| `searchLabel` | `string` | — | Plain text used for searching. |
+| `disabled` | `boolean` | — | Disable interaction. |
+
+## AutoCompleteOptionGroup
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | — | Required. Available options. |

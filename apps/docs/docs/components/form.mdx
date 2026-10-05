@@ -38,20 +38,21 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | 数字设置像素宽度；auto 统一使用最宽标签 |
 | `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | 标签与字段的排列方式 |
+| `labelWidth` | `number \| 'auto'` | `'auto'` | 数字设置像素宽度；auto 统一使用最宽标签 |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | 标签对齐方向 |
-| `disabled` | `boolean` | `false` | 禁用表单内的 Leaf 控件 |
-| `onSubmit / onReset` | `FormEventHandler<HTMLFormElement>` | — | 保留提交 / 重置事件 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
 | `ref` | `Ref<HTMLFormElement>` | — | 表单引用 |
 
 ## FormField API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label / help / error` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
+| `label` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
 | `htmlFor` | `string` | 自动生成 | 与输入控件的 id 关联；一个字段对应一个控件或组 |
-| `required` | `boolean` | `false` | 显示必填标记并传递给控件 |
+| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
+| `help` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
+| `error` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
 | `labelWidth` | `number` | — | 当前字段的标签宽度，单位像素 |
 
 ## 类型
@@ -85,44 +86,44 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `name` | `string` | 必填 | 表单字段名称 |
+| `name` | `string` | 必填 | 必需。表单字段名称 |
 | `value` | `readonly T[]` | — | 受控值 |
 | `defaultValue` | `readonly T[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: T[]) => void` | — | 值变化回调 |
 | `itemKey` | `(value: T) => string` | — | 提取稳定的项目标识 |
-| `children` | [`(fields: readonly FormListField<T>[], operations: FormListOperations<T>) => ReactNode`](#formlistfield-api) [`FormListOperations`](#formlistoperations-api) | 必填 | 内容或下级项目 |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | 必填 | 必需。内容或下级项目 |
 
 ## FormListField API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | 必填 | 唯一且稳定的标识 |
-| `index` | `number` | 必填 | 当前索引，从 0 开始 |
-| `name` | `string` | 必填 | 表单字段名称 |
-| `value` | `T` | 必填 | 受控值 |
+| `key` | `string` | 必填 | 必需。唯一且稳定的标识 |
+| `index` | `number` | 必填 | 必需。当前索引，从 0 开始 |
+| `name` | `string` | 必填 | 必需。表单字段名称 |
+| `value` | `T` | 必填 | 必需。受控值 |
 
 ## FormListOperations API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `add` | `(value: T, index?: number) => void` | 必填 | 插入字段，省略 index 时追加 |
-| `remove` | `(index: number \| readonly number[]) => void` | 必填 | 移除一个或多个位置 |
-| `move` | `(from: number, to: number) => void` | 必填 | 移动字段并保留稳定 key |
-| `update` | `(index: number, value: T) => void` | 必填 | 更新字段值 |
+| `add` | `(value: T, index?: number) => void` | 必填 | 必需。插入字段，省略 index 时追加 |
+| `remove` | `(index: number \| readonly number[]) => void` | 必填 | 必需。移除一个或多个位置 |
+| `move` | `(from: number, to: number) => void` | 必填 | 必需。移动字段并保留稳定 key |
+| `update` | `(index: number, value: T) => void` | 必填 | 必需。更新字段值 |
 
 ## FormErrorSummaryProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `errors` | [`readonly FormError[]`](#formerror-api) | — | 省略时汇总同一 Form 内字段错误 |
+| `errors` | `readonly `[`FormError`](#formerror-api)`[]` | — | 省略时汇总同一 Form 内字段错误 |
 | `title` | `ReactNode` | — | 标题内容 |
 
 ## FormError API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `fieldId` | `string` | 必填 | 关联输入控件 id，点击错误后聚焦 |
-| `message` | `ReactNode` | 必填 | 错误内容 |
+| `fieldId` | `string` | 必填 | 必需。关联输入控件 id，点击错误后聚焦 |
+| `message` | `ReactNode` | 必填 | 必需。错误内容 |
 | `label` | `ReactNode` | — | 显示内容 |
 
 ## 接入 React Hook Form
@@ -149,3 +150,24 @@ export function AccountForm() {
   </Form>;
 }
 ```
+
+## FormValidationApi
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `errors` | `Record<string, string>` | — | 必需。按字段名组织的错误，可传给 FormField。 |
+| `pending` | `boolean` | — | 必需。校验或提交是否进行中。 |
+| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | — | 必需。设置服务端或业务错误。 |
+| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | — | 必需。绑定到 Form.onSubmit。 |
+| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | — | 必需。绑定到 Form.onReset，取消请求并清除错误。 |
+| `cancel` | `() => void` | — | 必需。取消当前请求。 |
+| `clearErrors` | `(name?: string) => void` | — | 必需。清除一个或全部错误并取消旧请求。 |
+
+## FormValidationOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | 必需。接收 FormData 和取消信号，返回按字段名组织的错误。 |
+| `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | 校验通过后提交；应响应取消信号。 |
+| `onError` | `(error: unknown) => void` | — | 操作失败时调用；命令面板会保留并展示错误。 |
+| `focusError` | `boolean` | — | 出现错误时聚焦第一个字段。 |

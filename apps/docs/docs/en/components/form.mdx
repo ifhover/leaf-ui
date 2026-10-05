@@ -38,20 +38,21 @@ Organize fields, labels and validation feedback, and collect form data.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | A pixel width, or auto to align all labels to the widest label |
 | `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Label and field layout |
+| `labelWidth` | `number \| 'auto'` | `'auto'` | A pixel width, or auto to align all labels to the widest label |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment |
-| `disabled` | `boolean` | `false` | Disable Leaf controls inside the form |
-| `onSubmit / onReset` | `FormEventHandler<HTMLFormElement>` | — | Standard submit / reset events |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
 
 ## FormField API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label / help / error` | `ReactNode` | — | Label / help text / application error |
+| `label` | `ReactNode` | — | Label / help text / application error |
 | `htmlFor` | `string` | Generated | The associated control ID; one field wraps one control or group |
-| `required` | `boolean` | `false` | Show the required mark and pass required to the control |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `help` | `ReactNode` | — | Label / help text / application error |
+| `error` | `ReactNode` | — | Label / help text / application error |
 | `labelWidth` | `number` | — | Override this field’s label width in pixels |
 
 ## Types
@@ -85,44 +86,44 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `name` | `string` | Required | Form field name |
+| `name` | `string` | Required | Required. Form field name |
 | `value` | `readonly T[]` | — | Controlled value |
 | `defaultValue` | `readonly T[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: T[]) => void` | — | Value change callback |
 | `itemKey` | `(value: T) => string` | — | Return a stable identifier |
-| `children` | [`(fields: readonly FormListField<T>[], operations: FormListOperations<T>) => ReactNode`](#formlistfield-api) [`FormListOperations`](#formlistoperations-api) | Required | Content or child items |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Required. Content or child items |
 
 ## FormListField API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Unique stable identifier |
-| `index` | `number` | Required | Current index, starting at zero |
-| `name` | `string` | Required | Form field name |
-| `value` | `T` | Required | Controlled value |
+| `key` | `string` | Required | Required. Unique stable identifier |
+| `index` | `number` | Required | Required. Current index, starting at zero |
+| `name` | `string` | Required | Required. Form field name |
+| `value` | `T` | Required | Required. Controlled value |
 
 ## FormListOperations API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `add` | `(value: T, index?: number) => void` | Required | Insert a field; omitted index appends |
-| `remove` | `(index: number \| readonly number[]) => void` | Required | Remove one or multiple indices |
-| `move` | `(from: number, to: number) => void` | Required | Move fields preserving stable keys |
-| `update` | `(index: number, value: T) => void` | Required | Update field value |
+| `add` | `(value: T, index?: number) => void` | Required | Required. Insert a field; omitted index appends |
+| `remove` | `(index: number \| readonly number[]) => void` | Required | Required. Remove one or multiple indices |
+| `move` | `(from: number, to: number) => void` | Required | Required. Move fields preserving stable keys |
+| `update` | `(index: number, value: T) => void` | Required | Required. Update field value |
 
 ## FormErrorSummaryProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `errors` | [`readonly FormError[]`](#formerror-api) | — | Omitted collects field errors in this Form |
+| `errors` | `readonly `[`FormError`](#formerror-api)`[]` | — | Omitted collects field errors in this Form |
 | `title` | `ReactNode` | — | Title content |
 
 ## FormError API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `fieldId` | `string` | Required | Input id focused when error is clicked |
-| `message` | `ReactNode` | Required | Error content |
+| `fieldId` | `string` | Required | Required. Input id focused when error is clicked |
+| `message` | `ReactNode` | Required | Required. Error content |
 | `label` | `ReactNode` | — | Display label |
 
 ## React Hook Form integration
@@ -149,3 +150,24 @@ export function AccountForm() {
   </Form>;
 }
 ```
+
+## FormValidationApi
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `errors` | `Record<string, string>` | — | Required. Field-keyed errors for FormField. |
+| `pending` | `boolean` | — | Required. Whether validation or submission is pending. |
+| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | — | Required. Set server or business errors. |
+| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | — | Required. Bind to Form.onSubmit. |
+| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | — | Required. Bind to Form.onReset to cancel requests and clear errors. |
+| `cancel` | `() => void` | — | Required. Cancel the current request. |
+| `clearErrors` | `(name?: string) => void` | — | Required. Clear one or all errors and cancel stale requests. |
+
+## FormValidationOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | Required. Validate FormData with a cancellation signal; return field-keyed errors. |
+| `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | Submit after validation, respecting cancellation. |
+| `onError` | `(error: unknown) => void` | — | Called on failure; the palette remains open with error feedback. |
+| `focusError` | `boolean` | — | Focus the first invalid field. |

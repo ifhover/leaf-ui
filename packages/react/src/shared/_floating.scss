@@ -13,7 +13,7 @@
   font-size: var(--leaf-font-size);
   line-height: 1.5;
   background: var(--leaf-color-surface);
-  box-shadow: 0 12px 32px color-mix(in srgb, #13251a 14%, transparent);
+  box-shadow: var(--leaf-shadow-md);
   overscroll-behavior: contain;
   opacity: 1;
   transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);

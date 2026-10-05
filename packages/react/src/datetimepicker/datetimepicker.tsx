@@ -1,9 +1,15 @@
 import { forwardRef, type ReactNode, useRef, useState } from 'react';
 import { Button } from '../button';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { CalendarPanel, dateTimeKey } from '../shared/calendar';
 import { dateKey } from '../shared/date';
+import {
+  type DateFormat,
+  type DatePreset,
+  formatPickerDate,
+  parsePickerDate,
+} from '../shared/date-format';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
@@ -25,6 +31,14 @@ export interface DateTimePickerProps extends PickerFieldProps {
   renderExtraFooter?: ReactNode;
   onChange?: (value: Date | null, dateString: string) => void;
   onOpenChange?: (open: boolean) => void;
+  disabledDate?: (date: Date) => boolean;
+  disabledTime?: (parts: TimeParts, date: Date) => boolean;
+  format?: DateFormat;
+  parse?: (text: string) => Date | null;
+  presets?: readonly DatePreset[];
+  panelValue?: Date;
+  onPanelChange?: (date: Date) => void;
+  cellRender?: (date: Date) => ReactNode;
 }
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
   function DateTimePicker(
@@ -42,6 +56,16 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       renderExtraFooter,
       onChange,
       onOpenChange,
+      open: controlledOpen,
+      defaultOpen,
+      disabledDate,
+      disabledTime,
+      format,
+      parse,
+      presets,
+      panelValue,
+      onPanelChange,
+      cellRender,
       ...props
     },
     ref,
@@ -51,7 +75,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const trigger = useRef<HTMLInputElement>(null);
     const [selected, setSelected] = useFieldValue(value, defaultValue, trigger, props.form);
     const merged = useMergedRef(trigger, ref);
-    const [open, setOpen] = usePopupState(props.disabled ?? field?.disabled, onOpenChange);
+    const [open, setOpen] = usePopupState(
+      props.disabled || field?.disabled || props.readOnly,
+      onOpenChange,
+      controlledOpen,
+      defaultOpen,
+    );
     const [draft, setDraft] = useState(selected ?? new Date());
     const [view, setView] = useState<'date' | 'time'>('date');
     const [focusCalendar, setFocusCalendar] = useState(false);
@@ -65,11 +94,19 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const inBounds = (date: Date) =>
       Number.isFinite(date.getTime()) &&
       (!minDate || date >= minDate) &&
-      (!maxDate || date <= maxDate);
+      (!maxDate || date <= maxDate) &&
+      !disabledDate?.(date) &&
+      !disabledTime?.(parts(date), date);
     const change = (next: Date | null) => {
+      if (props.readOnly || props.disabled || field?.disabled || (next && !inBounds(next))) return;
       const normalized = next ? normalize(next) : null;
       setSelected(normalized);
-      onChange?.(normalized, normalized ? dateTimeKey(normalized, showSeconds) : '');
+      onChange?.(
+        normalized,
+        normalized
+          ? formatPickerDate(normalized, format, (date) => dateTimeKey(date, showSeconds))
+          : '',
+      );
     };
     const parts = (date: Date): TimeParts => ({
       hour: date.getHours(),
@@ -78,7 +115,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     });
     const timeLabel = (date: Date) =>
       displayTime(parts(date), showSeconds, use12Hours, [messages.am, messages.pm]);
-    const label = (date: Date) => `${dateKey(date)} ${timeLabel(date)}`;
+    const label = (date: Date) =>
+      formatPickerDate(date, format, (date) => `${dateKey(date)} ${timeLabel(date)}`);
     const today = new Date();
     today.setHours(draft.getHours(), draft.getMinutes(), showSeconds ? draft.getSeconds() : 0, 0);
     const updateTime = (time: TimeParts) => {
@@ -108,7 +146,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         }}
         onClear={() => change(null)}
         onTextChange={(text) => {
-          const next = parseDateText(text.trim(), 'datetime');
+          const next = parsePickerDate(
+            text.trim(),
+            format,
+            (text) => parseDateText(text, 'datetime'),
+            parse,
+          );
           setValidText(Boolean(next && inBounds(normalize(next))));
           if (next) setDraft(normalize(next));
         }}
@@ -117,7 +160,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             change(null);
             return true;
           }
-          const next = parseDateText(text, 'datetime');
+          const next = parsePickerDate(
+            text,
+            format,
+            (text) => parseDateText(text, 'datetime'),
+            parse,
+          );
           if (!next || !inBounds(normalize(next))) return false;
           change(next);
           return true;
@@ -127,6 +175,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
           <>
             {view === 'date' ? (
               <CalendarPanel
+                disabledDate={disabledDate}
+                cellRender={cellRender}
+                visibleDate={panelValue}
+                onVisibleChange={onPanelChange}
                 value={draft}
                 picker="datetime"
                 autoFocus={focusCalendar}
@@ -170,6 +222,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                   <span>{timeLabel(draft)}</span>
                 </div>
                 <TimePanel
+                  disabledTime={(parts) => !!disabledTime?.(parts, draft)}
                   autoFocus
                   value={parts(draft)}
                   onChange={updateTime}
@@ -180,6 +233,27 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                 />
               </div>
             )}
+            {presets?.length ? (
+              <div className="leaf-picker-presets">
+                {presets.map((preset) => (
+                  <Button
+                    key={preset.key ?? String(preset.label)}
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      const date =
+                        typeof preset.value === 'function' ? preset.value() : preset.value;
+                      if (inBounds(date)) {
+                        change(date);
+                        close();
+                      }
+                    }}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+            ) : null}
             <div className="leaf-picker-footer">
               <div className="leaf-picker-footer__extra">
                 {showToday && (

@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/date-time-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DateTimePickerBasic } from '../../../src/examples/en/date-time-picker/basic';
 
@@ -14,25 +15,59 @@ Select a specific date and time.
 
 </ComponentExample>
 
+## Formats and business hours
+
+<ComponentExample title="Formats and business hours" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/date-time-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## Serialization and dates
+
+`format` changes display text and the string argument of `onChange`; FormData keeps the canonical period/date representation described below. Square brackets escape literal text, such as `YYYY-[Q]Q`. Provide `parse` with a function-valued formatter. Dates are local calendar values; convert business timezones explicitly at the application boundary. Configure the first weekday with ConfigProvider's `weekStartsOn`.
+
 ## DateTimePicker API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `Date \| null` | `null` | Controlled / initial value |
-| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Confirms a Date and local date-time string; clearing returns null |
-| `minDate / maxDate` | `Date` | — | Bounds, including the time |
-| `showSeconds` | `boolean` | `true` | Show seconds; when disabled seconds are zero |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `value` | `Date \| null` | `null` | Controlled / initial value |
+| `defaultValue` | `Date \| null` | `null` | Controlled / initial value |
+| `minDate` | `Date` | — | Bounds, including the time |
+| `maxDate` | `Date` | — | Bounds, including the time |
 | `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
-| `minuteStep / secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `showSeconds` | `boolean` | `true` | Show seconds; when disabled seconds are zero |
+| `minuteStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
 | `showToday` | `boolean` | `true` | Show the Today shortcut |
 | `todayText` | `ReactNode` | Locale default | Customize the Today label |
 | `renderExtraFooter` | `ReactNode` | — | Additional footer content |
-| `allowClear` | `boolean` | `true` | Show the clear button |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled / required` | `boolean` | `false` | Disabled / required; inherited from FormField |
-| `placeholder / name / form` | `string` | — | Placeholder / field name / form ID |
+| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Confirms a Date and local date-time string; clearing returns null |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
+| `disabledDate` | `(date: Date) => boolean` | — | Disable dates using business rules. |
+| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, date: Date) => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`[]` | — | Presets; value may be computed on demand. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLInputElement>` | — | Input element reference |
 
 ## Types

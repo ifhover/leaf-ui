@@ -16,7 +16,10 @@
     justify-content: flex-end;
     --leaf-drawer-enter: translateX(100%);
     .leaf-drawer {
-      border-radius: var(--leaf-radius-lg) 0 0 var(--leaf-radius-lg);
+      border-radius: var(
+        --leaf-component-drawer-radius,
+        var(--leaf-radius-lg) 0 0 var(--leaf-radius-lg)
+      );
     }
   }
   &--left {
@@ -112,4 +115,37 @@
   .leaf-drawer {
     transition: none;
   }
+}
+
+.leaf-drawer-mask[hidden] {
+  display: none;
+}
+.leaf-drawer__resize {
+  position: absolute;
+  z-index: 2;
+  touch-action: none;
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: -2px;
+  }
+}
+.leaf-drawer-mask--right .leaf-drawer__resize {
+  inset: 0 auto 0 0;
+  width: 8px;
+  cursor: ew-resize;
+}
+.leaf-drawer-mask--left .leaf-drawer__resize {
+  inset: 0 0 0 auto;
+  width: 8px;
+  cursor: ew-resize;
+}
+.leaf-drawer-mask--top .leaf-drawer__resize {
+  inset: auto 0 0;
+  height: 8px;
+  cursor: ns-resize;
+}
+.leaf-drawer-mask--bottom .leaf-drawer__resize {
+  inset: 0 0 auto;
+  height: 8px;
+  cursor: ns-resize;
 }

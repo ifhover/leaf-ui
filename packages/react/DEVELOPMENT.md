@@ -59,7 +59,7 @@ usePopupState 处理禁用时收起和去重后的 onOpenChange。useFloatingDis
 
 src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。FormValue 使用不可交互的文本输入参与 FormData 与 required 校验，拦截原生校验提示并聚焦触发器。自定义选择组件 onChange 返回业务值，事件属性仍透传到触发按钮；清除值分别为 Select 空字符串、日期 / 时间 null、级联空数组。
 
-DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 支持分钟或秒精度，使用草稿并确认提交；Cascader 只在末级提交。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
+DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格式可以定制，FormData 始终使用标准格式。周起点由 ConfigProvider 控制，ISO 周编号保持独立。TimePicker 支持分钟或秒精度，使用草稿并确认提交；禁用时间同时应用于输入、选择和键盘导航。Cascader 默认选择末级，changeOnSelect 可选择中间层，并支持搜索、多选和懒加载。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
 
 包产物包含 dist、package.json、使用说明及第三方许可证。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
 
@@ -73,8 +73,31 @@ DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 支持分钟�
 
 Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加载模块不在服务端执行。源码入口及各输出文件保留 Next.js 客户端边界。
 
-异步加载组件必须支持 AbortSignal 与卸载清理；InfiniteScroll 同一 dataLength 不会重复请求，失败时可重试，缺少 IntersectionObserver 时提供手动加载。Tree 的 key 必须稳定，异步子树在实例内缓存。更换整个数据源时可更换 Tree 的 React key 以重置缓存。虚拟列表通过 TanStack 测量实际行高，移动焦点时先滚动再聚焦。
+异步加载组件必须支持 AbortSignal 与卸载清理；InfiniteScroll 同一 dataLength 不会重复请求，失败时可重试，缺少 IntersectionObserver 时提供手动加载。Tree、TreeSelect 和 Cascader 的 key 必须稳定，异步子树在实例内缓存。更换 data / options、loadData 或 cacheKey 时清除缓存，取消旧请求并隔离返回结果；调用方应稳定数据与加载函数的引用。Select 只缓存已选项的回显标签，不保留所有历史搜索结果。虚拟列表通过 TanStack 测量实际行高，移动焦点时先滚动再聚焦。
 
 Sortable / Tabs / Tree 通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
 ConfigProvider 自动提供 Confirm、Message、Notification 与 LoadingBar 的作用域。useConfirm / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，调用区域卸载时取消待处理请求；任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
+
+## 公共契约与生成资源
+
+Form 的 disabled 是独立的上下文，内部控件不能用 disabled=false 覆盖它。FormField 的 required、id、labelId 与 error 只关联字段本身；CheckboxGroup、Transfer、Upload 等复合字段使用 FieldScope 隔离内部按钮、搜索框与选项，用整体值参与原生校验。readOnly 锁定业务值，inputReadOnly 只禁止键入。业务错误的代理字段聚焦需要转交给可见控件。
+
+useFormValidation 不维护另一套字段数据仓库；接收原生 FormData、AbortSignal 与字段错误。应用自行对接 Schema、异步校验及服务端错误。noValidate 允许 Schema 接管原生校验；默认保留 reportValidity。高精度输入用 InputNumber stringMode，步长和边界也使用十进制字符串，不转换为 number。
+
+浮层支持 popupPlacement / popupClassName / popupStyle / popupRender / getPopupContainer，自定义容器可为 ShadowRoot。嵌套浮层按层级处理 Escape，关闭动画内保持内容与位置稳定。焦点和外部点击判断使用 composed path 与深层 activeElement，避免 Shadow DOM 的事件重定向误判。
+
+主题的 spacing、lineHeight、headingWeight、elevation、breakpoints 与 components 在 src/theme.ts 合并并产生内联变量。断点辅助函数 useBreakpoint 消费 breakpoints；Grid 的静态响应式 SCSS 使用固定阈值。新增组件级样式需消费对应 token，不能只生成未使用的变量。
+
+中文、英文与繁体中文资源和生成流程位于 config-provider；新增文本时运行：
+
+```bash
+node packages/react/scripts/generate-locale.mjs
+node apps/docs/scripts/sync-component-api.mjs
+```
+
+API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，解析并链接公开的数据类型。`--from-ref=<git-ref>` 可从指定提交恢复人工说明。更新组件目录需要同步 component-metadata.mjs、component-catalog.ts、侧边栏和 SVG 预览；开发说明仍只放在源码 Markdown 中。
+
+## 自动化质量检查
+
+验证范围、命令、兼容矩阵与体积基线见 [QUALITY.md](QUALITY.md)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。

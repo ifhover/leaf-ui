@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CompositeForm, RemoteSelection } from '../../../src/examples/scenarios/basic';
+import { SchemaForm } from '../../../src/examples/scenarios/schema';
+
+# Application scenarios
+
+Combine field layout, async validation and compound controls in one form.
+
+## Dynamic fields and async validation
+
+`Form` uses native form semantics. `useFormValidation` accepts `FormData` for synchronous validation, schema adapters, async requests and server errors. Return an object keyed by field name; use `setErrors` to map server field errors after submission.
+
+Bind `handleSubmit` and `handleReset` to the form. Resubmission and reset cancel previous requests; async functions must respect `AbortSignal`. Compound fields such as CheckboxGroup and Transfer validate the overall value. Upload appends File objects or existing URLs to FormData; directory paths remain available through `File.webkitRelativePath`.
+
+<ComponentExample title="Dynamic fields and async validation" preview={<CompositeForm english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scenarios/basic.tsx"
+```
+
+</ComponentExample>
+
+With Zod or Valibot, parse FormData inside `validate` and map schema issues to field errors. Read repeated fields with `data.getAll(name)`. Convert dynamic arrays using your application's model; Leaf does not interpret dotted field paths implicitly. See [Form](../components/form) for React Hook Form integration.
+
+## Schemas and server errors
+
+This example uses Zod and maps issue paths to `FormField` errors. Set `noValidate` when the schema owns all validation; omit it to retain native validation. Check the supplied cancellation signal before applying server errors in `onSubmit`.
+
+<ComponentExample title="Schemas and server errors" preview={<SchemaForm english />} fileName="schema.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scenarios/schema.tsx"
+```
+
+</ComponentExample>
+
+## Remote search and request races
+
+Use `filterOption={false}` for remote filtering. Manage query parameters, cancellation and page state in the application. `onPopupScroll` can load another page, while `popupRender` can add a retry action. Select caches only selected records for display, rather than all historical search results.
+
+<ComponentExample title="Remote search" preview={<RemoteSelection english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scenarios/basic.tsx"
+```
+
+</ComponentExample>
+
+When changing tenants or tree-data versions, update the `cacheKey` on Tree, TreeSelect or Cascader. The component discards lazy caches and aborts old requests. Return children belonging to the current request.
+
+## Upload transport adapters
+
+Use `autoUpload={false}` with `UploadHandle.upload()` to start manually. `concurrency` limits simultaneous requests. Chunking, checksums and resumable upload IDs belong to your server protocol: implement them in `customRequest` using `File.slice()`, the supplied `signal`, and aggregate `onProgress` updates. Leaf does not assume a storage-specific resume protocol.
+
+See [Form](../components/form), [Select](../components/select) and [Upload](../components/upload) for details.

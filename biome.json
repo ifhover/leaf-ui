@@ -8,6 +8,10 @@
       "!**/site_build",
       "!**/.version-cache",
       "!**/node_modules",
+      "!**/.quality",
+      "!**/test-results",
+      "!**/playwright-report",
+      "!audit-lint.json",
       "!**/.rspress",
       "!**/pnpm-lock.yaml",
       "!apps/docs/docs/public/media/pdf.worker.min.mjs"

@@ -1,6 +1,6 @@
 import { UserRound } from 'lucide-react';
 import { type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 

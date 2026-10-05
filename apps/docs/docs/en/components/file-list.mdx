@@ -38,13 +38,17 @@ import type { FileItem, FileListProps } from '@sudden3/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly FileItem[]`](#fileitem-api) | Required | Files to display |
-| `downloadable / previewable` | `boolean` | `true` | Show download / media preview actions |
-| `removable / disabled` | `boolean` | `false` | Show remove actions / disable actions |
-| `onPreview / onDownload` | [`(file: FileItem) => void`](#fileitem-api) | — | Override preview or download; preview remains media only |
-| `onRemove` | [`(file: FileItem) => void \| boolean \| Promise<void> \| Promise<boolean>`](#fileitem-api) | — | Request removal; the caller updates items |
-| `renderActions` | [`(file: FileItem, actions: ReactNode) => ReactNode`](#fileitem-api) | — | Customize the action area |
+| `items` | `readonly `[`FileItem`](#fileitem-api)`[]` | Required | Required. Files to display |
+| `downloadable` | `boolean` | `true` | Show download / media preview actions |
+| `previewable` | `boolean` | `true` | Show download / media preview actions |
+| `removable` | `boolean` | `false` | Show remove actions / disable actions |
+| `onPreview` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Override preview or download; preview remains media only |
+| `onDownload` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Override preview or download; preview remains media only |
+| `onRemove` | `(file: `[`FileItem`](#fileitem-api)`) => void \| boolean \| Promise<void> \| Promise<boolean>` | — | Request removal; the caller updates items |
+| `renderActions` | `(file: `[`FileItem`](#fileitem-api)`, actions: ReactNode) => ReactNode` | — | Customize the action area |
 | `emptyContent` | `ReactNode` | — | Empty list content |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
 
 ## FileItem API
 
@@ -58,4 +62,4 @@ import type { FileItem, FileListProps } from '@sudden3/leaf-ui';
 | `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Optional upload status |
 | `percent` | `number` | — | Upload progress from 0 to 100 |
 | `error` | `string` | — | Error description |
-| `originFile` | `File` | — | Original browser File |
+| `originFile` | `globalThis.File` | — | Original browser File |

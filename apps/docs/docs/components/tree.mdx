@@ -1,4 +1,5 @@
 import { ExtensionDemo } from '../../src/examples/tree/extensions';
+import { TreeCacheRefresh } from '../../src/examples/tree/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { TreeBasic } from '../../src/examples/tree/basic';
 import { TreeCheckable } from '../../src/examples/tree/checkable';
@@ -58,71 +59,92 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 </ComponentExample>
 
+## 刷新异步数据
+
+更新 `cacheKey` 可以刷新同一组节点的懒加载缓存。更换 `data` 或 `loadData` 也会清除缓存；保持它们的引用稳定，避免因无关渲染重复加载。过期请求被取消后，不会覆盖新数据。
+
+<ComponentExample title="刷新异步数据" preview={<TreeCacheRefresh />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Tree API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `data` | [`readonly TreeNode[]`](#treenode) | 必填 | 树节点 |
-| `selectedKeys / defaultSelectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
-| `onSelect` | [`(keys: string[], info: TreeSelectInfo) => void`](#treeselectinfo) | — | 选择变化 |
-| `multiple / selectable` | `boolean` | `false / true` | 多选 / 允许选择 |
-| `checkedKeys / defaultCheckedKeys` | `readonly string[]` | `[]` | 受控 / 初始勾选节点 |
-| `onCheck` | [`(keys: string[], info: TreeCheckInfo) => void`](#treecheckinfo) | — | 勾选变化，包含联动结果 |
-| `checkable / checkStrictly` | `boolean` | `false / false` | 展示复选框 / 禁止父子联动 |
-| `expandedKeys / defaultExpandedKeys` | `readonly string[]` | `[]` | 受控 / 初始展开节点 |
+| `data` | `readonly `[`TreeNode`](#treenode)`[]` | 必填 | 必需。树节点 |
+| `selectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
+| `defaultSelectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
+| `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | 选择变化 |
+| `multiple` | `boolean` | `false` | 多选 / 允许选择 |
+| `selectable` | `boolean` | `true` | 多选 / 允许选择 |
+| `checkable` | `boolean` | `false` | 展示复选框 / 禁止父子联动 |
+| `checkStrictly` | `boolean` | `false` | 展示复选框 / 禁止父子联动 |
+| `checkedKeys` | `readonly string[]` | `[]` | 受控 / 初始勾选节点 |
+| `defaultCheckedKeys` | `readonly string[]` | `[]` | 受控 / 初始勾选节点 |
+| `onCheck` | `(keys: string[], info: `[`TreeCheckInfo`](#treecheckinfo)`) => void` | — | 勾选变化，包含联动结果 |
+| `expandedKeys` | `readonly string[]` | `[]` | 受控 / 初始展开节点 |
+| `defaultExpandedKeys` | `readonly string[]` | `[]` | 受控 / 初始展开节点 |
 | `defaultExpandAll` | `boolean` | `false` | 初始展开全部节点 |
-| `onExpand` | [`(keys: string[], info: TreeExpandInfo) => void`](#treeexpandinfo) | — | 展开变化 |
-| `disabled / showIcon / showLine` | `boolean` | `false` | 禁用操作 / 显示图标 / 显示层级线 |
+| `onExpand` | `(keys: string[], info: `[`TreeExpandInfo`](#treeexpandinfo)`) => void` | — | 展开变化 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `showLine` | `boolean` | `false` | 禁用操作 / 显示图标 / 显示层级线 |
+| `showIcon` | `boolean` | `false` | 禁用操作 / 显示图标 / 显示层级线 |
 | `searchValue` | `string` | `''` | 过滤节点，保留匹配项和祖先 |
-| `filterTreeNode` | [`(node: TreeNode, query: string) => boolean`](#treenode) | — | 自定义搜索规则 |
+| `filterTreeNode` | `(node: `[`TreeNode`](#treenode)`, query: string) => boolean` | — | 自定义搜索规则 |
 | `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
-| `loadData` | [`(node: TreeNode, signal: AbortSignal) => Promise<readonly TreeNode[]>`](#treenode) | — | 展开时加载子项，signal 用于取消 |
-| `onLoad` | [`(node: TreeNode, children: readonly TreeNode[]) => void`](#treenode) | — | 子项加载成功 |
-| `onLoadError` | [`(error: unknown, node: TreeNode) => void`](#treenode) | — | 加载失败，再次展开可重试 |
-| `virtual` | `boolean` | `false` | 仅渲染可见项目 |
+| `loadData` | `(node: `[`TreeNode`](#treenode)`, signal: AbortSignal) => Promise<readonly `[`TreeNode`](#treenode)`[]>` | — | 展开时加载子项，signal 用于取消 |
+| `cacheKey` | `string \| number` | — | 数据版本改变时清空懒加载缓存，并取消旧请求。 |
+| `nodeRender` | `(node: `[`TreeNode`](#treenode)`) => ReactNode` | — | 自定义节点展示内容。 |
+| `onLoad` | `(node: `[`TreeNode`](#treenode)`, children: readonly `[`TreeNode`](#treenode)`[]) => void` | — | 子项加载成功 |
+| `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | 加载失败，再次展开可重试 |
+| `virtual` | `boolean` | `false` | 仅渲染可视节点；大量节点时建议启用。 |
 | `height` | `number` | `320` | 高度，数字按像素计算 |
 | `itemHeight` | `number` | `34` | 虚拟列表预估行高 |
-| `draggable` | [`boolean \| ((node: TreeNode) => boolean)`](#treenode) | `false` | 允许通过手柄移动节点 |
-| `allowDrop` | [`(info: Omit<TreeDropInfo, 'data'>) => boolean`](#treedropinfo-api) | — | 限制放置位置 |
-| `onDrop` | [`(info: TreeDropInfo) => void`](#treedropinfo-api) | — | 移动结果，调用方更新 data |
+| `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | 允许通过手柄移动节点 |
+| `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | 限制放置位置 |
+| `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | 移动结果，调用方更新 data |
 
 ## TreeNode
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `key` | `string` | 唯一标识，必填 |
-| `title` | `ReactNode` | 节点内容，必填 |
-| `children` | [`readonly TreeNode[]`](#treenode) | 子节点；使用同一结构 |
-| `disabled` | `boolean` | 禁止选择与勾选，仍可浏览子节点 |
-| `selectable / checkable` | `boolean` | 该节点能否选择 / 是否展示复选框，默认可用 |
-| `disableCheckbox` | `boolean` | 禁止勾选并阻断父子勾选联动 |
-| `icon` | `ReactNode` | 自定义图标 |
-| `searchLabel` | `string` | 标题为节点时提供用于搜索和读屏的文字 |
-| `isLeaf` | `boolean` | false 允许异步加载子项 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 必需。唯一标识，必填 |
+| `title` | `ReactNode` | — | 必需。节点内容，必填 |
+| `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | 子节点；使用同一结构 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `selectable` | `boolean` | — | 该节点能否选择 / 是否展示复选框，默认可用 |
+| `checkable` | `boolean` | — | 该节点能否选择 / 是否展示复选框，默认可用 |
+| `disableCheckbox` | `boolean` | — | 禁止勾选并阻断父子勾选联动 |
+| `searchLabel` | `string` | — | 标题为节点时提供用于搜索和读屏的文字 |
+| `isLeaf` | `boolean` | — | false 允许异步加载子项 |
 
 ## TreeSelectInfo
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | 本次操作节点 |
-| `selected` | `boolean` | 操作后是否选中 |
-| `selectedNodes` | [`readonly TreeNode[]`](#treenode) | 全部选中节点 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
+| `selected` | `boolean` | — | 必需。操作后是否选中 |
+| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | 必需。全部选中节点 |
 
 ## TreeCheckInfo
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | 本次操作节点 |
-| `checked` | `boolean` | 操作后是否勾选 |
-| `checkedNodes` | [`readonly TreeNode[]`](#treenode) | 完整勾选节点 |
-| `halfCheckedKeys` | `readonly string[]` | 半选节点标识 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
+| `checked` | `boolean` | — | 必需。操作后是否勾选 |
+| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | 必需。完整勾选节点 |
+| `halfCheckedKeys` | `readonly string[]` | — | 必需。半选节点标识 |
 
 ## TreeExpandInfo
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | 本次操作节点 |
-| `expanded` | `boolean` | 操作后是否展开 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
+| `expanded` | `boolean` | — | 必需。操作后是否展开 |
 
 ## 类型
 
@@ -153,10 +175,10 @@ import type { TreeDropInfo } from '@sudden3/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | 必填 | 操作节点 |
-| `target` | [`TreeNode`](#treenode) | 必填 | 放置目标节点 |
-| `position` | `'before' \| 'inside' \| 'after'` | 必填 | 显示或插入位置 |
-| `data` | [`TreeNode[]`](#treenode) | 必填 | 层级数据 |
+| `node` | [`TreeNode`](#treenode) | 必填 | 必需。操作节点 |
+| `target` | [`TreeNode`](#treenode) | 必填 | 必需。接收拖放的目标节点。 |
+| `position` | `'before' \| 'inside' \| 'after'` | 必填 | 必需。放在目标节点之前、内部或之后。 |
+| `data` | [`TreeNode`](#treenode)`[]` | 必填 | 必需。层级数据 |
 
 ## moveTreeNode
 

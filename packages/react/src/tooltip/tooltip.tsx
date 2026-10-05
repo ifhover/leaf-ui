@@ -12,9 +12,9 @@ import {
 } from 'react';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
-import { FloatingPanel, useFloatingDismiss } from '../shared/floating';
+import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
 
-export interface TooltipProps {
+export interface TooltipProps extends PopupOptions {
   content: ReactNode;
   children: ReactElement<
     HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean }
@@ -51,6 +51,11 @@ export function Tooltip({
   enterDelay = 100,
   leaveDelay = 100,
   className,
+  popupPlacement,
+  popupClassName,
+  popupStyle,
+  popupRender,
+  getPopupContainer,
 }: TooltipProps) {
   const [internal, setInternal] = useState(defaultOpen);
   const inactive = disabled || children.props.disabled || content == null || content === '';
@@ -120,12 +125,15 @@ export function Tooltip({
       })}
       <FloatingPanel
         open={open}
+        render={popupRender}
+        container={getPopupContainer}
         triggerRef={trigger}
         panelRef={panel}
         id={id}
         role="tooltip"
-        placement={placement}
-        className={classes('leaf-floating', 'leaf-tooltip', className)}
+        placement={popupPlacement ?? placement}
+        className={classes('leaf-floating', 'leaf-tooltip', className, popupClassName)}
+        style={popupStyle}
         onPointerEnter={() => {
           hovered.current = true;
           clearTimeout(timer.current);

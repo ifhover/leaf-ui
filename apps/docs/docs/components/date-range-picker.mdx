@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/date-range-picker/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { DateRangePickerBasic } from '../../src/examples/date-range-picker/basic';
 import { DateRangePickerModes } from '../../src/examples/date-range-picker/modes';
@@ -24,23 +25,59 @@ import { DateRangePickerModes } from '../../src/examples/date-range-picker/modes
 
 </ComponentExample>
 
+## 季度、预设与开放端点
+
+<ComponentExample title="季度、预设与开放端点" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## 显示格式与提交值
+
+`format` 改变显示文字和 `onChange` 的字符串参数；FormData 保持日期或周期的稳定序列化格式。方括号可以转义固定文字，例如 `YYYY-[Q]Q`。使用函数格式化时，请同时提供 `parse`。Date 表示本地日历值，业务时区在应用的数据边界完成转换。周起点通过 ConfigProvider 的 `weekStartsOn` 设置。
+
 ## DateRangePicker API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue` | [`DateRange \| null`](#daterange) | `null` | 受控区间 / 初始区间 |
-| `onChange` | [`(value: DateRange \| null, dateStrings: readonly [string, string]) => void`](#daterange) | — | 完成选择后返回有序区间与字符串；清除返回 null |
-| `picker` | `'year' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | 选择粒度 |
-| `minDate / maxDate` | `Date` | — | 最早 / 最晚可选边界 |
-| `showSeconds` | `boolean` | `true` | 日期时间区间展示秒，关闭时秒为 0 |
-| `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
-| `minuteStep / secondStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
-| `allowClear` | `boolean` | `true` | 展示清除按钮 |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `disabled / required` | `boolean` | `false` | 禁用 / 必填，可继承 FormField |
-| `placeholder / name / form` | `string` | — | 提示文字 / 字段名 / 表单 ID |
+| `allowClear` | `boolean` | `true` | 展示清除按钮 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | 选择粒度 |
+| `minDate` | `Date` | — | 最早 / 最晚可选边界 |
+| `maxDate` | `Date` | — | 最早 / 最晚可选边界 |
+| `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
+| `showSeconds` | `boolean` | `true` | 日期时间区间展示秒，关闭时秒为 0 |
+| `minuteStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
+| `secondStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
+| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | 按业务规则禁用日期。 |
+| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | 按业务规则禁用时间，输入和面板选择使用同一规则。 |
+| `format` | `string \| ((date: Date) => string)` | — | 显示格式；日期支持 YYYY、MM、DD、HH、mm、ss、Q。 |
+| `parse` | `(text: string) => Date \| null` | — | 自定义文本解析，失败时返回 null。 |
+| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | 快捷选项；value 可以动态计算。 |
+| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | 选择过程中的日期变化，包含当前起止位置。 |
+| `panelValue` | `Date` | — | 受控的日历显示日期。 |
+| `onPanelChange` | `(date: Date) => void` | — | 日历显示的周期改变时调用。 |
+| `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
+| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | 明确允许空的起止端点。 |
+| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | 受控区间 / 初始区间 |
+| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | 受控区间 / 初始区间 |
+| `onChange` | `((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void) \| ((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)` | — | 完成选择后返回有序区间与字符串；清除返回 null |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 ## DateRange

@@ -37,7 +37,7 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
   ref,
 ) {
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const entries = options.map((option) =>
     typeof option === 'string' ? { label: option, value: option } : option,
   );

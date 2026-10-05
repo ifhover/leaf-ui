@@ -9,37 +9,65 @@ import {
 } from '@floating-ui/react-dom';
 import {
   type CSSProperties,
+  createContext,
   type HTMLAttributes,
   type RefObject,
   useCallback,
   useContext,
   useEffect,
+  useId,
   useLayoutEffect,
   useRef,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { tabbable } from 'tabbable';
+import { useLeafConfig } from '../config-provider/context';
 import type { LeafThemeStyle } from '../theme';
+import { composedEventTarget, composedParent, deepActiveElement } from './dom';
 import { inertAttribute } from './inert';
 import { OverlayOwner } from './overlay-owner';
 import { usePresence } from './presence';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+const PopupParent = createContext<string | undefined>(undefined);
+const popupNodes = new Map<string, HTMLElement>();
+const dismissStack: RefObject<HTMLElement | null>[] = [];
+function insidePopup(target: Node, panel: HTMLElement | null) {
+  if (!panel) return false;
+  if (panel.contains(target)) return true;
+  let popup = target instanceof Element ? target.closest<HTMLElement>('[data-leaf-popup]') : null;
+  const visited = new Set<string>();
+  while (popup?.dataset.leafPopupParent) {
+    const parent = popup.dataset.leafPopupParent;
+    if (visited.has(parent)) break;
+    visited.add(parent);
+    popup = popupNodes.get(parent) ?? null;
+    if (popup === panel) return true;
+  }
+  return false;
+}
 
 /** Close disabled fields immediately and report each open-state change once. */
-export function usePopupState(disabled?: boolean, onOpenChange?: (open: boolean) => void) {
-  const [requestedOpen, setRequestedOpen] = useState(false);
-  const requestedRef = useRef(false);
+export function usePopupState(
+  disabled?: boolean,
+  onOpenChange?: (open: boolean) => void,
+  controlledOpen?: boolean,
+  defaultOpen = false,
+) {
+  const [internalOpen, setRequestedOpen] = useState(defaultOpen);
+  const requestedOpen = controlledOpen ?? internalOpen;
+  const requestedRef = useRef(requestedOpen);
+  requestedRef.current = requestedOpen;
   const open = requestedOpen && !disabled;
   const setOpen = useCallback(
     (next: boolean) => {
       if (next === requestedRef.current || (next && disabled)) return;
       requestedRef.current = next;
-      setRequestedOpen(next);
+      if (controlledOpen === undefined) setRequestedOpen(next);
       onOpenChange?.(next);
     },
-    [disabled, onOpenChange],
+    [disabled, onOpenChange, controlledOpen],
   );
   useEffect(() => {
     if (disabled && requestedOpen) setOpen(false);
@@ -47,6 +75,13 @@ export function usePopupState(disabled?: boolean, onOpenChange?: (open: boolean)
   return [open, setOpen] as const;
 }
 
+export interface PopupOptions {
+  popupPlacement?: Placement;
+  popupClassName?: string;
+  popupStyle?: CSSProperties;
+  popupRender?: (content: React.ReactNode) => React.ReactNode;
+  getPopupContainer?: () => Element | DocumentFragment;
+}
 interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
   triggerRef: RefObject<HTMLElement | null>;
@@ -57,6 +92,9 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   maxWidth?: CSSProperties['maxWidth'];
   maxHeight?: CSSProperties['maxHeight'];
   placement?: Placement;
+  container?: Element | DocumentFragment | (() => Element | DocumentFragment);
+  render?: (content: React.ReactNode) => React.ReactNode;
+  position?: { x: number; y: number };
 }
 
 /** Position a lazily mounted portal, preserving the trigger's scoped theme. */
@@ -70,10 +108,16 @@ export function FloatingPanel({
   maxWidth,
   maxHeight,
   placement = 'bottom-start',
+  container,
+  render,
+  position,
   style,
   children,
   ...props
 }: FloatingPanelProps) {
+  const popupId = useId();
+  const parentPopup = useContext(PopupParent);
+  const config = useLeafConfig();
   const owner = useContext(OverlayOwner);
   const present = usePresence(open, panelRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
@@ -129,16 +173,33 @@ export function FloatingPanel({
   if (open) previousPosition.current = floatingStyles;
   const setPanelRef = useCallback(
     (node: HTMLDivElement | null) => {
+      if (node) popupNodes.set(popupId, node);
+      else popupNodes.delete(popupId);
       panelRef.current = node;
       refs.setFloating(node);
     },
-    [panelRef, refs.setFloating],
+    [panelRef, refs.setFloating, popupId],
   );
 
   useBrowserLayoutEffect(() => {
     const trigger = triggerRef.current;
     if (!trigger || !present) return;
-    refs.setReference(trigger);
+    refs.setReference(
+      position
+        ? {
+            getBoundingClientRect: () => ({
+              x: position.x,
+              y: position.y,
+              top: position.y,
+              bottom: position.y,
+              left: position.x,
+              right: position.x,
+              width: 0,
+              height: 0,
+            }),
+          }
+        : trigger,
+    );
     const syncTheme = () => {
       const computed = getComputedStyle(trigger);
       const variables: LeafThemeStyle = {
@@ -158,28 +219,38 @@ export function FloatingPanel({
     while (ancestor) {
       observer.observe(ancestor, {
         attributes: true,
-        attributeFilter: ['class', 'style', 'data-leaf-theme'],
+        attributeFilter: ['class', 'style', 'data-leaf-theme', 'dir'],
       });
-      ancestor = ancestor.parentElement;
+      ancestor = composedParent(ancestor);
     }
     return () => observer.disconnect();
-  }, [triggerRef, refs.setReference, present]);
+  }, [triggerRef, refs.setReference, present, position]);
 
   if (!present || typeof document === 'undefined') return null;
   return createPortal(
-    <div
-      {...props}
-      ref={setPanelRef}
-      data-leaf-owner={owner}
-      data-state={open ? 'open' : 'closing'}
-      data-positioned={isPositioned || !open}
-      aria-hidden={!open || undefined}
-      inert={inertAttribute(!open)}
-      style={{ ...theme, ...style, ...(open ? floatingStyles : previousPosition.current) }}
-    >
-      {open ? children : closingContent.current}
-    </div>,
-    document.body,
+    <PopupParent.Provider value={popupId}>
+      <div
+        {...props}
+        ref={setPanelRef}
+        data-leaf-owner={owner}
+        data-leaf-popup={popupId}
+        data-leaf-popup-parent={parentPopup}
+        data-state={open ? 'open' : 'closing'}
+        data-positioned={isPositioned || !open}
+        aria-hidden={!open || undefined}
+        inert={inertAttribute(!open)}
+        style={{ ...theme, ...style, ...(open ? floatingStyles : previousPosition.current) }}
+      >
+        {render
+          ? render(open ? children : closingContent.current)
+          : open
+            ? children
+            : closingContent.current}
+      </div>
+    </PopupParent.Provider>,
+    (typeof container === 'function' ? container() : container) ??
+      config.getPopupContainer?.() ??
+      document.body,
   );
 }
 
@@ -191,45 +262,50 @@ export function useFloatingDismiss(
   panelRef: RefObject<HTMLElement | null>,
   boundaryRef: RefObject<HTMLElement | null> = triggerRef,
 ) {
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
     if (!open) {
       return;
     }
+    dismissStack.push(panelRef);
 
     const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target;
+      const target = event.composedPath()[0] ?? event.target;
       if (!(target instanceof Node)) {
         return;
       }
-      if (boundaryRef.current?.contains(target) || panelRef.current?.contains(target)) {
+      if (boundaryRef.current?.contains(target) || insidePopup(target, panelRef.current)) {
         return;
       }
-      onClose('outside');
+      closeRef.current('outside');
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return;
+      if (event.defaultPrevented || dismissStack.at(-1) !== panelRef) return;
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();
-        onClose('escape');
+        closeRef.current('escape');
         triggerRef.current?.focus();
       } else if (event.key === 'Tab') {
         const panel = panelRef.current;
         const trigger = triggerRef.current;
-        if (!panel || !trigger || !panel.contains(document.activeElement)) return;
-        const items = tabbable(panel);
-        const index =
-          document.activeElement instanceof HTMLElement
-            ? items.indexOf(document.activeElement)
-            : -1;
+        const active = deepActiveElement();
+        if (!panel || !trigger || !panel.contains(active)) return;
+        const items = tabbable(panel, {
+          getShadowRoot: (element) => element.shadowRoot ?? undefined,
+        });
+        const index = active instanceof HTMLElement ? items.indexOf(active) : -1;
         const leaving = event.shiftKey ? index <= 0 : index === items.length - 1;
         if (!leaving) return;
         event.preventDefault();
-        onClose('tab');
+        closeRef.current('tab');
         if (event.shiftKey) trigger.focus();
         else {
-          const pageItems = tabbable(document.body).filter((item) => !panel.contains(item));
+          const pageItems = tabbable(document.body, {
+            getShadowRoot: (element) => element.shadowRoot ?? undefined,
+          }).filter((item) => !panel.contains(item));
           const triggerIndex = pageItems.indexOf(trigger);
           (pageItems[triggerIndex + 1] ?? trigger).focus();
         }
@@ -237,29 +313,38 @@ export function useFloatingDismiss(
     };
 
     const handleFocus = (event: FocusEvent) => {
-      const target = event.target;
+      const target = composedEventTarget(event);
       if (
         target instanceof Node &&
         !boundaryRef.current?.contains(target) &&
-        !panelRef.current?.contains(target)
+        !insidePopup(target, panelRef.current)
       )
-        onClose('focus');
+        closeRef.current('focus');
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('focusin', handleFocus);
     return () => {
+      const index = dismissStack.indexOf(panelRef);
+      if (index >= 0) dismissStack.splice(index, 1);
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown, true);
       document.removeEventListener('focusin', handleFocus);
     };
-  }, [open, onClose, panelRef, triggerRef, boundaryRef]);
+  }, [open, panelRef, triggerRef, boundaryRef]);
 }
 
 /** Keep keyboard-highlighted options visible without animated scrolling. */
-export function useActiveOption(open: boolean, optionId: string | undefined) {
+export function useActiveOption(
+  open: boolean,
+  optionId: string | undefined,
+  panelRef?: RefObject<HTMLElement | null>,
+) {
   useEffect(() => {
-    if (open && optionId) document.getElementById(optionId)?.scrollIntoView?.({ block: 'nearest' });
-  }, [open, optionId]);
+    if (!open || !optionId) return;
+    const root = panelRef?.current?.getRootNode();
+    const scope = root instanceof ShadowRoot ? root : document;
+    scope.getElementById(optionId)?.scrollIntoView?.({ block: 'nearest' });
+  }, [open, optionId, panelRef]);
 }

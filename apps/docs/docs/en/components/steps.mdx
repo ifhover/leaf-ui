@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/steps/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { StepsBasic } from '../../../src/examples/en/steps/basic';
 
@@ -14,28 +15,39 @@ Show the progress and current step of a task.
 
 </ComponentExample>
 
+## Dots and step progress
+
+<ComponentExample title="Dots and step progress" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/steps/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Steps API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly StepItem[]`](#stepitem) | Required | Step items |
+| `items` | `readonly `[`StepItem`](#stepitem)`[]` | Required | Required. Step items |
 | `current` | `number` | `0` | Current step index, starting at 0 |
 | `status` | `'process' \| 'finish' \| 'error'` | `'process'` | Current step status |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Step size |
 | `loading` | `boolean` | `false` | Show a spinner for the current step |
 | `onChange` | `(current: number) => void` | — | Makes steps selectable |
+| `progressDot` | `boolean \| ((dot: ReactNode, info: { index: number; status: string }) => ReactNode)` | — | Use progress dots, optionally with custom content. |
+| `percent` | `number` | — | Completion percentage. |
 
 ## StepItem
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable identifier |
-| `title` | `ReactNode` | Required | Step title |
+| `title` | `ReactNode` | Required | Required. Step title |
 | `description` | `ReactNode` | — | Supporting description |
 | `icon` | `ReactNode` | — | Custom icon |
 | `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | Override the item status |
-| `disabled` | `boolean` | `false` | Prevent selecting the step |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 
 ## Types
 

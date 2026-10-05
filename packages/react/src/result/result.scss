@@ -1,9 +1,9 @@
 .leaf-result {
   --leaf-result-color: var(--leaf-color-text-muted);
-  padding: 36px 20px;
+  padding: var(--leaf-component-result-padding, 36px 20px);
   text-align: center;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  color: var(--leaf-component-result-color, var(--leaf-color-text));
+  font: var(--leaf-component-result-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   &--success {
     --leaf-result-color: var(--leaf-color-success);
   }

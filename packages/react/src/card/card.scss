@@ -1,13 +1,13 @@
 .leaf-card {
-  --leaf-card-padding: 20px;
+  --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
   --leaf-card-heading-gap: 16px;
   box-sizing: border-box;
   min-width: 0;
   border: 1px solid transparent;
-  border-radius: var(--leaf-radius-lg);
-  background: var(--leaf-color-surface);
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  border-radius: var(--leaf-component-card-radius, var(--leaf-radius-lg));
+  background: var(--leaf-component-card-background, var(--leaf-color-surface));
+  color: var(--leaf-component-card-color, var(--leaf-color-text));
+  font: var(--leaf-component-card-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   transition:
     border-color var(--leaf-motion-duration),
     box-shadow var(--leaf-motion-duration);
@@ -20,7 +20,7 @@
     box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
   }
   &--sm {
-    --leaf-card-padding: 12px;
+    --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 1.5));
     --leaf-card-heading-gap: 12px;
   }
   &__header {

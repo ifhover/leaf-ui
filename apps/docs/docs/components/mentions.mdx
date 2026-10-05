@@ -1,0 +1,68 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { MentionsBasic, MentionsPrefixes } from '../../src/examples/mentions/basic';
+
+# Mentions 提及
+
+在文本中插入成员或内容引用。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<MentionsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/mentions/basic.tsx"
+```
+
+</ComponentExample>
+
+## 不同的前缀
+
+<ComponentExample title="不同的前缀" preview={<MentionsPrefixes />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/mentions/basic.tsx"
+```
+
+</ComponentExample>
+
+## MentionOption
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | — | 必需。受控值。 |
+| `label` | `ReactNode` | — | 展示文字或内容。 |
+| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+
+## Mentions API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 展示尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 设置 status。 |
+| `resize` | `'none' \| 'vertical' \| 'both'` | — | 设置 resize。 |
+| `autoSize` | `boolean \| `[`TextareaAutoSize`](../components/textarea#textareaautosize-api) | — | 设置 autoSize。 |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | 设置 showCount。 |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `value` | `string` | — | 受控值。 |
+| `defaultValue` | `string` | `''` | 初始值；非受控模式支持表单重置。 |
+| `onChange` | `(value: string) => void` | — | 值发生变化时调用。 |
+| `onSearch` | `(query: string, prefix: string) => void` | — | 搜索文字改变时调用。 |
+| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | 条目被选择时调用。 |
+| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | — | 必需。可供选择的选项。 |
+| `prefixes` | `readonly string[]` | — | 可触发建议的文本前缀。 |
+| `split` | `string` | `' '` | 插入引用后追加的分隔文字。 |
+| `loading` | `boolean` | — | 展示加载状态。 |
+| `notFoundContent` | `ReactNode` | — | 没有匹配选项时的内容。 |
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { MentionOption, MentionsProps } from '@sudden3/leaf-ui';
+```
+
+为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

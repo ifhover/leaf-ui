@@ -1,6 +1,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { documentationPage } from './component-metadata.mjs';
 
 export async function walkFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -54,6 +55,7 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
     const html = relative.replace(/\.md$/, '.html');
     const symbols = exports
       .filter((entry) => {
+        if (documentationPage(entry) === id) return true;
         const module = entry.module.split('/').filter(Boolean).at(-1);
         if (id === 'components/result' && module === 'empty') return true;
         if (id === 'components/textarea' && entry.module.startsWith('./textarea/')) return true;

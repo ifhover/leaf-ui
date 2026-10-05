@@ -3,6 +3,7 @@ import {
   type ButtonHTMLAttributes,
   cloneElement,
   type KeyboardEvent,
+  type MouseEvent,
   type ReactElement,
   type ReactNode,
   type Ref,
@@ -15,8 +16,10 @@ import {
   version,
 } from 'react';
 import { tabbable } from 'tabbable';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
+import type { PopupOptions } from '../shared/floating';
 import { FloatingPanel } from '../shared/floating';
 export interface DropdownItem {
   key: string;
@@ -32,9 +35,9 @@ export interface DropdownItem {
   onCheckedChange?: (checked: boolean) => void;
   href?: string;
   target?: string;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
 }
-export interface DropdownProps {
+export interface DropdownProps extends PopupOptions {
   items: readonly DropdownItem[];
   children: ReactElement<
     ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> }
@@ -47,6 +50,10 @@ export interface DropdownProps {
   placement?: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
   popupWidth?: number | string;
   popupMaxWidth?: number | string;
+  trigger?: 'click' | 'hover' | 'contextMenu' | readonly ('click' | 'hover' | 'contextMenu')[];
+  mouseEnterDelay?: number;
+  mouseLeaveDelay?: number;
+  itemRender?: (item: DropdownItem) => ReactNode;
 }
 const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
   items.flatMap((item) =>
@@ -65,7 +72,21 @@ export function Dropdown({
   placement = 'bottom-start',
   popupWidth,
   popupMaxWidth = 420,
+  trigger: triggerType = 'click',
+  mouseEnterDelay = 100,
+  mouseLeaveDelay = 150,
+  popupPlacement,
+  popupClassName,
+  popupStyle,
+  popupRender,
+  getPopupContainer,
+  itemRender,
 }: DropdownProps) {
+  const triggers = Array.isArray(triggerType) ? triggerType : [triggerType];
+  const [position, setPosition] = useState<{ x: number; y: number }>();
+  const [pointerOpen, setPointerOpen] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const [internal, setInternal] = useState(defaultOpen);
@@ -92,6 +113,19 @@ export function Dropdown({
     change(false);
     if (focus) trigger.current?.focus();
   };
+  const hoverEnter = () => {
+    clearTimeout(timer.current);
+    if (triggers.includes('hover') && !inactive)
+      timer.current = setTimeout(() => {
+        setPosition(undefined);
+        setPointerOpen(true);
+        change(true);
+      }, mouseEnterDelay);
+  };
+  const hoverLeave = () => {
+    clearTimeout(timer.current);
+    if (triggers.includes('hover')) timer.current = setTimeout(() => close(), mouseLeaveDelay);
+  };
   useEffect(() => {
     if (inactive) setInternal(false);
   }, [inactive]);
@@ -114,7 +148,7 @@ export function Dropdown({
       document.removeEventListener('focusin', focus);
     };
   });
-  const choose = (item: DropdownItem) => {
+  const choose = (item: DropdownItem, event: MouseEvent<HTMLElement>) => {
     if (item.disabled) return;
     if (item.type === 'checkbox' || item.type === 'radio') {
       const checked = item.type === 'radio' || !(item.checked ?? checks[item.key]);
@@ -134,7 +168,7 @@ export function Dropdown({
       });
       item.onCheckedChange?.(checked);
     }
-    item.onClick?.();
+    item.onClick?.(event);
     onSelect?.(item.key);
     if (item.closeOnSelect ?? (item.type !== 'checkbox' && item.type !== 'radio')) close(true);
   };
@@ -158,9 +192,28 @@ export function Dropdown({
         'aria-controls': `${id}-root`,
         onClick: (event) => {
           children.props.onClick?.(event);
-          if (!event.defaultPrevented && !inactive) {
+          if (!event.defaultPrevented && !inactive && triggers.includes('click')) {
+            setPosition(undefined);
+            setPointerOpen(false);
             setStartAtEnd(false);
             change(!open);
+          }
+        },
+        onPointerEnter: (event) => {
+          children.props.onPointerEnter?.(event);
+          if (!event.defaultPrevented) hoverEnter();
+        },
+        onPointerLeave: (event) => {
+          children.props.onPointerLeave?.(event);
+          if (!event.defaultPrevented) hoverLeave();
+        },
+        onContextMenu: (event) => {
+          children.props.onContextMenu?.(event);
+          if (!event.defaultPrevented && !inactive && triggers.includes('contextMenu')) {
+            event.preventDefault();
+            setPosition({ x: event.clientX, y: event.clientY });
+            setPointerOpen(false);
+            change(true);
           }
         },
         onKeyDown: (event) => {
@@ -169,6 +222,8 @@ export function Dropdown({
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
             setStartAtEnd(event.key === 'ArrowUp');
+            setPosition(undefined);
+            setPointerOpen(false);
             change(true);
           }
         },
@@ -178,7 +233,16 @@ export function Dropdown({
         open={open}
         trigger={trigger}
         id={`${id}-root`}
-        placement={placement}
+        placement={(popupPlacement ?? placement) as PanelProps['placement']}
+        position={position}
+        pointerOpen={pointerOpen}
+        onPointerEnter={() => clearTimeout(timer.current)}
+        onPointerLeave={hoverLeave}
+        popupClassName={popupClassName}
+        popupStyle={popupStyle}
+        popupRender={popupRender}
+        getPopupContainer={getPopupContainer}
+        itemRender={itemRender}
         width={popupWidth}
         maxWidth={popupMaxWidth}
         startAtEnd={startAtEnd}
@@ -192,21 +256,26 @@ export function Dropdown({
     </>
   );
 }
-interface PanelProps {
+interface PanelProps extends PopupOptions {
   items: readonly DropdownItem[];
   open: boolean;
   trigger: RefObject<HTMLElement | null>;
   id: string;
-  placement: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'right-start';
+  placement: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'right-start' | 'left-start';
   width?: number | string;
   maxWidth: number | string;
   startAtEnd?: boolean;
   register: (node: HTMLDivElement | null) => void;
   unregister: (node: HTMLDivElement) => void;
   checks: Record<string, boolean>;
-  choose: (item: DropdownItem) => void;
+  choose: (item: DropdownItem, event: MouseEvent<HTMLElement>) => void;
   close: () => void;
   onTab: (event: KeyboardEvent) => void;
+  position?: { x: number; y: number };
+  pointerOpen?: boolean;
+  onPointerEnter?: () => void;
+  onPointerLeave?: () => void;
+  itemRender?: (item: DropdownItem) => ReactNode;
 }
 function MenuPanel({
   items,
@@ -223,7 +292,17 @@ function MenuPanel({
   choose,
   close,
   onTab,
+  position,
+  pointerOpen,
+  onPointerEnter,
+  onPointerLeave,
+  popupClassName,
+  popupStyle,
+  popupRender,
+  getPopupContainer,
+  itemRender,
 }: PanelProps) {
+  const { direction } = useLeafConfig();
   const panel = useRef<HTMLDivElement>(null);
   const submenuTrigger = useRef<HTMLElement>(null);
   const rows = flatten(items);
@@ -249,11 +328,11 @@ function MenuPanel({
     );
     const choice = startAtEnd ? choices?.[choices.length - 1] : choices?.[0];
     setActive(choice?.dataset.key);
-    choice?.focus();
+    if (!pointerOpen) choice?.focus();
     return () => {
       if (node) unregister(node);
     };
-  }, [open, startAtEnd, register, unregister]);
+  }, [open, startAtEnd, register, unregister, pointerOpen]);
   const focus = (key?: string) => {
     setActive(key);
     if (key)
@@ -270,13 +349,17 @@ function MenuPanel({
       next = enabled[(index - 1 + enabled.length) % enabled.length]?.key;
     else if (event.key === 'Home') next = enabled[0]?.key;
     else if (event.key === 'End') next = enabled.at(-1)?.key;
-    else if (event.key === 'Escape' || (event.key === 'ArrowLeft' && placement === 'right-start')) {
+    else if (
+      event.key === 'Escape' ||
+      (event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft') &&
+        (placement === 'right-start' || placement === 'left-start'))
+    ) {
       event.preventDefault();
       event.stopPropagation();
       close();
       trigger.current?.focus();
       return;
-    } else if (event.key === 'ArrowRight') {
+    } else if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
       const item = enabled[index];
       if (item?.children?.length) {
         submenuTrigger.current = event.target as HTMLElement;
@@ -310,7 +393,13 @@ function MenuPanel({
         placement={placement}
         width={width}
         maxWidth={maxWidth}
-        className="leaf-floating leaf-dropdown"
+        className={classes('leaf-floating', 'leaf-dropdown', popupClassName)}
+        position={position}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        style={popupStyle}
+        render={popupRender}
+        container={getPopupContainer}
         role="menu"
         tabIndex={-1}
         onKeyDown={keyDown}
@@ -345,11 +434,17 @@ function MenuPanel({
               tabIndex={current === item.key ? 0 : -1}
               className={classes('leaf-floating__option', item.danger && 'leaf-dropdown__danger')}
               onFocus={() => setActive(item.key)}
+              onPointerEnter={(event) => {
+                if (item.children?.length) {
+                  submenuTrigger.current = event.currentTarget;
+                  setSubmenu(item.key);
+                } else setSubmenu(undefined);
+              }}
               onClick={(event) => {
                 if (item.children?.length) {
                   submenuTrigger.current = event.currentTarget;
                   setSubmenu((previous) => (previous === item.key ? undefined : item.key));
-                } else choose(item);
+                } else choose(item, event);
               }}
             >
               {item.type === 'checkbox' ? (
@@ -368,7 +463,7 @@ function MenuPanel({
               ) : (
                 item.icon
               )}
-              <span>{item.label}</span>
+              <span>{itemRender?.(item) ?? item.label}</span>
               {item.children?.length ? (
                 <ChevronRight size={14} className="leaf-dropdown__arrow" aria-hidden="true" />
               ) : null}
@@ -382,7 +477,12 @@ function MenuPanel({
           open={open && Boolean(submenu)}
           trigger={submenuTrigger}
           id={`${id}-sub`}
-          placement="right-start"
+          placement={direction === 'rtl' ? 'left-start' : 'right-start'}
+          pointerOpen={pointerOpen}
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
+          getPopupContainer={getPopupContainer}
+          itemRender={itemRender}
           maxWidth={maxWidth}
           register={register}
           unregister={unregister}

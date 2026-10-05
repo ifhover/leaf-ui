@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { useLeafConfig } from '../config-provider/context';
 import { Dropdown, type DropdownItem } from '../dropdown';
 import { classes } from '../shared/classes';
 import { inertAttribute } from '../shared/inert';
@@ -25,6 +26,9 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLElement>, 'onSelect'>
   defaultOpenKeys?: readonly string[];
   onOpenChange?: (keys: string[]) => void;
   collapsed?: boolean;
+  itemRender?: (item: MenuItem, content: ReactNode) => ReactNode;
+  linkRender?: (item: MenuItem, link: ReactNode) => ReactNode;
+  itemClassName?: string | ((item: MenuItem) => string);
 }
 function MenuSubmenu({
   open,
@@ -65,10 +69,14 @@ export function Menu({
   defaultOpenKeys = [],
   onOpenChange,
   collapsed = false,
+  itemRender,
+  linkRender,
+  itemClassName,
   className,
   ...props
 }: MenuProps) {
   const t = useText();
+  const { direction } = useLeafConfig();
   const id = useId();
   const root = useRef<HTMLElement>(null);
   const [selected, setSelected] = useControllable(selectedKey, defaultSelectedKey);
@@ -124,7 +132,7 @@ export function Menu({
         );
       const expanded = opened.includes(item.key);
       const hasChildren = Boolean(item.children?.length);
-      const content = (
+      const originalContent = (
         <>
           {item.icon && (
             <span className="leaf-menu__icon" aria-hidden="true">
@@ -140,6 +148,7 @@ export function Menu({
           {hasChildren && <ChevronDown className="leaf-menu__arrow" size={14} aria-hidden="true" />}
         </>
       );
+      const content = itemRender?.(item, originalContent) ?? originalContent;
       const common = {
         role: 'menuitem',
         'aria-current': selected === item.key ? ('page' as const) : undefined,
@@ -149,7 +158,10 @@ export function Menu({
         'data-selected': selected === item.key || undefined,
         'data-active-parent': (hasChildren && hasSelected(item)) || undefined,
         'data-danger': item.danger || undefined,
-        className: 'leaf-menu__item',
+        className: classes(
+          'leaf-menu__item',
+          typeof itemClassName === 'function' ? itemClassName(item) : itemClassName,
+        ),
         tabIndex: !item.disabled && focusKey === item.key ? 0 : -1,
         'data-menu-key': item.key,
         'aria-label': collapsed && typeof item.label === 'string' ? item.label : undefined,
@@ -183,16 +195,18 @@ export function Menu({
       return (
         <div key={item.key} className="leaf-menu__entry">
           {item.href && !hasChildren ? (
-            <a
-              {...common}
-              href={item.disabled ? undefined : item.href}
-              onClick={(event) => {
-                if (item.disabled) event.preventDefault();
-                else activate();
-              }}
-            >
-              {content}
-            </a>
+            ((link: ReactNode) => linkRender?.(item, link) ?? link)(
+              <a
+                {...common}
+                href={item.disabled ? undefined : item.href}
+                onClick={(event) => {
+                  if (item.disabled) event.preventDefault();
+                  else activate();
+                }}
+              >
+                {content}
+              </a>,
+            )
           ) : (
             <button {...common} type="button" disabled={item.disabled} onClick={activate}>
               {content}
@@ -257,7 +271,7 @@ export function Menu({
             });
           };
           if (mode !== 'horizontal' && !collapsed && item) {
-            if (event.key === 'ArrowRight') {
+            if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
               event.preventDefault();
               if (item.children?.length) {
                 if (!opened.includes(item.key)) setOpened([...opened, item.key]);
@@ -270,7 +284,7 @@ export function Menu({
               }
               return;
             }
-            if (event.key === 'ArrowLeft') {
+            if (event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft')) {
               event.preventDefault();
               if (opened.includes(item.key)) toggle(item.key);
               else {
@@ -299,7 +313,10 @@ export function Menu({
               : event.key === 'End'
                 ? choices.length - 1
                 : (position +
-                    (event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1) +
+                    (event.key === 'ArrowUp' ||
+                    event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft')
+                      ? -1
+                      : 1) +
                     choices.length) %
                   choices.length;
           event.preventDefault();

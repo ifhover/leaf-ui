@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ModalBasic } from '../../../src/examples/en/modal/basic';
@@ -25,29 +26,48 @@ Display content or complete an action in a dialog.
 
 </ComponentExample>
 
+## Destroying state and initial focus
+
+<ComponentExample title="Destroying state and initial focus" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/modal/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Modal API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `open` | `boolean` | Required | Whether the dialog is visible |
-| `title / children` | `ReactNode` | — | Title / content |
-| `footer` | [`ReactNode \| ((actions: ModalFooterActions) => ReactNode)`](#modalfooteractions) | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
-| `confirmText / cancelText` | `ReactNode` | Locale default | Button labels |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
+| `open` | `boolean` | Required | Required. Whether the dialog is visible |
+| `title` | `ReactNode` | — | Title / content |
+| `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
+| `confirmText` | `ReactNode` | Locale default | Button labels |
+| `cancelText` | `ReactNode` | Locale default | Button labels |
 | `confirmLoading` | `boolean` | `false` | Confirm loading state |
-| `confirmButtonProps / cancelButtonProps` | [`ButtonProps`](/en/components/button#button-api) | — | Customize the default buttons |
+| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Customize the default buttons |
+| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Customize the default buttons |
 | `onConfirm` | `() => void \| Promise<void>` | — | Application controls open; rejection displays an error |
 | `onCancel` | `() => void` | — | Cancel or dismiss; falls back to onClose |
 | `width` | `number \| string` | `480` | Width; numbers are pixels |
-| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `closable` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `maskClosable` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
+| `keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
+| `forceRender` | `boolean` | — | Mount before opening and keep hidden while closed. |
+| `destroyOnClose` | `boolean` | — | Unmount content after the closing transition; preserved by default. |
+| `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
 
 ## ModalFooterActions
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `cancelButton` | `ReactNode` | Default cancel button |
-| `confirmButton` | `ReactNode` | Default confirm button with loading state |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `confirmButton` | `ReactNode` | — | Required. Default confirm button with loading state |
+| `cancelButton` | `ReactNode` | — | Required. Default cancel button |
 
 ## Types
 
@@ -64,3 +84,10 @@ Focus moves into the dialog when opened and returns to the trigger on dismissal.
 Customize footer actions or place a Form inside the body. Picker overlays inside a dialog retain its regional theme.
 
 The default footer has Cancel followed by OK. With onConfirm, update open after the action; without it, OK calls onClose. Promises show loading and prevent duplicates. Submit forms with requestSubmit() in onConfirm or a submit type and form ID in confirmButtonProps. Native validation still applies. A footer function extends default buttons; footer={null} hides the footer.
+
+## DialogFocusOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |

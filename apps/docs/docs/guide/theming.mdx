@@ -146,3 +146,62 @@ CSS 变量用于读取当前区域的主题，方便自己编写的组件与 Lea
 ## 服务端渲染
 
 静态 CSS 与动态主题可以一起使用，不需要运行时生成 CSS。Next.js 与其他 SSR 框架的接入方法见 [SSR 使用](/guide/ssr)。
+
+## 间距、字体与组件覆盖
+
+基础 `spacing` 会生成小、大间距，`lineHeight`、`headingWeight` 和 `elevation` 分别调整正文行高、标题字重和阴影。继续通过 ConfigProvider 配置；组件专属覆盖放在 `theme.components`：
+
+```tsx
+const theme = {
+  spacing: 8,
+  lineHeight: 1.6,
+  headingWeight: 600,
+  elevation: 'soft',
+  components: {
+    Button: { borderRadius: 6, padding: '0 18px' },
+    Input: { borderRadius: 6, controlHeight: 36 },
+    Card: { padding: 16, shadow: '0 6px 20px #0001' },
+  },
+} satisfies LeafTheme;
+```
+
+组件名使用导出的名称。覆盖只作用于该区域中对应组件；每类组件使用与其布局相关的 token：输入组件支持圆角、高度、背景、字号，容器支持内边距和阴影，排列组件支持间距。通过组件本身的 `className` / `style` 与浮层的 `popupClassName` / `popupStyle` 可进一步定制。
+
+## 系统外观、响应断点与对比度
+
+```tsx
+import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@sudden3/leaf-ui';
+
+function Application() {
+  const appearance = useSystemAppearance('light');
+  return <ConfigProvider theme={{ appearance, breakpoints: { md: 800 } }}><Content /></ConfigProvider>;
+}
+function Content() {
+  const { md } = useBreakpoint({ md: false });
+  return <p>{md ? '宽屏布局' : '紧凑布局'}</p>;
+}
+const contrast = colorContrast('#ffffff', '#20834a');
+```
+
+`useBreakpoint` 按当前区域的断点生成布尔值，可用于业务布局。Grid 的现有 `sm/md/lg` CSS 响应规则仍使用组件文档中的固定断点。`colorContrast` 返回 WCAG 对比度比值，无法解析颜色时返回 `null`；透明颜色会先与背景和可选第三参数的底色合成。普通文字建议至少 4.5，较大文字至少 3。
+
+系统偏好在客户端接管后更新；SSR 的首次外观应来自服务端 Cookie 或一致的初始值，见 [SSR 使用](/guide/ssr)。
+
+## LeafComponentTokens
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `borderRadius` | `string \| number` | — | 圆角；数字表示像素。 |
+| `controlHeight` | `string \| number` | — | 基础控件高度；其他尺寸由此生成。 |
+| `padding` | `string \| number` | — | 内容或高亮目标的内边距。 |
+| `gap` | `string \| number` | — | 子项之间的间距；数字表示像素。 |
+| `fontSize` | `string \| number` | — | 字号；数字表示像素。 |
+| `color` | `string` | — | 颜色或语义色。 |
+| `background` | `string` | — | 组件表面背景。 |
+| `shadow` | `string` | — | CSS box-shadow 的值。 |
+
+## LeafThemeStyle
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | 可复用的 CSS 自定义属性。 |

@@ -9,8 +9,11 @@
   overflow: hidden;
   vertical-align: middle;
   border: 1px solid color-mix(in srgb, var(--leaf-color-primary) 18%, transparent);
-  color: var(--leaf-color-primary);
-  background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+  color: var(--leaf-component-avatar-color, var(--leaf-color-primary));
+  background: var(
+    --leaf-component-avatar-background,
+    color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface))
+  );
   font: 600 16px/1 var(--leaf-font-family);
   &--circle {
     border-radius: 50%;

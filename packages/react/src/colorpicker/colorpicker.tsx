@@ -11,19 +11,26 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
-import { FloatingPanel, useFloatingDismiss, usePopupState } from '../shared/floating';
+import {
+  FloatingPanel,
+  type PopupOptions,
+  useFloatingDismiss,
+  usePopupState,
+} from '../shared/floating';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { GradientColorPicker } from './gradient';
 
 export interface ColorPreset {
   label: ReactNode;
   colors: readonly string[];
 }
 export interface ColorPickerProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'defaultValue' | 'onChange'> {
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'defaultValue' | 'onChange'>,
+    PopupOptions {
   value?: string;
   defaultValue?: string;
   onChange?: (color: string) => void;
@@ -38,12 +45,21 @@ export interface ColorPickerProps
   size?: ControlSize;
   status?: ControlStatus;
   required?: boolean;
+  readOnly?: boolean;
   popupWidth?: number | string;
   onOpenChange?: (open: boolean) => void;
+  gradient?: boolean;
+  mode?: 'solid' | 'gradient';
+  open?: boolean;
+  defaultOpen?: boolean;
+  popupClassName?: string;
+  popupStyle?: CSSProperties;
+  popupRender?: (content: ReactNode) => ReactNode;
+  getPopupContainer?: () => Element | DocumentFragment;
 }
 type HSV = { h: number; s: number; v: number; a: number };
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
-export function ColorPicker({
+export function SolidColorPicker({
   value,
   defaultValue = '#20834a',
   onChange,
@@ -60,6 +76,16 @@ export function ColorPicker({
   required: requiredProp,
   popupWidth = 280,
   onOpenChange,
+  gradient = false,
+  mode: _mode,
+  open: controlledOpen,
+  defaultOpen,
+  popupClassName,
+  popupStyle,
+  popupRender,
+  popupPlacement,
+  getPopupContainer,
+  readOnly,
   disabled: disabledProp,
   name,
   form,
@@ -70,7 +96,7 @@ export function ColorPicker({
 }: ColorPickerProps) {
   const { messages } = useLeafConfig();
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -79,7 +105,12 @@ export function ColorPicker({
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
   const [internalFormat, setFormat] = useState(defaultFormat);
   const format = formatProp ?? internalFormat;
-  const [open, setOpen] = usePopupState(disabled, onOpenChange);
+  const [open, setOpen] = usePopupState(
+    disabled || readOnly,
+    onOpenChange,
+    controlledOpen,
+    defaultOpen,
+  );
   const id = `${useId()}-color`;
   const color = new TinyColor(current || '#20834a');
   const hsv = color.isValid ? color.toHsv() : new TinyColor('#20834a').toHsv();
@@ -116,6 +147,7 @@ export function ColorPicker({
   };
   useFloatingDismiss(open, close, trigger, panel, root);
   const change = (next: HSV, complete = false) => {
+    if (disabled || readOnly) return;
     setRememberedHue(next.h);
     const result = serialize(new TinyColor(next));
     setCoordinates({ value: result, hsv: { ...next, a: disableAlpha ? 1 : next.a } });
@@ -160,7 +192,7 @@ export function ColorPicker({
   const previewColor = current ? new TinyColor(activeHsv).toRgbString() : 'transparent';
   const hueColor = new TinyColor({ h: activeHsv.h, s: 1, v: 1 }).toHexString();
   const opaqueColor = new TinyColor({ ...activeHsv, a: 1 }).toRgbString();
-  const clearable = allowClear && Boolean(current) && !disabled;
+  const clearable = allowClear && Boolean(current) && !disabled && !readOnly;
   return (
     <>
       <span
@@ -229,11 +261,15 @@ export function ColorPicker({
         open={open}
         triggerRef={trigger}
         panelRef={panel}
-        className="leaf-floating leaf-color-picker__panel"
+        className={classes('leaf-floating', 'leaf-color-picker__panel', popupClassName)}
         id={id}
         role="dialog"
         aria-label={messages.color}
         width={popupWidth}
+        style={popupStyle}
+        render={popupRender}
+        placement={popupPlacement}
+        container={getPopupContainer}
       >
         <div
           role="slider"
@@ -244,7 +280,12 @@ export function ColorPicker({
           aria-valuenow={Math.round(activeHsv.s * 100)}
           aria-valuetext={`${messages.saturation} ${Math.round(activeHsv.s * 100)}%, ${messages.brightness} ${Math.round(activeHsv.v * 100)}%`}
           className="leaf-color-picker__area"
-          style={{ backgroundColor: hueColor }}
+          style={{
+            backgroundImage: gradient
+              ? `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, ${hueColor})`
+              : undefined,
+            backgroundColor: hueColor,
+          }}
           onKeyDown={areaKey}
           onPointerDown={(event) => {
             if (event.button !== 0) return;
@@ -392,5 +433,13 @@ export function ColorPicker({
         ))}
       </FloatingPanel>
     </>
+  );
+}
+
+export function ColorPicker(props: ColorPickerProps) {
+  return props.mode === 'gradient' || props.gradient ? (
+    <GradientColorPicker {...props} />
+  ) : (
+    <SolidColorPicker {...props} />
   );
 }

@@ -2,12 +2,12 @@
 .leaf-menu {
   width: 240px;
   max-width: 100%;
-  padding: 6px;
+  padding: var(--leaf-component-menu-padding, 6px);
   box-sizing: border-box;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface);
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  border-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
+  background: var(--leaf-component-menu-background, var(--leaf-color-surface));
+  color: var(--leaf-component-menu-color, var(--leaf-color-text));
+  font: var(--leaf-component-menu-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
   transition: width var(--leaf-motion-duration) var(--leaf-motion-easing);
   &__item {
     width: 100%;

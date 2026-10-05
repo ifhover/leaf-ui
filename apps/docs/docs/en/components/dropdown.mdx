@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/dropdown/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/dropdown/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DropdownBasic } from '../../../src/examples/en/dropdown/basic';
@@ -24,28 +25,57 @@ Group additional actions in a menu.
 
 </ComponentExample>
 
+## Hover and context menus
+
+<ComponentExample title="Hover and context menus" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/dropdown/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Dropdown API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly DropdownItem[]`](#dropdownitem) | Required | Menu entries |
-| `children` | `ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>` | Required | A single Leaf Button or native button |
-| `open / defaultOpen` | `boolean` | `false` | Controlled / initial open state |
-| `disabled` | `boolean` | `false` | Disable the trigger |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | Required | Required. Menu entries |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | Required | Required. A single Leaf Button or native button |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `open` | `boolean` | `false` | Controlled / initial open state |
+| `defaultOpen` | `boolean` | `false` | Controlled / initial open state |
 | `onOpenChange` | `(open: boolean) => void` | — | Open-state changes |
 | `onSelect` | `(key: string) => void` | — | Called when an enabled menu entry is selected |
 | `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | Popup placement |
-| `popupWidth / popupMaxWidth` | `number \| string` | `— / 420` | Popup width / maximum width |
+| `popupWidth` | `number \| string` | `—` | Popup width / maximum width |
+| `popupMaxWidth` | `number \| string` | `420` | Popup width / maximum width |
+| `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | Trigger mode; Dropdown supports click, hover and context menu. |
+| `mouseEnterDelay` | `number` | `100` | Configure mouse enter delay. |
+| `mouseLeaveDelay` | `number` | `150` | Configure mouse leave delay. |
+| `itemRender` | `(item: `[`DropdownItem`](#dropdownitem)`) => ReactNode` | — | Customize item content. |
 
 ## DropdownItem
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Unique key |
-| `label / icon` | `ReactNode` | — | Content and icon |
-| `type` | `'item' \| 'divider'` | `'item'` | Menu entry or divider |
-| `disabled / danger` | `boolean` | `false` | Disabled / danger action |
-| `onClick` | `() => void` | — | Runs when the item is selected |
+| `key` | `string` | Required | Required. Unique key |
+| `label` | `ReactNode` | — | Content and icon |
+| `icon` | `ReactNode` | — | Content and icon |
+| `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | Menu entry or divider |
+| `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | Content, or child nodes for hierarchical records. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `danger` | `boolean` | `false` | Disabled / danger action |
+| `checked` | `boolean` | — | Configure checked. |
+| `group` | `string` | — | Group heading. |
+| `closeOnSelect` | `boolean` | — | Configure close on select. |
+| `onCheckedChange` | `(checked: boolean) => void` | — | Configure on checked change. |
+| `href` | `string` | — | Link destination. |
+| `target` | `string` | — | Target selector or element getter; omit to center the step. |
+| `onClick` | `(event: MouseEvent<HTMLElement>) => void` | — | Runs when the item is selected |
 
 ## Types
 

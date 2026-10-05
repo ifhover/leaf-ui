@@ -151,3 +151,22 @@ Image 的图片本身可以服务端渲染。放大预览、ImageCropper 的裁�
 FileList 可在服务端展示基于 URL 的文件信息。Upload 选择的 File 对象和临时预览 URL 保留在客户端状态中；服务端渲染不会启动上传请求。
 
 这些交互组件需要客户端 JavaScript 才能响应操作。样式复用与高级主题配置见[定制主题](/guide/theming)。
+
+## 按组件导入样式
+
+只使用部分组件时可选择子路径与独立样式：
+
+```tsx
+import { Button } from '@sudden3/leaf-ui/button';
+import '@sudden3/leaf-ui/button/style.css';
+```
+
+每个组件样式入口包含自身需要的基础样式与内部视觉依赖；组合业务组件时引入每个使用组件的样式。使用 ConfigProvider 的反馈服务时还需导入 `@sudden3/leaf-ui/config-provider/style.css`，或直接用整库 `styles.css`。子路径保留 Next.js 所需的客户端边界。
+
+## 日期、数字与浮层的首屏
+
+Picker 采用本地 Date 的年月日与时间。日期输入及 FormData 是本地日历值；`date.toISOString()` 表示 UTC 时间点，不能直接用它截取用户所在地区的日期。需要业务时区时在应用的数据边界完成转换，并在客户端和服务端使用同一约定。非公历与带时区的专用 Date 类型由应用适配。
+
+服务端与客户端使用相同的 `locale`、初始值和时区设置，以免 Intl 数字或日期文字不同。倒计时可以传固定 `value` 与 `initialRemaining` 避免请求延迟导致首屏差异。系统外观与断点辅助 Hook 接受初始值，挂载后再读取浏览器偏好。
+
+浮层会在客户端挂载。`container` / `getPopupContainer` 使用函数延迟访问 DOM；不要在模块顶层或服务端渲染时直接读取 `document`。详情见 [控件与浮层](/guide/control-contracts)。

@@ -1,0 +1,26 @@
+.leaf-anchor {
+  font: var(--leaf-component-anchor-font-size, var(--leaf-font-size)) var(--leaf-font-family);
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  ul ul {
+    padding-inline-start: 14px;
+  }
+  a {
+    display: block;
+    padding: 7px 12px;
+    color: var(--leaf-color-text-muted);
+    text-decoration: none;
+    border-inline-start: 2px solid var(--leaf-color-border);
+    transition:
+      color var(--leaf-motion-duration),
+      border-color var(--leaf-motion-duration);
+    &:hover,
+    &[aria-current] {
+      color: var(--leaf-color-primary);
+      border-color: var(--leaf-color-primary);
+    }
+  }
+}

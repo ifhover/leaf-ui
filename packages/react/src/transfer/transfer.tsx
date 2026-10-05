@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
 import { Button } from '../button';
 import { Checkbox } from '../checkbox';
+import { FieldScope, useFormField } from '../form/form';
 import { Input } from '../input';
 import { Result } from '../result';
 import { classes } from '../shared/classes';
@@ -49,7 +50,7 @@ export function Transfer({
   searchable = true,
   filterOption,
   renderItem,
-  disabled,
+  disabled: disabledProp,
   height = 180,
   virtual = false,
   name,
@@ -59,6 +60,8 @@ export function Transfer({
   className,
   ...props
 }: TransferProps) {
+  const field = useFormField();
+  const disabled = disabledProp || field?.disabled;
   const t = useText();
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -193,10 +196,11 @@ export function Transfer({
       className={classes('leaf-transfer', className)}
       data-disabled={disabled ? '' : undefined}
     >
-      {panel(0)}
+      <FieldScope>{panel(0)}</FieldScope>
       <div className="leaf-transfer__actions">
         <Button
           ref={trigger}
+          id={props.id ?? field?.id}
           size="sm"
           startIcon={<ArrowRight size={16} />}
           aria-label={t('移至已选', 'Move to selected')}
@@ -226,12 +230,12 @@ export function Transfer({
           />
         )}
       </div>
-      {panel(1)}
+      <FieldScope>{panel(1)}</FieldScope>
       <FormValue
         name={name}
         form={form}
         value={current.length ? JSON.stringify(current) : ''}
-        required={required}
+        required={required ?? field?.required}
         disabled={disabled}
         triggerRef={trigger}
       />

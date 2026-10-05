@@ -1,6 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertAttribute } from '../shared/inert';
 import type { ControlSize } from '../shared/types';

@@ -1,5 +1,5 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { CalendarPanel } from '../shared/calendar';
 import { classes } from '../shared/classes';
 

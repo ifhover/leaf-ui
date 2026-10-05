@@ -144,3 +144,58 @@ Place custom components inside the intended provider. Import the compiled `style
 ## Server rendering
 
 Static CSS and dynamic themes work together without generating CSS at runtime. See [SSR usage](/en/guide/ssr) for Next.js and other frameworks.
+
+## Spacing, typography and component overrides
+
+`spacing` derives small and large spacing. `lineHeight`, `headingWeight` and `elevation` configure body line height, heading weight and shadows. Keep configuring through ConfigProvider; use `theme.components` for scoped component overrides:
+
+```tsx
+const theme = {
+  spacing: 8, lineHeight: 1.6, headingWeight: 600, elevation: 'soft',
+  components: {
+    Button: { borderRadius: 6, padding: '0 18px' },
+    Input: { borderRadius: 6, controlHeight: 36 },
+    Card: { padding: 16, shadow: '0 6px 20px #0001' },
+  },
+} satisfies LeafTheme;
+```
+
+Use exported component names. Each component consumes tokens relevant to its layout: input controls use radius, height, background and font size; containers use padding and shadow; layout components use gaps. For further changes, use component `className` / `style` and popup `popupClassName` / `popupStyle`.
+
+## System appearance, responsive breakpoints and contrast
+
+```tsx
+import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@sudden3/leaf-ui';
+function Application() {
+  const appearance = useSystemAppearance('light');
+  return <ConfigProvider theme={{ appearance, breakpoints: { md: 800 } }}><Content /></ConfigProvider>;
+}
+function Content() {
+  const { md } = useBreakpoint({ md: false });
+  return <p>{md ? 'Wide layout' : 'Compact layout'}</p>;
+}
+const contrast = colorContrast('#ffffff', '#20834a');
+```
+
+`useBreakpoint` reads breakpoints from the current region for your application layout. Grid's existing `sm/md/lg` CSS rules still use the fixed breakpoints listed in its docs. `colorContrast` returns a WCAG contrast ratio, or `null` for invalid colors. Transparent colors are composited with the background and optional third canvas argument. Aim for 4.5 for ordinary text, or 3 for large text.
+
+System preferences update after client hydration. For SSR, start with a server Cookie or a consistent fallback; see [SSR](/en/guide/ssr).
+
+## LeafComponentTokens
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `borderRadius` | `string \| number` | — | Border radius; numbers are pixels. |
+| `controlHeight` | `string \| number` | — | Base control height, deriving other sizes. |
+| `padding` | `string \| number` | — | Padding for content or a highlighted target. |
+| `gap` | `string \| number` | — | Gap between items; numbers are pixels. |
+| `fontSize` | `string \| number` | — | Font size; numbers are pixels. |
+| `color` | `string` | — | Color or semantic tone. |
+| `background` | `string` | — | Component surface background. |
+| `shadow` | `string` | — | CSS box-shadow value. |
+
+## LeafThemeStyle
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | Reusable CSS custom property. |

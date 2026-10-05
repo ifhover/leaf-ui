@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { StatisticBasic, StatisticCountdown } from '../../src/examples/statistic/basic';
+
+# Statistic 统计数值
+
+展示指标数值和倒计时。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<StatisticBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/statistic/basic.tsx"
+```
+
+</ComponentExample>
+
+## 倒计时
+
+<ComponentExample title="倒计时" preview={<StatisticCountdown />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/statistic/basic.tsx"
+```
+
+</ComponentExample>
+
+## Statistic API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | 标题内容。 |
+| `value` | `number \| string` | — | 必需。受控值。 |
+| `precision` | `number` | — | 小数位数。 |
+| `grouping` | `boolean` | `true` | 启用本地化数字分组。 |
+| `prefix` | `ReactNode` | — | 前置内容。 |
+| `suffix` | `ReactNode` | — | 后置内容。 |
+| `formatter` | `(value: number \| string) => ReactNode` | — | 自定义指标数值的展示。 |
+| `loading` | `boolean` | — | 展示加载状态。 |
+
+## Countdown API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | 标题内容。 |
+| `prefix` | `ReactNode` | — | 前置内容。 |
+| `suffix` | `ReactNode` | — | 后置内容。 |
+| `loading` | `boolean` | — | 展示加载状态。 |
+| `value` | `number \| Date` | — | 必需。截止时间的 Date 或毫秒时间戳。 |
+| `format` | `string` | `'HH:mm:ss'` | DD、HH、mm、ss、SSS 格式，其中 HH 可展示累计小时。 |
+| `onFinish` | `() => void` | — | 完成时调用一次。 |
+| `onChange` | `(remaining: number) => void` | — | 值发生变化时调用。 |
+| `initialRemaining` | `number` | — | SSR 首屏使用的剩余毫秒数，客户端挂载后按截止时间更新。 |
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { StatisticProps, CountdownProps } from '@sudden3/leaf-ui';
+```
+
+为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

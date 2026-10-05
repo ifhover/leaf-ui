@@ -1,6 +1,6 @@
 import { CircleCheck, CircleX, Inbox, Info, TriangleAlert } from 'lucide-react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 
 export interface ResultProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {

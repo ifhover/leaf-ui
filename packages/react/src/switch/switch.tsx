@@ -22,7 +22,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
   ref,
 ) {
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   return (
     <label
       className={classes('leaf-switch', `leaf-switch--${size}`, className)}

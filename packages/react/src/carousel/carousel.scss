@@ -1,0 +1,80 @@
+.leaf-carousel {
+  position: relative;
+  border-radius: var(--leaf-radius-lg);
+  color: var(--leaf-color-text);
+  &__viewport {
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  &__track {
+    display: flex;
+    transition: transform var(--leaf-motion-duration) ease;
+  }
+  &__slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: var(--leaf-color-surface);
+    color: var(--leaf-color-text);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.15);
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    &--previous {
+      inset-inline-start: 12px;
+    }
+    &--next {
+      inset-inline-end: 12px;
+    }
+  }
+  &__dots {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px;
+    button {
+      border: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 10px;
+      background: var(--leaf-color-border);
+      padding: 0;
+      cursor: pointer;
+      transition:
+        width var(--leaf-motion-duration),
+        background var(--leaf-motion-duration);
+      &[aria-current] {
+        width: 20px;
+        background: var(--leaf-color-primary);
+      }
+    }
+  }
+  &__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+.leaf-carousel__slide {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-inline-size: 100%;
+}

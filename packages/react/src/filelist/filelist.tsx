@@ -41,6 +41,7 @@ export interface FileListProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onE
   renderActions?: (file: FileItem, actions: ReactNode) => ReactNode;
   emptyContent?: ReactNode;
   disabled?: boolean;
+  listType?: 'text' | 'picture' | 'picture-card';
 }
 const icons = {
   image: FileImage,
@@ -63,6 +64,7 @@ export function FileList({
   renderActions,
   emptyContent,
   disabled = false,
+  listType = 'text',
   className,
   ...props
 }: FileListProps) {
@@ -84,7 +86,7 @@ export function FileList({
   const previewUrl = safeFileUrl(selected?.url);
   const index = selected ? images.indexOf(selected) : -1;
   return (
-    <div {...props} className={classes('leaf-file-list', className)}>
+    <div {...props} className={classes('leaf-file-list', `leaf-file-list--${listType}`, className)}>
       {items.length ? (
         <ul className="leaf-file-list__items">
           {items.map((file, index) => {
@@ -169,7 +171,11 @@ export function FileList({
                   data-kind={kind}
                   data-extension={fileExtension(file)}
                 >
-                  <Icon size={21} aria-hidden="true" />
+                  {listType !== 'text' && kind === 'image' && url ? (
+                    <img src={url} alt="" loading="lazy" />
+                  ) : (
+                    <Icon size={21} aria-hidden="true" />
+                  )}
                 </span>
                 <div className="leaf-file-list__details">
                   <span className="leaf-file-list__name" title={name}>

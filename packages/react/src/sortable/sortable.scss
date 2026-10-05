@@ -1,7 +1,7 @@
 .leaf-sortable {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--leaf-component-sortable-gap, 8px);
   min-width: 0;
   &__item {
     position: relative;

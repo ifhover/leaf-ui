@@ -1,0 +1,25 @@
+.leaf-command-palette {
+  &__list {
+    margin-top: 12px;
+    max-height: 340px;
+    overflow: auto;
+    .leaf-floating__option {
+      gap: 10px;
+      > span {
+        flex: 1;
+      }
+      kbd {
+        font-size: 11px;
+        color: var(--leaf-color-text-muted);
+        padding: 2px 5px;
+        background: var(--leaf-color-surface-muted);
+        border-radius: 4px;
+      }
+    }
+  }
+  &__group {
+    padding: 8px 10px 5px;
+    font-size: 12px;
+    color: var(--leaf-color-text-muted);
+  }
+}

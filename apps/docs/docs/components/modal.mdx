@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../src/examples/modal/footer';
 import { ComponentExample } from '../../src/components/component-example';
 import { ModalBasic } from '../../src/examples/modal/basic';
@@ -25,29 +26,48 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 
 </ComponentExample>
 
+## 状态销毁与初始焦点
+
+<ComponentExample title="状态销毁与初始焦点" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/modal/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Modal API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `open` | `boolean` | 必填 | 是否显示弹窗 |
-| `title / children` | `ReactNode` | — | 标题 / 内容 |
-| `footer` | [`ReactNode \| ((actions: ModalFooterActions) => ReactNode)`](#modalfooteractions) | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮 |
-| `confirmText / cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
+| `open` | `boolean` | 必填 | 必需。是否显示弹窗 |
+| `title` | `ReactNode` | — | 标题 / 内容 |
+| `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮 |
+| `confirmText` | `ReactNode` | 语言默认值 | 按钮文字 |
+| `cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
 | `confirmLoading` | `boolean` | `false` | 确认加载状态 |
-| `confirmButtonProps / cancelButtonProps` | [`ButtonProps`](/components/button#button-api) | — | 定制默认按钮属性 |
+| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 定制默认按钮属性 |
+| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 定制默认按钮属性 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 由应用控制 open；Promise 拒绝时显示错误 |
 | `onCancel` | `() => void` | — | 取消或关闭请求，未指定时使用 onClose |
 | `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
-| `closable / maskClosable / keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `closable` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `maskClosable` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
+| `keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `afterClose` | `() => void` | — | 关闭动画完成后触发 |
+| `forceRender` | `boolean` | — | 打开前也挂载内容，关闭时保持隐藏。 |
+| `destroyOnClose` | `boolean` | — | 关闭过渡完成后卸载内容；默认保留。 |
+| `preserve` | `boolean` | — | 显式控制关闭后是否保留内容，优先于 destroyOnClose。 |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 自定义挂载或滚动容器。 |
 
 ## ModalFooterActions
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `cancelButton` | `ReactNode` | 默认取消按钮 |
-| `confirmButton` | `ReactNode` | 默认确认按钮，保留加载状态 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `confirmButton` | `ReactNode` | — | 必需。默认确认按钮，保留加载状态 |
+| `cancelButton` | `ReactNode` | — | 必需。默认取消按钮 |
 
 ## 类型
 
@@ -64,3 +84,10 @@ import type { ModalProps, ModalFooterActions } from '@sudden3/leaf-ui';
 footer 可放确认、取消等操作；也可以在内容中使用 Form。弹窗中的选择器浮层沿用区域主题。
 
 默认底部按取消、确定顺序靠右排列。传入 onConfirm 时，完成操作后自行更新 open；未传入时确定调用 onClose。Promise 执行期间显示加载状态并避免重复操作。提交表单可在 onConfirm 中调用 form.requestSubmit()，或通过 confirmButtonProps 设置 type="submit" 与 form ID，保留表单校验。footer 函数可扩展默认按钮，footer={null} 隐藏底部。
+
+## DialogFocusOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |

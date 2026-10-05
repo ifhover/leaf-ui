@@ -2,11 +2,12 @@
 .leaf-steps {
   @include mixins.control-size;
   display: flex;
-  padding: 0;
+  padding: var(--leaf-component-steps-padding, 0);
   margin: 0;
   list-style: none;
-  color: var(--leaf-color-text);
-  font: var(--leaf-current-font-size)/1.5 var(--leaf-font-family);
+  color: var(--leaf-component-steps-color, var(--leaf-color-text));
+  font: var(--leaf-component-steps-font-size, var(--leaf-current-font-size))/1.5
+    var(--leaf-font-family);
   &__item {
     list-style: none;
     position: relative;
@@ -147,4 +148,56 @@
   .leaf-steps__spinner {
     animation: none;
   }
+}
+
+.leaf-steps__dot {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.leaf-steps--dot .leaf-steps__icon {
+  border: 0;
+  background: transparent;
+  width: 24px;
+  height: var(--leaf-current-control-height);
+  color: var(--leaf-color-text-muted);
+}
+.leaf-steps--dot [data-status='process'] .leaf-steps__icon,
+.leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
+  color: var(--leaf-color-primary);
+  background: transparent;
+}
+.leaf-steps__progress {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  fill: none;
+  stroke: var(--leaf-color-primary);
+  stroke-width: 2;
+  transform: rotate(-90deg);
+}
+.leaf-steps__icon {
+  position: relative;
+}
+
+.leaf-steps {
+  --leaf-current-control-height: var(--leaf-component-steps-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-steps-font-size, var(--leaf-font-size));
+}
+.leaf-steps--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-steps-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-steps--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-steps-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

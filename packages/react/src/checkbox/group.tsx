@@ -1,5 +1,5 @@
-import { type FieldsetHTMLAttributes, type ReactNode, useRef } from 'react';
-import { useFormField } from '../form/form';
+import { type FieldsetHTMLAttributes, type ReactNode, useId, useRef } from 'react';
+import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import type { ControlSize } from '../shared/types';
@@ -40,7 +40,8 @@ export function CheckboxGroup({
   ...props
 }: CheckboxGroupProps) {
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const id = useId();
+  const disabled = disabledProp || field?.disabled;
   const trigger = useRef<HTMLInputElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
   const items = options.map((option) =>
@@ -56,40 +57,43 @@ export function CheckboxGroup({
       }
     >
       {legend && <legend>{legend}</legend>}
-      <div className="leaf-checkbox-group__options">
-        {items.map((item, index) => {
-          const checked = current.includes(item.value);
-          const limited = checked
-            ? current.length <= Math.max(0, minCount)
-            : current.length >= Math.max(0, maxCount);
-          return (
-            <Checkbox
-              key={item.value}
-              ref={index === 0 ? trigger : undefined}
-              size={size}
-              name={name}
-              form={form}
-              value={item.value}
-              checked={checked}
-              disabled={disabled || item.disabled}
-              aria-disabled={limited || undefined}
-              onChange={(event) => {
-                if (limited) {
-                  event.currentTarget.checked = checked;
-                  return;
-                }
-                const next = event.target.checked
-                  ? [...current, item.value]
-                  : current.filter((key) => key !== item.value);
-                setCurrent(next);
-                onChange?.(next);
-              }}
-            >
-              {item.label}
-            </Checkbox>
-          );
-        })}
-      </div>
+      <FieldScope>
+        <div className="leaf-checkbox-group__options">
+          {items.map((item, index) => {
+            const checked = current.includes(item.value);
+            const limited = checked
+              ? current.length <= Math.max(0, minCount)
+              : current.length >= Math.max(0, maxCount);
+            return (
+              <Checkbox
+                key={item.value}
+                id={index === 0 ? (field?.id ?? `${id}-${index}`) : `${id}-${index}`}
+                ref={index === 0 ? trigger : undefined}
+                size={size}
+                name={name}
+                form={form}
+                value={item.value}
+                checked={checked}
+                disabled={disabled || item.disabled}
+                aria-disabled={limited || undefined}
+                onChange={(event) => {
+                  if (limited) {
+                    event.currentTarget.checked = checked;
+                    return;
+                  }
+                  const next = event.target.checked
+                    ? [...current, item.value]
+                    : current.filter((key) => key !== item.value);
+                  setCurrent(next);
+                  onChange?.(next);
+                }}
+              >
+                {item.label}
+              </Checkbox>
+            );
+          })}
+        </div>
+      </FieldScope>
       <FormValue
         value={current.length >= Math.max(1, minCount) ? 'selected' : ''}
         required={required ?? field?.required}

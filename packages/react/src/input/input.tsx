@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
@@ -72,7 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const [internalVisible, setVisible] = useState(defaultVisible);
   const visible = controlledVisible ?? internalVisible;
   const password = type === 'password';
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   return (
     <div

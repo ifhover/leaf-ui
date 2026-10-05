@@ -5,7 +5,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--leaf-component-rate-gap, 6px);
   min-height: var(--leaf-control-height);
   &--sm {
     --leaf-rate-size: 18px;

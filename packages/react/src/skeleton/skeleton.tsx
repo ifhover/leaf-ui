@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 
 export interface SkeletonProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {

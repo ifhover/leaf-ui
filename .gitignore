@@ -9,3 +9,7 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 *.log
+audit-lint.json
+playwright-report/
+test-results/
+.quality/

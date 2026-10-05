@@ -1,4 +1,5 @@
-:root {
+:root,
+:host {
   --leaf-color-primary: #20834a;
   --leaf-color-on-primary: #ffffff;
   --leaf-color-danger: #c83c3c;
@@ -13,7 +14,7 @@
   --leaf-z-index-modal: 1100;
   --leaf-z-index-message: 1200;
   --leaf-color-text: #203329;
-  --leaf-color-text-muted: #6c7c71;
+  --leaf-color-text-muted: #627167;
   --leaf-color-surface: #ffffff;
   --leaf-color-surface-muted: #f4f7f4;
   --leaf-color-border: #dce5de;
@@ -41,7 +42,7 @@
   --leaf-color-info: #1677ff;
   color-scheme: light;
   --leaf-color-text: #203329;
-  --leaf-color-text-muted: #6c7c71;
+  --leaf-color-text-muted: #627167;
   --leaf-color-surface: #ffffff;
   --leaf-color-surface-muted: #f4f7f4;
   --leaf-color-border: #dce5de;
@@ -61,4 +62,19 @@
   --leaf-color-surface: #18251d;
   --leaf-color-surface-muted: #203027;
   --leaf-color-border: #3d5144;
+}
+
+:root,
+:host {
+  --leaf-spacing: 8px;
+  --leaf-spacing-xs: calc(var(--leaf-spacing) * 0.5);
+  --leaf-spacing-sm: var(--leaf-spacing);
+  --leaf-spacing-md: calc(var(--leaf-spacing) * 2);
+  --leaf-spacing-lg: calc(var(--leaf-spacing) * 3);
+  --leaf-spacing-xl: calc(var(--leaf-spacing) * 4);
+  --leaf-line-height: 1.6;
+  --leaf-heading-weight: 600;
+  --leaf-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.06);
+  --leaf-shadow-md: 0 6px 20px rgb(0 0 0 / 0.1);
+  --leaf-shadow-lg: 0 12px 48px rgb(0 0 0 / 0.16);
 }

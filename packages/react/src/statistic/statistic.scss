@@ -1,0 +1,21 @@
+.leaf-statistic {
+  color: var(--leaf-color-text);
+  font-family: var(--leaf-font-family);
+  &__title {
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size);
+    margin-bottom: 6px;
+  }
+  &__value {
+    font-size: 28px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  &__suffix {
+    font-size: var(--leaf-font-size);
+    font-weight: 400;
+  }
+}

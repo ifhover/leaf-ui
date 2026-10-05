@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { CompositeForm, RemoteSelection } from '../../src/examples/scenarios/basic';
+import { SchemaForm } from '../../src/examples/scenarios/schema';
+
+# 业务场景
+
+把字段布局、异步校验和复合控件组合到一个表单中。
+
+## 动态表单与异步校验
+
+`Form` 使用原生表单。`useFormValidation` 接收 `FormData`，支持同步校验、Schema 适配、异步请求和服务端错误。校验回调返回以字段名为 key 的错误；提交函数中可用 `setErrors` 回填服务端字段错误。
+
+将 `handleSubmit`、`handleReset` 绑定到表单。新的提交或重置会取消旧请求，异步函数需要响应 `AbortSignal`。`CheckboxGroup`、`Transfer` 等复合字段按整体值校验。文件上传在表单构造 FormData 时追加 File 或已有文件 URL，目录文件可从 `File.webkitRelativePath` 读取相对路径。
+
+<ComponentExample title="动态表单与异步校验" preview={<CompositeForm />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scenarios/basic.tsx"
+```
+
+</ComponentExample>
+
+使用 Zod、Valibot 等 Schema 时，在 `validate` 中解析 `FormData`，将 Schema 的 issues 映射为字段错误即可。重复字段用 `data.getAll(name)`，动态数组需要按应用的数据模型转换；Leaf 不隐式解析点号路径。React Hook Form 的接入见 [Form](../components/form#接入-react-hook-form)。
+
+## Schema 与服务端错误
+
+这个示例使用 Zod，把 issues 的字段路径转换为 `FormField` 的错误。若由 Schema 完整接管校验，给表单设置 `noValidate`；保留原生校验时省略它即可。`onSubmit` 接收取消信号，提交完成前检查信号再回填服务端错误。
+
+<ComponentExample title="Schema 与服务端错误" preview={<SchemaForm />} fileName="schema.tsx">
+
+```tsx lineNumbers file="../../src/examples/scenarios/schema.tsx"
+```
+
+</ComponentExample>
+
+## 远程搜索与竞态
+
+远程过滤设为 `filterOption={false}`，将查询参数、取消请求与分页状态放在应用层。`onPopupScroll` 可触发加载下一页，`popupRender` 可追加重试按钮。Select 只保留已选项的回显记录，不会无限缓存历史搜索结果。
+
+<ComponentExample title="远程搜索" preview={<RemoteSelection />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scenarios/basic.tsx"
+```
+
+</ComponentExample>
+
+切换租户或树的数据版本时，更新 `Tree`、`TreeSelect` 或 `Cascader` 的 `cacheKey`。组件会丢弃懒加载缓存并取消旧请求；加载函数必须返回当前请求的子节点。
+
+## 上传服务适配
+
+`autoUpload={false}` 配合 `UploadHandle.upload()` 实现手动开始；`concurrency` 限制同时进行的上传。分片、校验摘要和断点续传属于服务端协议，在 `customRequest` 中实现：读取 `File.slice()`、保存服务端 uploadId、传递 `signal`，每片完成时通过 `onProgress` 更新总进度。不要在前端组件中假定一种存储服务的续传协议。
+
+更多 API 见 [Form](../components/form)、[Select](../components/select) 和 [Upload](../components/upload)。

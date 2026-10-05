@@ -1,0 +1,59 @@
+# Control and popup contracts
+
+A common contract for fields and floating panels.
+
+## Disabled and read-only values
+
+- `disabled` prevents interaction and excludes the field from native submission. `Form disabled` applies throughout the form; a field cannot override it with `disabled={false}`.
+- `readOnly` locks typing, selecting, clearing and removing tags while keeping the value available for submission.
+- Picker and Select `inputReadOnly` prevents typing but retains panel selection.
+- Compound controls validate `required` once for the overall value. Internal searches and checkboxes do not introduce unrelated required fields.
+
+## Native forms and reset
+
+Provide `name` to collect values with `new FormData(form)`. Use `data.getAll(name)` for multiple values and check each component's serialization contract. Native reset restores an uncontrolled field's `defaultValue`; reset your own state when controlling a field.
+
+Date `format` changes displayed text and the text returned by `onChange`. FormData remains canonical: `YYYY-MM-DD` dates, `HH:mm[:ss]` times and `start/end` ranges. Keep display formats separate from server interchange formats.
+
+## Customize a popup
+
+Selector popups share the options below. Component settings override ConfigProvider's `getPopupContainer`. Retain the supplied content when adding actions with `popupRender`.
+
+```tsx
+import { ConfigProvider, Select } from '@sudden3/leaf-ui';
+
+<ConfigProvider getPopupContainer={() => document.getElementById('overlay-root')!}>
+  <Select options={[{ value: 'design', label: 'Design' }]}
+    popupPlacement="bottom-start" popupStyle={{ maxHeight: 320 }}
+    popupRender={content => <>{content}<p>Choose a team</p></>} />
+</ConfigProvider>
+```
+
+Mount the container before interaction. Popups copy the trigger region's theme and direction; avoid clipping containers. Modal and Drawer expose the equivalent option as `container`.
+
+## Shadow DOM and micro-frontends
+
+`getPopupContainer` can return a ShadowRoot. Import compiled component CSS inside that root too: external styles do not cross the boundary. Use a `style` / `link` element or `adoptedStyleSheets`. A separate configured container for each application region keeps styles and stacking predictable.
+
+## Language and direction
+
+Built-in locales are `zh-CN`, `zh-TW` and `en-US`. Override common control text with `messages`; `textMessages` uses English source text as keys for extension components. `weekStartsOn` configures the first weekday (0 is Sunday, 1 Monday), and `direction="rtl"` configures a region, including its popups.
+
+```tsx
+<ConfigProvider locale="zh-TW" weekStartsOn={0}
+  messages={{ empty: '沒有可選項目' }} textMessages={{ 'Next': '下一步' }}>
+  <Select options={[]} />
+</ConfigProvider>
+```
+
+Use BCP 47 names for custom locales so Intl date and number formatting stays consistent, and provide translations through both message properties. See [LeafMessages](/en/components/config-provider#leafmessages) for the full message contract.
+
+## PopupOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |

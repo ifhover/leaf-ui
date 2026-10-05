@@ -1,11 +1,12 @@
 .leaf-divider {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--leaf-component-divider-gap, 14px);
   margin-block: 20px;
   min-width: 0;
-  color: var(--leaf-color-text);
-  font: 500 var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  color: var(--leaf-component-divider-color, var(--leaf-color-text));
+  font: 500 var(--leaf-component-divider-font-size, var(--leaf-font-size))/1.5
+    var(--leaf-font-family);
   &::before,
   &::after {
     content: '';

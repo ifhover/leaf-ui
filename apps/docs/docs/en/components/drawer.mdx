@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/drawer/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DrawerBasic } from '../../../src/examples/en/drawer/basic';
 
@@ -14,21 +15,42 @@ Open content from a page edge to view details or complete actions.
 
 </ComponentExample>
 
+## Resize and nested push
+
+<ComponentExample title="Resize and nested push" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/drawer/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Drawer API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `open` | `boolean` | Required | Whether the drawer is open |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
+| `open` | `boolean` | Required | Required. Whether the drawer is open |
 | `title` | `ReactNode` | — | Title |
-| `children` | `ReactNode` | — | Drawer content |
+| `footer` | `ReactNode` | — | Footer content |
+| `extra` | `ReactNode` | — | Actions beside the title |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
 | `width` | `number \| string` | `380` | Width for left and right drawers |
 | `height` | `number \| string` | `300` | Height for top and bottom drawers |
-| `extra` | `ReactNode` | — | Actions beside the title |
-| `footer` | `ReactNode` | — | Footer content |
-| `closable / maskClosable / keyboard` | `boolean` | `true` | Close button / backdrop click / Escape |
+| `closable` | `boolean` | `true` | Close button / backdrop click / Escape |
+| `maskClosable` | `boolean` | `true` | Close button / backdrop click / Escape |
+| `keyboard` | `boolean` | `true` | Close button / backdrop click / Escape |
 | `onClose` | `() => void` | — | Close request; update open in application state |
 | `afterClose` | `() => void` | — | Called after the closing transition |
+| `forceRender` | `boolean` | — | Mount before opening and keep hidden while closed. |
+| `destroyOnClose` | `boolean` | — | Unmount content after the closing transition; preserved by default. |
+| `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
+| `push` | `boolean \| number` | — | Push the parent overlay when a nested drawer opens; accepts a distance. |
+| `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
+| `minSize` | `number` | — | Minimum size in pixels. |
+| `maxSize` | `number` | — | Maximum size in pixels. |
+| `onResize` | `(size: number) => void` | — | Called while resizing. |
 
 ## Types
 

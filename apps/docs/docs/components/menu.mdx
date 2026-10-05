@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { MenuBasic } from '../../src/examples/menu/basic';
 import { MenuHorizontal } from '../../src/examples/menu/advanced';
+import { MenuRouting } from '../../src/examples/menu/capabilities';
 
 # Menu 菜单
 
@@ -24,6 +25,17 @@ import { MenuHorizontal } from '../../src/examples/menu/advanced';
 
 </ComponentExample>
 
+## 受控导航与路由
+
+`selectedKey` 跟随当前路由。`linkRender` 可替换默认链接，例如 React Router 或 Next.js 的 Link；保留传入链接的事件、类名和 ARIA 属性。
+
+<ComponentExample title="受控导航与路由" preview={<MenuRouting />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/menu/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## 使用说明
 
 纵向菜单默认 240px，折叠时 60px，可通过 style.width 调整。items 支持嵌套、分组、分隔线与链接。selectedKey 管理当前选中项，openKeys 管理展开项；横向模式与折叠模式使用浮层展示子菜单。
@@ -42,25 +54,28 @@ import type { MenuItem, MenuProps } from '@sudden3/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | 必填 | 唯一且稳定的标识 |
-| `label` | `ReactNode` | 必填 | 显示内容 |
+| `key` | `string` | 必填 | 必需。唯一且稳定的标识 |
+| `label` | `ReactNode` | 必填 | 必需。显示内容 |
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `href` | `string` | — | 目标链接 |
-| `disabled` | `boolean` | — | 禁止交互 |
+| `disabled` | `boolean` | — | 禁用交互。 |
 | `danger` | `boolean` | — | 危险操作颜色 |
-| `children` | [`readonly MenuItem[]`](#menuitem-api) | — | 内容或下级项目 |
+| `children` | `readonly `[`MenuItem`](#menuitem-api)`[]` | — | 内容或下级项目 |
 | `type` | `'item' \| 'group' \| 'divider'` | — | 显示或选项类型 |
 
 ## MenuProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly MenuItem[]`](#menuitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `items` | `readonly `[`MenuItem`](#menuitem-api)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
 | `mode` | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` | 菜单排列方式 |
 | `selectedKey` | `string` | — | 受控选中项目 |
 | `defaultSelectedKey` | `string` | `''` | 初始选中项目 |
-| `onSelect` | [`(key: string, item: MenuItem) => void`](#menuitem-api) | — | 选择项目 |
+| `onSelect` | `(key: string, item: `[`MenuItem`](#menuitem-api)`) => void` | — | 选择项目 |
 | `openKeys` | `readonly string[]` | — | 受控展开项目 |
 | `defaultOpenKeys` | `readonly string[]` | `[]` | 初始展开项目 |
 | `onOpenChange` | `(keys: string[]) => void` | — | 展开状态变化 |
 | `collapsed` | `boolean` | `false` | 受控收起状态 |
+| `itemRender` | `(item: `[`MenuItem`](#menuitem-api)`, content: ReactNode) => ReactNode` | — | 自定义条目内容。 |
+| `linkRender` | `(item: `[`MenuItem`](#menuitem-api)`, link: ReactNode) => ReactNode` | — | 接入路由链接时保留传入的可访问性和事件属性。 |
+| `itemClassName` | `string \| ((item: `[`MenuItem`](#menuitem-api)`) => string)` | — | 条目类名或按条目计算的类名。 |

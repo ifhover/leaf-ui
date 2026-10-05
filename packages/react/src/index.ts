@@ -1,6 +1,19 @@
 export type { AlertProps, FeedbackType } from './alert';
 export { Alert } from './alert';
-export type { AutoCompleteOption, AutoCompleteProps } from './autocomplete';
+export type { AffixProps, AnchorItem, AnchorProps } from './anchor';
+export { Affix, Anchor } from './anchor';
+export type {
+  AppBarProps,
+  BottomNavigationItem,
+  BottomNavigationProps,
+  ToolbarProps,
+} from './appbar';
+export { AppBar, BottomNavigation, Toolbar } from './appbar';
+export type {
+  AutoCompleteOption,
+  AutoCompleteOptionGroup,
+  AutoCompleteProps,
+} from './autocomplete';
 export { AutoComplete } from './autocomplete';
 export type { AvatarGroupProps, AvatarProps } from './avatar';
 export { Avatar, AvatarGroup } from './avatar';
@@ -22,14 +35,23 @@ export type { CalendarProps } from './calendar';
 export { Calendar } from './calendar';
 export type { CardProps } from './card';
 export { Card } from './card';
-export type { CascaderOption, CascaderProps } from './cascader';
-export { Cascader } from './cascader';
+export type { CarouselHandle, CarouselProps } from './carousel';
+export { Carousel } from './carousel';
+export type { CascaderFieldNames, CascaderOption, CascaderProps } from './cascader';
+export { Cascader, mapCascaderOptions } from './cascader';
 export type { CheckboxGroupProps, CheckboxOption, CheckboxProps } from './checkbox';
 export { Checkbox, CheckboxGroup } from './checkbox';
 export type { CollapseItem, CollapseProps } from './collapse';
 export { Collapse } from './collapse';
-export type { ColorPickerProps, ColorPreset } from './colorpicker';
-export { ColorPicker } from './colorpicker';
+export type {
+  ColorGradient,
+  ColorGradientStop,
+  ColorPickerProps,
+  ColorPreset,
+} from './colorpicker';
+export { ColorPicker, gradientString, parseGradient } from './colorpicker';
+export type { CommandItem, CommandPaletteProps } from './commandpalette';
+export { CommandPalette } from './commandpalette';
 export type {
   ConfigProviderProps,
   LeafLocale,
@@ -37,12 +59,15 @@ export type {
   LeafThemeTokens,
 } from './config-provider';
 export { ConfigProvider } from './config-provider';
+export type { LeafDirection, LeafMessages } from './config-provider/context';
+export { colorContrast, useBreakpoint, useSystemAppearance } from './config-provider/helpers';
 export type { ConfirmApi, ConfirmOptions, ConfirmProps, ConfirmProviderProps } from './confirm';
 export { Confirm, ConfirmProvider, useConfirm } from './confirm';
-export type { DatePickerProps } from './datepicker';
+export type { DatePickerProps, MultipleDatePickerProps, SingleDatePickerProps } from './datepicker';
 export { DatePicker } from './datepicker';
 export type { DateRange, DateRangePickerProps } from './daterangepicker';
 export { DateRangePicker } from './daterangepicker';
+export type { OpenDateRange } from './daterangepicker/daterangepicker';
 export type { DateTimePickerProps } from './datetimepicker';
 export { DateTimePicker } from './datetimepicker';
 export type { DescriptionItem, DescriptionsProps } from './descriptions';
@@ -59,6 +84,8 @@ export type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from './errorboun
 export { ErrorBoundary } from './errorboundary';
 export type { FileItem, FileListProps } from './filelist';
 export { FileList } from './filelist';
+export type { FloatButtonAction, FloatButtonGroupProps, FloatButtonProps } from './floatbutton';
+export { FAB, FloatButton, FloatButtonGroup } from './floatbutton';
 export type {
   FormError,
   FormErrorSummaryProps,
@@ -70,6 +97,8 @@ export type {
   FormProps,
 } from './form';
 export { Form, FormErrorSummary, FormField, FormGroup, FormList } from './form';
+export type { FormValidationApi, FormValidationOptions } from './form/validation';
+export { useFormValidation } from './form/validation';
 export type { ColProps, GridBreakpoint, GridProps, RowProps } from './grid';
 export { Col, Grid, Row } from './grid';
 export type {
@@ -92,18 +121,26 @@ export type { InputGroupProps, InputProps, InputSearchProps } from './input';
 export { Input, InputGroup, InputSearch } from './input';
 export type { InputMaskProps } from './inputmask';
 export { InputMask } from './inputmask';
-export type { InputNumberProps } from './inputnumber';
+export type {
+  InputNumberProps,
+  NumericInputNumberProps,
+  StringInputNumberProps,
+} from './inputnumber';
 export { InputNumber } from './inputnumber';
 export type { InputOTPProps } from './inputotp';
 export { InputOTP } from './inputotp';
 export type { LayoutProps, LayoutSiderProps } from './layout';
 export { Layout, LayoutContent, LayoutFooter, LayoutHeader, LayoutSider } from './layout';
+export type { ListItemProps, ListProps } from './list';
+export { List, ListItem } from './list';
 export type { LoadingProps } from './loading';
 export { Loading } from './loading';
 export type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from './loadingbar';
 export { LoadingBar, LoadingBarProvider, useLoadingBar } from './loadingbar';
 export type { MasonryProps } from './masonry';
 export { Masonry } from './masonry';
+export type { MentionOption, MentionsProps } from './mentions';
+export { Mentions } from './mentions';
 export type { MenuItem, MenuProps } from './menu';
 export { Menu } from './menu';
 export type { MessageApi, MessageOptions, MessageProps, MessageProviderProps } from './message';
@@ -125,7 +162,7 @@ export type { PopconfirmProps } from './popconfirm';
 export { Popconfirm } from './popconfirm';
 export type { PopoverProps } from './popover';
 export { Popover } from './popover';
-export type { ProgressProps } from './progress';
+export type { ProgressProps, ProgressSegment } from './progress';
 export { Progress } from './progress';
 export type { QRCodeProps } from './qrcode';
 export { QRCode } from './qrcode';
@@ -141,6 +178,9 @@ export type { SegmentedOption, SegmentedProps } from './segmented';
 export { Segmented } from './segmented';
 export type { SelectOption, SelectOptionGroup, SelectProps } from './select';
 export { Select } from './select';
+export type { DateFormat, DatePreset } from './shared/date-format';
+export type { DialogFocusOptions, FocusTarget } from './shared/dialog';
+export type { PopupOptions } from './shared/floating';
 export type { TimeParts } from './shared/time';
 export type { ControlSize, ControlStatus } from './shared/types';
 export type {
@@ -158,6 +198,10 @@ export type { SortableChangeInfo, SortableProps, SortableRenderInfo } from './so
 export { Sortable } from './sortable';
 export type { SpaceProps } from './space';
 export { Space } from './space';
+export type { SplitterPanel, SplitterProps } from './splitter';
+export { ResizablePanels, Splitter } from './splitter';
+export type { CountdownProps, StatisticProps } from './statistic';
+export { Countdown, Statistic } from './statistic';
 export type { StepItem, StepsProps } from './steps';
 export { Steps } from './steps';
 export type { SwitchProps } from './switch';
@@ -169,7 +213,7 @@ export { CheckableTag, Tag, TagGroup } from './tag';
 export type { TextareaProps } from './textarea';
 export { Textarea } from './textarea';
 export type { TextareaAutoSize } from './textarea/textarea';
-export type { LeafThemeStyle } from './theme';
+export type { LeafComponentTokens, LeafThemeStyle } from './theme';
 export type { TimelineItem, TimelineProps } from './timeline';
 export { Timeline } from './timeline';
 export type { TimePickerProps } from './timepicker';
@@ -178,6 +222,8 @@ export type { TimeRange, TimeRangePickerProps } from './timerangepicker';
 export { TimeRangePicker } from './timerangepicker';
 export type { TooltipProps } from './tooltip';
 export { Tooltip } from './tooltip';
+export type { TourProps, TourStep } from './tour';
+export { Tour } from './tour';
 export type { TransferChangeInfo, TransferItem, TransferProps } from './transfer';
 export { Transfer } from './transfer';
 export type {
@@ -192,6 +238,14 @@ export { moveTreeNode, Tree } from './tree';
 export type { TreeSelectOption, TreeSelectProps, TreeSelectValue } from './treeselect';
 export { TreeSelect } from './treeselect';
 export type {
+  LinkProps,
+  ParagraphProps,
+  TextProps,
+  TitleProps,
+  TypographyProps,
+} from './typography';
+export { Link, Paragraph, Text, Title, Typography } from './typography';
+export type {
   UploadChangeInfo,
   UploadFile,
   UploadProps,
@@ -200,5 +254,6 @@ export type {
   UploadResult,
 } from './upload';
 export { Upload } from './upload';
+export type { UploadHandle } from './upload/upload';
 export type { VirtualListHandle, VirtualListProps } from './virtuallist';
 export { VirtualList } from './virtuallist';

@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/tree-select/capabilities';
 import { ExtensionDemo } from '../../src/examples/tree-select/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { TreeSelectBasic } from '../../src/examples/tree-select/basic';
@@ -44,14 +45,25 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 </ComponentExample>
 
+## 选择限制与节点展示
+
+<ComponentExample title="选择限制与节点展示" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree-select/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## TreeSelect API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | [`readonly TreeSelectOption[]`](#treeselectoption) | 必填 | 层级选项 |
-| `value / defaultValue` | `string \| readonly string[] \| null` | `null` | 受控 / 初始值；多选使用数组 |
-| `onChange` | `(value: string \| readonly string[] \| null) => void` | — | 选择变化，清除单选返回 null，多选返回 [] |
-| `multiple / treeCheckable` | `boolean` | `false` | 多选 / 复选框模式，后者自动开启多选 |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | 必填 | 必需。层级选项 |
 | `checkStrictly` | `boolean` | `false` | 父子节点独立勾选 |
 | `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | 勾选后显示与输出子节点、合并父节点或全部节点 |
 | `showSearch` | `boolean` | `true` | 通过输入过滤节点 |
@@ -61,29 +73,48 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 | `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | 初始展开的 value |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验反馈 |
-| `disabled / required` | `boolean` | `false` | 禁用 / 必填 |
-| `name / form` | `string` | — | 字段名 / 关联表单 |
-| `popupWidth / popupMaxWidth` | `number \| string` | 内容宽度 / 420 | 浮层宽度 / 最大宽度；至少与触发器等宽 |
-| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `popupWidth` | `number \| string` | `内容宽度` | 浮层宽度 / 最大宽度；至少与触发器等宽 |
+| `popupMaxWidth` | `number \| string` | `420` | 浮层宽度 / 最大宽度；至少与触发器等宽 |
 | `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
-| `loadData` | [`( option: TreeSelectOption, signal: AbortSignal, ) => Promise<readonly TreeSelectOption[]>`](#treeselectoption) | — | 展开时加载子项，signal 用于取消 |
-| `onLoadError` | [`(error: unknown, option: TreeSelectOption) => void`](#treeselectoption) | — | 加载失败，再次展开可重试 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | 展开时加载子项，signal 用于取消 |
+| `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | 加载失败，再次展开可重试 |
 | `virtual` | `boolean` | `false` | 仅渲染可见项目 |
 | `listHeight` | `number` | `256` | 列表高度 |
 | `itemHeight` | `number` | `34` | 虚拟列表预估行高 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `maxTagCount` | `number` | — | 最多展示的标签数；responsive 根据可用宽度折叠。 |
+| `maxCount` | `number` | — | 最多可选的数量。 |
+| `treeExpandedKeys` | `readonly string[]` | — | 受控的展开节点。 |
+| `onExpand` | `(keys: string[]) => void` | — | 展开节点发生变化时调用。 |
+| `filterTreeNode` | `(option: `[`TreeSelectOption`](#treeselectoption)`, query: string) => boolean` | — | 自定义节点的搜索匹配。 |
+| `nodeRender` | `(option: `[`TreeSelectOption`](#treeselectoption)`) => ReactNode` | — | 自定义节点展示内容。 |
+| `cacheKey` | `string \| number` | — | 数据版本改变时清空懒加载缓存，并取消旧请求。 |
+| `multiple` | `false \| true \| boolean` | `false` | 多选 / 复选框模式，后者自动开启多选 |
+| `treeCheckable` | `false \| boolean \| true` | `false` | 多选 / 复选框模式，后者自动开启多选 |
+| `value` | `string \| null \| readonly string[] \| readonly string[]` | `null` | 受控 / 初始值；多选使用数组 |
+| `defaultValue` | `string \| null \| readonly string[] \| readonly string[]` | `null` | 受控 / 初始值；多选使用数组 |
+| `onChange` | `(((value: string \| null) => void) \| ((value: readonly string[]) => void)) \| ((value: readonly string[]) => void)` | — | 选择变化，清除单选返回 null，多选返回 [] |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
 
 ## TreeSelectOption
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `value` | `string` | 唯一值，必填 |
-| `label` | `ReactNode` | 展示内容，必填 |
-| `children` | [`readonly TreeSelectOption[]`](#treeselectoption) | 子选项，结构相同 |
-| `disabled` | `boolean` | 禁止选择与勾选 |
-| `selectable` | `boolean` | 设为 false 可让分类节点仅用于浏览 |
-| `disableCheckbox` | `boolean` | 禁止勾选并阻断联动 |
-| `icon` | `ReactNode` | 节点图标 |
-| `searchLabel` | `string` | label 为节点时提供搜索和读屏文字 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | — | 必需。唯一值，必填 |
+| `label` | `ReactNode` | — | 必需。展示内容，必填 |
+| `children` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | — | 子选项，结构相同 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `selectable` | `boolean` | — | 设为 false 可让分类节点仅用于浏览 |
+| `disableCheckbox` | `boolean` | — | 禁止勾选并阻断联动 |
+| `icon` | `ReactNode` | — | 节点图标 |
+| `searchLabel` | `string` | — | label 为节点时提供搜索和读屏文字 |
+| `isLeaf` | `boolean` | — | 明确指定是否为叶子节点，配合异步加载使用。 |
 
 ## 类型
 

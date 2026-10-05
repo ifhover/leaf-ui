@@ -1,8 +1,15 @@
 import { type RefObject, useEffect, useRef } from 'react';
 import { tabbable } from 'tabbable';
+import { composedEventTarget, deepActiveElement } from './dom';
 
 const stack: HTMLElement[] = [];
+export type FocusTarget = RefObject<HTMLElement | null> | (() => HTMLElement | null);
+export interface DialogFocusOptions {
+  initialFocus?: FocusTarget;
+  returnFocus?: boolean | FocusTarget;
+}
 let savedOverflow = '';
+let scrollLocks = 0;
 
 /** Share focus, Escape and scroll ownership between nested dialogs and drawers. */
 export function useDialog(
@@ -11,21 +18,31 @@ export function useDialog(
   owner: string,
   onClose: () => void,
   keyboard: boolean,
+  options: DialogFocusOptions = {},
+  ready = true,
+  modal = true,
 ) {
+  const focusOptions = useRef(options);
+  focusOptions.current = options;
   const close = useRef(onClose);
   close.current = onClose;
   const keyboardRef = useRef(keyboard);
   keyboardRef.current = keyboard;
   useEffect(() => {
     const node = panel.current;
-    if (!open || !node) return;
-    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    if (!stack.length) {
+    if (!open || !node || !ready) return;
+    const active = deepActiveElement();
+    const previous = active instanceof HTMLElement ? active : null;
+    const focusable = () =>
+      tabbable(node, { getShadowRoot: (element) => element.shadowRoot ?? undefined });
+    if (modal && scrollLocks++ === 0) {
       savedOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
     }
     stack.push(node);
-    (tabbable(node)[0] ?? node).focus();
+    const resolve = (target?: FocusTarget) =>
+      typeof target === 'function' ? target() : target?.current;
+    (resolve(focusOptions.current.initialFocus) ?? focusable()[0] ?? node).focus();
     const key = (event: KeyboardEvent) => {
       if (stack.at(-1) !== node || event.defaultPrevented) return;
       if (event.key === 'Escape' && keyboardRef.current) {
@@ -34,13 +51,14 @@ export function useDialog(
         close.current();
       }
       if (event.key === 'Tab') {
-        const items = tabbable(node);
+        if (!modal) return;
+        const items = focusable();
         if (!items.length) {
           event.preventDefault();
           node.focus();
           return;
         }
-        const index = items.indexOf(document.activeElement as HTMLElement);
+        const index = items.indexOf(deepActiveElement() as HTMLElement);
         if (event.shiftKey && index <= 0) {
           event.preventDefault();
           items.at(-1)?.focus();
@@ -51,13 +69,15 @@ export function useDialog(
       }
     };
     const focus = (event: FocusEvent) => {
+      const target = composedEventTarget(event);
       if (
         stack.at(-1) === node &&
-        event.target instanceof HTMLElement &&
-        !node.contains(event.target) &&
-        event.target.closest('[data-leaf-owner]')?.getAttribute('data-leaf-owner') !== owner
+        modal &&
+        target instanceof HTMLElement &&
+        !event.composedPath().includes(node) &&
+        target.closest('[data-leaf-owner]')?.getAttribute('data-leaf-owner') !== owner
       )
-        (tabbable(node)[0] ?? node).focus();
+        (focusable()[0] ?? node).focus();
     };
     document.addEventListener('keydown', key);
     document.addEventListener('focusin', focus);
@@ -67,8 +87,15 @@ export function useDialog(
       const wasTop = stack.at(-1) === node;
       const index = stack.indexOf(node);
       if (index >= 0) stack.splice(index, 1);
-      if (!stack.length) document.body.style.overflow = savedOverflow;
-      if (wasTop && previous?.isConnected) previous.focus();
+      if (modal && --scrollLocks === 0) document.body.style.overflow = savedOverflow;
+      if (wasTop && focusOptions.current.returnFocus !== false) {
+        const destination =
+          typeof focusOptions.current.returnFocus === 'object' ||
+          typeof focusOptions.current.returnFocus === 'function'
+            ? resolve(focusOptions.current.returnFocus)
+            : previous;
+        if (destination?.isConnected) destination.focus();
+      }
     };
-  }, [open, panel, owner]);
+  }, [open, panel, owner, ready, modal]);
 }

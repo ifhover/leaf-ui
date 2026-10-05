@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/color-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ColorPickerBasic } from '../../../src/examples/en/color-picker/basic';
 import { ColorPickerFormats } from '../../../src/examples/en/color-picker/formats';
@@ -34,31 +35,55 @@ Choose colors for content and branding.
 
 </ComponentExample>
 
+## Gradients
+
+<ComponentExample title="Gradients" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/color-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## ColorPicker API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
-| `onChange / onChangeComplete` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
-| `format / defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Controlled / initial display and output format |
-| `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | Format changes |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `value` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
+| `defaultValue` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
+| `onChange` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
+| `onChangeComplete` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
+| `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Color text format, applied to each stop in gradient mode. |
+| `defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Initial color text format. |
+| `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | Called when the color text format changes. |
 | `disableAlpha` | `boolean` | `false` | Hide opacity and output opaque colors |
 | `showText` | `boolean \| ((color: string) => ReactNode)` | `false` | Show color text or custom content |
-| `presets` | [`readonly ColorPreset[]`](#colorpreset) | Built-in colors | Grouped presets; an empty array hides them |
 | `allowClear` | `boolean` | `false` | Allow clearing |
+| `presets` | `readonly `[`ColorPreset`](#colorpreset)`[]` | Built-in colors | Groups of preset colors. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Trigger size |
 | `status` | `'error' \| 'warning'` | — | Validation status |
-| `disabled / required` | `boolean` | `false` | Disabled / required |
-| `name / form` | `string` | — | Field name / associated form |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `readOnly` | `boolean` | — | Lock the value against typing, selection, clearing and removal. |
 | `popupWidth` | `number \| string` | `280` | Panel width |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `gradient` | `boolean` | — | Enable gradient color selection. |
+| `mode` | `'solid' \| 'gradient'` | — | Presentation or editing mode. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
 
 ## ColorPreset
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `label` | `ReactNode` | Group heading |
-| `colors` | `readonly string[]` | Color values in the group |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | — | Required. Group heading |
+| `colors` | `readonly string[]` | — | Required. Color values in the group |
 
 ## Types
 
@@ -73,3 +98,18 @@ import type { ColorPickerProps, ColorPreset } from '@sudden3/leaf-ui';
 Colors are strings; HEX may contain eight digits when opacity is enabled. Changing format preserves the submitted value; the next adjustment outputs the selected format. `onChange` reports live changes, while `onChangeComplete` reports pointer release, keyboard adjustment, input submission or preset selection.
 
 Use arrow keys in the color plane, with Shift for larger steps. Left/right adjust saturation; up/down adjust brightness. Enter or blur submits color text; invalid text displays an error. Supports FormData, required validation and uncontrolled form reset. Reset controlled state in your application.
+
+## ColorGradient
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `angle` | `number` | — | Required. Gradient angle in degrees. |
+| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | — | Required. Color stops in the gradient. |
+
+## ColorGradientStop
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Stable, unique identifier. |
+| `color` | `string` | — | Required. Color or semantic tone. |
+| `offset` | `number` | — | Required. Offset; color stops use a percentage from 0 to 100. |

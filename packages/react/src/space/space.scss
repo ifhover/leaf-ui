@@ -1,6 +1,6 @@
 .leaf-space {
   min-width: 0;
-  color: var(--leaf-color-text);
+  color: var(--leaf-component-space-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   &__split {
     flex: none;

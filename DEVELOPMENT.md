@@ -56,7 +56,7 @@ packages/react/dist/
     └── index.d.cts
 ```
 
-React 与 Lucide 被 externalize，交给使用者的应用提供。`package.json` 中定义了模块、声明和样式的公开入口，并将 CSS 标记为 side effect，避免样式被 tree shaking 移除。
+React 是 peer dependency；Lucide 与其他运行依赖由包管理器安装，构建保留按需导入。`package.json` 中定义了根入口、组件子路径、ESM / CommonJS 声明与按组件样式入口，并将 CSS 标记为 side effect，避免样式被 tree shaking 移除。独立样式位于 `dist/esm/styles` 和 `dist/cjs/styles`，由构建脚本按视觉依赖生成。
 
 ## 添加新组件
 
@@ -74,7 +74,7 @@ pnpm build:lib
 pnpm --dir packages/react pack
 ```
 
-打包范围只包含 `dist` 与包 README。源码测试和文档不会进入 npm 包。
+打包范围包含 `dist`、包 README 与第三方许可证说明。源码测试和文档不会进入 npm 包。
 
 ## 文档内容边界
 
@@ -85,3 +85,7 @@ pnpm --dir packages/react pack
 ## 样式与图标
 
 源码统一使用 SCSS，通过 @rsbuild/plugin-sass 构建。公共尺寸和样式 mixin 在 packages/react/src/styles；34px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。
+
+## 质量验收
+
+PR 与 main 推送均运行组件检查、React 18 / 19 兼容矩阵和 Chromium / Firefox / WebKit 浏览器矩阵。交互、a11y、主题布局、大数据及生产体积的范围和证据说明见 [packages/react/QUALITY.md](packages/react/QUALITY.md)。

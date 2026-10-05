@@ -1,0 +1,68 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { AppBarBasic, AppBarNavigation } from '../../src/examples/app-bar/basic';
+
+# AppBar 应用导航
+
+组织应用顶部和底部的导航。
+
+## 基础用法
+
+<ComponentExample title="基础用法" preview={<AppBarBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/app-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## 底部导航
+
+<ComponentExample title="底部导航" preview={<AppBarNavigation />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/app-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## AppBar API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `position` | `'static' \| 'sticky' \| 'fixed'` | `'static'` | 导航栏定位方式。 |
+| `elevation` | `boolean` | — | 展示导航栏阴影。 |
+
+## Toolbar API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `dense` | `boolean` | — | 使用紧凑的工具栏。 |
+
+## BottomNavigationItem
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 必需。稳定且唯一的标识。 |
+| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
+| `icon` | `ReactNode` | — | 图标内容。 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `href` | `string` | — | 链接目标。 |
+
+## BottomNavigation API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`BottomNavigationItem`](#bottomnavigationitem)`[]` | — | 必需。展示的条目。 |
+| `value` | `string` | — | 受控值。 |
+| `defaultValue` | `string` | `''` | 初始值；非受控模式支持表单重置。 |
+| `onChange` | `(value: string) => void` | — | 值发生变化时调用。 |
+| `showLabels` | `boolean` | `true` | 始终展示底部导航文字。 |
+| `linkRender` | `( item: `[`BottomNavigationItem`](#bottomnavigationitem)`, props: AnchorHTMLAttributes<HTMLAnchorElement>, ) => ReactNode` | — | 接入路由链接时保留传入的可访问性和事件属性。 |
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { AppBarProps, ToolbarProps, BottomNavigationItem, BottomNavigationProps } from '@sudden3/leaf-ui';
+```
+
+为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

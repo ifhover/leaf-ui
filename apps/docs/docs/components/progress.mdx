@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/progress/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { ProgressBasic } from '../../src/examples/progress/basic';
 import { ProgressStates } from '../../src/examples/progress/states';
@@ -34,6 +35,15 @@ import { ProgressCircles } from '../../src/examples/progress/circles';
 
 </ComponentExample>
 
+## 分段与仪表盘
+
+<ComponentExample title="分段与仪表盘" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/progress/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Progress API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -48,6 +58,10 @@ import { ProgressCircles } from '../../src/examples/progress/circles';
 | `size` | `number` | `100` | 圆形宽高，单位像素 |
 | `indeterminate` | `boolean` | `false` | 总进度未知时展示加载动画，不显示百分比 |
 | `trailColor` | `string` | — | 底轨颜色 |
+| `segments` | `readonly `[`ProgressSegment`](#progresssegment)`[]` | — | 按比例和颜色显示多个分段。 |
+| `steps` | `number` | — | 离散的进度段数。 |
+| `dashboard` | `boolean` | `false` | 显示仪表盘式进度。 |
+| `successPercent` | `number` | — | 已经成功完成的进度部分。 |
 
 ## 类型
 
@@ -60,3 +74,11 @@ import type { ProgressProps } from '@sudden3/leaf-ui';
 ## 使用说明
 
 达到 100% 时自动使用成功状态。aria-label 可描述具体任务，如“上传进度”；进度本身也会提供给辅助技术。
+
+## ProgressSegment
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | — | 稳定且唯一的标识。 |
+| `percent` | `number` | `0` | 必需。完成百分比。 |
+| `color` | `string` | — | 颜色或语义色。 |

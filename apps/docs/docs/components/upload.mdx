@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/upload/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { UploadBasic } from '../../src/examples/upload/basic';
 import { UploadDrag } from '../../src/examples/upload/advanced';
@@ -34,28 +35,49 @@ import { UploadDrag } from '../../src/examples/upload/advanced';
 import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, UploadRequest, UploadResult, FileItem } from '@sudden3/leaf-ui';
 ```
 
+## 手动上传与图片卡片
+
+<ComponentExample title="手动上传与图片卡片" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/upload/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## UploadProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `fileList / defaultFileList` | [`readonly UploadFile[]`](#uploadfile-api) | `[]` | 受控 / 初始文件列表 |
-| `onChange` | [`(files: UploadFile[], info: UploadChangeInfo) => void`](#uploadchangeinfo-api) | — | 列表及上传状态变化 |
+| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | 受控 / 初始文件列表 |
+| `defaultFileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | 受控 / 初始文件列表 |
+| `onChange` | `(files: `[`UploadFile`](#uploadfile-api)`[], info: `[`UploadChangeInfo`](#uploadchangeinfo-api)`) => void` | — | 列表及上传状态变化 |
 | `accept` | `string` | — | 允许的 MIME 或后缀，如 image/*,.pdf |
-| `multiple / disabled / drag` | `boolean` | `false` | 多文件选择 / 禁用 / 拖拽区域 |
+| `multiple` | `boolean` | `false` | 多文件选择 / 禁用 / 拖拽区域 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `drag` | `boolean` | `false` | 多文件选择 / 禁用 / 拖拽区域 |
 | `maxCount` | `number` | — | 允许的文件总数 |
 | `maxSize` | `number` | — | 单个文件最大字节数 |
 | `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | 上传前校验，false 拒绝，File 可转换文件 |
-| `onReject` | [`(rejections: readonly UploadRejection[]) => void`](#uploadrejection-api) | — | 格式、大小、数量或校验拒绝 |
+| `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | 格式、大小、数量或校验拒绝 |
 | `action` | `string \| ((file: File) => string \| Promise<string>)` | — | 上传地址，未配置时只选择文件 |
 | `method` | `'POST' \| 'PUT'` | `'POST'` | POST 使用 FormData，PUT 上传文件本身 |
 | `headers` | `Readonly<Record<string, string>>` | — | 请求头 |
 | `data` | `Readonly<Record<string, string \| Blob>>` | — | POST 的额外表单数据 |
 | `withCredentials` | `boolean` | `false` | 跨域发送凭证 |
 | `fieldName` | `string` | `'file'` | POST 中的文件字段名 |
-| `customRequest` | [`(request: UploadRequest) => Promise<UploadResult> \| Promise<void>`](#uploadrequest-api) | — | 自定义异步上传，配合 signal 取消 |
-| `onRemove` | [`(file: UploadFile) => boolean \| void \| Promise<boolean> \| Promise<void>`](#uploadfile-api) | — | 移除前回调，返回 false 保留文件 |
+| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | 自定义异步上传，配合 signal 取消 |
+| `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | 移除前回调，返回 false 保留文件 |
 | `showFileList` | `boolean` | `true` | 展示文件列表 |
-| `hint / children` | `ReactNode` | — | 提示 / 选择按钮或拖拽区域标题 |
+| `hint` | `ReactNode` | — | 提示 / 选择按钮或拖拽区域标题 |
+| `children` | `ReactNode` | — | 提示 / 选择按钮或拖拽区域标题 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
+| `required` | `boolean` | — | 要求整体值非空，复合控件只校验一次。 |
+| `autoUpload` | `boolean` | `true` | 文件校验通过后自动开始；false 时用 ref.upload()。 |
+| `concurrency` | `number` | `3` | 同时进行的上传请求数。 |
+| `directory` | `boolean` | — | 选择目录及其文件；依赖浏览器的目录选择能力。 |
+| `paste` | `boolean` | — | 接收剪贴板中的文件。 |
+| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | 文件列表的展示形式。 |
 
 ## UploadFile API
 
@@ -63,7 +85,15 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `uid` | `string` | 必填 | 唯一标识 |
+| `uid` | `string` | 必填 | 必需。唯一标识 |
+| `url` | `string` | — | 设置 url。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `size` | `number` | — | 展示尺寸。 |
+| `type` | `string` | — | 设置 type。 |
+| `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | 设置 status。 |
+| `percent` | `number` | — | 完成百分比。 |
+| `error` | `string` | — | 设置 error。 |
+| `originFile` | `globalThis.File` | — | 设置 originFile。 |
 | `response` | `unknown` | — | 服务端返回的数据 |
 
 ## UploadChangeInfo API
@@ -71,29 +101,30 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `file` | [`UploadFile`](#uploadfile-api) | — | 本次变化的文件 |
-| `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | 必填 | 变化原因 |
+| `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | 必填 | 必需。变化原因 |
 
 ## UploadRejection API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `file` | `File` | 必填 | 被拒绝的文件 |
-| `reason` | `'type' \| 'size' \| 'count' \| 'validation'` | 必填 | 拒绝原因 |
-| `message` | `string` | 必填 | 用户可读的说明 |
+| `file` | `File` | 必填 | 必需。被拒绝的文件 |
+| `reason` | `'type' \| 'size' \| 'count' \| 'validation'` | 必填 | 必需。拒绝原因 |
+| `message` | `string` | 必填 | 必需。用户可读的说明 |
 
 ## UploadRequest API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `file` | `File` | 必填 | 待上传文件 |
-| `signal` | `AbortSignal` | 必填 | 取消信号，移除或卸载也会取消 |
-| `onProgress` | `(percent: number) => void` | 必填 | 报告上传进度 |
+| `file` | `File` | 必填 | 必需。待上传文件 |
+| `signal` | `AbortSignal` | 必填 | 必需。取消信号，移除或卸载也会取消 |
+| `onProgress` | `(percent: number) => void` | 必填 | 必需。报告上传进度 |
 
 ## UploadResult API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `url / name` | `string` | — | 上传后的地址 / 名称 |
+| `url` | `string` | — | 上传后的地址 / 名称 |
+| `name` | `string` | — | 上传后的地址 / 名称 |
 | `response` | `unknown` | — | 保留业务响应 |
 
 ## FileItem API
@@ -109,3 +140,11 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `percent` | `number` | — | 上传进度 0–100 |
 | `error` | `string` | — | 失败说明 |
 | `originFile` | `File` | — | 浏览器选择的原始文件 |
+
+## UploadHandle
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `upload` | `(uid?: string) => void` | — | 必需。开始指定文件或所有待处理文件的上传。 |
+| `abort` | `(uid?: string) => void` | — | 必需。取消指定文件或所有上传。 |
+| `focus` | `() => void` | — | 必需。聚焦控件。 |

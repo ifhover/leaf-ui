@@ -1,9 +1,9 @@
 import { X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { Button, type ButtonProps } from '../button';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
-import { useDialog } from '../shared/dialog';
+import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertAttribute } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
 import { usePresence } from '../shared/presence';
@@ -13,7 +13,9 @@ export interface ModalFooterActions {
   confirmButton: ReactNode;
   cancelButton: ReactNode;
 }
-export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface ModalProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>,
+    DialogFocusOptions {
   open: boolean;
   title?: ReactNode;
   footer?: ReactNode | ((actions: ModalFooterActions) => ReactNode);
@@ -30,6 +32,10 @@ export interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   keyboard?: boolean;
   onClose?: () => void;
   afterClose?: () => void;
+  forceRender?: boolean;
+  destroyOnClose?: boolean;
+  preserve?: boolean;
+  container?: Element | DocumentFragment | (() => Element | DocumentFragment);
 }
 
 function ModalSurface({
@@ -49,6 +55,12 @@ function ModalSurface({
   keyboard = true,
   onClose,
   afterClose,
+  forceRender = false,
+  destroyOnClose = false,
+  preserve,
+  initialFocus,
+  returnFocus,
+  container: _container,
   children,
   className,
   style,
@@ -140,11 +152,19 @@ function ModalSurface({
     if (wasPresent.current && !present) afterClose?.();
     wasPresent.current = present;
   }, [present, afterClose]);
-  useDialog(open, panel, modalId, cancel, keyboard);
-  if (!present) return null;
+  useDialog(open, panel, modalId, cancel, keyboard, { initialFocus, returnFocus });
+  const visited = useRef(false);
+  if (open) visited.current = true;
+  if (
+    !present &&
+    !forceRender &&
+    ((preserve === undefined ? destroyOnClose : !preserve) || !visited.current)
+  )
+    return null;
   return (
     <div
       ref={root}
+      hidden={!present}
       className="leaf-modal-mask"
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
@@ -203,7 +223,7 @@ function ModalSurface({
 }
 export function Modal(props: ModalProps) {
   return (
-    <ScopedPortal>
+    <ScopedPortal container={props.container}>
       <ModalSurface {...props} />
     </ScopedPortal>
   );

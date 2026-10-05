@@ -16,7 +16,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
   ref,
 ) {
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   return (
     <label
       className={classes('leaf-radio', `leaf-radio--${size}`, className)}
@@ -83,7 +83,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
 ) {
   const id = useId();
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   return (
     <fieldset
       {...props}

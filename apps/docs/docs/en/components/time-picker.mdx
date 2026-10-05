@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/time-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TimePickerBasic, TimePickerControlled } from '../../../src/components/en-form-examples';
 import { TimePickerTwelveHours } from '../../../src/examples/en/time-picker/twelve-hours';
@@ -31,24 +32,43 @@ Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the d
 
 </ComponentExample>
 
+## Disabled times
+
+<ComponentExample title="Disabled times" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/time-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## TimePicker API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` / `defaultValue` | `string \| null` | `null` | Controlled / initial HH:mm value; HH:mm:ss when seconds are enabled |
-| `onChange` | `(value: string \| null) => void` | — | Confirmed time; null when cleared |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `allowClear` | `boolean` | `true` | Show a clear button |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `value` | `string \| null` | `null` | Controlled / initial HH:mm value; HH:mm:ss when seconds are enabled |
+| `defaultValue` | `string \| null` | `null` | Controlled / initial HH:mm value; HH:mm:ss when seconds are enabled |
 | `minuteStep` | `number` | `5` | Minute step, an integer from 1 to 60 |
 | `secondStep` | `number` | `1` | Second step, an integer from 1 to 60 |
 | `showSeconds` | `boolean` | `false` | Show seconds and use HH:mm:ss values |
 | `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM |
-| `allowClear` | `boolean` | `true` | Show a clear button |
-| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled` | `boolean` | `false` | Disable the control |
-| `name` / `form` | `string` | — | Field name / associated form ID |
-| `required` | `boolean` | `false` | Require a time |
+| `onChange` | `(value: string \| null) => void` | — | Confirmed time; null when cleared |
 | `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
+| `disabledTime` | `(parts: `[`TimeParts`](#timeparts)`) => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ## Types
@@ -64,3 +84,11 @@ import type { TimePickerProps } from '@sudden3/leaf-ui';
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
 
 Type `HH:mm` or `HH:mm:ss`; 12-hour text accepts AM/PM or 上午/下午. Press Enter to submit, or adjust columns and click OK. Every mode requires confirmation. Now updates the draft and still requires OK. Escape or leaving the field discards changes. Other input attributes and aria-* target the input; className/style target the wrapper. ArrowDown moves focus to the selected hour.
+
+## TimeParts
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `hour` | `number` | — | Required. Configure hour. |
+| `minute` | `number` | — | Required. Configure minute. |
+| `second` | `number` | — | Required. Configure second. |

@@ -1,7 +1,7 @@
 import { Clock3 } from 'lucide-react';
 import { forwardRef, useRef, useState } from 'react';
 import { Button } from '../button';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
@@ -18,6 +18,7 @@ export interface TimePickerProps extends PickerFieldProps {
   use12Hours?: boolean;
   onChange?: (value: string | null) => void;
   onOpenChange?: (open: boolean) => void;
+  disabledTime?: (parts: TimeParts) => boolean;
 }
 export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function TimePicker(
   {
@@ -29,6 +30,9 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
     use12Hours = false,
     onChange,
     onOpenChange,
+    disabledTime,
+    open: controlledOpen,
+    defaultOpen,
     ...props
   },
   ref,
@@ -42,8 +46,15 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
     parseTime(selected) ?? { hour: 9, minute: 0, second: 0 },
   );
   const [validText, setValidText] = useState(true);
-  const [open, setOpen] = usePopupState(props.disabled ?? field?.disabled, onOpenChange);
+  const [open, setOpen] = usePopupState(
+    props.disabled || field?.disabled || props.readOnly,
+    onOpenChange,
+    controlledOpen,
+    defaultOpen,
+  );
   const change = (parts: TimeParts | null) => {
+    if (props.readOnly || props.disabled || field?.disabled || (parts && disabledTime?.(parts)))
+      return;
     const next = parts ? timeString(parts, showSeconds) : null;
     setSelected(next);
     onChange?.(next);
@@ -81,7 +92,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
           return true;
         }
         const next = parseTime(text);
-        if (!next) return false;
+        if (!next || disabledTime?.(next)) return false;
         change(next);
         return true;
       }}
@@ -89,6 +100,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
       renderPanel={(close) => (
         <>
           <TimePanel
+            disabledTime={disabledTime}
             value={draft}
             onChange={(next) => {
               setDraft(next);
@@ -117,7 +129,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
             </Button>
             <Button
               size="sm"
-              disabled={!validText}
+              disabled={!validText || disabledTime?.(draft)}
               onClick={() => {
                 change(draft);
                 close();

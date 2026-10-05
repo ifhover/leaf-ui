@@ -1,7 +1,9 @@
 import { createContext, useContext } from 'react';
+import { traditionalMessages } from '../locales/zh-tw';
 import type { LeafTheme } from '../theme';
 
-export type LeafLocale = 'zh-CN' | 'en-US';
+export type LeafLocale = 'zh-CN' | 'zh-TW' | 'en-US' | (string & {});
+export type LeafDirection = 'ltr' | 'rtl';
 
 const zh = {
   select: '请选择',
@@ -179,8 +181,22 @@ const en: typeof zh = {
   pageForward: 'Jump forward 5 pages',
   closeTab: 'Close tab',
 };
-export const localeMessages = { 'zh-CN': zh, 'en-US': en };
-const defaultConfig = { locale: 'zh-CN' as LeafLocale, theme: {} as LeafTheme, messages: zh };
+export type LeafMessages = typeof zh;
+const tw: LeafMessages = traditionalMessages;
+export const localeMessages: Record<string, LeafMessages> = {
+  'zh-CN': zh,
+  'zh-TW': tw,
+  'en-US': en,
+};
+const defaultConfig = {
+  locale: 'zh-CN' as LeafLocale,
+  theme: {} as LeafTheme,
+  messages: zh,
+  direction: 'ltr' as LeafDirection,
+  weekStartsOn: 1 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+  textMessages: {} as Record<string, string>,
+  getPopupContainer: undefined as undefined | (() => Element | DocumentFragment),
+};
 export type LeafConfig = typeof defaultConfig;
 export const ConfigContext = createContext(defaultConfig);
 export function useLeafConfig() {

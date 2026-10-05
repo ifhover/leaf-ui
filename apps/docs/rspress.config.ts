@@ -14,6 +14,8 @@ const guideSidebar = [
       { text: '安装&快速开始', link: '/guide/getting-started' },
       { text: 'SSR 使用', link: '/guide/ssr' },
       { text: 'AI 与 Skills', link: '/guide/ai' },
+      { text: '控件与浮层', link: '/guide/control-contracts' },
+      { text: '业务场景', link: '/guide/scenarios' },
     ],
   },
   {
@@ -33,6 +35,7 @@ const componentSidebar = [
   {
     text: '通用',
     items: [
+      { text: 'Typography', tag: '排版', link: '/components/typography' },
       { text: 'Button', tag: '按钮', link: '/components/button' },
       { text: 'Divider', tag: '分割线', link: '/components/divider' },
     ],
@@ -40,6 +43,7 @@ const componentSidebar = [
   {
     text: '布局',
     items: [
+      { text: 'Splitter', tag: '分割面板', link: '/components/splitter' },
       { text: 'Layout', tag: '布局', link: '/components/layout' },
       { text: 'Grid', tag: '栅格', link: '/components/grid' },
       { text: 'Space', tag: '间距', link: '/components/space' },
@@ -50,6 +54,10 @@ const componentSidebar = [
   {
     text: '导航',
     items: [
+      { text: 'AppBar', tag: '应用导航', link: '/components/app-bar' },
+      { text: 'CommandPalette', tag: '命令面板', link: '/components/command-palette' },
+      { text: 'FloatButton', tag: '悬浮按钮', link: '/components/float-button' },
+      { text: 'Anchor', tag: '锚点与固钉', link: '/components/anchor' },
       { text: 'Segmented', tag: '分段控制器', link: '/components/segmented' },
       { text: 'Menu', tag: '菜单', link: '/components/menu' },
       { text: 'BackTop', tag: '回到顶部', link: '/components/back-top' },
@@ -62,6 +70,8 @@ const componentSidebar = [
   {
     text: '数据展示',
     items: [
+      { text: 'Statistic', tag: '统计数值', link: '/components/statistic' },
+      { text: 'List', tag: '列表', link: '/components/list' },
       { text: 'Descriptions', tag: '描述列表', link: '/components/descriptions' },
       { text: 'QRCode', tag: '二维码', link: '/components/qr-code' },
       { text: 'Timeline', tag: '时间线', link: '/components/timeline' },
@@ -79,6 +89,7 @@ const componentSidebar = [
   {
     text: '媒体',
     items: [
+      { text: 'Carousel', tag: '轮播', link: '/components/carousel' },
       { text: 'Image', tag: '图片', link: '/components/image' },
       { text: 'FileList', tag: '文件列表', link: '/components/file-list' },
       { text: 'ImageCropper', tag: '图片裁剪', link: '/components/image-cropper' },
@@ -88,6 +99,7 @@ const componentSidebar = [
   {
     text: '数据录入',
     items: [
+      { text: 'Mentions', tag: '提及', link: '/components/mentions' },
       { text: 'Upload', tag: '文件上传', link: '/components/upload' },
       { text: 'Transfer', tag: '穿梭框', link: '/components/transfer' },
       { text: 'InputOTP', tag: '验证码输入', link: '/components/input-otp' },
@@ -123,6 +135,7 @@ const componentSidebar = [
   {
     text: '反馈与交互',
     items: [
+      { text: 'Tour', tag: '引导', link: '/components/tour' },
       { text: 'Notification', tag: '通知提醒', link: '/components/notification' },
       { text: 'Popconfirm', tag: '气泡确认', link: '/components/popconfirm' },
       { text: 'ErrorBoundary', tag: '错误边界', link: '/components/error-boundary' },
@@ -148,6 +161,8 @@ const componentSidebar = [
 ];
 
 const englishLabels: Record<string, string> = {
+  控件与浮层: 'Control and popup contracts',
+  业务场景: 'Application scenarios',
   开始使用: 'Getting started',
   '认识 Leaf UI': 'Introduction',
   '安装&快速开始': 'Installation & quick start',

@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ListBasic, ListStates } from '../../../src/examples/list/basic';
+
+# List
+
+Present a collection of content and actions.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<ListBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/list/basic.tsx"
+```
+
+</ComponentExample>
+
+## Loading and empty states
+
+<ComponentExample title="Loading and empty states" preview={<ListStates english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/list/basic.tsx"
+```
+
+</ComponentExample>
+
+## List API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly T[]` | — | Items to display. |
+| `renderItem` | `(item: T, index: number) => ReactNode` | — | Render each item. |
+| `itemKey` | `(item: T, index: number) => string \| number` | — | Provide stable keys for dynamic items. |
+| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
+| `header` | `ReactNode` | — | Header content. |
+| `footer` | `ReactNode` | — | Footer content. |
+| `divider` | `boolean` | `false` | Show separators between items. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `emptyContent` | `ReactNode` | — | Content for an empty collection. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+
+## ListItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | — | Title content. |
+| `description` | `ReactNode` | — | Additional description. |
+| `avatar` | `ReactNode` | — | Leading avatar or icon. |
+| `extra` | `ReactNode` | — | Trailing content. |
+| `actions` | `readonly ReactNode[]` | — | Actions for the item. |
+| `as` | `'li' \| 'div'` | `'li'` | List-item semantics or a standalone block. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { ListProps, ListItemProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

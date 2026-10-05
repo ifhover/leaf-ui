@@ -1,11 +1,37 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { versionTarget } from '../src/components/version-path.ts';
-import { publishedReleases, redirectPage } from './build-versioned-site.mjs';
-import { exportAiDocs } from './export-ai-docs.mjs';
+import { properties, readApiRows } from './api-model.mjs';
+
+test('component defaults stay scoped to their own function rather than sibling components', async () => {
+  const entry = path.resolve(import.meta.dirname, '../../../packages/react/src/index.ts');
+  assert.equal((await properties(entry, 'TextProps')).get('underline').defaultValue, undefined);
+  assert.equal(
+    (await properties(entry, 'ParagraphProps')).get('underline').defaultValue,
+    undefined,
+  );
+  assert.equal((await properties(entry, 'LinkProps')).get('underline').defaultValue, 'true');
+});
+
+import { platformFiles, publishedReleases, redirectPage } from './build-versioned-site.mjs';
+
+test('API tables retain data-type descriptions and split grouped defaults correctly', () => {
+  const rows = readApiRows(
+    '| `node` | `TreeNode` | Operated node |\n| `multiple / selectable` | `boolean` | `false / true` | Allow multiple / selection |\n| `filter` | `string \\| false` | — | Custom filter |',
+  );
+  assert.deepEqual(rows.get('node'), {
+    type: '`TreeNode`',
+    defaultValue: '—',
+    description: 'Operated node',
+  });
+  assert.equal(rows.get('multiple').defaultValue, '`false`');
+  assert.equal(rows.get('selectable').defaultValue, '`true`');
+  assert.equal(rows.get('filter').description, 'Custom filter');
+});
 
 test('version switch preserves the page, language and anchor when available', () => {
   const release = {
@@ -138,12 +164,28 @@ test('AI index comes from snapshot exports and maps nested types to component do
     );
     await writeFile(path.join(output, 'components/textarea.md'), '# Textarea\n');
     await writeFile(path.join(output, 'llms.txt'), '# Leaf UI\n\n## Components\n');
-    const result = await exportAiDocs({
-      repository: root,
-      output,
-      base: '/leaf-ui/v/0.1.0/',
-      sourceCommit: 'a'.repeat(40),
-    });
+    // Run from the staged historical snapshot, which has no current workspace dependencies.
+    const scripts = platformFiles.filter(
+      (file) => file.startsWith('apps/docs/scripts/') && !file.endsWith('build-versioned-site.mjs'),
+    );
+    for (const file of scripts) {
+      const target = path.join(root, file);
+      await mkdir(path.dirname(target), { recursive: true });
+      await cp(new URL(`../../../${file}`, import.meta.url), target);
+    }
+    execFileSync(
+      process.execPath,
+      [path.join(root, 'apps/docs/scripts/export-ai-docs.mjs'), root, output],
+      {
+        env: {
+          ...process.env,
+          LEAF_DOCS_BASE: '/leaf-ui/v/0.1.0/',
+          LEAF_DOCS_SOURCE_COMMIT: 'a'.repeat(40),
+        },
+        stdio: 'pipe',
+      },
+    );
+    const result = JSON.parse(await readFile(path.join(output, 'api/index.json'), 'utf8'));
     assert.equal(result.version, '0.1.0');
     assert.equal(
       result.exports.some((entry) => entry.name === 'Menu'),

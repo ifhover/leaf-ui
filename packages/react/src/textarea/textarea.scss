@@ -1,10 +1,10 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-textarea {
-  @include mixins.field;
+  @include mixins.field('textarea');
   display: block;
   min-height: calc(var(--leaf-current-control-height) * 2);
-  padding: 8px 10px;
+  padding: var(--leaf-component-textarea-padding, 8px 10px);
   outline: none;
   &::placeholder {
     color: var(--leaf-color-text-muted);
@@ -22,4 +22,23 @@
   align-self: flex-end;
   color: var(--leaf-color-text-muted);
   font: var(--leaf-font-size-sm) var(--leaf-font-family);
+}
+
+.leaf-textarea {
+  --leaf-current-control-height: var(--leaf-component-textarea-height, var(--leaf-control-height));
+  --leaf-current-font-size: var(--leaf-component-textarea-font-size, var(--leaf-font-size));
+}
+.leaf-textarea--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-textarea-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-textarea--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-textarea-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

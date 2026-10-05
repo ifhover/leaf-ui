@@ -15,6 +15,22 @@ export interface LeafTheme {
   appearance?: 'light' | 'dark';
   motion?: boolean;
   tokens?: LeafThemeTokens;
+  spacing?: number;
+  lineHeight?: number;
+  headingWeight?: number;
+  elevation?: 'none' | 'soft' | 'medium';
+  breakpoints?: Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', number>>;
+  components?: Record<string, LeafComponentTokens>;
+}
+export interface LeafComponentTokens {
+  borderRadius?: string | number;
+  controlHeight?: string | number;
+  padding?: string | number;
+  gap?: string | number;
+  fontSize?: string | number;
+  color?: string;
+  background?: string;
+  shadow?: string;
 }
 
 /** Optional overrides for applications with more specific design requirements. */
@@ -54,6 +70,12 @@ export interface LeafThemeTokens {
   primaryBorderColor?: string;
   dangerHoverColor?: string;
   dangerActiveColor?: string;
+  spacingSm?: number | string;
+  spacingLg?: number | string;
+  shadowSm?: string;
+  shadowMd?: string;
+  shadowLg?: string;
+  lineHeight?: number;
 }
 
 const defined = <T extends object>(value?: T) =>
@@ -63,6 +85,15 @@ export function mergeLeafTheme(parent: LeafTheme, theme?: LeafTheme): LeafTheme 
   return {
     ...parent,
     ...defined(theme),
+    breakpoints: { ...parent.breakpoints, ...defined(theme?.breakpoints) },
+    components: Object.fromEntries(
+      [
+        ...new Set([
+          ...Object.keys(parent.components ?? {}),
+          ...Object.keys(theme?.components ?? {}),
+        ]),
+      ].map((key) => [key, { ...parent.components?.[key], ...defined(theme?.components?.[key]) }]),
+    ),
     ...(parent.tokens || theme?.tokens
       ? { tokens: { ...parent.tokens, ...defined(theme?.tokens) } }
       : {}),
@@ -105,6 +136,12 @@ const tokenVariables = {
   primaryBorderColor: 'color-primary-border',
   dangerHoverColor: 'color-danger-hover',
   dangerActiveColor: 'color-danger-active',
+  spacingSm: 'spacing-sm',
+  spacingLg: 'spacing-lg',
+  shadowSm: 'shadow-sm',
+  shadowMd: 'shadow-md',
+  shadowLg: 'shadow-lg',
+  lineHeight: 'line-height',
 } satisfies Record<keyof LeafThemeTokens, string>;
 
 const length = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
@@ -112,6 +149,57 @@ const length = (value: number | string) => (typeof value === 'number' ? `${value
 /** Pure, deterministic output can be rendered in the server's initial HTML. */
 export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   const variables: LeafThemeStyle = {};
+  if (theme.spacing !== undefined) {
+    variables['--leaf-spacing'] = `${Math.max(0, theme.spacing)}px`;
+    for (const [name, scale] of [
+      ['xs', 0.5],
+      ['sm', 1],
+      ['md', 2],
+      ['lg', 3],
+      ['xl', 4],
+    ] as const)
+      variables[`--leaf-spacing-${name}`] = `calc(var(--leaf-spacing) * ${scale})`;
+  }
+  if (theme.lineHeight !== undefined) variables['--leaf-line-height'] = theme.lineHeight;
+  if (theme.headingWeight !== undefined) variables['--leaf-heading-weight'] = theme.headingWeight;
+  if (theme.elevation)
+    for (const [name, blur, y] of [
+      ['sm', 8, 2],
+      ['md', 20, 6],
+      ['lg', 48, 12],
+    ] as const)
+      variables[`--leaf-shadow-${name}`] =
+        theme.elevation === 'none'
+          ? 'none'
+          : `0 ${y}px ${blur}px rgb(0 0 0 / ${theme.elevation === 'soft' ? '.08' : '.16'})`;
+  for (const [name, value] of Object.entries(theme.breakpoints ?? {}))
+    if (value !== undefined) variables[`--leaf-breakpoint-${name}`] = `${value}px`;
+  const componentKeys = {
+    borderRadius: 'radius',
+    controlHeight: 'height',
+    padding: 'padding',
+    gap: 'gap',
+    fontSize: 'font-size',
+    color: 'color',
+    background: 'background',
+    shadow: 'shadow',
+  } as const;
+  for (const [component, tokens] of Object.entries(theme.components ?? {}))
+    for (const [key, value] of Object.entries(tokens))
+      if (value !== undefined && /^[a-z][a-z\d-]*$/i.test(component)) {
+        const token = componentKeys[key as keyof typeof componentKeys];
+        if (token)
+          variables[
+            `--leaf-component-${component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase()}-${token}`
+          ] = typeof value === 'number' ? length(value) : value;
+        if (key === 'controlHeight') {
+          const name = component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
+          variables[`--leaf-component-${name}-height-sm`] =
+            `max(1px, calc(var(--leaf-component-${name}-height) - 6px))`;
+          variables[`--leaf-component-${name}-height-lg`] =
+            `calc(var(--leaf-component-${name}-height) + 6px)`;
+        }
+      }
   if (theme.primaryColor !== undefined) {
     variables['--leaf-color-primary'] = theme.primaryColor;
     variables['--leaf-color-on-primary'] = '#ffffff';
@@ -144,7 +232,8 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
           ? `${value}ms`
           : variable.includes('radius') ||
               variable.includes('height') ||
-              variable.includes('font-size')
+              variable.includes('font-size') ||
+              variable.includes('spacing')
             ? length(value)
             : value;
   }

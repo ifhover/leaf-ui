@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useRef } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { padTime, type TimeParts } from '../shared/time';
 
 interface TimePanelProps {
@@ -11,6 +11,7 @@ interface TimePanelProps {
   minuteStep?: number;
   secondStep?: number;
   autoFocus?: boolean;
+  disabledTime?: (parts: TimeParts) => boolean;
 }
 export function TimePanel({
   value,
@@ -20,6 +21,7 @@ export function TimePanel({
   minuteStep = 5,
   secondStep = 1,
   autoFocus,
+  disabledTime,
 }: TimePanelProps) {
   const { messages } = useLeafConfig();
   const ref = useRef<HTMLDivElement>(null);
@@ -38,19 +40,24 @@ export function TimePanel({
     selected: number,
     change: (next: number) => void,
     labels?: string[],
+    disabled?: (choice: number) => boolean,
   ) => {
     const key = (event: KeyboardEvent<HTMLButtonElement>, current: number) => {
-      const index = choices.indexOf(current);
+      const available = choices.filter((choice) => !disabled?.(choice));
+      if (!available.length) return;
+      const index = available.indexOf(current);
       let next = index;
-      if (event.key === 'ArrowDown') next = (index + 1) % choices.length;
-      else if (event.key === 'ArrowUp') next = (index - 1 + choices.length) % choices.length;
+      if (event.key === 'ArrowDown') next = (index + 1) % available.length;
+      else if (event.key === 'ArrowUp') next = (index - 1 + available.length) % available.length;
       else if (event.key === 'Home') next = 0;
-      else if (event.key === 'End') next = choices.length - 1;
+      else if (event.key === 'End') next = available.length - 1;
       else return;
       event.preventDefault();
-      change(choices[next] ?? current);
+      change(available[next] ?? current);
       const node =
-        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button')[next];
+        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+          'button:not(:disabled)',
+        )[next];
       node?.focus();
       node?.scrollIntoView?.({ block: 'nearest' });
     };
@@ -65,7 +72,13 @@ export function TimePanel({
               type="button"
               key={option}
               role="option"
-              tabIndex={option === selected ? 0 : -1}
+              disabled={disabled?.(option)}
+              tabIndex={
+                option ===
+                (disabled?.(selected) ? choices.find((choice) => !disabled?.(choice)) : selected)
+                  ? 0
+                  : -1
+              }
               aria-selected={option === selected}
               className="leaf-floating__option"
               ref={(node) => {
@@ -91,15 +104,38 @@ export function TimePanel({
     : Array.from({ length: 24 }, (_, i) => i);
   return (
     <div ref={ref} className="leaf-time-picker__columns">
-      {column(messages.hours, hours, use12Hours ? value.hour % 12 || 12 : value.hour, (hour) =>
-        onChange({ ...value, hour: use12Hours ? (hour % 12) + (value.hour < 12 ? 0 : 12) : hour }),
+      {column(
+        messages.hours,
+        hours,
+        use12Hours ? value.hour % 12 || 12 : value.hour,
+        (hour) =>
+          onChange({
+            ...value,
+            hour: use12Hours ? (hour % 12) + (value.hour < 12 ? 0 : 12) : hour,
+          }),
+        undefined,
+        (hour) =>
+          !!disabledTime?.({
+            ...value,
+            hour: use12Hours ? (hour % 12) + (value.hour < 12 ? 0 : 12) : hour,
+          }),
       )}
-      {column(messages.minutes, options(minuteStep, value.minute), value.minute, (minute) =>
-        onChange({ ...value, minute }),
+      {column(
+        messages.minutes,
+        options(minuteStep, value.minute),
+        value.minute,
+        (minute) => onChange({ ...value, minute }),
+        undefined,
+        (minute) => !!disabledTime?.({ ...value, minute }),
       )}
       {showSeconds &&
-        column(messages.seconds, options(secondStep, value.second), value.second, (second) =>
-          onChange({ ...value, second }),
+        column(
+          messages.seconds,
+          options(secondStep, value.second),
+          value.second,
+          (second) => onChange({ ...value, second }),
+          undefined,
+          (second) => !!disabledTime?.({ ...value, second }),
         )}
       {use12Hours &&
         column(
@@ -108,6 +144,7 @@ export function TimePanel({
           value.hour < 12 ? 0 : 1,
           (period) => onChange({ ...value, hour: (value.hour % 12) + period * 12 }),
           [messages.am, messages.pm],
+          (period) => !!disabledTime?.({ ...value, hour: (value.hour % 12) + period * 12 }),
         )}
     </div>
   );

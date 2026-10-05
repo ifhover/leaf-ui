@@ -1,0 +1,66 @@
+# 控件与浮层
+
+输入控件与浮层使用一致的状态约定。
+
+## 禁用与只读
+
+- `disabled` 禁止交互，也不参加原生表单提交。`Form disabled` 会禁用所有内部控件，单个控件的 `disabled={false}` 不会绕过它。
+- `readOnly` 锁定业务值，禁止输入、选项选择、清除与标签删除；已有值仍可以提交。
+- 日期、时间和 Select 的 `inputReadOnly` 只关闭键盘输入，仍允许面板选择。它适合需要减少输入错误的场景。
+- `required` 按整个字段的值校验，CheckboxGroup、Transfer 等内部搜索框不会额外成为必填项。
+
+## 原生表单与重置
+
+传入 `name` 后可通过 `new FormData(form)` 读取值。多选值使用 `data.getAll(name)`；具体序列化方式见各组件文档。非受控组件通过 `defaultValue` 提供初始值，原生 `reset` 恢复初始值；受控组件需要同步重置应用状态。
+
+日期的 `format` 控制显示文字和 `onChange` 的文字参数；FormData 仍使用稳定格式：日期 `YYYY-MM-DD`、时间 `HH:mm[:ss]`、区间 `start/end`。避免把用户显示格式当作服务端交换格式。
+
+## 定制浮层
+
+选择器共用下面的浮层选项。单个组件的配置优先于 ConfigProvider 的 `getPopupContainer`。`popupRender` 可附加操作区，保留收到的内容以维持键盘操作。
+
+```tsx
+import { ConfigProvider, Select } from '@sudden3/leaf-ui';
+
+<ConfigProvider getPopupContainer={() => document.getElementById('overlay-root')!}>
+  <Select
+    options={[{ value: 'design', label: '设计' }]}
+    popupPlacement="bottom-start"
+    popupStyle={{ maxHeight: 320 }}
+    popupRender={content => <>{content}<p>选择一个团队</p></>}
+  />
+</ConfigProvider>
+```
+
+容器应该在交互发生前挂载。浮层会复制触发区域的主题与方向；避免把它放进会裁剪内容的容器。Modal / Drawer 的同类配置名为 `container`。
+
+## Shadow DOM 与微前端
+
+`getPopupContainer` 可以返回 ShadowRoot。组件的样式也必须导入对应的 ShadowRoot；外部页面的 CSS 不会穿过这个边界。可将同一份编译 CSS 放到影子根的 `style` / `link` 或 `adoptedStyleSheets` 中。优先为每个应用区域配置容器，避免多个微前端共享未知的样式与层级。
+
+## 可扩展语言与方向
+
+内置 `zh-CN`、`zh-TW`、`en-US`。`messages` 覆盖控件的常用文本，`textMessages` 用英语原文作为键覆盖扩展组件文本。`weekStartsOn` 设置周起点（0 为周日，1 为周一），`direction="rtl"` 设置区域方向；浮层同时继承。
+
+```tsx
+<ConfigProvider
+  locale="zh-TW"
+  weekStartsOn={0}
+  messages={{ empty: '沒有可選項目' }}
+  textMessages={{ 'Next': '下一步' }}
+>
+  <Select options={[]} />
+</ConfigProvider>
+```
+
+自定义 `locale` 使用 BCP 47 名称，让数字与日期的 Intl 格式保持一致，并通过两个消息属性提供自己的翻译。完整文本字段见 [LeafMessages](/components/config-provider#leafmessages)。
+
+## PopupOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |

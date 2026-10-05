@@ -8,9 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { walkFiles } from './export-ai-docs.mjs';
 
 const repository = fileURLToPath(new URL('../../../', import.meta.url));
-const platformFiles = [
+export const platformFiles = [
   'apps/docs/scripts/build-versioned-site.mjs',
   'apps/docs/scripts/export-ai-docs.mjs',
+  'apps/docs/scripts/component-metadata.mjs',
   'apps/docs/src/components/version-path.ts',
   'apps/docs/src/components/version-switcher.tsx',
   'apps/docs/src/components/version-switcher.scss',

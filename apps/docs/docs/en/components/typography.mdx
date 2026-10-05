@@ -1,0 +1,83 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TypographyBasic, TypographyActions } from '../../../src/examples/typography/basic';
+
+# Typography
+
+Organize headings, body text and links.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TypographyBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/typography/basic.tsx"
+```
+
+</ComponentExample>
+
+## Copy and edit
+
+<ComponentExample title="Copy and edit" preview={<TypographyActions english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/typography/basic.tsx"
+```
+
+</ComponentExample>
+
+## Typography API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `compact` | `boolean` | — | Use tighter paragraph spacing. |
+
+## Text API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tone` | `'default' \| 'muted' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Semantic text tone. |
+| `strong` | `boolean` | — | Use bold text. |
+| `italic` | `boolean` | — | Use italic text. |
+| `underline` | `boolean` | — | Show an underline. |
+| `code` | `boolean` | — | Display as inline code. |
+| `mark` | `boolean` | — | Highlight text. |
+| `ellipsis` | `boolean \| { rows?: number; expandable?: boolean }` | — | Truncate one or more lines, optionally with an expand action. |
+| `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | Provide a copy action with optional content and callbacks. |
+| `editable` | `{ onChange: (text: string) => void; text?: string }` | — | Provide editing; update the text after onChange. |
+
+## Paragraph API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tone` | `'default' \| 'muted' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Semantic text tone. |
+| `strong` | `boolean` | — | Use bold text. |
+| `italic` | `boolean` | — | Use italic text. |
+| `underline` | `boolean` | — | Show an underline. |
+| `code` | `boolean` | — | Display as inline code. |
+| `mark` | `boolean` | — | Highlight text. |
+| `ellipsis` | `boolean \| { rows?: number; expandable?: boolean }` | — | Truncate one or more lines, optionally with an expand action. |
+| `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | Provide a copy action with optional content and callbacks. |
+| `editable` | `{ onChange: (text: string) => void; text?: string }` | — | Provide editing; update the text after onChange. |
+
+## Title API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | Heading level, rendering h1–h6. |
+
+## Link API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `underline` | `boolean` | `true` | Show an underline. |
+| `external` | `boolean` | — | Open in a new tab with a safe rel attribute. |
+| `icon` | `ReactNode` | — | Icon content. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { TypographyProps, TextProps, ParagraphProps, TitleProps, LinkProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

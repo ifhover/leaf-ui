@@ -1,9 +1,9 @@
 @use '../styles/mixins' as mixins;
 .leaf-input-number {
-  @include mixins.field;
+  @include mixins.field('input-number');
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--leaf-component-input-number-gap, 8px);
   height: var(--leaf-current-control-height);
   padding-inline-start: 10px;
   overflow: hidden;
@@ -69,4 +69,26 @@
   .leaf-input-number__controls button {
     transition: none;
   }
+}
+
+.leaf-input-number {
+  --leaf-current-control-height: var(
+    --leaf-component-input-number-height,
+    var(--leaf-control-height)
+  );
+  --leaf-current-font-size: var(--leaf-component-input-number-font-size, var(--leaf-font-size));
+}
+.leaf-input-number--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-input-number-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-input-number--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-input-number-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

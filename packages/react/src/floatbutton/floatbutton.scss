@@ -1,0 +1,46 @@
+.leaf-float-button {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  box-shadow: var(--leaf-shadow-md, 0 4px 16px rgb(0 0 0 / 0.12));
+  &--fixed {
+    position: fixed;
+    inset-inline-end: 24px;
+    bottom: 24px;
+    z-index: 50;
+  }
+}
+.leaf-float-group {
+  position: fixed;
+  inset-inline-end: 24px;
+  bottom: 24px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: leaf-float-in var(--leaf-motion-duration) ease;
+  }
+}
+@keyframes leaf-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leaf-float-group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}

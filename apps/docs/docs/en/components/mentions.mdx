@@ -1,0 +1,68 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { MentionsBasic, MentionsPrefixes } from '../../../src/examples/mentions/basic';
+
+# Mentions
+
+Insert people or references into text.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<MentionsBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/mentions/basic.tsx"
+```
+
+</ComponentExample>
+
+## Different prefixes
+
+<ComponentExample title="Different prefixes" preview={<MentionsPrefixes english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/mentions/basic.tsx"
+```
+
+</ComponentExample>
+
+## MentionOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | — | Required. Controlled value. |
+| `label` | `ReactNode` | — | Visible label or content. |
+| `searchLabel` | `string` | — | Plain text used for searching. |
+| `disabled` | `boolean` | — | Disable interaction. |
+
+## Mentions API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
+| `status` | `'error' \| 'warning'` | — | Configure status. |
+| `resize` | `'none' \| 'vertical' \| 'both'` | — | Configure resize. |
+| `autoSize` | `boolean \| `[`TextareaAutoSize`](../components/textarea#textareaautosize-api) | — | Configure auto size. |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | Configure show count. |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `value` | `string` | — | Controlled value. |
+| `defaultValue` | `string` | `''` | Initial value; uncontrolled fields support native form reset. |
+| `onChange` | `(value: string) => void` | — | Called when the value changes. |
+| `onSearch` | `(query: string, prefix: string) => void` | — | Called when the search text changes. |
+| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | Called when an item is selected. |
+| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | — | Required. Available options. |
+| `prefixes` | `readonly string[]` | — | Text prefixes that trigger suggestions. |
+| `split` | `string` | `' '` | Separator appended after inserting a reference. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `notFoundContent` | `ReactNode` | — | Content when no options match. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { MentionOption, MentionsProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

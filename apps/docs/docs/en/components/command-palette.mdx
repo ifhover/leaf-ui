@@ -1,0 +1,63 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CommandPaletteBasic, CommandPaletteFailure } from '../../../src/examples/command-palette/basic';
+
+# CommandPalette
+
+Search and run actions quickly.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<CommandPaletteBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/command-palette/basic.tsx"
+```
+
+</ComponentExample>
+
+## Async actions
+
+<ComponentExample title="Async actions" preview={<CommandPaletteFailure english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/command-palette/basic.tsx"
+```
+
+</ComponentExample>
+
+## CommandItem
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Stable, unique identifier. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `keywords` | `string` | — | Additional search keywords. |
+| `group` | `ReactNode` | — | Group heading. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `shortcut` | `string` | — | Shortcut hint displayed beside the item. |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `onSelect` | `() => void \| Promise<void>` | — | Called when an item is selected. |
+
+## CommandPalette API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`CommandItem`](#commanditem)`[]` | — | Required. Items to display. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | `false` | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `onSelect` | `(item: `[`CommandItem`](#commanditem)`) => void` | — | Called when an item is selected. |
+| `shortcut` | `string \| false` | `'k'` | Use Ctrl/Cmd with this key to open the palette; false disables it. |
+| `placeholder` | `string` | — | Configure placeholder. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `emptyContent` | `ReactNode` | — | Content for an empty collection. |
+| `onSearch` | `(query: string) => void` | — | Called when the search text changes. |
+| `onError` | `(error: unknown, item: `[`CommandItem`](#commanditem)`) => void` | — | Called on failure; the palette remains open with error feedback. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { CommandItem, CommandPaletteProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

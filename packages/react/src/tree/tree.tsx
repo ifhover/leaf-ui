@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react';
 import { Checkbox } from '../checkbox';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { Result } from '../result';
 import { classes } from '../shared/classes';
 import { TreeDragRow, TreeDragScope } from './drag';
@@ -75,6 +75,8 @@ export interface TreeProps
   filterTreeNode?: (node: TreeNode, query: string) => boolean;
   notFoundContent?: ReactNode;
   loadData?: (node: TreeNode, signal: AbortSignal) => Promise<readonly TreeNode[]>;
+  cacheKey?: string | number;
+  nodeRender?: (node: TreeNode) => ReactNode;
   onLoad?: (node: TreeNode, children: readonly TreeNode[]) => void;
   onLoadError?: (error: unknown, node: TreeNode) => void;
   virtual?: boolean;
@@ -107,6 +109,8 @@ export function Tree({
   filterTreeNode,
   notFoundContent,
   loadData,
+  cacheKey,
+  nodeRender,
   onLoad,
   onLoadError,
   virtual = false,
@@ -119,12 +123,19 @@ export function Tree({
   'aria-label': label,
   ...props
 }: TreeProps) {
-  const { messages } = useLeafConfig();
+  const { messages, direction } = useLeafConfig();
   const [loaded, setLoaded] = useState<Map<string, readonly TreeNode[]>>(new Map());
   const [loading, setLoading] = useState<readonly string[]>([]);
   const requests = useRef(new Map<string, AbortController>());
   const latestLoad = useRef({ loadData, onLoad, onLoadError });
   latestLoad.current = { loadData, onLoad, onLoadError };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Invalidate node caches whenever the supplied data, loader or cache version changes.
+  useEffect(() => {
+    for (const request of requests.current.values()) request.abort();
+    requests.current.clear();
+    setLoaded(new Map());
+    setLoading([]);
+  }, [suppliedData, loadData, cacheKey]);
   const data = useMemo(() => {
     const merge = (nodes: readonly TreeNode[]): TreeNode[] =>
       nodes.map((node) => {
@@ -301,11 +312,11 @@ export function Tree({
     else if (event.key === 'ArrowUp') focus(visible[Math.max(0, index - 1)]?.key);
     else if (event.key === 'Home') focus(visible[0]?.key);
     else if (event.key === 'End') focus(visible.at(-1)?.key);
-    else if (event.key === 'ArrowRight') {
+    else if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
       if (hasChildren && !isExpanded(node.key)) expand(node, true);
       else if (hasChildren)
         focus(node.children?.find((child) => !matches || matches.visible.has(child.key))?.key);
-    } else if (event.key === 'ArrowLeft') {
+    } else if (event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft')) {
       if (hasChildren && isExpanded(node.key)) expand(node, false);
       else focus(records.get(node.key)?.parent);
     } else if (event.key === ' ' || event.key === 'Enter') {
@@ -451,7 +462,7 @@ export function Tree({
               className="leaf-tree__title"
               data-match={matches?.matched.has(node.key) || undefined}
             >
-              {node.title}
+              {nodeRender?.(node) ?? node.title}
             </span>
           </div>
         </TreeRow>

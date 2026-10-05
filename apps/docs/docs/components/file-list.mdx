@@ -38,13 +38,17 @@ import type { FileItem, FileListProps } from '@sudden3/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly FileItem[]`](#fileitem-api) | 必填 | 展示的文件 |
-| `downloadable / previewable` | `boolean` | `true` | 显示下载 / 媒体预览操作 |
-| `removable / disabled` | `boolean` | `false` | 显示移除操作 / 禁用操作 |
-| `onPreview / onDownload` | [`(file: FileItem) => void`](#fileitem-api) | — | 自定义预览或下载；预览仍仅对媒体显示 |
-| `onRemove` | [`(file: FileItem) => void \| boolean \| Promise<void> \| Promise<boolean>`](#fileitem-api) | — | 请求移除，由调用方更新 items |
-| `renderActions` | [`(file: FileItem, actions: ReactNode) => ReactNode`](#fileitem-api) | — | 定制操作区 |
+| `items` | `readonly `[`FileItem`](#fileitem-api)`[]` | 必填 | 必需。展示的文件 |
+| `downloadable` | `boolean` | `true` | 显示下载 / 媒体预览操作 |
+| `previewable` | `boolean` | `true` | 显示下载 / 媒体预览操作 |
+| `removable` | `boolean` | `false` | 显示移除操作 / 禁用操作 |
+| `onPreview` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | 自定义预览或下载；预览仍仅对媒体显示 |
+| `onDownload` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | 自定义预览或下载；预览仍仅对媒体显示 |
+| `onRemove` | `(file: `[`FileItem`](#fileitem-api)`) => void \| boolean \| Promise<void> \| Promise<boolean>` | — | 请求移除，由调用方更新 items |
+| `renderActions` | `(file: `[`FileItem`](#fileitem-api)`, actions: ReactNode) => ReactNode` | — | 定制操作区 |
 | `emptyContent` | `ReactNode` | — | 空列表内容 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | 文件列表的展示形式。 |
 
 ## FileItem API
 
@@ -58,4 +62,4 @@ import type { FileItem, FileListProps } from '@sudden3/leaf-ui';
 | `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | 上传状态，可不提供 |
 | `percent` | `number` | — | 上传进度 0–100 |
 | `error` | `string` | — | 失败说明 |
-| `originFile` | `File` | — | 浏览器选择的原始文件 |
+| `originFile` | `globalThis.File` | — | 浏览器选择的原始文件 |

@@ -25,7 +25,10 @@
   }
 }
 .leaf-alert {
-  background: color-mix(in srgb, var(--leaf-feedback-color) 7%, var(--leaf-color-surface));
+  background: var(
+    --leaf-component-alert-background,
+    color-mix(in srgb, var(--leaf-feedback-color) 7%, var(--leaf-color-surface))
+  );
   &__content {
     flex: 1;
     min-width: 0;

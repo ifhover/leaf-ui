@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/time-range-picker/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { TimeRangePickerBasic } from '../../src/examples/time-range-picker/basic';
 import { TimeRangePickerOptions } from '../../src/examples/time-range-picker/advanced';
@@ -38,13 +39,30 @@ import type { TimeRangePickerProps, TimeRange, TimeParts } from '@sudden3/leaf-u
 
 导出的 `TimeRange` 为 `readonly [string, string]`，使用 24 小时制时间字符串。
 
+## 限制可选时间
+
+<ComponentExample title="限制可选时间" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/time-range-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## TimeRangePickerProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
 | `status` | `'error' \| 'warning'` | — | 显示状态 |
 | `allowClear` | `boolean` | `true` | 显示清除按钮 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
 | `value` | `readonly [string, string] \| null` | — | 受控值 |
 | `defaultValue` | `readonly [string, string] \| null` | `null` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(value: readonly [string, string] \| null) => void` | — | 值变化回调 |
@@ -54,7 +72,7 @@ import type { TimeRangePickerProps, TimeRange, TimeParts } from '@sudden3/leaf-u
 | `minuteStep` | `number` | `5` | 分钟选项间隔 |
 | `secondStep` | `number` | `1` | 秒选项间隔 |
 | `allowOvernight` | `boolean` | `false` | 允许跨过午夜的时间范围 |
-| `disabledTime` | [`(parts: TimeParts, position: 'start' \| 'end') => boolean`](#timeparts-api) | — | 分别限制开始与结束时间 |
+| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end') => boolean` | — | 分别限制开始与结束时间 |
 
 ## TimeParts API
 

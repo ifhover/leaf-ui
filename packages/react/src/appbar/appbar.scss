@@ -1,0 +1,67 @@
+.leaf-app-bar {
+  background: var(--leaf-color-surface);
+  color: var(--leaf-color-text);
+  z-index: 30;
+  width: 100%;
+  &--elevated {
+    box-shadow: var(--leaf-shadow-sm, 0 2px 8px rgb(0 0 0 / 0.08));
+  }
+}
+.leaf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 0 20px;
+  &--dense {
+    min-height: 44px;
+  }
+}
+.leaf-bottom-navigation {
+  display: flex;
+  justify-content: center;
+  background: var(--leaf-color-surface);
+  padding: 6px;
+  gap: 4px;
+  button,
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    max-width: 150px;
+    min-height: 52px;
+    border: 0;
+    border-radius: var(--leaf-radius);
+    color: var(--leaf-color-text-muted);
+    text-decoration: none;
+    background: transparent;
+    font: var(--leaf-font-size-sm) var(--leaf-font-family);
+    cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration),
+      background var(--leaf-motion-duration);
+    &[aria-current] {
+      color: var(--leaf-color-primary);
+      background: color-mix(in srgb, var(--leaf-color-primary) 9%, transparent);
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+}
+
+.leaf-bottom-navigation__item {
+  display: contents;
+}
+.leaf-bottom-navigation [data-leaf-navigation]:focus-visible {
+  outline: 2px solid var(--leaf-color-primary);
+  outline-offset: -2px;
+}
+.leaf-bottom-navigation [aria-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

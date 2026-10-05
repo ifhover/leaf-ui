@@ -8,22 +8,26 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from './classes';
 import { ClearButton } from './clear-button';
 import { FormValue, useMergedRef } from './field';
-import { FloatingPanel, useFloatingDismiss } from './floating';
+import { FloatingPanel, type PopupOptions, useFloatingDismiss } from './floating';
 import type { ControlSize, ControlStatus } from './types';
 
 export interface PickerFieldProps
   extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children'
-  > {
+      InputHTMLAttributes<HTMLInputElement>,
+      'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children'
+    >,
+    PopupOptions {
   size?: ControlSize;
   status?: ControlStatus;
   allowClear?: boolean;
+  inputReadOnly?: boolean;
+  open?: boolean;
+  defaultOpen?: boolean;
 }
 export interface DateInputProps extends PickerFieldProps {
   displayValue: string;
@@ -50,6 +54,13 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     name,
     required: requiredProp,
     allowClear = true,
+    inputReadOnly,
+    defaultOpen: _defaultOpen,
+    popupPlacement,
+    popupClassName,
+    popupStyle,
+    popupRender,
+    getPopupContainer,
     displayValue,
     formValue,
     open,
@@ -78,7 +89,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
 ) {
   const field = useFormField();
   const { messages } = useLeafConfig();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
   const input = useRef<HTMLInputElement>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -105,7 +116,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     input.current?.focus();
   };
   const opening = () => {
-    if (!open && !disabled) {
+    if (!open && !disabled && !props.readOnly) {
       onOpening();
       onOpenChange(true);
     }
@@ -174,7 +185,9 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
       data-status={status}
       data-disabled={disabled ? '' : undefined}
       data-open={open ? '' : undefined}
-      data-clearable={allowClear && (formValue || text) && !disabled ? '' : undefined}
+      data-clearable={
+        allowClear && (formValue || text) && !disabled && !props.readOnly ? '' : undefined
+      }
     >
       <input
         {...props}
@@ -184,6 +197,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         form={form}
         className="leaf-date-picker__input"
         disabled={disabled}
+        readOnly={props.readOnly || inputReadOnly}
         value={dirty ? text : displayValue}
         placeholder={placeholder ?? messages.date}
         role="combobox"
@@ -242,7 +256,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
           }
         }}
       />
-      {allowClear && (formValue || text) && !disabled && (
+      {allowClear && (formValue || text) && !disabled && !props.readOnly && (
         <ClearButton
           label={clearLabel ?? messages.clearDate}
           onClear={() => {
@@ -284,7 +298,11 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         triggerRef={root}
         panelRef={panel}
         id={panelId}
-        className={classes('leaf-floating', panelClassName)}
+        className={classes('leaf-floating', panelClassName, popupClassName)}
+        placement={popupPlacement}
+        style={popupStyle}
+        render={popupRender}
+        container={getPopupContainer}
         role="dialog"
         aria-label={panelLabel ?? messages.chooseDate}
       >

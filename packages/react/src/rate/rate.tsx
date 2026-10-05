@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 import { type HTMLAttributes, useRef, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
@@ -47,7 +47,7 @@ export function Rate({
 }: RateProps) {
   const { messages } = useLeafConfig();
   const field = useFormField();
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
   const maximum = Math.max(1, Math.min(20, Number.isFinite(count) ? Math.floor(count) : 5));
   const step = allowHalf ? 0.5 : 1;

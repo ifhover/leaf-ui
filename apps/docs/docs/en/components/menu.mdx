@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MenuBasic } from '../../../src/examples/en/menu/basic';
 import { MenuHorizontal } from '../../../src/examples/en/menu/advanced';
+import { MenuRouting } from '../../../src/examples/menu/capabilities';
 
 # Menu
 
@@ -24,6 +25,17 @@ Organize hierarchical navigation.
 
 </ComponentExample>
 
+## Controlled navigation and routing
+
+Keep `selectedKey` in sync with the current route. Use `linkRender` to replace the default anchor with a React Router or Next.js Link, retaining its event handlers, classes and ARIA attributes.
+
+<ComponentExample title="Controlled navigation and routing" preview={<MenuRouting english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/menu/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Usage
 
 The vertical menu defaults to 240px (60px when collapsed); use style.width to customize it. items supports nesting, groups, dividers and links. selectedKey controls the current item and openKeys controls expanded items. Horizontal and collapsed modes display submenus in floating panels.
@@ -42,25 +54,28 @@ import type { MenuItem, MenuProps } from '@sudden3/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Unique stable identifier |
-| `label` | `ReactNode` | Required | Display label |
+| `key` | `string` | Required | Required. Unique stable identifier |
+| `label` | `ReactNode` | Required | Required. Display label |
 | `icon` | `ReactNode` | — | Custom icon |
 | `href` | `string` | — | Destination URL |
-| `disabled` | `boolean` | — | Disable interactions |
+| `disabled` | `boolean` | — | Disable interaction. |
 | `danger` | `boolean` | — | Danger colors |
-| `children` | [`readonly MenuItem[]`](#menuitem-api) | — | Content or child items |
+| `children` | `readonly `[`MenuItem`](#menuitem-api)`[]` | — | Content or child items |
 | `type` | `'item' \| 'group' \| 'divider'` | — | Visual or item type |
 
 ## MenuProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly MenuItem[]`](#menuitem-api) | Required | Items; keep keys unique and stable |
+| `items` | `readonly `[`MenuItem`](#menuitem-api)`[]` | Required | Required. Items; keep keys unique and stable |
 | `mode` | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` | Menu orientation and behavior |
 | `selectedKey` | `string` | — | Controlled selected key |
 | `defaultSelectedKey` | `string` | `''` | Initial selected key |
-| `onSelect` | [`(key: string, item: MenuItem) => void`](#menuitem-api) | — | Select an item |
+| `onSelect` | `(key: string, item: `[`MenuItem`](#menuitem-api)`) => void` | — | Select an item |
 | `openKeys` | `readonly string[]` | — | Controlled open keys |
 | `defaultOpenKeys` | `readonly string[]` | `[]` | Initially open keys |
 | `onOpenChange` | `(keys: string[]) => void` | — | Open state changes |
 | `collapsed` | `boolean` | `false` | Controlled collapsed state |
+| `itemRender` | `(item: `[`MenuItem`](#menuitem-api)`, content: ReactNode) => ReactNode` | — | Customize item content. |
+| `linkRender` | `(item: `[`MenuItem`](#menuitem-api)`, link: ReactNode) => ReactNode` | — | Render a router link while retaining supplied accessibility and event props. |
+| `itemClassName` | `string \| ((item: `[`MenuItem`](#menuitem-api)`) => string)` | — | Item class, or a class computed from an item. |

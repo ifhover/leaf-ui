@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/date-range-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DateRangePickerBasic } from '../../../src/examples/en/date-range-picker/basic';
 import { DateRangePickerModes } from '../../../src/examples/en/date-range-picker/modes';
@@ -24,23 +25,59 @@ Select start and end dates or times to define a range.
 
 </ComponentExample>
 
+## Quarters, presets and open endpoints
+
+<ComponentExample title="Quarters, presets and open endpoints" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/date-range-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## Serialization and dates
+
+`format` changes display text and the string argument of `onChange`; FormData keeps the canonical period/date representation described below. Square brackets escape literal text, such as `YYYY-[Q]Q`. Provide `parse` with a function-valued formatter. Dates are local calendar values; convert business timezones explicitly at the application boundary. Configure the first weekday with ConfigProvider's `weekStartsOn`.
+
 ## DateRangePicker API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value / defaultValue` | [`DateRange \| null`](#daterange) | `null` | Controlled / initial range |
-| `onChange` | [`(value: DateRange \| null, dateStrings: readonly [string, string]) => void`](#daterange) | — | Returns an ordered range and formatted strings; clearing returns null |
-| `picker` | `'year' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | Selection granularity |
-| `minDate / maxDate` | `Date` | — | Earliest / latest allowed values |
-| `showSeconds` | `boolean` | `true` | Include seconds in date-time ranges; otherwise seconds are zero |
-| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
-| `minuteStep / secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
-| `allowClear` | `boolean` | `true` | Show the clear button |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled / required` | `boolean` | `false` | Disabled / required; inherited from FormField |
-| `placeholder / name / form` | `string` | — | Placeholder / field name / form ID |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | Selection granularity |
+| `minDate` | `Date` | — | Earliest / latest allowed values |
+| `maxDate` | `Date` | — | Earliest / latest allowed values |
+| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
+| `showSeconds` | `boolean` | `true` | Include seconds in date-time ranges; otherwise seconds are zero |
+| `minuteStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
+| `secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
+| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | Disable dates using business rules. |
+| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | Presets; value may be computed on demand. |
+| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | Changes during selection, including the current start/end position. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | Explicitly allow open range endpoints. |
+| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | Controlled / initial range |
+| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | Controlled / initial range |
+| `onChange` | `((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void) \| ((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)` | — | Returns an ordered range and formatted strings; clearing returns null |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLInputElement>` | — | Input element reference |
 
 ## DateRange
@@ -60,7 +97,7 @@ import type { DateRangePickerProps, DateRange } from '@sudden3/leaf-ui';
 
 ## Usage notes
 
-A DateRange is a `readonly [Date, Date]`. Years use January 1, months use the first day, and weeks start on Monday with ISO week numbers. Dates use local time.
+A DateRange is a `readonly [Date, Date]`. Years use January 1, months use the first day, and weeks default to Monday; configure weekStartsOn on ConfigProvider with ISO week numbers. Dates use local time.
 
 The two calendars navigate together. After choosing the start, hover a year, month, week or date to preview the range. Choosing the end commits immediately in every mode, without a footer confirmation. Reversed selections are sorted.
 

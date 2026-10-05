@@ -65,7 +65,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
   useEffect(() => {
     if (current.length < count) completed.current = '';
   }, [current, count]);
-  const disabled = disabledProp ?? field?.disabled;
+  const disabled = disabledProp || field?.disabled;
   const update = (text: string) => {
     const next = normalize(text);
     setCurrent(next);

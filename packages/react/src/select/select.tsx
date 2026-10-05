@@ -11,13 +11,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
 import {
   FloatingPanel,
+  type PopupOptions,
   useActiveOption,
   useFloatingDismiss,
   usePopupState,
@@ -37,9 +38,10 @@ export interface SelectOptionGroup {
 }
 interface SelectBaseProps
   extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children' | 'multiple'
-  > {
+      InputHTMLAttributes<HTMLInputElement>,
+      'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children' | 'multiple'
+    >,
+    PopupOptions {
   options: readonly (SelectOption | SelectOptionGroup)[];
   size?: ControlSize;
   status?: ControlStatus;
@@ -48,6 +50,13 @@ interface SelectBaseProps
   filterOption?: boolean | ((query: string, option: SelectOption) => boolean);
   onSearch?: (query: string) => void;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
+  inputReadOnly?: boolean;
+  labelRender?: (option: SelectOption) => ReactNode;
+  tagRender?: (option: SelectOption, remove: () => void) => ReactNode;
+  popupRender?: (content: ReactNode) => ReactNode;
+  onPopupScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
   popupWidth?: number | string;
   popupMaxWidth?: number | string;
   popupClassName?: string;
@@ -56,7 +65,7 @@ interface SelectBaseProps
   notFoundContent?: ReactNode;
   optionRender?: (option: SelectOption) => ReactNode;
   maxCount?: number;
-  maxTagCount?: number;
+  maxTagCount?: number | 'responsive';
   allowCreate?: boolean;
   onCreate?: (option: SelectOption) => void;
   virtual?: boolean;
@@ -102,6 +111,13 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       disabled: disabledProp,
       id: idProp,
       onOpenChange,
+      open: controlledOpen,
+      defaultOpen,
+      inputReadOnly,
+      labelRender,
+      tagRender,
+      popupRender,
+      onPopupScroll,
       onClick,
       onKeyDown,
       onBlur,
@@ -113,6 +129,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       popupMaxWidth = 420,
       popupClassName,
       popupStyle,
+      popupPlacement,
+      getPopupContainer,
       loading = false,
       notFoundContent,
       optionRender,
@@ -154,7 +172,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     const virtual = virtualProp ?? options.length > 100;
     const { messages } = useLeafConfig();
     const field = useFormField();
-    const disabled = disabledProp ?? field?.disabled;
+    const disabled = disabledProp || field?.disabled;
     const required = requiredProp ?? field?.required;
     const status = statusProp ?? (field?.error ? 'error' : undefined);
     const root = useRef<HTMLDivElement>(null);
@@ -169,15 +187,53 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       form,
     );
     const values = typeof selected === 'string' ? (selected ? [selected] : []) : selected;
+    const [responsiveCount, setResponsiveCount] = useState(3);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Remeasure tag widths when the selected values change.
+    useEffect(() => {
+      if (maxTagCount !== 'responsive' || !root.current) return;
+      const measure = () => {
+        const width = root.current?.clientWidth ?? 0;
+        let used = 90;
+        let count = 0;
+        for (const tag of root.current?.querySelectorAll<HTMLElement>('[data-leaf-tag-measure]') ??
+          []) {
+          used += tag.getBoundingClientRect().width + 4;
+          if (used > width) break;
+          count++;
+        }
+        setResponsiveCount(count);
+      };
+      const observer = new ResizeObserver(measure);
+      observer.observe(root.current);
+      measure();
+      return () => observer.disconnect();
+    }, [maxTagCount, values]);
     const visibleTagCount =
-      maxTagCount === undefined ? values.length : Math.max(0, Math.floor(maxTagCount));
+      maxTagCount === 'responsive'
+        ? responsiveCount
+        : maxTagCount === undefined
+          ? values.length
+          : Math.max(0, Math.floor(maxTagCount));
     const atLimit =
       multiple && maxCount !== undefined && values.length >= Math.max(0, Math.floor(maxCount));
     const unavailable = (option: SelectOption) =>
       option.disabled || (atLimit && !values.includes(option.value));
-    const selectedOptions = options.filter((option) => values.includes(option.value));
+    const selectedCache = useRef(new Map<string, SelectOption>());
+    const nextCache = new Map<string, SelectOption>();
+    for (const key of values) {
+      const record =
+        options.find((option) => option.value === key) ?? selectedCache.current.get(key);
+      if (record) nextCache.set(key, record);
+    }
+    selectedCache.current = nextCache;
+    const selectedOptions = values.map((key) => nextCache.get(key) ?? { value: key, label: key });
     const [query, setQuery] = useState('');
-    const [open, setOpen] = usePopupState(disabled, onOpenChange);
+    const [open, setOpen] = usePopupState(
+      disabled || inputProps.readOnly,
+      onOpenChange,
+      controlledOpen,
+      defaultOpen,
+    );
     const [highlighted, setHighlighted] = useState(-1);
     const matched =
       !query || !showSearch || filterOption === false
@@ -232,18 +288,21 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
       if (query) updateQuery('');
     };
     useFloatingDismiss(open, close, input, panel, root);
-    useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined);
+    useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined, panel);
     useEffect(() => {
       if (!open) setQuery('');
     }, [open]);
     const change = (next: readonly string[]) => {
+      if (disabled || inputProps.readOnly) return;
       setSelected(multiple ? next : (next[0] ?? ''));
       if (props.multiple)
         props.onChange?.(
           [...next],
-          [...options, ...(createOption ? [createOption] : [])].filter((option) =>
-            next.includes(option.value),
-          ),
+          [
+            ...selectedOptions,
+            ...options.filter((option) => !values.includes(option.value)),
+            ...(createOption ? [createOption] : []),
+          ].filter((option) => next.includes(option.value)),
         );
       else
         props.onChange?.(
@@ -254,7 +313,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         );
     };
     const openMenu = () => {
-      if (disabled) return;
+      if (disabled || inputProps.readOnly) return;
       const active = filtered.findIndex(
         (option) => values.includes(option.value) && !unavailable(option),
       );
@@ -328,13 +387,15 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         />
       </button>
     );
-    const displayLabel = selectedOptions[0]?.label ?? (!multiple ? values[0] : undefined);
+    const displayLabel = selectedOptions[0]
+      ? (labelRender?.(selectedOptions[0]) ?? selectedOptions[0].label)
+      : undefined;
     const textLabel =
       typeof displayLabel === 'string' || typeof displayLabel === 'number'
         ? String(displayLabel)
         : '';
     const inputValue = multiple || (showSearch && open) ? query : textLabel;
-    const clearable = allowClear && values.length > 0 && !disabled;
+    const clearable = allowClear && values.length > 0 && !disabled && !inputProps.readOnly;
     return (
       // biome-ignore lint/a11y/noStaticElementInteractions: Pointer events on padding forward to the keyboard-accessible combobox input.
       // biome-ignore lint/a11y/useKeyWithClickEvents: The combobox input owns all keyboard interaction; this wrapper only extends its hit area.
@@ -375,11 +436,18 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         <div className="leaf-select__content">
           {multiple &&
             values.slice(0, visibleTagCount).map((value) => {
-              const option = options.find((option) => option.value === value);
+              const option = nextCache.get(value) ?? { value, label: value };
+              const remove = () => change(values.filter((item) => item !== value));
+              if (tagRender)
+                return (
+                  <span key={value} className="leaf-select__tag">
+                    {tagRender(option, remove)}
+                  </span>
+                );
               return (
                 <span key={value} className="leaf-select__tag">
                   <span>{option?.label ?? value}</span>
-                  {!disabled && !option?.disabled && (
+                  {!disabled && !inputProps.readOnly && !option?.disabled && (
                     <button
                       type="button"
                       tabIndex={-1}
@@ -399,6 +467,24 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           {multiple && values.length > visibleTagCount && (
             <span className="leaf-select__tag">+{values.length - visibleTagCount}</span>
           )}
+          {multiple && maxTagCount === 'responsive' && (
+            <span
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                visibility: 'hidden',
+                pointerEvents: 'none',
+                display: 'flex',
+              }}
+            >
+              {selectedOptions.map((option) => (
+                <span key={option.value} data-leaf-tag-measure className="leaf-select__tag">
+                  {option.label}
+                  <X size={12} />
+                </span>
+              ))}
+            </span>
+          )}
           <div className="leaf-select__input-wrap">
             {!multiple &&
               !query &&
@@ -414,7 +500,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
               type="text"
               className="leaf-select__input"
               disabled={disabled}
-              readOnly={!showSearch || inputProps.readOnly}
+              readOnly={!showSearch || inputProps.readOnly || inputReadOnly}
               value={inputValue}
               placeholder={values.length ? '' : (placeholder ?? messages.select)}
               autoComplete="off"
@@ -545,6 +631,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           ))}
         <FloatingPanel
           open={open}
+          placement={popupPlacement}
+          container={getPopupContainer}
           triggerRef={root}
           panelRef={panel}
           matchWidth={popupWidth === 'trigger'}
@@ -560,60 +648,63 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           id={panelId}
           className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}
           style={{ maxHeight: listHeight, ...popupStyle }}
+          onScroll={onPopupScroll}
           role="listbox"
           aria-busy={loading || undefined}
           aria-label={inputProps['aria-label'] ?? messages.select}
           aria-multiselectable={multiple || undefined}
         >
-          {loading && !filtered.length ? (
-            <div className="leaf-floating__empty">{messages.loading}</div>
-          ) : filtered.length ? (
-            virtual ? (
-              <div
-                style={{
-                  height: virtualizer.getTotalSize(),
-                  position: 'relative',
-                  minWidth: '100%',
-                }}
-              >
-                {virtualizer.getVirtualItems().map((item) => {
-                  const row = rows[item.index];
-                  if (!row) return null;
-                  return (
-                    <div
-                      key={row.key}
-                      ref={virtualizer.measureElement}
-                      data-index={item.index}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        transform: `translateY(${item.start}px)`,
-                      }}
-                    >
-                      {row.option ? (
-                        renderOption(row.option, row.index)
-                      ) : (
-                        <div className="leaf-select__group">{row.group}</div>
-                      )}
+          {(popupRender ?? ((content: ReactNode) => content))(
+            loading && !filtered.length ? (
+              <div className="leaf-floating__empty">{messages.loading}</div>
+            ) : filtered.length ? (
+              virtual ? (
+                <div
+                  style={{
+                    height: virtualizer.getTotalSize(),
+                    position: 'relative',
+                    minWidth: '100%',
+                  }}
+                >
+                  {virtualizer.getVirtualItems().map((item) => {
+                    const row = rows[item.index];
+                    if (!row) return null;
+                    return (
+                      <div
+                        key={row.key}
+                        ref={virtualizer.measureElement}
+                        data-index={item.index}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          transform: `translateY(${item.start}px)`,
+                        }}
+                      >
+                        {row.option ? (
+                          renderOption(row.option, row.index)
+                        ) : (
+                          <div className="leaf-select__group">{row.group}</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                rows.map((row) =>
+                  row.option ? (
+                    renderOption(row.option, row.index)
+                  ) : (
+                    <div key={row.key} className="leaf-select__group">
+                      {row.group}
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              rows.map((row) =>
-                row.option ? (
-                  renderOption(row.option, row.index)
-                ) : (
-                  <div key={row.key} className="leaf-select__group">
-                    {row.group}
-                  </div>
-                ),
+                  ),
+                )
               )
-            )
-          ) : (
-            <div className="leaf-floating__empty">{notFoundContent ?? messages.empty}</div>
+            ) : (
+              <div className="leaf-floating__empty">{notFoundContent ?? messages.empty}</div>
+            ),
           )}
         </FloatingPanel>
       </div>

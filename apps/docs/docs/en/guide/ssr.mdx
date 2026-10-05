@@ -151,3 +151,22 @@ Image renders its image on the server. The enlarged viewer, ImageCropper engine 
 FileList renders URL-based metadata on the server. Upload keeps browser-selected File objects and temporary preview URLs in client state; no upload request is started during SSR.
 
 Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.
+
+## Component CSS imports
+
+Use subpaths and standalone CSS when using only part of the library:
+
+```tsx
+import { Button } from '@sudden3/leaf-ui/button';
+import '@sudden3/leaf-ui/button/style.css';
+```
+
+Each CSS entry includes shared styles and its internal visual dependencies. Import styles for each component you compose. When using ConfigProvider's feedback services, include `@sudden3/leaf-ui/config-provider/style.css`, or use the whole `styles.css`. Component subpaths retain the Next.js client boundary.
+
+## Date, number and popup hydration
+
+Pickers use local Date calendar fields and time. Date inputs and FormData represent local calendar values. `date.toISOString()` represents a UTC instant, so truncating it is not a reliable local date conversion. Convert business time zones at your application boundary and use the same convention on both server and client. Non-Gregorian calendars and dedicated timezone date types need an application adapter.
+
+Use consistent `locale`, values and timezone settings on server and client to keep Intl output identical. Pass a fixed deadline and `initialRemaining` to Countdown to avoid rendering differences caused by request latency. System appearance and breakpoint hooks accept initial values and read browser preferences after mounting.
+
+Portals mount on the client. Use function-valued `container` / `getPopupContainer` to defer DOM access; do not access `document` at module scope or during server rendering. See [Control and popup contracts](/en/guide/control-contracts).

@@ -1,8 +1,8 @@
-import { TreeSelect, type TreeSelectValue } from '@sudden3/leaf-ui';
+import { TreeSelect } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 import { treeOptions } from './options';
 export function TreeSelectBasic() {
-  const [value, setValue] = useState<TreeSelectValue>(null);
+  const [value, setValue] = useState<string | null>(null);
   return (
     <div className="leaf-demo-stack">
       <TreeSelect

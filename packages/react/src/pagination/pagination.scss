@@ -4,9 +4,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  color: var(--leaf-color-text);
-  font: var(--leaf-current-font-size)/1.5 var(--leaf-font-family);
+  gap: var(--leaf-component-pagination-gap, 6px);
+  color: var(--leaf-component-pagination-color, var(--leaf-color-text));
+  font: var(--leaf-component-pagination-font-size, var(--leaf-current-font-size))/1.5
+    var(--leaf-font-family);
   & > button,
   &__entry > button {
     box-sizing: border-box;
@@ -94,4 +95,26 @@
   .leaf-pagination__entry > button {
     transition: none;
   }
+}
+
+.leaf-pagination {
+  --leaf-current-control-height: var(
+    --leaf-component-pagination-height,
+    var(--leaf-control-height)
+  );
+  --leaf-current-font-size: var(--leaf-component-pagination-font-size, var(--leaf-font-size));
+}
+.leaf-pagination--sm {
+  --leaf-current-control-height: var(
+    --leaf-component-pagination-height-sm,
+    var(--leaf-control-height-sm)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-sm);
+}
+.leaf-pagination--lg {
+  --leaf-current-control-height: var(
+    --leaf-component-pagination-height-lg,
+    var(--leaf-control-height-lg)
+  );
+  --leaf-current-font-size: var(--leaf-font-size-lg);
 }

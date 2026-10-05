@@ -1,0 +1,68 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { AppBarBasic, AppBarNavigation } from '../../../src/examples/app-bar/basic';
+
+# AppBar
+
+Organize navigation at the top and bottom of an application.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<AppBarBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/app-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Bottom navigation
+
+<ComponentExample title="Bottom navigation" preview={<AppBarNavigation english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/app-bar/basic.tsx"
+```
+
+</ComponentExample>
+
+## AppBar API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `position` | `'static' \| 'sticky' \| 'fixed'` | `'static'` | Navigation bar positioning. |
+| `elevation` | `boolean` | — | Show a shadow below the bar. |
+
+## Toolbar API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `dense` | `boolean` | — | Use a compact toolbar. |
+
+## BottomNavigationItem
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Required. Stable, unique identifier. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `href` | `string` | — | Link destination. |
+
+## BottomNavigation API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`BottomNavigationItem`](#bottomnavigationitem)`[]` | — | Required. Items to display. |
+| `value` | `string` | — | Controlled value. |
+| `defaultValue` | `string` | `''` | Initial value; uncontrolled fields support native form reset. |
+| `onChange` | `(value: string) => void` | — | Called when the value changes. |
+| `showLabels` | `boolean` | `true` | Always show bottom-navigation labels. |
+| `linkRender` | `( item: `[`BottomNavigationItem`](#bottomnavigationitem)`, props: AnchorHTMLAttributes<HTMLAnchorElement>, ) => ReactNode` | — | Render a router link while retaining supplied accessibility and event props. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { AppBarProps, ToolbarProps, BottomNavigationItem, BottomNavigationProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

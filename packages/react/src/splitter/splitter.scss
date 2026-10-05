@@ -1,0 +1,50 @@
+.leaf-splitter {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+  &--vertical {
+    flex-direction: column;
+  }
+  &__panel {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    &[data-collapsed] {
+      overflow: hidden;
+    }
+  }
+  &__handle {
+    position: relative;
+    flex: 0 0 7px;
+    background: var(--leaf-color-surface-muted);
+    cursor: col-resize;
+    touch-action: none;
+    transition: background var(--leaf-motion-duration);
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, var(--leaf-color-primary) 28%, var(--leaf-color-surface));
+    }
+    button {
+      position: absolute;
+      inset-inline-start: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 0;
+      border-radius: var(--leaf-radius-sm);
+      background: var(--leaf-color-surface);
+      color: var(--leaf-color-primary);
+      width: 18px;
+      height: 28px;
+      cursor: pointer;
+      z-index: 1;
+    }
+  }
+  &--vertical &__handle {
+    cursor: row-resize;
+    button {
+      width: 28px;
+      height: 18px;
+    }
+  }
+}

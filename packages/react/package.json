@@ -34,8 +34,932 @@
         "default": "./dist/cjs/index.cjs"
       }
     },
+    "./alert": {
+      "import": {
+        "types": "./dist/esm/alert/index.d.ts",
+        "default": "./dist/esm/alert/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/alert/index.d.cts",
+        "default": "./dist/cjs/alert/index.cjs"
+      }
+    },
+    "./alert/style.css": "./dist/esm/styles/alert.css",
+    "./anchor": {
+      "import": {
+        "types": "./dist/esm/anchor/index.d.ts",
+        "default": "./dist/esm/anchor/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/anchor/index.d.cts",
+        "default": "./dist/cjs/anchor/index.cjs"
+      }
+    },
+    "./anchor/style.css": "./dist/esm/styles/anchor.css",
+    "./app-bar": {
+      "import": {
+        "types": "./dist/esm/appbar/index.d.ts",
+        "default": "./dist/esm/appbar/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/appbar/index.d.cts",
+        "default": "./dist/cjs/appbar/index.cjs"
+      }
+    },
+    "./app-bar/style.css": "./dist/esm/styles/appbar.css",
+    "./auto-complete": {
+      "import": {
+        "types": "./dist/esm/autocomplete/index.d.ts",
+        "default": "./dist/esm/autocomplete/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/autocomplete/index.d.cts",
+        "default": "./dist/cjs/autocomplete/index.cjs"
+      }
+    },
+    "./auto-complete/style.css": "./dist/esm/styles/autocomplete.css",
+    "./avatar": {
+      "import": {
+        "types": "./dist/esm/avatar/index.d.ts",
+        "default": "./dist/esm/avatar/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/avatar/index.d.cts",
+        "default": "./dist/cjs/avatar/index.cjs"
+      }
+    },
+    "./avatar/style.css": "./dist/esm/styles/avatar.css",
+    "./back-top": {
+      "import": {
+        "types": "./dist/esm/backtop/index.d.ts",
+        "default": "./dist/esm/backtop/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/backtop/index.d.cts",
+        "default": "./dist/cjs/backtop/index.cjs"
+      }
+    },
+    "./back-top/style.css": "./dist/esm/styles/backtop.css",
+    "./badge": {
+      "import": {
+        "types": "./dist/esm/badge/index.d.ts",
+        "default": "./dist/esm/badge/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/badge/index.d.cts",
+        "default": "./dist/cjs/badge/index.cjs"
+      }
+    },
+    "./badge/style.css": "./dist/esm/styles/badge.css",
+    "./breadcrumb": {
+      "import": {
+        "types": "./dist/esm/breadcrumb/index.d.ts",
+        "default": "./dist/esm/breadcrumb/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/breadcrumb/index.d.cts",
+        "default": "./dist/cjs/breadcrumb/index.cjs"
+      }
+    },
+    "./breadcrumb/style.css": "./dist/esm/styles/breadcrumb.css",
+    "./button": {
+      "import": {
+        "types": "./dist/esm/button/index.d.ts",
+        "default": "./dist/esm/button/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/button/index.d.cts",
+        "default": "./dist/cjs/button/index.cjs"
+      }
+    },
+    "./button/style.css": "./dist/esm/styles/button.css",
+    "./calendar": {
+      "import": {
+        "types": "./dist/esm/calendar/index.d.ts",
+        "default": "./dist/esm/calendar/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/calendar/index.d.cts",
+        "default": "./dist/cjs/calendar/index.cjs"
+      }
+    },
+    "./calendar/style.css": "./dist/esm/styles/calendar.css",
+    "./card": {
+      "import": {
+        "types": "./dist/esm/card/index.d.ts",
+        "default": "./dist/esm/card/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/card/index.d.cts",
+        "default": "./dist/cjs/card/index.cjs"
+      }
+    },
+    "./card/style.css": "./dist/esm/styles/card.css",
+    "./carousel": {
+      "import": {
+        "types": "./dist/esm/carousel/index.d.ts",
+        "default": "./dist/esm/carousel/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/carousel/index.d.cts",
+        "default": "./dist/cjs/carousel/index.cjs"
+      }
+    },
+    "./carousel/style.css": "./dist/esm/styles/carousel.css",
+    "./cascader": {
+      "import": {
+        "types": "./dist/esm/cascader/index.d.ts",
+        "default": "./dist/esm/cascader/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/cascader/index.d.cts",
+        "default": "./dist/cjs/cascader/index.cjs"
+      }
+    },
+    "./cascader/style.css": "./dist/esm/styles/cascader.css",
+    "./checkbox": {
+      "import": {
+        "types": "./dist/esm/checkbox/index.d.ts",
+        "default": "./dist/esm/checkbox/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/checkbox/index.d.cts",
+        "default": "./dist/cjs/checkbox/index.cjs"
+      }
+    },
+    "./checkbox/style.css": "./dist/esm/styles/checkbox.css",
+    "./collapse": {
+      "import": {
+        "types": "./dist/esm/collapse/index.d.ts",
+        "default": "./dist/esm/collapse/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/collapse/index.d.cts",
+        "default": "./dist/cjs/collapse/index.cjs"
+      }
+    },
+    "./collapse/style.css": "./dist/esm/styles/collapse.css",
+    "./color-picker": {
+      "import": {
+        "types": "./dist/esm/colorpicker/index.d.ts",
+        "default": "./dist/esm/colorpicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/colorpicker/index.d.cts",
+        "default": "./dist/cjs/colorpicker/index.cjs"
+      }
+    },
+    "./color-picker/style.css": "./dist/esm/styles/colorpicker.css",
+    "./command-palette": {
+      "import": {
+        "types": "./dist/esm/commandpalette/index.d.ts",
+        "default": "./dist/esm/commandpalette/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/commandpalette/index.d.cts",
+        "default": "./dist/cjs/commandpalette/index.cjs"
+      }
+    },
+    "./command-palette/style.css": "./dist/esm/styles/commandpalette.css",
+    "./config-provider": {
+      "import": {
+        "types": "./dist/esm/config-provider/index.d.ts",
+        "default": "./dist/esm/config-provider/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/config-provider/index.d.cts",
+        "default": "./dist/cjs/config-provider/index.cjs"
+      }
+    },
+    "./config-provider/style.css": "./dist/esm/styles/config-provider.css",
+    "./confirm": {
+      "import": {
+        "types": "./dist/esm/confirm/index.d.ts",
+        "default": "./dist/esm/confirm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/confirm/index.d.cts",
+        "default": "./dist/cjs/confirm/index.cjs"
+      }
+    },
+    "./confirm/style.css": "./dist/esm/styles/confirm.css",
+    "./date-picker": {
+      "import": {
+        "types": "./dist/esm/datepicker/index.d.ts",
+        "default": "./dist/esm/datepicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/datepicker/index.d.cts",
+        "default": "./dist/cjs/datepicker/index.cjs"
+      }
+    },
+    "./date-picker/style.css": "./dist/esm/styles/datepicker.css",
+    "./date-range-picker": {
+      "import": {
+        "types": "./dist/esm/daterangepicker/index.d.ts",
+        "default": "./dist/esm/daterangepicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/daterangepicker/index.d.cts",
+        "default": "./dist/cjs/daterangepicker/index.cjs"
+      }
+    },
+    "./date-range-picker/style.css": "./dist/esm/styles/daterangepicker.css",
+    "./date-time-picker": {
+      "import": {
+        "types": "./dist/esm/datetimepicker/index.d.ts",
+        "default": "./dist/esm/datetimepicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/datetimepicker/index.d.cts",
+        "default": "./dist/cjs/datetimepicker/index.cjs"
+      }
+    },
+    "./date-time-picker/style.css": "./dist/esm/styles/datetimepicker.css",
+    "./descriptions": {
+      "import": {
+        "types": "./dist/esm/descriptions/index.d.ts",
+        "default": "./dist/esm/descriptions/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/descriptions/index.d.cts",
+        "default": "./dist/cjs/descriptions/index.cjs"
+      }
+    },
+    "./descriptions/style.css": "./dist/esm/styles/descriptions.css",
+    "./divider": {
+      "import": {
+        "types": "./dist/esm/divider/index.d.ts",
+        "default": "./dist/esm/divider/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/divider/index.d.cts",
+        "default": "./dist/cjs/divider/index.cjs"
+      }
+    },
+    "./divider/style.css": "./dist/esm/styles/divider.css",
+    "./drawer": {
+      "import": {
+        "types": "./dist/esm/drawer/index.d.ts",
+        "default": "./dist/esm/drawer/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/drawer/index.d.cts",
+        "default": "./dist/cjs/drawer/index.cjs"
+      }
+    },
+    "./drawer/style.css": "./dist/esm/styles/drawer.css",
+    "./dropdown": {
+      "import": {
+        "types": "./dist/esm/dropdown/index.d.ts",
+        "default": "./dist/esm/dropdown/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/dropdown/index.d.cts",
+        "default": "./dist/cjs/dropdown/index.cjs"
+      }
+    },
+    "./dropdown/style.css": "./dist/esm/styles/dropdown.css",
+    "./empty": {
+      "import": {
+        "types": "./dist/esm/empty/index.d.ts",
+        "default": "./dist/esm/empty/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/empty/index.d.cts",
+        "default": "./dist/cjs/empty/index.cjs"
+      }
+    },
+    "./empty/style.css": "./dist/esm/styles/empty.css",
+    "./error-boundary": {
+      "import": {
+        "types": "./dist/esm/errorboundary/index.d.ts",
+        "default": "./dist/esm/errorboundary/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/errorboundary/index.d.cts",
+        "default": "./dist/cjs/errorboundary/index.cjs"
+      }
+    },
+    "./error-boundary/style.css": "./dist/esm/styles/errorboundary.css",
+    "./file-list": {
+      "import": {
+        "types": "./dist/esm/filelist/index.d.ts",
+        "default": "./dist/esm/filelist/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/filelist/index.d.cts",
+        "default": "./dist/cjs/filelist/index.cjs"
+      }
+    },
+    "./file-list/style.css": "./dist/esm/styles/filelist.css",
+    "./float-button": {
+      "import": {
+        "types": "./dist/esm/floatbutton/index.d.ts",
+        "default": "./dist/esm/floatbutton/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/floatbutton/index.d.cts",
+        "default": "./dist/cjs/floatbutton/index.cjs"
+      }
+    },
+    "./float-button/style.css": "./dist/esm/styles/floatbutton.css",
+    "./form": {
+      "import": {
+        "types": "./dist/esm/form/index.d.ts",
+        "default": "./dist/esm/form/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/form/index.d.cts",
+        "default": "./dist/cjs/form/index.cjs"
+      }
+    },
+    "./form/style.css": "./dist/esm/styles/form.css",
+    "./grid": {
+      "import": {
+        "types": "./dist/esm/grid/index.d.ts",
+        "default": "./dist/esm/grid/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/grid/index.d.cts",
+        "default": "./dist/cjs/grid/index.cjs"
+      }
+    },
+    "./grid/style.css": "./dist/esm/styles/grid.css",
+    "./image": {
+      "import": {
+        "types": "./dist/esm/image/index.d.ts",
+        "default": "./dist/esm/image/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/image/index.d.cts",
+        "default": "./dist/cjs/image/index.cjs"
+      }
+    },
+    "./image-cropper": {
+      "import": {
+        "types": "./dist/esm/imagecropper/index.d.ts",
+        "default": "./dist/esm/imagecropper/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/imagecropper/index.d.cts",
+        "default": "./dist/cjs/imagecropper/index.cjs"
+      }
+    },
+    "./image-cropper/style.css": "./dist/esm/styles/imagecropper.css",
+    "./image/style.css": "./dist/esm/styles/image.css",
+    "./infinite-scroll": {
+      "import": {
+        "types": "./dist/esm/infinitescroll/index.d.ts",
+        "default": "./dist/esm/infinitescroll/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/infinitescroll/index.d.cts",
+        "default": "./dist/cjs/infinitescroll/index.cjs"
+      }
+    },
+    "./infinite-scroll/style.css": "./dist/esm/styles/infinitescroll.css",
+    "./input": {
+      "import": {
+        "types": "./dist/esm/input/index.d.ts",
+        "default": "./dist/esm/input/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/input/index.d.cts",
+        "default": "./dist/cjs/input/index.cjs"
+      }
+    },
+    "./input-mask": {
+      "import": {
+        "types": "./dist/esm/inputmask/index.d.ts",
+        "default": "./dist/esm/inputmask/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/inputmask/index.d.cts",
+        "default": "./dist/cjs/inputmask/index.cjs"
+      }
+    },
+    "./input-mask/style.css": "./dist/esm/styles/inputmask.css",
+    "./input-number": {
+      "import": {
+        "types": "./dist/esm/inputnumber/index.d.ts",
+        "default": "./dist/esm/inputnumber/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/inputnumber/index.d.cts",
+        "default": "./dist/cjs/inputnumber/index.cjs"
+      }
+    },
+    "./input-number/style.css": "./dist/esm/styles/inputnumber.css",
+    "./input-otp": {
+      "import": {
+        "types": "./dist/esm/inputotp/index.d.ts",
+        "default": "./dist/esm/inputotp/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/inputotp/index.d.cts",
+        "default": "./dist/cjs/inputotp/index.cjs"
+      }
+    },
+    "./input-otp/style.css": "./dist/esm/styles/inputotp.css",
+    "./input/style.css": "./dist/esm/styles/input.css",
+    "./layout": {
+      "import": {
+        "types": "./dist/esm/layout/index.d.ts",
+        "default": "./dist/esm/layout/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/layout/index.d.cts",
+        "default": "./dist/cjs/layout/index.cjs"
+      }
+    },
+    "./layout/style.css": "./dist/esm/styles/layout.css",
+    "./list": {
+      "import": {
+        "types": "./dist/esm/list/index.d.ts",
+        "default": "./dist/esm/list/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/list/index.d.cts",
+        "default": "./dist/cjs/list/index.cjs"
+      }
+    },
+    "./list/style.css": "./dist/esm/styles/list.css",
+    "./loading": {
+      "import": {
+        "types": "./dist/esm/loading/index.d.ts",
+        "default": "./dist/esm/loading/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/loading/index.d.cts",
+        "default": "./dist/cjs/loading/index.cjs"
+      }
+    },
+    "./loading-bar": {
+      "import": {
+        "types": "./dist/esm/loadingbar/index.d.ts",
+        "default": "./dist/esm/loadingbar/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/loadingbar/index.d.cts",
+        "default": "./dist/cjs/loadingbar/index.cjs"
+      }
+    },
+    "./loading-bar/style.css": "./dist/esm/styles/loadingbar.css",
+    "./loading/style.css": "./dist/esm/styles/loading.css",
+    "./masonry": {
+      "import": {
+        "types": "./dist/esm/masonry/index.d.ts",
+        "default": "./dist/esm/masonry/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/masonry/index.d.cts",
+        "default": "./dist/cjs/masonry/index.cjs"
+      }
+    },
+    "./masonry/style.css": "./dist/esm/styles/masonry.css",
+    "./mentions": {
+      "import": {
+        "types": "./dist/esm/mentions/index.d.ts",
+        "default": "./dist/esm/mentions/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/mentions/index.d.cts",
+        "default": "./dist/cjs/mentions/index.cjs"
+      }
+    },
+    "./mentions/style.css": "./dist/esm/styles/mentions.css",
+    "./menu": {
+      "import": {
+        "types": "./dist/esm/menu/index.d.ts",
+        "default": "./dist/esm/menu/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/menu/index.d.cts",
+        "default": "./dist/cjs/menu/index.cjs"
+      }
+    },
+    "./menu/style.css": "./dist/esm/styles/menu.css",
+    "./message": {
+      "import": {
+        "types": "./dist/esm/message/index.d.ts",
+        "default": "./dist/esm/message/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/message/index.d.cts",
+        "default": "./dist/cjs/message/index.cjs"
+      }
+    },
+    "./message/style.css": "./dist/esm/styles/message.css",
+    "./modal": {
+      "import": {
+        "types": "./dist/esm/modal/index.d.ts",
+        "default": "./dist/esm/modal/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/modal/index.d.cts",
+        "default": "./dist/cjs/modal/index.cjs"
+      }
+    },
+    "./modal/style.css": "./dist/esm/styles/modal.css",
+    "./notification": {
+      "import": {
+        "types": "./dist/esm/notification/index.d.ts",
+        "default": "./dist/esm/notification/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/notification/index.d.cts",
+        "default": "./dist/cjs/notification/index.cjs"
+      }
+    },
+    "./notification/style.css": "./dist/esm/styles/notification.css",
+    "./org-chart": {
+      "import": {
+        "types": "./dist/esm/orgchart/index.d.ts",
+        "default": "./dist/esm/orgchart/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/orgchart/index.d.cts",
+        "default": "./dist/cjs/orgchart/index.cjs"
+      }
+    },
+    "./org-chart/style.css": "./dist/esm/styles/orgchart.css",
+    "./package.json": "./package.json",
+    "./pagination": {
+      "import": {
+        "types": "./dist/esm/pagination/index.d.ts",
+        "default": "./dist/esm/pagination/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/pagination/index.d.cts",
+        "default": "./dist/cjs/pagination/index.cjs"
+      }
+    },
+    "./pagination/style.css": "./dist/esm/styles/pagination.css",
+    "./popconfirm": {
+      "import": {
+        "types": "./dist/esm/popconfirm/index.d.ts",
+        "default": "./dist/esm/popconfirm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/popconfirm/index.d.cts",
+        "default": "./dist/cjs/popconfirm/index.cjs"
+      }
+    },
+    "./popconfirm/style.css": "./dist/esm/styles/popconfirm.css",
+    "./popover": {
+      "import": {
+        "types": "./dist/esm/popover/index.d.ts",
+        "default": "./dist/esm/popover/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/popover/index.d.cts",
+        "default": "./dist/cjs/popover/index.cjs"
+      }
+    },
+    "./popover/style.css": "./dist/esm/styles/popover.css",
+    "./progress": {
+      "import": {
+        "types": "./dist/esm/progress/index.d.ts",
+        "default": "./dist/esm/progress/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/progress/index.d.cts",
+        "default": "./dist/cjs/progress/index.cjs"
+      }
+    },
+    "./progress/style.css": "./dist/esm/styles/progress.css",
+    "./qr-code": {
+      "import": {
+        "types": "./dist/esm/qrcode/index.d.ts",
+        "default": "./dist/esm/qrcode/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/qrcode/index.d.cts",
+        "default": "./dist/cjs/qrcode/index.cjs"
+      }
+    },
+    "./qr-code/style.css": "./dist/esm/styles/qrcode.css",
+    "./radio": {
+      "import": {
+        "types": "./dist/esm/radio/index.d.ts",
+        "default": "./dist/esm/radio/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/radio/index.d.cts",
+        "default": "./dist/cjs/radio/index.cjs"
+      }
+    },
+    "./radio/style.css": "./dist/esm/styles/radio.css",
+    "./rate": {
+      "import": {
+        "types": "./dist/esm/rate/index.d.ts",
+        "default": "./dist/esm/rate/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/rate/index.d.cts",
+        "default": "./dist/cjs/rate/index.cjs"
+      }
+    },
+    "./rate/style.css": "./dist/esm/styles/rate.css",
+    "./result": {
+      "import": {
+        "types": "./dist/esm/result/index.d.ts",
+        "default": "./dist/esm/result/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/result/index.d.cts",
+        "default": "./dist/cjs/result/index.cjs"
+      }
+    },
+    "./result/style.css": "./dist/esm/styles/result.css",
+    "./scroll-area": {
+      "import": {
+        "types": "./dist/esm/scrollarea/index.d.ts",
+        "default": "./dist/esm/scrollarea/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/scrollarea/index.d.cts",
+        "default": "./dist/cjs/scrollarea/index.cjs"
+      }
+    },
+    "./scroll-area/style.css": "./dist/esm/styles/scrollarea.css",
+    "./segmented": {
+      "import": {
+        "types": "./dist/esm/segmented/index.d.ts",
+        "default": "./dist/esm/segmented/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/segmented/index.d.cts",
+        "default": "./dist/cjs/segmented/index.cjs"
+      }
+    },
+    "./segmented/style.css": "./dist/esm/styles/segmented.css",
+    "./select": {
+      "import": {
+        "types": "./dist/esm/select/index.d.ts",
+        "default": "./dist/esm/select/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/select/index.d.cts",
+        "default": "./dist/cjs/select/index.cjs"
+      }
+    },
+    "./select/style.css": "./dist/esm/styles/select.css",
+    "./signature-pad": {
+      "import": {
+        "types": "./dist/esm/signaturepad/index.d.ts",
+        "default": "./dist/esm/signaturepad/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/signaturepad/index.d.cts",
+        "default": "./dist/cjs/signaturepad/index.cjs"
+      }
+    },
+    "./signature-pad/style.css": "./dist/esm/styles/signaturepad.css",
+    "./skeleton": {
+      "import": {
+        "types": "./dist/esm/skeleton/index.d.ts",
+        "default": "./dist/esm/skeleton/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/skeleton/index.d.cts",
+        "default": "./dist/cjs/skeleton/index.cjs"
+      }
+    },
+    "./skeleton/style.css": "./dist/esm/styles/skeleton.css",
+    "./slider": {
+      "import": {
+        "types": "./dist/esm/slider/index.d.ts",
+        "default": "./dist/esm/slider/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/slider/index.d.cts",
+        "default": "./dist/cjs/slider/index.cjs"
+      }
+    },
+    "./slider/style.css": "./dist/esm/styles/slider.css",
+    "./sortable": {
+      "import": {
+        "types": "./dist/esm/sortable/index.d.ts",
+        "default": "./dist/esm/sortable/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/sortable/index.d.cts",
+        "default": "./dist/cjs/sortable/index.cjs"
+      }
+    },
+    "./sortable/style.css": "./dist/esm/styles/sortable.css",
+    "./space": {
+      "import": {
+        "types": "./dist/esm/space/index.d.ts",
+        "default": "./dist/esm/space/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/space/index.d.cts",
+        "default": "./dist/cjs/space/index.cjs"
+      }
+    },
+    "./space/style.css": "./dist/esm/styles/space.css",
+    "./splitter": {
+      "import": {
+        "types": "./dist/esm/splitter/index.d.ts",
+        "default": "./dist/esm/splitter/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/splitter/index.d.cts",
+        "default": "./dist/cjs/splitter/index.cjs"
+      }
+    },
+    "./splitter/style.css": "./dist/esm/styles/splitter.css",
+    "./statistic": {
+      "import": {
+        "types": "./dist/esm/statistic/index.d.ts",
+        "default": "./dist/esm/statistic/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/statistic/index.d.cts",
+        "default": "./dist/cjs/statistic/index.cjs"
+      }
+    },
+    "./statistic/style.css": "./dist/esm/styles/statistic.css",
+    "./steps": {
+      "import": {
+        "types": "./dist/esm/steps/index.d.ts",
+        "default": "./dist/esm/steps/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/steps/index.d.cts",
+        "default": "./dist/cjs/steps/index.cjs"
+      }
+    },
+    "./steps/style.css": "./dist/esm/styles/steps.css",
     "./styles.css": "./dist/esm/styles/index.css",
-    "./package.json": "./package.json"
+    "./switch": {
+      "import": {
+        "types": "./dist/esm/switch/index.d.ts",
+        "default": "./dist/esm/switch/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/switch/index.d.cts",
+        "default": "./dist/cjs/switch/index.cjs"
+      }
+    },
+    "./switch/style.css": "./dist/esm/styles/switch.css",
+    "./tabs": {
+      "import": {
+        "types": "./dist/esm/tabs/index.d.ts",
+        "default": "./dist/esm/tabs/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tabs/index.d.cts",
+        "default": "./dist/cjs/tabs/index.cjs"
+      }
+    },
+    "./tabs/style.css": "./dist/esm/styles/tabs.css",
+    "./tag": {
+      "import": {
+        "types": "./dist/esm/tag/index.d.ts",
+        "default": "./dist/esm/tag/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tag/index.d.cts",
+        "default": "./dist/cjs/tag/index.cjs"
+      }
+    },
+    "./tag/style.css": "./dist/esm/styles/tag.css",
+    "./textarea": {
+      "import": {
+        "types": "./dist/esm/textarea/index.d.ts",
+        "default": "./dist/esm/textarea/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/textarea/index.d.cts",
+        "default": "./dist/cjs/textarea/index.cjs"
+      }
+    },
+    "./textarea/style.css": "./dist/esm/styles/textarea.css",
+    "./time-picker": {
+      "import": {
+        "types": "./dist/esm/timepicker/index.d.ts",
+        "default": "./dist/esm/timepicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/timepicker/index.d.cts",
+        "default": "./dist/cjs/timepicker/index.cjs"
+      }
+    },
+    "./time-picker/style.css": "./dist/esm/styles/timepicker.css",
+    "./time-range-picker": {
+      "import": {
+        "types": "./dist/esm/timerangepicker/index.d.ts",
+        "default": "./dist/esm/timerangepicker/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/timerangepicker/index.d.cts",
+        "default": "./dist/cjs/timerangepicker/index.cjs"
+      }
+    },
+    "./time-range-picker/style.css": "./dist/esm/styles/timerangepicker.css",
+    "./timeline": {
+      "import": {
+        "types": "./dist/esm/timeline/index.d.ts",
+        "default": "./dist/esm/timeline/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/timeline/index.d.cts",
+        "default": "./dist/cjs/timeline/index.cjs"
+      }
+    },
+    "./timeline/style.css": "./dist/esm/styles/timeline.css",
+    "./tooltip": {
+      "import": {
+        "types": "./dist/esm/tooltip/index.d.ts",
+        "default": "./dist/esm/tooltip/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tooltip/index.d.cts",
+        "default": "./dist/cjs/tooltip/index.cjs"
+      }
+    },
+    "./tooltip/style.css": "./dist/esm/styles/tooltip.css",
+    "./tour": {
+      "import": {
+        "types": "./dist/esm/tour/index.d.ts",
+        "default": "./dist/esm/tour/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tour/index.d.cts",
+        "default": "./dist/cjs/tour/index.cjs"
+      }
+    },
+    "./tour/style.css": "./dist/esm/styles/tour.css",
+    "./transfer": {
+      "import": {
+        "types": "./dist/esm/transfer/index.d.ts",
+        "default": "./dist/esm/transfer/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/transfer/index.d.cts",
+        "default": "./dist/cjs/transfer/index.cjs"
+      }
+    },
+    "./transfer/style.css": "./dist/esm/styles/transfer.css",
+    "./tree": {
+      "import": {
+        "types": "./dist/esm/tree/index.d.ts",
+        "default": "./dist/esm/tree/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tree/index.d.cts",
+        "default": "./dist/cjs/tree/index.cjs"
+      }
+    },
+    "./tree-select": {
+      "import": {
+        "types": "./dist/esm/treeselect/index.d.ts",
+        "default": "./dist/esm/treeselect/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/treeselect/index.d.cts",
+        "default": "./dist/cjs/treeselect/index.cjs"
+      }
+    },
+    "./tree-select/style.css": "./dist/esm/styles/treeselect.css",
+    "./tree/style.css": "./dist/esm/styles/tree.css",
+    "./typography": {
+      "import": {
+        "types": "./dist/esm/typography/index.d.ts",
+        "default": "./dist/esm/typography/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/typography/index.d.cts",
+        "default": "./dist/cjs/typography/index.cjs"
+      }
+    },
+    "./typography/style.css": "./dist/esm/styles/typography.css",
+    "./upload": {
+      "import": {
+        "types": "./dist/esm/upload/index.d.ts",
+        "default": "./dist/esm/upload/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/upload/index.d.cts",
+        "default": "./dist/cjs/upload/index.cjs"
+      }
+    },
+    "./upload/style.css": "./dist/esm/styles/upload.css",
+    "./virtual-list": {
+      "import": {
+        "types": "./dist/esm/virtuallist/index.d.ts",
+        "default": "./dist/esm/virtuallist/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/virtuallist/index.d.cts",
+        "default": "./dist/cjs/virtuallist/index.cjs"
+      }
+    },
+    "./virtual-list/style.css": "./dist/esm/styles/virtuallist.css"
   },
   "files": [
     "dist",
@@ -46,20 +970,23 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "rslib build",
+    "build": "rslib build && node scripts/build-component-styles.mjs",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "pnpm check:release && pnpm build && pnpm check:package",
     "check:release": "node ./scripts/check-release-notes.mjs",
-    "check:package": "node ./scripts/verify-package.mjs"
+    "check:package": "node ./scripts/verify-package.mjs",
+    "test:browser": "playwright test",
+    "measure:bundle": "node scripts/measure-bundle.mjs"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@rsbuild/plugin-react": "^2.1.1",
     "@rsbuild/plugin-sass": "^2.0.1",
     "@rslib/core": "^1.0.3",
@@ -69,9 +996,12 @@
     "@testing-library/user-event": "^14.6.7",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "axe-core": "^4.13.0",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.1.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "sass-embedded": "^1.105.1",
     "vite": "^8.3.2",
     "vitest": "^5.0.3"
   },

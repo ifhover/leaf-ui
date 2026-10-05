@@ -1,0 +1,55 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { CarouselBasic, CarouselAutoplay } from '../../../src/examples/carousel/basic';
+
+# Carousel
+
+Browse images or content one slide at a time.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<CarouselBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/carousel/basic.tsx"
+```
+
+</ComponentExample>
+
+## Autoplay
+
+<ComponentExample title="Autoplay" preview={<CarouselAutoplay english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/carousel/basic.tsx"
+```
+
+</ComponentExample>
+
+## CarouselHandle
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `goTo` | `(index: number) => void` | — | Required. Go to a slide index. |
+| `next` | `() => void` | — | Required. Go to the next item. |
+| `previous` | `() => void` | — | Required. Go to the previous item. |
+
+## Carousel API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `activeIndex` | `number` | — | Controlled slide index. |
+| `defaultActiveIndex` | `number` | `0` | Initial slide index. |
+| `onChange` | `(index: number) => void` | — | Called when the value changes. |
+| `arrows` | `boolean` | `true` | Show previous and next controls. |
+| `dots` | `boolean` | `true` | Show slide indicators. |
+| `autoplay` | `boolean \| number` | `false` | Enable autoplay; a number sets the interval in milliseconds. |
+| `infinite` | `boolean` | `true` | Allow cycling through slides. |
+| `pauseOnHover` | `boolean` | `true` | Pause on hover; focus also pauses playback. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { CarouselHandle, CarouselProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

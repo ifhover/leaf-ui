@@ -1,3 +1,4 @@
+import { Capabilities } from '../../src/examples/select/capabilities';
 import { ExtensionDemo } from '../../src/examples/select/extensions';
 import { SelectPopup } from '../../src/examples/select/popup';
 import { SelectSearch } from '../../src/examples/select/search';
@@ -80,39 +81,59 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 
 </ComponentExample>
 
+## 选中内容与受控浮层
+
+<ComponentExample title="选中内容与受控浮层" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/capabilities.tsx"
+```
+
+</ComponentExample>
+
 ## Select API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层样式 |
+| `popupStyle` | `CSSProperties` | — | 浮层样式 |
+| `popupRender` | `(content: ReactNode) => ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | 必填 | 必需。选项列表 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `options` | [`readonly (SelectOption \| SelectOptionGroup)[]`](#selectoptiongroup-api) | 必填 | 选项列表 |
-| `placeholder` | `string` | `'请选择'` | 未选择时的提示文字 |
-| `value` / `defaultValue` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |
-| `onChange` | [`(value: string, option?: SelectOption) => void` 或 `(values: string[], options: SelectOption[]) => void`](#selectoption) | — | 返回值与选项；清除时返回空字符串和 `undefined` |
-| `multiple` | `boolean` | `false` | 多选时值为数组，默认 [] |
-| `showSearch` | `boolean` | `false` | 允许输入搜索选项 |
-| `filterOption` | [`boolean \| ((query: string, option: SelectOption) => boolean)`](#selectoption) | `true` | 自定义筛选，false 用于外部筛选 |
-| `onSearch` | `(query: string) => void` | — | 搜索文字变化 |
 | `allowClear` | `boolean` | `false` | 展示清除按钮 |
-| `disabled` | `boolean` | `false` | 禁用整个选择器 |
-| `name` / `form` | `string` | — | 字段名 / 关联的表单 ID |
-| `required` | `boolean` | `false` | 要求选择一项 |
+| `showSearch` | `boolean` | `false` | 允许输入搜索选项 |
+| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | 自定义筛选，false 用于外部筛选 |
+| `onSearch` | `(query: string) => void` | — | 搜索文字变化 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开或收起选项面板 |
-| `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选中值的展示。 |
+| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | 自定义选中标签；通过 remove 请求移除。 |
+| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | 浮层滚动事件，可用来加载下一页。 |
 | `popupWidth` | `number \| string` | `'auto'` | 浮层宽度；auto 按内容扩宽，trigger 与控件等宽，也可指定像素或 CSS 长度 |
 | `popupMaxWidth` | `number \| string` | `420` | 最大宽度，仍受视口限制 |
-| `popupClassName / popupStyle` | `string / CSSProperties` | — | 浮层样式 |
 | `loading` | `boolean` | `false` | 加载提示 |
 | `notFoundContent` | `ReactNode` | — | 没有选项时的内容 |
-| `optionRender` | [`(option: SelectOption) => ReactNode`](#selectoption) | — | 自定义选项内容 |
+| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选项内容 |
 | `maxCount` | `number` | — | 多选数量上限，已选项可继续取消 |
-| `maxTagCount` | `number` | — | 展示的标签数量，其余用数量提示 |
+| `maxTagCount` | `number \| 'responsive'` | — | 展示的标签数量，其余用数量提示 |
 | `allowCreate` | `boolean` | `false` | 允许创建未匹配的选项 |
-| `onCreate` | [`(option: SelectOption) => void`](#selectoption) | — | 新选项创建回调 |
+| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | 新选项创建回调 |
 | `virtual` | `boolean` | 选项超过 100 时启用 | 仅渲染可见项目 |
 | `listHeight` | `number` | `248` | 列表高度 |
 | `optionHeight` | `number` | `36` | 虚拟列表的预估选项高度 |
+| `multiple` | `false \| true` | `false` | 多选时值为数组，默认 [] |
+| `value` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |
+| `defaultValue` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |
+| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | 返回值与选项；清除时返回空字符串和 `undefined` |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
+| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
+| `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
 支持 name、required、form 和非受控表单 reset；其余原生 input 属性及 aria-* 透传至输入框。className 与 style 作用于外层容器。选项 value 应唯一，不要将空字符串用作业务选项值。
 
@@ -160,5 +181,14 @@ import type { SelectOptionGroup } from '@sudden3/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | 必填 | 显示内容 |
-| `options` | [`readonly SelectOption[]`](#selectoption) | 必填 | 可用选项 |
+| `label` | `ReactNode` | 必填 | 必需。显示内容 |
+| `options` | `readonly `[`SelectOption`](#selectoption)`[]` | 必填 | 必需。可用选项 |
+
+## SelectOption
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | — | 必需。受控值。 |
+| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |

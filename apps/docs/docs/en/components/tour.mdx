@@ -1,0 +1,60 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { TourBasic, TourCentered } from '../../../src/examples/tour/basic';
+
+# Tour
+
+Introduce features in a sequence of steps.
+
+## Basic usage
+
+<ComponentExample title="Basic usage" preview={<TourBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/tour/basic.tsx"
+```
+
+</ComponentExample>
+
+## Welcome step
+
+<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/tour/basic.tsx"
+```
+
+</ComponentExample>
+
+## TourStep
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Stable, unique identifier. |
+| `title` | `ReactNode` | — | Required. Title content. |
+| `description` | `ReactNode` | — | Additional description. |
+| `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or element getter; omit to center the step. |
+| `placement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | Layout or display placement. |
+
+## Tour API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | — | Required. Control whether the panel is open. |
+| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | — | Required. Steps in the guided tour. |
+| `current` | `number` | — | Controlled current step index. |
+| `defaultCurrent` | `number` | `0` | Initial step index. |
+| `onChange` | `(current: number) => void` | — | Called when the value changes. |
+| `onClose` | `() => void` | — | Called when closing is requested. |
+| `onFinish` | `() => void` | — | Called once on completion. |
+| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | Center, skip or close when a target is missing. |
+| `mask` | `boolean` | `true` | Show a tour mask. |
+| `padding` | `number` | `8` | Padding for content or a highlighted target. |
+| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { TourStep, TourProps } from '@sudden3/leaf-ui';
+```
+
+Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

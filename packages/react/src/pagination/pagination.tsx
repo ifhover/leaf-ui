@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useState } from 'react';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { InputNumber } from '../inputnumber';
 import { Select } from '../select';
 import { classes } from '../shared/classes';

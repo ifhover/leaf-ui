@@ -2,6 +2,7 @@ import { Clock3 } from 'lucide-react';
 import { forwardRef, useRef, useState } from 'react';
 import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/context';
+import { useFormField } from '../form/form';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
@@ -30,6 +31,8 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
       defaultValue = null,
       onChange,
       onOpenChange,
+      open: controlledOpen,
+      defaultOpen,
       showSeconds = false,
       use12Hours = false,
       minuteStep = 5,
@@ -41,11 +44,17 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
     ref,
   ) {
     const t = useText();
+    const field = useFormField();
     const { messages } = useLeafConfig();
     const trigger = useRef<HTMLInputElement>(null);
     const merged = useMergedRef(trigger, ref);
     const [selected, setSelected] = useFieldValue(value, defaultValue, trigger, props.form);
-    const [open, setOpen] = usePopupState(props.disabled, onOpenChange);
+    const [open, setOpen] = usePopupState(
+      props.disabled || field?.disabled || props.readOnly,
+      onOpenChange,
+      controlledOpen,
+      defaultOpen,
+    );
     const [draft, setDraft] = useState<readonly [TimeParts, TimeParts]>([startTime, endTime]);
     const [active, setActive] = useState<0 | 1>(0);
     const [validText, setValidText] = useState(true);
@@ -56,6 +65,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
     const format = (parts: TimeParts) =>
       displayTime(parts, showSeconds, use12Hours, [messages.am, messages.pm]);
     const change = (parts: readonly [TimeParts, TimeParts] | null) => {
+      if (props.disabled || field?.disabled || props.readOnly || (parts && !valid(parts))) return;
       const next = parts
         ? ([timeString(parts[0], showSeconds), timeString(parts[1], showSeconds)] as const)
         : null;
@@ -126,6 +136,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
               </Button>
             </div>
             <TimePanel
+              disabledTime={(parts) => !!disabledTime?.(parts, active === 0 ? 'start' : 'end')}
               value={draft[active]}
               onChange={(next) => {
                 setDraft((previous) => (active === 0 ? [next, previous[1]] : [previous[0], next]));

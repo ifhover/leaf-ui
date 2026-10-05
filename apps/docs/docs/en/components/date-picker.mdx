@@ -1,3 +1,4 @@
+import { Capabilities } from '../../../src/examples/date-picker/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/date-picker/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DatePickerBasic, DatePickerControlled } from '../../../src/components/en-form-examples';
@@ -45,27 +46,58 @@ Customize Today with todayText, add shortcuts with renderExtraFooter, or hide To
 
 </ComponentExample>
 
+## Formats, presets and multiple dates
+
+<ComponentExample title="Formats, presets and multiple dates" preview={<Capabilities english />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/date-picker/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## Serialization and dates
+
+`format` changes display text and the string argument of `onChange`; FormData keeps the canonical period/date representation described below. Square brackets escape literal text, such as `YYYY-[Q]Q`. Provide `parse` with a function-valued formatter. Dates are local calendar values; convert business timezones explicitly at the application boundary. Configure the first weekday with ConfigProvider's `weekStartsOn`.
+
 ## DatePicker API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` / `defaultValue` | `Date \| null` | `null` | Controlled date / initial uncontrolled date |
-| `onChange` | `(date: Date \| null, dateString: string) => void` | — | Changed date; clearing returns null and an empty string |
-| `minDate` / `maxDate` | `Date` | — | Earliest / latest date, compared in local time |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `allowClear` | `boolean` | `true` | Show a clear button |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `multiple` | `false \| true` | — | Enable multiple selection; value and callback types change accordingly. |
+| `value` | `Date \| null \| readonly Date[]` | `null` | Controlled date / initial uncontrolled date |
+| `defaultValue` | `Date \| null \| readonly Date[]` | `null` | Controlled date / initial uncontrolled date |
+| `minDate` | `Date` | — | Earliest / latest date, compared in local time |
+| `maxDate` | `Date` | — | Earliest / latest date, compared in local time |
+| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Select date, year, quarter, month or week |
+| `disabledDate` | `(date: Date) => boolean` | — | Restrict selectable dates |
 | `showToday` | `boolean` | `true` | Show the Today shortcut |
 | `todayText` | `ReactNode` | Locale default | Customize the Today label |
 | `renderExtraFooter` | `ReactNode` | — | Additional footer content |
-| `allowClear` | `boolean` | `true` | Show a clear button |
-| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `disabled` | `boolean` | `false` | Disable the control and its panel |
-| `name` / `form` | `string` | — | Field name / associated form ID |
-| `required` | `boolean` | `false` | Require a date |
+| `onChange` | `((value: Date \| null, dateString: string) => void) \| ((value: Date[], dateStrings: string[]) => void)` | — | Changed date; clearing returns null and an empty string |
 | `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](#datepreset)`[]` | — | Presets; value may be computed on demand. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `maxCount` | `number` | — | Maximum selection count. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
-| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Select date, year, quarter, month or week |
-| `disabledDate` | `(date: Date) => boolean` | — | Restrict selectable dates |
 
 ## Types
 
@@ -84,3 +116,79 @@ Type `YYYY-MM-DD` and press Enter or move focus away to submit. Invalid dates an
 Clicking the field keeps typing focus; ArrowDown moves into the calendar, and Escape discards pending text. Other input attributes and aria-* target the input; className/style target the wrapper.
 
 Picker formats: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YYYY-QN`, `month → YYYY-MM`, `week → YYYY-Www`. These formats apply to display, manual input, the onChange string and FormData.
+
+## SingleDatePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `status` | `'error' \| 'warning'` | — | Configure status. |
+| `allowClear` | `boolean` | `true` | Show a clear action. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `multiple` | `false` | — | Enable multiple selection; value and callback types change accordingly. |
+| `value` | `Date \| null` | — | Controlled value. |
+| `defaultValue` | `Date \| null` | `null` | Initial value; uncontrolled fields support native form reset. |
+| `minDate` | `Date` | — | Earliest available date, inclusive. |
+| `maxDate` | `Date` | — | Latest available date, inclusive. |
+| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Configure picker. |
+| `disabledDate` | `(date: Date) => boolean` | — | Disable dates using business rules. |
+| `showToday` | `boolean` | `true` | Configure show today. |
+| `todayText` | `ReactNode` | — | Configure today text. |
+| `renderExtraFooter` | `ReactNode` | — | Configure render extra footer. |
+| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Called when the value changes. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](#datepreset)`[]` | — | Presets; value may be computed on demand. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+
+## MultipleDatePicker API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `status` | `'error' \| 'warning'` | — | Configure status. |
+| `allowClear` | `boolean` | `true` | Show a clear action. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `minDate` | `Date` | — | Earliest available date, inclusive. |
+| `maxDate` | `Date` | — | Latest available date, inclusive. |
+| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Configure picker. |
+| `disabledDate` | `(date: Date) => boolean` | — | Disable dates using business rules. |
+| `showToday` | `boolean` | `true` | Configure show today. |
+| `todayText` | `ReactNode` | — | Configure today text. |
+| `renderExtraFooter` | `ReactNode` | — | Configure render extra footer. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `multiple` | `true` | — | Required. Enable multiple selection; value and callback types change accordingly. |
+| `value` | `readonly Date[]` | — | Controlled value. |
+| `defaultValue` | `readonly Date[]` | — | Initial value; uncontrolled fields support native form reset. |
+| `maxCount` | `number` | — | Maximum selection count. |
+| `onChange` | `(value: Date[], dateStrings: string[]) => void` | — | Called when the value changes. |
+
+## DatePreset
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | — | Stable, unique identifier. |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `value` | `T \| (() => T)` | — | Required. Controlled value. |

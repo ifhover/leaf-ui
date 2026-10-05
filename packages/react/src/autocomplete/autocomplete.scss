@@ -1,7 +1,7 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-autocomplete {
-  @include mixins.field;
+  @include mixins.field('autocomplete');
   display: inline-flex;
   position: relative;
   height: var(--leaf-current-control-height);
