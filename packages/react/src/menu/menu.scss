@@ -1,5 +1,11 @@
 @use '../styles/mixins' as mixins;
 .leaf-menu {
+  width: 240px;
+  max-width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: var(--leaf-radius);
+  background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   &__item {
@@ -7,11 +13,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    min-height: var(--leaf-control-height);
+    min-height: calc(var(--leaf-control-height) + 4px);
     margin-bottom: 3px;
     padding: 6px 12px;
     border: 0;
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(--leaf-radius);
     background: transparent;
     color: inherit;
     text-decoration: none;
@@ -25,9 +31,15 @@
     &:hover:not(:disabled):not([aria-disabled]) {
       background: var(--leaf-color-surface-muted);
     }
-    &[data-selected] {
+    &[data-active-parent] {
+      color: var(--leaf-color-primary);
+      font-weight: 500;
+    }
+    &[data-selected],
+    &[data-selected]:hover:not(:disabled) {
       color: var(--leaf-color-primary);
       background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+      font-weight: 500;
     }
     &[data-danger] {
       color: var(--leaf-color-danger);
@@ -43,6 +55,9 @@
   }
   &__icon {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
     flex: none;
     svg {
       width: 18px;
@@ -52,6 +67,9 @@
   &__label {
     flex: 1;
     min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   &__arrow {
     flex: none;
@@ -61,7 +79,7 @@
     transform: rotate(180deg);
   }
   &__group-label {
-    padding: 12px;
+    padding: 14px 12px 8px;
     font-size: 12px;
     color: var(--leaf-color-text-muted);
   }
@@ -69,6 +87,13 @@
     height: 1px;
     margin: 8px 12px;
     background: var(--leaf-color-border);
+  }
+  &--horizontal {
+    width: max-content;
+    padding: 4px;
+  }
+  &--horizontal &__item {
+    padding-inline: 14px !important;
   }
   &--horizontal > [role='menubar'] {
     display: flex;
@@ -96,6 +121,12 @@
   &--collapsed &__item {
     justify-content: center;
     padding-inline: 8px !important;
+  }
+  &--collapsed {
+    width: 60px;
+  }
+  &__submenu {
+    padding-block: 2px 4px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

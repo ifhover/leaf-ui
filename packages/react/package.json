@@ -34,21 +34,19 @@
         "default": "./dist/cjs/index.cjs"
       }
     },
-    "./styles.css": "./dist/esm/index.css",
-    "./pdf.worker.mjs": "./dist/esm/pdf.worker.min.mjs",
+    "./styles.css": "./dist/esm/styles/index.css",
     "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "README.md",
-    "THIRD_PARTY.md",
-    "PDFJS-LICENSE"
+    "THIRD_PARTY.md"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
-    "build": "rslib build && node ./scripts/copy-assets.mjs",
+    "build": "rslib build",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",
@@ -89,11 +87,9 @@
     "@floating-ui/react-dom": "^2.1.9",
     "@tanstack/react-virtual": "^3.14.13",
     "lucide-react": "^1.50.0",
-    "pdfjs-dist": "5.4.296",
     "qrcode.react": "^4.2.0",
-    "react-easy-crop": "^6.2.3",
+    "react-image-crop": "^11.1.2",
     "react-imask": "^7.6.1",
-    "react-pdf": "^10.5.0",
     "signature_pad": "^5.1.4",
     "tabbable": "^6.5.0",
     "yet-another-react-lightbox": "^3.32.2"

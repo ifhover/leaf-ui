@@ -41,7 +41,7 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | 内容或下级项目 |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | 数据项目，保持 key 唯一且稳定 |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | 按顺序展示的图片 |
 | `open` | `boolean` | — | 受控展示状态 |
 | `defaultOpen` | `boolean` | `false` | 初始展示状态 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
@@ -56,16 +56,18 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `src` | `string` | 必填 | 图片地址 |
+| `thumbnailSrc` | `string` | — | 缩略图地址，默认使用 src |
 | `alt` | `string` | `''` | 图片文字说明 |
 | `width` | `number` | — | 宽度，数字按像素计算 |
 | `height` | `number` | — | 高度，数字按像素计算 |
 | `download` | `string \| boolean` | — | 下载地址或是否允许下载 |
+| `downloadName` | `string` | — | 自定义下载后的文件名 |
 
 ## ImagePreviewProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | 必填 | 按顺序展示的图片 |
 | `open` | `boolean` | 必填 | 受控展示状态 |
 | `index` | `number` | `0` | 当前索引，从 0 开始 |
 | `onClose` | `() => void` | 必填 | 关闭时触发 |

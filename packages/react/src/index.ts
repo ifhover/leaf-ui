@@ -57,8 +57,8 @@ export type { EmptyProps } from './empty';
 export { Empty } from './empty';
 export type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from './errorboundary';
 export { ErrorBoundary } from './errorboundary';
-export type { FilePreviewProps, FilePreviewSource } from './filepreview';
-export { FilePreview } from './filepreview';
+export type { FileItem, FileListProps } from './filelist';
+export { FileList } from './filelist';
 export type {
   FormError,
   FormErrorSummaryProps,
@@ -191,5 +191,14 @@ export type {
 export { moveTreeNode, Tree } from './tree';
 export type { TreeSelectOption, TreeSelectProps, TreeSelectValue } from './treeselect';
 export { TreeSelect } from './treeselect';
+export type {
+  UploadChangeInfo,
+  UploadFile,
+  UploadProps,
+  UploadRejection,
+  UploadRequest,
+  UploadResult,
+} from './upload';
+export { Upload } from './upload';
 export type { VirtualListHandle, VirtualListProps } from './virtuallist';
 export { VirtualList } from './virtuallist';

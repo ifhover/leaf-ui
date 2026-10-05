@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { FileListBasic } from '../../../src/examples/en/file-list/basic';
+import { FileListActions } from '../../../src/examples/en/file-list/advanced';
+
+# FileList
+
+Display file names, icons and file actions.
+
+## File information
+
+<ComponentExample title="File information" preview={<FileListBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/file-list/basic.tsx"
+```
+
+</ComponentExample>
+
+## URL-only files and removal
+
+<ComponentExample title="URL-only files and removal" preview={<FileListActions />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/file-list/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Usage notes
+
+Names are inferred from URLs; size is optional and no file metadata is fetched automatically. File icons follow MIME types or extensions. Preview is available for images, video and audio; other files show download only. Browser codec support determines media playback. Cross-origin downloads may open in a new tab; use onDownload for your download service.
+
+## Types
+
+```ts
+import type { FileItem, FileListProps } from '@sudden3/leaf-ui';
+```
+
+## FileListProps API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | [`readonly FileItem[]`](#fileitem-api) | Required | Files to display |
+| `downloadable / previewable` | `boolean` | `true` | Show download / media preview actions |
+| `removable / disabled` | `boolean` | `false` | Show remove actions / disable actions |
+| `onPreview / onDownload` | [`(file: FileItem) => void`](#fileitem-api) | — | Override preview or download; preview remains media only |
+| `onRemove` | [`(file: FileItem) => void \| boolean \| Promise<void> \| Promise<boolean>`](#fileitem-api) | — | Request removal; the caller updates items |
+| `renderActions` | [`(file: FileItem, actions: ReactNode) => ReactNode`](#fileitem-api) | — | Customize the action area |
+| `emptyContent` | `ReactNode` | — | Empty list content |
+
+## FileItem API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `uid` | `string` | — | Stable identifier, recommended |
+| `url` | `string` | — | File URL |
+| `name` | `string` | — | Name, inferred from URL if omitted |
+| `size` | `number` | — | Bytes; omitted sizes are not displayed |
+| `type` | `string` | — | MIME type; inferred from the extension if omitted |
+| `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Optional upload status |
+| `percent` | `number` | — | Upload progress from 0 to 100 |
+| `error` | `string` | — | Error description |
+| `originFile` | `File` | — | Original browser File |

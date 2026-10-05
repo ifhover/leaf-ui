@@ -41,7 +41,7 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Content or child items |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | Items; keep keys unique and stable |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | Images in display order |
 | `open` | `boolean` | — | Controlled visibility |
 | `defaultOpen` | `boolean` | `false` | Initial visibility |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
@@ -56,16 +56,18 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `src` | `string` | Required | Image URL |
+| `thumbnailSrc` | `string` | — | Optional thumbnail URL; falls back to src |
 | `alt` | `string` | `''` | Image description |
 | `width` | `number` | — | Width, numbers are in pixels |
 | `height` | `number` | — | Height, numbers are in pixels |
-| `download` | `string \| boolean` | — | Download URL or availability |
+| `download` | `string \| boolean` | — | Download URL, or whether downloads are allowed |
+| `downloadName` | `string` | — | Optional filename for the downloaded image |
 
 ## ImagePreviewProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | Required | Items; keep keys unique and stable |
+| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | Required | Images in display order |
 | `open` | `boolean` | Required | Controlled visibility |
 | `index` | `number` | `0` | Current index, starting at zero |
 | `onClose` | `() => void` | Required | Called when closed |

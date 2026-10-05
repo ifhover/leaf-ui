@@ -30,11 +30,11 @@ export interface ImageCropperProps
   src: string;
   aspect?: number;
   shape?: 'rect' | 'round';
-  minZoom?: number;
-  maxZoom?: number;
+  minWidth?: number;
+  minHeight?: number;
+  disabled?: boolean;
   showGrid?: boolean;
-  controls?: boolean;
-  rotation?: boolean;
+  showActions?: boolean;
   crossOrigin?: 'anonymous' | 'use-credentials';
   type?: 'image/png' | 'image/jpeg' | 'image/webp';
   quality?: number;
@@ -67,7 +67,11 @@ export const ImageCropper = forwardRef<ImageCropperHandle, ImageCropperProps>(
               </div>
             }
           >
-            <Editor {...props} ref={editor} />
+            <Editor
+              key={`${props.src}-${props.crossOrigin ?? 'anonymous'}`}
+              {...props}
+              ref={editor}
+            />
           </Suspense>
         ) : (
           <div className="leaf-image-cropper__stage">

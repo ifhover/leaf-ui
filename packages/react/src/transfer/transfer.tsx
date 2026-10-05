@@ -50,7 +50,7 @@ export function Transfer({
   filterOption,
   renderItem,
   disabled,
-  height = 260,
+  height = 180,
   virtual = false,
   name,
   form,
@@ -172,15 +172,15 @@ export function Transfer({
             itemKey={(item) => item.key}
             renderItem={row}
             height={height}
-            estimateSize={42}
-            emptyContent={<Result status="empty" />}
+            estimateSize={items.some((item) => item.description) ? 54 : 40}
+            emptyContent={<Result size="sm" icon={null} title={t('暂无项目', 'No items')} />}
           />
         ) : (
           <div className="leaf-transfer__list" style={{ height }}>
             {list.length ? (
               list.map((item) => <div key={item.key}>{row(item)}</div>)
             ) : (
-              <Result status="empty" />
+              <Result size="sm" icon={null} title={t('暂无项目', 'No items')} />
             )}
           </div>
         )}

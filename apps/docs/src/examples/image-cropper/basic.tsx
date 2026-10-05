@@ -14,10 +14,9 @@ export function ImageCropperBasic() {
     <div className="leaf-demo-stack leaf-demo-stack--wide">
       <ImageCropper
         src={withBase('/media/landscape-1.svg')}
-        aspect={4 / 3}
         onExport={(result) => setResult(result.blob)}
       />
-      {url && <Image src={url} alt="裁剪结果" width={220} height={165} />}
+      {url && <Image src={url} alt="裁剪结果" width={220} fit="contain" />}
     </div>
   );
 }

@@ -1,6 +1,4 @@
 @use 'yet-another-react-lightbox/styles.css';
-@use 'yet-another-react-lightbox/plugins/counter.css';
-@use 'yet-another-react-lightbox/plugins/thumbnails.css';
 .leaf-image {
   position: relative;
   display: inline-flex;
@@ -54,6 +52,285 @@
 .leaf-image[data-state='error'] img {
   opacity: 0;
 }
+.leaf-image-viewer {
+  &__lightbox {
+    --yarl__color_button: #e8edf3;
+    .yarl__toolbar {
+      display: none;
+    }
+    .yarl__carousel {
+      padding: 76px 80px 100px;
+      box-sizing: border-box;
+    }
+    &:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__carousel {
+      padding-bottom: 168px;
+    }
+    .yarl__slide {
+      padding: 0;
+    }
+    .yarl__slide_image {
+      border-radius: 4px;
+    }
+  }
+  &__chrome {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    color: #f4f5f7;
+    font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  }
+  &__header {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+    background: linear-gradient(#0005, transparent);
+  }
+  &__title {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    > span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+  }
+  &__count {
+    color: #b7bfc9;
+    font-size: 12px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  &__header-actions {
+    display: flex;
+    gap: 6px;
+    flex: none;
+  }
+  &__control {
+    pointer-events: auto;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition:
+      background var(--leaf-motion-duration),
+      opacity var(--leaf-motion-duration);
+    svg {
+      display: block;
+    }
+    &:hover:not(:disabled),
+    &[aria-pressed='true'] {
+      background: #ffffff1c;
+    }
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+    &:disabled {
+      opacity: 0.28;
+      cursor: default;
+    }
+  }
+  &__previous,
+  &__next {
+    position: absolute;
+    top: calc(50% - 40px);
+    width: 44px;
+    height: 52px;
+    background: #ffffff0e;
+    border-radius: 12px;
+  }
+  &__previous {
+    inset-inline-start: 20px;
+  }
+  &__next {
+    inset-inline-end: 20px;
+  }
+  &__footer {
+    position: absolute;
+    bottom: 0;
+    inset-inline: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 24px 20px;
+    background: linear-gradient(transparent, #0003);
+  }
+  &__tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border: 1px solid #ffffff12;
+    border-radius: 12px;
+    background: #26292f;
+    box-shadow: 0 8px 24px #0003;
+    pointer-events: auto;
+  }
+  &__zoom-level {
+    min-width: 54px;
+    padding: 8px 4px;
+    color: #f4f5f7;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    font: 12px/1.5 var(--leaf-font-family);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid #fff;
+    }
+  }
+  &__tool-separator {
+    width: 1px;
+    height: 18px;
+    margin: 0 4px;
+    background: #ffffff24;
+  }
+  &__gallery {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: min(760px, 100%);
+    pointer-events: auto;
+  }
+  &__thumbnails {
+    border: 0;
+    margin: 0;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px;
+    scrollbar-width: none;
+    overscroll-behavior: contain;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  &__thumbnail {
+    position: relative;
+    width: 72px;
+    height: 54px;
+    box-sizing: border-box;
+    flex: none;
+    padding: 3px;
+    border: 2px solid transparent;
+    background: #ffffff0b;
+    border-radius: 9px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition:
+      opacity var(--leaf-motion-duration),
+      border-color var(--leaf-motion-duration);
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    > span {
+      position: absolute;
+      right: 5px;
+      bottom: 4px;
+      padding: 0 4px;
+      border-radius: 3px;
+      color: #fff;
+      background: #0009;
+      font-size: 9px;
+    }
+    &:hover {
+      opacity: 0.9;
+    }
+    &[aria-current='true'] {
+      border-color: #fff;
+      opacity: 1;
+    }
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 1px;
+    }
+  }
+  &__error {
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    color: #f5b4b4;
+    pointer-events: auto;
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
+}
+@media (max-width: 640px) {
+  .leaf-image-viewer {
+    &__lightbox .yarl__carousel {
+      padding: 72px 12px 100px;
+    }
+    &__lightbox:has(.leaf-image-viewer__chrome[data-thumbnails]) .yarl__carousel {
+      padding-bottom: 158px;
+    }
+    &__header {
+      padding: 12px;
+    }
+    &__title {
+      display: block;
+      > span {
+        display: block;
+      }
+    }
+    &__previous,
+    &__next {
+      width: 32px;
+      height: 40px;
+      top: calc(50% - 40px);
+      background: #0006;
+    }
+    &__previous {
+      inset-inline-start: 8px;
+    }
+    &__next {
+      inset-inline-end: 8px;
+    }
+    &__footer {
+      padding: 12px 8px 16px;
+      gap: 10px;
+    }
+    &__thumbnail {
+      width: 56px;
+      height: 44px;
+      border-radius: 7px;
+    }
+    &__thumbnails {
+      gap: 6px;
+    }
+    &__gallery {
+      gap: 2px;
+      > button {
+        width: 26px;
+      }
+    }
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .leaf-image__zoom {
     transition: none;
@@ -61,5 +338,9 @@
   .leaf-image-viewer {
     --yarl__fade_animation_duration: 0ms;
     --yarl__swipe_animation_duration: 0ms;
+    &__control,
+    &__thumbnail {
+      transition: none;
+    }
   }
 }

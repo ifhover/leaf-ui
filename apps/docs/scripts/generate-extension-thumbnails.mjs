@@ -197,7 +197,11 @@ const images = {
         t(92, 43 + i * 39, ['Design', 'Build', 'Ship'][i]),
     )
     .join(''),
-  'file-preview':
+  upload:
+    r(38, 26, 224, 106, '#f4f7f5') +
+    '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#20834a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    t(108, 117, 'Upload files', 11),
+  'file-list':
     r(48, 16, 204, 126, '#f4f7f5') +
     r(81, 23, 138, 112) +
     t(101, 48, 'Project report', 11) +

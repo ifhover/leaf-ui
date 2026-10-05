@@ -2,7 +2,6 @@ import type { CropArea, ImageCropResult } from './imagecropper';
 export async function cropImage(
   src: string,
   area: CropArea,
-  rotation: number,
   shape: 'rect' | 'round',
   type: string,
   quality: number,
@@ -15,17 +14,6 @@ export async function cropImage(
     img.onerror = () => reject(new Error('Unable to load image for export.'));
     img.src = src;
   });
-  const radians = (rotation * Math.PI) / 180;
-  const cosine = Math.abs(Math.cos(radians));
-  const sine = Math.abs(Math.sin(radians));
-  const rotated = document.createElement('canvas');
-  rotated.width = Math.ceil(image.naturalWidth * cosine + image.naturalHeight * sine);
-  rotated.height = Math.ceil(image.naturalWidth * sine + image.naturalHeight * cosine);
-  const context = rotated.getContext('2d');
-  if (!context) throw new Error('Canvas is unavailable.');
-  context.translate(rotated.width / 2, rotated.height / 2);
-  context.rotate(radians);
-  context.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(area.width));
   canvas.height = Math.max(1, Math.round(area.height));
@@ -44,12 +32,13 @@ export async function cropImage(
       canvas.height / 2,
       0,
       0,
-      2 * Math.PI,
+      Math.PI * 2,
     );
     output.clip();
   }
+  output.imageSmoothingQuality = 'high';
   output.drawImage(
-    rotated,
+    image,
     area.x,
     area.y,
     area.width,
@@ -63,7 +52,7 @@ export async function cropImage(
     canvas.toBlob(
       (value) => (value ? resolve(value) : reject(new Error('Image export failed.'))),
       type,
-      quality,
+      Math.max(0, Math.min(1, quality)),
     );
   });
   return { blob, width: canvas.width, height: canvas.height };

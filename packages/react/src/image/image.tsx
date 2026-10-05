@@ -22,10 +22,12 @@ import { useText } from '../shared/use-text';
 
 export interface ImagePreviewItem {
   src: string;
+  thumbnailSrc?: string;
   alt?: string;
   width?: number;
   height?: number;
   download?: string | boolean;
+  downloadName?: string;
 }
 export interface ImagePreviewProps {
   items: readonly ImagePreviewItem[];

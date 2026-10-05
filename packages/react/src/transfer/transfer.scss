@@ -1,7 +1,11 @@
 .leaf-transfer {
-  display: flex;
+  display: inline-flex;
+  width: 404px;
+  max-width: 100%;
+  align-self: flex-start;
+  box-sizing: border-box;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   color: var(--leaf-color-text);
   font: var(--leaf-font-size) var(--leaf-font-family);
 }
@@ -16,9 +20,11 @@
 .leaf-transfer__header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px;
-  font-weight: 600;
+  gap: 8px;
+  min-height: var(--leaf-control-height);
+  padding: 6px 10px;
+  box-sizing: border-box;
+  font-weight: 500;
   small {
     margin-left: auto;
     color: var(--leaf-color-text-muted);
@@ -26,15 +32,15 @@
   }
 }
 .leaf-transfer__search {
-  padding: 0 12px 10px;
+  padding: 2px 8px 6px;
 }
 .leaf-transfer__list {
   overflow: auto;
-  padding: 0 6px;
+  padding: 0 4px 4px;
   scrollbar-width: thin;
 }
 .leaf-transfer__item {
-  padding: 10px 8px;
+  padding: 3px 6px;
   border-radius: var(--leaf-radius-sm);
   transition: background var(--leaf-motion-duration);
   &:hover {
@@ -43,6 +49,11 @@
   .leaf-checkbox {
     display: flex;
     width: 100%;
+    min-height: var(--leaf-control-height);
+    > span:last-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
   }
   small {
     display: block;
@@ -52,14 +63,14 @@
 }
 .leaf-transfer__actions {
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 @media (max-width: 480px) {
   .leaf-transfer {
     gap: 6px;
   }
   .leaf-transfer__header {
-    padding: 10px;
+    padding: 6px 8px;
     gap: 6px;
   }
 }

@@ -78,7 +78,7 @@ const componentSidebar = [
     text: '媒体',
     items: [
       { text: 'Image', tag: '图片', link: '/components/image' },
-      { text: 'FilePreview', tag: '文件预览', link: '/components/file-preview' },
+      { text: 'FileList', tag: '文件列表', link: '/components/file-list' },
       { text: 'ImageCropper', tag: '图片裁剪', link: '/components/image-cropper' },
       { text: 'SignaturePad', tag: '签名板', link: '/components/signature-pad' },
     ],
@@ -86,6 +86,7 @@ const componentSidebar = [
   {
     text: '数据录入',
     items: [
+      { text: 'Upload', tag: '文件上传', link: '/components/upload' },
       { text: 'Transfer', tag: '穿梭框', link: '/components/transfer' },
       { text: 'InputOTP', tag: '验证码输入', link: '/components/input-otp' },
       { text: 'InputMask', tag: '格式输入', link: '/components/input-mask' },

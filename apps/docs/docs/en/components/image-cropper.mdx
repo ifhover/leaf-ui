@@ -4,7 +4,7 @@ import { ImageCropperAvatar } from '../../../src/examples/en/image-cropper/advan
 
 # ImageCropper
 
-Position, zoom and crop images.
+Move and resize a selection to crop images.
 
 ## Basic usage
 
@@ -26,7 +26,7 @@ Position, zoom and crop images.
 
 ## Usage
 
-Position with pointer, touch or keyboard; zoom, rotate and reset. Export returns a Blob. Remote servers must permit CORS. Round PNGs retain transparent corners; JPEG uses white.
+The image stays fixed. Move the selection or drag its edges to resize it; touch and keyboard are supported. The canvas is square by default. Omit aspect for free resizing; round crops use 1:1. export() returns a Blob. Remote images require CORS permissions; round PNGs keep transparent corners and JPEGs use white.
 
 ## Types
 
@@ -57,13 +57,12 @@ import type { CropArea, ImageCropperHandle, ImageCropperProps, ImageCropResult }
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `src` | `string` | Required | Image URL |
-| `aspect` | `number` | `1` | Crop aspect ratio |
+| `aspect` | `number` | — | Fixed crop aspect ratio; omitted means free resizing |
 | `shape` | `'rect' \| 'round'` | `'rect'` | Crop shape |
-| `minZoom` | `number` | `1` | Minimum zoom |
-| `maxZoom` | `number` | `3` | Maximum zoom |
+| `minWidth / minHeight` | `number` | `24` | Minimum selection size in displayed pixels |
+| `disabled` | `boolean` | `false` | Disable moving and resizing |
+| `showActions` | `boolean` | `true` | Show reset and export actions |
 | `showGrid` | `boolean` | `true` | Crop guides |
-| `controls` | `boolean` | `true` | Show controls |
-| `rotation` | `boolean` | `true` | Show rotation controls |
 | `crossOrigin` | `'anonymous' \| 'use-credentials'` | `'anonymous'` | Image cross-origin mode; export needs server CORS permission |
 | `type` | `'image/png' \| 'image/jpeg' \| 'image/webp'` | `'image/png'` | Export image format |
 | `quality` | `number` | `0.92` | Export quality, 0–1 |

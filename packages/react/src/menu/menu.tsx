@@ -50,6 +50,8 @@ export function Menu({
   );
   const toggle = (key: string) =>
     setOpened(opened.includes(key) ? opened.filter((value) => value !== key) : [...opened, key]);
+  const hasSelected = (item: MenuItem): boolean =>
+    item.key === selected || Boolean(item.children?.some(hasSelected));
   const visibleItems: MenuItem[] = [];
   const collect = (entries: readonly MenuItem[]) => {
     for (const item of entries) {
@@ -99,6 +101,11 @@ export function Menu({
               {item.icon}
             </span>
           )}
+          {!item.icon && collapsed && (
+            <span className="leaf-menu__icon" aria-hidden="true">
+              {typeof item.label === 'string' ? item.label.slice(0, 1) : '·'}
+            </span>
+          )}
           <span className="leaf-menu__label">{item.label}</span>
           {hasChildren && <ChevronDown className="leaf-menu__arrow" size={14} aria-hidden="true" />}
         </>
@@ -110,6 +117,7 @@ export function Menu({
         'aria-expanded': hasChildren ? expanded : undefined,
         'aria-controls': hasChildren ? `${id}-${item.key}` : undefined,
         'data-selected': selected === item.key || undefined,
+        'data-active-parent': (hasChildren && hasSelected(item)) || undefined,
         'data-danger': item.danger || undefined,
         className: 'leaf-menu__item',
         tabIndex: !item.disabled && focusKey === item.key ? 0 : -1,

@@ -8,13 +8,5 @@ export function TransferVirtual() {
       description: index % 2 ? 'Designer' : 'Developer',
     })),
   );
-  return (
-    <Transfer
-      style={{ width: '100%' }}
-      items={items}
-      virtual
-      height={240}
-      titles={['All members', 'Team members']}
-    />
-  );
+  return <Transfer items={items} virtual height={240} titles={['All members', 'Team members']} />;
 }

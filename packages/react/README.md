@@ -56,7 +56,7 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - VirtualList / InfiniteScroll / Sortable: measured virtual rows, abortable loading and pointer/touch/keyboard sorting.
 - Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
-- FilePreview / ImageCropper / SignaturePad: PDF/text/media previews, crop exports and editable signature strokes.
+- Upload / FileList / ImageCropper / SignaturePad: upload progress and cancellation, file metadata and browser media previews, movable crop selections and signature strokes.
 
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 

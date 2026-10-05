@@ -7,5 +7,5 @@ export function TransferBasic() {
     disabled: index === 4,
   }));
   const [value, setValue] = useState<readonly string[]>(['1', '3']);
-  return <Transfer style={{ width: '100%' }} items={items} value={value} onChange={setValue} />;
+  return <Transfer items={items} value={value} onChange={setValue} />;
 }

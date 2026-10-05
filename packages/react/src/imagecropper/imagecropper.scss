@@ -1,38 +1,118 @@
-@use 'react-easy-crop/react-easy-crop.css';
+@use 'react-image-crop/dist/ReactCrop.css';
 .leaf-image-cropper {
+  width: 100%;
+  min-width: 0;
   color: var(--leaf-color-text);
-  font: var(--leaf-font-size) var(--leaf-font-family);
-}
-.leaf-image-cropper__stage {
-  position: relative;
-  height: 340px;
-  min-height: 180px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  border-radius: var(--leaf-radius);
-  background: #171a19;
-  .reactEasyCrop_CropArea {
-    border-color: rgba(255, 255, 255, 0.8);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__stage {
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: var(--leaf-radius-lg);
+    background: #f1f3f5;
+    background-image:
+      linear-gradient(45deg, #e8ebee 25%, transparent 25%),
+      linear-gradient(-45deg, #e8ebee 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e8ebee 75%),
+      linear-gradient(-45deg, transparent 75%, #e8ebee 75%);
+    background-size: 16px 16px;
+    background-position:
+      0 0,
+      0 8px,
+      8px -8px,
+      -8px 0;
+    --rc-drag-handle-bg-colour: #fff;
+    --rc-drag-handle-border-colour: #0006;
+    --rc-focus-color: var(--leaf-color-primary);
+    container-type: inline-size;
+    .ReactCrop {
+      display: block;
+      max-height: 100%;
+      max-width: 100%;
+      line-height: 0;
+    }
+    .ReactCrop__child-wrapper {
+      max-height: 100%;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100cqw - 40px);
+      width: auto;
+      height: auto;
+      user-select: none;
+    }
+    .ReactCrop .ReactCrop__crop-selection {
+      border: 1px solid #fff;
+      background-image: none;
+      animation: none;
+    }
+    .ReactCrop__drag-handle {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid #ffffff;
+      box-shadow: 0 0 0 1px #0004;
+    }
+    .ReactCrop__drag-handle.ord-n,
+    .ReactCrop__drag-handle.ord-s {
+      width: 20px;
+      height: 5px;
+    }
+    .ReactCrop__drag-handle.ord-w,
+    .ReactCrop__drag-handle.ord-e {
+      width: 5px;
+      height: 20px;
+    }
+    .ReactCrop__crop-selection:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 3px;
+    }
+    &[data-disabled] {
+      opacity: 0.65;
+    }
   }
-}
-.leaf-image-cropper__controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  padding-top: 16px;
-}
-.leaf-image-cropper__slider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 180px;
-  flex: 1;
-  .leaf-slider {
+  &__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #64748b;
+    pointer-events: none;
+  }
+  &__dimensions {
+    position: absolute;
+    inset-block-end: 10px;
+    inset-inline-end: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #0009;
+    color: #fff;
+    font: 11px/1.6 var(--leaf-font-family);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 10px;
+  }
+  &__hint {
     flex: 1;
+    font-size: var(--leaf-font-size-sm);
+    color: var(--leaf-color-text-muted);
+    min-width: 160px;
   }
-}
-.leaf-image-cropper__error {
-  color: var(--leaf-color-danger);
+  &__error {
+    margin: 8px 0 0;
+    color: var(--leaf-color-danger);
+  }
 }

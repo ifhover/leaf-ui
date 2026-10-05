@@ -2,6 +2,9 @@
 .leaf-segmented {
   @include mixins.control-size;
   display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  align-self: flex-start;
   gap: 3px;
   padding: 3px;
   border-radius: var(--leaf-radius);
@@ -9,6 +12,8 @@
   box-sizing: border-box;
   &--block {
     display: flex;
+    width: 100%;
+    align-self: stretch;
     > button {
       flex: 1;
     }

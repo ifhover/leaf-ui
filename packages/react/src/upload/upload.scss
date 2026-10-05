@@ -1,0 +1,87 @@
+@use '../styles/mixins' as mixins;
+.leaf-upload {
+  width: 100%;
+  min-width: 0;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  &__trigger {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+  &__dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 160px;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    border: 1px dashed var(--leaf-color-border);
+    border-radius: var(--leaf-radius-lg);
+    background: var(--leaf-color-surface-muted);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition:
+      border-color var(--leaf-motion-duration),
+      background var(--leaf-motion-duration);
+    &:hover:not(:disabled) {
+      border-color: var(--leaf-color-primary);
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+  &[data-dragging] &__dropzone {
+    border-color: var(--leaf-color-primary);
+    background: color-mix(in srgb, var(--leaf-color-primary) 7%, var(--leaf-color-surface));
+  }
+  &__symbol {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--leaf-radius-lg);
+    background: var(--leaf-color-surface);
+    color: var(--leaf-color-primary);
+  }
+  &__title {
+    font-weight: 500;
+  }
+  &__hint {
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+  }
+  &__errors {
+    margin: 8px 0;
+    padding-inline-start: 20px;
+    color: var(--leaf-color-danger);
+    font-size: var(--leaf-font-size-sm);
+  }
+  > .leaf-file-list {
+    margin-top: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-upload__dropzone {
+    transition: none;
+  }
+}

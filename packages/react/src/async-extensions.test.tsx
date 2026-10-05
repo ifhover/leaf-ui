@@ -6,7 +6,7 @@ import {
   Button,
   ConfigProvider,
   ErrorBoundary,
-  FilePreview,
+  FileList,
   InfiniteScroll,
   Popconfirm,
   Tree,
@@ -210,16 +210,14 @@ describe('Async components and lifecycle', () => {
     unmount();
     expect(signal?.aborted).toBe(true);
   });
-  it('provides an explicit fallback and download link for unsupported files', () => {
+  it('provides download without a preview action for document files', () => {
     render(
       <ConfigProvider locale="en-US">
-        <FilePreview
-          file={{ url: '/report.docx', name: 'report.docx' }}
-          renderUnsupported={(file) => <p>Convert {file.name} to PDF</p>}
-        />
+        <FileList items={[{ url: '/report.docx', name: 'report.docx' }]} />
       </ConfigProvider>,
     );
-    expect(screen.getByText('Convert report.docx to PDF')).toBeInTheDocument();
+    expect(screen.getByText('report.docx')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Preview/ })).toBeNull();
     expect(screen.getByRole('link', { name: /Download/ })).toHaveAttribute('href', '/report.docx');
   });
 });

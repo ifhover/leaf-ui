@@ -69,12 +69,12 @@ DatePicker 使用本地年月日而非 UTC 序列化；TimePicker 支持分钟�
 
 ## 扩展组件的实现
 
-布局与栅格使用 CSS。Masonry 使用多列布局，内容按列阅读；要求按行阅读或固定焦点顺序时使用 Grid。图片、PDF、裁剪与签名依赖见 [THIRD_PARTY.md](THIRD_PARTY.md)。只在需要时加载浏览器引擎，SSR 首屏输出稳定的占位内容。
+布局与栅格使用 CSS。Masonry 使用多列布局，内容按列阅读；要求按行阅读或固定焦点顺序时使用 Grid。图片、裁剪与签名依赖见 [THIRD_PARTY.md](THIRD_PARTY.md)。只在需要时加载浏览器引擎，SSR 首屏输出稳定的占位内容。
 
-Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加载模块不在服务端执行。源码入口及各输出文件保留 Next.js 客户端边界。构建时复制当前 PDF.js 版本的 worker 和许可证，不从 CDN 下载构建资产。
+Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加载模块不在服务端执行。源码入口及各输出文件保留 Next.js 客户端边界。
 
 异步加载组件必须支持 AbortSignal 与卸载清理；InfiniteScroll 同一 dataLength 不会重复请求，失败时可重试，缺少 IntersectionObserver 时提供手动加载。Tree 的 key 必须稳定，异步子树在实例内缓存。更换整个数据源时可更换 Tree 的 React key 以重置缓存。虚拟列表通过 TanStack 测量实际行高，移动焦点时先滚动再聚焦。
 
-Sortable / Tabs / Tree 通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。FilePreview 原生支持图片、PDF、文本和媒体；Office 文件保留下载与自定义展示入口，在线阅读需要先转换为 PDF。
+Sortable / Tabs / Tree 通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
 ConfigProvider 自动提供 Notification 与 LoadingBar 的作用域。操作通知无需 contextHolder，任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。

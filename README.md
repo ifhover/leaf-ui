@@ -76,7 +76,7 @@ export function App() {
 | `VirtualList` / `InfiniteScroll` / `Sortable` | 大量数据、分页加载和拖拽排序 |
 | `Transfer` / `InputOTP` / `InputMask` / `TimeRangePicker` | 穿梭选择、验证码、格式输入和时间范围 |
 | `Notification` / `useNotification` / `Popconfirm` / `ErrorBoundary` / `LoadingBar` / `useLoadingBar` | 通知、就地确认、异常恢复和任务进度 |
-| `FilePreview` / `ImageCropper` / `SignaturePad` | 文件阅读、图片裁剪和签名导出 |
+| `Upload` / `FileList` / `ImageCropper` / `SignaturePad` | 文件上传、文件信息、图片裁剪和签名导出 |
 
 `Select` 的 onChange 返回字符串值与选项，多选时返回数组；`DatePicker` 返回 Date 或 null 及当前模式的日期字符串，支持日期、年、季度、月、周；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
 
@@ -131,7 +131,7 @@ export function useProjectSave(saveProject: () => Promise<void>) {
 }
 ```
 
-每个任务的完成函数相互独立，并发任务全部完成后才收起加载条。FilePreview 支持图片、PDF、文本和音视频；Office 文件可以通过自定义展示接入转换后的 PDF。远程图片裁剪需要文件服务器允许跨域读取。
+每个任务的完成函数相互独立，并发任务全部完成后才收起加载条。Upload 支持文件校验、进度、取消和重试；FileList 展示文件信息，预览图片与音视频。
 
 ## 主题定制
 

@@ -4,7 +4,7 @@ import { ImageCropperAvatar } from '../../src/examples/image-cropper/advanced';
 
 # ImageCropper 图片裁剪
 
-调整图片位置、缩放与裁剪范围。
+移动选框并调整裁剪范围。
 
 ## 基本用法
 
@@ -26,7 +26,7 @@ import { ImageCropperAvatar } from '../../src/examples/image-cropper/advanced';
 
 ## 使用说明
 
-支持鼠标、触摸、键盘调整位置，缩放、旋转和重置。导出返回 Blob。远程图片服务器须允许 CORS；圆形 PNG 保留透明边角，JPEG 使用白底。
+图片保持固定，拖动选框移动，拖动边缘或角点调整尺寸，支持触摸与键盘。画布默认正方形。未指定 aspect 时矩形可自由调整，圆形固定为 1:1。export() 返回 Blob。远程图片须允许 CORS；圆形 PNG 保留透明边角，JPEG 使用白底。
 
 ## 类型
 
@@ -57,13 +57,12 @@ import type { CropArea, ImageCropperHandle, ImageCropperProps, ImageCropResult }
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `src` | `string` | 必填 | 图片地址 |
-| `aspect` | `number` | `1` | 裁剪宽高比 |
+| `aspect` | `number` | — | 固定裁剪比例，未提供时自由调整 |
 | `shape` | `'rect' \| 'round'` | `'rect'` | 裁剪形状 |
-| `minZoom` | `number` | `1` | 最小缩放比例 |
-| `maxZoom` | `number` | `3` | 最大缩放比例 |
+| `minWidth / minHeight` | `number` | `24` | 选框最小宽高，按显示像素计算 |
+| `disabled` | `boolean` | `false` | 禁止移动和调整选框 |
+| `showActions` | `boolean` | `true` | 显示重置与裁剪按钮 |
 | `showGrid` | `boolean` | `true` | 裁剪辅助线 |
-| `controls` | `boolean` | `true` | 显示操作栏 |
-| `rotation` | `boolean` | `true` | 显示旋转操作 |
 | `crossOrigin` | `'anonymous' \| 'use-credentials'` | `'anonymous'` | 图片跨域模式，导出需要服务器允许 CORS |
 | `type` | `'image/png' \| 'image/jpeg' \| 'image/webp'` | `'image/png'` | 导出图片格式 |
 | `quality` | `number` | `0.92` | 导出质量，0–1 |

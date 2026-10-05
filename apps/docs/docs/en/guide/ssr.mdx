@@ -146,8 +146,8 @@ The entry `ConfigProvider` manages messages, notifications and task loading bars
 
 ## Images and file interactions
 
-Image renders its image on the server. The enlarged viewer, ImageCropper engine, SignaturePad engine and FilePreview PDF reader load on demand in the browser. Stable containers and placeholders keep the server output consistent. Use these components in a Client Component without disabling SSR for the page.
+Image renders its image on the server. The enlarged viewer, ImageCropper engine and SignaturePad engine load on demand in the browser. Stable containers and placeholders keep the server output consistent. Use these components in a Client Component without disabling SSR for the page.
 
-FilePreview can render a file URL on the server. Keep browser-selected `File` objects in client state. To self-host the PDF worker, copy `@sudden3/leaf-ui/pdf.worker.mjs` into your public directory and pass `workerSrc="/pdf.worker.mjs"`. See [file preview](/en/components/file-preview#self-hosting-the-pdf-worker) for the full example.
+FileList renders URL-based metadata on the server. Upload keeps browser-selected File objects and temporary preview URLs in client state; no upload request is started during SSR.
 
 Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.

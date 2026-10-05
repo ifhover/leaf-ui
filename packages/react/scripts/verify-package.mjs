@@ -15,7 +15,6 @@ for (const relativePath of [
   entry.require.types,
   entry.require.default,
   manifest.exports['./styles.css'],
-  manifest.exports['./pdf.worker.mjs'],
 ]) {
   assert.ok((await stat(new URL(relativePath, packageRoot))).isFile(), relativePath);
 }
@@ -170,7 +169,8 @@ const components = [
     null,
     /leaf-sortable/,
   ],
-  ['FilePreview', { file: { url: '/report.pdf' } }, null, /leaf-file-preview/],
+  ['FileList', { items: [{ url: '/report.pdf' }] }, null, /leaf-file-list/],
+  ['Upload', {}, null, /leaf-upload/],
   ['ImageCropper', { src: '/image.png' }, null, /leaf-image-cropper/],
   ['SignaturePad', {}, null, /<canvas/],
   ['OrgChart', { data: { key: 'team', label: 'Team' } }, null, /leaf-org-chart/],
@@ -332,7 +332,8 @@ for (const name of [
   'loading-bar',
   'infinite-scroll',
   'sortable',
-  'file-preview',
+  'file-list',
+  'upload',
   'image-cropper',
   'signature-pad',
   'org-chart',
