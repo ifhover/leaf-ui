@@ -142,7 +142,7 @@ Date pickers display local dates and times. Different server and browser time zo
 
 Modal, Confirm, Message and floating panels create their portals after client mounting. Form controls themselves can render on the server; initially open overlays appear after hydration.
 
-The entry `ConfigProvider` manages messages, notifications and task loading bars automatically. Client descendants call `useMessage`, `useNotification` and `useLoadingBar` without adding a `contextHolder`. These containers do not render on the server. State belongs to individual application roots and is not shared between SSR requests.
+The entry `ConfigProvider` manages confirmations, messages, notifications and task loading bars automatically. Client descendants call `useConfirm`, `useMessage`, `useNotification` and `useLoadingBar`. These containers do not render on the server. State belongs to individual application roots and is not shared between SSR requests.
 
 ## Images and file interactions
 

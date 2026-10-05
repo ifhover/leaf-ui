@@ -93,7 +93,7 @@ const advanced: LeafThemeTokens = { controlHeightLg: 44 };
 
 ## 使用说明
 
-嵌套区域按字段合并 tokens；手动指定的派生尺寸会继续继承。浮层、Modal、消息及此区域内的 confirm contextHolder 沿用相同配置。ConfigProvider 自动托管消息，子组件调用 useMessage 即可，详见 [Message](/components/message)。
+嵌套区域按字段合并 tokens；手动指定的派生尺寸会继续继承。浮层、Modal、确认框和消息沿用调用区域的配置。ConfigProvider 自动托管确认框、消息、通知和顶部加载条，子组件调用相应 hook 即可，详见 [Confirm](/components/confirm) 和 [Message](/components/message)。
 
 语言覆盖内置提示、日期、时间、清除按钮和反馈组件；业务内容、label 和 options 由应用翻译。
 

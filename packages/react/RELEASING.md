@@ -26,7 +26,7 @@
 
 ### 改进
 
-- ConfigProvider 自动托管消息，业务组件无需渲染 contextHolder。
+- ConfigProvider 自动托管消息，业务组件直接调用 useMessage。
 ```
 
 ## 检查与发布

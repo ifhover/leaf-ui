@@ -136,21 +136,22 @@ describe('Modal and Confirm', () => {
   it('resolves hook requests independently and preserves content during dismissal', async () => {
     let result: Promise<boolean> | undefined;
     function Example() {
-      const { confirm, contextHolder } = useConfirm();
+      const { confirm } = useConfirm();
       return (
-        <>
-          <Button
-            onClick={() => {
-              result = confirm({ title: 'Continue', children: 'Ready?' });
-            }}
-          >
-            Open
-          </Button>
-          {contextHolder}
-        </>
+        <Button
+          onClick={() => {
+            result = confirm({ title: 'Continue', children: 'Ready?' });
+          }}
+        >
+          Open
+        </Button>
       );
     }
-    render(<Example />);
+    render(
+      <ConfigProvider>
+        <Example />
+      </ConfigProvider>,
+    );
     await userEvent.click(screen.getByText('Open'));
     await userEvent.click(screen.getByRole('button', { name: '确定' }));
     await expect(result).resolves.toBe(true);

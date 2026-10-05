@@ -59,7 +59,7 @@ Nested providers override only supplied settings, including individual token ove
 </ConfigProvider>
 ```
 
-Floating panels, Modal, messages and confirm context holders placed in a region inherit its theme. ConfigProvider manages messages automatically, so pages do not need a contextHolder. Set `locale` separately for built-in text.
+Floating panels, Modal, confirmations and messages inherit their calling region’s theme. ConfigProvider manages confirmations and messages automatically; descendants call useConfirm and useMessage. Set `locale` separately for built-in text.
 
 ## Appearance and switching
 

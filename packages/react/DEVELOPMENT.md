@@ -77,4 +77,4 @@ Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加�
 
 Sortable / Tabs / Tree 通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
-ConfigProvider 自动提供 Notification 与 LoadingBar 的作用域。操作通知无需 contextHolder，任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
+ConfigProvider 自动提供 Confirm、Message、Notification 与 LoadingBar 的作用域。useConfirm / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，调用区域卸载时取消待处理请求；任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。

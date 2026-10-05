@@ -1,4 +1,5 @@
 import { type HTMLAttributes, useMemo } from 'react';
+import { ConfirmScope } from '../confirm/provider';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
 import { MessageScope } from '../message/provider';
 import { NotificationScope } from '../notification/notification';
@@ -35,9 +36,11 @@ export function ConfigProvider({ locale, theme, style, children, ...props }: Con
         style={{ ...variables, ...style }}
       >
         <MessageScope>
-          <NotificationScope>
-            <LoadingBarScope>{children}</LoadingBarScope>
-          </NotificationScope>
+          <ConfirmScope>
+            <NotificationScope>
+              <LoadingBarScope>{children}</LoadingBarScope>
+            </NotificationScope>
+          </ConfirmScope>
         </MessageScope>
       </div>
     </ConfigContext.Provider>

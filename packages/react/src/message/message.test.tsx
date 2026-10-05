@@ -17,9 +17,13 @@ it('keeps the closing slot until its transition finishes and preserves following
   function Example() {
     const result = useMessage();
     message = result.message;
-    return result.contextHolder;
+    return null;
   }
-  render(<Example />);
+  render(
+    <MessageProvider>
+      <Example />
+    </MessageProvider>,
+  );
   await act(async () => {
     message?.open({ key: 'first', content: 'First', duration: 0, onClose });
     message?.open({ key: 'second', content: 'Second', duration: 0, closable: true });
@@ -47,9 +51,13 @@ it('updates a loading message by key and closes only once', async () => {
   function Example() {
     const result = useMessage();
     message = result.message;
-    return result.contextHolder;
+    return null;
   }
-  render(<Example />);
+  render(
+    <MessageProvider>
+      <Example />
+    </MessageProvider>,
+  );
   await act(async () => {
     message?.open({ key: 'save', content: 'Saving', type: 'loading' });
   });
@@ -74,9 +82,13 @@ it('pauses dismissal while hovered and resumes with the remaining time', async (
   function Example() {
     const result = useMessage();
     message = result.message;
-    return result.contextHolder;
+    return null;
   }
-  render(<Example />);
+  render(
+    <MessageProvider>
+      <Example />
+    </MessageProvider>,
+  );
   await act(async () => {});
   vi.useFakeTimers();
   act(() => {
@@ -102,7 +114,7 @@ it('shares one queue without holders and keeps messages across consumer unmounts
     const result = useMessage();
     first = result.message;
     renders();
-    expect(result.contextHolder).toBeNull();
+    expect(result).not.toHaveProperty('contextHolder');
     return null;
   }
   function Second() {
@@ -215,13 +227,13 @@ it('isolates providers and ignores delayed calls after the owning provider unmou
   expect(screen.getByText('Second root')).toBeInTheDocument();
 });
 
-it('can open from effects under StrictMode and does not duplicate a legacy holder', async () => {
+it('can open from effects under StrictMode with one managed queue', async () => {
   function Example() {
-    const { message, contextHolder } = useMessage();
+    const { message } = useMessage();
     useEffect(() => {
       message.open({ key: 'mounted', content: 'Ready', duration: 0 });
     }, [message]);
-    return contextHolder;
+    return null;
   }
   render(
     <StrictMode>

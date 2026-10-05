@@ -1,7 +1,7 @@
 import { Button, useConfirm, useMessage } from '@sudden3/leaf-ui';
 export function ConfirmBasic() {
-  const { confirm, contextHolder } = useConfirm();
-  const feedback = useMessage();
+  const { confirm } = useConfirm();
+  const { message } = useMessage();
   return (
     <>
       <Button
@@ -14,7 +14,7 @@ export function ConfirmBasic() {
             type: 'danger',
             onConfirm: () => new Promise((resolve) => setTimeout(resolve, 900)),
           });
-          if (accepted) feedback.message.success('项目已删除');
+          if (accepted) message.success('项目已删除');
         }}
       >
         删除项目
@@ -41,7 +41,6 @@ export function ConfirmBasic() {
           </Button>
         ))}
       </div>
-      {contextHolder}
     </>
   );
 }

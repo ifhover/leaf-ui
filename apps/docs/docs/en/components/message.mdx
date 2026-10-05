@@ -9,7 +9,7 @@ Provide brief feedback about an operation.
 
 ## Set up once
 
-Wrap your application in `ConfigProvider`. It manages messages automatically, so pages and business components can call `useMessage` without rendering a `contextHolder`.
+Wrap your application in `ConfigProvider`. It manages messages automatically, so pages and business components can call `useMessage` directly.
 
 ```tsx
 import { ConfigProvider } from '@sudden3/leaf-ui';
@@ -58,7 +58,6 @@ When a message closes, those below it move up smoothly. Content of different hei
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `message` | [`MessageApi`](#messageapi) | — | Call the queue managed by the application provider |
-| `contextHolder` | `ReactNode` | — | Legacy compatibility; null inside a provider, no need to render |
 
 ## MessageProvider API
 
@@ -123,4 +122,4 @@ Components under the same entry provider share a queue. `close()` closes all its
 
 Messages continue after the calling component unmounts, and asynchronous work can update them through the same `message` instance. Unmounting the entry provider clears its messages and timers. Separate React applications and SSR requests have independent queues.
 
-`Message` also supports declarative rendering; set `open=false` after `onClose`. The legacy local `contextHolder` pattern remains supported and returns `null` when the entry provider handles messages.
+`Message` also supports declarative rendering; set `open=false` after `onClose`.

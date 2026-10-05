@@ -5,6 +5,18 @@ import { ConfirmBasic } from '../../../src/examples/en/confirm/basic';
 
 Ask for confirmation before an important action.
 
+## Application setup
+
+Place `ConfigProvider` at the application entry. Descendants call `useConfirm()` directly and inherit their region’s theme and language.
+
+```tsx
+import { ConfigProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
 ## Async confirmation
 
 <ComponentExample title="Async confirmation" preview={<ConfirmBasic />} fileName="basic.tsx">
@@ -33,10 +45,27 @@ Ask for confirmation before an important action.
 
 ## useConfirm API
 
+The returned object is typed as [`ConfirmApi`](#useconfirm-api).
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or unmount |
-| `contextHolder` | `ReactNode` | — | Render inside the target ConfigProvider |
+
+## ConfirmProvider API
+
+Without `ConfigProvider`, wrap the application in `ConfirmProvider`. An explicit provider also creates an independent confirmation queue for a region.
+
+```tsx
+import { ConfirmProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <ConfirmProvider><App /></ConfirmProvider>;
+}
+```
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Components sharing the confirmation queue |
 
 ## ConfirmOptions
 
@@ -57,12 +86,16 @@ Ask for confirmation before an important action.
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
+import type { ConfirmProps, ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@sudden3/leaf-ui';
 ```
 
 ## Usage notes
 
-useConfirm returns confirm and contextHolder. Render the holder inside ConfigProvider to inherit regional settings. You can also render Confirm directly and control open and onClose. Async confirmation displays a loading state and prevents duplicate actions.
+`useConfirm()` returns `{ confirm }`. Requests under the same entry appear in order, with the next dialog opening after the previous dismissal finishes. Confirmation resolves to `true`; cancellation or unmounting the calling component or provider resolves to `false`.
+
+Async confirmation shows a loading state and prevents duplicate actions. Rejection displays an error and keeps the dialog open for retry. Nested `ConfigProvider` regions share the queue while preserving each caller’s theme and language.
+
+You can also render `Confirm` directly and control `open` and `onClose`.
 
 See [Modal API](/en/components/modal#modal-api) for inherited attributes.
 

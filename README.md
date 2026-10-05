@@ -98,7 +98,7 @@ import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-u
 </ConfigProvider>
 ```
 
-嵌套配置继承未设置的选项；浮层、消息与区域内的 confirm contextHolder 沿用主题和语言。ConfigProvider 自动托管消息，页面无需重复放置 contextHolder：
+嵌套配置继承未设置的选项；浮层、确认框与消息沿用调用区域的主题和语言。ConfigProvider 自动托管确认框、消息、通知和顶部加载条，子组件直接调用相应 hook：
 
 ```tsx
 import { Button, useMessage } from '@sudden3/leaf-ui';
@@ -109,7 +109,22 @@ export function SaveButton() {
 }
 ```
 
-将 SaveButton 放在应用入口的 ConfigProvider 下即可。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
+确认框同样直接使用：
+
+```tsx
+import { Button, useConfirm } from '@sudden3/leaf-ui';
+
+export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void> }) {
+  const { confirm } = useConfirm();
+  return <Button danger onClick={async () => {
+    if (await confirm({ title: '删除项目', children: '是否继续？', type: 'danger' })) {
+      await onDelete();
+    }
+  }}>删除</Button>;
+}
+```
+
+将这些组件放在应用入口的 ConfigProvider 下即可。单独使用时可在入口选择 ConfirmProvider 或 MessageProvider。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
 
 通知和顶部加载条也由入口托管，子组件或自定义 hook 直接使用：
 

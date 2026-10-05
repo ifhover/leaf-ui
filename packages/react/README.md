@@ -74,11 +74,11 @@ import { ConfigProvider, Button } from '@sudden3/leaf-ui';
 </ConfigProvider>
 ```
 
-Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Messages follow the calling ConfigProvider region; place confirm context holders within the desired region.
+Floating panels inherit the trigger's scoped theme, mount on opening and stay mounted through the closing animation. They follow scroll/resize while avoiding viewport edges. Click outside, move focus away or press Escape to dismiss. Portaled dialogs preserve the form's Tab order. Messages and confirmations follow the calling ConfigProvider region.
 
-## Messages
+## Confirmations and messages
 
-ConfigProvider manages the message queue once at your application entry. Descendants call useMessage without rendering a contextHolder:
+ConfigProvider manages messages and confirmations once at the application entry. Descendants call useMessage or useConfirm directly:
 
 ```tsx
 import { Button, useMessage } from '@sudden3/leaf-ui';
@@ -89,7 +89,20 @@ export function SaveButton() {
 }
 ```
 
-If you do not use ConfigProvider, wrap your application in MessageProvider instead. Components share one queue and can update a message using the same key. The legacy holder pattern remains supported.
+If you do not use ConfigProvider, wrap your application in MessageProvider instead. Components share one queue and can update a message using the same key. Use ConfirmProvider for a standalone confirmation scope.
+
+```tsx
+import { Button, useConfirm } from '@sudden3/leaf-ui';
+
+export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void> }) {
+  const { confirm } = useConfirm();
+  return <Button danger onClick={async () => {
+    if (await confirm({ title: 'Delete project', children: 'Continue?', type: 'danger' })) {
+      await onDelete();
+    }
+  }}>Delete</Button>;
+}
+```
 
 Custom components can read var(--leaf-color-primary), var(--leaf-radius), var(--leaf-control-height) and other shared variables inside the region. Use ConfigProvider to change library styles, and CSS variables to reuse the resulting values. See [theming](https://ifhover.github.io/leaf-ui/guide/theming.html).
 

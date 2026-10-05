@@ -37,8 +37,8 @@ export type {
   LeafThemeTokens,
 } from './config-provider';
 export { ConfigProvider } from './config-provider';
-export type { ConfirmOptions, ConfirmProps } from './confirm';
-export { Confirm, useConfirm } from './confirm';
+export type { ConfirmApi, ConfirmOptions, ConfirmProps, ConfirmProviderProps } from './confirm';
+export { Confirm, ConfirmProvider, useConfirm } from './confirm';
 export type { DatePickerProps } from './datepicker';
 export { DatePicker } from './datepicker';
 export type { DateRange, DateRangePickerProps } from './daterangepicker';

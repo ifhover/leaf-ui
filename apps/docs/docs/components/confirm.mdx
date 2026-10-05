@@ -5,6 +5,18 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 
 在执行重要操作前征求确认。
 
+## 入口配置一次
+
+在应用入口使用 `ConfigProvider`，子组件直接调用 `useConfirm()`，确认框会沿用调用区域的主题和语言。
+
+```tsx
+import { ConfigProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
 ## 异步确认
 
 <ComponentExample title="异步确认" preview={<ConfirmBasic />} fileName="basic.tsx">
@@ -33,10 +45,27 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 
 ## useConfirm API
 
+返回的对象类型是 [`ConfirmApi`](#useconfirm-api)。
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | 确认返回 true，取消或卸载返回 false |
-| `contextHolder` | `ReactNode` | — | 放在目标 ConfigProvider 区域内 |
+
+## ConfirmProvider API
+
+未使用 `ConfigProvider` 时，在入口放置 `ConfirmProvider`。显式添加它也可以为某个区域建立独立的确认队列。
+
+```tsx
+import { ConfirmProvider } from '@sudden3/leaf-ui';
+
+export function Root() {
+  return <ConfirmProvider><App /></ConfirmProvider>;
+}
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 共用此确认队列的组件 |
 
 ## ConfirmOptions
 
@@ -57,12 +86,16 @@ import { ConfirmBasic } from '../../src/examples/confirm/basic';
 定义组件属性或组装变量时可导入相关类型。
 
 ```ts
-import type { ConfirmProps, ConfirmOptions } from '@sudden3/leaf-ui';
+import type { ConfirmProps, ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@sudden3/leaf-ui';
 ```
 
 ## 使用说明
 
-useConfirm 返回 confirm 与 contextHolder。把 holder 放在 ConfigProvider 内即可继承区域设置。也支持直接渲染 Confirm，控制 open 和 onClose。处理异步确认时会显示加载状态并阻止重复操作。
+`useConfirm()` 返回 `{ confirm }`。同一入口下的请求依次展示，上一个确认框完成关闭后再显示下一个。确认返回 `true`；取消、调用组件或入口卸载返回 `false`。
+
+异步确认期间展示加载状态并阻止重复操作；失败时保留确认框并显示错误，可再次尝试。嵌套 `ConfigProvider` 共用队列，各个请求仍沿用调用区域的主题和语言。
+
+也支持直接渲染 `Confirm`，控制 `open` 和 `onClose`。
 
 其他属性参见 [Modal API](/components/modal#modal-api)。
 

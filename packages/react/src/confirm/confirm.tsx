@@ -1,7 +1,7 @@
-import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { FeedbackIcon } from '../alert/alert';
 import { Button } from '../button';
-import { useLeafConfig } from '../config-provider/config-provider';
+import { useLeafConfig } from '../config-provider/context';
 import { Modal, type ModalProps } from '../modal';
 
 export interface ConfirmProps extends Omit<ModalProps, 'footer' | 'onConfirm'> {
@@ -140,50 +140,4 @@ export function Confirm({
       </div>
     </Modal>
   );
-}
-
-/** The holder stays inside its ConfigProvider so imperative confirmations inherit the scope. */
-export function useConfirm() {
-  const [request, setRequest] = useState<{ id: number; options: ConfirmOptions; open: boolean }>();
-  const active = useRef<{ id: number; resolve: (result: boolean) => void } | null>(null);
-  const serial = useRef(0);
-  const close = useCallback((id: number, result: boolean) => {
-    if (active.current?.id !== id) return;
-    active.current.resolve(result);
-    active.current = null;
-    setRequest((current) => (current?.id === id ? { ...current, open: false } : current));
-  }, []);
-  useEffect(
-    () => () => {
-      active.current?.resolve(false);
-      active.current = null;
-    },
-    [],
-  );
-  const confirm = useCallback(
-    (options: ConfirmOptions) =>
-      new Promise<boolean>((resolve) => {
-        active.current?.resolve(false);
-        const id = ++serial.current;
-        active.current = { id, resolve };
-        setRequest({ id, options, open: true });
-      }),
-    [],
-  );
-  const contextHolder = request ? (
-    <Confirm
-      key={request.id}
-      {...request.options}
-      open={request.open}
-      onConfirm={async () => {
-        await request.options.onConfirm?.();
-        close(request.id, true);
-      }}
-      onClose={() => close(request.id, false)}
-      afterClose={() =>
-        setRequest((current) => (current?.id === request.id && !current.open ? undefined : current))
-      }
-    />
-  ) : null;
-  return { confirm, contextHolder };
 }

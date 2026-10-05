@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { createElement, Fragment } from 'react';
+import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const require = createRequire(import.meta.url);
@@ -223,21 +223,31 @@ for (const [format, api] of [
     'moveTreeNode',
   ])
     assert.equal(typeof api[name], 'function', `${format} must export ${name}`);
-  function HookHolders() {
-    const confirm = api.useConfirm();
-    const message = api.useMessage();
-    return createElement(Fragment, null, confirm.contextHolder, message.contextHolder);
-  }
-  assert.equal(renderToStaticMarkup(createElement(HookHolders)), '');
-  function ManagedMessage() {
-    const { message, contextHolder } = api.useMessage();
-    assert.equal(contextHolder, null);
-    assert.equal(typeof message.success, 'function');
+  assert.equal(typeof api.ConfirmProvider, 'function', `${format} must export ConfirmProvider`);
+  function ManagedFeedback() {
+    const confirmation = api.useConfirm();
+    const messages = api.useMessage();
+    assert.deepEqual(Object.keys(confirmation), ['confirm']);
+    assert.deepEqual(Object.keys(messages), ['message']);
+    assert.equal(typeof confirmation.confirm, 'function');
+    assert.equal(typeof messages.message.success, 'function');
+    assert.equal(typeof api.useNotification().open, 'function');
+    assert.equal(typeof api.useLoadingBar().start, 'function');
     return createElement('span', null, 'Ready');
   }
   assert.match(
-    renderToStaticMarkup(createElement(api.ConfigProvider, null, createElement(ManagedMessage))),
+    renderToStaticMarkup(createElement(api.ConfigProvider, null, createElement(ManagedFeedback))),
     /Ready/,
+  );
+  function ManagedConfirmation() {
+    assert.equal(typeof api.useConfirm().confirm, 'function');
+    return null;
+  }
+  assert.equal(
+    renderToStaticMarkup(
+      createElement(api.ConfirmProvider, null, createElement(ManagedConfirmation)),
+    ),
+    '',
   );
   const themed = renderToStaticMarkup(
     createElement(

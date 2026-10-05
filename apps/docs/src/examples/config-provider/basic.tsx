@@ -1,13 +1,30 @@
-import { Button, ConfigProvider, DatePicker, Select, Switch, useMessage } from '@sudden3/leaf-ui';
+import {
+  Button,
+  ConfigProvider,
+  DatePicker,
+  Select,
+  Switch,
+  useConfirm,
+  useMessage,
+} from '@sudden3/leaf-ui';
 import { useState } from 'react';
 
 function Region() {
   const { message } = useMessage();
+  const { confirm } = useConfirm();
   return (
     <div className="leaf-demo-row">
       <Select aria-label="选项" options={[]} />
       <DatePicker aria-label="日期" />
       <Button onClick={() => message.success('Success / 操作成功')}>Message</Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          confirm({ title: 'Continue / 是否继续', children: 'Please review / 请查看提示内容' })
+        }
+      >
+        Confirm
+      </Button>
     </div>
   );
 }

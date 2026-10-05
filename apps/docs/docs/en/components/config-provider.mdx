@@ -91,6 +91,6 @@ const advanced: LeafThemeTokens = { controlHeightLg: 44 };
 
 ## Usage notes
 
-Nested regions merge tokens by field; explicit derived-size overrides remain inherited. Floating panels, Modal, messages and confirm holders inside a region inherit the configuration. ConfigProvider manages messages automatically; descendants only need useMessage. See [Message](/components/message).
+Nested regions merge tokens by field; explicit derived-size overrides remain inherited. Floating panels, Modal, confirmations and messages inherit the calling region’s configuration. ConfigProvider manages confirmations, messages, notifications and loading bars automatically; descendants call the corresponding hooks. See [Confirm](/en/components/confirm) and [Message](/en/components/message).
 
 Translate application content, labels and options yourself. Configure themes through ConfigProvider and consume CSS variables in custom components. See [theming](/en/guide/theming) and [SSR usage](/en/guide/ssr).
