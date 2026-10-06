@@ -1,0 +1,24 @@
+# 浏览器兼容性
+
+建议使用当前与上一代稳定版 Chrome、Edge、Firefox 或 Safari。工程基线为 Chrome/Edge 109、Firefox 121、Safari 16.4；这些最低版本是支持目标，不能等同于已逐个实测的版本。IE 和旧版 WebView 不在支持范围内。
+
+| 能力 | 实现与降级 |
+| --- | --- |
+| 派生颜色 | JavaScript 生成具体颜色变量；静态默认色板支持首屏和独立 CSS 引入，无需原生颜色混合 |
+| 背景模糊 | 同时使用标准和 WebKit 前缀；不支持时使用加深的半透明遮罩；`maskBlur={false}` 可关闭 |
+| 打开动效 | 遮罩采用关键帧渐变；不支持 `@starting-style` 时部分内容直接显示，操作仍可用 |
+| Web Animations | 缺少 `Element.animate` 时直接更新布局 |
+| ResizeObserver | 可选布局观测器有保护；窗口 resize 继续触发布局测量。虚拟列表等第三方能力需要现代浏览器 |
+| IntersectionObserver | 无限滚动降级为手动加载按钮 |
+| 减少动态效果 | 系统偏好和 `theme.motion={false}` 均生效 |
+| 高对比度 | 保留键盘焦点与原生选择标记；用文字和 ARIA 描述状态 |
+
+```tsx
+<ConfigProvider maskBlur={false} theme={{ primaryColor: '#635bff', appearance: 'dark' }}>
+  <App />
+</ConfigProvider>
+```
+
+颜色支持具体 hex、rgb、hsl 和命名色，推荐通过 `theme` / `tokens` 配置。JS 无法在服务端解析 CSS 变量；使用 `var(...)` 时，浏览器在挂载后解析并生成派生值，祖先的 class/style 变化会重新同步。需要严格一致的 SSR 首屏时应传入具体颜色。不要只改 CSS 中的基础色而期望所有派生色自动重新计算。
+
+CI 已配置 Chromium、Firefox、WebKit 行为测试，以及 React 18/19、SSR 和包导出检查。WebKit 的通过不代表已经在真实 Safari 或 iOS 设备验收。当前本机 Firefox 启动存在环境问题（`spawn UNKNOWN`），不能将其列为通过；具体已执行记录见仓库 `packages/react/ACCESSIBILITY.md`。

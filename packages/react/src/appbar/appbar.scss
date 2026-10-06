@@ -1,10 +1,15 @@
 .leaf-app-bar {
-  background: var(--leaf-color-surface);
+  background: var(--leaf-color-surface-raised);
   color: var(--leaf-color-text);
   z-index: 30;
   width: 100%;
+  box-sizing: border-box;
+  border-block-end: 1px solid var(--leaf-color-border);
+  transition:
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   &--elevated {
-    box-shadow: var(--leaf-shadow-sm, 0 2px 8px rgb(0 0 0 / 0.08));
+    box-shadow: var(--leaf-shadow-sm);
   }
 }
 .leaf-toolbar {
@@ -18,11 +23,61 @@
   }
 }
 .leaf-bottom-navigation {
+  box-sizing: border-box;
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
   display: flex;
   justify-content: center;
   background: var(--leaf-color-surface);
   padding: 6px;
   gap: 4px;
+  border-block-start: 1px solid var(--leaf-color-border);
+  &__indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    width: var(--leaf-indicator-width, 0px);
+    height: var(--leaf-indicator-height, 0px);
+    transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
+    border-radius: var(--leaf-radius);
+    background: var(--leaf-color-primary-alpha-8);
+    opacity: 0;
+    &[data-visible='true'] {
+      opacity: 1;
+    }
+    &[data-animate='true'] {
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+        width var(--leaf-motion-slow) var(--leaf-motion-spring),
+        height var(--leaf-motion-slow) var(--leaf-motion-spring);
+    }
+  }
+  &__icon {
+    display: flex;
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  &__label {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(3px);
+    transition:
+      max-height var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-slow) var(--leaf-motion-easing);
+    &[data-visible] {
+      max-height: 2em;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   button,
   a {
     display: flex;
@@ -42,15 +97,34 @@
     cursor: pointer;
     transition:
       color var(--leaf-motion-duration),
-      background var(--leaf-motion-duration);
+      background var(--leaf-motion-duration),
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-current] {
       color: var(--leaf-color-primary);
-      background: color-mix(in srgb, var(--leaf-color-primary) 9%, transparent);
+      .leaf-bottom-navigation__icon {
+        transform: translateY(-1px) scale(1.04);
+      }
+    }
+    &:hover:not(:disabled):not([aria-disabled]):not([aria-current]) {
+      color: var(--leaf-color-text);
+    }
+    &:active:not(:disabled):not([aria-disabled]) {
+      transform: scale(0.96);
     }
     &:disabled {
       opacity: 0.5;
       cursor: default;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-app-bar,
+  .leaf-bottom-navigation button,
+  .leaf-bottom-navigation a,
+  .leaf-bottom-navigation__indicator[data-animate='true'],
+  .leaf-bottom-navigation__icon,
+  .leaf-bottom-navigation__label {
+    transition: none;
   }
 }
 
@@ -64,4 +138,13 @@
 .leaf-bottom-navigation [aria-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+@media (forced-colors: active) {
+  .leaf-bottom-navigation__indicator {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  .leaf-bottom-navigation [aria-current] {
+    color: HighlightText;
+  }
 }

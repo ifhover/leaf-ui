@@ -1,6 +1,6 @@
 .leaf-form {
   display: grid;
-  gap: var(--leaf-component-form-gap, 18px);
+  gap: var(--leaf-component-form-gap, var(--leaf-density-form-gap));
   color: var(--leaf-component-form-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-form-font-size, var(--leaf-font-size));
@@ -16,7 +16,7 @@
   }
   &--vertical {
     grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+    gap: var(--leaf-density-label-gap);
   }
   &__label {
     display: flex;
@@ -59,6 +59,10 @@
   }
   &__error {
     color: var(--leaf-color-danger);
+    animation: var(
+      --leaf-motion-animation,
+      leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
+    );
   }
   @media (max-width: 560px) {
     &--horizontal {
@@ -81,7 +85,7 @@
   border: 0;
   min-width: 0;
   display: grid;
-  gap: 16px;
+  gap: var(--leaf-spacing-md);
   legend {
     padding: 0 0 12px;
     font-weight: 600;
@@ -96,9 +100,13 @@
   gap: 12px;
 }
 .leaf-form-error-summary {
+  animation: var(
+    --leaf-motion-animation,
+    leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
+  );
   padding: 14px 16px;
   border-radius: var(--leaf-radius);
-  background: color-mix(in srgb, var(--leaf-color-danger) 6%, var(--leaf-color-surface));
+  background: var(--leaf-color-danger-surface-6);
   color: var(--leaf-color-danger);
   ul {
     margin: 8px 0 0;

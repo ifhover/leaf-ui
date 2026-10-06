@@ -11,6 +11,11 @@
     display: block;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+  }
+  &[data-state='ready'] img {
+    opacity: 1;
   }
 }
 .leaf-image__trigger {
@@ -38,7 +43,15 @@
   color: white;
   background: rgba(0, 0, 0, 0.22);
   opacity: 0;
-  transition: opacity var(--leaf-motion-duration);
+  transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+  svg {
+    scale: 0.85;
+    transition: scale var(--leaf-motion-duration) var(--leaf-motion-spring);
+  }
+  .leaf-image__trigger:hover & svg,
+  .leaf-image__trigger:focus-visible & svg {
+    scale: 1;
+  }
 }
 .leaf-image__placeholder {
   position: absolute;

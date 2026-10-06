@@ -20,6 +20,7 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { useListMotion } from '../shared/motion';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { Tree, type TreeNode } from '../tree';
 import { treeModel } from '../tree/model';
@@ -148,6 +149,12 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
     const pendingFocus = useRef(false);
     const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
     const selected = typeof current === 'string' ? [current] : (current ?? emptyKeys);
+    useListMotion(
+      root,
+      JSON.stringify(selected.slice(0, maxTagCount)),
+      '.leaf-tree-select__tag[data-motion-key]',
+    );
+    useListMotion(root, selected[0], multi ? '' : '.leaf-tree-select__input-wrap[data-motion-key]');
     const [query, setQuery] = useState('');
     const [open, setOpen] = usePopupState(
       disabled || props.readOnly,
@@ -285,7 +292,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
           <div className="leaf-tree-select__content">
             {multi &&
               selected.slice(0, Math.max(0, maxTagCount)).map((key) => (
-                <span className="leaf-tree-select__tag" key={key}>
+                <span className="leaf-tree-select__tag" key={key} data-motion-key={key}>
                   <span>{caption(key)}</span>
                   {canRemove(key) && !disabled && !props.readOnly && (
                     <button
@@ -301,7 +308,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
             {multi && selected.length > maxTagCount && (
               <span className="leaf-tree-select__tag">+{selected.length - maxTagCount}</span>
             )}
-            <span className="leaf-tree-select__input-wrap">
+            <span className="leaf-tree-select__input-wrap" data-motion-key={selected[0] ?? ''}>
               {showCaption && (
                 <span className="leaf-tree-select__value" aria-hidden="true">
                   {selectedCaption}

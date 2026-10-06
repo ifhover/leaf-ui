@@ -1,6 +1,16 @@
-import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  type HTMLAttributes,
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { animateMotion, useMotionEnabled } from '../shared/motion';
+
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 export interface StatisticProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'prefix'> {
   title?: ReactNode;
   value: number | string;
@@ -24,6 +34,41 @@ export function Statistic({
   ...props
 }: StatisticProps) {
   const { locale, messages } = useLeafConfig();
+  const number = useRef<HTMLSpanElement>(null);
+  const previous = useRef(value);
+  const animation = useRef<Animation | undefined>(undefined);
+  const motion = useMotionEnabled();
+  useBrowserLayoutEffect(() => {
+    const node = number.current;
+    const changed = previous.current !== value;
+    const interrupted =
+      animation.current?.playState === 'running' && node ? getComputedStyle(node) : null;
+    const opacity = interrupted?.opacity ?? 0.65;
+    const transform =
+      interrupted?.transform ??
+      `translateY(${typeof value === 'number' && typeof previous.current === 'number' && value < previous.current ? -4 : 4}px)`;
+    animation.current?.cancel();
+    if (
+      motion &&
+      changed &&
+      node &&
+      !loading &&
+      !formatter &&
+      typeof value === 'number' &&
+      Number.isFinite(value)
+    ) {
+      animation.current = animateMotion(
+        node,
+        [
+          { opacity, transform },
+          { opacity: 1, transform: 'translateY(0)' },
+        ],
+        { durationMultiplier: 1.6 },
+      );
+    }
+    previous.current = value;
+  }, [value, loading, formatter, motion]);
+  useEffect(() => () => animation.current?.cancel(), []);
   const digits = precision === undefined ? undefined : Math.max(0, Math.min(20, precision));
   return (
     <div
@@ -34,7 +79,7 @@ export function Statistic({
       {title && <div className="leaf-statistic__title">{title}</div>}
       <div className="leaf-statistic__value">
         {prefix}
-        <span>
+        <span ref={number} className="leaf-statistic__number" data-loading={loading || undefined}>
           {loading
             ? messages.loading
             : formatter

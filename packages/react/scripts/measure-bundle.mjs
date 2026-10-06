@@ -61,7 +61,9 @@ for (const [name, code] of Object.entries(cases)) {
 assert.ok(report.cases.form.js.gzip < 64 * 1024, 'Form JS regression: over 64 KiB gzip');
 assert.ok(report.cases.form.css.gzip < 10 * 1024, 'Form CSS regression: over 10 KiB gzip');
 assert.ok(report.cases.all.js.gzip < 250 * 1024, 'Library JS regression: over 250 KiB gzip');
-assert.ok(report.cases.all.css.gzip < 35 * 1024, 'Library CSS regression: over 35 KiB gzip');
+// Static light/dark derived palettes and inherited density add ~2.6 KiB to the full CSS.
+// Standalone styles prune unused derived colors and retain their existing budgets.
+assert.ok(report.cases.all.css.gzip < 37 * 1024, 'Library CSS regression: over 37 KiB gzip');
 assert.ok(
   report.cases.button.css.gzip < report.cases.all.css.gzip,
   'Component CSS must be smaller than the whole library',

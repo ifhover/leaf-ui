@@ -1,12 +1,13 @@
 .leaf-dropdown {
   min-width: 164px;
-  padding: var(--leaf-component-dropdown-padding, 5px);
+  padding: var(--leaf-component-dropdown-padding, 6px);
   display: flex;
   flex-direction: column;
   gap: var(--leaf-component-dropdown-gap, 2px);
   &__divider {
     width: 100%;
-    margin: 4px 0;
+    margin: 5px 4px;
+    width: calc(100% - 8px);
     border: 0;
     border-top: 1px solid var(--leaf-color-border);
   }
@@ -14,12 +15,53 @@
     color: var(--leaf-color-danger);
     &:hover,
     &:focus-visible {
-      background: color-mix(in srgb, var(--leaf-color-danger) 8%, transparent);
+      background: var(--leaf-color-danger-alpha-8);
     }
   }
   .leaf-floating__option {
+    position: relative;
+    z-index: 1;
     gap: 8px;
     justify-content: flex-start;
+    min-height: 34px;
+    font-size: var(--leaf-font-size-sm);
+    &:hover:not(:disabled) {
+      background: transparent;
+    }
+    &[aria-expanded='true'] {
+      color: var(--leaf-color-text);
+    }
+    &[aria-checked='true'] {
+      color: var(--leaf-color-primary);
+    }
+  }
+  &__highlight {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    inset-inline: 6px;
+    height: var(--leaf-menu-highlight-height, 34px);
+    translate: 0 var(--leaf-menu-highlight-y, 0px);
+    border: 1px solid var(--leaf-color-border-alpha-55);
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-surface-muted);
+    pointer-events: none;
+    transition:
+      translate var(--leaf-motion-duration) var(--leaf-motion-spring),
+      height var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &[data-ready='false'] {
+      visibility: hidden;
+    }
+  }
+  &__check {
+    flex: 0 0 15px;
+    scale: 1;
+    transition:
+      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-duration) var(--leaf-motion-spring);
+  }
+  [aria-checked='false'] &__check {
+    scale: 0.6;
   }
 }
 
@@ -30,5 +72,19 @@
   font-weight: 600;
 }
 .leaf-dropdown__arrow {
-  margin-left: auto;
+  margin-inline-start: auto;
+  transition: translate var(--leaf-motion-fast) var(--leaf-motion-easing);
+  :dir(rtl) & {
+    rotate: 180deg;
+  }
+  [aria-expanded='true'] & {
+    translate: 2px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-dropdown__highlight,
+  .leaf-dropdown__check,
+  .leaf-dropdown__arrow {
+    transition: none;
+  }
 }

@@ -1,5 +1,12 @@
 import { Check } from 'lucide-react';
-import { type KeyboardEvent, useEffect, useRef } from 'react';
+import {
+  type CSSProperties,
+  type KeyboardEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { padTime, type TimeParts } from '../shared/time';
 
@@ -12,6 +19,112 @@ interface TimePanelProps {
   secondStep?: number;
   autoFocus?: boolean;
   disabledTime?: (parts: TimeParts) => boolean;
+}
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+interface TimeColumnProps {
+  label: string;
+  choices: number[];
+  selected: number;
+  change: (next: number) => void;
+  labels?: string[];
+  disabled?: (choice: number) => boolean;
+}
+function keepTimeOptionVisible(column: HTMLElement, row: HTMLElement) {
+  const top = row.offsetTop;
+  const bottom = top + row.offsetHeight;
+  if (top < column.scrollTop) column.scrollTop = top;
+  else if (bottom > column.scrollTop + column.clientHeight)
+    column.scrollTop = bottom - column.clientHeight;
+}
+
+function TimeColumn({ label, choices, selected, change, labels, disabled }: TimeColumnProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<CSSProperties>();
+  useBrowserLayoutEffect(() => {
+    const column = ref.current;
+    if (!column) return;
+    const row = column.querySelector<HTMLButtonElement>('[aria-selected="true"]:not(:disabled)');
+    const update = () => {
+      setSelection(
+        row
+          ? ({
+              '--leaf-time-selection-y': `${row.offsetTop}px`,
+              '--leaf-time-selection-height': `${row.offsetHeight}px`,
+            } as CSSProperties)
+          : undefined,
+      );
+      // Scrolling a row into every ancestor moves the whole range popup and can
+      // hide its endpoint labels when both time panels are present.
+      if (row) keepTimeOptionVisible(column, row);
+    };
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(column);
+    if (row) observer.observe(row);
+    return () => observer.disconnect();
+  }, [selected, choices, disabled]);
+  const key = (event: KeyboardEvent<HTMLButtonElement>, current: number) => {
+    const available = choices.filter((choice) => !disabled?.(choice));
+    if (!available.length) return;
+    const index = available.indexOf(current);
+    let next = index;
+    if (event.key === 'ArrowDown') next = (index + 1) % available.length;
+    else if (event.key === 'ArrowUp') next = (index - 1 + available.length) % available.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = available.length - 1;
+    else return;
+    event.preventDefault();
+    change(available[next] ?? current);
+    const node =
+      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+        'button:not(:disabled)',
+      )[next];
+    node?.focus({ preventScroll: true });
+    if (node && ref.current) keepTimeOptionVisible(ref.current, node);
+  };
+  return (
+    <div className="leaf-time-picker__column-wrap">
+      <div className="leaf-time-picker__column-label" aria-hidden="true">
+        {label}
+      </div>
+      <div ref={ref} className="leaf-time-picker__column" role="listbox" aria-label={label}>
+        <div
+          className="leaf-time-picker__selection"
+          data-ready={Boolean(selection)}
+          aria-hidden="true"
+          style={selection}
+        />
+        {choices.map((option) => (
+          <button
+            type="button"
+            key={option}
+            role="option"
+            disabled={disabled?.(option)}
+            tabIndex={
+              option ===
+              (disabled?.(selected) ? choices.find((choice) => !disabled?.(choice)) : selected)
+                ? 0
+                : -1
+            }
+            aria-selected={option === selected}
+            className="leaf-floating__option"
+            onClick={() => change(option)}
+            onKeyDown={(event) => key(event, option)}
+          >
+            <span>{labels?.[option] ?? padTime(option)}</span>
+            <Check
+              size={14}
+              aria-hidden="true"
+              className="leaf-time-picker__check"
+              style={{ opacity: option === selected ? 1 : 0 }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 export function TimePanel({
   value,
@@ -26,7 +139,10 @@ export function TimePanel({
   const { messages } = useLeafConfig();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (autoFocus) ref.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]')?.focus();
+    if (autoFocus)
+      ref.current
+        ?.querySelector<HTMLButtonElement>('[aria-selected="true"]')
+        ?.focus({ preventScroll: true });
   }, [autoFocus]);
   const options = (step: number, selected: number) => {
     const safe = Number.isFinite(step) ? Math.max(1, Math.min(60, Math.floor(step))) : 1;
@@ -42,61 +158,16 @@ export function TimePanel({
     labels?: string[],
     disabled?: (choice: number) => boolean,
   ) => {
-    const key = (event: KeyboardEvent<HTMLButtonElement>, current: number) => {
-      const available = choices.filter((choice) => !disabled?.(choice));
-      if (!available.length) return;
-      const index = available.indexOf(current);
-      let next = index;
-      if (event.key === 'ArrowDown') next = (index + 1) % available.length;
-      else if (event.key === 'ArrowUp') next = (index - 1 + available.length) % available.length;
-      else if (event.key === 'Home') next = 0;
-      else if (event.key === 'End') next = available.length - 1;
-      else return;
-      event.preventDefault();
-      change(available[next] ?? current);
-      const node =
-        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-          'button:not(:disabled)',
-        )[next];
-      node?.focus();
-      node?.scrollIntoView?.({ block: 'nearest' });
-    };
     return (
-      <div className="leaf-time-picker__column-wrap" key={label}>
-        <div className="leaf-time-picker__column-label" aria-hidden="true">
-          {label}
-        </div>
-        <div className="leaf-time-picker__column" role="listbox" aria-label={label}>
-          {choices.map((option) => (
-            <button
-              type="button"
-              key={option}
-              role="option"
-              disabled={disabled?.(option)}
-              tabIndex={
-                option ===
-                (disabled?.(selected) ? choices.find((choice) => !disabled?.(choice)) : selected)
-                  ? 0
-                  : -1
-              }
-              aria-selected={option === selected}
-              className="leaf-floating__option"
-              ref={(node) => {
-                if (node && option === selected) node.scrollIntoView?.({ block: 'nearest' });
-              }}
-              onClick={() => change(option)}
-              onKeyDown={(event) => key(event, option)}
-            >
-              <span>{labels?.[option] ?? padTime(option)}</span>
-              <Check
-                size={14}
-                aria-hidden="true"
-                style={{ opacity: option === selected ? 1 : 0 }}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
+      <TimeColumn
+        key={label}
+        label={label}
+        choices={choices}
+        selected={selected}
+        change={change}
+        labels={labels}
+        disabled={disabled}
+      />
     );
   };
   const hours = use12Hours

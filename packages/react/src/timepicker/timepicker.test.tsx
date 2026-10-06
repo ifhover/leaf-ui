@@ -1,9 +1,31 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { TimePicker } from './timepicker';
 
 describe('TimePicker', () => {
+  it('keeps the selected time row focused while skipping unavailable values', async () => {
+    const change = vi.fn();
+    render(
+      <TimePicker
+        defaultValue="08:07"
+        minuteStep={15}
+        disabledTime={(parts) => parts.minute === 15}
+        onChange={change}
+      />,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    const minutes = within(screen.getByRole('listbox', { name: '分钟' }));
+    const selected = minutes.getByRole('option', { name: '07' });
+    selected.focus();
+    fireEvent.keyDown(selected, { key: 'ArrowDown' });
+    expect(minutes.getByRole('option', { name: '15' })).toBeDisabled();
+    expect(minutes.getByRole('option', { name: '30' })).toHaveFocus();
+    expect(minutes.getByRole('option', { name: '30' })).toHaveAttribute('aria-selected', 'true');
+    expect(change).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: '确定' }));
+    expect(change).toHaveBeenLastCalledWith('08:30');
+  });
   it('accepts 12-hour typed values and keeps unconfirmed text out of FormData', async () => {
     const change = vi.fn();
     render(

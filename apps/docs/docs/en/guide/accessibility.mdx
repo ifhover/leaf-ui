@@ -1,0 +1,21 @@
+import { AccessibilityWorkbench } from '../../../src/examples/scenarios/accessibility';
+
+# Accessibility acceptance
+
+Exercise keyboard behavior, appearance, density, overlays and reduced motion below. Applications must still supply meaningful names and descriptions for business fields, icon actions and compound controls.
+
+<AccessibilityWorkbench english />
+
+| Check | Expected behavior |
+| --- | --- |
+| Tab / Shift+Tab | Logical order, visible focus, disabled actions excluded |
+| Enter / Space / arrows | Actions, selections, tabs and Slider work from the keyboard |
+| Dialog + nested Select | Focus remains within the overlay stack; Escape closes the popup before the dialog |
+| Dismissal | Focus returns to the opener and the page becomes usable/scrollable |
+| Required / email fields | Errors identify the field and focus moves to the correction |
+| Light/dark / forced colors | Focus, state and text remain identifiable; retest custom business colors |
+| 200% / 400% zoom | Reflow at 320 CSS px, reachable actions, no unnecessary page-level horizontal scrolling |
+| Touch | Essential actions work by tapping without requiring hover |
+| Reduced motion | Every flow remains usable with animations disabled |
+
+Automation uses axe and real browser behavior assertions without screenshot baselines. Emulated touch and narrow viewports do not replace physical-device browser zoom checks. Run manual NVDA on Windows and VoiceOver on macOS/iOS, recording versions, names/roles/states and error announcements. Unperformed manual checks remain pending. Executed coverage is recorded in `packages/react/ACCESSIBILITY.md`.

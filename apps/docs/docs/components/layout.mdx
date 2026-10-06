@@ -8,6 +8,8 @@ import { LayoutResponsive } from '../../src/examples/layout/advanced';
 
 ## 基本用法
 
+通过不同背景区分 Header、Sider、Content 和 Footer，横向嵌套区域负责排列侧栏与内容。
+
 <ComponentExample title="基本用法" preview={<LayoutBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/layout/basic.tsx"
@@ -15,9 +17,11 @@ import { LayoutResponsive } from '../../src/examples/layout/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 可折叠的工作区
 
-<ComponentExample title="更多用法" preview={<LayoutResponsive />} fileName="advanced.tsx">
+侧栏支持手动折叠，在窄屏上自动收起；菜单同步切换为图标导航。
+
+<ComponentExample title="可折叠的工作区" preview={<LayoutResponsive />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/layout/advanced.tsx"
 ```

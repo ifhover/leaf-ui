@@ -1,11 +1,30 @@
 .leaf-time-range-picker__panel {
-  min-width: 310px;
+  width: min(480px, calc(100vw - 24px));
+  min-width: 0;
 }
-.leaf-time-range-picker__tabs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 4px 4px 12px;
-  color: var(--leaf-color-text-muted);
+.leaf-time-range-picker__panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 10px 4px 4px;
+  > fieldset {
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    > legend {
+      padding: 0 8px 4px;
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+    }
+  }
+}
+@media (max-width: 480px) {
+  .leaf-time-range-picker__panels {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    .leaf-time-picker__column {
+      max-height: 130px;
+    }
+  }
 }

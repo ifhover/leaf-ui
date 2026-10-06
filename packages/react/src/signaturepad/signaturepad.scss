@@ -6,6 +6,22 @@
     overflow: hidden;
     border: 1px solid var(--leaf-color-border);
     border-radius: var(--leaf-radius);
+    box-shadow: var(--leaf-shadow-xs);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 24px;
+      inset-block-end: 42px;
+      border-bottom: 1px dashed var(--leaf-color-text-alpha-16);
+      pointer-events: none;
+    }
+    &[data-drawing] {
+      border-color: var(--leaf-color-primary);
+      box-shadow: 0 0 0 3px var(--leaf-color-primary-alpha-12);
+    }
   }
   canvas {
     display: block;
@@ -17,9 +33,17 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    color: #7b857f;
+    transform: translate(-50%, calc(-50% - 4px));
+    color: inherit;
+    opacity: 0;
     pointer-events: none;
+    transition:
+      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+  }
+  &__surface[data-empty] &__placeholder {
+    opacity: 0.45;
+    transform: translate(-50%, -50%);
   }
   &__controls {
     display: flex;
@@ -32,5 +56,11 @@
     canvas {
       touch-action: auto;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-signature-pad__surface,
+  .leaf-signature-pad__placeholder {
+    transition: none;
   }
 }

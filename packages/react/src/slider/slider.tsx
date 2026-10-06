@@ -53,7 +53,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       step = 1,
       marks = [],
       vertical = false,
-      showValue = true,
+      showValue = false,
       onChangeComplete,
       tooltip = false,
       disabled: disabledProp,
@@ -276,6 +276,9 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
             <button
               type="button"
               className="leaf-slider__mark"
+              data-active={
+                mark.value >= (range ? low : minimum) && mark.value <= high ? '' : undefined
+              }
               key={mark.value}
               disabled={disabled || readOnly}
               style={

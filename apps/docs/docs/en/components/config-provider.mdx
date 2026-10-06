@@ -1,3 +1,4 @@
+import { ConfigProviderDensity } from '../../../src/examples/config-provider/density';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ConfigProviderBasic } from '../../../src/examples/en/config-provider/basic';
 import { ConfigProviderSizes } from '../../../src/examples/en/config-provider/sizes';
@@ -26,10 +27,22 @@ Small and large controls follow the base height. Use tokens only when a particul
 
 </ComponentExample>
 
+## Global density
+
+Density changes spacing and geometry while preserving body text readability. Nested scopes inherit it; use an explicit comfortable scope to reset.
+
+<ComponentExample title="Comfortable and compact" preview={<ConfigProviderDensity />} fileName="density.tsx">
+
+```tsx lineNumbers file="../../../src/examples/config-provider/density.tsx"
+```
+
+</ComponentExample>
+
 ## ConfigProvider API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Inherited controls, forms, menus, lists and overlay spacing; explicit sizes override the preset. |
 | `locale` | `LeafLocale` | `'zh-CN'` | Built-in language; nested providers inherit |
 | `theme` | [`LeafTheme`](#leaftheme) | — | Regional settings; omitted fields inherit |
 | `messages` | `Partial<`[`LeafMessages`](#leafmessages)`>` | — | Override built-in component messages. |
@@ -37,8 +50,11 @@ Small and large controls follow the base height. Use tokens only when a particul
 | `direction` | `'ltr' \| 'rtl'` | — | Text and interaction direction. |
 | `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | First day of the week; 0 is Sunday and 1 is Monday. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `maskBlur` | `boolean` | `true` | Enable mask blur for Modal, Drawer and Modal-based overlays such as confirmations and command palettes. Disable to reduce rendering cost; nested providers inherit it. |
 
 Other native div attributes, className and style apply to the container. Configure themes through theme.
+
+Mask blur transitions on opening and closing. Use `<ConfigProvider maskBlur={false}>` on performance-sensitive pages to keep the translucent mask without blur. This setting is independent of `theme.motion`.
 
 ## LeafTheme
 
@@ -50,7 +66,7 @@ Other native div attributes, className and style apply to the container. Configu
 | `fontSize` | `number \| string` | `14` | Base font; small / large fonts use − / + 2px |
 | `fontFamily` | `string` | System sans-serif | Font family |
 | `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
-| `motion` | `boolean` | `true` | Enable transitions and loading icon rotation; respects reduced motion |
+| `motion` | `boolean` | `true` | Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it. |
 | `tokens` | [`LeafThemeTokens`](#leafthemetokens) | — | Optional advanced overrides |
 | `spacing` | `number` | — | Base spacing; other spacing values are derived. |
 | `lineHeight` | `number` | — | Body line height. |
@@ -75,9 +91,12 @@ All fields are optional. Explicit values take precedence over generated values.
 | `infoColor` | `string` | Appearance | Success / warning / information |
 | `textColor` | `string` | Appearance | Main / secondary text |
 | `mutedTextColor` | `string` | Appearance | Main / secondary text |
+| `subtleTextColor` | `string` | — | Subtle supporting text color. |
 | `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
 | `mutedSurfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
 | `borderColor` | `string` | Appearance | Neutral borders |
+| `borderHoverColor` | `string` | — | Neutral border color on hover. |
 | `borderRadiusSm` | `number \| string` | `Base × 0.6` | Small / large radius override |
 | `borderRadiusLg` | `number \| string` | `1.6` | Small / large radius override |
 | `controlHeightSm` | `number \| string` | `Base −` | Small / large height override |
@@ -85,8 +104,9 @@ All fields are optional. Explicit values take precedence over generated values.
 | `fontSizeSm` | `number \| string` | `Base −` | Small / large font override |
 | `fontSizeLg` | `number \| string` | `+ 2px` | Small / large font override |
 | `fontWeight` | `number` | `500` | Weight used by buttons |
-| `motionDuration` | `number \| string` | `160` | Numbers are ms; CSS times also accepted; motion=false forces 0 |
-| `motionEasing` | `string` | `'ease'` | Transition timing function |
+| `motionDuration` | `number \| string` | `200` | Base transition duration; numbers are ms and CSS times are accepted. motion=false forces 0. |
+| `motionEasing` | `string` | `'cubic-bezier(0.22, 1, 0.36, 1)'` | Easing for hover, content and ordinary transitions. |
+| `motionSpring` | `string` | `'cubic-bezier(0.22, 1.28, 0.36, 1)'` | A mild spring curve for selection and shape changes. |
 | `popupZIndex` | `number` | `1000` | Popup / modal / message stacking |
 | `modalZIndex` | `number` | `1100` | Popup / modal / message stacking |
 | `messageZIndex` | `number` | `1200` | Popup / modal / message stacking |
@@ -105,6 +125,7 @@ All fields are optional. Explicit values take precedence over generated values.
 | `spacingSm` | `number \| string` | — | Configure spacing sm. |
 | `spacingLg` | `number \| string` | — | Configure spacing lg. |
 | `shadowSm` | `string` | — | Configure shadow sm. |
+| `shadowXs` | `string` | — | The lightest surface shadow. |
 | `shadowMd` | `string` | — | Configure shadow md. |
 | `shadowLg` | `string` | — | Configure shadow lg. |
 | `lineHeight` | `number` | — | Body line height. |

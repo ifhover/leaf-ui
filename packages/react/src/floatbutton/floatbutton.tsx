@@ -1,7 +1,8 @@
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Button, type ButtonProps } from '../button';
 import { classes } from '../shared/classes';
+import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
 import { Tooltip } from '../tooltip';
 export interface FloatButtonProps extends ButtonProps {
@@ -45,6 +46,9 @@ export function FloatButtonGroup({
   const t = useText();
   const [internal, setInternal] = useState(defaultOpen),
     open = controlled ?? internal;
+  const expanded = !expandable || open;
+  const [visited, setVisited] = useState(expanded);
+  if (expanded && !visited) setVisited(true);
   const root = useRef<HTMLFieldSetElement>(null);
   const setOpen = useCallback(
     (next: boolean) => {
@@ -74,31 +78,50 @@ export function FloatButtonGroup({
         }
       }}
     >
-      {(!expandable || open) && (
-        <div className="leaf-float-group__actions">
-          {actions.map((action) => (
-            <FloatButton
-              fixed={false}
-              key={action.key}
-              tooltip={action.label}
-              aria-label={typeof action.label === 'string' ? action.label : action.key}
-              startIcon={action.icon}
-              disabled={action.disabled}
-              variant="outline"
-              onClick={() => {
-                action.onClick?.();
-                if (expandable) setOpen(false);
-              }}
-            />
-          ))}
+      <div
+        className="leaf-float-group__actions"
+        data-open={expanded || undefined}
+        aria-hidden={!expanded || undefined}
+        {...inertProps(!expanded)}
+      >
+        <div className="leaf-float-group__actions-inner">
+          <div className="leaf-float-group__actions-content">
+            {visited &&
+              actions.map((action, index) => (
+                <div
+                  key={action.key}
+                  className="leaf-float-group__action"
+                  style={
+                    { '--leaf-float-order': actions.length - index - 1 } as React.CSSProperties
+                  }
+                >
+                  <FloatButton
+                    fixed={false}
+                    tooltip={action.label}
+                    aria-label={typeof action.label === 'string' ? action.label : action.key}
+                    startIcon={action.icon}
+                    disabled={action.disabled}
+                    variant="outline"
+                    onClick={() => {
+                      action.onClick?.();
+                      if (expandable) setOpen(false);
+                    }}
+                  />
+                </div>
+              ))}
+          </div>
         </div>
-      )}
+      </div>
       {expandable && (
         <FloatButton
           fixed={false}
           aria-label={t('快捷操作', 'Quick actions')}
           aria-expanded={open}
-          startIcon={open ? <X size={20} /> : (icon ?? <Plus size={20} />)}
+          startIcon={
+            <span className="leaf-float-group__trigger-icon" data-open={open || undefined}>
+              {icon ?? <Plus size={20} />}
+            </span>
+          }
           onClick={() => setOpen(!open)}
         />
       )}

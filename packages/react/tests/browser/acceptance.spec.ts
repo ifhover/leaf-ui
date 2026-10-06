@@ -82,6 +82,8 @@ test('nested popup respects modal focus ownership and Escape restores the trigge
 test('drawer and splitter resize with pointers, and splitter remains keyboard accessible', async ({
   page,
 }) => {
+  // Pointer geometry is tested independently of the drawer's entrance transition.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.getByRole('button', { name: 'Open drawer' }).click();
   const drawer = page.getByRole('dialog', { name: 'Workspace' });
   await expect(drawer).toBeVisible();

@@ -13,7 +13,7 @@ import {
 import { FeedbackIcon, type FeedbackType } from '../alert/alert';
 import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
 import { inertProps } from '../shared/inert';
-import { usePresence } from '../shared/presence';
+import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { leafThemeVariables } from '../theme';
 export interface NotificationOptions {
@@ -189,7 +189,10 @@ function NotificationItem({
   const inherited = useLeafConfig();
   const config = entry.config ?? inherited;
   const ref = useRef<HTMLDivElement>(null);
+  const icon = useRef<HTMLSpanElement>(null);
   const present = usePresence(entry.open, ref);
+  const type = entry.type ?? 'info';
+  useContentTransition(icon, `${entry.open}:${type}`);
   const [hover, setHover] = useState(false);
   const [focus, setFocus] = useState(false);
   const duration = entry.duration ?? 4.5;
@@ -217,7 +220,6 @@ function NotificationItem({
     previous.current = present;
   }, [present, remove]);
   if (!present) return null;
-  const type = entry.type ?? 'info';
   return (
     <ConfigContext.Provider value={config}>
       <div
@@ -240,26 +242,28 @@ function NotificationItem({
               if (!event.currentTarget.contains(event.relatedTarget)) setFocus(false);
             }}
           >
-            <span className="leaf-notification__icon">
+            <span ref={icon} className="leaf-notification__icon" aria-hidden="true">
               {entry.icon ?? <FeedbackIcon type={type} />}
             </span>
             <div className="leaf-notification__body">
-              <div className="leaf-notification__title">{entry.title}</div>
+              <div className="leaf-notification__header">
+                <div className="leaf-notification__title">{entry.title}</div>
+                {entry.closable !== false && (
+                  <button
+                    type="button"
+                    className="leaf-notification__close"
+                    aria-label={config.messages.close}
+                    onClick={close}
+                  >
+                    <X size={16} aria-hidden="true" />
+                  </button>
+                )}
+              </div>
               {entry.description && (
                 <div className="leaf-notification__description">{entry.description}</div>
               )}
               {entry.actions && <div className="leaf-notification__actions">{entry.actions}</div>}
             </div>
-            {entry.closable !== false && (
-              <button
-                type="button"
-                className="leaf-notification__close"
-                aria-label={config.messages.close}
-                onClick={close}
-              >
-                <X size={16} aria-hidden="true" />
-              </button>
-            )}
           </div>
         </div>
       </div>

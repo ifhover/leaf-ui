@@ -11,6 +11,7 @@ import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { useControllable } from '../shared/use-controllable';
+import { useMovingIndicator } from '../tabs/use-moving-indicator';
 export interface AppBarProps extends HTMLAttributes<HTMLElement> {
   position?: 'static' | 'sticky' | 'fixed';
   elevation?: boolean;
@@ -109,17 +110,36 @@ export function BottomNavigation({
     defaultValue || items[0]?.key || '',
     onChange,
   );
+  const indicator = useRef<HTMLSpanElement>(null);
+  useMovingIndicator(
+    root,
+    indicator,
+    '[aria-current="page"]',
+    `${current}-${showLabels}-${direction}`,
+  );
   return (
     <nav {...props} ref={root} className={classes('leaf-bottom-navigation', className)}>
+      <span ref={indicator} className="leaf-bottom-navigation__indicator" aria-hidden="true" />
       {items.map((item) => {
         const contents = (
           <>
-            {item.icon}
-            {(showLabels || current === item.key) && <span>{item.label}</span>}
+            {item.icon && (
+              <span className="leaf-bottom-navigation__icon" aria-hidden="true">
+                {item.icon}
+              </span>
+            )}
+            <span
+              className="leaf-bottom-navigation__label"
+              data-visible={showLabels || current === item.key || undefined}
+              aria-hidden="true"
+            >
+              {item.label}
+            </span>
           </>
         );
         const attributes = {
           'data-leaf-navigation': '',
+          'data-leaf-indicator-item': '',
           'aria-label': typeof item.label === 'string' ? item.label : item.key,
           'aria-current': current === item.key ? ('page' as const) : undefined,
           'aria-disabled': item.disabled || undefined,

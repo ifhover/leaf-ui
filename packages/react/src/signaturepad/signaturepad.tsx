@@ -72,6 +72,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(fu
   const pad = useRef<Pad | null>(null);
   const [ready, setReady] = useState(false);
   const [empty, setEmpty] = useState(true);
+  const [drawing, setDrawing] = useState(false);
   const latest = useRef({
     value,
     defaultValue,
@@ -162,7 +163,12 @@ export const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(fu
         };
         instance.fromData([...snapshot.current]);
         resize();
-        const ended = () => publish();
+        const started = () => setDrawing(true);
+        const ended = () => {
+          setDrawing(false);
+          publish();
+        };
+        instance.addEventListener('beginStroke', started);
         instance.addEventListener('endStroke', ended);
         if (config.disabled) instance.off();
         observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize);
@@ -171,6 +177,7 @@ export const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(fu
         setReady(true);
         cleanup = () => {
           instance.off();
+          instance.removeEventListener('beginStroke', started);
           instance.removeEventListener('endStroke', ended);
           window.removeEventListener('resize', resize);
           observer?.disconnect();
@@ -197,8 +204,10 @@ export const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(fu
     instance.minWidth = minWidth;
     instance.maxWidth = maxWidth;
     instance.redraw();
-    if (disabled) instance.off();
-    else instance.on();
+    if (disabled) {
+      setDrawing(false);
+      instance.off();
+    } else instance.on();
   }, [penColor, backgroundColor, minWidth, maxWidth, disabled, ready]);
   useEffect(() => {
     if (!ready || value === undefined || !pad.current) return;
@@ -246,15 +255,20 @@ export const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(fu
       style={style}
       data-disabled={disabled ? '' : undefined}
     >
-      <div className="leaf-signature-pad__surface" style={{ height, background: backgroundColor }}>
+      <div
+        className="leaf-signature-pad__surface"
+        style={{ height, background: backgroundColor, color: penColor }}
+        data-empty={empty || undefined}
+        data-drawing={drawing || undefined}
+      >
         <canvas
           ref={canvas}
           aria-label={props['aria-label'] ?? t('手写签名区域', 'Handwritten signature area')}
           role="img"
         />
-        {empty && (
-          <span className="leaf-signature-pad__placeholder">{t('在此签名', 'Sign here')}</span>
-        )}
+        <span className="leaf-signature-pad__placeholder" aria-hidden={!empty}>
+          {t('在此签名', 'Sign here')}
+        </span>
       </div>
       {controls && (
         <div className="leaf-signature-pad__controls">

@@ -1,6 +1,7 @@
 export type { LeafComponentTokens, LeafThemeStyle } from '../theme';
 export type {
   ConfigProviderProps,
+  LeafDensity,
   LeafDirection,
   LeafLocale,
   LeafMessages,

@@ -1,0 +1,19 @@
+import { BusinessWorkspace } from '../../../src/examples/scenarios/workspace';
+
+# Complete workspace
+
+A working project-management and team-settings page. Search, create, edit, archive and restore projects, then save team details, appearance, density and background blur preferences.
+
+<BusinessWorkspace />
+
+This example uses in-memory data and a 350ms simulated save; refreshing restores the initial data. Enter an existing project name to exercise server field errors and retry. Required names and email addresses use native form validation. Search for an unknown name to see the empty state. Discard changes to restore saved preferences.
+
+Replace the simulated save with your API and handle authentication, persistence and cancellation in the application.
+
+<details>
+<summary>View source</summary>
+
+```tsx lineNumbers file="../../../src/examples/scenarios/workspace.tsx"
+```
+
+</details>

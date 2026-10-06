@@ -1,6 +1,8 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
 import { classes } from '../shared/classes';
+import { useMotionEnabled } from '../shared/motion';
 import { useControllable } from '../shared/use-controllable';
+import { useMovingIndicator } from '../tabs/use-moving-indicator';
 export interface AnchorItem {
   key: string;
   title: ReactNode;
@@ -26,6 +28,10 @@ export function Anchor({
   ...props
 }: AnchorProps) {
   const [active, setActive] = useControllable(activeKey, '', onActiveChange);
+  const root = useRef<HTMLElement>(null);
+  const indicator = useRef<HTMLSpanElement>(null);
+  const motion = useMotionEnabled();
+  useMovingIndicator(root, indicator, '[aria-current="location"]', active);
   const callback = useRef(setActive);
   callback.current = setActive;
   useEffect(() => {
@@ -61,6 +67,7 @@ export function Anchor({
       <li key={item.key}>
         <a
           href={item.href}
+          data-leaf-indicator-item=""
           aria-current={active === item.key ? 'location' : undefined}
           onClick={(event) => {
             const target = document.getElementById(decodeURIComponent(item.href.replace(/^#/, '')));
@@ -74,10 +81,7 @@ export function Anchor({
               offset;
             scroll.scrollTo({
               top,
-              behavior:
-                smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches
-                  ? 'smooth'
-                  : 'instant',
+              behavior: smooth && motion ? 'smooth' : 'instant',
             });
             setActive(item.key);
           }}
@@ -90,9 +94,11 @@ export function Anchor({
   return (
     <nav
       {...props}
+      ref={root}
       aria-label={props['aria-label'] ?? 'Contents'}
       className={classes('leaf-anchor', className)}
     >
+      <span ref={indicator} className="leaf-anchor__indicator" aria-hidden="true" />
       <ul>{links(items)}</ul>
     </nav>
   );
@@ -157,13 +163,13 @@ export function Affix({
     };
     scroll.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
-    const observer = new ResizeObserver(update);
-    if (placeholder.current) observer.observe(placeholder.current);
-    if (content.current) observer.observe(content.current);
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(update);
+    if (placeholder.current) observer?.observe(placeholder.current);
+    if (content.current) observer?.observe(content.current);
     update();
     return () => {
       cancelAnimationFrame(frame);
-      observer.disconnect();
+      observer?.disconnect();
       scroll.removeEventListener('scroll', update);
       window.removeEventListener('resize', update);
     };

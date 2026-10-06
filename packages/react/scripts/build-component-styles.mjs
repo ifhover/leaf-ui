@@ -57,6 +57,15 @@ const resolveStyles = (name, visited = new Set()) => {
   return visited;
 };
 const source = path.join(root, 'src');
+const recipes = new Set(
+  (await readFile(path.join(source, 'color-recipes.ts'), 'utf8')).match(/--leaf-color-[\w-]+/gu),
+);
+const prunePalette = (css) => {
+  const used = new Set([...css.matchAll(/var\((--leaf-color-[\w-]+)/gu)].map((match) => match[1]));
+  return css.replace(/(--leaf-color-[\w-]+):[^;{}]+;/gu, (declaration, key) =>
+    recipes.has(key) && !used.has(key) ? '' : declaration,
+  );
+};
 const manifest = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const directories = [
   ...new Set(
@@ -97,7 +106,7 @@ for (const name of directories) {
   for (const format of ['esm', 'cjs']) {
     const output = path.join(root, 'dist', format, 'styles');
     await mkdir(output, { recursive: true });
-    await writeFile(path.join(output, `${name}.css`), compiled.css);
+    await writeFile(path.join(output, `${name}.css`), prunePalette(compiled.css));
   }
   count++;
 }

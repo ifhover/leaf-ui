@@ -115,25 +115,32 @@ export function InfiniteScroll({
       {children}
       <div ref={sentinel} className="leaf-infinite-scroll__sentinel" />
       <div className="leaf-infinite-scroll__status" aria-live="polite">
-        {error ? (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setError(false);
-              setRetry((value) => value + 1);
-            }}
-          >
-            {t('加载失败，重试', 'Loading failed. Retry')}
-          </Button>
-        ) : loading ? (
-          (loader ?? <Loading size="sm" tip={t('加载中', 'Loading')} />)
-        ) : !hasMore ? (
-          (endMessage ?? t('已加载全部内容', 'All items loaded'))
-        ) : manual ? (
-          <Button variant="ghost" onClick={() => manualLoad.current()}>
-            {t('加载更多', 'Load more')}
-          </Button>
-        ) : null}
+        <span
+          key={
+            error ? 'error' : loading ? 'loading' : !hasMore ? 'end' : manual ? 'manual' : 'idle'
+          }
+          className="leaf-infinite-scroll__feedback"
+        >
+          {error ? (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setError(false);
+                setRetry((value) => value + 1);
+              }}
+            >
+              {t('加载失败，重试', 'Loading failed. Retry')}
+            </Button>
+          ) : loading ? (
+            (loader ?? <Loading size="sm" tip={t('加载中', 'Loading')} />)
+          ) : !hasMore ? (
+            (endMessage ?? t('已加载全部内容', 'All items loaded'))
+          ) : manual ? (
+            <Button variant="ghost" onClick={() => manualLoad.current()}>
+              {t('加载更多', 'Load more')}
+            </Button>
+          ) : null}
+        </span>
       </div>
     </div>
   );

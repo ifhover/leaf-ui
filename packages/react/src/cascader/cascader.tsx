@@ -508,7 +508,9 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                                 JSON.stringify(path) ===
                                 JSON.stringify([...draft.slice(0, depth), option.value]),
                             )
-                          : draft[depth] === option.value) && <Check size={14} aria-hidden="true" />
+                          : draft[depth] === option.value) && (
+                          <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
+                        )
                       )}
                     </button>
                   ))

@@ -5,7 +5,8 @@
   max-width: 100%;
   border: 1px solid var(--leaf-color-border);
   border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface);
+  background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
+  box-shadow: var(--leaf-shadow-xs);
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   .leaf-calendar {
@@ -13,9 +14,9 @@
   }
   &--full {
     width: 100%;
-    border-color: color-mix(in srgb, var(--leaf-color-border) 70%, var(--leaf-color-surface));
+    border-color: var(--leaf-color-border-surface-70);
     border-radius: var(--leaf-radius-lg);
-    box-shadow: 0 4px 24px rgb(0 0 0 / 3%);
+    box-shadow: var(--leaf-shadow-sm);
     .leaf-calendar {
       padding: 20px;
     }
@@ -68,7 +69,7 @@
         background-color var(--leaf-motion-duration),
         color var(--leaf-motion-duration);
       &:hover {
-        background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+        background: var(--leaf-color-primary-surface-10);
         color: var(--leaf-color-primary);
       }
       &:focus-visible {
@@ -94,16 +95,17 @@
       padding: 10px 6px;
       gap: 4px;
       flex-direction: column;
-      border-color: color-mix(in srgb, var(--leaf-color-border) 65%, var(--leaf-color-surface));
+      border-color: var(--leaf-color-border-surface-65);
       border-radius: var(--leaf-radius-lg);
       font-size: var(--leaf-font-size);
       transition:
-        background-color var(--leaf-motion-duration),
-        border-color var(--leaf-motion-duration),
-        color var(--leaf-motion-duration);
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        scale var(--leaf-motion-duration) var(--leaf-motion-spring);
       &:hover:not(:disabled) {
-        border-color: color-mix(in srgb, var(--leaf-color-primary) 35%, var(--leaf-color-border));
-        background: color-mix(in srgb, var(--leaf-color-primary) 5%, var(--leaf-color-surface));
+        border-color: var(--leaf-color-primary-border-35);
+        background: var(--leaf-color-primary-surface-5);
       }
       &[aria-current='date']:not(:disabled) {
         border-color: var(--leaf-color-primary);
@@ -116,8 +118,8 @@
       &--selected,
       &--selected:hover:not(:disabled) {
         color: var(--leaf-color-text);
-        background: color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface));
-        border-color: color-mix(in srgb, var(--leaf-color-primary) 30%, var(--leaf-color-border));
+        background: var(--leaf-color-primary-surface-8);
+        border-color: var(--leaf-color-primary-border-30);
       }
       &:disabled {
         opacity: 1;
@@ -138,6 +140,10 @@
       min-height: 28px;
       padding-inline: 3px;
       border-radius: 50%;
+      transition:
+        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        scale var(--leaf-motion-duration) var(--leaf-motion-spring);
     }
     .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label {
       background: var(--leaf-color-primary);
@@ -196,6 +202,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-calendar-view--full .leaf-date-picker__day,
+  .leaf-calendar-view--full .leaf-calendar__cell-label,
   .leaf-calendar-view--full .leaf-calendar__today {
     transition: none;
   }

@@ -1,4 +1,4 @@
-import { type ReactNode, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { FeedbackIcon, type FeedbackType } from '../alert/alert';
 import { Button, type ButtonProps } from '../button';
 import { useLeafConfig } from '../config-provider/context';
@@ -45,6 +45,16 @@ export function Popconfirm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const inFlight = useRef(false);
+  const generation = useRef(0);
+  useEffect(() => {
+    generation.current++;
+    inFlight.current = false;
+    setBusy(false);
+    if (open) setError(false);
+    return () => {
+      generation.current++;
+    };
+  }, [open]);
   return (
     <Popover
       {...props}
@@ -99,17 +109,22 @@ export function Popconfirm({
                   confirmButtonProps?.onClick?.(event);
                   if (event.defaultPrevented || inFlight.current) return;
                   inFlight.current = true;
+                  const request = generation.current;
                   setBusy(true);
                   setError(false);
                   try {
                     await onConfirm?.();
+                    if (generation.current !== request) return;
                     setOpen(false);
                   } catch (reason) {
+                    if (generation.current !== request) return;
                     setError(true);
                     onError?.(reason);
                   } finally {
-                    inFlight.current = false;
-                    setBusy(false);
+                    if (generation.current === request) {
+                      inFlight.current = false;
+                      setBusy(false);
+                    }
                   }
                 }}
               >

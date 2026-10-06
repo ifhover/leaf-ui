@@ -14,7 +14,9 @@
       "!audit-lint.json",
       "!**/.rspress",
       "!**/pnpm-lock.yaml",
-      "!apps/docs/docs/public/media/pdf.worker.min.mjs"
+      "!apps/docs/docs/public/media/pdf.worker.min.mjs",
+      "!design/figma/code.js",
+      "!design/figma/tokens.js"
     ]
   },
   "formatter": {

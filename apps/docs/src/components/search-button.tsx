@@ -23,7 +23,7 @@ export function SearchButton({ setFocused }: SearchButtonProps) {
         endIcon={<kbd>{shortcut}</kbd>}
         onClick={() => setFocused(true)}
       >
-        {t('搜索', 'Search')}
+        {label}
       </Button>
       <Button
         className="leaf-docs-search-mobile"

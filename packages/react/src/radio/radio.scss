@@ -3,16 +3,24 @@
   @include mixins.choice;
   &__input {
     border-radius: 50%;
+    box-shadow: var(--leaf-shadow-xs);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+  }
+  &:active:not([data-disabled]) &__input {
+    transform: scale(0.9);
   }
   &__mark {
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0);
     transition:
-      opacity var(--leaf-motion-duration) ease,
-      transform var(--leaf-motion-duration) ease;
+      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      transform var(--leaf-motion-slow) var(--leaf-motion-spring);
     position: absolute;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--leaf-color-on-primary);
     pointer-events: none;

@@ -18,6 +18,14 @@
     display: inline-flex;
     width: var(--leaf-rate-size);
     height: var(--leaf-rate-size);
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    &:has(.leaf-rate__option:hover:not(:disabled):not([aria-disabled='true'])),
+    &:has(.leaf-rate__option:focus-visible) {
+      transform: translateY(-2px) scale(1.12);
+    }
+    &:has(.leaf-rate__option:active:not(:disabled):not([aria-disabled='true'])) {
+      transform: scale(0.94);
+    }
   }
   &__empty,
   &__fill svg {
@@ -33,13 +41,13 @@
   &__fill {
     position: absolute;
     inset-block: 0;
-    left: 0;
+    inset-inline-start: 0;
     overflow: hidden;
     pointer-events: none;
     color: var(--leaf-rate-color);
     transition:
-      width var(--leaf-motion-duration),
-      color var(--leaf-motion-duration);
+      width var(--leaf-motion-duration) var(--leaf-motion-easing),
+      color var(--leaf-motion-duration) var(--leaf-motion-easing);
     svg {
       fill: currentColor;
     }
@@ -69,7 +77,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-rate__fill {
+  .leaf-rate__fill,
+  .leaf-rate__star {
     transition: none;
   }
 }

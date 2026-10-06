@@ -1,9 +1,11 @@
 .leaf-layout {
+  box-sizing: border-box;
   display: flex;
   flex: 1;
   min-width: 0;
   min-height: 0;
   color: var(--leaf-component-layout-color, var(--leaf-color-text));
+  background: var(--leaf-component-layout-background, var(--leaf-color-surface-muted));
   font-family: var(--leaf-font-family);
   &--vertical {
     flex-direction: column;
@@ -13,11 +15,13 @@
   }
   &__header,
   &__footer {
+    box-sizing: border-box;
     flex: none;
     padding: 16px 24px;
     background: var(--leaf-color-surface);
   }
   &__content {
+    box-sizing: border-box;
     flex: 1;
     min-width: 0;
     min-height: 0;
@@ -31,12 +35,21 @@
     padding: 12px;
     box-sizing: border-box;
     background: var(--leaf-color-surface);
-    transition: width var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: width var(--leaf-motion-slow) var(--leaf-motion-easing);
   }
   &__sider-content {
     flex: 1;
     min-height: 0;
     overflow: auto;
+  }
+  &__sider[data-collapsed] > .leaf-button {
+    width: 100%;
+    padding-inline: 0;
+    overflow: hidden;
+    .leaf-button__label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

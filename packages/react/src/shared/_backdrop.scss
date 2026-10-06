@@ -1,0 +1,73 @@
+// Keep opacity on the backdrop itself. A translucent ancestor blocks its
+// backdrop sampling and would make the blur appear only after that fade ends.
+@mixin blur($mask) {
+  opacity: 1;
+  backdrop-filter: blur(3px);
+  transition:
+    opacity var(--leaf-motion-slow) var(--leaf-motion-easing),
+    backdrop-filter var(--leaf-motion-slow) var(--leaf-motion-easing),
+    -webkit-backdrop-filter var(--leaf-motion-slow) var(--leaf-motion-easing);
+  animation: var(
+    --leaf-motion-animation,
+    leaf-backdrop-in var(--leaf-motion-slow) var(--leaf-motion-easing)
+  );
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background: rgba(8, 12, 18, 0.44);
+  }
+  // Keep the prefixed declaration in its own rule: CSS minifiers otherwise
+  // collapse it with the standard property and can discard Chrome's version.
+  @supports (-webkit-backdrop-filter: blur(1px)) {
+    -webkit-backdrop-filter: blur(3px);
+    animation-name: leaf-backdrop-webkit;
+    #{$mask}[data-state='closing'] & {
+      -webkit-backdrop-filter: blur(0);
+    }
+    #{$mask}[data-blur='off'] & {
+      -webkit-backdrop-filter: none;
+    }
+  }
+  #{$mask}[data-state='closing'] & {
+    animation: none;
+    opacity: 0;
+    backdrop-filter: blur(0);
+    transition-duration: var(--leaf-motion-duration);
+  }
+  #{$mask}[data-blur='off'] & {
+    animation-name: leaf-backdrop-fade;
+    backdrop-filter: none;
+    transition-property: opacity;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes leaf-backdrop-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(3px);
+  }
+}
+@keyframes leaf-backdrop-webkit {
+  from {
+    opacity: 0;
+    -webkit-backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    -webkit-backdrop-filter: blur(3px);
+  }
+}
+@keyframes leaf-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

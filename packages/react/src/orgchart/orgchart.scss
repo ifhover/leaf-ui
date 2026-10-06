@@ -14,6 +14,8 @@
       min-width: 48px;
       text-align: center;
       color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      font-variant-numeric: tabular-nums;
     }
   }
   &__viewport {
@@ -22,7 +24,10 @@
     max-height: 600px;
     padding: 24px;
     background: var(--leaf-color-surface-muted);
+    background-image: radial-gradient(var(--leaf-color-border) 1px, transparent 1px);
+    background-size: 20px 20px;
     border-radius: var(--leaf-radius-lg);
+    border: 1px solid var(--leaf-color-border);
     &:focus-visible {
       @include mixins.focus-ring;
     }
@@ -30,6 +35,7 @@
   &__canvas {
     width: max-content;
     min-width: 100%;
+    transition: zoom var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   ul {
     display: flex;
@@ -47,8 +53,26 @@
     padding: 0;
     list-style: none;
   }
-  li > ul {
+  &__branch {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+    &[data-open] {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+  }
+  &__branch-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  &__branch-inner > ul {
     padding-top: 32px;
+    // Collapsed child nodes still have a toggle extending below their card.
+    padding-bottom: 20px;
     > li::before {
       content: '';
       position: absolute;
@@ -74,7 +98,7 @@
       display: none;
     }
   }
-  li:has(> ul) > .leaf-org-chart__node::after {
+  li:has(> .leaf-org-chart__branch[data-present]) > .leaf-org-chart__node::after {
     content: '';
     position: absolute;
     bottom: -16px;
@@ -88,7 +112,15 @@
     border: 1px solid var(--leaf-color-border);
     border-radius: var(--leaf-radius);
     background: var(--leaf-color-surface);
-    box-shadow: 0 2px 6px #00000005;
+    box-shadow: var(--leaf-shadow-xs);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:has(button.leaf-org-chart__node-content:hover),
+    &:focus-within {
+      border-color: var(--leaf-color-border-hover);
+      box-shadow: var(--leaf-shadow-sm);
+    }
   }
   &__node-content {
     display: flex;
@@ -110,6 +142,10 @@
   }
   button.leaf-org-chart__node-content {
     cursor: pointer;
+    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:hover {
+      background: var(--leaf-color-surface-muted);
+    }
     &:focus-visible {
       @include mixins.focus-ring;
     }
@@ -123,8 +159,24 @@
     min-height: 24px;
     border-radius: 50%;
     background: var(--leaf-color-surface);
+    border: 1px solid var(--leaf-color-border);
+    box-shadow: var(--leaf-shadow-xs);
+    svg {
+      width: 14px;
+      height: 14px;
+      transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+    }
     &[aria-expanded='false'] svg {
       transform: rotate(-90deg);
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-org-chart__canvas,
+  .leaf-org-chart__branch,
+  .leaf-org-chart__node,
+  .leaf-org-chart__node-content,
+  .leaf-org-chart__toggle svg {
+    transition: none;
   }
 }

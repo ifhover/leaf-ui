@@ -1,5 +1,13 @@
 import { Search } from 'lucide-react';
-import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { Input } from '../input';
 import { Modal } from '../modal';
@@ -28,6 +36,7 @@ export interface CommandPaletteProps {
   onSearch?: (query: string) => void;
   onError?: (error: unknown, item: CommandItem) => void;
 }
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 export function CommandPalette({
   items,
   open: controlled,
@@ -54,6 +63,8 @@ export function CommandPalette({
   const inFlight = useRef(false);
   const generation = useRef(0);
   const input = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState<CSSProperties>();
   useEffect(() => {
     if (!shortcut) return;
     const key = (event: KeyboardEvent) => {
@@ -88,6 +99,26 @@ export function CommandPalette({
       .toLocaleLowerCase()
       .includes(query.toLocaleLowerCase()),
   );
+  useBrowserLayoutEffect(() => {
+    const node = listRef.current;
+    if (!node || !open) return;
+    const update = () => {
+      const row = node.querySelector<HTMLButtonElement>('[aria-selected="true"]:not(:disabled)');
+      setSelection(
+        row
+          ? ({
+              '--leaf-command-selection-y': `${row.offsetTop}px`,
+              '--leaf-command-selection-height': `${row.offsetHeight}px`,
+            } as CSSProperties)
+          : undefined,
+      );
+    };
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [open, active, query, items, busy]);
   useEffect(() => {
     document.getElementById(`${id}-${active}`)?.scrollIntoView?.({ block: 'nearest' });
   }, [id, active]);
@@ -120,6 +151,7 @@ export function CommandPalette({
       footer={null}
       onClose={() => setOpen(false)}
       width={560}
+      className="leaf-command-palette"
     >
       <Input
         ref={input}
@@ -160,12 +192,19 @@ export function CommandPalette({
         </p>
       )}
       <div
+        ref={listRef}
         id={id}
         role="listbox"
         aria-label={t('命令', 'Commands')}
         aria-busy={loading || !!busy}
         className="leaf-command-palette__list"
       >
+        <div
+          className="leaf-command-palette__selection"
+          style={selection}
+          data-ready={Boolean(selection)}
+          aria-hidden="true"
+        />
         {list.map((item, index) => (
           <div key={item.key}>
             {item.group !== undefined && (index === 0 || list[index - 1]?.group !== item.group) && (
@@ -193,6 +232,18 @@ export function CommandPalette({
             {loading ? messages.loading : (emptyContent ?? messages.noData)}
           </div>
         )}
+      </div>
+      <div className="leaf-command-palette__hint" aria-hidden="true">
+        <span>
+          <kbd>↑</kbd>
+          <kbd>↓</kbd> {t('选择', 'Navigate')}
+        </span>
+        <span>
+          <kbd>↵</kbd> {t('执行', 'Run')}
+        </span>
+        <span>
+          <kbd>Esc</kbd> {messages.close}
+        </span>
       </div>
     </Modal>
   );

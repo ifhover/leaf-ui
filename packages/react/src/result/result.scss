@@ -1,20 +1,25 @@
 .leaf-result {
   --leaf-result-color: var(--leaf-color-text-muted);
+  --leaf-result-color-surface-9: var(--leaf-color-text-muted-surface-9);
   padding: var(--leaf-component-result-padding, 36px 20px);
   text-align: center;
   color: var(--leaf-component-result-color, var(--leaf-color-text));
   font: var(--leaf-component-result-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   &--success {
     --leaf-result-color: var(--leaf-color-success);
+    --leaf-result-color-surface-9: var(--leaf-color-success-surface-9);
   }
   &--warning {
     --leaf-result-color: var(--leaf-color-warning);
+    --leaf-result-color-surface-9: var(--leaf-color-warning-surface-9);
   }
   &--error {
     --leaf-result-color: var(--leaf-color-danger);
+    --leaf-result-color-surface-9: var(--leaf-color-danger-surface-9);
   }
   &--info {
     --leaf-result-color: var(--leaf-color-info);
+    --leaf-result-color-surface-9: var(--leaf-color-info-surface-9);
   }
   &__icon {
     display: grid;
@@ -22,22 +27,32 @@
     width: 76px;
     height: 76px;
     margin: 0 auto 20px;
-    border-radius: 50%;
+    border-radius: var(--leaf-radius-lg);
     color: var(--leaf-result-color);
-    background: color-mix(in srgb, var(--leaf-result-color) 9%, var(--leaf-color-surface));
+    background: var(--leaf-result-color-surface-9);
+    box-sizing: border-box;
     svg {
       width: 38px;
       height: 38px;
-      stroke-width: 1.5;
+      stroke-width: 2;
     }
+  }
+  &:not(.leaf-result--empty) &__icon > svg {
+    animation: var(
+      --leaf-motion-animation,
+      leaf-result-icon-enter var(--leaf-motion-slow) var(--leaf-motion-spring)
+    );
   }
   &__title {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: var(--leaf-heading-weight, 600);
+    letter-spacing: -0.02em;
   }
   &__description {
     margin-top: 8px;
     color: var(--leaf-color-text-muted);
+    max-width: 46ch;
+    margin-inline: auto;
   }
   &__content {
     margin-top: 20px;
@@ -70,5 +85,20 @@
     .leaf-result__extra {
       margin-top: 16px;
     }
+  }
+}
+@keyframes leaf-result-icon-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-result:not(.leaf-result--empty) .leaf-result__icon > svg {
+    animation: none;
   }
 }

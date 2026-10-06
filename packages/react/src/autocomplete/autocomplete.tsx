@@ -178,6 +178,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
       style={style}
       data-status={status}
       data-disabled={disabled ? '' : undefined}
+      data-open={open ? '' : undefined}
       data-clearable={allowClear && text && !disabled && !readOnly ? '' : undefined}
     >
       <input
@@ -252,7 +253,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         panelRef={panelRef}
         matchWidth
         id={listId}
-        className={classes('leaf-floating', popupClassName)}
+        className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
         placement={popupPlacement}
         style={{ maxHeight: listHeight, ...popupStyle }}
         container={getPopupContainer}

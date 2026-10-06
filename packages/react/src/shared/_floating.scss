@@ -1,4 +1,8 @@
 .leaf-floating {
+  --leaf-popup-x: 0px;
+  --leaf-popup-y: -4px;
+  --leaf-popup-origin-x: center;
+  --leaf-popup-origin-y: top;
   box-sizing: border-box;
   position: fixed;
   z-index: var(--leaf-z-index-popup, 1000);
@@ -7,26 +11,56 @@
   overflow: auto;
   padding: 6px;
   border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius);
+  border-radius: var(--leaf-radius-lg);
   color: var(--leaf-color-text);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
   line-height: 1.5;
-  background: var(--leaf-color-surface);
-  box-shadow: var(--leaf-shadow-md);
+  background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
+  box-shadow: var(--leaf-shadow-lg);
   overscroll-behavior: contain;
   opacity: 1;
-  transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+  translate: 0 0;
+  scale: 1;
+  transform-origin: var(--leaf-popup-origin-x) var(--leaf-popup-origin-y);
+  transition:
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+    translate var(--leaf-motion-slow) var(--leaf-motion-easing),
+    scale var(--leaf-motion-slow) var(--leaf-motion-easing);
+  &[data-side='top'] {
+    --leaf-popup-y: 4px;
+    --leaf-popup-origin-y: bottom;
+  }
+  &[data-side='left'] {
+    --leaf-popup-x: 6px;
+    --leaf-popup-y: 0px;
+    --leaf-popup-origin-x: right;
+    --leaf-popup-origin-y: center;
+  }
+  &[data-side='right'] {
+    --leaf-popup-x: -6px;
+    --leaf-popup-y: 0px;
+    --leaf-popup-origin-x: left;
+    --leaf-popup-origin-y: center;
+  }
   @starting-style {
     opacity: 0;
+    translate: var(--leaf-popup-x) var(--leaf-popup-y);
+    scale: 0.985;
   }
   &[data-positioned='false'] {
     opacity: 0;
+    translate: var(--leaf-popup-x) var(--leaf-popup-y);
+    scale: 0.985;
   }
 
   &[data-state='closing'] {
     pointer-events: none;
     opacity: 0;
+    translate: var(--leaf-popup-x) var(--leaf-popup-y);
+    scale: 0.98;
+    transition-duration: var(--leaf-motion-duration);
+    transition-timing-function: var(--leaf-motion-easing);
   }
 
   &:focus {
@@ -68,6 +102,10 @@
   color: var(--leaf-color-text-muted);
   background: var(--leaf-color-surface);
   cursor: pointer;
+  transition:
+    color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
   &:hover {
     color: var(--leaf-color-text);
     background: var(--leaf-color-surface-muted);
@@ -97,32 +135,40 @@
   box-sizing: border-box;
   display: flex;
   width: 100%;
-  min-height: 32px;
+  min-height: var(--leaf-density-option-height);
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: var(--leaf-density-option-padding) var(--leaf-density-field-padding);
   border: 0;
   border-radius: var(--leaf-radius-sm);
   color: inherit;
   background: transparent;
   font: inherit;
   line-height: 1.4;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
+  transition:
+    color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing);
 
   & + & {
     margin-top: 2px;
   }
 
-  &:hover:not(:disabled),
-  &[data-highlighted='true'],
-  &[aria-selected='true'] {
-    background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+  &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
+  &[data-highlighted='true']:not([aria-disabled='true']):not([aria-selected='true']) {
+    background: var(--leaf-color-surface-muted);
+  }
+
+  &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
+    background: var(--leaf-color-text-alpha-9);
   }
 
   &[aria-selected='true'] {
     color: var(--leaf-color-primary);
     font-weight: var(--leaf-font-weight);
+    background: var(--leaf-color-primary-alpha-9);
   }
 
   &:disabled,
@@ -135,6 +181,13 @@
   &:focus-visible {
     outline: 2px solid var(--leaf-color-primary);
     outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf-floating__option,
+  .leaf-picker-clear {
+    transition: none;
   }
 }
 

@@ -1,5 +1,8 @@
+@use './palette';
+
 :root,
 :host {
+  @include palette.light;
   --leaf-color-primary: #20834a;
   --leaf-color-on-primary: #ffffff;
   --leaf-color-danger: #c83c3c;
@@ -8,16 +11,26 @@
   --leaf-color-info: #1677ff;
   --leaf-color-success: #20834a;
   --leaf-control-height: 34px;
+  --leaf-density-form-gap: 18px;
+  --leaf-density-label-gap: 6px;
+  --leaf-density-row-padding: 12px;
+  --leaf-density-option-height: 32px;
+  --leaf-density-option-padding: 6px;
+  --leaf-density-button-padding: 14px;
+  --leaf-density-field-padding: 10px;
+  --leaf-density-dialog-block: 20px;
+  --leaf-density-dialog-inline: 24px;
+  --leaf-density-dialog-gap: 16px;
   --leaf-control-height-sm: max(1px, calc(var(--leaf-control-height) - 6px));
   --leaf-control-height-lg: calc(var(--leaf-control-height) + 6px);
   --leaf-z-index-popup: 1000;
   --leaf-z-index-modal: 1100;
   --leaf-z-index-message: 1200;
-  --leaf-color-text: #203329;
-  --leaf-color-text-muted: #627167;
+  --leaf-color-text: #202024;
+  --leaf-color-text-muted: #68686f;
   --leaf-color-surface: #ffffff;
-  --leaf-color-surface-muted: #f4f7f4;
-  --leaf-color-border: #dce5de;
+  --leaf-color-surface-muted: #f6f6f7;
+  --leaf-color-border: #e5e5e8;
   --leaf-radius: 10px;
   --leaf-radius-sm: calc(var(--leaf-radius) * 0.6);
   --leaf-radius-lg: calc(var(--leaf-radius) * 1.6);
@@ -27,12 +40,14 @@
   --leaf-font-size-sm: max(1px, calc(var(--leaf-font-size) - 2px));
   --leaf-font-size-lg: calc(var(--leaf-font-size) + 2px);
   --leaf-font-weight: 500;
-  --leaf-motion-duration: 160ms;
-  --leaf-motion-easing: ease;
+  --leaf-motion-duration: 200ms;
+  --leaf-motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --leaf-motion-spring: cubic-bezier(0.22, 1.28, 0.36, 1);
   --leaf-motion-play-state: running;
 }
 
 [data-leaf-theme='light'] {
+  @include palette.light;
   --leaf-color-primary: #20834a;
   --leaf-color-on-primary: #ffffff;
   --leaf-color-danger: #c83c3c;
@@ -41,14 +56,15 @@
   --leaf-color-warning: #a9670e;
   --leaf-color-info: #1677ff;
   color-scheme: light;
-  --leaf-color-text: #203329;
-  --leaf-color-text-muted: #627167;
+  --leaf-color-text: #202024;
+  --leaf-color-text-muted: #68686f;
   --leaf-color-surface: #ffffff;
-  --leaf-color-surface-muted: #f4f7f4;
-  --leaf-color-border: #dce5de;
+  --leaf-color-surface-muted: #f6f6f7;
+  --leaf-color-border: #e5e5e8;
 }
 
 [data-leaf-theme='dark'] {
+  @include palette.dark;
   --leaf-color-primary: #83cf9e;
   --leaf-color-on-primary: #11271a;
   --leaf-color-info: #69b1ff;
@@ -57,11 +73,11 @@
   --leaf-color-on-danger: #381818;
   --leaf-color-warning: #e0b76e;
   color-scheme: dark;
-  --leaf-color-text: #e6eee8;
-  --leaf-color-text-muted: #a1b0a5;
-  --leaf-color-surface: #18251d;
-  --leaf-color-surface-muted: #203027;
-  --leaf-color-border: #3d5144;
+  --leaf-color-text: #ededf0;
+  --leaf-color-text-muted: #a5a5ae;
+  --leaf-color-surface: #1c1c20;
+  --leaf-color-surface-muted: #25252b;
+  --leaf-color-border: #38383f;
 }
 
 :root,
@@ -74,7 +90,51 @@
   --leaf-spacing-xl: calc(var(--leaf-spacing) * 4);
   --leaf-line-height: 1.6;
   --leaf-heading-weight: 600;
-  --leaf-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.06);
-  --leaf-shadow-md: 0 6px 20px rgb(0 0 0 / 0.1);
-  --leaf-shadow-lg: 0 12px 48px rgb(0 0 0 / 0.16);
+  --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.02);
+  --leaf-shadow-sm: 0 2px 6px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
+  --leaf-shadow-md: 0 8px 24px rgb(0 0 0 / 0.08), 0 2px 6px rgb(0 0 0 / 0.04);
+  --leaf-shadow-lg: 0 20px 60px rgb(0 0 0 / 0.14), 0 4px 12px rgb(0 0 0 / 0.06);
+}
+
+// Resolve derived values again in each region so nested themes remain independent.
+:root,
+:host,
+[data-leaf-scope] {
+  --leaf-motion-fast: calc(var(--leaf-motion-duration) * 0.6);
+  --leaf-motion-slow: calc(var(--leaf-motion-duration) * 1.6);
+  --leaf-color-text-subtle: var(--leaf-color-text-muted-surface-92);
+  --leaf-color-surface-raised: var(--leaf-color-surface-text-98);
+  --leaf-color-border-hover: var(--leaf-color-border-text-muted-65);
+}
+
+@keyframes leaf-content-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes leaf-state-in {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where([class^='leaf-'], [class*=' leaf-']) {
+    animation: none !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
 }

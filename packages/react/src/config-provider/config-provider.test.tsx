@@ -3,10 +3,71 @@ import userEvent from '@testing-library/user-event';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { Button, Input, Select, TimePicker } from '../index';
+import { Button, Drawer, Input, Modal, Select, TimePicker } from '../index';
 import { ConfigProvider, useLeafConfig } from './config-provider';
 
 describe('ConfigProvider', () => {
+  it('inherits density, permits nested resets and keeps explicit theme sizes', () => {
+    function Value() {
+      return <output>{useLeafConfig().density}</output>;
+    }
+    const { rerender } = render(
+      <ConfigProvider density="compact">
+        <ConfigProvider data-testid="compact">
+          <Value />
+        </ConfigProvider>
+        <ConfigProvider density="comfortable" data-testid="reset" theme={{ controlHeight: 40 }} />
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('compact')).toHaveAttribute('data-leaf-density', 'compact');
+    expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-density-form-gap')).toBe(
+      '12px',
+    );
+    expect(screen.getByTestId('reset').style.getPropertyValue('--leaf-control-height')).toBe(
+      '40px',
+    );
+    expect(screen.getByText('compact')).toBeInTheDocument();
+    rerender(
+      <ConfigProvider>
+        <ConfigProvider data-testid="compact">
+          <Value />
+        </ConfigProvider>
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-control-height')).toBe(
+      '34px',
+    );
+    expect(screen.getByText('comfortable')).toBeInTheDocument();
+  });
+  it('defaults mask blur on and inherits overrides in portalled dialogs', () => {
+    function BlurValue() {
+      return <output data-testid="default-blur">{String(useLeafConfig().maskBlur)}</output>;
+    }
+    function Example({ blur }: { blur: boolean }) {
+      return (
+        <>
+          <BlurValue />
+          <ConfigProvider maskBlur={blur}>
+            <ConfigProvider>
+              <Modal open title="Inherited blur" />
+            </ConfigProvider>
+            <ConfigProvider maskBlur>
+              <Drawer open title="Enabled blur" />
+            </ConfigProvider>
+          </ConfigProvider>
+        </>
+      );
+    }
+    const { rerender } = render(<Example blur={false} />);
+    expect(screen.getByTestId('default-blur')).toHaveTextContent('true');
+    const modalMask = screen.getByRole('dialog', { name: 'Inherited blur' }).parentElement;
+    const drawerMask = screen.getByRole('dialog', { name: 'Enabled blur' }).parentElement;
+    expect(modalMask).toHaveAttribute('data-blur', 'off');
+    expect(drawerMask).not.toHaveAttribute('data-blur');
+    expect(modalMask?.closest('.leaf-portal-scope')).toBeInTheDocument();
+    rerender(<Example blur />);
+    expect(modalMask).not.toHaveAttribute('data-blur');
+  });
   it('inherits advanced overrides and removes stale settings when the theme changes', () => {
     const { rerender } = render(
       <ConfigProvider

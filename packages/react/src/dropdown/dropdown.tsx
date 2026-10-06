@@ -1,6 +1,7 @@
 import { Check, ChevronRight, Circle } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
+  type CSSProperties,
   cloneElement,
   type KeyboardEvent,
   type MouseEvent,
@@ -11,6 +12,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   version,
@@ -61,6 +63,7 @@ const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
       ? [{ ...item, children: undefined }, ...flatten(item.children ?? [])]
       : [item],
   );
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 export function Dropdown({
   items,
   children,
@@ -311,11 +314,34 @@ function MenuPanel({
   );
   const [active, setActive] = useState<string>();
   const [submenu, setSubmenu] = useState<string>();
+  const [highlight, setHighlight] = useState<CSSProperties>();
   const current = enabled.some((item) => item.key === active)
     ? active
     : startAtEnd
       ? enabled.at(-1)?.key
       : enabled[0]?.key;
+  useBrowserLayoutEffect(() => {
+    const node = panel.current;
+    if (!open || !node) return;
+    const update = () => {
+      const row = Array.from(node.querySelectorAll<HTMLElement>('[data-key]')).find(
+        (item) => item.dataset.key === current,
+      );
+      setHighlight(
+        row
+          ? ({
+              '--leaf-menu-highlight-y': `${row.offsetTop}px`,
+              '--leaf-menu-highlight-height': `${row.offsetHeight}px`,
+            } as CSSProperties)
+          : undefined,
+      );
+    };
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [open, current]);
   useEffect(() => {
     if (!open) {
       setSubmenu(undefined);
@@ -404,6 +430,12 @@ function MenuPanel({
         tabIndex={-1}
         onKeyDown={keyDown}
       >
+        <div
+          className="leaf-dropdown__highlight"
+          aria-hidden="true"
+          data-ready={Boolean(highlight)}
+          style={highlight}
+        />
         {rows.map((item) =>
           item.type === 'divider' ? (
             <hr key={item.key} className="leaf-dropdown__divider" />
@@ -435,6 +467,8 @@ function MenuPanel({
               className={classes('leaf-floating__option', item.danger && 'leaf-dropdown__danger')}
               onFocus={() => setActive(item.key)}
               onPointerEnter={(event) => {
+                if (item.disabled) return;
+                setActive(item.key);
                 if (item.children?.length) {
                   submenuTrigger.current = event.currentTarget;
                   setSubmenu(item.key);
@@ -450,12 +484,14 @@ function MenuPanel({
               {item.type === 'checkbox' ? (
                 <Check
                   size={15}
+                  className="leaf-dropdown__check"
                   style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
                   aria-hidden="true"
                 />
               ) : item.type === 'radio' ? (
                 <Circle
                   size={8}
+                  className="leaf-dropdown__check"
                   fill="currentColor"
                   style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
                   aria-hidden="true"
@@ -513,6 +549,7 @@ function MenuAction({
         tabIndex={props.tabIndex}
         data-key={item.key}
         onFocus={props.onFocus as never}
+        onPointerEnter={props.onPointerEnter as never}
         onClick={(event) => {
           if (item.disabled) event.preventDefault();
           else props.onClick?.(event as never);

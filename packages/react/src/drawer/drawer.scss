@@ -1,15 +1,11 @@
+@use '../shared/backdrop';
+
 .leaf-drawer-mask {
   position: fixed;
   inset: 0;
   z-index: var(--leaf-z-index-modal, 1100);
   display: flex;
-  opacity: 1;
-  transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-  @starting-style {
-    opacity: 0;
-  }
   &[data-state='closing'] {
-    opacity: 0;
     pointer-events: none;
   }
   &--right {
@@ -51,7 +47,8 @@
   height: 100%;
   border: 0;
   padding: 0;
-  background: rgb(0 0 0 / 42%);
+  background: rgba(8, 12, 18, 0.38);
+  @include backdrop.blur('.leaf-drawer-mask');
   cursor: default;
 }
 .leaf-drawer {
@@ -63,13 +60,21 @@
   max-width: 100%;
   max-height: 100%;
   color: var(--leaf-color-text);
-  background: var(--leaf-color-surface);
+  border: 1px solid var(--leaf-color-border);
+  background: var(
+    --leaf-component-drawer-background,
+    var(--leaf-color-surface-raised, var(--leaf-color-surface))
+  );
   font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
-  box-shadow: 0 8px 32px #0002;
+  box-shadow: var(--leaf-component-drawer-shadow, var(--leaf-shadow-lg));
   outline: none;
   transform: translate(0);
-  transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+  opacity: 1;
+  transition:
+    transform var(--leaf-motion-slow) var(--leaf-motion-easing),
+    opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
   @starting-style {
+    opacity: 0;
     transform: var(--leaf-drawer-enter);
   }
   &__header {
@@ -77,12 +82,13 @@
     flex-shrink: 0;
     align-items: center;
     gap: 12px;
-    padding: 24px 24px 12px;
+    padding: var(--leaf-spacing-lg) var(--leaf-density-dialog-inline) var(--leaf-spacing-md);
     h2 {
       flex: 1;
       margin: 0;
       font-size: 17px;
       font-weight: 600;
+      letter-spacing: -0.025em;
     }
   }
   &__extra {
@@ -91,11 +97,15 @@
   &__body {
     flex: 1;
     overflow: auto;
-    padding: 24px;
+    padding: var(--leaf-spacing-lg) var(--leaf-density-dialog-inline);
     overscroll-behavior: contain;
   }
+  &__content {
+    display: flow-root;
+    min-width: 0;
+  }
   &__header + &__body {
-    padding-block-start: 12px;
+    padding-block-start: var(--leaf-density-dialog-gap);
   }
   &__footer {
     display: flex;
@@ -103,15 +113,17 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 24px 24px;
+    gap: 8px;
+    padding: 0 var(--leaf-density-dialog-inline) var(--leaf-spacing-lg);
   }
 }
 .leaf-drawer-mask[data-state='closing'] .leaf-drawer {
+  opacity: 0;
   transform: var(--leaf-drawer-enter);
+  transition-duration: var(--leaf-motion-duration);
+  transition-timing-function: var(--leaf-motion-easing);
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-drawer-mask,
   .leaf-drawer {
     transition: none;
   }
@@ -124,6 +136,18 @@
   position: absolute;
   z-index: 2;
   touch-action: none;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--leaf-color-primary);
+    opacity: 0;
+    transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+  }
+  &:hover::after,
+  &:focus-visible::after {
+    opacity: 0.12;
+  }
   &:focus-visible {
     outline: 2px solid var(--leaf-color-primary);
     outline-offset: -2px;

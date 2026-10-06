@@ -19,6 +19,7 @@ import { GripVertical } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId } from 'react';
 import { Button } from '../button';
 import { classes } from '../shared/classes';
+import { useMotionEnabled } from '../shared/motion';
 import { useText } from '../shared/use-text';
 export interface SortableRenderInfo {
   handle: ReactNode;
@@ -52,6 +53,7 @@ function SortableItem<T>({
   renderItem: SortableProps<T>['renderItem'];
 }) {
   const t = useText();
+  const motion = useMotionEnabled();
   const {
     attributes,
     listeners,
@@ -79,7 +81,14 @@ function SortableItem<T>({
       ref={setNodeRef}
       className="leaf-sortable__item"
       data-dragging={isDragging || undefined}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: transition
+          ? motion
+            ? 'transform var(--leaf-motion-duration) var(--leaf-motion-easing)'
+            : 'none'
+          : undefined,
+      }}
     >
       {renderItem(item, { handle, dragging: isDragging })}
     </div>

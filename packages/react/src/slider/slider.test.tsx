@@ -5,6 +5,15 @@ import { describe, expect, it, vi } from 'vitest';
 import { Slider } from './slider';
 
 describe('Slider', () => {
+  it('keeps the numeric display opt-in without hiding the accessible value', () => {
+    const { rerender } = render(<Slider defaultValue={50} />);
+    expect(screen.getByRole('slider')).toHaveValue('50');
+    expect(screen.queryByText('50')).not.toBeInTheDocument();
+    rerender(<Slider defaultValue={50} showValue />);
+    expect(screen.getByText('50')).toBeInTheDocument();
+    rerender(<Slider range value={[20, 70]} showValue />);
+    expect(screen.getByText('20 – 70')).toBeInTheDocument();
+  });
   it('steps decimals with keys and reports a completed change once', async () => {
     const complete = vi.fn();
     function Example() {

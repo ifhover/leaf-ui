@@ -73,6 +73,7 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
           size="sm"
           onClick={() => setCompact(!compact)}
           aria-expanded={!folded}
+          aria-label={folded ? t('展开侧栏', 'Expand sidebar') : t('收起侧栏', 'Collapse sidebar')}
         >
           {trigger ??
             (folded ? t('展开侧栏', 'Expand sidebar') : t('收起侧栏', 'Collapse sidebar'))}

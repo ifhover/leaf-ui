@@ -33,8 +33,7 @@ export function CardBasic() {
             padding: 28,
             borderRadius: 'var(--leaf-radius)',
             color: 'var(--leaf-color-primary)',
-            background:
-              'color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface))',
+            background: 'var(--leaf-color-primary-surface-8)',
           }}
         >
           <Leaf size={44} strokeWidth={1.3} aria-hidden="true" />

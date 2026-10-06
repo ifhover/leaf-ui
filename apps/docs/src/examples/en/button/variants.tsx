@@ -5,7 +5,7 @@ export function ButtonVariants() {
     <>
       <Button>Primary</Button>
       <Button variant="soft">Soft</Button>
-      <Button variant="outline">Outline</Button>
+      <Button variant="outline">Neutral</Button>
       <Button variant="ghost">Ghost</Button>
     </>
   );

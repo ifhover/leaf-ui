@@ -33,6 +33,14 @@ pnpm dev
 
 使用 leaf- 类名前缀。提供减少动态效果和强制颜色模式下的必要样式。组件样式不重置应用的全局元素。
 
+## 交互动效
+
+视觉与动效调整的覆盖记录见 [DESIGN-REFRESH.md](../../DESIGN-REFRESH.md)。基础时间为 200ms，快速与布局过渡从当前区域的 `--leaf-motion-duration` 派生。悬停、选中、展开和状态变化使用不同的反馈；拖动、输入、裁剪与虚拟窗口位置保持即时响应。
+
+CSS keyframe 使用 `animation: var(--leaf-motion-animation, leaf-name …)`；`motion: false` 将它设为 none，内层 `motion: true` 用 initial 恢复 fallback。不要用父区域的后代选择器强行关闭嵌套区域。系统减少动态效果始终优先，浮层同步全部 `--leaf-*` 变量。
+
+测量动画复用 shared/motion.ts：普通有 key 的列表使用 useListMotion，虚拟列表关闭它。最多测量 200 项；缩放、响应式重排单独刷新布局基线。动画更新时先读当前位置、再取消旧动画、最后测量自然布局与写入新动画；卸载和偏好变化要取消动画。内容展开需要保留焦点与原生输入实例；结束后由自然布局接管，不保留 forwards keyframe。
+
 ## 图标与功能参考
 
 图标采用 lucide-react，使用具名导入；禁止增加手绘图标路径集或运行时动态加载整套图标。装饰性图标对辅助技术隐藏，无文字的控件需要可访问名称。
@@ -101,3 +109,8 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 ## 自动化质量检查
 
 验证范围、命令、兼容矩阵与体积基线见 [QUALITY.md](QUALITY.md)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
+## 设计资源与验收支持
+
+`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @sudden3/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @sudden3/leaf-ui generate:palette`; the library build rejects stale palettes.
+
+`DESIGN-STANDARDS.md` defines state and geometry rules. `ACCESSIBILITY.md` records executed browser coverage and pending device/screen-reader acceptance. Both guides and the workbench are available in Chinese and English documentation. Automatic screenshot baseline comparison remains deferred.

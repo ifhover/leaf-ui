@@ -1,6 +1,6 @@
 {
   "name": "@sudden3/leaf-ui",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -970,7 +970,8 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "rslib build && node scripts/build-component-styles.mjs",
+    "build": "node scripts/generate-palette.mjs --check && rslib build && node scripts/build-component-styles.mjs",
+    "generate:palette": "node scripts/generate-palette.mjs",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest run",

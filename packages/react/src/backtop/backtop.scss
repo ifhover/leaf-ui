@@ -5,15 +5,25 @@
   bottom: 24px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px);
+  transform: translateY(12px) scale(0.94);
+  box-shadow: var(--leaf-shadow-md);
   transition:
-    opacity var(--leaf-motion-duration),
-    transform var(--leaf-motion-duration),
-    visibility var(--leaf-motion-duration);
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+    transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+    visibility var(--leaf-motion-slow);
   &[data-visible] {
     visibility: visible;
     opacity: 1;
     transform: none;
+  }
+  &[data-visible]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--leaf-shadow-lg);
+  }
+  &[data-visible]:active:not(:disabled) {
+    transform: scale(0.95);
+    box-shadow: var(--leaf-shadow-sm);
   }
 }
 @media (prefers-reduced-motion: reduce) {

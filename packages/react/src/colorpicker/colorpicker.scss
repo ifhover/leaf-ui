@@ -6,6 +6,10 @@
   align-items: center;
   width: auto;
   vertical-align: middle;
+  &[data-open] {
+    border-color: var(--leaf-field-color);
+    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
+  }
   &__trigger {
     display: inline-flex;
     align-items: center;
@@ -20,6 +24,10 @@
     background: transparent;
     font: inherit;
     cursor: pointer;
+    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+    }
     &:disabled {
       cursor: not-allowed;
     }
@@ -40,6 +48,7 @@
     border-radius: 4px;
     background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 8%);
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
     i {
       width: 100%;
       height: 100%;
@@ -49,6 +58,9 @@
       height: 32px;
       border-radius: var(--leaf-radius-sm);
     }
+  }
+  &__trigger:active:not(:disabled) &__swatch {
+    transform: scale(0.88);
   }
   &--sm &__swatch {
     width: 16px;
@@ -70,6 +82,17 @@
     background: transparent;
     color: var(--leaf-color-text-muted);
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+    &:hover {
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
   }
   &__panel {
     box-sizing: border-box;
@@ -97,6 +120,16 @@
     box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
     transform: translate(-50%, -50%);
     pointer-events: none;
+    transition:
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-spring);
+  }
+  &__area:active &__handle,
+  &__area:focus-visible &__handle {
+    scale: 1.25;
+    box-shadow:
+      0 0 0 4px rgb(255 255 255 / 18%),
+      0 0 3px 1px rgb(0 0 0 / 25%);
   }
   &__sliders {
     display: flex;
@@ -125,6 +158,7 @@
         border-radius: 50%;
         background: transparent;
         box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+        transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
       }
       &::-moz-range-thumb {
         width: 10px;
@@ -133,6 +167,15 @@
         border-radius: 50%;
         background: transparent;
         box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+        transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      }
+      &:hover::-webkit-slider-thumb,
+      &:active::-webkit-slider-thumb {
+        transform: scale(1.15);
+      }
+      &:hover::-moz-range-thumb,
+      &:active::-moz-range-thumb {
+        transform: scale(1.15);
       }
       &:focus-visible {
         outline: 2px solid var(--leaf-color-primary);
@@ -151,8 +194,10 @@
   &__formats {
     display: inline-flex;
     gap: 4px;
-    padding: 0;
-    border: 0;
+    padding: 3px;
+    border: 1px solid var(--leaf-color-border);
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-surface-muted);
     margin: 0 0 8px;
     button {
       padding: 3px 8px;
@@ -163,9 +208,21 @@
       font: inherit;
       font-size: 11px;
       cursor: pointer;
-      &[aria-pressed='true'] {
-        background: var(--leaf-color-surface-muted);
+      transition:
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+        transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      &:hover {
         color: var(--leaf-color-text);
+      }
+      &:active {
+        transform: scale(0.95);
+      }
+      &[aria-pressed='true'] {
+        background: var(--leaf-color-surface-raised);
+        color: var(--leaf-color-text);
+        box-shadow: var(--leaf-shadow-xs);
       }
     }
   }
@@ -180,9 +237,14 @@
     color: var(--leaf-color-text);
     font: inherit;
     font-size: 12px;
+    outline: none;
+    box-shadow: var(--leaf-shadow-xs);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:focus {
-      outline: 2px solid var(--leaf-color-primary);
-      outline-offset: 1px;
+      border-color: var(--leaf-color-primary);
+      box-shadow: 0 0 0 3px var(--leaf-color-primary-alpha-12);
     }
     &[aria-invalid='true'] {
       border-color: var(--leaf-color-danger);
@@ -213,6 +275,16 @@
     border: 1px solid rgb(0 0 0 / 8%);
     border-radius: 5px;
     cursor: pointer;
+    transition:
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    &:hover:not([aria-pressed='true']) {
+      transform: translateY(-2px) scale(1.06);
+      box-shadow: var(--leaf-shadow-sm);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
     &[aria-pressed='true'] {
       outline: 2px solid var(--leaf-color-primary);
       outline-offset: 2px;
@@ -245,6 +317,15 @@
     border-radius: 50%;
     box-shadow: 0 0 0 1px var(--leaf-color-border);
     cursor: pointer;
+    transition:
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    &:hover:not([aria-pressed='true']) {
+      transform: translateY(-2px);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
     &[aria-pressed='true'] {
       box-shadow: 0 0 0 2px var(--leaf-color-primary);
     }
@@ -252,6 +333,24 @@
       outline: 2px solid var(--leaf-color-primary);
       outline-offset: 3px;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-color-picker__trigger,
+  .leaf-color-picker__swatch,
+  .leaf-color-picker__clear,
+  .leaf-color-picker__handle,
+  .leaf-color-picker__formats button,
+  .leaf-color-picker__input,
+  .leaf-color-picker__preset,
+  .leaf-color-picker__stops > button {
+    transition: none;
+  }
+  .leaf-color-picker__sliders input::-webkit-slider-thumb {
+    transition: none;
+  }
+  .leaf-color-picker__sliders input::-moz-range-thumb {
+    transition: none;
   }
 }
 .leaf-color-picker__gradient-field {

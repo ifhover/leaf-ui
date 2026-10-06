@@ -50,3 +50,8 @@ import { SchemaForm } from '../../src/examples/scenarios/schema';
 `autoUpload={false}` 配合 `UploadHandle.upload()` 实现手动开始；`concurrency` 限制同时进行的上传。分片、校验摘要和断点续传属于服务端协议，在 `customRequest` 中实现：读取 `File.slice()`、保存服务端 uploadId、传递 `signal`，每片完成时通过 `onProgress` 更新总进度。不要在前端组件中假定一种存储服务的续传协议。
 
 更多 API 见 [Form](../components/form)、[Select](../components/select) 和 [Upload](../components/upload)。
+
+
+## 完整业务页面
+
+[完整工作空间](./workspace) 串起项目搜索、新建、编辑、归档与恢复、字段校验和团队设置保存；[可访问性工作台](./accessibility) 可检查键盘、浮层、主题与密度。

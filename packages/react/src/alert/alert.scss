@@ -1,44 +1,108 @@
-.leaf-alert,
-.leaf-message {
+.leaf-alert {
   --leaf-feedback-color: var(--leaf-color-success);
+  --leaf-feedback-color-border-12: var(--leaf-color-success-border-12);
+  --leaf-feedback-color-surface-5: var(--leaf-color-success-surface-5);
+  --leaf-feedback-color-alpha-10: var(--leaf-color-success-alpha-10);
+  --leaf-feedback-color-alpha-15: var(--leaf-color-success-alpha-15);
+  --leaf-feedback-color-alpha-8: var(--leaf-color-success-alpha-8);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   border-radius: var(--leaf-radius);
-  border: 1px solid color-mix(in srgb, var(--leaf-feedback-color) 28%, transparent);
-  padding: 12px 14px;
+  border: 1px solid var(--leaf-feedback-color-border-12);
+  padding: 14px 16px;
   &--info {
     --leaf-feedback-color: var(--leaf-color-info);
+    --leaf-feedback-color-border-12: var(--leaf-color-info-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-info-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-info-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-info-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-info-alpha-8);
   }
   &--warning {
     --leaf-feedback-color: var(--leaf-color-warning);
+    --leaf-feedback-color-border-12: var(--leaf-color-warning-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-warning-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-warning-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-warning-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-warning-alpha-8);
   }
   &--error {
     --leaf-feedback-color: var(--leaf-color-danger);
-  }
-  > svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: var(--leaf-feedback-color);
+    --leaf-feedback-color-border-12: var(--leaf-color-danger-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-danger-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-danger-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-danger-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-danger-alpha-8);
   }
 }
 .leaf-alert {
-  background: var(
-    --leaf-component-alert-background,
-    color-mix(in srgb, var(--leaf-feedback-color) 7%, var(--leaf-color-surface))
-  );
+  box-sizing: border-box;
+  max-height: var(--leaf-alert-height, none);
+  transition:
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+    max-height var(--leaf-motion-duration) var(--leaf-motion-easing),
+    padding-block var(--leaf-motion-duration) var(--leaf-motion-easing),
+    border-block-width var(--leaf-motion-duration) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+  background: var(--leaf-component-alert-background, var(--leaf-feedback-color-surface-5));
+  &[data-state='closing'] {
+    max-height: 0;
+    opacity: 0;
+    padding-block: 0;
+    border-block-width: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 28px;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    border-radius: 8px;
+    color: var(--leaf-feedback-color);
+    background: var(--leaf-feedback-color-alpha-10);
+  }
   &__content {
     flex: 1;
     min-width: 0;
   }
   &__title {
-    font-weight: 550;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
   }
   &__description {
     margin-top: 4px;
     color: var(--leaf-color-text-muted);
+  }
+  &__close {
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+    &:hover {
+      color: var(--leaf-color-text);
+      background: var(--leaf-feedback-color-alpha-10);
+    }
+    &:active {
+      transform: scale(0.88);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-alert,
+  .leaf-alert__close {
+    transition: none;
   }
 }
 .leaf-alert__close,
@@ -62,13 +126,28 @@
   gap: 12px;
 }
 .leaf-confirm--has-icon .leaf-confirm-content {
-  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 16px;
 }
 .leaf-confirm-icon {
   display: flex;
   align-items: center;
-  height: 27px;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--leaf-feedback-color-alpha-15);
+  border-radius: var(--leaf-radius);
   color: var(--leaf-feedback-color);
+  background: var(--leaf-feedback-color-alpha-8);
+  scale: 1;
+  opacity: 1;
+  transition:
+    scale var(--leaf-motion-slow) var(--leaf-motion-spring),
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+  @starting-style {
+    scale: 0.82;
+    opacity: 0;
+  }
   > svg {
     width: 22px;
     height: 22px;
@@ -80,27 +159,52 @@
 }
 .leaf-confirm {
   --leaf-feedback-color: var(--leaf-color-text);
+  --leaf-feedback-color-border-12: var(--leaf-color-text-border-12);
+  --leaf-feedback-color-surface-5: var(--leaf-color-text-surface-5);
+  --leaf-feedback-color-alpha-10: var(--leaf-color-text-alpha-10);
+  --leaf-feedback-color-alpha-15: var(--leaf-color-text-alpha-15);
+  --leaf-feedback-color-alpha-8: var(--leaf-color-text-alpha-8);
   &--danger {
     --leaf-feedback-color: var(--leaf-color-danger);
+    --leaf-feedback-color-border-12: var(--leaf-color-danger-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-danger-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-danger-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-danger-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-danger-alpha-8);
   }
   &--success {
     --leaf-feedback-color: var(--leaf-color-success);
+    --leaf-feedback-color-border-12: var(--leaf-color-success-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-success-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-success-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-success-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-success-alpha-8);
   }
   &--warning {
     --leaf-feedback-color: var(--leaf-color-warning);
+    --leaf-feedback-color-border-12: var(--leaf-color-warning-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-warning-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-warning-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-warning-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-warning-alpha-8);
   }
   &--info {
     --leaf-feedback-color: var(--leaf-color-info);
+    --leaf-feedback-color-border-12: var(--leaf-color-info-border-12);
+    --leaf-feedback-color-surface-5: var(--leaf-color-info-surface-5);
+    --leaf-feedback-color-alpha-10: var(--leaf-color-info-alpha-10);
+    --leaf-feedback-color-alpha-15: var(--leaf-color-info-alpha-15);
+    --leaf-feedback-color-alpha-8: var(--leaf-color-info-alpha-8);
   }
   .leaf-modal__header {
     position: absolute;
     top: 16px;
-    right: 16px;
+    inset-inline-end: 16px;
     z-index: 1;
     padding: 0;
   }
   .leaf-modal__body {
-    padding: 24px 24px 20px;
+    padding: 20px 24px;
   }
   .leaf-modal__footer {
     padding-top: 0;
@@ -115,15 +219,40 @@
   font-size: 17px;
   font-weight: 600;
   line-height: 1.6;
+  letter-spacing: -0.025em;
+}
+.leaf-confirm-description {
+  color: var(--leaf-color-text-muted);
+  line-height: 1.65;
 }
 .leaf-confirm-error {
+  margin-block: 12px 0;
+  padding: 8px 10px;
+  border-radius: var(--leaf-radius-sm);
   color: var(--leaf-color-danger);
+  background: var(--leaf-color-danger-alpha-7);
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+    translate var(--leaf-motion-duration) var(--leaf-motion-easing);
+  @starting-style {
+    opacity: 0;
+    translate: 0 4px;
+  }
 }
 .leaf-feedback-spinner {
-  animation: leaf-spin 900ms linear infinite;
+  animation: var(
+    --leaf-motion-animation,
+    leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+  );
   animation-play-state: var(--leaf-motion-play-state, running);
 }
 @media (prefers-reduced-motion: reduce) {
+  .leaf-confirm-icon,
+  .leaf-confirm-error {
+    transition: none;
+  }
   .leaf-feedback-spinner {
     animation: none;
   }

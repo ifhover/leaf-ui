@@ -23,6 +23,7 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { useListMotion } from '../shared/motion';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useText } from '../shared/use-text';
 
@@ -203,10 +204,15 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         }
         setResponsiveCount(count);
       };
-      const observer = new ResizeObserver(measure);
-      observer.observe(root.current);
+      const observer =
+        typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+      observer?.observe(root.current);
+      window.addEventListener('resize', measure);
       measure();
-      return () => observer.disconnect();
+      return () => {
+        observer?.disconnect();
+        window.removeEventListener('resize', measure);
+      };
     }, [maxTagCount, values]);
     const visibleTagCount =
       maxTagCount === 'responsive'
@@ -214,6 +220,12 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
         : maxTagCount === undefined
           ? values.length
           : Math.max(0, Math.floor(maxTagCount));
+    useListMotion(
+      root,
+      JSON.stringify(values.slice(0, visibleTagCount)),
+      '.leaf-select__tag[data-motion-key]',
+    );
+    useListMotion(root, values[0], multiple ? '' : '.leaf-select__input-wrap[data-motion-key]');
     const atLimit =
       multiple && maxCount !== undefined && values.length >= Math.max(0, Math.floor(maxCount));
     const unavailable = (option: SelectOption) =>
@@ -380,11 +392,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
             option.label
           )}
         </span>
-        <Check
-          size={15}
-          aria-hidden="true"
-          style={{ opacity: values.includes(option.value) ? 1 : 0 }}
-        />
+        <Check size={15} aria-hidden="true" className="leaf-select__check" />
       </button>
     );
     const displayLabel = selectedOptions[0]
@@ -440,12 +448,12 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
               const remove = () => change(values.filter((item) => item !== value));
               if (tagRender)
                 return (
-                  <span key={value} className="leaf-select__tag">
+                  <span key={value} className="leaf-select__tag" data-motion-key={value}>
                     {tagRender(option, remove)}
                   </span>
                 );
               return (
-                <span key={value} className="leaf-select__tag">
+                <span key={value} className="leaf-select__tag" data-motion-key={value}>
                   <span>{option?.label ?? value}</span>
                   {!disabled && !inputProps.readOnly && !option?.disabled && (
                     <button
@@ -485,7 +493,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
               ))}
             </span>
           )}
-          <div className="leaf-select__input-wrap">
+          <div className="leaf-select__input-wrap" data-motion-key={values[0] ?? ''}>
             {!multiple &&
               !query &&
               displayLabel != null &&

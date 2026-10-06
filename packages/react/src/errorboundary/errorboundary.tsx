@@ -46,6 +46,7 @@ function DefaultFallback({ reset }: { reset: () => void }) {
   const t = useText();
   return (
     <Result
+      className="leaf-error-boundary"
       status="error"
       title={t('内容暂时无法显示', 'This content could not be displayed')}
       description={t('请重试，或稍后返回。', 'Please retry or come back later.')}

@@ -6,6 +6,32 @@ import { Button, ConfigProvider, Confirm, Select, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
+  it.each(['modal', 'confirm'] as const)(
+    'ignores a stale async %s error after closing and reopening',
+    async (kind) => {
+      let reject: (error: Error) => void = () => {};
+      const request = new Promise<void>((_resolve, rejectPromise) => {
+        reject = rejectPromise;
+      });
+      const close = vi.fn();
+      const Surface = kind === 'modal' ? Modal : Confirm;
+      const example = (open: boolean) => (
+        <ConfigProvider locale="en-US">
+          <Surface open={open} title="Save" onConfirm={() => request} onClose={close}>
+            Details
+          </Surface>
+        </ConfigProvider>
+      );
+      const { rerender } = render(example(true));
+      await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+      rerender(example(false));
+      rerender(example(true));
+      await act(async () => reject(new Error('Previous save failed')));
+      expect(screen.queryByRole('alert')).toBeNull();
+      expect(screen.getByRole('button', { name: 'OK' })).toBeEnabled();
+      expect(close).not.toHaveBeenCalled();
+    },
+  );
   it('supplies default actions to an extended footer and respects native form validation', async () => {
     const submit = vi.fn((event: React.FormEvent) => event.preventDefault());
     const close = vi.fn();

@@ -1,7 +1,8 @@
-import { CircleCheck, CircleX, Inbox, Info, TriangleAlert } from 'lucide-react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import { Check, Inbox, Info, TriangleAlert, X } from 'lucide-react';
+import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { useContentTransition } from '../shared/presence';
 
 export interface ResultProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   status?: 'empty' | 'success' | 'warning' | 'error' | 'info';
@@ -13,9 +14,9 @@ export interface ResultProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title
 }
 const icons = {
   empty: Inbox,
-  success: CircleCheck,
+  success: Check,
   warning: TriangleAlert,
-  error: CircleX,
+  error: X,
   info: Info,
 };
 export function Result({
@@ -30,6 +31,8 @@ export function Result({
   ...props
 }: ResultProps) {
   const { messages } = useLeafConfig();
+  const root = useRef<HTMLDivElement>(null);
+  useContentTransition(root, status);
   const Icon = icons[status];
   const heading =
     title !== undefined
@@ -48,6 +51,7 @@ export function Result({
   return (
     <div
       {...props}
+      ref={root}
       className={classes(
         'leaf-result',
         `leaf-result--${status}`,
@@ -56,7 +60,7 @@ export function Result({
       )}
     >
       {icon !== null && (
-        <div className="leaf-result__icon" aria-hidden="true">
+        <div className="leaf-result__icon" aria-hidden="true" key={status}>
           {icon ?? <Icon />}
         </div>
       )}

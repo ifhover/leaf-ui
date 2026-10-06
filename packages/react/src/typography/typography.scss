@@ -38,7 +38,7 @@
     font-family: monospace;
   }
   &--mark {
-    background: color-mix(in srgb, var(--leaf-color-warning) 16%, transparent);
+    background: var(--leaf-color-warning-alpha-16);
   }
   &__content {
     min-width: 0;
@@ -61,6 +61,15 @@
     color: var(--leaf-color-primary);
     font: inherit;
     cursor: pointer;
+    border-radius: var(--leaf-radius-sm);
+    transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:hover {
+      background: var(--leaf-color-primary-alpha-8);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 2px;
+    }
   }
 }
 .leaf-paragraph {
@@ -86,6 +95,17 @@
   color: var(--leaf-color-primary);
   text-decoration: none;
   font: inherit;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
+  &:hover:not([aria-disabled]) {
+    color: var(--leaf-color-primary-text-85);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
   &--underline:hover {
     text-decoration: underline;
   }

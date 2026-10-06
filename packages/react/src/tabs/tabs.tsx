@@ -22,6 +22,7 @@ import {
   type ReactNode,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -29,8 +30,12 @@ import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/context';
 import { Dropdown } from '../dropdown';
 import { classes } from '../shared/classes';
+import { animateMotion, useMotionEnabled } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
+import { useMovingIndicator } from './use-moving-indicator';
+
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface TabItem {
   key: string;
@@ -91,6 +96,23 @@ export function Tabs({
   if (selected && !visited.includes(selected)) setVisited([...visited, selected]);
   const id = useId();
   const list = useRef<HTMLDivElement>(null);
+  const indicator = useRef<HTMLSpanElement>(null);
+  const panels = useRef<HTMLDivElement>(null);
+  const motion = useMotionEnabled();
+  useMovingIndicator(
+    list,
+    indicator,
+    '[data-leaf-indicator-item][data-active="true"]',
+    `${selected}-${placement}-${type}-${direction}`,
+  );
+  useTabPanelMotion(
+    panels,
+    selected,
+    items.findIndex((item) => item.key === selected),
+    placement,
+    direction,
+    motion,
+  );
   const header = useRef<HTMLDivElement>(null);
   const [overflowKeys, setOverflowKeys] = useState<string[]>([]);
   const sorting = sortable && Boolean(onReorder);
@@ -171,6 +193,7 @@ export function Tabs({
             }
             className="leaf-tabs__list"
           >
+            <span ref={indicator} className="leaf-tabs__indicator" aria-hidden="true" />
             <SortableContext
               items={items.map((item) => item.key)}
               strategy={
@@ -186,6 +209,7 @@ export function Tabs({
                   className="leaf-tabs__entry"
                   key={item.key}
                   data-active={item.key === selected || undefined}
+                  data-leaf-indicator-item=""
                 >
                   <button
                     id={`${id}-tab-${index}`}
@@ -302,7 +326,7 @@ export function Tabs({
           {extra && <div className="leaf-tabs__extra">{extra}</div>}
         </div>
       </TabDragScope>
-      <div className="leaf-tabs__panels">
+      <div ref={panels} className="leaf-tabs__panels">
         {items.map((item, index) => (
           <div
             key={item.key}
@@ -323,6 +347,81 @@ export function Tabs({
   );
 }
 
+function useTabPanelMotion(
+  panels: React.RefObject<HTMLDivElement | null>,
+  selected: string | undefined,
+  index: number,
+  placement: TabsProps['placement'],
+  direction: 'ltr' | 'rtl',
+  enabled: boolean,
+) {
+  const previous = useRef({ key: selected, index, height: 0 });
+  const animations = useRef<Animation[]>([]);
+  const heightAnimation = useRef<Animation | undefined>(undefined);
+  useBrowserLayoutEffect(() => {
+    const host = panels.current;
+    if (!host) return;
+    const active = host.querySelector<HTMLElement>('.leaf-tabs__panel:not([hidden])');
+    const interruptedHeight =
+      heightAnimation.current?.playState === 'running'
+        ? host.offsetHeight
+        : previous.current.height;
+    for (const animation of animations.current) animation.cancel();
+    animations.current = [];
+    heightAnimation.current = undefined;
+    host.removeAttribute('data-transitioning');
+    const height = host.offsetHeight;
+    if (enabled && active && previous.current.key !== selected) {
+      const vertical = placement === 'left' || placement === 'right';
+      const delta =
+        (index >= previous.current.index ? 1 : -1) * (vertical || direction !== 'rtl' ? 1 : -1);
+      const enter = animateMotion(
+        active,
+        [
+          {
+            opacity: 0,
+            transform: vertical ? `translateY(${delta * 8}px)` : `translateX(${delta * 12}px)`,
+          },
+          { opacity: 1, transform: 'translate(0, 0)' },
+        ],
+        { durationMultiplier: 1.25 },
+      );
+      if (enter) animations.current.push(enter);
+      if (interruptedHeight > 0 && Math.abs(height - interruptedHeight) > 1) {
+        const resize = animateMotion(
+          host,
+          [{ height: `${interruptedHeight}px` }, { height: `${height}px` }],
+          { durationMultiplier: 1.5 },
+        );
+        if (resize) {
+          host.dataset.transitioning = 'true';
+          animations.current.push(resize);
+          heightAnimation.current = resize;
+          resize.addEventListener('finish', () => host.removeAttribute('data-transitioning'), {
+            once: true,
+          });
+        }
+      }
+    }
+    previous.current = { key: selected, index, height };
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            if (!animations.current.some((animation) => animation.playState === 'running'))
+              previous.current.height = host.offsetHeight;
+          });
+    if (active) observer?.observe(active);
+    return () => observer?.disconnect();
+  }, [panels, selected, index, placement, direction, enabled]);
+  useEffect(
+    () => () => {
+      for (const animation of animations.current) animation.cancel();
+    },
+    [],
+  );
+}
+
 function TabEntry({
   item,
   sortable,
@@ -340,6 +439,7 @@ function SortableTab({
   ...props
 }: HTMLAttributes<HTMLDivElement> & { item: TabItem }) {
   const { locale } = useLeafConfig();
+  const motion = useMotionEnabled();
   const {
     attributes,
     listeners,
@@ -355,7 +455,14 @@ function SortableTab({
       ref={setNodeRef}
       data-tab-key={item.key}
       data-dragging={isDragging || undefined}
-      style={{ ...props.style, transform: CSS.Transform.toString(transform), transition }}
+      style={{
+        ...props.style,
+        transform: CSS.Transform.toString(transform),
+        transition:
+          motion && transition
+            ? 'transform var(--leaf-motion-slow) var(--leaf-motion-easing)'
+            : undefined,
+      }}
     >
       <button
         type="button"

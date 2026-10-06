@@ -1,0 +1,17 @@
+import { withBase } from '@rspress/core/runtime';
+
+# 设计资源
+
+资源由组件运行时使用的颜色、派生配方和密度参数生成，便于设计与实现保持一致。
+
+- <a href={withBase('/design/leaf.tokens.json')} download>DTCG tokens</a>：标准颜色、尺寸、行高与动效时长。
+- <a href={withBase('/design/leaf.tokens-studio.json')} download>Tokens Studio tokens</a>：兼容 `type` / `value` 格式，选择一个外观和一个密度集合。
+- <a href={withBase('/design/leaf-light-foundations.svg')} download>浅色基础变量</a>、<a href={withBase('/design/leaf-dark-foundations.svg')} download>深色基础变量</a>。
+- <a href={withBase('/design/leaf-light-components.svg')} download>浅色组件状态</a>、<a href={withBase('/design/leaf-dark-components.svg')} download>深色组件状态</a>：可编辑文字、路径与命名分组。
+- <a href={withBase('/design/leaf-figma-plugin.zip')} download>本地 Figma 导入插件</a>：原生颜色/密度变量、Button 与 Input 组件变体。
+
+SVG 可直接拖入 Figma。插件解压后，在 Figma 桌面端选择 **Plugins → Development → Import plugin from manifest**，导入 `manifest.json` 并运行 **Leaf UI Resources**。每次运行创建一个页面与变量集合；可使用 Undo 撤回。字体使用 Inter，缺少时插件选择可用字体。
+
+插件包括 Button 的四种外观、四种状态和两种密度，Input 的默认、焦点、错误、禁用状态与两种密度。颜色填充与控件高度绑定变量。其余 SVG 是可编辑设计参考，可在 Figma 中进一步转换为组件。
+
+在仓库运行 `pnpm design:export` 可重新生成资源。本地已检查 JSON、SVG 与 JavaScript 语法；Figma 实际导入效果需要人工验收。这套资源尚未发布为在线 Figma 组件库。

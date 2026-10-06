@@ -4,17 +4,22 @@ import {
   forwardRef,
   type HTMLAttributes,
   isValidElement,
+  type MutableRefObject,
   useEffect,
   useId,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
+import { animateMotion, useMotionEnabled } from '../shared/motion';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
+
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 export interface CarouselHandle {
   goTo: (index: number) => void;
   next: () => void;
@@ -55,10 +60,15 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
   const [requested, setIndex] = useControllable(activeIndex, defaultActiveIndex, onChange);
   const index = Math.min(Math.max(0, requested), Math.max(0, count - 1));
   const [paused, setPaused] = useState(false);
+  const motion = useMotionEnabled();
+  const track = useRef<HTMLDivElement>(null);
+  const moveDirection = useRef(0);
+  useCarouselMotion(track, index, moveDirection, config.direction, motion);
   const latest = useRef(index);
   latest.current = index;
   const go = (next: number) => {
     if (!count) return;
+    moveDirection.current = Math.sign(next - index);
     setIndex(infinite ? ((next % count) + count) % count : Math.max(0, Math.min(count - 1, next)));
   };
   const callback = useRef(go);
@@ -70,14 +80,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
     previous: () => go(index - 1),
   }));
   useEffect(() => {
-    if (
-      !autoplay ||
-      paused ||
-      config.theme.motion === false ||
-      matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      count < 2
-    )
-      return;
+    if (!autoplay || paused || !motion || count < 2) return;
     const timer = setInterval(
       () => {
         if (!document.hidden) callback.current(latest.current + 1);
@@ -85,7 +88,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
       typeof autoplay === 'number' ? Math.max(500, autoplay) : 4000,
     );
     return () => clearInterval(timer);
-  }, [autoplay, paused, count, config.theme.motion]);
+  }, [autoplay, paused, count, motion]);
   return (
     <section
       {...props}
@@ -134,12 +137,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
       tabIndex={props.tabIndex ?? 0}
     >
       <div className="leaf-carousel__viewport">
-        <div
-          className="leaf-carousel__track"
-          style={{
-            transform: `translateX(${index * 100 * (config.direction === 'rtl' ? 1 : -1)}%)`,
-          }}
-        >
+        <div ref={track} className="leaf-carousel__track">
           {slides.map((slide, position) => (
             <fieldset
               key={isValidElement(slide) ? slide.key : `slide-${position}`}
@@ -149,6 +147,8 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
               aria-hidden={position !== index || undefined}
               {...inertProps(position !== index)}
               className="leaf-carousel__slide"
+              data-slide-index={position}
+              data-active={position === index || undefined}
             >
               {slide}
             </fieldset>
@@ -194,3 +194,105 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
     </section>
   );
 });
+
+function useCarouselMotion(
+  track: React.RefObject<HTMLDivElement | null>,
+  index: number,
+  moveDirection: MutableRefObject<number>,
+  direction: 'ltr' | 'rtl',
+  enabled: boolean,
+) {
+  const previous = useRef({ index, height: 0 });
+  const animations = useRef<Animation[]>([]);
+  const heightAnimation = useRef<Animation | undefined>(undefined);
+  useBrowserLayoutEffect(() => {
+    const host = track.current;
+    if (!host) return;
+    const outgoing = host.querySelector<HTMLElement>(
+      `[data-slide-index="${previous.current.index}"]`,
+    );
+    const incoming = host.querySelector<HTMLElement>(`[data-slide-index="${index}"]`);
+    const interruptedHeight =
+      heightAnimation.current?.playState === 'running'
+        ? host.offsetHeight
+        : previous.current.height;
+    const outgoingStyle = outgoing ? getComputedStyle(outgoing) : null;
+    const incomingStyle = incoming?.dataset.exiting ? getComputedStyle(incoming) : null;
+    const incomingTransform = incomingStyle?.transform;
+    const incomingOpacity = incomingStyle?.opacity;
+    const outgoingTransform = outgoingStyle?.transform ?? 'none';
+    const outgoingOpacity = animations.current.some(
+      (animation) => animation.playState === 'running',
+    )
+      ? (outgoingStyle?.opacity ?? '1')
+      : '1';
+    for (const animation of animations.current) animation.cancel();
+    animations.current = [];
+    heightAnimation.current = undefined;
+    for (const slide of host.querySelectorAll<HTMLElement>('[data-exiting]'))
+      slide.removeAttribute('data-exiting');
+    const height = host.offsetHeight;
+    if (enabled && incoming && previous.current.index !== index) {
+      const sign =
+        (moveDirection.current || Math.sign(index - previous.current.index)) *
+        (direction === 'rtl' ? -1 : 1);
+      const enter = animateMotion(
+        incoming,
+        [
+          {
+            opacity: incomingOpacity ?? 0,
+            transform: incomingTransform ?? `translateX(${sign * 12}%) scale(0.985)`,
+          },
+          { opacity: 1, transform: 'translateX(0) scale(1)' },
+        ],
+        { durationMultiplier: 2 },
+      );
+      if (enter) animations.current.push(enter);
+      if (outgoing) {
+        outgoing.dataset.exiting = 'true';
+        const exit = animateMotion(
+          outgoing,
+          [
+            { opacity: outgoingOpacity, transform: outgoingTransform },
+            { opacity: 0, transform: `translateX(${sign * -12}%) scale(0.985)` },
+          ],
+          { durationMultiplier: 2 },
+        );
+        if (exit) {
+          animations.current.push(exit);
+          exit.addEventListener('finish', () => outgoing.removeAttribute('data-exiting'), {
+            once: true,
+          });
+        } else outgoing.removeAttribute('data-exiting');
+      }
+      if (interruptedHeight > 0 && Math.abs(height - interruptedHeight) > 1) {
+        const resize = animateMotion(
+          host,
+          [{ height: `${interruptedHeight}px` }, { height: `${height}px` }],
+          { durationMultiplier: 2 },
+        );
+        if (resize) {
+          animations.current.push(resize);
+          heightAnimation.current = resize;
+        }
+      }
+    }
+    moveDirection.current = 0;
+    previous.current = { index, height };
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            if (!animations.current.some((animation) => animation.playState === 'running'))
+              previous.current.height = host.offsetHeight;
+          });
+    if (incoming) observer?.observe(incoming);
+    return () => observer?.disconnect();
+  }, [track, index, moveDirection, direction, enabled]);
+  useEffect(
+    () => () => {
+      for (const animation of animations.current) animation.cancel();
+    },
+    [],
+  );
+}

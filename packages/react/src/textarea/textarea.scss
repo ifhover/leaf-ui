@@ -4,11 +4,14 @@
   @include mixins.field('textarea');
   display: block;
   min-height: calc(var(--leaf-current-control-height) * 2);
-  padding: var(--leaf-component-textarea-padding, 8px 10px);
+  padding: var(
+    --leaf-component-textarea-padding,
+    var(--leaf-spacing-sm) var(--leaf-density-field-padding)
+  );
   outline: none;
   &::placeholder {
-    color: var(--leaf-color-text-muted);
-    opacity: 0.8;
+    color: var(--leaf-color-text-subtle);
+    opacity: 1;
   }
 }
 
@@ -20,8 +23,18 @@
 }
 .leaf-textarea__count {
   align-self: flex-end;
-  color: var(--leaf-color-text-muted);
+  color: var(--leaf-color-text-subtle);
   font: var(--leaf-font-size-sm) var(--leaf-font-family);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
+}
+.leaf-textarea-wrap:focus-within .leaf-textarea__count {
+  color: var(--leaf-color-text-muted);
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-textarea__count {
+    transition: none;
+  }
 }
 
 .leaf-textarea {

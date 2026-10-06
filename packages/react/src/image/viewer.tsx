@@ -22,6 +22,7 @@ import Lightbox, {
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { Loading } from '../loading';
+import { motionDuration, useMotionEnabled } from '../shared/motion';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useText } from '../shared/use-text';
 import type { ImagePreviewItem, ImagePreviewProps } from './image';
@@ -76,6 +77,7 @@ function ViewerChrome({
   fullscreenControl: FullscreenRef | null;
 }) {
   const t = useText();
+  const motion = useMotionEnabled();
   const { currentIndex } = useLightboxState();
   const { prev, next, close } = useController();
   const { prevDisabled, nextDisabled } = useNavigationState();
@@ -97,9 +99,9 @@ function ViewerChrome({
     if (root && selected)
       root.scrollTo({
         left: selected.offsetLeft - root.offsetLeft - (root.clientWidth - selected.clientWidth) / 2,
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        behavior: motion ? 'smooth' : 'auto',
       });
-  }, [currentIndex, showThumbs]);
+  }, [currentIndex, showThumbs, motion]);
   const choose = (target: number) => {
     const difference = target - currentIndex;
     if (difference > 0) next({ count: difference });
@@ -243,7 +245,7 @@ function ViewerChrome({
               onClick={() =>
                 strip.current?.scrollBy({
                   left: -(strip.current.clientWidth * 0.7),
-                  behavior: 'smooth',
+                  behavior: motion ? 'smooth' : 'auto',
                 })
               }
             >
@@ -303,7 +305,7 @@ function ViewerChrome({
               onClick={() =>
                 strip.current?.scrollBy({
                   left: strip.current.clientWidth * 0.7,
-                  behavior: 'smooth',
+                  behavior: motion ? 'smooth' : 'auto',
                 })
               }
             >
@@ -348,6 +350,8 @@ function Viewer({
     setSlides(items.map((item) => ({ ...item })));
   }
   const t = useText();
+  const motion = useMotionEnabled();
+  const duration = root && motion ? motionDuration(root) : 0;
   return (
     <div ref={setRoot} className="leaf-image-viewer">
       {root && (
@@ -360,6 +364,12 @@ function Viewer({
           plugins={[Zoom, Fullscreen]}
           className="leaf-image-viewer__lightbox"
           carousel={{ finite: true, padding: 0, spacing: 24 }}
+          animation={{
+            fade: duration * 1.2,
+            swipe: duration * 1.6,
+            navigation: duration * 1.6,
+            zoom: duration,
+          }}
           zoom={{ ref: setZoomControl, maxZoomPixelRatio: 3, scrollToZoom: true }}
           fullscreen={{ ref: setFullscreenControl }}
           controller={{ closeOnBackdropClick: true }}

@@ -14,6 +14,7 @@ import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
 import { parseDateText } from '../shared/parse-date';
+import { useContentTransition } from '../shared/presence';
 import { displayTime, type TimeParts } from '../shared/time';
 import { TimePanel } from '../timepicker/time-panel';
 
@@ -83,6 +84,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     );
     const [draft, setDraft] = useState(selected ?? new Date());
     const [view, setView] = useState<'date' | 'time'>('date');
+    const panelView = useRef<HTMLDivElement>(null);
+    useContentTransition(panelView, `${open}:${view}`, view === 'time' ? 1 : -1);
     const [focusCalendar, setFocusCalendar] = useState(false);
     const [validText, setValidText] = useState(true);
     const normalize = (date: Date) => {
@@ -173,66 +176,68 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         panelClassName="leaf-datetime-panel"
         renderPanel={(close) => (
           <>
-            {view === 'date' ? (
-              <CalendarPanel
-                disabledDate={disabledDate}
-                cellRender={cellRender}
-                visibleDate={panelValue}
-                onVisibleChange={onPanelChange}
-                value={draft}
-                picker="datetime"
-                autoFocus={focusCalendar}
-                minDate={minDate}
-                maxDate={maxDate}
-                headerExtra={
-                  <button
-                    type="button"
-                    className="leaf-picker-time-toggle"
-                    aria-label={messages.selectTime}
-                    onClick={() => {
-                      setFocusCalendar(false);
-                      setView('time');
-                    }}
-                  >
-                    {timeLabel(draft)}
-                  </button>
-                }
-                onChange={(date) => {
-                  const next = new Date(date);
-                  const time = parts(draft);
-                  next.setHours(time.hour, time.minute, showSeconds ? time.second : 0, 0);
-                  setDraft(next);
-                  setValidText(true);
-                }}
-              />
-            ) : (
-              <div className="leaf-picker-time-view">
-                <div className="leaf-picker-time-view__header">
-                  <button
-                    type="button"
-                    className="leaf-picker-time-toggle"
-                    aria-label={messages.selectDate}
-                    onClick={() => {
-                      setFocusCalendar(true);
-                      setView('date');
-                    }}
-                  >
-                    {dateKey(draft)}
-                  </button>
-                  <span>{timeLabel(draft)}</span>
-                </div>
-                <TimePanel
-                  disabledTime={(parts) => !!disabledTime?.(parts, draft)}
-                  autoFocus
-                  value={parts(draft)}
-                  onChange={updateTime}
-                  showSeconds={showSeconds}
-                  use12Hours={use12Hours}
-                  minuteStep={minuteStep}
-                  secondStep={secondStep}
+            <div ref={panelView} className="leaf-picker-view">
+              {view === 'date' ? (
+                <CalendarPanel
+                  disabledDate={disabledDate}
+                  cellRender={cellRender}
+                  visibleDate={panelValue}
+                  onVisibleChange={onPanelChange}
+                  value={draft}
+                  picker="datetime"
+                  autoFocus={focusCalendar}
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  headerExtra={
+                    <button
+                      type="button"
+                      className="leaf-picker-time-toggle"
+                      aria-label={messages.selectTime}
+                      onClick={() => {
+                        setFocusCalendar(false);
+                        setView('time');
+                      }}
+                    >
+                      {timeLabel(draft)}
+                    </button>
+                  }
+                  onChange={(date) => {
+                    const next = new Date(date);
+                    const time = parts(draft);
+                    next.setHours(time.hour, time.minute, showSeconds ? time.second : 0, 0);
+                    setDraft(next);
+                    setValidText(true);
+                  }}
                 />
-              </div>
-            )}
+              ) : (
+                <div className="leaf-picker-time-view">
+                  <div className="leaf-picker-time-view__header">
+                    <button
+                      type="button"
+                      className="leaf-picker-time-toggle"
+                      aria-label={messages.selectDate}
+                      onClick={() => {
+                        setFocusCalendar(true);
+                        setView('date');
+                      }}
+                    >
+                      {dateKey(draft)}
+                    </button>
+                    <span>{timeLabel(draft)}</span>
+                  </div>
+                  <TimePanel
+                    disabledTime={(parts) => !!disabledTime?.(parts, draft)}
+                    autoFocus
+                    value={parts(draft)}
+                    onChange={updateTime}
+                    showSeconds={showSeconds}
+                    use12Hours={use12Hours}
+                    minuteStep={minuteStep}
+                    secondStep={secondStep}
+                  />
+                </div>
+              )}
+            </div>
             {presets?.length ? (
               <div className="leaf-picker-presets">
                 {presets.map((preset) => (

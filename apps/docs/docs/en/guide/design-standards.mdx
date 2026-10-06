@@ -1,0 +1,17 @@
+# Visual and interaction standard
+
+Semantic colors, dimensions and spacing keep components consistent across light/dark appearance and comfortable/compact density. The full standard lives in `DESIGN-STANDARDS.md` in the repository.
+
+| Foundation | Comfortable | Compact |
+| --- | --- | --- |
+| Control height | 34px | 28px |
+| Body text / line height | 14px / 1.6 | 14px / 1.6 |
+| Spacing unit | 8px | 6px |
+| Form row gap | 18px | 12px |
+| Dialog block / inline padding | 20px / 24px | 16px / 20px |
+
+Ordinary buttons, menus and tabs retain their geometry on hover/press, using color, opacity, borders and shadows for feedback. Selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. System reduced motion takes precedence.
+
+Acceptance covers default, hover, pressed, focus-visible, selected, disabled, loading, error and empty states. Text or ARIA must also express state. Icon-only actions need accessible names. Align icons with labels and dialog form edges with footer actions.
+
+Compact density suits pointer/keyboard interfaces and keeps body text readable. Prefer comfortable or larger explicit controls on touch; essential targets should be at least 24px, preferably 44px. Local component settings and explicit theme dimensions override density and defaults.

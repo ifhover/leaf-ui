@@ -7,28 +7,60 @@
     border-radius: inherit;
   }
   &__track {
-    display: flex;
-    transition: transform var(--leaf-motion-duration) ease;
+    position: relative;
+    isolation: isolate;
   }
   &__slide {
-    flex: 0 0 100%;
+    position: absolute;
+    inset: 0;
     min-width: 0;
     box-sizing: border-box;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    &[data-active] {
+      position: relative;
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
+    }
+    &[data-exiting] {
+      visibility: visible;
+      height: max-content;
+    }
   }
   &__arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    border: 0;
+    border: 1px solid var(--leaf-color-border);
     border-radius: 50%;
-    width: 34px;
-    height: 34px;
+    width: var(--leaf-control-height);
+    height: var(--leaf-control-height);
     display: grid;
     place-items: center;
-    background: var(--leaf-color-surface);
+    background: var(--leaf-color-surface-raised);
     color: var(--leaf-color-text);
-    box-shadow: 0 2px 12px rgb(0 0 0 / 0.15);
+    box-shadow: var(--leaf-shadow-sm);
     cursor: pointer;
+    z-index: 2;
+    transition:
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:hover:not(:disabled) {
+      transform: translateY(-50%) scale(1.08);
+      border-color: var(--leaf-color-border-hover);
+      box-shadow: var(--leaf-shadow-md);
+    }
+    &:active:not(:disabled) {
+      transform: translateY(-50%) scale(0.94);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-primary);
+      outline-offset: 3px;
+    }
     &:disabled {
       opacity: 0.4;
       cursor: default;
@@ -54,8 +86,12 @@
       padding: 0;
       cursor: pointer;
       transition:
-        width var(--leaf-motion-duration),
-        background var(--leaf-motion-duration);
+        width var(--leaf-motion-slow) var(--leaf-motion-spring),
+        background var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-primary);
+        outline-offset: 3px;
+      }
       &[aria-current] {
         width: 20px;
         background: var(--leaf-color-primary);
@@ -69,6 +105,15 @@
     overflow: hidden;
     clip-path: inset(50%);
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-carousel__arrow,
+  .leaf-carousel__dots button {
+    transition: none;
+  }
+}
+:dir(rtl) .leaf-carousel__arrow > svg {
+  transform: rotate(180deg);
 }
 
 .leaf-carousel__slide {

@@ -22,8 +22,8 @@
     border-radius: inherit;
     background: var(--leaf-progress-color);
     transition:
-      width var(--leaf-motion-duration),
-      background-color var(--leaf-motion-duration);
+      width var(--leaf-motion-slow) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &--dashboard {
     .leaf-progress__arc {
@@ -42,6 +42,7 @@
       flex: 1;
       background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
       border-radius: 100px;
+      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
       &[data-filled] {
         background: var(--leaf-progress-color);
       }
@@ -91,17 +92,24 @@
     stroke: var(--leaf-progress-color);
     stroke-linecap: round;
     transition:
-      stroke-dashoffset var(--leaf-motion-duration),
-      stroke var(--leaf-motion-duration);
+      stroke-dasharray var(--leaf-motion-slow) var(--leaf-motion-easing),
+      stroke-dashoffset var(--leaf-motion-slow) var(--leaf-motion-easing),
+      stroke var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &[data-indeterminate='true'] {
     .leaf-progress__fill {
       width: 35% !important;
-      animation: leaf-progress-travel 1.4s ease-in-out infinite;
+      animation: var(
+        --leaf-motion-animation,
+        leaf-progress-travel calc(var(--leaf-motion-duration) * 7) ease-in-out infinite
+      );
       animation-play-state: var(--leaf-motion-play-state, running);
     }
     &.leaf-progress--circle > svg {
-      animation: leaf-progress-rotate 1s linear infinite;
+      animation: var(
+        --leaf-motion-animation,
+        leaf-progress-rotate calc(var(--leaf-motion-duration) * 5) linear infinite
+      );
       animation-play-state: var(--leaf-motion-play-state, running);
     }
   }
@@ -121,6 +129,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-progress__fill,
+  .leaf-progress__step,
   .leaf-progress__arc {
     transition: none;
   }

@@ -1,0 +1,24 @@
+# Browser compatibility
+
+Use the current and previous stable Chrome, Edge, Firefox or Safari. Engineering targets are Chrome/Edge 109, Firefox 121 and Safari 16.4. These minimum versions are support targets, not a claim that each version has been tested. IE and older WebViews are outside the supported range.
+
+| Capability | Implementation and fallback |
+| --- | --- |
+| Derived colors | JavaScript emits concrete color variables; static palettes support initial rendering and standalone CSS |
+| Background blur | Standard and WebKit-prefixed filters; unsupported filters use a darker translucent mask; disable with `maskBlur={false}` |
+| Entrance motion | Keyframes fade the mask; without `@starting-style`, some content appears immediately and remains usable |
+| Web Animations | Layout updates immediately when `Element.animate` is unavailable |
+| ResizeObserver | Optional observers are guarded; window resize continues to measure layouts. Third-party virtualization requires modern browsers |
+| IntersectionObserver | Infinite scrolling offers a manual load button |
+| Reduced motion | System preferences and `theme.motion={false}` are honored |
+| Forced colors | Keyboard focus and native selection indicators remain visible; text and ARIA communicate status |
+
+```tsx
+<ConfigProvider maskBlur={false} theme={{ primaryColor: '#635bff', appearance: 'dark' }}>
+  <App />
+</ConfigProvider>
+```
+
+Use concrete hex/rgb/hsl/named colors through `theme` and `tokens`. A server cannot resolve CSS variables: `var(...)` colors resolve after mounting and synchronize when ancestor class/style attributes change. Pass concrete colors for a deterministic SSR first frame. Changing only a base CSS color does not recalculate the full palette.
+
+CI covers Chromium, Firefox, WebKit, React 18/19, SSR and package exports. WebKit coverage does not imply physical Safari/iOS coverage. Local Firefox currently fails to launch (`spawn UNKNOWN`) and is not recorded as passed. See `packages/react/ACCESSIBILITY.md` in the repository for executed checks and manual limits.

@@ -63,19 +63,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       aria-busy={loading || ariaBusy}
       data-loading={loading ? '' : undefined}
     >
-      {loading ? (
-        <LoaderCircle className="leaf-button__spinner" aria-hidden="true" />
-      ) : startIcon ? (
-        <span className="leaf-button__icon" aria-hidden="true">
-          {startIcon}
-        </span>
-      ) : null}
-      {hasLabel && <span className="leaf-button__label">{children}</span>}
-      {endIcon && (
-        <span className="leaf-button__icon" aria-hidden="true">
-          {endIcon}
-        </span>
-      )}
+      <span className="leaf-button__content">
+        {startIcon && (
+          <span className="leaf-button__icon" aria-hidden="true">
+            {startIcon}
+          </span>
+        )}
+        {hasLabel && <span className="leaf-button__label">{children}</span>}
+        {endIcon && (
+          <span className="leaf-button__icon" aria-hidden="true">
+            {endIcon}
+          </span>
+        )}
+      </span>
+      <span className="leaf-button__loading" aria-hidden="true">
+        <LoaderCircle className="leaf-button__spinner" />
+      </span>
     </button>
   );
 });

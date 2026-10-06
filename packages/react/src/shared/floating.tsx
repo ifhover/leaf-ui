@@ -122,15 +122,25 @@ export function FloatingPanel({
   const owner = useContext(OverlayOwner);
   const present = usePresence(open, panelRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
+  const [inheritedMotion, setInheritedMotion] = useState<string>();
   const openRef = useRef(open);
   openRef.current = open;
   const previousPosition = useRef<CSSProperties>({});
   const closingContent = useRef(children);
+  const referenceElement = triggerRef.current;
   if (open) closingContent.current = children;
-  const { refs, floatingStyles, isPositioned } = useFloating({
+  const {
+    refs,
+    floatingStyles,
+    isPositioned,
+    update,
+    placement: resolvedPlacement,
+  } = useFloating({
     open,
     placement,
     strategy: 'fixed',
+    // Keep viewport positioning outside the popup's local scale/translate motion.
+    transform: false,
     whileElementsMounted: (reference, floating, update) =>
       autoUpdate(reference, floating, () => {
         if (openRef.current) update();
@@ -183,7 +193,7 @@ export function FloatingPanel({
   );
 
   useBrowserLayoutEffect(() => {
-    const trigger = triggerRef.current;
+    const trigger = referenceElement ?? triggerRef.current;
     if (!trigger || !present) return;
     refs.setReference(
       position
@@ -203,6 +213,10 @@ export function FloatingPanel({
     );
     const syncTheme = () => {
       const computed = getComputedStyle(trigger);
+      let motionAncestor: HTMLElement | null = trigger;
+      while (motionAncestor && !motionAncestor.hasAttribute('data-leaf-motion'))
+        motionAncestor = composedParent(motionAncestor);
+      setInheritedMotion(motionAncestor?.getAttribute('data-leaf-motion') ?? undefined);
       const variables: LeafThemeStyle = {
         colorScheme: computed.colorScheme,
         direction: computed.direction as CSSProperties['direction'],
@@ -220,12 +234,17 @@ export function FloatingPanel({
     while (ancestor) {
       observer.observe(ancestor, {
         attributes: true,
-        attributeFilter: ['class', 'style', 'data-leaf-theme', 'dir'],
+        attributeFilter: ['class', 'style', 'data-leaf-theme', 'data-leaf-motion', 'dir'],
       });
       ancestor = composedParent(ancestor);
     }
     return () => observer.disconnect();
-  }, [triggerRef, refs.setReference, present, position]);
+  }, [triggerRef, referenceElement, refs.setReference, present, position]);
+
+  useBrowserLayoutEffect(() => {
+    // A quick reopen can reuse the exit-presence node without remounting autoUpdate.
+    if (open && present) void update();
+  }, [open, present, update]);
 
   if (!present || typeof document === 'undefined') return null;
   return createPortal(
@@ -236,6 +255,10 @@ export function FloatingPanel({
         data-leaf-owner={owner}
         data-leaf-popup={popupId}
         data-leaf-popup-parent={parentPopup}
+        data-leaf-motion={config.theme.motion === false ? 'off' : inheritedMotion}
+        data-side={resolvedPlacement.split('-')[0]}
+        data-align={resolvedPlacement.split('-')[1] ?? 'center'}
+        dir={props.dir ?? theme.direction ?? config.direction}
         data-state={open ? 'open' : 'closing'}
         data-positioned={isPositioned || !open}
         aria-hidden={!open || undefined}
@@ -276,7 +299,13 @@ export function useFloatingDismiss(
       if (!(target instanceof Node)) {
         return;
       }
-      if (boundaryRef.current?.contains(target) || insidePopup(target, panelRef.current)) {
+      const label = target instanceof Element ? target.closest('label') : null;
+      const labelledControl = label?.control;
+      if (
+        boundaryRef.current?.contains(target) ||
+        insidePopup(target, panelRef.current) ||
+        (labelledControl && boundaryRef.current?.contains(labelledControl))
+      ) {
         return;
       }
       closeRef.current('outside');

@@ -1,6 +1,14 @@
-import { Children, cloneElement, type HTMLAttributes, isValidElement, type ReactNode } from 'react';
+import {
+  Children,
+  cloneElement,
+  type HTMLAttributes,
+  isValidElement,
+  type ReactNode,
+  useRef,
+} from 'react';
 import { Popover } from '../popover';
 import { classes } from '../shared/classes';
+import { useListMotion } from '../shared/motion';
 import { useText } from '../shared/use-text';
 import { Avatar, type AvatarProps } from './avatar';
 export interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {
@@ -19,6 +27,7 @@ export function AvatarGroup({
   ...props
 }: AvatarGroupProps) {
   const t = useText();
+  const root = useRef<HTMLDivElement>(null);
   const items = Children.toArray(children).map((child) =>
     isValidElement<AvatarProps>(child)
       ? cloneElement(child, { size: child.props.size ?? size, shape: child.props.shape ?? shape })
@@ -26,8 +35,13 @@ export function AvatarGroup({
   );
   const visible = items.slice(0, Math.max(0, maxCount));
   const hidden = items.slice(visible.length);
+  useListMotion(
+    root,
+    JSON.stringify(visible.map((child, index) => (isValidElement(child) ? child.key : index))),
+    ':scope > .leaf-avatar, :scope > .leaf-avatar-group__more',
+  );
   return (
-    <div {...props} className={classes('leaf-avatar-group', className)}>
+    <div {...props} ref={root} className={classes('leaf-avatar-group', className)}>
       {visible}
       {hidden.length > 0 && (
         <Popover

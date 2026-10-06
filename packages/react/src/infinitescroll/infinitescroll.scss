@@ -10,4 +10,12 @@
     color: var(--leaf-color-text-muted);
     font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   }
+  &__feedback {
+    display: inline-flex;
+    align-items: center;
+    animation: var(
+      --leaf-motion-animation,
+      leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
+    );
+  }
 }

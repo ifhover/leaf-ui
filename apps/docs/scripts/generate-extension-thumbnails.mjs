@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 
-const r = (x, y, w, h, fill = '#fff', stroke = '#dce5de', radius = 6) =>
+const r = (x, y, w, h, fill = '#fff', stroke = '#e5e5e8', radius = 6) =>
   '<rect x="' +
   x +
   '" y="' +
@@ -16,7 +16,7 @@ const r = (x, y, w, h, fill = '#fff', stroke = '#dce5de', radius = 6) =>
   '" stroke="' +
   stroke +
   '"/>';
-const t = (x, y, label, size = 11, color = '#203329') =>
+const t = (x, y, label, size = 11, color = '#202024') =>
   '<text x="' +
   x +
   '" y="' +
@@ -74,7 +74,7 @@ const images = {
     )
     .join(''),
   segmented:
-    r(38, 55, 224, 40, '#f0f4f1', 'none') +
+    r(38, 55, 224, 40, '#f0f4f1', 'none', 10) +
     r(112, 59, 73, 32) +
     t(56, 80, 'Daily') +
     t(128, 80, 'Weekly') +
@@ -110,16 +110,16 @@ const images = {
     [0, 1, 2]
       .map(
         (i) =>
-          r(i === 1 ? 168 : 108, i === 2 ? 96 : 36, 25, 25, '#203329', 'none', 0) +
+          r(i === 1 ? 168 : 108, i === 2 ? 96 : 36, 25, 25, '#202024', 'none', 0) +
           r(i === 1 ? 173 : 113, i === 2 ? 101 : 41, 15, 15, '#fff', 'none', 0) +
-          r(i === 1 ? 177 : 117, i === 2 ? 105 : 45, 7, 7, '#203329', 'none', 0),
+          r(i === 1 ? 177 : 117, i === 2 ? 105 : 45, 7, 7, '#202024', 'none', 0),
       )
       .join('') +
     [0, 1, 2, 3, 4]
-      .map((i) => r(141 + (i % 3) * 8, 71 + Math.floor(i / 3) * 8, 6, 6, '#203329', 'none', 0))
+      .map((i) => r(141 + (i % 3) * 8, 71 + Math.floor(i / 3) * 8, 6, 6, '#202024', 'none', 0))
       .join(''),
   timeline:
-    r(60, 32, 2, 90, '#dce5de', 'none') +
+    r(60, 32, 2, 90, '#e5e5e8', 'none') +
     [0, 1, 2]
       .map(
         (i) =>
@@ -159,7 +159,7 @@ const images = {
   'input-otp': [0, 1, 2, 3, 4, 5]
     .map(
       (i) =>
-        r(32 + i * 40, 53, 32, 40, i === 3 ? '#eaf4ed' : '#fff', i === 3 ? '#20834a' : '#dce5de') +
+        r(32 + i * 40, 53, 32, 40, i === 3 ? '#eaf4ed' : '#fff', i === 3 ? '#20834a' : '#e5e5e8') +
         t(43 + i * 40, 80, i < 3 ? String(i + 2) : ' ', 18),
     )
     .join(''),

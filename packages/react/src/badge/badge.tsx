@@ -1,5 +1,6 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { classes } from '../shared/classes';
+import { useContentTransition } from '../shared/presence';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   count?: number | string;
@@ -23,9 +24,11 @@ export function Badge({
   style,
   ...props
 }: BadgeProps) {
+  const number = useRef<HTMLSpanElement>(null);
   const hasCount = count !== undefined && count !== '' && (count !== 0 || showZero);
   const visible = dot || status || hasCount;
   const display = typeof count === 'number' && count > max ? `${max}+` : count;
+  useContentTransition(number, display ?? '');
   return (
     <span
       {...props}
@@ -51,7 +54,11 @@ export function Badge({
           }
           title={count === undefined ? undefined : String(count)}
         >
-          {!dot && !status && display}
+          {!dot && !status && (
+            <span ref={number} className="leaf-badge__count">
+              {display}
+            </span>
+          )}
         </span>
       )}
       {text != null && <span className="leaf-badge__text">{text}</span>}

@@ -3,6 +3,7 @@ import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from './classes';
 import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from './date';
+import { useContentTransition } from './presence';
 
 export type CalendarMode = 'year' | 'quarter' | 'month' | 'week' | 'date' | 'datetime';
 export function startOfPeriod(date: Date, mode: CalendarMode) {
@@ -106,6 +107,21 @@ export function CalendarPanel({
   const visible = visibleDate ?? internalVisible;
   const [active, setActive] = useState(initial);
   const root = useRef<HTMLDivElement>(null);
+  const grid = useRef<HTMLFieldSetElement>(null);
+  const previousVisible = useRef(visible.getTime());
+  const transitionDirection =
+    Math.sign(visible.getTime() - previousVisible.current) * (direction === 'rtl' ? -1 : 1);
+  const period =
+    view === 'year'
+      ? Math.floor(visible.getFullYear() / 12)
+      : view === 'date'
+        ? `${visible.getFullYear()}-${visible.getMonth()}`
+        : visible.getFullYear();
+  useContentTransition(root, view, 0, true);
+  useContentTransition(grid, `${view}:${period}`, transitionDirection);
+  useEffect(() => {
+    previousVisible.current = visible.getTime();
+  }, [visible]);
   const focusRequested = useRef(false);
   const valueTime = value?.getTime();
   const controlledVisible = visibleDate !== undefined;
@@ -349,6 +365,7 @@ export function CalendarPanel({
         </div>
       )}
       <fieldset
+        ref={grid}
         className={classes(
           'leaf-calendar__cells',
           view !== 'date' && 'leaf-calendar__cells--coarse',

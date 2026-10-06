@@ -1,4 +1,5 @@
 import {
+  Check,
   Download,
   Eye,
   File,
@@ -11,11 +12,12 @@ import {
   FileVideo2,
   Trash2,
 } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useRef, useState } from 'react';
 import { Button } from '../button';
 import { ImagePreview } from '../image';
 import { Modal } from '../modal';
 import { classes } from '../shared/classes';
+import { useListMotion } from '../shared/motion';
 import { useText } from '../shared/use-text';
 import { fileExtension, fileKind, fileName, formatFileSize, safeFileUrl } from './model';
 
@@ -53,6 +55,8 @@ const icons = {
   code: FileCode2,
   file: File,
 };
+const itemKey = (file: FileItem, index: number) =>
+  file.uid ?? `${file.url ?? fileName(file)}-${index}`;
 export function FileList({
   items,
   downloadable = true,
@@ -69,6 +73,9 @@ export function FileList({
   ...props
 }: FileListProps) {
   const t = useText();
+  const root = useRef<HTMLDivElement>(null);
+  const keys = items.map(itemKey);
+  useListMotion(root, JSON.stringify(keys), '.leaf-file-list__item[data-motion-key]');
   const [preview, setPreview] = useState<FileItem | null>(null);
   const [pending, setPending] = useState<string[]>([]);
   const [error, setError] = useState('');
@@ -86,11 +93,16 @@ export function FileList({
   const previewUrl = safeFileUrl(selected?.url);
   const index = selected ? images.indexOf(selected) : -1;
   return (
-    <div {...props} className={classes('leaf-file-list', `leaf-file-list--${listType}`, className)}>
+    <div
+      {...props}
+      ref={root}
+      className={classes('leaf-file-list', `leaf-file-list--${listType}`, className)}
+      data-disabled={disabled || undefined}
+    >
       {items.length ? (
         <ul className="leaf-file-list__items">
           {items.map((file, index) => {
-            const key = file.uid ?? `${file.url ?? fileName(file)}-${index}`;
+            const key = itemKey(file, index);
             const name = fileName(file);
             const kind = fileKind(file);
             const Icon = icons[kind];
@@ -140,6 +152,7 @@ export function FileList({
                   ))}
                 {removable && onRemove && (
                   <Button
+                    className="leaf-file-list__remove"
                     variant="ghost"
                     size="sm"
                     disabled={disabled || isPending}
@@ -165,7 +178,12 @@ export function FileList({
             );
             const percent = Math.max(0, Math.min(100, file.percent ?? 0));
             return (
-              <li key={key} className="leaf-file-list__item" data-status={file.status}>
+              <li
+                key={key}
+                className="leaf-file-list__item"
+                data-status={file.status}
+                data-motion-key={key}
+              >
                 <span
                   className="leaf-file-list__icon"
                   data-kind={kind}
@@ -182,6 +200,9 @@ export function FileList({
                     {name}
                   </span>
                   <span className="leaf-file-list__meta">
+                    <span className="leaf-file-list__type">
+                      {fileExtension(file).toUpperCase() || t('文件', 'FILE')}
+                    </span>
                     {size !== undefined && formatFileSize(size) && (
                       <span>{formatFileSize(size)}</span>
                     )}
@@ -196,6 +217,11 @@ export function FileList({
                       </span>
                     )}
                     {file.status === 'cancelled' && <span>{t('已取消', 'Cancelled')}</span>}
+                    {file.status === 'done' && (
+                      <span className="leaf-file-list__complete">
+                        <Check size={12} aria-hidden="true" /> {t('上传完成', 'Upload complete')}
+                      </span>
+                    )}
                     {file.status === 'ready' && <span>{t('待上传', 'Ready')}</span>}
                   </span>
                   {file.status === 'uploading' && (

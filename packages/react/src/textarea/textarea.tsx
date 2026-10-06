@@ -9,6 +9,7 @@ import {
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
+import { animateMotion, useMotionEnabled } from '../shared/motion';
 import type { ControlSize, ControlStatus } from '../shared/types';
 
 export interface TextareaAutoSize {
@@ -46,6 +47,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
 ) {
   const field = useFormField();
   const textarea = useRef<HTMLTextAreaElement>(null);
+  const heightAnimation = useRef<Animation | undefined>(undefined);
+  const measuredHeight = useRef(false);
+  const motionEnabled = useMotionEnabled();
   const merged = useMergedRef(textarea, ref);
   const [current, setCurrent] = useFieldValue(
     value === undefined ? undefined : String(value),
@@ -59,9 +63,15 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   const maxRows =
     typeof autoSize === 'object' ? Math.max(minRows, autoSize.maxRows ?? Infinity) : Infinity;
   useBrowserLayoutEffect(() => {
-    if (!autoSize || !textarea.current) return;
+    if (!autoSize || !textarea.current) {
+      heightAnimation.current?.cancel();
+      measuredHeight.current = false;
+      return;
+    }
     const node = textarea.current;
     const measure = () => {
+      const previousHeight = Number.parseFloat(getComputedStyle(node).height) || node.offsetHeight;
+      heightAnimation.current?.cancel();
       const computed = getComputedStyle(node);
       const lineHeight =
         Number.parseFloat(computed.lineHeight) ||
@@ -77,8 +87,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       const measured =
         node.scrollHeight + (computed.boxSizing === 'border-box' ? border : -padding);
       const maximum = lineHeight * maxRows + addition;
-      node.style.height = `${Math.min(maximum, Math.max(lineHeight * minRows + addition, measured))}px`;
+      const height = Math.min(maximum, Math.max(lineHeight * minRows + addition, measured));
+      node.style.height = `${height}px`;
       node.style.overflowY = measured > maximum ? 'auto' : 'hidden';
+      if (measuredHeight.current && motionEnabled && Math.abs(previousHeight - height) > 0.5)
+        heightAnimation.current = animateMotion(
+          node,
+          [{ height: `${previousHeight}px` }, { height: `${height}px` }],
+          { durationMultiplier: 0.8 },
+        );
+      measuredHeight.current = true;
     };
     measure();
     let width = node.clientWidth;
@@ -93,7 +111,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
           });
     observer?.observe(node);
     return () => observer?.disconnect();
-  }, [autoSize, minRows, maxRows, current]);
+  }, [autoSize, minRows, maxRows, current, motionEnabled]);
+  useEffect(() => () => heightAnimation.current?.cancel(), []);
   const control = (
     <textarea
       {...props}

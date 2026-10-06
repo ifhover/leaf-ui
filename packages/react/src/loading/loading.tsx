@@ -1,8 +1,9 @@
 import { LoaderCircle } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
+import { usePresence } from '../shared/presence';
 import type { ControlSize } from '../shared/types';
 
 export interface LoadingProps extends HTMLAttributes<HTMLDivElement> {
@@ -36,6 +37,8 @@ export function Loading({
     return () => clearTimeout(timer);
   }, [spinning, delay]);
   const visible = spinning && ready;
+  const state = useRef<HTMLDivElement>(null);
+  const present = usePresence(visible, state);
   const indicator = (
     <div
       className="leaf-loading__indicator"
@@ -66,10 +69,26 @@ export function Loading({
           >
             {children}
           </div>
-          {visible && <div className="leaf-loading__overlay">{indicator}</div>}
+          {present && (
+            <div
+              ref={state}
+              data-visible={visible || undefined}
+              aria-hidden={!visible || undefined}
+              className="leaf-loading__overlay"
+            >
+              {indicator}
+            </div>
+          )}
         </>
-      ) : visible ? (
-        indicator
+      ) : present ? (
+        <div
+          ref={state}
+          data-visible={visible || undefined}
+          aria-hidden={!visible || undefined}
+          className="leaf-loading__state"
+        >
+          {indicator}
+        </div>
       ) : null}
     </div>
   );

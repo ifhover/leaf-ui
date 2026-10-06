@@ -13,7 +13,7 @@ import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
-import { usePresence } from '../shared/presence';
+import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 
 export interface DrawerProps
@@ -70,11 +70,16 @@ function DrawerSurface({
   style,
   ...props
 }: DrawerProps) {
-  const { messages } = useLeafConfig();
+  const { messages, maskBlur } = useLeafConfig();
   const id = useId();
   const panel = useRef<HTMLDivElement>(null);
-  const root = useRef<HTMLDivElement>(null);
-  const present = usePresence(open, root);
+  const backdrop = useRef<HTMLButtonElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const present = usePresence(open, backdrop);
+  const contentRevision = useRef({ children, revision: 0 });
+  if (children !== contentRevision.current.children)
+    contentRevision.current = { children, revision: contentRevision.current.revision + 1 };
+  useContentTransition(content, `${open}:${contentRevision.current.revision}`, 0, true);
   const owner = useContext(OverlayOwner);
   const [resized, setResized] = useState<number>();
   const stopDragging = useRef<(() => void) | undefined>(undefined);
@@ -111,14 +116,15 @@ function DrawerSurface({
     return null;
   return (
     <div
-      ref={root}
       hidden={!present}
       className={classes('leaf-drawer-mask', `leaf-drawer-mask--${placement}`)}
+      data-blur={maskBlur ? undefined : 'off'}
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
       {...inertProps(!open)}
     >
       <button
+        ref={backdrop}
         type="button"
         tabIndex={-1}
         className="leaf-drawer-backdrop"
@@ -227,7 +233,11 @@ function DrawerSurface({
               )}
             </div>
           )}
-          <div className="leaf-drawer__body">{children}</div>
+          <div className="leaf-drawer__body">
+            <div ref={content} className="leaf-drawer__content">
+              {children}
+            </div>
+          </div>
           {footer != null && <div className="leaf-drawer__footer">{footer}</div>}
         </OverlayOwner.Provider>
       </div>

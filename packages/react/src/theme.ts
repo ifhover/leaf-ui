@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { deriveColors } from './colors';
 
 /** Shared CSS variables; configure component themes through ConfigProvider. */
 export type LeafThemeStyle = CSSProperties & {
@@ -43,9 +44,12 @@ export interface LeafThemeTokens {
   infoColor?: string;
   textColor?: string;
   mutedTextColor?: string;
+  subtleTextColor?: string;
   surfaceColor?: string;
   mutedSurfaceColor?: string;
+  raisedSurfaceColor?: string;
   borderColor?: string;
+  borderHoverColor?: string;
   borderRadiusSm?: number | string;
   borderRadiusLg?: number | string;
   controlHeightSm?: number | string;
@@ -55,6 +59,7 @@ export interface LeafThemeTokens {
   fontWeight?: number;
   motionDuration?: number | string;
   motionEasing?: string;
+  motionSpring?: string;
   popupZIndex?: number;
   modalZIndex?: number;
   messageZIndex?: number;
@@ -73,6 +78,7 @@ export interface LeafThemeTokens {
   spacingSm?: number | string;
   spacingLg?: number | string;
   shadowSm?: string;
+  shadowXs?: string;
   shadowMd?: string;
   shadowLg?: string;
   lineHeight?: number;
@@ -109,9 +115,12 @@ const tokenVariables = {
   infoColor: 'color-info',
   textColor: 'color-text',
   mutedTextColor: 'color-text-muted',
+  subtleTextColor: 'color-text-subtle',
   surfaceColor: 'color-surface',
   mutedSurfaceColor: 'color-surface-muted',
+  raisedSurfaceColor: 'color-surface-raised',
   borderColor: 'color-border',
+  borderHoverColor: 'color-border-hover',
   borderRadiusSm: 'radius-sm',
   borderRadiusLg: 'radius-lg',
   controlHeightSm: 'control-height-sm',
@@ -121,6 +130,7 @@ const tokenVariables = {
   fontWeight: 'font-weight',
   motionDuration: 'motion-duration',
   motionEasing: 'motion-easing',
+  motionSpring: 'motion-spring',
   popupZIndex: 'z-index-popup',
   modalZIndex: 'z-index-modal',
   messageZIndex: 'z-index-message',
@@ -139,12 +149,26 @@ const tokenVariables = {
   spacingSm: 'spacing-sm',
   spacingLg: 'spacing-lg',
   shadowSm: 'shadow-sm',
+  shadowXs: 'shadow-xs',
   shadowMd: 'shadow-md',
   shadowLg: 'shadow-lg',
   lineHeight: 'line-height',
 } satisfies Record<keyof LeafThemeTokens, string>;
 
 const length = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
+
+/** Explicit inputs, excluding the generated palette, for browser CSS-variable resolution. */
+export function leafThemeColors(theme: LeafTheme): Record<string, string> {
+  const colors: Record<string, string> = {};
+  if (theme.primaryColor) colors.primary = theme.primaryColor;
+  for (const key of Object.keys(tokenVariables) as (keyof LeafThemeTokens)[]) {
+    const variable = tokenVariables[key];
+    const value = theme.tokens?.[key];
+    if (variable.startsWith('color-') && typeof value === 'string')
+      colors[variable.slice(6)] = value;
+  }
+  return colors;
+}
 
 /** Pure, deterministic output can be rendered in the server's initial HTML. */
 export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
@@ -239,9 +263,17 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   }
   if (theme.motion !== undefined) {
     variables['--leaf-motion-play-state'] = theme.motion ? 'running' : 'paused';
+    variables['--leaf-motion-animation'] = theme.motion ? 'initial' : 'none';
     if (!theme.motion) variables['--leaf-motion-duration'] = '0ms';
     else if (theme.tokens?.motionDuration === undefined)
-      variables['--leaf-motion-duration'] = '160ms';
+      variables['--leaf-motion-duration'] = '200ms';
+  }
+  if (
+    theme.appearance ||
+    theme.primaryColor ||
+    Object.keys(theme.tokens ?? {}).some((key) => key.endsWith('Color'))
+  ) {
+    return { ...deriveColors(theme.appearance ?? 'light', leafThemeColors(theme)), ...variables };
   }
   return variables;
 }

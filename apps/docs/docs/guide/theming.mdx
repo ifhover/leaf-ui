@@ -102,7 +102,25 @@ const theme: LeafTheme = {
 
 手动设置的小 / 大尺寸优先于自动生成的值。嵌套配置按字段合并，包括 tokens；未覆盖的配置继续继承。完整选项见 [LeafThemeTokens](/components/config-provider#leafthemetokens)。
 
-`motion: false` 关闭过渡并暂停加载图标的旋转。系统的“减少动态效果”偏好仍会生效。
+## 调整交互节奏
+
+默认基础过渡时间为 200ms。按压和悬停采用更短的反馈，选中指示条、展开与浮层使用与变化幅度相配的时间；列表重排和弹窗内容高度变化会从当前位置继续过渡。
+
+通过 `tokens.motionDuration` 调整当前区域的整体节奏，`motionEasing` 调整普通过渡，`motionSpring` 调整选择和形状变化的弹性曲线：
+
+```tsx
+<ConfigProvider theme={{ tokens: {
+  motionDuration: 240,
+  motionEasing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  motionSpring: 'cubic-bezier(0.22, 1.28, 0.36, 1)',
+} }}>
+  <YourProduct />
+</ConfigProvider>
+```
+
+`motion: false` 关闭当前区域的 CSS 与 JavaScript 动画，包括加载旋转和浮层。内层可通过 `motion: true` 单独启用。系统的“减少动态效果”偏好始终优先。输入、拖动和裁剪等直接操作保持即时响应。
+
+表面与文字使用中性灰阶；主题色用于操作和选择。需要更精细地调整层次时，可使用 `subtleTextColor`、`raisedSurfaceColor`、`borderHoverColor` 和 `shadowXs`。
 
 ## 在自己的组件中复用样式
 
@@ -139,7 +157,8 @@ CSS 变量用于读取当前区域的主题，方便自己编写的组件与 Lea
 | `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | 基础 / 小 / 大圆角 |
 | `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | 基础 / 小 / 大控件高度 |
 | `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | 字体、字号与字重 |
-| `--leaf-motion-duration` / `--leaf-motion-easing` | 状态过渡 |
+| `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | 基础 / 快速 / 布局过渡时间 |
+| `--leaf-motion-easing` / `--leaf-motion-spring` | 普通过渡 / 弹性曲线 |
 
 业务组件需要位于相应的 ConfigProvider 区域内，才能读取该区域的主题。使用者只需引入编译好的 `styles.css`，无需安装 Sass。
 
@@ -205,3 +224,10 @@ const contrast = colorContrast('#ffffff', '#20834a');
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | 可复用的 CSS 自定义属性。 |
+
+
+## 密度与兼容色板
+
+使用 `<ConfigProvider density="compact">` 同时调整区域及浮层的控件高度与间距。显式主题尺寸优先。派生色由 JavaScript 生成；静态深浅色板支持独立 CSS 和 SSR。需要确定的首屏颜色时传入具体颜色，CSS 变量在浏览器中解析。
+
+参见[浏览器兼容性](./compatibility)、[设计资源](./design-resources)与[视觉规范](./design-standards)。

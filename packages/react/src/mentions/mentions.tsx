@@ -1,6 +1,7 @@
 import { forwardRef, type ReactNode, useId, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
+import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
 import { Textarea, type TextareaProps } from '../textarea';
@@ -102,6 +103,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     <>
       <Textarea
         {...props}
+        className={classes('leaf-mentions', props.className)}
         ref={merged}
         value={text}
         role="combobox"
@@ -159,7 +161,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         style={popupStyle}
         render={popupRender}
         container={getPopupContainer}
-        className={['leaf-floating', popupClassName].filter(Boolean).join(' ')}
+        className={classes('leaf-floating', 'leaf-mentions__panel', popupClassName)}
         role="listbox"
         id={id}
         aria-label={messages.search}
@@ -179,6 +181,9 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
               onMouseEnter={() => setActive(index)}
               onClick={() => select(option)}
             >
+              <span className="leaf-mentions__prefix" aria-hidden="true">
+                {match?.prefix}
+              </span>
               {option.label ?? option.value}
             </button>
           ))

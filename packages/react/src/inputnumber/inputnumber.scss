@@ -18,8 +18,9 @@
     background: transparent;
     color: inherit;
     font: inherit;
+    font-variant-numeric: tabular-nums;
     &::placeholder {
-      color: var(--leaf-color-text-muted);
+      color: var(--leaf-color-text-subtle);
     }
     &:disabled {
       cursor: not-allowed;
@@ -34,6 +35,10 @@
     align-self: stretch;
     flex-direction: column;
     border-inline-start: 1px solid var(--leaf-color-border);
+    background: var(--leaf-color-surface-muted);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
     button {
       display: inline-flex;
       flex: 1;
@@ -45,11 +50,20 @@
       background: transparent;
       cursor: pointer;
       transition:
-        color var(--leaf-motion-duration),
-        background-color var(--leaf-motion-duration);
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+      svg {
+        transition: transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      }
       &:hover:not(:disabled) {
         color: var(--leaf-color-primary);
         background: var(--leaf-color-surface-muted);
+      }
+      &:active:not(:disabled) {
+        background: var(--leaf-color-primary-surface-10);
+        svg {
+          transform: scale(0.8);
+        }
       }
       &:disabled {
         opacity: 0.4;
@@ -64,9 +78,15 @@
       border-top: 1px solid var(--leaf-color-border);
     }
   }
+  &:focus-within &__controls {
+    border-inline-start-color: var(--leaf-field-color-border-30);
+    background: var(--leaf-color-surface);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-input-number__controls button {
+  .leaf-input-number__controls,
+  .leaf-input-number__controls button,
+  .leaf-input-number__controls svg {
     transition: none;
   }
 }

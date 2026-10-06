@@ -1,1 +1,32 @@
-// Mentions uses the Textarea and floating option styles.
+.leaf-mentions__panel .leaf-floating__option {
+  gap: 9px;
+}
+.leaf-mentions__prefix {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: 6px;
+  background: var(--leaf-color-surface-raised);
+  color: var(--leaf-color-text-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+}
+.leaf-mentions__panel [aria-selected='true'] .leaf-mentions__prefix {
+  background: var(--leaf-color-primary);
+  color: var(--leaf-color-on-primary);
+  border-color: var(--leaf-color-primary);
+  transform: scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-mentions__prefix {
+    transition: none;
+  }
+}

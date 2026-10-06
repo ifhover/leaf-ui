@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @leaf-ui/docs dev",
+    "design:export": "pnpm --filter @sudden3/leaf-ui exec node scripts/export-design-resources.mjs",
     "build": "pnpm build:lib && pnpm build:docs",
     "build:lib": "pnpm --filter @sudden3/leaf-ui build && pnpm --filter @sudden3/leaf-ui check:package",
     "build:docs": "pnpm --filter @leaf-ui/docs build",

@@ -9,15 +9,18 @@
   color: var(--leaf-component-card-color, var(--leaf-color-text));
   font: var(--leaf-component-card-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   transition:
-    border-color var(--leaf-motion-duration),
-    box-shadow var(--leaf-motion-duration);
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+    transform var(--leaf-motion-slow) var(--leaf-motion-spring);
   &--bordered {
-    border-color: color-mix(in srgb, var(--leaf-color-border) 75%, var(--leaf-color-surface));
-    box-shadow: 0 4px 20px rgb(0 0 0 / 3%);
+    border-color: var(--leaf-color-border);
+    box-shadow: var(--leaf-shadow-xs);
   }
-  &--hoverable:hover {
-    border-color: color-mix(in srgb, var(--leaf-color-primary) 35%, var(--leaf-color-border));
-    box-shadow: 0 8px 28px rgb(0 0 0 / 6%);
+  &--hoverable:hover,
+  &--hoverable:focus-within {
+    border-color: var(--leaf-color-border-hover);
+    box-shadow: var(--leaf-shadow-md);
+    transform: translateY(-2px);
   }
   &--sm {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 1.5));
@@ -33,7 +36,7 @@
   &__title {
     min-width: 0;
     margin: 0;
-    font: 600 16px/1.5 var(--leaf-font-family);
+    font: var(--leaf-heading-weight, 600) 16px/1.5 var(--leaf-font-family);
     overflow-wrap: anywhere;
   }
   &__extra {

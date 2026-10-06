@@ -9,6 +9,10 @@
     var(--leaf-font-family);
   &--bordered {
     border: 1px solid var(--leaf-color-border);
+    box-shadow: var(--leaf-shadow-xs);
+  }
+  &__item + &__item {
+    border-top: 1px solid var(--leaf-color-border);
   }
   &__header {
     display: flex;
@@ -30,13 +34,19 @@
     font: 500 1em/1.5 var(--leaf-font-family);
     text-align: start;
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     > svg {
       flex: 0 0 auto;
       color: var(--leaf-color-text-muted);
-      transition: transform var(--leaf-motion-duration);
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+        color var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
     &:hover:not(:disabled) {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
     }
     &:disabled {
       opacity: 0.45;
@@ -56,21 +66,39 @@
   &__panel {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows var(--leaf-motion-duration) var(--leaf-motion-easing);
+    opacity: 0;
+    transition:
+      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
   }
   &__item[data-open='true'] &__panel {
     grid-template-rows: 1fr;
+    opacity: 1;
   }
   &__inner {
     min-height: 0;
     overflow: hidden;
   }
   &__body {
-    padding: 4px 16px 16px 42px;
+    padding: 4px 16px 18px 42px;
+    color: var(--leaf-color-text-muted);
+    transform: translateY(-5px);
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
   }
+  &__item[data-open='true'] &__body {
+    transform: translateY(0);
+  }
+}
+:dir(rtl) .leaf-collapse__trigger > svg {
+  transform: rotate(180deg);
+}
+:dir(rtl) .leaf-collapse__item[data-open='true'] .leaf-collapse__trigger > svg {
+  transform: rotate(90deg);
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-collapse__panel,
+  .leaf-collapse__trigger,
+  .leaf-collapse__body,
   .leaf-collapse__trigger > svg {
     transition: none;
   }

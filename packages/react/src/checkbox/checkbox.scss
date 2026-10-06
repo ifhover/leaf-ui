@@ -3,24 +3,53 @@
   @include mixins.choice;
   &__input {
     border-radius: var(--leaf-choice-radius, 5px);
+    box-shadow: var(--leaf-shadow-xs);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+  }
+  &:active:not([data-disabled]) &__input {
+    transform: scale(0.9);
+  }
+  &__control {
+    transition: transform var(--leaf-motion-fast) var(--leaf-motion-spring);
   }
   &__mark {
     opacity: 0;
-    transform: scale(0.65);
+    transform: scale(0.6);
     transition:
-      opacity var(--leaf-motion-duration) ease,
-      transform var(--leaf-motion-duration) ease;
+      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
     position: absolute;
     width: 14px;
     height: 14px;
     color: var(--leaf-color-on-primary);
     pointer-events: none;
     stroke-width: 2.5;
+    &--check polyline,
+    &--check path {
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
   }
   &__input:checked:not(:indeterminate) ~ &__mark--check,
   &__input:indeterminate ~ &__mark--mixed {
     opacity: 1;
     transform: scale(1);
+  }
+  &__input:checked:not(:indeterminate) ~ &__mark--check polyline,
+  &__input:checked:not(:indeterminate) ~ &__mark--check path {
+    stroke-dashoffset: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &__control,
+    &__mark--check polyline,
+    &__mark--check path {
+      transition: none;
+    }
   }
 }
 

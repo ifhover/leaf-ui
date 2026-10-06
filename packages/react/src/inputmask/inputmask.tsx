@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useIMask } from 'react-imask';
 import { Input, type InputProps } from '../input';
+import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 export interface InputMaskProps
   extends Omit<
@@ -35,6 +36,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
     onChange,
     onComplete,
     onClear,
+    className,
     ...props
   },
   ref,
@@ -77,6 +79,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
   return (
     <Input
       {...props}
+      className={classes('leaf-input-mask', className)}
       ref={merged}
       value={formatted}
       onChange={() => {}}

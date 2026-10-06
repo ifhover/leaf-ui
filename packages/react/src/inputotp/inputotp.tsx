@@ -159,15 +159,14 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
             <span
               data-otp-slot=""
               data-active={focused && active === index ? '' : undefined}
+              data-filled={current[index] ? '' : undefined}
               className="leaf-input-otp__slot"
             >
-              {current[index]
-                ? mask
-                  ? typeof mask === 'string'
-                    ? mask
-                    : '•'
-                  : current[index]
-                : ''}
+              {current[index] && (
+                <span className="leaf-input-otp__character" key={current[index]}>
+                  {mask ? (typeof mask === 'string' ? mask : '•') : current[index]}
+                </span>
+              )}
             </span>
             {index < count - 1 && separator?.(index)}
           </span>

@@ -1,5 +1,6 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { classes } from '../shared/classes';
+import { useListMotion } from '../shared/motion';
 export interface FormListField<T> {
   key: string;
   index: number;
@@ -57,6 +58,7 @@ export function FormList<T>({
     if (value === undefined) setInternal(values);
     onChange?.(values);
   };
+  useListMotion(root, records.current.map((row) => row.key).join('|'), ':scope > *');
   const operations: FormListOperations<T> = {
     add: (item, position = current.length) => {
       const next = [...records.current];

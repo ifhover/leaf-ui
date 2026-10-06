@@ -1,4 +1,6 @@
 .leaf-notification-region {
+  --leaf-notification-enter-x: 18px;
+  --leaf-notification-enter-y: 0px;
   position: fixed;
   z-index: var(--leaf-z-index-message);
   width: min(360px, calc(100vw - 32px));
@@ -8,14 +10,18 @@
     right: 24px;
   }
   &--top-left {
+    --leaf-notification-enter-x: -18px;
     top: 24px;
     left: 24px;
   }
   &--bottom-right {
+    --leaf-notification-enter-y: 8px;
     bottom: 24px;
     right: 24px;
   }
   &--bottom-left {
+    --leaf-notification-enter-x: -18px;
+    --leaf-notification-enter-y: 8px;
     bottom: 24px;
     left: 24px;
   }
@@ -26,10 +32,12 @@
   margin-bottom: 12px;
   opacity: 1;
   transition:
-    grid-template-rows var(--leaf-motion-duration),
-    margin-bottom var(--leaf-motion-duration),
-    opacity var(--leaf-motion-duration);
+    grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-spring),
+    margin-bottom var(--leaf-motion-slow) var(--leaf-motion-spring),
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   @starting-style {
+    grid-template-rows: 0fr;
+    margin-bottom: 0;
     opacity: 0;
   }
   &__content {
@@ -40,6 +48,8 @@
     margin-bottom: 0;
     opacity: 0;
     pointer-events: none;
+    transition-duration: var(--leaf-motion-duration);
+    transition-timing-function: var(--leaf-motion-easing);
     .leaf-notification-slot__content {
       overflow: hidden;
     }
@@ -51,21 +61,31 @@
   padding: var(--leaf-component-notification-padding, 18px);
   border: 1px solid var(--leaf-color-border);
   border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
-  background: var(--leaf-component-notification-background, var(--leaf-color-surface));
-  box-shadow: var(--leaf-component-notification-shadow, 0 8px 32px #00000014);
+  background: var(
+    --leaf-component-notification-background,
+    var(--leaf-color-surface-raised, var(--leaf-color-surface))
+  );
+  box-shadow: var(--leaf-component-notification-shadow, var(--leaf-shadow-lg));
   color: var(--leaf-component-notification-color, var(--leaf-color-text));
   font: var(--leaf-component-notification-font-size, var(--leaf-font-size))/1.6
     var(--leaf-font-family);
   pointer-events: auto;
-  transform: translateX(0);
-  transition: transform var(--leaf-motion-duration);
+  transform: translate(0) scale(1);
+  transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
   @starting-style {
-    transform: translateX(16px);
+    transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
+      scale(0.97);
   }
   &__icon {
     display: flex;
-    padding-top: 3px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--leaf-radius);
     color: var(--leaf-notification-color);
+    background: var(--leaf-notification-color-alpha-9);
   }
   &__body {
     flex: 1;
@@ -73,7 +93,15 @@
     overflow-wrap: anywhere;
   }
   &__title {
+    flex: 1;
+    min-width: 0;
     font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
   }
   &__description {
     margin-top: 5px;
@@ -86,6 +114,7 @@
     margin-top: 12px;
   }
   &__close {
+    flex: none;
     align-self: flex-start;
     display: flex;
     padding: 3px;
@@ -94,6 +123,17 @@
     background: transparent;
     color: var(--leaf-color-text-muted);
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:hover {
+      background: var(--leaf-color-surface-muted);
+      color: var(--leaf-color-text);
+    }
+    &:active {
+      scale: 0.9;
+    }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary);
     }
@@ -101,8 +141,17 @@
   @each $type in info, success, warning, error {
     &--#{$type} {
       --leaf-notification-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
+      --leaf-notification-color-alpha-9: var(
+        --leaf-color-#{if(sass($type == error): danger; else: $type)}-alpha-9
+      );
     }
   }
+}
+.leaf-notification-slot[data-state='closing'] .leaf-notification {
+  transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
+    scale(0.98);
+  transition-duration: var(--leaf-motion-duration);
+  transition-timing-function: var(--leaf-motion-easing);
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-notification-slot,

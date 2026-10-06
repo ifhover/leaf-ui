@@ -3,6 +3,7 @@ import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 're
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
+import { usePresence } from '../shared/presence';
 import type { ControlSize } from '../shared/types';
 
 export interface CollapseItem {
@@ -105,22 +106,53 @@ export function Collapse({
               </button>
               {item.extra != null && <div className="leaf-collapse__extra">{item.extra}</div>}
             </div>
-            <section
+            <CollapsePanel
               id={`${id}-panel-${index}`}
-              aria-labelledby={`${id}-trigger-${index}`}
-              aria-hidden={!open || undefined}
-              {...inertProps(!open)}
-              className="leaf-collapse__panel"
+              labelledBy={`${id}-trigger-${index}`}
+              open={open}
+              destroyInactive={destroyInactive}
+              visited={visited.includes(item.key)}
             >
-              <div className="leaf-collapse__inner">
-                <div className="leaf-collapse__body">
-                  {(open || (!destroyInactive && visited.includes(item.key))) && item.children}
-                </div>
-              </div>
-            </section>
+              {item.children}
+            </CollapsePanel>
           </div>
         );
       })}
+    </section>
+  );
+}
+
+function CollapsePanel({
+  id,
+  labelledBy,
+  open,
+  destroyInactive,
+  visited,
+  children,
+}: {
+  id: string;
+  labelledBy: string;
+  open: boolean;
+  destroyInactive: boolean;
+  visited: boolean;
+  children: ReactNode;
+}) {
+  const panel = useRef<HTMLElement>(null);
+  const present = usePresence(open, panel);
+  return (
+    <section
+      ref={panel}
+      id={id}
+      aria-labelledby={labelledBy}
+      aria-hidden={!open || undefined}
+      {...inertProps(!open)}
+      className="leaf-collapse__panel"
+    >
+      <div className="leaf-collapse__inner">
+        <div className="leaf-collapse__body">
+          {(open || (destroyInactive ? present : visited)) && children}
+        </div>
+      </div>
     </section>
   );
 }

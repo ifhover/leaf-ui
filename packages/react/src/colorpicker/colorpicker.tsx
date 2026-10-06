@@ -201,6 +201,7 @@ export function SolidColorPicker({
         style={style}
         data-status={status}
         data-disabled={disabled || undefined}
+        data-open={open || undefined}
       >
         <button
           {...props}

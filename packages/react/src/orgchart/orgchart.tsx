@@ -1,7 +1,17 @@
 import { ChevronDown, Minus, Plus, RotateCcw } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+import {
+  type HTMLAttributes,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from '../button';
 import { classes } from '../shared/classes';
+import { inertProps } from '../shared/inert';
+import { useListMotion } from '../shared/motion';
+import { usePresence } from '../shared/presence';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface OrgChartNode {
@@ -21,6 +31,35 @@ export interface OrgChartProps extends HTMLAttributes<HTMLDivElement> {
   minZoom?: number;
   maxZoom?: number;
 }
+function OrgBranch({
+  expanded,
+  onSettled,
+  children,
+}: {
+  expanded: boolean;
+  onSettled: () => void;
+  children: ReactNode;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  const present = usePresence(expanded, root);
+  const previous = useRef(present);
+  useEffect(() => {
+    if (previous.current && !present) onSettled();
+    previous.current = present;
+  }, [present, onSettled]);
+  return (
+    <div
+      ref={root}
+      className="leaf-org-chart__branch"
+      data-open={expanded || undefined}
+      data-present={present || undefined}
+      aria-hidden={!expanded || undefined}
+      {...inertProps(!expanded)}
+    >
+      <div className="leaf-org-chart__branch-inner">{present && children}</div>
+    </div>
+  );
+}
 export function OrgChart({
   data,
   collapsedKeys,
@@ -35,6 +74,9 @@ export function OrgChart({
   ...props
 }: OrgChartProps) {
   const t = useText();
+  const canvas = useRef<HTMLDivElement>(null);
+  const [revision, setRevision] = useState(0);
+  const settled = useCallback(() => setRevision((value) => value + 1), []);
   const [zoom, setZoom] = useState(1);
   const [collapsed, setCollapsed] = useControllable<readonly string[]>(
     collapsedKeys,
@@ -44,6 +86,12 @@ export function OrgChart({
   const minimum = Math.max(0.1, minZoom),
     maximum = Math.max(minimum, maxZoom);
   const nodes = Array.isArray(data) ? data : [data as OrgChartNode];
+  useListMotion(
+    canvas,
+    JSON.stringify([collapsed, revision]),
+    '.leaf-org-chart__node[data-motion-key]',
+    zoom,
+  );
   const renderNodes = (entries: readonly OrgChartNode[]): ReactNode => (
     <ul>
       {entries.map((node) => {
@@ -51,7 +99,7 @@ export function OrgChart({
         const hasChildren = Boolean(node.children?.length);
         return (
           <li key={node.key}>
-            <div className="leaf-org-chart__node">
+            <div className="leaf-org-chart__node" data-motion-key={node.key}>
               {onNodeClick ? (
                 <button
                   type="button"
@@ -93,7 +141,11 @@ export function OrgChart({
                 />
               )}
             </div>
-            {hasChildren && expanded && renderNodes(node.children ?? [])}
+            {hasChildren && (
+              <OrgBranch expanded={expanded} onSettled={settled}>
+                {renderNodes(node.children ?? [])}
+              </OrgBranch>
+            )}
           </li>
         );
       })}
@@ -135,7 +187,7 @@ export function OrgChart({
         tabIndex={0}
         aria-label={props['aria-label'] ?? t('组织结构图', 'Organization chart')}
       >
-        <div className="leaf-org-chart__canvas" style={{ zoom }}>
+        <div className="leaf-org-chart__canvas" ref={canvas} style={{ zoom }}>
           {renderNodes(nodes)}
         </div>
       </section>

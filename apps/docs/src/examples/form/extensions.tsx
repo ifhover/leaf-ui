@@ -17,24 +17,28 @@ export function ExtensionDemo() {
           {(fields, ops) => (
             <Space direction="vertical" align="stretch">
               {fields.map((field) => (
-                <Space key={field.key}>
-                  <FormField label={`联系人 ${field.index + 1}`} required>
+                <FormField key={field.key} label={`联系人 ${field.index + 1}`} required>
+                  <Space size="sm">
                     <Input
                       name={`${field.name}.email`}
                       type="email"
                       value={field.value}
                       onChange={(e) => ops.update(field.index, e.target.value)}
+                      style={{ flex: 1, minWidth: 0 }}
                     />
-                  </FormField>
-                  <Button variant="ghost" onClick={() => ops.remove(field.index)}>
-                    移除
-                  </Button>
-                  {field.index > 0 && (
-                    <Button variant="ghost" onClick={() => ops.move(field.index, field.index - 1)}>
-                      上移
+                    <Button variant="ghost" onClick={() => ops.remove(field.index)}>
+                      移除
                     </Button>
-                  )}
-                </Space>
+                    {field.index > 0 && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => ops.move(field.index, field.index - 1)}
+                      >
+                        上移
+                      </Button>
+                    )}
+                  </Space>
+                </FormField>
               ))}
               <Button variant="outline" onClick={() => ops.add('')}>
                 添加联系人

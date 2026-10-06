@@ -36,6 +36,7 @@ export function Confirm({
   const [error, setError] = useState<string>();
   const mounted = useRef(true);
   const busy = useRef(false);
+  const generation = useRef(0);
   const type = typeProp ?? (danger ? 'danger' : 'default');
   const titleId = `${useId()}-confirm-title`;
   useEffect(() => {
@@ -45,21 +46,28 @@ export function Confirm({
     };
   }, []);
   useEffect(() => {
+    generation.current++;
+    busy.current = false;
+    setPending(false);
     if (open) setError(undefined);
   }, [open]);
   async function accept() {
     if (busy.current || confirmLoading) return;
     busy.current = true;
+    const request = generation.current;
     setPending(true);
     setError(undefined);
     try {
       await onConfirm?.();
-      if (mounted.current) onClose?.();
+      if (mounted.current && generation.current === request) onClose?.();
     } catch (reason) {
-      if (mounted.current) setError(reason instanceof Error ? reason.message : String(reason));
+      if (mounted.current && generation.current === request)
+        setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
-      busy.current = false;
-      if (mounted.current) setPending(false);
+      if (generation.current === request) {
+        busy.current = false;
+        if (mounted.current) setPending(false);
+      }
     }
   }
   const cancel = () => {

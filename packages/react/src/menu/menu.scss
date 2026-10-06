@@ -1,5 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-menu {
+  position: relative;
+  isolation: isolate;
   width: 240px;
   max-width: 100%;
   padding: var(--leaf-component-menu-padding, 6px);
@@ -9,6 +11,28 @@
   color: var(--leaf-component-menu-color, var(--leaf-color-text));
   font: var(--leaf-component-menu-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
   transition: width var(--leaf-motion-duration) var(--leaf-motion-easing);
+  &__indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    width: var(--leaf-indicator-width, 0px);
+    height: var(--leaf-indicator-height, 0px);
+    transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-primary-surface-8);
+    opacity: 0;
+    &[data-visible='true'] {
+      opacity: 1;
+    }
+    &[data-animate='true'] {
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+        width var(--leaf-motion-slow) var(--leaf-motion-spring),
+        height var(--leaf-motion-slow) var(--leaf-motion-spring);
+    }
+  }
   &__item {
     width: 100%;
     display: flex;
@@ -16,9 +40,10 @@
     gap: 10px;
     min-height: calc(var(--leaf-control-height) + 4px);
     margin-bottom: 3px;
-    padding: 6px 12px;
+    padding: var(--leaf-density-option-padding) var(--leaf-spacing-sm)
+      var(--leaf-density-option-padding) var(--leaf-spacing-md);
     border: 0;
-    border-radius: var(--leaf-radius);
+    border-radius: var(--leaf-radius-sm);
     background: transparent;
     color: inherit;
     text-decoration: none;
@@ -29,6 +54,7 @@
     transition:
       background var(--leaf-motion-duration),
       color var(--leaf-motion-duration),
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing),
       gap var(--leaf-motion-duration) var(--leaf-motion-easing),
       padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled):not([aria-disabled]) {
@@ -41,8 +67,11 @@
     &[data-selected],
     &[data-selected]:hover:not(:disabled) {
       color: var(--leaf-color-primary);
-      background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+      background: transparent;
       font-weight: 500;
+    }
+    &:active:not(:disabled):not([aria-disabled]) {
+      opacity: 0.8;
     }
     &[data-danger] {
       color: var(--leaf-color-danger);
@@ -82,7 +111,7 @@
     flex: none;
     width: 14px;
     transition:
-      transform var(--leaf-motion-duration),
+      transform var(--leaf-motion-slow) var(--leaf-motion-spring),
       width var(--leaf-motion-duration) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
@@ -145,7 +174,7 @@
     grid-template-rows: 0fr;
     opacity: 0;
     transition:
-      grid-template-rows var(--leaf-motion-duration) var(--leaf-motion-easing),
+      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
     &[data-open='true'] {
       grid-template-rows: 1fr;
@@ -158,6 +187,11 @@
   }
   &__submenu-content {
     padding-block: 2px 4px;
+    transform: translateY(-5px);
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
+  }
+  &__submenu[data-open='true'] &__submenu-content {
+    transform: translateY(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -166,6 +200,10 @@
   .leaf-menu__label,
   .leaf-menu__submenu,
   .leaf-menu__arrow {
+    transition: none;
+  }
+  .leaf-menu__indicator[data-animate='true'],
+  .leaf-menu__submenu-content {
     transition: none;
   }
 }
@@ -178,4 +216,13 @@
 }
 .leaf-menu__divider {
   border: 0;
+}
+@media (forced-colors: active) {
+  .leaf-menu__indicator {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  .leaf-menu__item[data-selected] {
+    color: HighlightText;
+  }
 }

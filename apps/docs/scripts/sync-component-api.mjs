@@ -26,6 +26,10 @@ for (const type of types)
   if (!schema.get(type.name)?.size)
     expressions.set(type.name, await typeExpression(entry, type.name));
 const descriptions = {
+  density: [
+    '控件、表单、菜单、列表与浮层的区域密度；嵌套继承，显式尺寸优先。',
+    'Inherited region density for controls, forms, menus, lists and overlays; explicit sizes take precedence.',
+  ],
   value: ['受控值。', 'Controlled value.'],
   defaultValue: [
     '初始值；非受控模式支持表单重置。',
@@ -65,6 +69,10 @@ const descriptions = {
   getPopupContainer: [
     '返回浮层的挂载容器，也可返回 ShadowRoot。',
     'Return a popup container, including a ShadowRoot.',
+  ],
+  maskBlur: [
+    '启用 Modal 和 Drawer 等背景遮罩模糊，默认开启；嵌套时继承，关闭可减少渲染开销。',
+    'Enable background mask blur for Modal and Drawer; enabled by default and inherited by nested providers. Disable to reduce rendering cost.',
   ],
   popupWidth: [
     '浮层宽度；auto 根据内容展开，trigger 跟随触发控件。',
@@ -425,6 +433,29 @@ const descriptions = {
   focus: ['聚焦控件。', 'Focus the control.'],
 };
 const specific = {
+  'LeafTheme.motion': [
+    '启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。',
+    'Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it.',
+  ],
+  'LeafThemeTokens.motionDuration': [
+    '基础过渡时间；数字为 ms，也支持 CSS 时间。motion=false 时为 0。',
+    'Base transition duration; numbers are ms and CSS times are accepted. motion=false forces 0.',
+  ],
+  'LeafThemeTokens.motionEasing': [
+    '悬停、内容与普通过渡的曲线。',
+    'Easing for hover, content and ordinary transitions.',
+  ],
+  'LeafThemeTokens.motionSpring': [
+    '选择与形状变化的轻微弹性曲线。',
+    'A mild spring curve for selection and shape changes.',
+  ],
+  'LeafThemeTokens.subtleTextColor': ['更轻的辅助文字色。', 'Subtle supporting text color.'],
+  'LeafThemeTokens.raisedSurfaceColor': [
+    '浮层与抬升表面色。',
+    'Raised and floating surface color.',
+  ],
+  'LeafThemeTokens.borderHoverColor': ['悬停时的中性边框色。', 'Neutral border color on hover.'],
+  'LeafThemeTokens.shadowXs': ['最轻的表面阴影。', 'The lightest surface shadow.'],
   'TourProps.steps': ['引导的步骤列表。', 'Steps in the guided tour.'],
   'AppBarProps.elevation': ['展示导航栏阴影。', 'Show a shadow below the bar.'],
   'FloatButtonGroupProps.direction': [

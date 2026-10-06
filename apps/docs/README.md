@@ -68,6 +68,12 @@ Rspress `llms: true` 输出每页 Markdown，`scripts/export-ai-docs.mjs` 从各
 
 ## 预览与代码模块
 
+首页的 HomeShowcase 提供组件、工作台和文件三种场景。组件场景在透明背景上以三列组织偏好表单、协作动态与空间创建，使用 34px 控件和按操作分组的按钮；窄屏按阅读顺序堆叠。工作台保留任务筛选、列表重排与两步弹窗。MotionGallery 展示选择、展开与保存反馈。示例中所有数据保存在本地 React 状态；保持中文/英文文案、窄屏和主题切换可用。ThemePlayground 同时展示表单控件和当前区域的动效开关。
+
+首页场景、主题编辑器与其颜色弹窗共用 `src/components/theme-colors.ts` 中的五种预设，顺序为主题绿、黑色、活力橙 `#ff6900`、亮蓝 `#1d9bf0` 和红色 `#cf0b2d`，默认绿色与组件库浅色主题一致。预设在深浅外观下均保持原色，实色按钮统一使用白色文字，Switch 滑块保持白色；浅底按钮、工作台选中菜单与分类标签保留可读的深色文字。编辑器将 ColorPicker 的 HEX / RGB / HSL 输出归一成 HEX，主题代码包含 `onPrimaryColor: '#fff'`。颜色选中圈及组件的选中、焦点和展开状态优先于 hover 样式。
+
+ComponentExample 在上方展示交互预览，下方同时展示源码，预览保持挂载。复制、换行和长代码展开行为读取同一份 MDX 高亮源码。通用示例布局（leaf-demo-*）和目录副标题样式位于 theme/index.scss，调整首页样式时必须保留这些共用规则。
+
 在 MDX 中使用 `ComponentExample`，将交互预览与源码包在同一个卡片内：
 
 ````mdx

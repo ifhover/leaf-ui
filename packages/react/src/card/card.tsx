@@ -1,5 +1,6 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { classes } from '../shared/classes';
+import { useContentTransition } from '../shared/presence';
 import { Skeleton } from '../skeleton';
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -25,6 +26,8 @@ export function Card({
   className,
   ...props
 }: CardProps) {
+  const body = useRef<HTMLDivElement>(null);
+  useContentTransition(body, loading ? 'loading' : 'content');
   return (
     <div
       {...props}
@@ -44,7 +47,7 @@ export function Card({
           {extra != null && <div className="leaf-card__extra">{extra}</div>}
         </div>
       )}
-      <div className="leaf-card__body">
+      <div className="leaf-card__body" ref={body}>
         <Skeleton loading={loading}>{children}</Skeleton>
       </div>
       {footer != null && <div className="leaf-card__footer">{footer}</div>}

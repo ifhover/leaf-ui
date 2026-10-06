@@ -1,7 +1,9 @@
 import { CheckCircle2, CircleX, Info, LoaderCircle, TriangleAlert, X } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { inertProps } from '../shared/inert';
+import { useContentTransition, usePresence } from '../shared/presence';
 export type FeedbackType = 'success' | 'info' | 'warning' | 'error';
 export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
@@ -39,15 +41,27 @@ export function Alert({
 }: AlertProps) {
   const { messages } = useLeafConfig();
   const [closed, setClosed] = useState(false);
-  if (closed) return null;
+  const root = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const present = usePresence(!closed, root);
+  useContentTransition(content, type);
+  if (!present) return null;
   return (
     <div
       {...props}
+      {...inertProps(closed)}
+      ref={root}
+      data-state={closed ? 'closing' : undefined}
+      aria-hidden={closed || props['aria-hidden']}
       role={props.role ?? (type === 'error' || type === 'warning' ? 'alert' : 'status')}
       className={classes('leaf-alert', `leaf-alert--${type}`, className)}
     >
-      {showIcon && <FeedbackIcon type={type} />}
-      <div className="leaf-alert__content">
+      {showIcon && (
+        <span className="leaf-alert__icon" aria-hidden="true">
+          <FeedbackIcon type={type} />
+        </span>
+      )}
+      <div className="leaf-alert__content" ref={content}>
         <div className="leaf-alert__title">{title}</div>
         {description && <div className="leaf-alert__description">{description}</div>}
       </div>
@@ -57,6 +71,14 @@ export function Alert({
           className="leaf-alert__close"
           aria-label={messages.close}
           onClick={() => {
+            const node = root.current;
+            if (node) {
+              node.style.setProperty(
+                '--leaf-alert-height',
+                `${node.getBoundingClientRect().height}px`,
+              );
+              void node.offsetHeight;
+            }
             setClosed(true);
             onClose?.();
           }}

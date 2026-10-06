@@ -15,18 +15,20 @@
     justify-content: center;
     padding: 20px;
     border-radius: var(--leaf-radius-lg);
-    background: #f1f3f5;
-    background-image:
-      linear-gradient(45deg, #e8ebee 25%, transparent 25%),
-      linear-gradient(-45deg, #e8ebee 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #e8ebee 75%),
-      linear-gradient(-45deg, transparent 75%, #e8ebee 75%);
-    background-size: 16px 16px;
-    background-position:
-      0 0,
-      0 8px,
-      8px -8px,
-      -8px 0;
+    border: 1px solid var(--leaf-color-border);
+    box-shadow: var(--leaf-shadow-xs);
+    background: repeating-conic-gradient(
+        var(--leaf-color-surface-muted) 0% 25%,
+        var(--leaf-color-border-surface-35) 0% 50%
+      )
+      50% / 16px 16px;
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:focus-within {
+      border-color: var(--leaf-color-border-hover);
+      box-shadow: var(--leaf-shadow-sm);
+    }
     --rc-drag-handle-bg-colour: #fff;
     --rc-drag-handle-border-colour: #0006;
     --rc-focus-color: var(--leaf-color-primary);
@@ -47,6 +49,11 @@
       width: auto;
       height: auto;
       user-select: none;
+      opacity: 0;
+      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &[data-ready] img {
+      opacity: 1;
     }
     .ReactCrop .ReactCrop__crop-selection {
       border: 1px solid #fff;
@@ -59,6 +66,13 @@
       border-radius: 2px;
       border: 1px solid #ffffff;
       box-shadow: 0 0 0 1px #0004;
+      transition:
+        box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
+        scale var(--leaf-motion-fast) var(--leaf-motion-spring);
+      &:hover {
+        scale: 1.2;
+        box-shadow: 0 0 0 2px var(--leaf-color-primary);
+      }
     }
     .ReactCrop__drag-handle.ord-n,
     .ReactCrop__drag-handle.ord-s {
@@ -83,7 +97,7 @@
     inset: 0;
     display: grid;
     place-items: center;
-    color: #64748b;
+    color: var(--leaf-color-text-subtle);
     pointer-events: none;
   }
   &__dimensions {
@@ -93,10 +107,17 @@
     padding: 3px 8px;
     border-radius: 6px;
     background: #0009;
+    border: 1px solid rgb(255 255 255 / 16%);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--leaf-shadow-sm);
     color: #fff;
     font: 11px/1.6 var(--leaf-font-family);
     pointer-events: none;
     font-variant-numeric: tabular-nums;
+    animation: var(
+      --leaf-motion-animation,
+      leaf-crop-dimensions-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
+    );
   }
   &__actions {
     display: flex;
@@ -114,5 +135,25 @@
   &__error {
     margin: 8px 0 0;
     color: var(--leaf-color-danger);
+  }
+}
+@keyframes leaf-crop-dimensions-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-image-cropper__stage,
+  .leaf-image-cropper__stage img,
+  .leaf-image-cropper__stage .ReactCrop__drag-handle {
+    transition: none;
+  }
+  .leaf-image-cropper__dimensions {
+    animation: none;
   }
 }

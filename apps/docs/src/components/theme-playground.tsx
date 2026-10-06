@@ -6,57 +6,65 @@ import {
   Card,
   ColorPicker,
   ConfigProvider,
+  Progress,
   RadioGroup,
   Slider,
+  Switch,
 } from '@sudden3/leaf-ui';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
+import { defaultThemeColor, normalizeThemeColor, themeColorPresets } from './theme-colors';
 
 export function ThemePlayground() {
   const { t } = useDocsLocale();
-  const palettes = [
-    { color: '#20834a', label: t('森林绿', 'Forest green') },
-    { color: '#087f8c', label: t('湖水青', 'Lake teal') },
-    { color: '#3264d9', label: t('晴空蓝', 'Sky blue') },
-    { color: '#7654c6', label: t('鸢尾紫', 'Iris purple') },
-    { color: '#b75b1c', label: t('暖陶橙', 'Terracotta') },
-  ];
-
-  const [color, setColor] = useState('#20834a');
+  const [color, setColor] = useState<string>(defaultThemeColor);
   const [radius, setRadius] = useState(10);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
   const [showCode, setShowCode] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [motion, setMotion] = useState(true);
+  const [reminders, setReminders] = useState(true);
+  const [priority, setPriority] = useState(64);
   const id = useId();
   const source = [
     "import { Button, ConfigProvider } from '@sudden3/leaf-ui';",
     '',
-    '<ConfigProvider theme={{',
+    `<ConfigProvider density="${density}" theme={{`,
     `  primaryColor: '${color}',`,
     `  borderRadius: ${radius},`,
     `  appearance: '${mode}',`,
+    `  motion: ${motion},`,
+    "  tokens: { onPrimaryColor: '#fff' },",
     '}}>',
     `  <Button>${t('保存', 'Save')}</Button>`,
     '</ConfigProvider>',
   ].join('\n');
 
   function reset() {
-    setColor('#20834a');
+    setColor(defaultThemeColor);
     setRadius(10);
     setMode('light');
+    setDensity('comfortable');
     setSubscribed(false);
+    setMotion(true);
+    setReminders(true);
+    setPriority(64);
   }
 
   return (
     <div className="leaf-playground">
       <ConfigProvider
         className="leaf-playground__preview"
+        density={density}
         theme={{
           primaryColor: color,
           borderRadius: radius,
           appearance: mode,
+          motion,
+          tokens: { onPrimaryColor: '#fff' },
         }}
       >
         <div className="leaf-playground__preview-header">
@@ -84,13 +92,34 @@ export function ThemePlayground() {
             size={48}
             shape="square"
             alt={t('叶子', 'Leaf')}
-            icon={<Icon name="leaf" width="28" height="28" />}
+            icon={<Icon name="sliders" width="25" height="25" />}
           />
-          <span className="leaf-preview-card__tag">LESS, BUT BETTER</span>
-          <h3>{t('一点绿意，很多可能。', 'A little green. Many possibilities.')}</h3>
+          <span className="leaf-preview-card__tag">YOUR WORKSPACE</span>
+          <h3>{t('找到适合你的节奏。', 'Find your own rhythm.')}</h3>
           <p>
             {t('从小小的交互开始，构建属于你的界面。', 'Start small and build your own interface.')}
           </p>
+          <div className="leaf-preview-card__preferences">
+            <div>
+              <span>{t('项目提醒', 'Project reminders')}</span>
+              <Switch
+                checked={reminders}
+                onChange={(event) => setReminders(event.target.checked)}
+                aria-label={t('项目提醒', 'Project reminders')}
+              />
+            </div>
+            <Slider
+              value={priority}
+              onChange={setPriority}
+              showValue={false}
+              aria-label={t('优先级', 'Priority')}
+            />
+            <Progress
+              percent={priority}
+              showInfo={false}
+              aria-label={t('优先级进度', 'Priority progress')}
+            />
+          </div>
           <div className="leaf-preview-card__actions">
             <Button
               onClick={() => setSubscribed(!subscribed)}
@@ -119,9 +148,9 @@ export function ThemePlayground() {
           </div>
           <div>
             <Button size="sm" variant="outline">
-              {t('描边按钮', 'Outline')}
+              {t('灰底按钮', 'Neutral')}
             </Button>
-            <span>Outline</span>
+            <span>Neutral</span>
           </div>
           <div>
             <Button size="sm" variant="ghost">
@@ -143,6 +172,20 @@ export function ThemePlayground() {
           {t('几个设置，就能长成你喜欢的样子。', 'A few settings shape the look you want.')}
         </p>
         <fieldset className="leaf-control-fieldset">
+          <legend>{t('密度', 'Density')}</legend>
+          <RadioGroup
+            aria-label={t('密度', 'Density')}
+            value={density}
+            options={[
+              { value: 'comfortable', label: t('舒适', 'Comfortable') },
+              { value: 'compact', label: t('紧凑', 'Compact') },
+            ]}
+            onChange={(event) =>
+              setDensity(event.target.value === 'compact' ? 'compact' : 'comfortable')
+            }
+          />
+        </fieldset>
+        <fieldset className="leaf-control-fieldset">
           <legend>
             {t('主题色', 'Primary color')}
             <span>Primary color</span>
@@ -151,17 +194,19 @@ export function ThemePlayground() {
             className="leaf-playground__palettes"
             aria-label={t('配色预设', 'Color presets')}
           >
-            {palettes.map((palette) => {
+            {themeColorPresets.map((palette) => {
               const selected = color.toLowerCase() === palette.color;
               return (
                 <button
                   key={palette.color}
                   type="button"
                   className="leaf-playground__swatch"
-                  style={{ backgroundColor: palette.color }}
-                  aria-label={palette.label}
+                  style={{
+                    backgroundColor: palette.color,
+                  }}
+                  aria-label={t(palette.zh, palette.en)}
                   aria-pressed={selected}
-                  title={`${palette.label} ${palette.color.toUpperCase()}`}
+                  title={`${t(palette.zh, palette.en)} ${palette.color.toUpperCase()}`}
                   onClick={() => setColor(palette.color)}
                 >
                   {selected && <Icon name="check" width="16" height="16" />}
@@ -173,11 +218,26 @@ export function ThemePlayground() {
             className="leaf-playground__color-picker"
             aria-label={t('主题色', 'Primary color')}
             value={color}
-            onChange={setColor}
+            onChange={(value) => setColor(normalizeThemeColor(value))}
             showText={(value) => value.toUpperCase()}
+            presets={[
+              {
+                label: t('配色预设', 'Color presets'),
+                colors: themeColorPresets.map((preset) => preset.color),
+              },
+            ]}
             disableAlpha
           />
         </fieldset>
+        <div className="leaf-control-motion">
+          <span>{t('交互动效', 'Interaction motion')}</span>
+          <Switch
+            size="sm"
+            checked={motion}
+            onChange={(event) => setMotion(event.target.checked)}
+            aria-label={t('交互动效', 'Interaction motion')}
+          />
+        </div>
         <div className="leaf-control-radius">
           <label htmlFor={`${id}-radius`}>
             {t('圆角', 'Radius')}

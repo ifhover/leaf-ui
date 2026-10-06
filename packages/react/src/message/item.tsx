@@ -25,6 +25,7 @@ export function MessageItem({
   );
   const ref = useRef<HTMLDivElement>(null);
   const present = usePresence(entry.open, ref);
+  const type = entry.type ?? 'info';
   const [hover, setHover] = useState(false);
   const duration = entry.duration ?? (entry.type === 'loading' ? 0 : 3);
   const remaining = useRef(duration * 1000);
@@ -54,7 +55,6 @@ export function MessageItem({
     wasPresent.current = present;
   }, [present, remove]);
   if (!present) return null;
-  const type = entry.type ?? 'info';
   return (
     <ConfigContext.Provider value={config}>
       <div
@@ -80,7 +80,9 @@ export function MessageItem({
               if (!event.currentTarget.contains(event.relatedTarget)) setHover(false);
             }}
           >
-            <FeedbackIcon type={type} />
+            <span className="leaf-message__icon" aria-hidden="true">
+              <FeedbackIcon type={type} />
+            </span>
             <span>{entry.content}</span>
             {entry.closable && (
               <button type="button" aria-label={messages.close} onClick={close}>

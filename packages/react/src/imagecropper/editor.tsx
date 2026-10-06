@@ -86,7 +86,11 @@ export const CropEditor = forwardRef<ImageCropperHandle, ImageCropperProps>(func
   useImperativeHandle(ref, () => ({ export: exportImage, reset }));
   return (
     <div {...props}>
-      <div className="leaf-image-cropper__stage" data-disabled={disabled || undefined}>
+      <div
+        className="leaf-image-cropper__stage"
+        data-disabled={disabled || undefined}
+        data-ready={ready || undefined}
+      >
         <ReactCrop
           crop={crop}
           aspect={ratio && ratio > 0 ? ratio : undefined}

@@ -23,7 +23,7 @@
     transition: background var(--leaf-motion-duration);
     &:hover,
     &:focus-visible {
-      background: color-mix(in srgb, var(--leaf-color-primary) 28%, var(--leaf-color-surface));
+      background: var(--leaf-color-primary-surface-28);
     }
     button {
       position: absolute;

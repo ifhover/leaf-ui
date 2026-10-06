@@ -1,8 +1,10 @@
 import { forwardRef, type HTMLAttributes, type ReactNode, useId, useRef } from 'react';
+import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
-import { FormValue, useFieldValue } from '../shared/field';
+import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
 import type { ControlSize } from '../shared/types';
+import { useMovingIndicator } from '../tabs/use-moving-indicator';
 export interface SegmentedOption {
   value: string;
   label: ReactNode;
@@ -37,6 +39,10 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
   ref,
 ) {
   const field = useFormField();
+  const { direction } = useLeafConfig();
+  const root = useRef<HTMLDivElement>(null);
+  const marker = useRef<HTMLSpanElement>(null);
+  const merged = useMergedRef(root, ref);
   const disabled = disabledProp || field?.disabled;
   const entries = options.map((option) =>
     typeof option === 'string' ? { label: option, value: option } : option,
@@ -44,11 +50,12 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
   const first = entries.find((option) => !option.disabled)?.value ?? '';
   const trigger = useRef<HTMLButtonElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue ?? first, trigger, form);
+  useMovingIndicator(root, marker, '[aria-checked="true"]', `${current}-${direction}`);
   const id = useId();
   return (
     <div
       {...props}
-      ref={ref}
+      ref={merged}
       role="radiogroup"
       aria-disabled={disabled || undefined}
       className={classes(
@@ -58,6 +65,7 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
         className,
       )}
     >
+      <span ref={marker} className="leaf-segmented__indicator" aria-hidden="true" />
       {entries.map((option, index) => (
         // biome-ignore lint/a11y/useSemanticElements: Segmented buttons implement roving focus and radio-group selection with a shared form proxy.
         <button
@@ -65,6 +73,7 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
           type="button"
           ref={index === 0 ? trigger : undefined}
           role="radio"
+          data-leaf-indicator-item=""
           aria-checked={current === option.value}
           disabled={disabled || option.disabled}
           tabIndex={
@@ -90,7 +99,10 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
                   : ['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(event.key)
                     ? available[
                         (position +
-                          (event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1) +
+                          (event.key === 'ArrowUp' ||
+                          event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft')
+                            ? -1
+                            : 1) +
                           available.length) %
                           available.length
                       ]

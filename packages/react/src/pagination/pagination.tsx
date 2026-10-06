@@ -1,10 +1,11 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useId, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { InputNumber } from '../inputnumber';
 import { Select } from '../select';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
+import { useMovingIndicator } from '../tabs/use-moving-indicator';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   total: number;
@@ -43,7 +44,9 @@ export function Pagination({
   'aria-label': label,
   ...props
 }: PaginationProps) {
-  const { messages } = useLeafConfig();
+  const { messages, direction } = useLeafConfig();
+  const root = useRef<HTMLElement>(null);
+  const indicator = useRef<HTMLSpanElement>(null);
   const jumpId = `${useId()}-jump`;
   const [internalPage, setPage] = useState(defaultCurrent);
   const [internalSize, setSize] = useState(defaultPageSize);
@@ -52,6 +55,13 @@ export function Pagination({
   const perPage = positiveInteger(pageSize ?? internalSize);
   const pages = Math.max(1, Math.ceil(count / perPage));
   const page = Math.min(pages, positiveInteger(current ?? internalPage));
+  useMovingIndicator(
+    root,
+    indicator,
+    '[aria-current="page"]',
+    `${page}-${pages}-${simple}-${direction}`,
+    !hideOnSinglePage || pages !== 1,
+  );
   const choose = (next: number, nextSize = perPage) => {
     if (disabled) return;
     const normalizedSize = positiveInteger(nextSize);
@@ -83,9 +93,11 @@ export function Pagination({
   return (
     <nav
       {...props}
+      ref={root}
       aria-label={label ?? messages.pagination}
       className={classes('leaf-pagination', `leaf-pagination--${size}`, className)}
     >
+      <span ref={indicator} className="leaf-pagination__indicator" aria-hidden="true" />
       {showTotal && (
         <span className="leaf-pagination__total">
           {showTotal(count, [
@@ -140,6 +152,7 @@ export function Pagination({
               type="button"
               aria-label={`${messages.page} ${number}`}
               aria-current={number === page ? 'page' : undefined}
+              data-leaf-indicator-item=""
               disabled={disabled}
               onClick={() => choose(number)}
             >

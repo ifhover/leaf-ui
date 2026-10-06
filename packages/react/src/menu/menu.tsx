@@ -6,6 +6,7 @@ import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
+import { useMovingIndicator } from '../tabs/use-moving-indicator';
 export interface MenuItem {
   key: string;
   label: ReactNode;
@@ -79,12 +80,19 @@ export function Menu({
   const { direction } = useLeafConfig();
   const id = useId();
   const root = useRef<HTMLElement>(null);
+  const indicator = useRef<HTMLSpanElement>(null);
   const [selected, setSelected] = useControllable(selectedKey, defaultSelectedKey);
   const [active, setActive] = useState<string | undefined>(undefined);
   const [opened, setOpened] = useControllable<readonly string[]>(
     openKeys,
     defaultOpenKeys,
     (keys) => onOpenChange?.([...keys]),
+  );
+  useMovingIndicator(
+    root,
+    indicator,
+    '[data-selected="true"]',
+    `${selected}-${collapsed}-${mode}-${direction}-${opened.join(',')}`,
   );
   const toggle = (key: string) =>
     setOpened(opened.includes(key) ? opened.filter((value) => value !== key) : [...opened, key]);
@@ -164,6 +172,7 @@ export function Menu({
         ),
         tabIndex: !item.disabled && focusKey === item.key ? 0 : -1,
         'data-menu-key': item.key,
+        'data-leaf-indicator-item': '',
         'aria-label': collapsed && typeof item.label === 'string' ? item.label : undefined,
         onFocus: () => setActive(item.key),
         title: collapsed && typeof item.label === 'string' ? item.label : undefined,
@@ -236,6 +245,7 @@ export function Menu({
       )}
       aria-label={props['aria-label'] ?? t('导航菜单', 'Navigation menu')}
     >
+      <span ref={indicator} className="leaf-menu__indicator" aria-hidden="true" />
       {/* biome-ignore lint/a11y/noStaticElementInteractions: This container delegates arrow navigation for the menu or menubar role. */}
       <div
         role={mode === 'horizontal' ? 'menubar' : 'menu'}

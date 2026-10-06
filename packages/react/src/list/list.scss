@@ -8,7 +8,7 @@
   }
   &__row,
   .leaf-list-item {
-    padding: 12px 0;
+    padding: var(--leaf-component-list-padding, var(--leaf-density-row-padding)) 0;
   }
   &__row .leaf-list-item {
     padding: 0;
@@ -27,6 +27,7 @@
   &__header {
     padding-bottom: 12px;
     font-weight: 600;
+    color: var(--leaf-color-text);
   }
   &__footer {
     padding-top: 12px;
@@ -36,12 +37,26 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  border-radius: var(--leaf-radius-sm);
+  transition:
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+  &[data-interactive] {
+    cursor: pointer;
+    &:hover,
+    &:focus-within {
+      background: var(--leaf-color-surface-muted);
+    }
+    &:active {
+      opacity: 0.8;
+    }
+  }
   &__main {
     flex: 1;
     min-width: 0;
   }
   &__title {
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.5;
   }
   &__description {
@@ -57,5 +72,10 @@
   }
   &__extra {
     margin-inline-start: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-list-item {
+    transition: none;
   }
 }

@@ -8,7 +8,11 @@
   padding: var(--leaf-component-tree-select-padding, 0 30px 0 10px);
   cursor: pointer;
   &[data-clearable] {
-    padding-right: 54px;
+    padding-inline-end: 54px;
+  }
+  &[data-open] {
+    border-color: var(--leaf-field-color);
+    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
   }
   &__content {
     display: flex;
@@ -45,7 +49,7 @@
       cursor: not-allowed;
     }
     &::placeholder {
-      color: var(--leaf-color-text-muted);
+      color: var(--leaf-color-text-subtle);
     }
   }
   &__value {
@@ -62,7 +66,7 @@
   &__clear {
     position: absolute;
     top: 50%;
-    right: 8px;
+    inset-inline-end: 8px;
     transform: translateY(-50%);
     display: grid;
     place-items: center;
@@ -74,18 +78,25 @@
     color: var(--leaf-color-text-muted);
     background: transparent;
     cursor: pointer;
+    transition:
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+      color: var(--leaf-color-text);
+    }
     &:disabled {
       cursor: not-allowed;
     }
   }
   &__clear {
-    right: 30px;
+    inset-inline-end: 30px;
     &:hover {
       color: var(--leaf-color-text);
     }
   }
   &__arrow svg {
-    transition: transform var(--leaf-motion-duration);
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
   }
   &[data-open] &__arrow svg {
     transform: rotate(180deg);
@@ -105,6 +116,7 @@
     padding: 1px 5px;
     border-radius: var(--leaf-radius-sm);
     background: var(--leaf-color-surface-muted);
+    box-shadow: inset 0 0 0 1px var(--leaf-color-border);
     font-size: 12px;
     > span {
       overflow: hidden;
@@ -120,6 +132,17 @@
       color: var(--leaf-color-text-muted);
       background: transparent;
       cursor: pointer;
+      transition:
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      &:hover {
+        color: var(--leaf-color-text);
+        background: var(--leaf-color-border);
+      }
+      &:active {
+        transform: scale(0.85);
+      }
     }
   }
   &__panel {
@@ -130,7 +153,10 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-tree-select__arrow svg {
+  .leaf-tree-select__arrow,
+  .leaf-tree-select__clear,
+  .leaf-tree-select__arrow svg,
+  .leaf-tree-select__tag > button {
     transition: none;
   }
 }

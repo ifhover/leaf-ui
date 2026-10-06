@@ -21,6 +21,7 @@ import { DateInput, type PickerFieldProps } from '../shared/date-input';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { usePopupState } from '../shared/floating';
 import { parseDateText } from '../shared/parse-date';
+import { useContentTransition } from '../shared/presence';
 import { displayTime, type TimeParts } from '../shared/time';
 import { TimePanel } from '../timepicker/time-panel';
 
@@ -119,6 +120,10 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const [visible, setVisible] = useState(new Date(selected?.[0] ?? minDate ?? new Date()));
     const [hover, setHover] = useState<Date | null>(null);
     const [timeView, setTimeView] = useState<0 | 1 | null>(null);
+    const firstPanel = useRef<HTMLDivElement>(null);
+    const secondPanel = useRef<HTMLDivElement>(null);
+    useContentTransition(firstPanel, `${open}:${timeView === 0}`, timeView === 0 ? 1 : -1);
+    useContentTransition(secondPanel, `${open}:${timeView === 1}`, timeView === 1 ? 1 : -1);
     const [focusCalendar, setFocusCalendar] = useState<0 | 1 | null>(null);
     const [times, setTimes] = useState<readonly [TimeParts, TimeParts]>([
       getTime(selected?.[0] ?? new Date(new Date().setHours(0, 0, 0, 0))),
@@ -299,23 +304,6 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         panelClassName="leaf-range-panel"
         renderPanel={(close) => (
           <>
-            <div className="leaf-range-panel__endpoints">
-              {([0, 1] as const).map((index) => (
-                <button
-                  key={index}
-                  type="button"
-                  aria-pressed={endpoint === index}
-                  onClick={() => {
-                    if (index === 1 && !draft[0] && !emptyAllowed[0]) return;
-                    setEndpoint(index);
-                    setHover(null);
-                  }}
-                >
-                  {index === 0 ? messages.start : messages.end}
-                  <span>{draft[index] ? label(draft[index]) : '—'}</span>
-                </button>
-              ))}
-            </div>
             <fieldset
               aria-label={messages.range}
               className="leaf-range-panel__calendars"
@@ -325,7 +313,11 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                 const base = panelValue ?? visible;
                 const panelDate = index === 0 ? base : shiftCalendar(base, picker, 1);
                 return (
-                  <div key={index} className="leaf-range-panel__calendar">
+                  <div
+                    key={index}
+                    ref={index === 0 ? firstPanel : secondPanel}
+                    className="leaf-range-panel__calendar"
+                  >
                     {timeView === index && picker === 'datetime' ? (
                       <div className="leaf-picker-time-view">
                         <div className="leaf-picker-time-view__header">

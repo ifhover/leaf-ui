@@ -1,6 +1,6 @@
 .leaf-tooltip {
   max-width: min(300px, calc(100vw - 24px));
-  padding: var(--leaf-component-tooltip-padding, 7px 11px);
+  padding: var(--leaf-component-tooltip-padding, 7px 10px);
   border: 0;
   border-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius-sm));
   color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
@@ -8,5 +8,10 @@
   font-size: var(--leaf-font-size-sm);
   line-height: 1.6;
   overflow-wrap: anywhere;
-  box-shadow: var(--leaf-component-tooltip-shadow, 0 4px 12px #0002);
+  box-shadow: var(--leaf-component-tooltip-shadow, var(--leaf-shadow-md));
+  transition-duration:
+    var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
+  &[data-state='closing'] {
+    transition-duration: var(--leaf-motion-fast);
+  }
 }

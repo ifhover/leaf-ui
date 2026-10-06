@@ -1,6 +1,6 @@
 .leaf-calendar {
   min-width: 260px;
-  padding: 8px;
+  padding: 12px;
   box-sizing: border-box;
   &__headings {
     display: flex;
@@ -9,15 +9,18 @@
     white-space: nowrap;
   }
   &__heading {
-    padding: 5px 3px;
+    padding: 5px 6px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
     background: transparent;
     color: inherit;
     font: inherit;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       background: var(--leaf-color-surface-muted);
     }
@@ -41,17 +44,18 @@
     min-width: 0;
   }
   &__weekdays {
-    color: var(--leaf-color-text-muted);
+    color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
     text-align: center;
     font-size: 11px;
-    padding: 5px 0;
+    padding: 6px 0 8px;
   }
   &__cell {
     min-width: 0;
     padding: 1px 2px;
+    transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
   }
   &__cell--range {
-    background: color-mix(in srgb, var(--leaf-color-primary) 12%, transparent);
+    background: var(--leaf-color-primary-alpha-12);
   }
   &__cell--start {
     border-radius: var(--leaf-radius-sm) 0 0 var(--leaf-radius-sm);
@@ -59,9 +63,20 @@
   &__cell--end {
     border-radius: 0 var(--leaf-radius-sm) var(--leaf-radius-sm) 0;
   }
+  &:dir(rtl) {
+    .leaf-calendar__cell--start {
+      border-radius: 0 var(--leaf-radius-sm) var(--leaf-radius-sm) 0;
+    }
+    .leaf-calendar__cell--end {
+      border-radius: var(--leaf-radius-sm) 0 0 var(--leaf-radius-sm);
+    }
+    .leaf-date-picker__nav > svg {
+      rotate: 180deg;
+    }
+  }
   &__cells--coarse {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px 0;
+    gap: 6px 4px;
     .leaf-date-picker__day {
       min-height: 42px;
       width: 100%;
@@ -82,7 +97,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding: 4px 12px 12px;
+  padding: 10px 12px;
+  border-block-start: 1px solid var(--leaf-color-border);
+  background: var(--leaf-color-surface-muted-alpha-45);
+  border-end-start-radius: inherit;
+  border-end-end-radius: inherit;
   font-size: 12px;
   color: var(--leaf-color-text-muted);
   &__extra {
@@ -105,15 +124,18 @@
   font: inherit;
   font-size: 11px;
   cursor: pointer;
+  transition:
+    color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
   &:hover {
-    background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+    background: var(--leaf-color-primary-alpha-10);
   }
   &:focus-visible {
     outline: 2px solid var(--leaf-color-primary);
   }
 }
 .leaf-picker-time-view {
-  padding: 8px;
+  padding: 12px;
   min-height: 294px;
   box-sizing: border-box;
   &__header {
@@ -141,37 +163,6 @@
     margin: 0;
     border: 0;
   }
-  &__endpoints {
-    display: flex;
-    gap: 8px;
-    padding: 8px;
-    > button {
-      flex: 1;
-      min-width: 0;
-      padding: 8px;
-      border: 0;
-      border-radius: var(--leaf-radius-sm);
-      background: transparent;
-      color: var(--leaf-color-text-muted);
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      &[aria-pressed='true'] {
-        color: var(--leaf-color-primary);
-        background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
-      }
-      > span {
-        display: block;
-        margin-top: 2px;
-        white-space: nowrap;
-        font-size: 11px;
-      }
-      &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary);
-        outline-offset: -2px;
-      }
-    }
-  }
 }
 @media (max-width: 620px) {
   .leaf-range-panel {
@@ -183,7 +174,12 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-date-picker__day,
-  .leaf-date-picker__nav {
+  .leaf-date-picker__nav,
+  .leaf-calendar__heading,
+  .leaf-calendar__cell,
+  .leaf-picker-time-toggle,
+  .leaf-range-panel__endpoints::before,
+  .leaf-range-panel__endpoints > button {
     transition: none;
   }
 }

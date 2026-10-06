@@ -52,50 +52,52 @@ export function ComponentExample({
     >
       <div className="leaf-component-example__preview-header">
         <span>
-          <i />
-          {t('交互预览', 'Live preview')}
+          <i aria-hidden="true" />
+          {title}
         </span>
-        <span>{title}</span>
+        <span>{t('交互预览', 'Live preview')}</span>
       </div>
       <div className="leaf-component-example__preview rp-not-doc">{preview}</div>
-      <div className="leaf-component-example__code-header">
-        <span>
-          <Icon name="code" width="15" height="15" />
-          {fileName}
-        </span>
-        <div>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="leaf-component-example__wrap"
-            aria-label={t('切换代码换行', 'Toggle line wrapping')}
-            title={t('切换代码换行', 'Toggle line wrapping')}
-            aria-pressed={wrapCode}
-            onClick={() => setWrapCode(!wrapCode)}
-            startIcon={<Icon name="wrap" />}
-          />
-          <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
+      <div className="leaf-component-example__code">
+        <div className="leaf-component-example__code-header">
+          <span>
+            <Icon name="code" width="15" height="15" />
+            {fileName}
+          </span>
+          <div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="leaf-component-example__wrap"
+              aria-label={t('切换代码换行', 'Toggle line wrapping')}
+              title={t('切换代码换行', 'Toggle line wrapping')}
+              aria-pressed={wrapCode}
+              onClick={() => setWrapCode(!wrapCode)}
+              startIcon={<Icon name="wrap" />}
+            />
+            <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
+          </div>
         </div>
+        <div className="leaf-component-example__code-viewport" id={codeId}>
+          <div className="leaf-component-example__source" ref={sourceRef}>
+            {children}
+          </div>
+        </div>
+        {collapsible && (
+          <div className="leaf-component-example__expand">
+            <Button
+              size="sm"
+              variant="outline"
+              aria-expanded={expanded}
+              aria-controls={codeId}
+              onClick={() => setExpanded(!expanded)}
+              endIcon={<Icon name="chevron" />}
+            >
+              {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}
+            </Button>
+          </div>
+        )}
       </div>
-      <div className="leaf-component-example__code-viewport" id={codeId}>
-        <div className="leaf-component-example__source" ref={sourceRef}>
-          {children}
-        </div>
-      </div>
-      {collapsible && (
-        <div className="leaf-component-example__expand">
-          <Button
-            size="sm"
-            variant="outline"
-            aria-expanded={expanded}
-            aria-controls={codeId}
-            onClick={() => setExpanded(!expanded)}
-            endIcon={<Icon name="chevron" />}
-          >
-            {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}
-          </Button>
-        </div>
-      )}
     </section>
   );
 }

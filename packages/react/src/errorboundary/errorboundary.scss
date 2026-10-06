@@ -1,3 +1,29 @@
 .leaf-error-boundary {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   color: var(--leaf-color-text);
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius-lg);
+  background: var(--leaf-color-surface);
+  box-shadow: var(--leaf-shadow-xs);
+  animation: var(
+    --leaf-motion-animation,
+    leaf-error-reveal var(--leaf-motion-duration) var(--leaf-motion-easing)
+  );
+}
+@keyframes leaf-error-reveal {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-error-boundary {
+    animation: none;
+  }
 }

@@ -3,7 +3,7 @@ import { CalendarDays, Check, ChevronDown, ChevronRight, Clock3, Search } from '
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const colors = { green: '#20834a', border: '#dce5de', text: '#203329', muted: '#6c7c71' };
+const colors = { green: '#20834a', border: '#e5e5e8', text: '#202024', muted: '#68686f' };
 const rect = (x, y, width, height, fill = '#fff', stroke = colors.border, radius = 6) =>
   `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="${fill}" stroke="${stroke}"/>`;
 const text = (x, y, value, color = colors.text, fontSize = 10) =>
@@ -67,7 +67,7 @@ const autocomplete =
 const cascader =
   field('Design / Interface') +
   rect(17, 39, 206, 80) +
-  '<path d="M119 43V115" stroke="#dce5de"/>' +
+  '<path d="M119 43V115" stroke="#e5e5e8"/>' +
   rect(23, 45, 89, 24, '#eaf4ed', 'none', 4) +
   rect(125, 45, 92, 24, '#eaf4ed', 'none', 4) +
   text(30, 61, 'Design', colors.green) +

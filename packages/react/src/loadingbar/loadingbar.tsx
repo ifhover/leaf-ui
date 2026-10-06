@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { classes } from '../shared/classes';
+import { motionDuration, useMotionEnabled } from '../shared/motion';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useText } from '../shared/use-text';
 export interface LoadingBarProps {
@@ -30,21 +31,33 @@ export function LoadingBar({
   style,
 }: LoadingBarProps) {
   const t = useText();
+  const bar = useRef<HTMLDivElement>(null);
+  const motion = useMotionEnabled();
   const [visible, setVisible] = useState(active);
-  const [amount, setAmount] = useState(0);
+  const normalized =
+    progress === undefined
+      ? undefined
+      : Math.max(0, Math.min(100, Number.isFinite(progress) ? progress : 0));
+  const [amount, setAmount] = useState(active ? (normalized ?? 8) : 0);
   useEffect(() => {
     if (active) {
       setVisible(true);
-      setAmount(progress ?? 8);
-    } else {
+      setAmount((current) => normalized ?? (current >= 100 ? 8 : Math.max(8, current)));
+    } else if (visible) {
       setAmount(100);
+      const duration = motion && bar.current ? motionDuration(bar.current, 1.2) : 0;
+      if (!duration) {
+        setVisible(false);
+        setAmount(0);
+        return;
+      }
       const timer = setTimeout(() => {
         setVisible(false);
         setAmount(0);
-      }, 240);
+      }, duration + 32);
       return () => clearTimeout(timer);
     }
-  }, [active, progress]);
+  }, [active, normalized, visible, motion]);
   useEffect(() => {
     if (!active || progress !== undefined) return;
     const timer = setInterval(
@@ -57,12 +70,14 @@ export function LoadingBar({
   return (
     <ScopedPortal>
       <div
+        ref={bar}
         className={classes('leaf-loading-bar', `leaf-loading-bar--${position}`, className)}
         role="progressbar"
         aria-label={t('页面加载进度', 'Page loading progress')}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progress === undefined && active ? undefined : amount}
+        data-complete={!active || undefined}
         style={{ height, ...style }}
       >
         <span style={{ width: `${Math.max(0, Math.min(100, amount))}%`, background: color }} />

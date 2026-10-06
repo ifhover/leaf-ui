@@ -1,5 +1,12 @@
 import { UserRound } from 'lucide-react';
-import { type HTMLAttributes, type ImgHTMLAttributes, type ReactNode, useState } from 'react';
+import {
+  type HTMLAttributes,
+  type ImgHTMLAttributes,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -29,7 +36,15 @@ export function Avatar({
   ...props
 }: AvatarProps) {
   const { messages } = useLeafConfig();
+  const image = useRef<HTMLImageElement>(null);
   const [failedSource, setFailedSource] = useState<string>();
+  const [loadedSource, setLoadedSource] = useState<string>();
+  const source = `${src ?? ''}|${srcSet ?? ''}`;
+  const imageVisible = Boolean(src || srcSet) && failedSource !== source;
+  useEffect(() => {
+    if (imageVisible && image.current?.complete && image.current.naturalWidth > 0)
+      setLoadedSource(source);
+  }, [imageVisible, source]);
   return (
     <span
       {...props}
@@ -43,6 +58,7 @@ export function Avatar({
         typeof size === 'string' && `leaf-avatar--${size}`,
         className,
       )}
+      data-loaded={imageVisible && loadedSource === source ? '' : undefined}
       style={{
         ...(typeof size === 'number'
           ? {
@@ -54,19 +70,25 @@ export function Avatar({
         ...style,
       }}
     >
-      {(src || srcSet) && failedSource !== `${src ?? ''}|${srcSet ?? ''}` ? (
+      <span className="leaf-avatar__fallback" aria-hidden="true">
+        {children ?? icon ?? <UserRound />}
+      </span>
+      {imageVisible && (
         <img
           {...imageProps}
+          ref={image}
           src={src}
           srcSet={srcSet}
           alt=""
+          onLoad={(event) => {
+            setLoadedSource(source);
+            imageProps?.onLoad?.(event);
+          }}
           onError={() => {
-            setFailedSource(`${src ?? ''}|${srcSet ?? ''}`);
+            setFailedSource(source);
             onError?.();
           }}
         />
-      ) : (
-        <span aria-hidden="true">{children ?? icon ?? <UserRound />}</span>
       )}
     </span>
   );

@@ -6,10 +6,31 @@
     outline: none;
   }
   &__group {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
     min-width: 0;
     margin: 0;
     padding: 0;
     border: 0;
+    transition:
+      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+    &[data-open='true'] {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+  }
+  &__group-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  &__group-content {
+    transform: translateY(-4px);
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
+  }
+  &__group[data-open='true'] &__group-content {
+    transform: translateY(0);
   }
   &__item:focus-visible > .leaf-tree__row,
   &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
@@ -27,14 +48,15 @@
     cursor: pointer;
     transition:
       background-color var(--leaf-motion-duration),
-      color var(--leaf-motion-duration);
+      color var(--leaf-motion-duration),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not([data-disabled]) {
       background: var(--leaf-color-surface-muted);
     }
     &[data-selected],
     &[data-selected]:hover {
       color: var(--leaf-color-primary);
-      background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
+      background: var(--leaf-color-primary-surface-8);
     }
     &[data-disabled] {
       color: var(--leaf-color-text-muted);
@@ -54,7 +76,14 @@
     color: var(--leaf-color-text-muted);
     cursor: pointer;
     svg {
-      transition: transform var(--leaf-motion-duration);
+      transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+    }
+    &[data-open] > svg:not(.leaf-tree__spinner) {
+      transform: rotate(90deg);
+    }
+    &:hover:not(:disabled) {
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
     }
     &[data-hidden] {
       visibility: hidden;
@@ -97,13 +126,18 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-tree__row,
+  .leaf-tree__group,
+  .leaf-tree__group-content,
   .leaf-tree__toggle svg {
     transition: none;
   }
 }
 
 .leaf-tree__spinner {
-  animation: leaf-feedback-spin 1s linear infinite;
+  animation: var(
+    --leaf-motion-animation,
+    leaf-feedback-spin calc(var(--leaf-motion-duration) * 5) linear infinite
+  );
 }
 .leaf-tree__drag-row {
   position: relative;
@@ -117,7 +151,7 @@
     opacity: 0.4;
   }
   &[data-drop='inside'] {
-    background: color-mix(in srgb, var(--leaf-color-primary) 12%, transparent);
+    background: var(--leaf-color-primary-alpha-12);
     border-radius: var(--leaf-radius-sm);
   }
   &[data-drop='before']::before,
@@ -140,6 +174,18 @@
   touch-action: none;
   cursor: grab;
   flex: none;
+}
+:dir(rtl) .leaf-tree__toggle > svg:not(.leaf-tree__spinner) {
+  transform: rotate(180deg);
+}
+:dir(rtl) .leaf-tree__toggle[data-open] > svg:not(.leaf-tree__spinner) {
+  transform: rotate(90deg);
+}
+@media (forced-colors: active) {
+  .leaf-tree__row[data-selected] {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
 }
 .leaf-tree__drag-preview {
   padding: 8px 14px;

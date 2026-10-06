@@ -8,6 +8,41 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.4.0 - 2026-10-07
+
+Consistent component visuals and interactions, global density settings, portable theme colors, and complete application examples, design resources and accessibility guidance.
+
+### Added
+
+- `ConfigProvider` accepts `density="comfortable" | "compact"`, with nested inheritance and overrides. Portals retain their region's density; explicit component and theme sizes take precedence.
+- `ConfigProvider` accepts `maskBlur`, enabled by default. Use `maskBlur={false}` to disable background blur on dialog and drawer masks.
+- Theme tokens for subtle text, raised surfaces, hover borders, smaller shadows and spring easing.
+- Project-management and team-settings examples, an interactive accessibility workbench, and browser compatibility and design-standard guides.
+- DTCG / Tokens Studio tokens, editable SVG resources, and a downloadable local Figma import plugin.
+
+### Improved
+
+- Consistent light and dark surfaces, borders, focus, state feedback and spacing; clearer Alert, Result, file-list and image-cropper presentation.
+- JavaScript derives colors from the theme, with static default palettes. Component and documentation styles no longer require CSS `color-mix()`; nested themes and portals stay synchronized.
+- Continuous selection indicators in Tabs and Segmented, smoother expansion and content-height changes, and motion that respects regional settings and system reduced-motion preferences.
+- Modal uses 20px vertical padding and retains 24px horizontal padding, with aligned titles, forms and actions. Drawers no longer bounce after opening, and masks blur gradually.
+- Refined layout, form, bottom-navigation and number-input examples, a wider documentation search entry, and refreshed home and example previews.
+
+### Fixed
+
+- Buttons no longer shift after pressing, releasing and leaving. Message icons and text no longer shake after appearing.
+- Notification close buttons reserve space only in the title row, leaving body text and actions unaffected.
+- Narrow-screen dialog and time-range overflow, disabled time-option handling, and stale asynchronous confirmation results affecting a reopened dialog.
+- Improved nested-popup focus and keyboard behavior, and React 18 compatibility for inert attributes and refs.
+
+### Usage notes
+
+- Set colors through `ConfigProvider`'s `theme` / `tokens` to keep derived variables synchronized. Overriding only a base CSS color variable does not recompute all derived colors.
+- Pass concrete colors for consistent SSR output. Colors using `var(...)` resolve and synchronize after browser mounting.
+- The default density remains `comfortable`. Disable mask blur on performance-sensitive pages; `theme={{ motion: false }}` disables regional motion.
+- `Slider` no longer shows standalone value text by default. Set `showValue` to retain that display; hover hints remain available through `tooltip`.
+- Accessibility and compatibility guides distinguish automated checks from manual acceptance. Screen readers, physical devices and actual Figma imports still require manual verification.
+
 ## 0.3.0 - 2026-10-05
 
 More layout, navigation, media and application components, refined uploads and image previews, and shared application-level feedback configuration.

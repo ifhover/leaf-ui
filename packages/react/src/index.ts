@@ -54,6 +54,7 @@ export type { CommandItem, CommandPaletteProps } from './commandpalette';
 export { CommandPalette } from './commandpalette';
 export type {
   ConfigProviderProps,
+  LeafDensity,
   LeafLocale,
   LeafTheme,
   LeafThemeTokens,

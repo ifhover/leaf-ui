@@ -1,6 +1,8 @@
 @use '../styles/mixins' as mixins;
 .leaf-pagination {
   @include mixins.control-size;
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -8,6 +10,31 @@
   color: var(--leaf-component-pagination-color, var(--leaf-color-text));
   font: var(--leaf-component-pagination-font-size, var(--leaf-current-font-size))/1.5
     var(--leaf-font-family);
+  &__indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    width: var(--leaf-indicator-width, 0px);
+    height: var(--leaf-indicator-height, 0px);
+    transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
+    box-sizing: border-box;
+    border: 1px solid var(--leaf-color-primary-border-24);
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-primary-surface-8);
+    box-shadow: var(--leaf-shadow-xs);
+    opacity: 0;
+    &[data-visible='true'] {
+      opacity: 1;
+    }
+    &[data-animate='true'] {
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+        width var(--leaf-motion-slow) var(--leaf-motion-spring),
+        height var(--leaf-motion-slow) var(--leaf-motion-spring);
+    }
+  }
   & > button,
   &__entry > button {
     box-sizing: border-box;
@@ -26,16 +53,22 @@
     transition:
       background-color var(--leaf-motion-duration),
       border-color var(--leaf-motion-duration),
-      color var(--leaf-motion-duration);
-    &:hover:not(:disabled) {
-      border-color: var(--leaf-color-primary);
-      color: var(--leaf-color-primary);
+      color var(--leaf-motion-duration),
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:hover:not(:disabled):not([aria-current='page']) {
+      border-color: var(--leaf-color-border-hover);
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
     }
     &[aria-current='page'] {
-      background: color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface));
-      border-color: var(--leaf-color-primary);
+      background: transparent;
+      border-color: transparent;
       color: var(--leaf-color-primary);
       font-weight: 600;
+    }
+    &:active:not(:disabled) {
+      transform: scale(0.94);
     }
     &:disabled {
       cursor: not-allowed;
@@ -95,6 +128,13 @@
   .leaf-pagination__entry > button {
     transition: none;
   }
+  .leaf-pagination__indicator[data-animate='true'] {
+    transition: none;
+  }
+}
+:dir(rtl) .leaf-pagination > button > svg,
+:dir(rtl) .leaf-pagination__jump > svg {
+  transform: rotate(180deg);
 }
 
 .leaf-pagination {
@@ -117,4 +157,15 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+}
+@media (forced-colors: active) {
+  .leaf-pagination__indicator {
+    background: Highlight;
+    border-color: Highlight;
+    forced-color-adjust: none;
+  }
+  .leaf-pagination__entry > button[aria-current='page'] {
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
 }

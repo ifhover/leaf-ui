@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import type { LeafDensity } from '../density';
 import { traditionalMessages } from '../locales/zh-tw';
 import type { LeafTheme } from '../theme';
 
@@ -195,6 +196,8 @@ const defaultConfig = {
   direction: 'ltr' as LeafDirection,
   weekStartsOn: 1 as 0 | 1 | 2 | 3 | 4 | 5 | 6,
   textMessages: {} as Record<string, string>,
+  maskBlur: true,
+  density: 'comfortable' as LeafDensity,
   getPopupContainer: undefined as undefined | (() => Element | DocumentFragment),
 };
 export type LeafConfig = typeof defaultConfig;

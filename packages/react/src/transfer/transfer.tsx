@@ -7,6 +7,7 @@ import { Input } from '../input';
 import { Result } from '../result';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
+import { useListMotion } from '../shared/motion';
 import { useText } from '../shared/use-text';
 import { VirtualList } from '../virtuallist/virtuallist';
 export interface TransferItem {
@@ -65,10 +66,16 @@ export function Transfer({
   const t = useText();
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
+  const root = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
   const [internal, setInternal] = useState<readonly string[]>([]);
   const selected = selectedKeys ?? internal;
   const [queries, setQueries] = useState(['', '']);
+  useListMotion(
+    root,
+    JSON.stringify([current, queries, items.map((item) => item.key)]),
+    virtual ? '[data-no-transfer-motion]' : '.leaf-transfer__item[data-motion-key]',
+  );
   const select = (keys: string[]) => {
     if (selectedKeys === undefined) setInternal(keys);
     onSelectionChange?.(keys);
@@ -105,7 +112,11 @@ export function Transfer({
     const enabled = list.filter((item) => !item.disabled);
     const checked = enabled.filter((item) => selected.includes(item.key));
     const row = (item: TransferItem) => (
-      <div className="leaf-transfer__item">
+      <div
+        className="leaf-transfer__item"
+        data-motion-key={item.key}
+        data-selected={selected.includes(item.key) ? '' : undefined}
+      >
         <Checkbox
           disabled={disabled || item.disabled}
           checked={selected.includes(item.key)}
@@ -193,6 +204,7 @@ export function Transfer({
   return (
     <div
       {...props}
+      ref={root}
       className={classes('leaf-transfer', className)}
       data-disabled={disabled ? '' : undefined}
     >

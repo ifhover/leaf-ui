@@ -1,6 +1,7 @@
 .leaf-avatar {
   box-sizing: border-box;
   display: inline-flex;
+  position: relative;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -8,12 +9,9 @@
   height: 40px;
   overflow: hidden;
   vertical-align: middle;
-  border: 1px solid color-mix(in srgb, var(--leaf-color-primary) 18%, transparent);
-  color: var(--leaf-component-avatar-color, var(--leaf-color-primary));
-  background: var(
-    --leaf-component-avatar-background,
-    color-mix(in srgb, var(--leaf-color-primary) 10%, var(--leaf-color-surface))
-  );
+  border: 1px solid var(--leaf-color-border);
+  color: var(--leaf-component-avatar-color, var(--leaf-color-text-muted));
+  background: var(--leaf-component-avatar-background, var(--leaf-color-surface-muted));
   font: 600 16px/1 var(--leaf-font-family);
   &--circle {
     border-radius: 50%;
@@ -32,15 +30,29 @@
     font-size: 22px;
   }
   > img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   > span {
     display: flex;
     align-items: center;
     justify-content: center;
     max-width: 100%;
+    transition:
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+  }
+  &[data-loaded] > img {
+    opacity: 1;
+  }
+  &[data-loaded] > .leaf-avatar__fallback {
+    opacity: 0;
+    transform: scale(0.9);
   }
   svg {
     width: 1.25em;
@@ -51,10 +63,10 @@
 .leaf-avatar-group {
   display: flex;
   align-items: center;
-  padding-left: 3px;
+  padding-inline-start: 3px;
   > .leaf-avatar,
   > button {
-    margin-left: -3px;
+    margin-inline-start: -3px;
     box-shadow: 0 0 0 3px var(--leaf-color-surface);
     border-radius: 50%;
   }
@@ -64,6 +76,16 @@
     border: 0;
     background: none;
     cursor: pointer;
+    position: relative;
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    &:hover,
+    &:focus-visible {
+      z-index: 1;
+      transform: translateY(-2px);
+    }
+    &:active {
+      transform: scale(0.96);
+    }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary);
       outline-offset: 3px;
@@ -73,5 +95,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-avatar > img,
+  .leaf-avatar > span,
+  .leaf-avatar-group__more {
+    transition: none;
   }
 }

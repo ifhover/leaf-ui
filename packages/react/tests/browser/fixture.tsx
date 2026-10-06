@@ -43,6 +43,11 @@ import { Modal } from '../../src/modal';
 import '../../src/styles/index.scss';
 import css from '../../src/styles/index.scss?inline';
 import './fixture.scss';
+import { AccessibilityWorkbench } from '../../../../apps/docs/src/examples/scenarios/accessibility';
+import { ColorFixture } from './color-fixture';
+import { FeedbackFixture } from './feedback-fixture';
+import { MotionFixture } from './motion-fixture';
+import { SelectionFixture } from './selection-fixture';
 
 const params = new URLSearchParams(location.search);
 const options = [
@@ -163,6 +168,27 @@ function Controls() {
         ]}
       />
     </>
+  );
+}
+function SliderInteractions() {
+  const marks = [
+    { value: 0, label: 'Low' },
+    { value: 50, label: 'Mid' },
+    { value: 100, label: 'High' },
+  ];
+  return (
+    <div style={{ maxWidth: 480 }}>
+      <h1>Marked sliders</h1>
+      <section aria-label="Single" style={{ marginBlock: 32 }}>
+        <Slider aria-label="Single value" defaultValue={50} marks={marks} />
+      </section>
+      <section aria-label="Range" style={{ marginBlock: 32 }}>
+        <Slider aria-label="Range value" range defaultValue={[20, 80]} marks={marks} />
+      </section>
+      <section aria-label="Vertical" style={{ marginBlock: 32 }}>
+        <Slider aria-label="Vertical value" vertical defaultValue={50} marks={marks} />
+      </section>
+    </div>
   );
 }
 function Visual() {
@@ -322,10 +348,22 @@ createRoot(root).render(
     }
   >
     <main>
-      {fixture === 'large' ? (
+      {fixture === 'colors' ? (
+        <ColorFixture />
+      ) : fixture === 'accessibility' ? (
+        <AccessibilityWorkbench english />
+      ) : fixture === 'feedback' ? (
+        <FeedbackFixture />
+      ) : fixture === 'selection' ? (
+        <SelectionFixture />
+      ) : fixture === 'motion' ? (
+        <MotionFixture />
+      ) : fixture === 'large' ? (
         <LargeData />
       ) : fixture === 'visual' ? (
         <Visual />
+      ) : fixture === 'sliders' ? (
+        <SliderInteractions />
       ) : fixture === 'shadow' ? (
         <Shadow />
       ) : (

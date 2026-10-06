@@ -15,6 +15,7 @@ import { Checkbox } from '../checkbox';
 import { useLeafConfig } from '../config-provider/context';
 import { Result } from '../result';
 import { classes } from '../shared/classes';
+import { inertProps } from '../shared/inert';
 import { TreeDragRow, TreeDragScope } from './drag';
 import { treeChecks, treeMatches, treeModel } from './model';
 
@@ -301,6 +302,13 @@ export function Tree({
     });
   };
   const keyDown = (event: KeyboardEvent<HTMLDivElement>, node: TreeNode) => {
+    if (
+      event.target !== event.currentTarget &&
+      (event.target as HTMLElement).closest(
+        'input,textarea,select,button,a[href],[contenteditable="true"]',
+      )
+    )
+      return;
     if (event.defaultPrevented || (event.target as HTMLElement).closest('.leaf-tree__drag-handle'))
       return;
     event.stopPropagation();
@@ -389,7 +397,9 @@ export function Tree({
           event.stopPropagation();
           if (
             !event.currentTarget.firstElementChild?.contains(event.target as Node) ||
-            (event.target as HTMLElement).closest('.leaf-tree__check, .leaf-tree__drag-handle')
+            (event.target as HTMLElement).closest(
+              '.leaf-tree__check, .leaf-tree__drag-handle, input, textarea, select, button, a[href], [contenteditable="true"]',
+            )
           )
             return;
           focus(node.key);
@@ -417,6 +427,7 @@ export function Tree({
               aria-label={`${opened ? messages.collapseNode : messages.expand} ${node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key)}`}
               disabled={disabled}
               data-hidden={!hasChildren || undefined}
+              data-open={opened || undefined}
               aria-hidden={!hasChildren || undefined}
               onClick={(event) => {
                 event.stopPropagation();
@@ -427,13 +438,7 @@ export function Tree({
               {loading.includes(node.key) ? (
                 <LoaderCircle size={14} className="leaf-tree__spinner" aria-hidden="true" />
               ) : (
-                hasChildren && (
-                  <ChevronRight
-                    size={14}
-                    style={{ transform: opened ? 'rotate(90deg)' : undefined }}
-                    aria-hidden="true"
-                  />
-                )
+                hasChildren && <ChevronRight size={14} aria-hidden="true" />
               )}
             </button>
             {checkable && node.checkable !== false && (
@@ -466,17 +471,18 @@ export function Tree({
             </span>
           </div>
         </TreeRow>
-        {opened && !flat && (
-          <fieldset
-            className="leaf-tree__group"
+        {hasChildren && !flat && (
+          <TreeGroup
+            open={opened}
             style={{ '--leaf-tree-line-left': `${(level - 1) * 20 + 14}px` } as CSSProperties}
           >
-            {renderNodes(node.children ?? [], level + 1)}
-          </fieldset>
+            {() => renderNodes(node.children ?? [], level + 1)}
+          </TreeGroup>
         )}
       </div>
     );
   };
+
   const renderNodes = (nodes: readonly TreeNode[], level: number): ReactNode => {
     const siblings = nodes.filter((node) => !matches || matches.visible.has(node.key));
     return siblings.map((node, index) => renderNode(node, level, index, siblings.length));
@@ -540,6 +546,32 @@ export function Tree({
     </TreeDragScope>
   ) : (
     content
+  );
+}
+
+function TreeGroup({
+  open,
+  style,
+  children,
+}: {
+  open: boolean;
+  style: CSSProperties;
+  children: () => ReactNode;
+}) {
+  const [visited, setVisited] = useState(open);
+  if (open && !visited) setVisited(true);
+  return (
+    <fieldset
+      className="leaf-tree__group"
+      style={style}
+      aria-hidden={!open || undefined}
+      {...inertProps(!open)}
+      data-open={open || undefined}
+    >
+      <div className="leaf-tree__group-inner">
+        <div className="leaf-tree__group-content">{visited && children()}</div>
+      </div>
+    </fieldset>
   );
 }
 

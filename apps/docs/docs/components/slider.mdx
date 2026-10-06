@@ -32,8 +32,8 @@ import { SliderBasic } from '../../src/examples/slider/basic';
 | `max` | `number` | `100` | 范围与步长 |
 | `step` | `number \| null` | `1` | 范围与步长 |
 | `marks` | `readonly `[`SliderMark`](#slidermark)`[]` | `[]` | 刻度列表 |
-| `vertical` | `boolean` | `false` | 垂直布局 / 悬停或聚焦时显示数值 |
-| `showValue` | `boolean` | `true` | 垂直布局 / 悬停或聚焦时显示数值 |
+| `vertical` | `boolean` | `false` | 使用垂直布局 |
+| `showValue` | `boolean` | `false` | 悬停或聚焦时在右上方显示数值，默认隐藏 |
 | `onChangeComplete` | `(value: number \| readonly [number, number]) => void` | — | 拖动或键盘操作完成后触发 |
 | `tooltip` | `boolean \| { formatter?: (value: number) => ReactNode }` | `false` | 显示滑块提示，可定制数值格式。 |
 | `range` | `false \| true` | `false` | 区间选择 |

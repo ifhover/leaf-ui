@@ -1,5 +1,5 @@
 .leaf-component-example {
-  --leaf-example-code-bg: #f7f9f6;
+  --leaf-example-code-bg: var(--leaf-site-soft);
   --rp-code-block-bg: var(--leaf-example-code-bg);
   --rp-code-font-size: 12px;
   min-width: 0;
@@ -8,11 +8,10 @@
   border: 1px solid var(--leaf-site-border);
   border-radius: 14px;
   background: var(--leaf-site-panel);
-  box-shadow: 0 2px 5px #203c2b03;
-}
-
-html.rp-dark .leaf-component-example {
-  --leaf-example-code-bg: #18241c;
+  box-shadow: var(--leaf-shadow-xs);
+  [hidden] {
+    display: none !important;
+  }
 }
 
 .leaf-component-example__preview-header {
@@ -20,9 +19,10 @@ html.rp-dark .leaf-component-example {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 15px 22px 0;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--leaf-site-border);
   color: var(--leaf-site-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -45,8 +45,18 @@ html.rp-dark .leaf-component-example {
   justify-content: center;
   flex-wrap: wrap;
   gap: 14px;
-  min-height: 166px;
-  padding: 32px;
+  min-height: 206px;
+  padding: 42px 32px;
+  color: var(--leaf-color-text);
+  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+  animation: var(
+    --leaf-motion-animation,
+    leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
+  );
+}
+
+.leaf-component-example__code {
+  border-top: 1px solid var(--leaf-site-border);
 }
 
 // Keep the documentation's prose list rules out of component previews.
@@ -76,7 +86,6 @@ html.rp-dark .leaf-component-example {
   gap: 12px;
   min-height: 43px;
   padding: 4px 14px 4px 20px;
-  border-top: 1px solid var(--leaf-site-border);
   background: var(--leaf-example-code-bg);
   color: var(--leaf-site-muted);
   font-size: 10px;
@@ -190,7 +199,7 @@ html.rp-dark .leaf-component-example {
     gap: 12px;
   }
   .leaf-component-example__preview-header {
-    padding: 13px 16px 0;
+    padding: 10px 12px;
   }
   .leaf-component-example__code-header {
     padding-left: 14px;

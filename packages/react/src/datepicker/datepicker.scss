@@ -11,7 +11,8 @@
     width: 100%;
     min-width: 0;
     height: 100%;
-    padding: 0 34px 0 10px;
+    padding-block: 0;
+    padding-inline: 10px 34px;
     border: 0;
     border-radius: inherit;
     outline: none;
@@ -27,11 +28,11 @@
     }
   }
   &[data-clearable] &__input {
-    padding-right: 56px;
+    padding-inline-end: 56px;
   }
   &__icon {
     position: absolute;
-    right: 8px;
+    inset-inline-end: 8px;
     top: 50%;
     transform: translateY(-50%);
     display: inline-flex;
@@ -44,12 +45,24 @@
     background: transparent;
     color: var(--leaf-color-text-muted);
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:hover:not(:disabled) {
+      color: var(--leaf-color-text);
+    }
+    &:active:not(:disabled) {
+      scale: 0.9;
+    }
     &:disabled {
       cursor: not-allowed;
     }
   }
   > .leaf-picker-clear {
-    right: 30px;
+    inset-inline-end: 30px;
+  }
+  &[data-open] &__icon {
+    color: var(--leaf-color-primary);
   }
   &__panel {
     width: 292px;
@@ -65,8 +78,8 @@
   &__nav {
     display: inline-flex;
     flex: 0 0 auto;
-    width: 26px;
-    height: 28px;
+    width: 28px;
+    height: 30px;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -76,11 +89,15 @@
     background: transparent;
     cursor: pointer;
     transition:
-      color var(--leaf-motion-duration),
-      background-color var(--leaf-motion-duration);
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
-      color: var(--leaf-color-primary);
-      background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
+    }
+    &:active:not(:disabled) {
+      scale: 0.9;
     }
     &:disabled {
       cursor: not-allowed;
@@ -106,10 +123,15 @@
     font-size: 12px;
     cursor: pointer;
     transition:
-      background-color var(--leaf-motion-duration),
-      color var(--leaf-motion-duration);
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-duration) var(--leaf-motion-spring);
     &:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--leaf-color-primary) 10%, transparent);
+      background: var(--leaf-color-surface-muted);
+    }
+    &:active:not(:disabled) {
+      scale: 0.92;
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -128,6 +150,7 @@
     &--selected:hover:not(:disabled) {
       color: var(--leaf-color-on-primary);
       background: var(--leaf-color-primary);
+      box-shadow: var(--leaf-shadow-xs);
     }
     &--selected:disabled {
       color: var(--leaf-color-text-muted);
@@ -135,6 +158,11 @@
       border-color: var(--leaf-color-border);
       opacity: 1;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-date-picker__icon {
+    transition: none;
   }
 }
 

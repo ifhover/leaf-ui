@@ -2,6 +2,7 @@ import { ArrowUp } from 'lucide-react';
 import { type ButtonHTMLAttributes, useEffect, useState } from 'react';
 import { Button } from '../button';
 import { classes } from '../shared/classes';
+import { useMotionEnabled } from '../shared/motion';
 import { useText } from '../shared/use-text';
 export interface BackTopProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   target?: () => HTMLElement | Window | null;
@@ -18,6 +19,7 @@ export function BackTop({
   ...props
 }: BackTopProps) {
   const t = useText();
+  const motion = useMotionEnabled();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const element = target?.() ?? window;
@@ -41,8 +43,7 @@ export function BackTop({
       onClick={(event) => {
         onClick?.(event);
         if (event.defaultPrevented) return;
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        (target?.() ?? window).scrollTo({ top: 0, behavior: reduced ? 'auto' : behavior });
+        (target?.() ?? window).scrollTo({ top: 0, behavior: motion ? behavior : 'auto' });
       }}
     >
       {children}

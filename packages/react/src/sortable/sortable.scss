@@ -5,12 +5,16 @@
   min-width: 0;
   &__item {
     position: relative;
+    border-radius: var(--leaf-radius);
+    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &[data-dragging] {
       z-index: 2;
-      opacity: 0.8;
+      box-shadow: var(--leaf-shadow-lg);
+      opacity: 0.92;
     }
   }
   &__handle {
+    color: var(--leaf-color-text-muted);
     cursor: grab;
     touch-action: none;
     &:active {

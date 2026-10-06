@@ -100,7 +100,25 @@ const theme: LeafTheme = {
 
 Explicit small and large sizes take precedence over derived values. See [LeafThemeTokens](/en/components/config-provider#leafthemetokens) for all options.
 
-`motion: false` disables transitions and pauses loading icons. System reduced-motion preferences remain respected.
+## Tune the interaction rhythm
+
+The default base duration is 200ms. Press and hover feedback use a shorter duration; selection, disclosure and overlays use timing suited to their change. Row reordering and dialog height changes continue from the current visual position.
+
+Use `tokens.motionDuration` to adjust the region's pace, `motionEasing` for ordinary transitions, and `motionSpring` for selection and shape changes:
+
+```tsx
+<ConfigProvider theme={{ tokens: {
+  motionDuration: 240,
+  motionEasing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  motionSpring: 'cubic-bezier(0.22, 1.28, 0.36, 1)',
+} }}>
+  <YourProduct />
+</ConfigProvider>
+```
+
+`motion: false` stops CSS and JavaScript animations in the region, including loading rotation and portals. An inner `motion: true` region can resume motion. The system's reduced-motion preference always takes precedence. Direct interactions such as typing, dragging and cropping respond immediately.
+
+Surfaces and text use neutral grays, with the primary color reserved for actions and selection. Use `subtleTextColor`, `raisedSurfaceColor`, `borderHoverColor` and `shadowXs` to refine the hierarchy.
 
 ## Reuse styles in your own components
 
@@ -137,7 +155,8 @@ Read the current region's CSS variables in your application styles. Use ConfigPr
 | `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | Base / small / large radius |
 | `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | Base / small / large height |
 | `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | Typography |
-| `--leaf-motion-duration` / `--leaf-motion-easing` | Transitions |
+| `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | Base / fast / layout transition duration |
+| `--leaf-motion-easing` / `--leaf-motion-spring` | Ordinary / spring easing |
 
 Place custom components inside the intended provider. Import the compiled `styles.css`; consumers do not need Sass.
 
@@ -199,3 +218,10 @@ System preferences update after client hydration. For SSR, start with a server C
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | Reusable CSS custom property. |
+
+
+## Density and portable colors
+
+Use `<ConfigProvider density="compact">` to reduce control heights and spacing throughout a region, including portals. Explicit theme sizes take precedence. Derived colors are calculated in JavaScript; static light/dark palettes support standalone CSS and SSR. Pass concrete colors for a deterministic first frame; CSS variables resolve in the browser.
+
+See [Browser compatibility](./compatibility), [Design resources](./design-resources) and [Visual standards](./design-standards).

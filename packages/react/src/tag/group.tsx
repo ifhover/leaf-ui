@@ -1,6 +1,7 @@
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
+import { useListMotion } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
 import { useControllable } from '../shared/use-controllable';
 export interface CheckableTagProps
@@ -74,9 +75,15 @@ export function TagGroup({
   ...props
 }: TagGroupProps) {
   const trigger = useRef<HTMLButtonElement>(null);
+  const root = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
+  useListMotion(
+    root,
+    JSON.stringify(options.map((option) => option.value)),
+    '.leaf-checkable-tag[data-motion-key]',
+  );
   return (
-    <div {...props} className={classes('leaf-tag-group', className)}>
+    <div {...props} ref={root} className={classes('leaf-tag-group', className)}>
       {options.map((option, index) => (
         <button
           key={option.value}
@@ -89,6 +96,7 @@ export function TagGroup({
             'leaf-checkable-tag',
           )}
           data-color={current.includes(option.value) ? 'primary' : 'default'}
+          data-motion-key={option.value}
           aria-pressed={current.includes(option.value)}
           disabled={disabled || option.disabled}
           onClick={() => {

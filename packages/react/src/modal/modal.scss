@@ -1,18 +1,16 @@
+@use '../shared/backdrop';
+
 .leaf-modal-mask {
+  box-sizing: border-box;
   position: fixed;
   inset: 0;
   z-index: var(--leaf-z-index-modal, 1100);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
   overflow: auto;
   padding: 24px;
-  opacity: 1;
-  transition: opacity var(--leaf-motion-duration) ease;
-  @starting-style {
-    opacity: 0;
-  }
   &[data-state='closing'] {
-    opacity: 0;
     pointer-events: none;
   }
 }
@@ -24,7 +22,8 @@
   padding: 0;
   border: 0;
   cursor: default;
-  background: rgb(0 0 0 / 42%);
+  background: rgba(8, 12, 18, 0.38);
+  @include backdrop.blur('.leaf-modal-mask');
 }
 .leaf-modal {
   position: relative;
@@ -33,71 +32,104 @@
   max-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--leaf-color-border);
+  border: 1px solid var(--leaf-color-border-alpha-85);
   border-radius: var(--leaf-component-modal-radius, var(--leaf-radius));
-  background: var(--leaf-component-modal-background, var(--leaf-color-surface));
+  background: var(
+    --leaf-component-modal-background,
+    var(--leaf-color-surface-raised, var(--leaf-color-surface))
+  );
   color: var(--leaf-component-modal-color, var(--leaf-color-text));
   font: var(--leaf-component-modal-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
-  box-shadow: var(--leaf-component-modal-shadow, 0 24px 70px #14201933);
+  box-shadow: var(--leaf-component-modal-shadow, var(--leaf-shadow-lg));
   outline: none;
   transform: translateY(0) scale(1);
-  transition: transform var(--leaf-motion-duration) ease;
+  opacity: 1;
+  transition:
+    transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+    opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
   @starting-style {
-    transform: translateY(8px) scale(0.97);
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
   }
   &__header {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 16px;
-    padding: 24px 24px 12px;
+    padding: var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+      var(--leaf-spacing-sm);
   }
   &__header h2 {
     flex: 1;
     margin: 0;
     font-size: 17px;
     font-weight: 600;
+    letter-spacing: -0.025em;
   }
   &__close {
     margin-inline-start: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 28px;
+    height: 28px;
     padding: 4px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
     color: var(--leaf-color-text-muted);
     background: transparent;
     cursor: pointer;
+    transition:
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
+      color: var(--leaf-color-text);
       background: var(--leaf-color-surface-muted);
+    }
+    &:active {
+      scale: 0.9;
     }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary);
     }
   }
   &__body {
+    min-height: 0;
     overflow: auto;
-    padding: 12px 24px 20px;
+    padding: var(--leaf-spacing-sm) var(--leaf-density-dialog-inline)
+      var(--leaf-density-dialog-block);
+    overscroll-behavior: contain;
+  }
+  &__content {
+    display: flow-root;
+    min-width: 0;
+  }
+  &__body:first-child {
+    padding-block-start: var(--leaf-density-dialog-block);
   }
   &__footer {
     display: flex;
+    flex-shrink: 0;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 24px 24px;
+    gap: 8px;
+    padding: 0 var(--leaf-density-dialog-inline) var(--leaf-density-dialog-block);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-modal-mask,
-  .leaf-modal-mask[data-state='closing'] {
+  .leaf-modal {
     transition: none;
   }
-  .leaf-modal {
+  .leaf-modal__close {
     transition: none;
   }
 }
 .leaf-modal-mask[data-state='closing'] .leaf-modal {
-  transform: translateY(8px) scale(0.97);
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition-duration: var(--leaf-motion-duration);
+  transition-timing-function: var(--leaf-motion-easing);
 }
 .leaf-modal {
   --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);

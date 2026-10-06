@@ -6,7 +6,7 @@ import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
-import { usePresence } from '../shared/presence';
+import { useNaturalHeightTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 
 export interface ModalFooterActions {
@@ -66,11 +66,12 @@ function ModalSurface({
   style,
   ...props
 }: ModalProps) {
-  const { messages } = useLeafConfig();
+  const { messages, maskBlur } = useLeafConfig();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const mounted = useRef(true);
   const accepting = useRef(false);
+  const generation = useRef(0);
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -78,6 +79,9 @@ function ModalSurface({
     };
   }, []);
   useEffect(() => {
+    generation.current++;
+    accepting.current = false;
+    setPending(false);
     if (open) setError(undefined);
   }, [open]);
   const busy = pending || confirmLoading;
@@ -88,15 +92,19 @@ function ModalSurface({
       return;
     }
     accepting.current = true;
+    const request = generation.current;
     setPending(true);
     setError(undefined);
     try {
       await onConfirm();
     } catch (reason) {
-      if (mounted.current) setError(reason instanceof Error ? reason.message : String(reason));
+      if (mounted.current && generation.current === request)
+        setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
-      accepting.current = false;
-      if (mounted.current) setPending(false);
+      if (generation.current === request) {
+        accepting.current = false;
+        if (mounted.current) setPending(false);
+      }
     }
   }
   const cancel = () => {
@@ -141,8 +149,10 @@ function ModalSurface({
       footer
     );
   const panel = useRef<HTMLDivElement>(null);
-  const root = useRef<HTMLDivElement>(null);
-  const present = usePresence(open, root);
+  const content = useRef<HTMLDivElement>(null);
+  const backdrop = useRef<HTMLButtonElement>(null);
+  const present = usePresence(open, backdrop);
+  useNaturalHeightTransition(panel, content, open);
   const titleId = `${useId()}-title`;
   const modalId = `${useId()}-dialog`;
   const close = useRef(cancel);
@@ -163,14 +173,15 @@ function ModalSurface({
     return null;
   return (
     <div
-      ref={root}
       hidden={!present}
       className="leaf-modal-mask"
+      data-blur={maskBlur ? undefined : 'off'}
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
       {...inertProps(!open)}
     >
       <button
+        ref={backdrop}
         type="button"
         className="leaf-modal-backdrop"
         tabIndex={-1}
@@ -208,12 +219,14 @@ function ModalSurface({
             </div>
           )}
           <div className="leaf-modal__body">
-            {children}
-            {error && (
-              <p role="alert" className="leaf-confirm-error">
-                {error}
-              </p>
-            )}
+            <div ref={content} className="leaf-modal__content">
+              {children}
+              {error && (
+                <p role="alert" className="leaf-confirm-error">
+                  {error}
+                </p>
+              )}
+            </div>
           </div>
           {renderedFooter != null && <div className="leaf-modal__footer">{renderedFooter}</div>}
         </OverlayOwner.Provider>

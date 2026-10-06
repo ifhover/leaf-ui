@@ -118,35 +118,28 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
         panelClassName="leaf-time-range-picker__panel"
         renderPanel={(close) => (
           <>
-            <div className="leaf-time-range-picker__tabs">
-              <Button
-                size="sm"
-                variant={active === 0 ? 'soft' : 'ghost'}
-                onClick={() => setActive(0)}
-              >
-                {messages.start}: {format(draft[0])}
-              </Button>
-              <span>~</span>
-              <Button
-                size="sm"
-                variant={active === 1 ? 'soft' : 'ghost'}
-                onClick={() => setActive(1)}
-              >
-                {messages.end}: {format(draft[1])}
-              </Button>
+            <div className="leaf-time-range-picker__panels">
+              {([0, 1] as const).map((index) => (
+                <fieldset key={index} onFocusCapture={() => setActive(index)}>
+                  <legend>{index === 0 ? messages.start : messages.end}</legend>
+                  <TimePanel
+                    disabledTime={(parts) => !!disabledTime?.(parts, index === 0 ? 'start' : 'end')}
+                    value={draft[index]}
+                    onChange={(next) => {
+                      setActive(index);
+                      setDraft((previous) =>
+                        index === 0 ? [next, previous[1]] : [previous[0], next],
+                      );
+                      setValidText(true);
+                    }}
+                    minuteStep={minuteStep}
+                    secondStep={secondStep}
+                    showSeconds={showSeconds}
+                    use12Hours={use12Hours}
+                  />
+                </fieldset>
+              ))}
             </div>
-            <TimePanel
-              disabledTime={(parts) => !!disabledTime?.(parts, active === 0 ? 'start' : 'end')}
-              value={draft[active]}
-              onChange={(next) => {
-                setDraft((previous) => (active === 0 ? [next, previous[1]] : [previous[0], next]));
-                setValidText(true);
-              }}
-              minuteStep={minuteStep}
-              secondStep={secondStep}
-              showSeconds={showSeconds}
-              use12Hours={use12Hours}
-            />
             <div className="leaf-picker-footer">
               <Button
                 variant="ghost"

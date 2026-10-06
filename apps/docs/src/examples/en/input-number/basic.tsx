@@ -1,53 +1,25 @@
-import { InputNumber } from '@sudden3/leaf-ui';
+import { Form, FormField, InputNumber } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 export function InputNumberBasic() {
   const [value, setValue] = useState<number | null>(3);
   return (
-    <div className="leaf-demo-stack">
-      <div className="leaf-demo-field">
-        <label htmlFor="number-quantity">Quantity</label>
-        <InputNumber
-          id="number-quantity"
-          name="quantity"
-          min={0}
-          max={20}
-          value={value}
-          onChange={setValue}
-        />
-      </div>
-      <div className="leaf-demo-field">
-        <label htmlFor="number-price">Price</label>
-        <InputNumber
-          id="number-price"
-          min={0}
-          step={0.1}
-          precision={2}
-          defaultValue={19.9}
-          prefix="¥"
-        />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Percentage</span>
-        <InputNumber
-          aria-label="Percentage"
-          defaultValue={50}
-          min={0}
-          max={100}
-          suffix="%"
-          controls={false}
-        />
-      </div>
-      <div className="leaf-demo-row">
-        <div className="leaf-demo-case">
-          <span className="leaf-demo-label">Read only</span>
-          <InputNumber aria-label="Read only" defaultValue={12} readOnly />
-        </div>
-        <div className="leaf-demo-case">
-          <span className="leaf-demo-label">Disabled</span>
-          <InputNumber aria-label="Disabled" defaultValue={8} disabled />
-        </div>
-      </div>
+    <Form layout="vertical" className="leaf-demo-stack">
+      <FormField label="Quantity">
+        <InputNumber name="quantity" min={0} max={20} value={value} onChange={setValue} />
+      </FormField>
+      <FormField label="Price">
+        <InputNumber min={0} step={0.1} precision={2} defaultValue={19.9} prefix="¥" />
+      </FormField>
+      <FormField label="Percentage">
+        <InputNumber defaultValue={50} min={0} max={100} suffix="%" controls={false} />
+      </FormField>
+      <FormField label="Read only">
+        <InputNumber defaultValue={12} readOnly />
+      </FormField>
+      <FormField label="Disabled">
+        <InputNumber defaultValue={8} disabled />
+      </FormField>
       <p className="leaf-demo-note">Current quantity: {value ?? 'Empty'}</p>
-    </div>
+    </Form>
   );
 }

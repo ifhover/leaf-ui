@@ -4,7 +4,7 @@
   min-height: 0;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: var(--leaf-color-border) transparent;
+  scrollbar-color: var(--leaf-color-border-hover) transparent;
   &:focus-visible {
     @include mixins.focus-ring;
   }
@@ -15,7 +15,7 @@
   &::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 8px;
-    background: var(--leaf-color-border);
+    background: var(--leaf-color-border-hover);
     background-clip: padding-box;
   }
   &::-webkit-scrollbar-thumb:hover {

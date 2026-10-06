@@ -1,0 +1,17 @@
+import { withBase } from '@rspress/core/runtime';
+
+# Design resources
+
+Resources are generated from the runtime colors, derivation recipes and density values.
+
+- <a href={withBase('/design/leaf.tokens.json')} download>DTCG tokens</a>: standard colors, dimensions, line height and motion duration.
+- <a href={withBase('/design/leaf.tokens-studio.json')} download>Tokens Studio tokens</a>: the legacy `type`/`value` shape; select one appearance and one density set.
+- <a href={withBase('/design/leaf-light-foundations.svg')} download>Light foundations</a> and <a href={withBase('/design/leaf-dark-foundations.svg')} download>dark foundations</a>.
+- <a href={withBase('/design/leaf-light-components.svg')} download>Light component states</a> and <a href={withBase('/design/leaf-dark-components.svg')} download>dark component states</a>: editable text, paths and named groups.
+- <a href={withBase('/design/leaf-figma-plugin.zip')} download>Local Figma import plugin</a>: native color/density variables and Button/Input component variants.
+
+Drag SVG files into Figma. Unzip the plugin, then use Figma desktop **Plugins → Development → Import plugin from manifest**, select `manifest.json`, and run **Leaf UI Resources**. Each run creates a page and collections; undo the import if needed. Inter is preferred with an available-font fallback.
+
+Button has four variants, four states and two densities. Input has default/focus/error/disabled states and both densities. Fills and heights bind to variables. Other SVG sheets remain editable design references that can be converted into components.
+
+Run `pnpm design:export` in the repository to regenerate. JSON, SVG and JavaScript syntax are checked locally; actual Figma import requires manual acceptance. This kit has not been published as an online Figma library.

@@ -1,5 +1,6 @@
-import { type HTMLAttributes, useMemo } from 'react';
+import { type HTMLAttributes, useMemo, useRef } from 'react';
 import { ConfirmScope } from '../confirm/provider';
+import { type LeafDensity, leafDensityVariables } from '../density';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
 import { MessageScope } from '../message/provider';
 import { NotificationScope } from '../notification/notification';
@@ -12,7 +13,9 @@ import {
   localeMessages,
   useLeafConfig,
 } from './context';
+import { useColorVariables } from './use-color-variables';
 
+export type { LeafDensity } from '../density';
 export type { LeafTheme, LeafThemeTokens } from '../theme';
 export type { LeafDirection, LeafLocale, LeafMessages } from './context';
 export { useLeafConfig } from './context';
@@ -25,6 +28,10 @@ export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   direction?: LeafDirection;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   getPopupContainer?: () => Element | DocumentFragment;
+  /** Enable the background blur on Modal and Drawer masks. Defaults to true. */
+  maskBlur?: boolean;
+  /** Inherited spacing preset; explicit theme and component sizes take precedence. */
+  density?: LeafDensity;
 }
 
 /** Nested scopes inherit unspecified theme and language settings. */
@@ -36,6 +43,8 @@ export function ConfigProvider({
   direction,
   weekStartsOn,
   getPopupContainer,
+  maskBlur,
+  density,
   style,
   children,
   ...props
@@ -54,17 +63,38 @@ export function ConfigProvider({
       direction: direction ?? parent.direction,
       weekStartsOn: weekStartsOn ?? parent.weekStartsOn,
       getPopupContainer: getPopupContainer ?? parent.getPopupContainer,
+      maskBlur: maskBlur ?? parent.maskBlur,
+      density: density ?? parent.density,
     };
-  }, [parent, locale, theme, messages, textMessages, direction, weekStartsOn, getPopupContainer]);
+  }, [
+    parent,
+    locale,
+    theme,
+    messages,
+    textMessages,
+    direction,
+    weekStartsOn,
+    getPopupContainer,
+    maskBlur,
+    density,
+  ]);
   const variables = useMemo(() => leafThemeVariables(merged.theme), [merged.theme]);
+  const root = useRef<HTMLDivElement>(null);
+  const resolved = useColorVariables(root, merged.theme);
   return (
     <ConfigContext.Provider value={merged}>
       <div
         {...props}
+        ref={root}
         lang={merged.locale}
         dir={merged.direction}
+        data-leaf-scope=""
+        data-leaf-density={merged.density}
+        data-leaf-motion={
+          merged.theme.motion === undefined ? undefined : merged.theme.motion ? 'on' : 'off'
+        }
         data-leaf-theme={merged.theme.appearance}
-        style={{ ...variables, ...style }}
+        style={{ ...leafDensityVariables(merged.density), ...variables, ...resolved, ...style }}
       >
         <MessageScope>
           <ConfirmScope>

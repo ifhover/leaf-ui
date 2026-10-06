@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, type FormEvent } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -29,6 +29,41 @@ it('navigates enabled menu items, skips dividers, selects and restores focus', a
   expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
 });
 describe('controlled menus', () => {
+  it('moves the pointer highlight without stealing keyboard focus or checking disabled items', async () => {
+    const change = vi.fn();
+    render(
+      <Dropdown
+        items={[
+          { key: 'a', label: 'Alpha' },
+          {
+            key: 'b',
+            label: 'Beta',
+            type: 'checkbox',
+            closeOnSelect: false,
+            onCheckedChange: change,
+          },
+          { key: 'c', label: 'Unavailable', disabled: true },
+        ]}
+      >
+        <Button>Menu</Button>
+      </Dropdown>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const first = screen.getByRole('menuitem', { name: 'Alpha' });
+    const check = screen.getByRole('menuitemcheckbox', { name: 'Beta' });
+    expect(first).toHaveFocus();
+    fireEvent.pointerEnter(check, { pointerType: 'mouse' });
+    expect(first).toHaveFocus();
+    expect(check).toHaveAttribute('tabindex', '0');
+    fireEvent.pointerEnter(screen.getByRole('menuitem', { name: 'Unavailable' }), {
+      pointerType: 'mouse',
+    });
+    expect(check).toHaveAttribute('tabindex', '0');
+    await userEvent.click(check);
+    expect(change).toHaveBeenCalledExactlyOnceWith(true);
+    expect(check).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
   it('reports state changes without assuming approval from a controlled prop', async () => {
     const change = vi.fn();
     render(

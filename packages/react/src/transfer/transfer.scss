@@ -16,6 +16,14 @@
   border: 1px solid var(--leaf-color-border);
   border-radius: var(--leaf-radius);
   background: var(--leaf-color-surface);
+  box-shadow: var(--leaf-shadow-xs);
+  transition:
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+  &:focus-within {
+    border-color: var(--leaf-color-border-hover);
+    box-shadow: var(--leaf-shadow-sm);
+  }
 }
 .leaf-transfer__header {
   display: flex;
@@ -25,14 +33,17 @@
   padding: 6px 10px;
   box-sizing: border-box;
   font-weight: 500;
+  background: var(--leaf-color-surface-muted);
+  border-bottom: 1px solid var(--leaf-color-border);
   small {
-    margin-left: auto;
+    margin-inline-start: auto;
     color: var(--leaf-color-text-muted);
     font-weight: 400;
+    font-variant-numeric: tabular-nums;
   }
 }
 .leaf-transfer__search {
-  padding: 2px 8px 6px;
+  padding: 8px;
 }
 .leaf-transfer__list {
   overflow: auto;
@@ -42,9 +53,12 @@
 .leaf-transfer__item {
   padding: 3px 6px;
   border-radius: var(--leaf-radius-sm);
-  transition: background var(--leaf-motion-duration);
-  &:hover {
+  transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+  &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
     background: var(--leaf-color-surface-muted);
+  }
+  &[data-selected] {
+    background: var(--leaf-color-primary-surface-8);
   }
   .leaf-checkbox {
     display: flex;
@@ -59,6 +73,12 @@
     display: block;
     margin-top: 2px;
     color: var(--leaf-color-text-muted);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-transfer__panel,
+  .leaf-transfer__item {
+    transition: none;
   }
 }
 .leaf-transfer__actions {

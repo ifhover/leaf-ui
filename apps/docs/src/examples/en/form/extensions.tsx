@@ -17,24 +17,28 @@ export function ExtensionDemo() {
           {(fields, ops) => (
             <Space direction="vertical" align="stretch">
               {fields.map((field) => (
-                <Space key={field.key}>
-                  <FormField label={`Contacts ${field.index + 1}`} required>
+                <FormField key={field.key} label={`Contact ${field.index + 1}`} required>
+                  <Space size="sm">
                     <Input
                       name={`${field.name}.email`}
                       type="email"
                       value={field.value}
                       onChange={(e) => ops.update(field.index, e.target.value)}
+                      style={{ flex: 1, minWidth: 0 }}
                     />
-                  </FormField>
-                  <Button variant="ghost" onClick={() => ops.remove(field.index)}>
-                    Remove
-                  </Button>
-                  {field.index > 0 && (
-                    <Button variant="ghost" onClick={() => ops.move(field.index, field.index - 1)}>
-                      Move up
+                    <Button variant="ghost" onClick={() => ops.remove(field.index)}>
+                      Remove
                     </Button>
-                  )}
-                </Space>
+                    {field.index > 0 && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => ops.move(field.index, field.index - 1)}
+                      >
+                        Move up
+                      </Button>
+                    )}
+                  </Space>
+                </FormField>
               ))}
               <Button variant="outline" onClick={() => ops.add('')}>
                 Add contact

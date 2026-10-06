@@ -1,0 +1,19 @@
+import { BusinessWorkspace } from '../../src/examples/scenarios/workspace';
+
+# 完整工作空间
+
+项目管理和团队设置组成一个可操作的业务页面。可搜索项目、新建或编辑项目、归档与恢复，也可以保存团队信息、外观、密度和背景模糊设置。
+
+<BusinessWorkspace />
+
+示例使用内存数据和 350ms 的模拟保存，刷新后恢复初始数据。输入已有的项目名称可体验服务端字段错误与重试；空名称、无效邮箱使用原生表单校验。搜索不存在的内容可查看空状态。设置页可放弃未保存的修改。
+
+应用接入时可用真实 API 替换模拟保存，并在业务层处理鉴权、持久化和请求取消。
+
+<details>
+<summary>查看源码</summary>
+
+```tsx lineNumbers file="../../src/examples/scenarios/workspace.tsx"
+```
+
+</details>

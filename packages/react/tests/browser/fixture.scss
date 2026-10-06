@@ -38,3 +38,14 @@ form {
     grid-template-columns: 1fr;
   }
 }
+.motion-fixture [data-leaf-theme] {
+  min-height: 0;
+}
+.motion-fixture .leaf-loading {
+  margin-block: 12px;
+}
+.motion-fixture-actions {
+  position: relative;
+  inset: auto;
+  width: max-content;
+}

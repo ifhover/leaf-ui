@@ -1,5 +1,6 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { classes } from '../shared/classes';
+import { useListMotion } from '../shared/motion';
 import type { LeafThemeStyle } from '../theme';
 export interface TimelineItem {
   key: string;
@@ -22,9 +23,15 @@ export function Timeline({
   className,
   ...props
 }: TimelineProps) {
+  const root = useRef<HTMLOListElement>(null);
   const entries = [...items];
   if (reverse) entries.reverse();
   if (pending != null) entries.push({ key: '__leaf-pending', children: pending });
+  useListMotion(
+    root,
+    JSON.stringify([mode, entries.map((item) => item.key)]),
+    '.leaf-timeline__item',
+  );
   const colors = {
     primary: 'primary',
     success: 'success',
@@ -33,10 +40,15 @@ export function Timeline({
     info: 'info',
   };
   return (
-    <ol {...props} className={classes('leaf-timeline', `leaf-timeline--${mode}`, className)}>
+    <ol
+      {...props}
+      ref={root}
+      className={classes('leaf-timeline', `leaf-timeline--${mode}`, className)}
+    >
       {entries.map((item, index) => (
         <li
           key={item.key}
+          data-motion-key={item.key}
           className="leaf-timeline__item"
           data-pending={item.key === '__leaf-pending' || undefined}
           data-side={mode === 'right' || (mode === 'alternate' && index % 2) ? 'right' : 'left'}

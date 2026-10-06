@@ -25,6 +25,7 @@ export function AppBarNavigation({ english = false }: { english?: boolean }) {
   const [value, setValue] = useState('home');
   return (
     <BottomNavigation
+      style={{ width: '100%', maxWidth: 560 }}
       aria-label={english ? 'Workspace navigation' : '工作区导航'}
       value={value}
       onChange={setValue}

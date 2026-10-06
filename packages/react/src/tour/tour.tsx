@@ -4,6 +4,8 @@ import { Button } from '../button';
 import { useLeafConfig } from '../config-provider/context';
 import { useDialog } from '../shared/dialog';
 import { FloatingPanel, type PopupOptions } from '../shared/floating';
+import { inertProps } from '../shared/inert';
+import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
@@ -32,15 +34,17 @@ function TourFocus({
   owner,
   close,
   modal,
+  open,
   children,
 }: {
   panel: RefObject<HTMLDivElement | null>;
   owner: string;
   close: () => void;
   modal: boolean;
+  open: boolean;
   children: ReactNode;
 }) {
-  useDialog(true, panel, owner, close, true, {}, true, modal);
+  useDialog(open, panel, owner, close, true, {}, true, modal);
   return children;
 }
 export function Tour({
@@ -59,9 +63,15 @@ export function Tour({
   const t = useText();
   const { messages } = useLeafConfig();
   const [index, setIndex] = useControllable(current, defaultCurrent, onChange);
-  const step = steps[index];
+  const latestStep = useRef(steps[index]);
+  if (open && steps[index]) latestStep.current = steps[index];
+  const step = open ? steps[index] : latestStep.current;
   const target = useRef<HTMLElement | null>(null),
     panel = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const contentView = useRef<HTMLDivElement>(null);
+  const present = usePresence(open && Boolean(step), root);
+  useContentTransition(contentView, `${open}:${index}`);
   const id = useId();
   const [rect, setRect] = useState<DOMRect | null>(null);
   const callbacks = useRef({ setIndex, onClose });
@@ -86,113 +96,123 @@ export function Tour({
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => setRect(node.getBoundingClientRect()));
     };
-    const observer = new ResizeObserver(update);
-    observer.observe(node);
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
+    observer?.observe(node);
     window.addEventListener('scroll', update, true);
     window.addEventListener('resize', update);
     update();
     return () => {
       cancelAnimationFrame(frame);
-      observer.disconnect();
+      observer?.disconnect();
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
   }, [open, step, index, missingTarget, steps.length]);
-  if (!open || !step) return null;
+  if (!present || !step) return null;
   const content = (
-    <TourFocus panel={panel} owner={id} close={() => onClose?.()} modal={mask}>
-      <div className="leaf-tour__header">
-        <h3 id={`${id}-title`}>{step.title}</h3>
-        <Button
-          size="sm"
-          variant="ghost"
-          startIcon={<X size={16} />}
-          aria-label={messages.close}
-          onClick={onClose}
-        />
-      </div>
-      <div className="leaf-tour__description">{step.description}</div>
-      <div className="leaf-tour__footer">
-        <span>
-          {index + 1} / {steps.length}
-        </span>
-        {index > 0 && (
-          <Button size="sm" variant="outline" onClick={() => setIndex(index - 1)}>
-            {t('上一步', 'Previous')}
+    <TourFocus panel={panel} owner={id} close={() => onClose?.()} modal={mask} open={open}>
+      <div ref={contentView} className="leaf-tour__content">
+        <div className="leaf-tour__header">
+          <h3 id={`${id}-title`}>{step.title}</h3>
+          <Button
+            size="sm"
+            variant="ghost"
+            startIcon={<X size={16} />}
+            aria-label={messages.close}
+            onClick={onClose}
+          />
+        </div>
+        <div className="leaf-tour__description">{step.description}</div>
+        <div className="leaf-tour__footer">
+          <span>
+            {index + 1} / {steps.length}
+          </span>
+          {index > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setIndex(index - 1)}>
+              {t('上一步', 'Previous')}
+            </Button>
+          )}
+          <Button
+            size="sm"
+            onClick={() => {
+              if (index < steps.length - 1) setIndex(index + 1);
+              else {
+                onFinish?.();
+                onClose?.();
+              }
+            }}
+          >
+            {index === steps.length - 1 ? t('完成', 'Finish') : t('下一步', 'Next')}
           </Button>
-        )}
-        <Button
-          size="sm"
-          onClick={() => {
-            if (index < steps.length - 1) setIndex(index + 1);
-            else {
-              onFinish?.();
-              onClose?.();
-            }
-          }}
-        >
-          {index === steps.length - 1 ? t('完成', 'Finish') : t('下一步', 'Next')}
-        </Button>
+        </div>
       </div>
     </TourFocus>
   );
   return (
     <ScopedPortal container={getPopupContainer}>
-      {mask && (
-        <div className="leaf-tour__mask" aria-hidden="true">
-          {rect ? (
-            <>
-              <div style={{ inset: `0 0 auto 0`, height: Math.max(0, rect.top - padding) }} />
-              <div style={{ inset: `${rect.bottom + padding}px 0 0 0` }} />
-              <div
-                style={{
-                  top: rect.top - padding,
-                  left: 0,
-                  width: Math.max(0, rect.left - padding),
-                  height: rect.height + 2 * padding,
-                }}
-              />
-              <div
-                style={{
-                  top: rect.top - padding,
-                  left: rect.right + padding,
-                  right: 0,
-                  height: rect.height + 2 * padding,
-                }}
-              />
-            </>
-          ) : (
-            <div style={{ inset: 0 }} />
-          )}
-        </div>
-      )}
-      {rect ? (
-        <FloatingPanel
-          open
-          triggerRef={target}
-          panelRef={panel}
-          placement={step.placement ?? 'bottom'}
-          container={getPopupContainer}
-          role="dialog"
-          aria-modal={mask || undefined}
-          aria-labelledby={`${id}-title`}
-          className="leaf-floating leaf-tour"
-          tabIndex={-1}
-        >
-          {content}
-        </FloatingPanel>
-      ) : (
-        <div
-          ref={panel}
-          role="dialog"
-          aria-modal={mask || undefined}
-          aria-labelledby={`${id}-title`}
-          tabIndex={-1}
-          className="leaf-tour leaf-tour--center"
-        >
-          {content}
-        </div>
-      )}
+      <div
+        ref={root}
+        className="leaf-tour-root"
+        data-state={open ? 'open' : 'closing'}
+        aria-hidden={!open || undefined}
+        {...inertProps(!open)}
+      >
+        {mask && (
+          <div className="leaf-tour__mask" aria-hidden="true">
+            {rect ? (
+              <>
+                <div style={{ inset: `0 0 auto 0`, height: Math.max(0, rect.top - padding) }} />
+                <div style={{ inset: `${rect.bottom + padding}px 0 0 0` }} />
+                <div
+                  style={{
+                    top: rect.top - padding,
+                    left: 0,
+                    width: Math.max(0, rect.left - padding),
+                    height: rect.height + 2 * padding,
+                  }}
+                />
+                <div
+                  style={{
+                    top: rect.top - padding,
+                    left: rect.right + padding,
+                    right: 0,
+                    height: rect.height + 2 * padding,
+                  }}
+                />
+              </>
+            ) : (
+              <div style={{ inset: 0 }} />
+            )}
+          </div>
+        )}
+        {rect ? (
+          <FloatingPanel
+            open={open}
+            triggerRef={target}
+            panelRef={panel}
+            placement={step.placement ?? 'bottom'}
+            container={getPopupContainer}
+            role="dialog"
+            aria-modal={mask || undefined}
+            aria-labelledby={`${id}-title`}
+            className="leaf-floating leaf-tour"
+            tabIndex={-1}
+          >
+            {content}
+          </FloatingPanel>
+        ) : (
+          <div
+            ref={panel}
+            role="dialog"
+            aria-modal={mask || undefined}
+            aria-labelledby={`${id}-title`}
+            tabIndex={-1}
+            className="leaf-tour leaf-tour--center"
+          >
+            {content}
+          </div>
+        )}
+      </div>
     </ScopedPortal>
   );
 }

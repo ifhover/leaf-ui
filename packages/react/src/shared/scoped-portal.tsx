@@ -37,7 +37,14 @@ export function ScopedPortal({
     while (parent) {
       observer.observe(parent, {
         attributes: true,
-        attributeFilter: ['style', 'class', 'data-leaf-theme', 'dir'],
+        attributeFilter: [
+          'style',
+          'class',
+          'data-leaf-theme',
+          'data-leaf-density',
+          'data-leaf-motion',
+          'dir',
+        ],
       });
       parent = composedParent(parent);
     }
@@ -49,7 +56,14 @@ export function ScopedPortal({
       {style &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="leaf-portal-scope" style={style}>
+          <div
+            className="leaf-portal-scope"
+            data-leaf-density={config.density}
+            data-leaf-motion={
+              config.theme.motion === undefined ? undefined : config.theme.motion ? 'on' : 'off'
+            }
+            style={style}
+          >
             {children}
           </div>,
           (typeof container === 'function' ? container() : container) ??

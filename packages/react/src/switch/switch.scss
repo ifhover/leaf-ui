@@ -4,6 +4,10 @@
   --leaf-switch-width: 36px;
   --leaf-switch-height: 20px;
   --leaf-switch-thumb: 14px;
+  --leaf-switch-direction: 1;
+  &:dir(rtl) {
+    --leaf-switch-direction: -1;
+  }
   &[data-loading] {
     cursor: default;
   }
@@ -38,9 +42,12 @@
     height: 100%;
     padding: 3px;
     border-radius: 999px;
-    background: var(--leaf-color-border);
+    background: var(--leaf-color-text-subtle-surface-muted-38);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
     pointer-events: none;
-    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition:
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__thumb {
     display: flex;
@@ -48,17 +55,38 @@
     justify-content: center;
     width: var(--leaf-switch-thumb);
     height: var(--leaf-switch-thumb);
-    border-radius: 50%;
+    border-radius: 999px;
     color: var(--leaf-color-primary);
-    background: var(--leaf-color-on-primary);
-    box-shadow: 0 1px 2px #0002;
-    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    background: #fff;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 22%);
+    transition:
+      transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+      width var(--leaf-motion-fast) var(--leaf-motion-spring),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__input:checked + &__track {
     background: var(--leaf-color-primary);
   }
   &__input:checked + &__track &__thumb {
-    transform: translateX(calc(var(--leaf-switch-width) - var(--leaf-switch-height)));
+    transform: translateX(
+      calc((var(--leaf-switch-width) - var(--leaf-switch-height)) * var(--leaf-switch-direction))
+    );
+  }
+  &:active:not([data-disabled]) &__thumb {
+    width: calc(var(--leaf-switch-thumb) + 4px);
+    box-shadow: 0 1px 1px rgb(0 0 0 / 15%);
+  }
+  &:active:not([data-disabled]) &__input:checked + &__track &__thumb {
+    transform: translateX(
+      calc(
+        (var(--leaf-switch-width) - var(--leaf-switch-height) - 4px) * var(--leaf-switch-direction)
+      )
+    );
+  }
+  &:hover:not([data-disabled]) &__track {
+    box-shadow:
+      inset 0 1px 2px rgb(0 0 0 / 8%),
+      0 0 0 3px var(--leaf-color-primary-alpha-8);
   }
   &__input:focus-visible + &__track {
     @include mixins.focus-ring;
@@ -66,7 +94,10 @@
   &__spinner {
     width: 10px;
     height: 10px;
-    animation: leaf-spin 900ms linear infinite;
+    animation: var(
+      --leaf-motion-animation,
+      leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+    );
     animation-play-state: var(--leaf-motion-play-state, running);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -95,5 +126,10 @@
     &__input:focus-visible + &__track {
       outline-color: Highlight;
     }
+  }
+}
+@keyframes leaf-switch-spin {
+  to {
+    transform: rotate(360deg);
   }
 }

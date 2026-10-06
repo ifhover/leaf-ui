@@ -15,6 +15,7 @@ import { tabbable } from 'tabbable';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
+import { useNaturalHeightTransition } from '../shared/presence';
 
 export interface PopoverProps extends PopupOptions {
   children: ReactElement<
@@ -78,6 +79,8 @@ export function Popover({
   const open = !inactive && (controlled ?? internal);
   const trigger = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const body = useRef<HTMLDivElement>(null);
+  useNaturalHeightTransition(panel, body, open);
   const childRef = version.startsWith('18.')
     ? (children as typeof children & { ref?: Ref<HTMLElement> }).ref
     : children.props.ref;
@@ -208,7 +211,9 @@ export function Popover({
             {title}
           </div>
         )}
-        <div className="leaf-popover__content">{content}</div>
+        <div ref={body} className="leaf-popover__content">
+          {content}
+        </div>
       </FloatingPanel>
     </>
   );
