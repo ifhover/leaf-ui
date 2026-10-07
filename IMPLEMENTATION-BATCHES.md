@@ -15,7 +15,7 @@ Each batch must preserve nested scopes, portalled content, React 18/19, SSR and 
 
 ## Delivered artifacts
 
-1. `DESIGN-STANDARDS.md` and bilingual design-standard guides. Ordinary button/menu/tab presses retain geometry; shared pressable actions use opacity feedback. Previously requested component/demo fixes remain in place.
+1. `DESIGN-STANDARDS.md` and bilingual design-standard guides. Buttons retain layout and center position while scaling subtly on press; menus/tabs retain geometry, and shared pressable actions use opacity feedback. Previously requested component/demo fixes remain in place.
 2. `colors.ts`, `color-recipes.ts`, generated `_palette.scss` and compatibility guides. Library/docs styles no longer depend on native CSS color mixing. Concrete colors derive deterministically for SSR; CSS-variable colors resolve in the browser. Semantic statuses, custom Tag, nested themes and portals are covered. Optional layout observers are guarded. Blur uses keyframes, including a separate WebKit fallback that survives CSS minification.
 3. `ConfigProvider density`, density tokens, form/menu/list/popup/dialog spacing, nested resets and theme-playground/examples. Explicit theme/component sizes retain precedence.
 4. `/guide/workspace` in both languages: search, create, edit, duplicate-name retry, archive/restore, empty state, saving feedback and applied team preferences. Data is explicitly a local simulation. No Table or framework project/template was created.

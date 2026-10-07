@@ -38,16 +38,22 @@
   cursor: pointer;
   user-select: none;
   appearance: none;
+  transform-origin: center;
+  scale: 1;
   transition:
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     color var(--leaf-motion-duration) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+    scale var(--leaf-motion-duration) var(--leaf-motion-easing);
   @include mixins.control-size;
 
   &:focus-visible {
     @include mixins.focus-ring(var(--leaf-button-color));
+  }
+  &:active:not(:disabled):not([aria-disabled='true']) {
+    scale: var(--leaf-button-press-scale, 0.97);
   }
   &:disabled {
     cursor: not-allowed;
@@ -208,6 +214,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .leaf-button {
+    --leaf-button-press-scale: 1;
+  }
   .leaf-button,
   .leaf-button__content,
   .leaf-button__loading {
@@ -216,6 +225,13 @@
   .leaf-button[data-loading] .leaf-button__spinner {
     animation: none;
   }
+}
+
+[data-leaf-motion='off'] {
+  --leaf-button-press-scale: 1;
+}
+[data-leaf-motion='on'] {
+  --leaf-button-press-scale: 0.97;
 }
 
 @media (forced-colors: active) {

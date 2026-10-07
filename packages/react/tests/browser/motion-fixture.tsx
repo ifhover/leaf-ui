@@ -1,5 +1,6 @@
 import {
   Button,
+  ButtonGroup,
   ConfigProvider,
   FileList,
   FloatButtonGroup,
@@ -13,6 +14,7 @@ import {
   TimeRangePicker,
 } from '@sudden3/leaf-ui';
 import { useRef, useState } from 'react';
+import { AppBarBasic } from '../../../../apps/docs/src/examples/app-bar/basic';
 
 export function MotionFixture() {
   const [enabled, setEnabled] = useState(true);
@@ -32,6 +34,24 @@ export function MotionFixture() {
         data-testid="motion-scope"
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
+        <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
+          {(['solid', 'soft', 'outline', 'ghost'] as const).map((variant) => (
+            <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
+              {variant}
+            </Button>
+          ))}
+          <ButtonGroup attached>
+            <Button data-testid="press-group-first">First action</Button>
+            <Button data-testid="press-group-last">Last action</Button>
+          </ButtonGroup>
+          <Button data-testid="press-disabled" disabled>
+            Disabled action
+          </Button>
+          <Button data-testid="press-loading" loading>
+            Loading action
+          </Button>
+        </div>
+        <AppBarBasic english />
         <Button onClick={() => setRows((items) => [...items].reverse())}>Reverse</Button>
         <Button onClick={() => setRows((items) => [...items.slice(1), ...items.slice(0, 1)])}>
           Rotate
@@ -130,7 +150,11 @@ export function MotionFixture() {
           onClose={() => setModal(false)}
           title="Morphing modal"
           initialFocus={name}
-          footer={<Button onClick={() => setStep(!step)}>Change modal step</Button>}
+          footer={
+            <Button data-testid="press-portal" onClick={() => setStep(!step)}>
+              Change modal step
+            </Button>
+          }
         >
           <div style={{ minHeight: step ? 210 : tall ? 800 : 40 }}>
             <Input ref={name} aria-label="Retained modal name" />
@@ -139,8 +163,10 @@ export function MotionFixture() {
         </Modal>
         <Loading data-testid="main-spinner" />
         <ConfigProvider data-testid="off-scope" theme={{ motion: false }}>
+          <Button data-testid="press-off">No motion action</Button>
           <Loading data-testid="off-spinner" />
           <ConfigProvider data-testid="resumed-scope" theme={{ motion: true }}>
+            <Button data-testid="press-resumed">Resumed motion action</Button>
             <Loading data-testid="resumed-spinner" />
           </ConfigProvider>
         </ConfigProvider>

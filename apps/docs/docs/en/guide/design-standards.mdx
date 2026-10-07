@@ -10,7 +10,7 @@ Semantic colors, dimensions and spacing keep components consistent across light/
 | Form row gap | 18px | 12px |
 | Dialog block / inline padding | 20px / 24px | 16px / 20px |
 
-Ordinary buttons, menus and tabs retain their geometry on hover/press, using color, opacity, borders and shadows for feedback. Selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. System reduced motion takes precedence.
+Buttons shrink subtly around their center while pressed and return on release. Hover does not change their size; layout space and center position remain stable. Menus and tabs use color, opacity, borders and shadows for feedback; selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. Buttons do not scale when regional motion is disabled or system reduced motion is enabled; the system preference takes precedence.
 
 Acceptance covers default, hover, pressed, focus-visible, selected, disabled, loading, error and empty states. Text or ARIA must also express state. Icon-only actions need accessible names. Align icons with labels and dialog form edges with footer actions.
 

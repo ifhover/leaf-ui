@@ -8,6 +8,13 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.4.1 - 2026-10-07
+
+### Fixed
+
+- Restored subtle centered press scaling for every `Button` variant, button groups and application-navigation buttons. Buttons return smoothly after release or pointer exit without an additional position shift.
+- Disabled and loading buttons do not scale. Regional motion settings, nested overrides, portals and system reduced-motion preferences remain consistent.
+
 ## 0.4.0 - 2026-10-07
 
 Consistent component visuals and interactions, global density settings, portable theme colors, and complete application examples, design resources and accessibility guidance.

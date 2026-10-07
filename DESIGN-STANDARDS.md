@@ -19,7 +19,7 @@ Component size is a local choice; density is a region-wide layout choice. Compac
 | --- | --- |
 | Default | Legible text, consistent icon alignment, stable geometry |
 | Hover | Color, border or shadow feedback; ordinary actions retain position and dimensions |
-| Pressed | Immediate color/opacity feedback; navigation and form actions retain geometry |
+| Pressed | Immediate color/opacity feedback; Button may shrink subtly around its center without changing layout or translating; menu/tab actions retain geometry |
 | Focus-visible | Distinct outline; no layout shift; visible in forced colors |
 | Selected | Semantic selected background/indicator plus ARIA state; never color alone |
 | Disabled | Inoperable, correct native/ARIA state; distinguish from loading |
