@@ -131,17 +131,30 @@ test('releasing and immediately leaving a toolbar button returns smoothly withou
   await expect.poll(async () => (await measure(button)).scale).toBe(1);
 });
 
-test('keyboard press animates while disabled and loading buttons retain their size', async ({
+test('keyboard activation retains focus while disabled and loading buttons retain their size', async ({
   page,
 }) => {
   await page.goto('/?fixture=motion');
   const button = page.getByTestId('press-solid');
+  await button.evaluate((node) => {
+    node.addEventListener('click', () => {
+      node.setAttribute(
+        'data-click-count',
+        String(Number(node.getAttribute('data-click-count')) + 1),
+      );
+    });
+  });
   await button.focus();
+  const before = await measure(button);
   await page.keyboard.down('Space');
-  await expect.poll(async () => (await measure(button)).scale).toBeCloseTo(0.97, 3);
+  // Engines differ in whether a native keyboard press sets :active.
+  const active = await button.evaluate((node) => node.matches(':active'));
+  await expect.poll(async () => (await measure(button)).scale).toBeCloseTo(active ? 0.97 : 1, 3);
   await page.keyboard.up('Space');
   await expect.poll(async () => (await measure(button)).scale).toBe(1);
+  await expect(button).toHaveAttribute('data-click-count', '1');
   await expect(button).toBeFocused();
+  expect((await measure(button)).layoutWidth).toBe(before.layoutWidth);
   for (const id of ['press-disabled', 'press-loading']) {
     const disabled = page.getByTestId(id);
     await expect(disabled).toBeDisabled();
