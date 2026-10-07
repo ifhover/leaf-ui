@@ -46,17 +46,16 @@ for (const theme of ['light', 'dark']) {
     ];
     for (const button of buttons) {
       await button.evaluate((node) => {
-        node.addEventListener('transitionrun', (event) => {
+        node.addEventListener('transitionend', (event) => {
           if (!(event instanceof TransitionEvent) || event.propertyName !== 'scale') return;
-          const animation = node
-            .getAnimations()
-            .find((item) => item instanceof CSSTransition && item.transitionProperty === 'scale');
-          node.setAttribute('data-press-duration', String(animation?.effect?.getTiming().duration));
+          node.setAttribute('data-press-duration', String(event.elapsedTime * 1000));
         });
       });
       const before = await hold(page, button);
       await expect.poll(async () => (await measure(button)).scale).toBeCloseTo(0.97, 3);
-      expect(Number(await button.getAttribute('data-press-duration'))).toBeGreaterThan(0);
+      await expect
+        .poll(async () => Number(await button.getAttribute('data-press-duration')))
+        .toBeGreaterThan(0);
       const pressed = await measure(button);
       expect(pressed.centerX).toBeCloseTo(before.centerX, 1);
       expect(pressed.centerY).toBeCloseTo(before.centerY, 1);
