@@ -1,17 +1,40 @@
+@use '../styles/geometry' as geometry;
+
 .leaf-time-picker {
   &__panel {
     min-width: 240px;
-    padding: 0;
+    --leaf-surface-padding: 0px;
+    @each $side in top, right, bottom, left {
+      --leaf-surface-padding-#{$side}: 0px;
+    }
   }
   &__columns {
+    --leaf-time-columns-padding: 8px;
+    --leaf-time-column-padding: 3px;
+    @include geometry.inset-corners(
+      --leaf-time-inner-radius,
+      var(--leaf-surface-radius),
+      calc(var(--leaf-surface-padding-top) + var(--leaf-time-columns-padding)),
+      calc(
+        var(--leaf-surface-padding-right) + var(--leaf-time-columns-padding) +
+          var(--leaf-time-column-padding)
+      ),
+      calc(var(--leaf-surface-padding-bottom) + var(--leaf-time-columns-padding)),
+      calc(
+        var(--leaf-surface-padding-left) + var(--leaf-time-columns-padding) +
+          var(--leaf-time-column-padding)
+      ),
+      var(--leaf-surface-border)
+    );
+    --leaf-floating-option-radius: var(--leaf-time-option-radius, var(--leaf-time-inner-radius));
     display: flex;
     gap: 0;
-    padding: 8px;
+    padding: var(--leaf-time-columns-padding);
   }
   &__column-wrap {
     min-width: 54px;
     flex: 1;
-    padding: 0 3px;
+    padding: 0 var(--leaf-time-column-padding);
   }
   &__column-wrap + &__column-wrap {
     border-inline-start: 1px solid var(--leaf-color-border);
@@ -51,7 +74,7 @@
     height: var(--leaf-time-selection-height, 32px);
     translate: 0 var(--leaf-time-selection-y, 0px);
     border: 1px solid var(--leaf-color-primary-alpha-15);
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(--leaf-floating-option-radius);
     background: var(--leaf-color-primary-alpha-9);
     pointer-events: none;
     transition:

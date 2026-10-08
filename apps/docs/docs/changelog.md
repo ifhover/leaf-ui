@@ -8,6 +8,18 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.4.2 - 2026-10-08
+
+### 修复
+
+- 统一紧贴容器的嵌套圆角：Select、AutoComplete、Mentions、Dropdown 等浮层选项根据外框圆角、内边距和边框自动计算内部圆角；默认选项从 6px 调整为 9px，使内外轮廓更协调。
+- 同步菜单、卡片式 Tabs、Segmented、ColorPicker 格式切换及移动高亮背景的圆角；Cascader、TreeSelect 和 TimePicker 计入实际额外留白，独立控件保留各自的语义圆角。
+- 修复 Dropdown 自定义内边距后高亮背景与选项边缘错位的问题，支持不等距内边距、RTL、直角主题、嵌套主题与浮层打开时的动态主题更新。
+
+### 主题配置
+
+- 可通过 `theme.components.Floating` 的 `borderRadius` 和 `padding` 统一调整浮层，`Dropdown` 的局部配置优先；组件内边距支持数字、CSS 长度和 1–4 值简写。已有组件属性保持兼容，无需修改业务调用。
+
 ## 0.4.1 - 2026-10-07
 
 ### 修复

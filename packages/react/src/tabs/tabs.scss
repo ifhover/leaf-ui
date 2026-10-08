@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../styles/geometry' as geometry;
 .leaf-tabs {
   @include mixins.control-size;
   min-width: 0;
@@ -171,15 +172,18 @@
     }
   }
   &--card &__list {
+    @include geometry.nested-surface(
+      tabs,
+      var(--leaf-component-tabs-radius, var(--leaf-radius)),
+      var(--leaf-component-tabs-padding, 3px)
+    );
     gap: 3px;
-    padding: 3px;
     border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius);
     background: var(--leaf-color-surface-muted);
     box-shadow: none;
   }
   &--card &__indicator {
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(--leaf-surface-inner-radius);
     background: var(--leaf-color-surface-raised);
     box-shadow: var(--leaf-shadow-xs);
     &::after {
@@ -187,7 +191,11 @@
     }
   }
   &--card &__tab {
+    border-radius: var(--leaf-surface-inner-radius);
     padding-inline: 14px;
+  }
+  &--card &__entry {
+    border-radius: var(--leaf-surface-inner-radius);
   }
   &--bottom {
     display: flex;

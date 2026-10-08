@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../styles/geometry' as geometry;
 .leaf-color-picker {
   @include mixins.field('color-picker');
   display: inline-flex;
@@ -192,17 +193,16 @@
       repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
   }
   &__formats {
+    @include geometry.nested-surface(color-picker-formats, var(--leaf-radius-sm), 3px);
     display: inline-flex;
     gap: 4px;
-    padding: 3px;
     border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius-sm);
     background: var(--leaf-color-surface-muted);
     margin: 0 0 8px;
     button {
       padding: 3px 8px;
       border: 0;
-      border-radius: var(--leaf-radius-sm);
+      border-radius: var(--leaf-surface-inner-radius);
       background: transparent;
       color: var(--leaf-color-text-muted);
       font: inherit;

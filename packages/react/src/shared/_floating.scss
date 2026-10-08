@@ -1,4 +1,14 @@
+@use '../styles/geometry' as geometry;
+
+$include-field-styles: true !default;
+
 .leaf-floating {
+  @include geometry.nested-surface(
+    floating,
+    var(--leaf-component-floating-radius, var(--leaf-radius-lg)),
+    var(--leaf-component-floating-padding, 6px)
+  );
+  --leaf-floating-option-radius: var(--leaf-surface-inner-radius);
   --leaf-popup-x: 0px;
   --leaf-popup-y: -4px;
   --leaf-popup-origin-x: center;
@@ -9,9 +19,7 @@
   max-width: min(420px, calc(100vw - 24px));
   max-height: min(360px, calc(100vh - 32px));
   overflow: auto;
-  padding: 6px;
-  border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius-lg);
+  border: var(--leaf-surface-border) solid var(--leaf-color-border);
   color: var(--leaf-color-text);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
@@ -75,59 +83,16 @@
   }
 }
 
-.leaf-form-value {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  border: 0;
-  clip-path: inset(50%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.leaf-picker-clear {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: var(--leaf-color-text-muted);
-  background: var(--leaf-color-surface);
-  cursor: pointer;
-  transition:
-    color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-  &:hover {
-    color: var(--leaf-color-text);
-    background: var(--leaf-color-surface-muted);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
-    outline-offset: 2px;
-  }
-  &--before-arrow {
-    right: 30px;
-  }
-}
-
-.leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {
-  padding-right: 34px;
-}
-.leaf-select[data-clearable] > .leaf-select__trigger,
-.leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
-.leaf-cascader[data-clearable] > .leaf-cascader__trigger {
-  // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
-  > span {
-    margin-right: 24px;
+@if $include-field-styles {
+  .leaf-form-value {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    clip-path: inset(50%);
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -140,7 +105,7 @@
   gap: 8px;
   padding: var(--leaf-density-option-padding) var(--leaf-density-field-padding);
   border: 0;
-  border-radius: var(--leaf-radius-sm);
+  border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
   color: inherit;
   background: transparent;
   font: inherit;
@@ -156,19 +121,23 @@
     margin-top: 2px;
   }
 
-  &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
-  &[data-highlighted='true']:not([aria-disabled='true']):not([aria-selected='true']) {
-    background: var(--leaf-color-surface-muted);
+  @if $include-field-styles {
+    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
+    &[data-highlighted='true']:not([aria-disabled='true']):not([aria-selected='true']) {
+      background: var(--leaf-color-surface-muted);
+    }
   }
 
   &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
     background: var(--leaf-color-text-alpha-9);
   }
 
-  &[aria-selected='true'] {
-    color: var(--leaf-color-primary);
-    font-weight: var(--leaf-font-weight);
-    background: var(--leaf-color-primary-alpha-9);
+  @if $include-field-styles {
+    &[aria-selected='true'] {
+      color: var(--leaf-color-primary);
+      font-weight: var(--leaf-font-weight);
+      background: var(--leaf-color-primary-alpha-9);
+    }
   }
 
   &:disabled,
@@ -185,15 +154,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .leaf-floating__option,
-  .leaf-picker-clear {
+  .leaf-floating__option {
     transition: none;
   }
 }
 
-.leaf-floating__empty {
-  padding: 12px 10px;
-  color: var(--leaf-color-text-muted);
-  font-size: 13px;
-  text-align: center;
+@if $include-field-styles {
+  .leaf-floating__empty {
+    padding: 12px 10px;
+    color: var(--leaf-color-text-muted);
+    font-size: 13px;
+    text-align: center;
+  }
 }

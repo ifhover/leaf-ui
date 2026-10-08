@@ -84,7 +84,13 @@ const hasStyle = async (name) => {
 };
 let count = 0;
 for (const name of directories) {
-  const modules = new Set(common);
+  const modules = new Set(
+    common.map((module) =>
+      module === "@use 'shared/floating';" && (name === 'button' || name === 'dropdown')
+        ? "@use 'shared/floating' with ($include-field-styles: false);"
+        : module,
+    ),
+  );
   for (const component of resolveStyles(name))
     if (await hasStyle(component)) modules.add(`@use '${component}/${component}';`);
   const compiled = await compileStringAsync([...modules].join('\n'), {

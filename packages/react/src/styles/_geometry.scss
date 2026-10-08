@@ -1,0 +1,51 @@
+// Subtract the actual inset from the outer curve; square themes stay square.
+@function inner-radius($radius, $inset, $border: 0px) {
+  @return max(0px, calc(#{$radius} - #{$inset} - #{$border}));
+}
+
+// Unequal insets need separate horizontal and vertical curves at each corner.
+@mixin inset-corners(
+  $property,
+  $radius,
+  $top,
+  $right: $top,
+  $bottom: $top,
+  $left: $right,
+  $border: 0px
+) {
+  #{$property}: #{inner-radius($radius, $left, $border)} #{inner-radius($radius, $right, $border)}
+    #{inner-radius($radius, $right, $border)} #{inner-radius($radius, $left, $border)} /
+    #{inner-radius($radius, $top, $border)} #{inner-radius($radius, $top, $border)}
+    #{inner-radius($radius, $bottom, $border)} #{inner-radius($radius, $bottom, $border)};
+}
+
+// Emit the solver once, including in standalone component styles.
+%nested-surface {
+  @each $side in top, right, bottom, left {
+    --leaf-surface-inner-#{$side}: #{inner-radius(
+        var(--leaf-surface-radius),
+        var(--leaf-surface-padding-#{$side}),
+        var(--leaf-surface-border)
+      )};
+  }
+  --leaf-surface-inner-radius: var(--leaf-surface-inner-left) var(--leaf-surface-inner-right)
+    var(--leaf-surface-inner-right) var(--leaf-surface-inner-left) / var(--leaf-surface-inner-top)
+    var(--leaf-surface-inner-top) var(--leaf-surface-inner-bottom) var(--leaf-surface-inner-bottom);
+  padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
+    var(--leaf-surface-padding-bottom) var(--leaf-surface-padding-left);
+  border-radius: var(--leaf-surface-radius);
+}
+
+// Each surface sets its own inputs, preventing inherited curves from leaking in.
+@mixin nested-surface($name, $radius, $padding, $border: 1px) {
+  @extend %nested-surface;
+  --leaf-surface-radius: #{$radius};
+  --leaf-surface-padding: #{$padding};
+  --leaf-surface-border: #{$border};
+  @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: var(
+      --leaf-component-#{$name}-padding-#{$side},
+      var(--leaf-surface-padding)
+    );
+  }
+}

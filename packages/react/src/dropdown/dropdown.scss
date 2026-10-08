@@ -1,6 +1,19 @@
 .leaf-dropdown {
+  --leaf-surface-radius: var(
+    --leaf-component-dropdown-radius,
+    var(--leaf-component-floating-radius, var(--leaf-radius-lg))
+  );
+  --leaf-surface-padding: var(
+    --leaf-component-dropdown-padding,
+    var(--leaf-component-floating-padding, 6px)
+  );
+  @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: var(
+      --leaf-component-dropdown-padding-#{$side},
+      var(--leaf-component-floating-padding-#{$side}, var(--leaf-surface-padding))
+    );
+  }
   min-width: 164px;
-  padding: var(--leaf-component-dropdown-padding, 6px);
   display: flex;
   flex-direction: column;
   gap: var(--leaf-component-dropdown-gap, 2px);
@@ -39,11 +52,12 @@
     box-sizing: border-box;
     position: absolute;
     top: 0;
-    inset-inline: 6px;
+    left: var(--leaf-surface-padding-left);
+    right: var(--leaf-surface-padding-right);
     height: var(--leaf-menu-highlight-height, 34px);
     translate: 0 var(--leaf-menu-highlight-y, 0px);
     border: 1px solid var(--leaf-color-border-alpha-55);
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(--leaf-floating-option-radius);
     background: var(--leaf-color-surface-muted);
     pointer-events: none;
     transition:

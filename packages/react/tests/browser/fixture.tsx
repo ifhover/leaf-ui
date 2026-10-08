@@ -47,6 +47,7 @@ import { AccessibilityWorkbench } from '../../../../apps/docs/src/examples/scena
 import { ColorFixture } from './color-fixture';
 import { FeedbackFixture } from './feedback-fixture';
 import { MotionFixture } from './motion-fixture';
+import { RadiusFixture } from './radius-fixture';
 import { SelectionFixture } from './selection-fixture';
 
 const params = new URLSearchParams(location.search);
@@ -348,7 +349,9 @@ createRoot(root).render(
     }
   >
     <main>
-      {fixture === 'colors' ? (
+      {fixture === 'radius' ? (
+        <RadiusFixture />
+      ) : fixture === 'colors' ? (
         <ColorFixture />
       ) : fixture === 'accessibility' ? (
         <AccessibilityWorkbench english />

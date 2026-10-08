@@ -12,6 +12,8 @@ Semantic colors, dimensions and spacing keep components consistent across light/
 
 Buttons shrink subtly around their center while pressed and return on release. Hover does not change their size; layout space and center position remain stable. Menus and tabs use color, opacity, borders and shadows for feedback; selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. Buttons do not scale when regional motion is disabled or system reduced motion is enabled; the system preference takes precedence.
 
+Inset backgrounds use nested curves: `inner radius = max(0px, outer radius - padding - border width)`. The default popup has a 16px outer radius, 6px padding and a 1px border, so options use 9px. Hover, selected and moving highlights share the same curve and follow theme changes. Unequal padding is calculated per direction; additional insets in nested structures are included. Small and square themes clamp to zero. Independent controls, calendar cells, tags and icons keep their semantic radii.
+
 Acceptance covers default, hover, pressed, focus-visible, selected, disabled, loading, error and empty states. Text or ARIA must also express state. Icon-only actions need accessible names. Align icons with labels and dialog form edges with footer actions.
 
 Compact density suits pointer/keyboard interfaces and keeps body text readable. Prefer comfortable or larger explicit controls on touch; essential targets should be at least 24px, preferably 44px. Local component settings and explicit theme dimensions override density and defaults.

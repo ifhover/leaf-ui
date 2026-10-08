@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../shared/picker';
 .leaf-select {
   @include mixins.field('select');
   display: inline-flex;

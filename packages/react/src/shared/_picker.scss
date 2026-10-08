@@ -1,0 +1,50 @@
+.leaf-picker-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--leaf-color-text-muted);
+  background: var(--leaf-color-surface);
+  cursor: pointer;
+  transition:
+    color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+  &:hover {
+    color: var(--leaf-color-text);
+    background: var(--leaf-color-surface-muted);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: 2px;
+  }
+  &--before-arrow {
+    right: 30px;
+  }
+}
+
+.leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {
+  padding-right: 34px;
+}
+.leaf-select[data-clearable] > .leaf-select__trigger,
+.leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
+.leaf-cascader[data-clearable] > .leaf-cascader__trigger {
+  // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
+  > span {
+    margin-right: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf-picker-clear {
+    transition: none;
+  }
+}

@@ -1,4 +1,6 @@
 @use '../styles/mixins' as mixins;
+@use '../shared/picker';
+@use '../styles/geometry' as geometry;
 .leaf-cascader {
   @include mixins.field('cascader');
   display: inline-flex;
@@ -50,10 +52,20 @@
     display: flex;
   }
   &__column {
+    --leaf-cascader-column-padding: 4px;
+    @include geometry.inset-corners(
+      --leaf-floating-option-radius,
+      var(--leaf-surface-radius),
+      var(--leaf-surface-padding-top),
+      calc(var(--leaf-surface-padding-right) + var(--leaf-cascader-column-padding)),
+      var(--leaf-surface-padding-bottom),
+      calc(var(--leaf-surface-padding-left) + var(--leaf-cascader-column-padding)),
+      var(--leaf-surface-border)
+    );
     min-width: 140px;
     max-height: 256px;
     overflow-y: auto;
-    padding: 0 4px;
+    padding: 0 var(--leaf-cascader-column-padding);
   }
   &__column + &__column {
     border-inline-start: 1px solid var(--leaf-color-border);

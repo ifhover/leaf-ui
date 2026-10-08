@@ -46,6 +46,8 @@ export function App() {
 
 数字表示像素，也可以传入带单位的 CSS 长度。按钮、输入框和选择器共用这套尺寸，放在一起时保持一致。
 
+紧贴容器的选项与选中背景按外框圆角、内边距和边框自动推导圆角，默认浮层为 `16px − 6px − 1px = 9px`。通过 `theme.components.Floating` 可统一设置浮层的 `borderRadius` 和 `padding`，`Dropdown` 的局部设置优先；卡片式 `Tabs`、`Segmented` 和 `Menu` 同样跟随各自的容器。内边距支持数字、CSS 长度和 1–4 值简写（例如 `4px 8px`），各方向的内部圆弧会同步更新。
+
 ## 局部主题与嵌套
 
 ConfigProvider 可以包裹整个应用，也可以只包裹一个区域。内层只覆盖明确设置的选项：

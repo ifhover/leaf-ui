@@ -11,6 +11,7 @@
     padding: 4px 16px 0;
   }
   &__list {
+    --leaf-floating-option-radius: var(--leaf-radius-sm);
     position: relative;
     margin-top: 10px;
     padding: 4px;
@@ -56,7 +57,7 @@
     height: var(--leaf-command-selection-height, 36px);
     translate: 0 var(--leaf-command-selection-y, 0px);
     border: 1px solid var(--leaf-color-border-alpha-60);
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     background: var(--leaf-color-surface-muted);
     pointer-events: none;
     transition:

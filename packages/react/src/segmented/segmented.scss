@@ -1,11 +1,11 @@
 @use '../styles/mixins' as mixins;
+@use '../styles/geometry' as geometry;
 .leaf-segmented {
   @include mixins.control-size;
-  --leaf-segmented-padding: var(--leaf-component-segmented-padding, 3px);
-  --leaf-segmented-radius: var(--leaf-component-segmented-radius, var(--leaf-radius));
-  --leaf-segmented-inner-radius: max(
-    0px,
-    calc(var(--leaf-segmented-radius) - var(--leaf-segmented-padding) - 1px)
+  @include geometry.nested-surface(
+    segmented,
+    var(--leaf-component-segmented-radius, var(--leaf-radius)),
+    var(--leaf-component-segmented-padding, 3px)
   );
   position: relative;
   isolation: isolate;
@@ -14,8 +14,6 @@
   max-width: 100%;
   align-self: flex-start;
   gap: var(--leaf-component-segmented-gap, 3px);
-  padding: var(--leaf-segmented-padding);
-  border-radius: var(--leaf-segmented-radius);
   background: var(--leaf-component-segmented-background, var(--leaf-color-surface-muted));
   box-sizing: border-box;
   border: 1px solid var(--leaf-color-border-alpha-65);
@@ -28,7 +26,7 @@
     width: var(--leaf-indicator-width, 0px);
     height: var(--leaf-indicator-height, 0px);
     transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
-    border-radius: var(--leaf-segmented-inner-radius);
+    border-radius: var(--leaf-surface-inner-radius);
     background: var(--leaf-color-surface-raised);
     box-shadow: var(--leaf-shadow-xs);
     opacity: 0;
@@ -55,10 +53,15 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-height: calc(var(--leaf-current-control-height) - var(--leaf-segmented-padding) * 2 - 2px);
+    min-height: calc(
+      var(--leaf-current-control-height) - var(--leaf-surface-padding-top) - var(
+          --leaf-surface-padding-bottom
+        ) -
+        2px
+    );
     padding: 0 12px;
     border: 0;
-    border-radius: var(--leaf-segmented-inner-radius);
+    border-radius: var(--leaf-surface-inner-radius);
     background: transparent;
     color: var(--leaf-color-text-muted);
     font: var(--leaf-current-font-size)/1.5 var(--leaf-font-family);

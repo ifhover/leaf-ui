@@ -15,6 +15,8 @@ The default appearance is quiet and readable. Every component uses semantic them
 
 Component size is a local choice; density is a region-wide layout choice. Compact is intended for pointer/keyboard data-heavy interfaces. Use comfortable or larger explicit controls for touch interfaces; essential targets should be at least 24 px and preferably 44 px.
 
+Inset surfaces use concentric curves: `inner radius = max(0px, outer radius - padding - border width)`. A default popup has a 16 px outer radius, 6 px padding and a 1 px border, so its options use 9 px. Hover, selected and moving highlight layers share that curve. The shared geometry helper accounts for unequal padding with horizontal/vertical corner radii, including the extra insets in Cascader, TreeSelect and TimePicker. Theme and component padding changes update the curves automatically; small and square themes clamp to zero. Independent controls, calendar cells, tags and icons retain their semantic radii. Do not introduce clipping merely to hide a mismatch.
+
 | State | Required behavior |
 | --- | --- |
 | Default | Legible text, consistent icon alignment, stable geometry |

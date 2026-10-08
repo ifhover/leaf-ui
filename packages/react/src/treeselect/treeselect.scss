@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../styles/geometry' as geometry;
 .leaf-tree-select {
   @include mixins.field('tree-select');
   position: relative;
@@ -146,8 +147,19 @@
     }
   }
   &__panel {
-    padding: 6px;
+    --leaf-tree-select-row-margin: 3px;
+    @include geometry.inset-corners(
+      --leaf-tree-select-option-radius,
+      var(--leaf-surface-radius),
+      calc(var(--leaf-surface-padding-top) + var(--leaf-tree-select-row-margin)),
+      var(--leaf-surface-padding-right),
+      calc(var(--leaf-surface-padding-bottom) + var(--leaf-tree-select-row-margin)),
+      var(--leaf-surface-padding-left),
+      var(--leaf-surface-border)
+    );
     .leaf-tree__row {
+      margin-block: var(--leaf-tree-select-row-margin);
+      border-radius: var(--leaf-tree-select-option-radius);
       white-space: nowrap;
     }
   }

@@ -46,6 +46,8 @@ The defaults are a 10px base radius, 34px control height and 14px font size:
 
 Numbers are pixels; CSS lengths with units are also accepted. Buttons, inputs and pickers share the same sizes.
 
+Inset options and selected backgrounds derive their radius from the surface radius, padding and border: the default popup uses `16px - 6px - 1px = 9px`. Set `borderRadius` and `padding` through `theme.components.Floating` for shared popups; local `Dropdown` settings take precedence. Card `Tabs`, `Segmented` and `Menu` follow their own surfaces. Padding accepts numbers, CSS lengths and 1–4 value shorthand (such as `4px 8px`), updating the inner curves in each direction.
+
 ## Regional themes
 
 Nested providers override only supplied settings, including individual token overrides:

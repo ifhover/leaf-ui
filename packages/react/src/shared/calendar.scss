@@ -85,12 +85,17 @@
 }
 .leaf-datetime-panel {
   width: 310px;
-  padding: 0;
 }
 .leaf-range-panel {
   width: 600px;
   max-width: calc(100vw - 24px);
-  padding: 0;
+}
+.leaf-datetime-panel,
+.leaf-range-panel {
+  --leaf-surface-padding: 0px;
+  @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: 0px;
+  }
 }
 .leaf-picker-footer {
   display: flex;
@@ -135,6 +140,8 @@
   }
 }
 .leaf-picker-time-view {
+  // The time controls are inset inside this view, rather than against the popup edge.
+  --leaf-time-option-radius: var(--leaf-radius-sm);
   padding: 12px;
   min-height: 294px;
   box-sizing: border-box;

@@ -8,6 +8,18 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.4.2 - 2026-10-08
+
+### Fixed
+
+- Coordinated nested corner geometry for Select, AutoComplete, Mentions, Dropdown and other popup options. Inner radii derive from the surface radius, padding and border; default options change from 6px to 9px for consistent inner and outer curves.
+- Kept Menu, card Tabs, Segmented, ColorPicker format buttons and moving highlights consistent. Cascader, TreeSelect and TimePicker include their additional insets; independent controls retain their semantic radii.
+- Fixed Dropdown highlight edges after custom padding, including asymmetric padding, RTL, square themes, nested theme overrides and live theme updates while a popup is open.
+
+### Theme configuration
+
+- Set shared popup `borderRadius` and `padding` through `theme.components.Floating`; local `Dropdown` settings take precedence. Component padding accepts numbers, CSS lengths and 1–4 value shorthand. Existing component props remain compatible; no application migration is required.
+
 ## 0.4.1 - 2026-10-07
 
 ### Fixed

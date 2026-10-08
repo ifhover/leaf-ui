@@ -157,6 +157,26 @@ const tokenVariables = {
 
 const length = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
 
+/** Expand CSS padding without splitting whitespace inside calc()/var(). */
+function paddingSides(value: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index <= value.length; index++) {
+    const character = value[index];
+    if (character === '(') depth++;
+    else if (character === ')') depth--;
+    if (index === value.length || (depth === 0 && /\s/.test(character ?? ''))) {
+      const part = value.slice(start, index).trim();
+      if (part) parts.push(part);
+      start = index + 1;
+    }
+  }
+  if (!parts.length || parts.length > 4) return [];
+  const [top, right = top, bottom = top, left = right] = parts;
+  return [top, right, bottom, left];
+}
+
 /** Explicit inputs, excluding the generated palette, for browser CSS-variable resolution. */
 export function leafThemeColors(theme: LeafTheme): Record<string, string> {
   const colors: Record<string, string> = {};
@@ -222,6 +242,12 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
             `max(1px, calc(var(--leaf-component-${name}-height) - 6px))`;
           variables[`--leaf-component-${name}-height-lg`] =
             `calc(var(--leaf-component-${name}-height) + 6px)`;
+        }
+        if (key === 'padding') {
+          const name = component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
+          const sides = paddingSides(length(value));
+          for (const [index, side] of ['top', 'right', 'bottom', 'left'].entries())
+            variables[`--leaf-component-${name}-padding-${side}`] = sides[index];
         }
       }
   if (theme.primaryColor !== undefined) {
