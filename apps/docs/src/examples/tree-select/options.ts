@@ -1,4 +1,4 @@
-import type { TreeSelectOption } from '@sudden3/leaf-ui';
+import type { TreeSelectOption } from '@ifhover/leaf-ui';
 export const treeOptions: readonly TreeSelectOption[] = [
   {
     value: 'design',

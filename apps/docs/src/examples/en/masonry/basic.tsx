@@ -1,4 +1,4 @@
-import { Card, Masonry } from '@sudden3/leaf-ui';
+import { Card, Masonry } from '@ifhover/leaf-ui';
 
 export function MasonryBasic() {
   return (

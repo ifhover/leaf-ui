@@ -1,4 +1,4 @@
-import { Form, FormField, InputNumber } from '@sudden3/leaf-ui';
+import { Form, FormField, InputNumber } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function InputNumberBasic() {
   const [value, setValue] = useState<number | null>(3);

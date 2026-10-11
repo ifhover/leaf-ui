@@ -1,33 +1,39 @@
 .leaf-tag {
+  --leaf-tag-ink-color: var(--leaf-tag-color);
   --leaf-tag-color: var(--leaf-color-text-muted);
   --leaf-tag-color-alpha-22: var(--leaf-color-text-muted-alpha-22);
   --leaf-tag-color-surface-8: var(--leaf-color-text-muted-surface-8);
   --leaf-tag-color-alpha-10: var(--leaf-color-text-muted-alpha-10);
   &[data-color='primary'] {
+    --leaf-tag-ink-color: var(--leaf-color-primary-text-80);
     --leaf-tag-color: var(--leaf-color-primary);
     --leaf-tag-color-alpha-22: var(--leaf-color-primary-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-primary-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-primary-alpha-10);
   }
   &[data-color='success'] {
+    --leaf-tag-ink-color: var(--leaf-color-success-text-80);
     --leaf-tag-color: var(--leaf-color-success);
     --leaf-tag-color-alpha-22: var(--leaf-color-success-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-success-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-success-alpha-10);
   }
   &[data-color='warning'] {
+    --leaf-tag-ink-color: var(--leaf-color-warning-text-80);
     --leaf-tag-color: var(--leaf-color-warning);
     --leaf-tag-color-alpha-22: var(--leaf-color-warning-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-warning-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-warning-alpha-10);
   }
   &[data-color='error'] {
+    --leaf-tag-ink-color: var(--leaf-color-danger-text-80);
     --leaf-tag-color: var(--leaf-color-danger);
     --leaf-tag-color-alpha-22: var(--leaf-color-danger-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-danger-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-danger-alpha-10);
   }
   &[data-color='info'] {
+    --leaf-tag-ink-color: var(--leaf-color-info-text-80);
     --leaf-tag-color: var(--leaf-color-info);
     --leaf-tag-color-alpha-22: var(--leaf-color-info-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-info-surface-8);
@@ -38,12 +44,12 @@
   align-items: center;
   gap: 5px;
   max-width: var(--leaf-tag-width, 100%);
-  padding: 2px 8px;
+  padding: 2px 9px;
   border: 1px solid var(--leaf-tag-color-alpha-22);
-  border-radius: var(--leaf-radius-sm);
-  color: var(--leaf-tag-color);
+  border-radius: var(--leaf-component-tag-radius, 999px);
+  color: var(--leaf-tag-ink-color);
   background: var(--leaf-tag-color-surface-8);
-  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  font: max(1px, calc(var(--leaf-font-size) - 2px)) / 1.5 var(--leaf-font-family);
   vertical-align: middle;
   white-space: nowrap;
   transition:
@@ -67,11 +73,11 @@
     text-overflow: ellipsis;
   }
   &--sm {
-    padding: 0 6px;
+    padding: 0 7px;
   }
   &--lg {
-    padding: 4px 10px;
-    font-size: var(--leaf-font-size);
+    padding: 3px 12px;
+    font-size: var(--leaf-font-size-sm);
   }
   &--outline {
     background: transparent;
@@ -88,6 +94,9 @@
   &--solid[data-color='error'] {
     color: var(--leaf-color-on-danger);
   }
+  &--solid[data-color='warning'] {
+    color: var(--leaf-color-on-warning);
+  }
   &__icon {
     display: inline-flex;
     svg {
@@ -99,9 +108,9 @@
     display: inline-flex;
     align-items: center;
     padding: 2px;
-    margin-inline-end: -3px;
+    margin-inline-end: -4px;
     border: 0;
-    border-radius: 3px;
+    border-radius: 50%;
     color: inherit;
     background: transparent;
     cursor: pointer;
@@ -140,7 +149,6 @@
     transform var(--leaf-motion-duration) var(--leaf-motion-spring);
   &:hover:not(:disabled):not([aria-pressed='true']) {
     border-color: var(--leaf-color-border-hover);
-    box-shadow: var(--leaf-shadow-xs);
   }
   &[aria-pressed='true'] {
     box-shadow: inset 0 0 0 1px var(--leaf-color-primary-alpha-12);

@@ -1,9 +1,9 @@
-import { Button, useConfirm, useMessage } from '@sudden3/leaf-ui';
+import { Button, Space, useConfirm, useMessage } from '@ifhover/leaf-ui';
 export function ConfirmBasic() {
   const { confirm } = useConfirm();
   const { message } = useMessage();
   return (
-    <>
+    <Space direction="vertical" align="center">
       <Button
         danger
         variant="outline"
@@ -19,28 +19,6 @@ export function ConfirmBasic() {
       >
         删除项目
       </Button>
-      <div className="leaf-demo-row">
-        {(['default', 'info', 'success', 'warning'] as const).map((type) => (
-          <Button
-            key={type}
-            variant="outline"
-            onClick={() =>
-              confirm({
-                type,
-                title: {
-                  default: '默认确认',
-                  info: '信息提示',
-                  success: '操作成功',
-                  warning: '操作警告',
-                }[type],
-                children: '请查看提示内容。',
-              })
-            }
-          >
-            {type}
-          </Button>
-        ))}
-      </div>
-    </>
+    </Space>
   );
 }

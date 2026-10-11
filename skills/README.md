@@ -20,8 +20,8 @@ npx skills add ifhover/leaf-ui --list
 
 ## 查询契约
 
-`scripts/docs.mjs` 从目标应用目录通过 Node 模块解析取得实际安装版本，支持 npm、pnpm、工作区和常规 Yarn node_modules。Yarn PnP 使用 `yarn node <skill-directory>/scripts/docs.mjs ...`，让 Yarn 注入解析器。
+`scripts/docs.mjs` 从目标应用目录通过 Node 模块解析取得实际安装包名和版本，支持 `@ifhover/leaf-ui` 与迁移前的 `@sudden3/leaf-ui`，以及 npm、pnpm、工作区和常规 Yarn node_modules。两个包同时可解析时，须通过 `--package` 选择与应用导入一致的包，不能默默切换作用域。Yarn PnP 使用 `yarn node <skill-directory>/scripts/docs.mjs ...`，让 Yarn 注入解析器。
 
 读取 `/v/<exact-version>/api/index.json` 后验证包名、版本及结构，按导出名称选择一份 Markdown。页面也必须带同版本标识。禁止重定向、跨版本路径和 latest 回退。包未安装、API 未导出或请求失败时直接返回错误；本地声明路径仍可用于核对。
 
-测试覆盖实际模块解析、不同应用安装不同版本、旧版本缺少组件、语言回退、服务错误和跨版本请求。测试与 Skill 无关的维护文件放在 `skills/tests`，避免安装到用户工具中。
+测试覆盖实际模块解析、新旧作用域、两个包同时安装、不同应用安装不同版本、旧版本缺少组件、语言回退、服务错误和跨版本请求。测试与 Skill 无关的维护文件放在 `skills/tests`，避免安装到用户工具中。

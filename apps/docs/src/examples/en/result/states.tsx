@@ -1,7 +1,7 @@
-import { Button, Result } from '@sudden3/leaf-ui';
+import { Button, Result, Space } from '@ifhover/leaf-ui';
 export function ResultStates() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Result
         status="empty"
         size="sm"
@@ -28,6 +28,6 @@ export function ResultStates() {
         title="Review in progress"
         description="The project page will update when it is complete."
       />
-    </div>
+    </Space>
   );
 }

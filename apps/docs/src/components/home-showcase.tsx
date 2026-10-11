@@ -11,7 +11,6 @@ import {
   Dropdown,
   FileList,
   Input,
-  List,
   Menu,
   Modal,
   Progress,
@@ -24,7 +23,7 @@ import {
   Tag,
   Tooltip,
   useMessage,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 import {
   ArrowRight,
   Bell,
@@ -126,8 +125,6 @@ export function HomeShowcase() {
       <ConfigProvider
         theme={{
           primaryColor: accent,
-          borderRadius: 12,
-          controlHeight: 34,
           tokens: { onPrimaryColor: '#fff' },
         }}
       >
@@ -313,67 +310,69 @@ function ProjectShowcase() {
                     {visible.length} {t('项', 'items')}
                   </span>
                 </div>
-                <List
-                  className="leaf-workspace__list"
-                  items={visible}
-                  itemKey={(task) => task.id}
-                  renderItem={(task) => (
-                    <div className="leaf-workspace__task" data-done={task.done || undefined}>
-                      <Checkbox
-                        aria-label={t(task.zh, task.en)}
-                        checked={task.done}
-                        onChange={(event) =>
-                          setTasks((rows) =>
-                            rows.map((row) =>
-                              row.id === task.id ? { ...row, done: event.target.checked } : row,
-                            ),
-                          )
-                        }
-                      />
-                      <div className="leaf-workspace__task-copy">
-                        <span>{t(task.zh, task.en)}</span>
-                        <small>LEAF-{String(task.id).padStart(3, '0')}</small>
-                      </div>
-                      <Tag size="sm" color={task.category === 'design' ? 'primary' : 'default'}>
-                        {task.category === 'design'
-                          ? t('设计', 'Design')
-                          : task.category === 'build'
-                            ? t('开发', 'Build')
-                            : t('协作', 'Team')}
-                      </Tag>
-                      <Dropdown
-                        placement="bottom-end"
-                        items={[
-                          { key: 'top', label: t('移到最前', 'Move to top') },
-                          { key: 'delete', label: t('删除任务', 'Delete task'), danger: true },
-                        ]}
-                        onSelect={(key) =>
-                          setTasks((rows) =>
-                            key === 'top'
-                              ? [task, ...rows.filter((row) => row.id !== task.id)]
-                              : rows.filter((row) => row.id !== task.id),
-                          )
-                        }
+                {visible.length ? (
+                  <ul className="leaf-workspace__list" aria-label={t('任务列表', 'Task list')}>
+                    {visible.map((task) => (
+                      <li
+                        key={task.id}
+                        className="leaf-workspace__task"
+                        data-done={task.done || undefined}
                       >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          aria-label={`${t('任务操作', 'Task actions')}: ${t(task.zh, task.en)}`}
-                          startIcon={<Ellipsis size={16} />}
+                        <Checkbox
+                          aria-label={t(task.zh, task.en)}
+                          checked={task.done}
+                          onChange={(event) =>
+                            setTasks((rows) =>
+                              rows.map((row) =>
+                                row.id === task.id ? { ...row, done: event.target.checked } : row,
+                              ),
+                            )
+                          }
                         />
-                      </Dropdown>
-                    </div>
-                  )}
-                  emptyContent={
-                    <div className="leaf-workspace__empty">
-                      <CheckCheck size={24} />
-                      <span>{t('这里已经整理好了。', 'Everything is in order.')}</span>
-                      <Button size="sm" variant="ghost" onClick={() => setFilter('all')}>
-                        {t('查看全部任务', 'View all tasks')}
-                      </Button>
-                    </div>
-                  }
-                />
+                        <div className="leaf-workspace__task-copy">
+                          <span>{t(task.zh, task.en)}</span>
+                          <small>LEAF-{String(task.id).padStart(3, '0')}</small>
+                        </div>
+                        <Tag size="sm" color={task.category === 'design' ? 'primary' : 'default'}>
+                          {task.category === 'design'
+                            ? t('设计', 'Design')
+                            : task.category === 'build'
+                              ? t('开发', 'Build')
+                              : t('协作', 'Team')}
+                        </Tag>
+                        <Dropdown
+                          placement="bottom-end"
+                          items={[
+                            { key: 'top', label: t('移到最前', 'Move to top') },
+                            { key: 'delete', label: t('删除任务', 'Delete task'), danger: true },
+                          ]}
+                          onSelect={(key) =>
+                            setTasks((rows) =>
+                              key === 'top'
+                                ? [task, ...rows.filter((row) => row.id !== task.id)]
+                                : rows.filter((row) => row.id !== task.id),
+                            )
+                          }
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={`${t('任务操作', 'Task actions')}: ${t(task.zh, task.en)}`}
+                            startIcon={<Ellipsis size={16} />}
+                          />
+                        </Dropdown>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="leaf-workspace__empty">
+                    <CheckCheck size={24} />
+                    <span>{t('这里已经整理好了。', 'Everything is in order.')}</span>
+                    <Button size="sm" variant="ghost" onClick={() => setFilter('all')}>
+                      {t('查看全部任务', 'View all tasks')}
+                    </Button>
+                  </div>
+                )}
                 <Button
                   className="leaf-workspace__add"
                   size="sm"

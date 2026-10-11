@@ -1,4 +1,4 @@
-import { Input, type TabItem, Tabs } from '@sudden3/leaf-ui';
+import { Input, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
 import { ChartNoAxesColumn, Settings } from 'lucide-react';
 
 const items: readonly TabItem[] = [
@@ -26,7 +26,7 @@ const items: readonly TabItem[] = [
 ];
 export function TabsBasic() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Line tabs</span>
         <Tabs aria-label="Project information" items={items} />
@@ -39,6 +39,6 @@ export function TabsBasic() {
         <span className="leaf-demo-label">Vertical tabs</span>
         <Tabs items={items} placement="left" />
       </div>
-    </div>
+    </Space>
   );
 }

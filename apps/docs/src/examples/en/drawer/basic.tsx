@@ -1,11 +1,11 @@
-import { Button, Drawer, Form, FormField, Input, Select } from '@sudden3/leaf-ui';
+import { Button, Drawer, Form, FormField, Input, Select, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function DrawerBasic() {
   const [placement, setPlacement] = useState<'left' | 'right' | 'top' | 'bottom'>('right');
   const [open, setOpen] = useState(false);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-row">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+      <Space wrap className="leaf-demo-row">
         {(['left', 'right', 'top', 'bottom'] as const).map((side) => (
           <Button
             key={side}
@@ -18,7 +18,7 @@ export function DrawerBasic() {
             {side}
           </Button>
         ))}
-      </div>
+      </Space>
       <Drawer
         open={open}
         placement={placement}
@@ -57,6 +57,6 @@ export function DrawerBasic() {
           </FormField>
         </Form>
       </Drawer>
-    </div>
+    </Space>
   );
 }

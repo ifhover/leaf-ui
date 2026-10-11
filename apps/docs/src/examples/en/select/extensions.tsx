@@ -1,4 +1,4 @@
-import { Select, Space } from '@sudden3/leaf-ui';
+import { Select, Space } from '@ifhover/leaf-ui';
 
 const many = Array.from({ length: 5000 }, (_, i) => ({
   value: String(i),

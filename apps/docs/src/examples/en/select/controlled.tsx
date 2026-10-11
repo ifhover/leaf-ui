@@ -1,10 +1,10 @@
-import { Select } from '@sudden3/leaf-ui';
+import { Select, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SelectControlled() {
   const [value, setValue] = useState('');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Project visibility</span>
         <Select
@@ -30,6 +30,6 @@ export function SelectControlled() {
           options={[{ label: 'Design team', value: 'design' }]}
         />
       </div>
-    </div>
+    </Space>
   );
 }

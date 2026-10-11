@@ -1,5 +1,5 @@
-import { Button } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { Button } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 import { useState } from 'react';
 
 export function GettingStartedExample() {

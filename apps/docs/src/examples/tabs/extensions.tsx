@@ -1,4 +1,4 @@
-import { type TabItem, Tabs } from '@sudden3/leaf-ui';
+import { type TabItem, Tabs } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function ExtensionDemo() {
   const count = useRef(7);

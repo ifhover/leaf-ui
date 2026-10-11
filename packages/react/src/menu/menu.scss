@@ -67,13 +67,13 @@
     }
     &[data-active-parent] {
       color: var(--leaf-color-primary);
-      font-weight: 500;
+      font-weight: var(--leaf-font-weight);
     }
     &[data-selected],
     &[data-selected]:hover:not(:disabled) {
       color: var(--leaf-color-primary);
       background: transparent;
-      font-weight: 500;
+      font-weight: var(--leaf-font-weight);
     }
     &:active:not(:disabled):not([aria-disabled]) {
       opacity: 0.8;
@@ -124,14 +124,13 @@
     transform: rotate(180deg);
   }
   &__group-label {
-    padding: 14px 12px 8px;
-    font-size: 12px;
-    color: var(--leaf-color-text-muted);
+    @include mixins.section-label;
+    padding: 14px 12px 6px;
   }
   &__divider {
     height: 1px;
     margin: 8px 12px;
-    background: var(--leaf-color-border);
+    background: var(--leaf-color-divider);
   }
   &--horizontal {
     --leaf-surface-padding: var(--leaf-component-menu-padding, 4px);

@@ -1,8 +1,8 @@
-import { InputMask } from '@sudden3/leaf-ui';
+import { InputMask, Space } from '@ifhover/leaf-ui';
 
 export function InputMaskFormats() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <strong className="leaf-demo-note">Card number format</strong>
       <InputMask mask="0000 0000 0000 0000" lazy={false} aria-label="Card number" />
       <strong className="leaf-demo-note">Custom letter and digit rules</strong>
@@ -12,6 +12,6 @@ export function InputMaskFormats() {
         placeholder="AB-1234"
         aria-label="Identifier"
       />
-    </div>
+    </Space>
   );
 }

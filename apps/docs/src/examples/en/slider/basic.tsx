@@ -1,4 +1,4 @@
-import { Slider, type SliderMark } from '@sudden3/leaf-ui';
+import { Slider, type SliderMark, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const marks: SliderMark[] = [
@@ -9,7 +9,7 @@ const marks: SliderMark[] = [
 export function SliderBasic() {
   const [value, setValue] = useState(35);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Volume</span>
         <Slider aria-label="Volume" value={value} onChange={setValue} marks={marks} />
@@ -27,6 +27,6 @@ export function SliderBasic() {
         <span className="leaf-demo-label">Vertical value</span>
         <Slider aria-label="Vertical value" vertical defaultValue={60} />
       </div>
-    </div>
+    </Space>
   );
 }

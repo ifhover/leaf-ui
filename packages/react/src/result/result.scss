@@ -1,40 +1,36 @@
 .leaf-result {
   --leaf-result-color: var(--leaf-color-text-muted);
-  --leaf-result-color-surface-9: var(--leaf-color-text-muted-surface-9);
   padding: var(--leaf-component-result-padding, 36px 20px);
   text-align: center;
   color: var(--leaf-component-result-color, var(--leaf-color-text));
   font: var(--leaf-component-result-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   &--success {
     --leaf-result-color: var(--leaf-color-success);
-    --leaf-result-color-surface-9: var(--leaf-color-success-surface-9);
   }
   &--warning {
     --leaf-result-color: var(--leaf-color-warning);
-    --leaf-result-color-surface-9: var(--leaf-color-warning-surface-9);
   }
   &--error {
     --leaf-result-color: var(--leaf-color-danger);
-    --leaf-result-color-surface-9: var(--leaf-color-danger-surface-9);
   }
   &--info {
     --leaf-result-color: var(--leaf-color-info);
-    --leaf-result-color-surface-9: var(--leaf-color-info-surface-9);
   }
   &__icon {
     display: grid;
     place-items: center;
-    width: 76px;
-    height: 76px;
+    width: 64px;
+    height: 64px;
     margin: 0 auto 20px;
-    border-radius: var(--leaf-radius-lg);
+    border: 1px solid var(--leaf-color-divider);
+    border-radius: 50%;
     color: var(--leaf-result-color);
-    background: var(--leaf-result-color-surface-9);
+    background: var(--leaf-color-surface-muted);
     box-sizing: border-box;
     svg {
-      width: 38px;
-      height: 38px;
-      stroke-width: 2;
+      width: 30px;
+      height: 30px;
+      stroke-width: 1.75;
     }
   }
   &:not(.leaf-result--empty) &__icon > svg {
@@ -44,9 +40,9 @@
     );
   }
   &__title {
-    font-size: 20px;
-    font-weight: var(--leaf-heading-weight, 600);
-    letter-spacing: -0.02em;
+    font-size: calc(var(--leaf-font-size) + 4px);
+    font-weight: var(--leaf-font-weight);
+    letter-spacing: -0.01em;
   }
   &__description {
     margin-top: 8px;
@@ -59,7 +55,7 @@
     text-align: start;
     padding: 16px;
     background: var(--leaf-color-surface-muted);
-    border-radius: var(--leaf-radius);
+    border-radius: var(--leaf-radius-md);
   }
   &__extra {
     display: flex;
@@ -71,16 +67,16 @@
   &--sm {
     padding: 20px 12px;
     .leaf-result__icon {
-      width: 52px;
-      height: 52px;
+      width: 48px;
+      height: 48px;
       margin-bottom: 12px;
       svg {
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
       }
     }
     .leaf-result__title {
-      font-size: 16px;
+      font-size: var(--leaf-font-size-lg);
     }
     .leaf-result__extra {
       margin-top: 16px;

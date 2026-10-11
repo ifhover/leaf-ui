@@ -1,11 +1,11 @@
-import { DatePicker } from '@sudden3/leaf-ui';
+import { DatePicker, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function DatePickerControlled() {
   const [date, setDate] = useState<Date | null>(new Date(2026, 9, 15));
   const [dateString, setDateString] = useState('2026-10-15');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Date in October</span>
         <DatePicker
@@ -31,6 +31,6 @@ export function DatePickerControlled() {
           placeholder="Set a deadline"
         />
       </div>
-    </div>
+    </Space>
   );
 }

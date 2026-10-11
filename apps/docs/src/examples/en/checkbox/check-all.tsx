@@ -1,4 +1,4 @@
-import { Checkbox } from '@sudden3/leaf-ui';
+import { Checkbox, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = ['Design updates', 'Product news', 'Weekly updates'];
@@ -7,7 +7,7 @@ export function CheckboxCheckAll() {
   const [selected, setSelected] = useState<string[]>(['Design updates']);
   const allChecked = selected.length === options.length;
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <Checkbox
         checked={allChecked}
         indeterminate={selected.length > 0 && !allChecked}
@@ -15,7 +15,7 @@ export function CheckboxCheckAll() {
       >
         Subscribe to all
       </Checkbox>
-      <div className="leaf-demo-row">
+      <Space wrap className="leaf-demo-row">
         {options.map((option) => (
           <Checkbox
             key={option}
@@ -31,8 +31,8 @@ export function CheckboxCheckAll() {
             {option}
           </Checkbox>
         ))}
-      </div>
+      </Space>
       <span className="leaf-demo-note">Selected {selected.length} items</span>
-    </div>
+    </Space>
   );
 }

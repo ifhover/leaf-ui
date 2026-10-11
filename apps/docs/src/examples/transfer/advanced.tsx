@@ -1,4 +1,4 @@
-import { Transfer } from '@sudden3/leaf-ui';
+import { Transfer } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function TransferVirtual() {
   const [items] = useState(() =>

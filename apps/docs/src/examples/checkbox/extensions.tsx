@@ -1,4 +1,4 @@
-import { CheckboxGroup } from '@sudden3/leaf-ui';
+import { CheckboxGroup } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <CheckboxGroup

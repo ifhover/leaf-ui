@@ -1,7 +1,7 @@
-import { TimeRangePicker } from '@sudden3/leaf-ui';
+import { Space, TimeRangePicker } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
-    <div>
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <p style={{ margin: '0 0 8px' }}>
         {english ? 'Business hours for both endpoints' : '开始与结束均限制在营业时间'}
       </p>
@@ -11,6 +11,6 @@ export function Capabilities({ english = false }) {
         use12Hours
         minuteStep={15}
       />
-    </div>
+    </Space>
   );
 }

@@ -1,7 +1,7 @@
-import { Button, VirtualList } from '@sudden3/leaf-ui';
+import { Button, Space, VirtualList } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function VirtualListDynamic() {
-  const list = useRef<import('@sudden3/leaf-ui').VirtualListHandle>(null);
+  const list = useRef<import('@ifhover/leaf-ui').VirtualListHandle>(null);
   const [items] = useState(() =>
     Array.from({ length: 1000 }, (_, index) => ({
       id: String(index),
@@ -9,7 +9,7 @@ export function VirtualListDynamic() {
     })),
   );
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Button variant="outline" onClick={() => list.current?.scrollToIndex(500, 'start')}>
         跳至第 501 项
       </Button>
@@ -26,6 +26,6 @@ export function VirtualListDynamic() {
           </div>
         )}
       />
-    </div>
+    </Space>
   );
 }

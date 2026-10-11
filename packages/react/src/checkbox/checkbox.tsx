@@ -2,7 +2,9 @@ import { Check, Minus } from 'lucide-react';
 import {
   forwardRef,
   type InputHTMLAttributes,
+  type ReactNode,
   useEffect,
+  useId,
   useImperativeHandle,
   useRef,
 } from 'react';
@@ -13,12 +15,21 @@ import type { ControlSize } from '../shared/types';
 export interface CheckboxProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   size?: ControlSize;
+  variant?: 'plain' | 'card';
+  description?: ReactNode;
+  icon?: ReactNode;
+  /** Non-interactive supplementary content, such as a status tag. */
+  extra?: ReactNode;
   /** Displays mixed selection; it does not change the submitted value. */
   indeterminate?: boolean;
 }
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
   {
     size = 'md',
+    variant = 'plain',
+    description,
+    icon,
+    extra,
     indeterminate = false,
     className,
     style,
@@ -29,6 +40,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
   ref,
 ) {
   const field = useFormField();
+  const id = useId();
   const disabled = disabledProp || field?.disabled;
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
@@ -37,7 +49,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
   }, [indeterminate]);
   return (
     <label
-      className={classes('leaf-checkbox', `leaf-checkbox--${size}`, className)}
+      className={classes(
+        'leaf-checkbox',
+        `leaf-checkbox--${size}`,
+        `leaf-checkbox--${variant}`,
+        description != null && 'leaf-checkbox--described',
+        className,
+      )}
       style={style}
       data-disabled={disabled ? '' : undefined}
     >
@@ -46,9 +64,21 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
           {...props}
           id={props.id ?? field?.id}
           required={props.required ?? field?.required}
-          aria-describedby={
-            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+          aria-labelledby={
+            props['aria-labelledby'] ??
+            (!props['aria-label'] && children != null ? `${id}-label` : undefined)
           }
+          aria-describedby={
+            [
+              props['aria-describedby'],
+              field?.descriptionId,
+              description != null && `${id}-description`,
+              extra != null && `${id}-extra`,
+            ]
+              .filter(Boolean)
+              .join(' ') || undefined
+          }
+          aria-invalid={field?.error ? true : props['aria-invalid']}
           ref={inputRef}
           type="checkbox"
           className="leaf-checkbox__input"
@@ -57,7 +87,30 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         <Check className="leaf-checkbox__mark leaf-checkbox__mark--check" aria-hidden="true" />
         <Minus className="leaf-checkbox__mark leaf-checkbox__mark--mixed" aria-hidden="true" />
       </span>
-      {children && <span className="leaf-checkbox__label">{children}</span>}
+      {icon != null && (
+        <span className="leaf-checkbox__icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      {(children != null || description != null) && (
+        <span className="leaf-checkbox__copy">
+          {children != null && (
+            <span id={`${id}-label`} className="leaf-checkbox__label">
+              {children}
+            </span>
+          )}
+          {description != null && (
+            <span id={`${id}-description`} className="leaf-checkbox__description">
+              {description}
+            </span>
+          )}
+        </span>
+      )}
+      {extra != null && (
+        <span id={`${id}-extra`} className="leaf-checkbox__extra">
+          {extra}
+        </span>
+      )}
     </label>
   );
 });

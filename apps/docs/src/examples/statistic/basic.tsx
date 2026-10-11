@@ -1,4 +1,4 @@
-import { Countdown, Space, Statistic } from '@sudden3/leaf-ui';
+import { Countdown, Space, Statistic } from '@ifhover/leaf-ui';
 import { ArrowUp } from 'lucide-react';
 import { useState } from 'react';
 export function StatisticBasic({ english = false }: { english?: boolean }) {

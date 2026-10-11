@@ -1,5 +1,5 @@
+import { Button } from '@ifhover/leaf-ui';
 import { type CodeButtonGroupProps, getCopyableText } from '@rspress/core/theme-original';
-import { Button } from '@sudden3/leaf-ui';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';

@@ -1,8 +1,8 @@
-import { DatePicker, Space } from '@sudden3/leaf-ui';
+import { DatePicker, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Custom display and weekday restrictions' : '自定义显示格式与工作日限制'}
         </p>
@@ -12,7 +12,7 @@ export function Capabilities({ english = false }) {
           presets={[{ label: english ? 'Today' : '今天', value: () => new Date() }]}
         />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Select up to three dates' : '选择最多三个日期'}
         </p>

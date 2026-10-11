@@ -1,4 +1,4 @@
-import { Upload, type UploadRequest } from '@sudden3/leaf-ui';
+import { Space, Upload, type UploadRequest } from '@ifhover/leaf-ui';
 
 const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   new Promise<void>((resolve, reject) => {
@@ -24,7 +24,7 @@ const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   });
 export function UploadDrag() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <p className="leaf-demo-note">
         This demo simulates progress locally. Use action or customRequest to connect your upload
         service.
@@ -37,6 +37,6 @@ export function UploadDrag() {
         customRequest={demoRequest}
         hint="Images only · cancellation and retry supported"
       />
-    </div>
+    </Space>
   );
 }

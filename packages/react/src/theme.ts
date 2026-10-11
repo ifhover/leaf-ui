@@ -31,6 +31,9 @@ export interface LeafComponentTokens {
   fontSize?: string | number;
   color?: string;
   background?: string;
+  borderColor?: string;
+  headerBackground?: string;
+  footerBackground?: string;
   shadow?: string;
 }
 
@@ -50,7 +53,9 @@ export interface LeafThemeTokens {
   raisedSurfaceColor?: string;
   borderColor?: string;
   borderHoverColor?: string;
+  dividerColor?: string;
   borderRadiusSm?: number | string;
+  borderRadiusMd?: number | string;
   borderRadiusLg?: number | string;
   controlHeightSm?: number | string;
   controlHeightLg?: number | string;
@@ -121,7 +126,9 @@ const tokenVariables = {
   raisedSurfaceColor: 'color-surface-raised',
   borderColor: 'color-border',
   borderHoverColor: 'color-border-hover',
+  dividerColor: 'color-divider',
   borderRadiusSm: 'radius-sm',
+  borderRadiusMd: 'radius-md',
   borderRadiusLg: 'radius-lg',
   controlHeightSm: 'control-height-sm',
   controlHeightLg: 'control-height-lg',
@@ -180,7 +187,10 @@ function paddingSides(value: string) {
 /** Explicit inputs, excluding the generated palette, for browser CSS-variable resolution. */
 export function leafThemeColors(theme: LeafTheme): Record<string, string> {
   const colors: Record<string, string> = {};
-  if (theme.primaryColor) colors.primary = theme.primaryColor;
+  if (theme.primaryColor) {
+    colors.primary = theme.primaryColor;
+    colors['on-primary'] = '#ffffff';
+  }
   for (const key of Object.keys(tokenVariables) as (keyof LeafThemeTokens)[]) {
     const variable = tokenVariables[key];
     const value = theme.tokens?.[key];
@@ -226,6 +236,9 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
     fontSize: 'font-size',
     color: 'color',
     background: 'background',
+    borderColor: 'border-color',
+    headerBackground: 'header-background',
+    footerBackground: 'footer-background',
     shadow: 'shadow',
   } as const;
   for (const [component, tokens] of Object.entries(theme.components ?? {}))
@@ -257,6 +270,7 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   if (theme.borderRadius !== undefined) {
     variables['--leaf-radius'] = length(theme.borderRadius);
     variables['--leaf-radius-sm'] = 'calc(var(--leaf-radius) * 0.6)';
+    variables['--leaf-radius-md'] = 'calc(var(--leaf-radius) * 1.2)';
     variables['--leaf-radius-lg'] = 'calc(var(--leaf-radius) * 1.6)';
     variables['--leaf-choice-radius'] = 'calc(var(--leaf-radius) * 0.5)';
   }
@@ -267,7 +281,7 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   }
   if (theme.fontSize !== undefined) {
     variables['--leaf-font-size'] = length(theme.fontSize);
-    variables['--leaf-font-size-sm'] = 'max(1px, calc(var(--leaf-font-size) - 2px))';
+    variables['--leaf-font-size-sm'] = 'max(1px, calc(var(--leaf-font-size) - 1px))';
     variables['--leaf-font-size-lg'] = 'calc(var(--leaf-font-size) + 2px)';
   }
   if (theme.fontFamily !== undefined) variables['--leaf-font-family'] = theme.fontFamily;

@@ -20,13 +20,11 @@
   text-decoration: none;
   transition:
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    translate var(--leaf-motion-duration) var(--leaf-motion-easing);
+    background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
 
   &:hover {
     border-color: var(--leaf-color-border-hover);
-    box-shadow: var(--leaf-shadow-md);
-    translate: 0 -2px;
+    background: var(--leaf-site-soft);
   }
   &:focus-visible {
     outline: 3px solid var(--leaf-color-primary-alpha-35);
@@ -56,12 +54,12 @@
       flex-wrap: wrap;
       margin: 5px 0 8px;
       font-size: 14px;
-      font-weight: 650;
+      font-weight: 500;
       line-height: 1.5;
       color: var(--leaf-site-text);
       span {
         color: var(--leaf-site-muted);
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 400;
       }
       svg {
@@ -73,7 +71,7 @@
     p {
       margin: 0;
       color: var(--leaf-site-muted);
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.7;
     }
   }

@@ -1,18 +1,18 @@
-import { Button, Form, FormField, Input, Switch } from '@sudden3/leaf-ui';
+import { Button, Form, FormField, Input, Space, Switch } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function FormLabelWidth() {
   const [automatic, setAutomatic] = useState(true);
   const [extra, setExtra] = useState(false);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-row">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+      <Space wrap className="leaf-demo-row">
         <Switch checked={automatic} onChange={(event) => setAutomatic(event.target.checked)}>
           Automatic label widths
         </Switch>
         <Button variant="outline" onClick={() => setExtra(!extra)}>
           Toggle long label
         </Button>
-      </div>
+      </Space>
       <Form labelWidth={automatic ? 'auto' : 110}>
         <FormField label="Name">
           <Input name="name" />
@@ -26,6 +26,6 @@ export function FormLabelWidth() {
           </FormField>
         )}
       </Form>
-    </div>
+    </Space>
   );
 }

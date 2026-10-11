@@ -31,6 +31,22 @@
 - ConfigProvider 自动托管消息，业务组件直接调用 useMessage。
 ```
 
+## npm 作用域迁移
+
+当前开发内容使用 `@ifhover/leaf-ui`，历史正式版本 `0.1.0` 至 `0.4.2` 使用 `@sudden3/leaf-ui`。npm 包名不能直接改名；新作用域需要首次发布一个独立的公开包。
+
+首次发布新包时，选择高于旧包 `0.4.2` 的尚未使用版本（例如 `0.5.0`），整理本分支的正式更新记录，再执行下面的完整发布流程。不要以新包名重复发布旧版本号：文档仍使用 `/v/X.Y.Z/`，同号的两个包会造成历史 API 冲突，构建器会拒绝部署。
+
+发布前执行 `npm login`，在浏览器中登录 `ifhover`，再通过 `npm whoami` 确认账号。组件包的 `publishConfig.access` 为 `public`。npm 账号、验证操作与发布权限都以 npm 实际状态为准；修改仓库包名不会自动创建新包。
+
+保留旧包的已发布版本供既有项目下载。新包发布并完成文档部署后，可由拥有旧包权限的账号将旧包的废弃提示改为明确的迁移地址：
+
+```bash
+npm deprecate '@sudden3/leaf-ui@*' 'This package has moved to @ifhover/leaf-ui. See https://ifhover.github.io/leaf-ui/guide/getting-started.html'
+```
+
+文档构建同时读取新旧两包。新包尚未发布或只有开发预发布时，默认文档继续使用旧包的稳定版；新包有正式版本后使用新包的 `latest`，保留旧包各版快照。每个快照的包名与 `gitHead` 均来自实际发布记录，Skill 同时校验已安装的包名和精确版本。
+
 ## 检查与发布
 
 在仓库根目录运行：
@@ -49,7 +65,7 @@ npm publish --dry-run --access public
 npm publish --access public
 ```
 
-确认包名为 `@sudden3/leaf-ui`，账户具备该作用域的写入权限，并由维护者在已登录浏览器中完成 npm 双因素认证。令牌和验证码不得写入源码。
+确认包名为 `@ifhover/leaf-ui`，账户具备该作用域的写入权限，并由维护者在已登录浏览器中完成 npm 双因素认证。令牌和验证码不得写入源码。
 
 npm 的 `gitHead` 和 `vX.Y.Z` 标签必须指向同一个实际发布提交。使用 squash 或 rebase 合并时，以合并后的提交发布，保证 npm 源码记录可从 `main` 追溯。
 
@@ -57,7 +73,7 @@ npm 的 `gitHead` 和 `vX.Y.Z` 标签必须指向同一个实际发布提交。�
 
 ## 发布完成
 
-1. 通过 `npm view @sudden3/leaf-ui@X.Y.Z version gitHead` 和 `npm view @sudden3/leaf-ui dist-tags --json` 确认新版本已存在、`latest` 指向它、`gitHead` 与发布提交一致。
+1. 通过 `npm view @ifhover/leaf-ui@X.Y.Z version gitHead` 和 `npm view @ifhover/leaf-ui dist-tags --json` 确认新版本已存在、`latest` 指向它、`gitHead` 与发布提交一致。
 2. 为该发布提交创建 `vX.Y.Z` Git 标签并推送到 GitHub。源码、标签和 npm 必须对应同一提交。
 3. `main` 推送会自动构建并部署 GitHub Pages。构建器从 npm 的 `gitHead` 还原发布提交，因此该提交必须已推送到仓库，且 package.json 中版本必须与 npm 一致。若合并触发的构建早于 npm 发布，发布后手动触发 `Deploy documentation` workflow。
 4. 确认 `/v/X.Y.Z/`、其 `llm.txt`、`llms.txt`、`api/index.json` 和组件 Markdown 均能访问。顶部版本菜单应包含新版本，中英文更新记录应一致；默认根地址直接展示 npm latest 的已发布文档，不跳转到版本路径。

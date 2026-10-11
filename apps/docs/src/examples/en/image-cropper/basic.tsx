@@ -1,5 +1,5 @@
+import { Image, ImageCropper, Space } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { Image, ImageCropper } from '@sudden3/leaf-ui';
 import { useEffect, useState } from 'react';
 export function ImageCropperBasic() {
   const [result, setResult] = useState<Blob | null>(null);
@@ -11,12 +11,12 @@ export function ImageCropperBasic() {
     return () => URL.revokeObjectURL(address);
   }, [result]);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <ImageCropper
         src={withBase('/media/landscape-1.svg')}
         onExport={(result) => setResult(result.blob)}
       />
       {url && <Image src={url} alt="Cropped image" width={220} fit="contain" />}
-    </div>
+    </Space>
   );
 }

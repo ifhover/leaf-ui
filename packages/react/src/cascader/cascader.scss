@@ -47,11 +47,15 @@
   &__panel {
     width: max-content;
     max-width: min(560px, calc(100vw - 24px));
+    overflow-x: auto;
+    overflow-y: hidden;
   }
   &__columns {
     display: flex;
+    width: max-content;
+    min-width: 100%;
   }
-  &__column {
+  &__column.leaf-scrollbar {
     --leaf-cascader-column-padding: 4px;
     @include geometry.inset-corners(
       --leaf-floating-option-radius,
@@ -63,8 +67,10 @@
       var(--leaf-surface-border)
     );
     min-width: 140px;
-    max-height: 256px;
-    overflow-y: auto;
+    width: 160px;
+    max-width: none;
+    flex: 0 0 auto;
+    border-radius: 0;
     padding: 0 var(--leaf-cascader-column-padding);
   }
   &__column + &__column {
@@ -93,14 +99,11 @@
     transform: rotate(180deg);
   }
   &__column[data-level]:not([data-level='0']) {
-    --leaf-cascader-enter-offset: 8px;
     animation: var(
       --leaf-motion-animation,
       leaf-cascader-column-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
     );
-    &:dir(rtl) {
-      --leaf-cascader-enter-offset: -8px;
-    }
+    animation-play-state: var(--leaf-motion-play-state, running);
   }
   &__check {
     animation: var(
@@ -122,11 +125,9 @@
 @keyframes leaf-cascader-column-enter {
   from {
     opacity: 0;
-    transform: translateX(var(--leaf-cascader-enter-offset));
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {

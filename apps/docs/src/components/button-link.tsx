@@ -1,4 +1,4 @@
-import type { ButtonProps } from '@sudden3/leaf-ui';
+import type { ButtonProps } from '@ifhover/leaf-ui';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 interface ButtonLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {

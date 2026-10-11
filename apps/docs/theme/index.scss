@@ -1,7 +1,13 @@
 @use '../../../packages/react/src/styles/palette';
+@use '../../../packages/react/src/styles/mixins';
 
 :root {
-  --rp-code-font-size: 12px;
+  --rp-font-family-base:
+    'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --rp-font-family-mono:
+    ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
+  --rp-code-font-size: 13px;
   --rp-code-block-bg: #f6f6f7;
   --rp-code-title-bg: #efeff1;
   --rp-code-block-border: 1px solid var(--leaf-site-border);
@@ -10,20 +16,27 @@
   --rp-c-brand-lighter: #b9dec5;
   --rp-c-brand-dark: #1a713f;
   --rp-c-brand-darker: #145b32;
-  --rp-c-brand-tint: #20834a0c;
+  --rp-c-brand-tint: #20834a14;
   --rp-c-bg: #ffffff;
   --rp-c-bg-soft: #f6f6f7;
   --rp-c-text-1: #202024;
-  --rp-c-text-2: #68686f;
-  --rp-c-divider-light: #e5e5e8;
+  --rp-c-text-2: #5c5c64;
+  --rp-c-divider-light: #ececef;
   --leaf-site-bg: #ffffff;
   --leaf-site-text: #202024;
   --leaf-site-muted: #68686f;
+  --leaf-site-nav-text: #45454c;
   --leaf-site-panel: #ffffff;
   --leaf-site-soft: #f6f6f7;
   --leaf-site-border: #e5e5e8;
+  --leaf-site-divider: #ececef;
   --leaf-site-accent: #20834a;
   --leaf-font-family: var(--rp-font-family-base);
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11';
 }
 html.rp-dark {
   @include palette.dark;
@@ -44,42 +57,88 @@ html.rp-dark {
   --rp-c-brand: #83cf9e;
   --rp-c-brand-light: #a5dcb8;
   --rp-c-brand-dark: #83cf9e;
-  --rp-c-brand-tint: #83cf9e14;
+  --rp-c-brand-tint: #83cf9e1f;
   --rp-c-bg: #161619;
   --rp-c-bg-soft: #25252b;
   --rp-c-text-1: #ededf0;
-  --rp-c-text-2: #a5a5ae;
+  --rp-c-text-2: #b7b7c0;
   --rp-c-divider-light: #38383f;
   --leaf-site-bg: #161619;
   --leaf-site-text: #ededf0;
-  --leaf-site-muted: #a5a5ae;
+  --leaf-site-muted: #b7b7c0;
+  --leaf-site-nav-text: #d4d4dc;
   --leaf-site-panel: #1c1c20;
   --leaf-site-soft: #25252b;
   --leaf-site-border: #38383f;
+  --leaf-site-divider: #2e2e34;
   --leaf-site-accent: #83cf9e;
 }
 .rp-nav {
-  background: var(--leaf-site-bg);
+  background: color-mix(in srgb, var(--leaf-site-bg) 86%, transparent);
+  backdrop-filter: saturate(1.6) blur(12px);
+  border-bottom-color: var(--leaf-site-divider);
 }
 .rp-nav__title__link {
-  gap: 8px;
-  font-size: 19px;
-  font-weight: 650;
-  letter-spacing: -0.5px;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .rp-nav__title__logo-image {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
 }
-.rp-nav-menu__item {
-  font-size: 13px;
+.rp-nav .rp-nav-menu__item .rp-nav-menu__item__container,
+.rp-nav .rp-nav-menu__item:hover .rp-nav-menu__item__container,
+.rp-nav .rp-nav-menu__item--active .rp-nav-menu__item__container {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+}
+.rp-nav .rp-nav-menu__item__container {
+  color: var(--leaf-site-nav-text);
+  transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
+}
+.rp-nav .rp-nav-menu__item:hover .rp-nav-menu__item__container,
+.rp-nav .rp-nav-menu__item--active .rp-nav-menu__item__container {
+  color: var(--leaf-site-accent);
+}
+.rp-nav__others > .rp-nav-menu__item:has(a[hreflang]) > .rp-nav-menu__item__container {
+  gap: 8px;
+}
+// Use the same Lucide icon on both language menus without replacing Rspress routing.
+.rp-nav__others > .rp-nav-menu__item:has(a[hreflang]) > .rp-nav-menu__item__container::before,
+.rp-nav-screen-langs__left::before {
+  content: '';
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: url('./icons/languages.svg') center / contain no-repeat;
+}
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-menu-item {
+  min-height: 44px;
+}
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-menu-item__left,
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-menu-item__right,
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-langs {
+  font-size: 16px;
+  font-weight: 500;
+}
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-langs__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+:is(.rp-nav-screen, .rp-nav-hamburger__md__hover-group) .rp-nav-screen-langs-group__item {
+  font-size: 15px;
 }
 .leaf-docs-search-button {
-  width: clamp(180px, 18vw, 260px);
+  width: clamp(260px, 20vw, 320px);
   flex: 0 0 auto;
   justify-content: flex-start;
-  font-size: 12px;
-  color: var(--leaf-site-muted);
+  font-size: 14px;
+  color: var(--leaf-site-nav-text);
   .leaf-button__content {
     width: 100%;
     gap: 8px;
@@ -88,8 +147,16 @@ html.rp-dark {
     width: auto;
     margin-inline-start: auto;
   }
+  .leaf-docs-search-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: start;
+  }
   kbd {
-    font: 9px var(--rp-font-family-mono);
+    font: 12px var(--rp-font-family-mono);
     padding: 1px 4px;
     border: 1px solid var(--leaf-site-border);
     border-radius: 4px;
@@ -99,11 +166,14 @@ html.rp-dark {
 .leaf-docs-search-mobile {
   display: none;
 }
+.leaf-docs-theme-button {
+  color: var(--leaf-site-nav-text);
+}
 .leaf-docs-code-actions {
   display: inline-flex;
   gap: 3px;
 }
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .leaf-docs-search-button {
     display: none;
   }
@@ -130,6 +200,105 @@ html.rp-dark {
 .rp-doc td > a.rp-link {
   display: inline-block;
 }
+.rp-outline .rp-toc-item__text {
+  color: var(--leaf-site-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.rp-outline .rp-toc-item--active .rp-toc-item__text {
+  color: var(--leaf-site-accent);
+  font-weight: 500;
+}
+.rp-outline__title {
+  color: var(--leaf-site-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// Document typography: one calm scale, weight reserved for headings. Live previews opt out.
+$prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
+.rp-doc {
+  h1#{$prose} {
+    margin-bottom: 12px;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  h1#{$prose} + p {
+    margin-top: 0;
+    color: var(--leaf-site-muted);
+    font-size: 16px;
+  }
+  h2#{$prose} {
+    margin-top: 48px;
+    margin-bottom: 14px;
+    padding-top: 0;
+    border-top: 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    &::before {
+      display: none;
+    }
+  }
+  h3#{$prose} {
+    margin-top: 32px;
+    margin-bottom: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  p#{$prose},
+  li#{$prose} {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  p#{$prose} {
+    margin: 14px 0;
+  }
+  :not(pre) > code#{$prose} {
+    padding: 2px 6px;
+    border: 1px solid var(--leaf-site-divider);
+    border-radius: 6px;
+    color: var(--leaf-site-text);
+    background: var(--leaf-site-soft);
+    font-size: 0.86em;
+  }
+  table#{$prose} {
+    border-color: var(--leaf-site-border);
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  th#{$prose} {
+    color: var(--leaf-site-muted);
+    background: var(--leaf-site-soft);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  th#{$prose},
+  td#{$prose} {
+    border-color: var(--leaf-site-divider);
+  }
+  hr#{$prose} {
+    border-color: var(--leaf-site-divider);
+  }
+}
+@media (min-width: 1280px) {
+  :root:has(.leaf-component-example) {
+    --rp-content-padding-x: 32px;
+    --rp-content-max-width: 1200px;
+  }
+}
+@media (min-width: 769px) and (max-width: 1279px) {
+  :root:has(.leaf-component-example) {
+    --rp-content-padding-x: 24px;
+  }
+}
 .leaf-home {
   max-width: 1184px;
   margin: 0 auto;
@@ -148,17 +317,17 @@ html.rp-dark {
   text-align: center;
 }
 .leaf-release {
-  font-size: 11px;
+  font-size: 12px;
 }
 .leaf-release .leaf-badge__text {
   color: var(--leaf-site-muted);
 }
 .leaf-hero h1 {
   margin: 24px 0 18px;
-  font-size: clamp(38px, 5.1vw, 64px);
+  font-size: clamp(36px, 4.6vw, 56px);
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: -2.5px;
+  letter-spacing: -0.035em;
   > span {
     color: var(--leaf-site-accent);
   }
@@ -166,8 +335,8 @@ html.rp-dark {
 .leaf-hero > p {
   margin: 0;
   color: var(--leaf-site-muted);
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 16px;
+  line-height: 1.75;
 }
 .leaf-hero__actions {
   display: flex;
@@ -195,7 +364,7 @@ html.rp-dark {
     min-width: 0;
     overflow-wrap: anywhere;
     color: var(--leaf-site-text);
-    font-size: 11px;
+    font-size: 13px;
   }
   .leaf-button {
     color: var(--leaf-site-muted);
@@ -204,7 +373,7 @@ html.rp-dark {
 .leaf-hero__note {
   margin-top: 15px;
   color: var(--leaf-site-muted);
-  font-size: 10px;
+  font-size: 12px;
   > span {
     padding: 0 8px;
     opacity: 0.6;
@@ -222,15 +391,15 @@ html.rp-dark {
     }
   }
   h2 {
-    margin: 14px 0 9px;
+    margin: 14px 0 8px;
     font-size: 16px;
-    font-weight: 550;
+    font-weight: 600;
   }
   p {
     margin: 0;
     color: var(--leaf-site-muted);
-    font-size: 12px;
-    line-height: 1.85;
+    font-size: 14px;
+    line-height: 1.75;
   }
 }
 .leaf-home-motion {
@@ -246,34 +415,35 @@ html.rp-dark {
   gap: 24px;
   margin-bottom: 25px;
   h2 {
-    margin: 10px 0;
-    font-size: 27px;
-    line-height: 1.4;
-    font-weight: 550;
-    letter-spacing: -0.7px;
+    margin: 8px 0;
+    font-size: 28px;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
   p {
     margin: 0;
     color: var(--leaf-site-muted);
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 15px;
+    line-height: 1.75;
   }
   > a {
     flex: none;
   }
 }
 .leaf-eyebrow {
-  color: var(--leaf-site-muted);
-  font-size: 9px;
+  color: var(--leaf-site-accent);
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 1.4px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .leaf-playground {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
   border: 1px solid var(--leaf-site-border);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   color: var(--leaf-site-text);
   background: var(--leaf-site-panel);
@@ -311,19 +481,19 @@ html.rp-dark {
 }
 .leaf-preview-card__tag {
   color: var(--leaf-color-text-muted);
-  font-size: 8px;
-  letter-spacing: 1.3px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 .leaf-preview-card h3 {
-  font-size: 21px;
-  font-weight: 550;
+  font-size: 20px;
+  font-weight: 600;
   margin: 9px 0 10px;
   line-height: 1.5;
   color: inherit;
 }
 .leaf-preview-card p {
   margin: 0;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--leaf-color-text-muted);
 }
@@ -338,7 +508,7 @@ html.rp-dark {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--leaf-color-text-muted);
 }
 .leaf-preview-card__footer > svg {
@@ -359,7 +529,7 @@ html.rp-dark {
   gap: 11px;
 }
 .leaf-preview-variants > div > span {
-  font-size: 9px;
+  font-size: 13px;
   color: var(--leaf-color-text-muted);
 }
 .leaf-playground__controls {
@@ -380,12 +550,12 @@ html.rp-dark {
 }
 .leaf-playground__controls-header h3 {
   font-size: 14px;
-  font-weight: 550;
+  font-weight: 500;
   margin: 0;
   border: 0;
 }
 .leaf-control-description {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--leaf-site-muted);
   margin: 10px 0 24px;
   line-height: 1.7;
@@ -398,7 +568,7 @@ html.rp-dark {
 }
 .leaf-control-fieldset legend,
 .leaf-control-radius > label {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -408,7 +578,7 @@ html.rp-dark {
 }
 .leaf-control-fieldset legend > span,
 .leaf-control-radius label > span {
-  font-size: 9px;
+  font-size: 13px;
   color: var(--leaf-site-muted);
   font-weight: 400;
 }
@@ -464,7 +634,7 @@ html.rp-dark {
 }
 .leaf-control-radius output {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 12px;
   font-family: monospace;
   padding: 2px 5px;
   border-radius: 4px;
@@ -476,7 +646,7 @@ html.rp-dark {
   justify-content: space-between;
   margin-top: 8px;
   color: var(--leaf-site-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 .leaf-playground__code {
   grid-column: 1 / -1;
@@ -495,10 +665,10 @@ html.rp-dark {
   margin-right: auto;
   color: var(--leaf-site-muted);
   font-family: monospace;
-  font-size: 9px;
+  font-size: 12px;
 }
 .leaf-playground__code .leaf-button {
-  font-size: 11px;
+  font-size: 12px;
   padding: 0 8px;
   color: var(--leaf-site-muted);
 }
@@ -529,7 +699,7 @@ html.rp-dark {
   border-top: 1px solid var(--leaf-site-border);
   background: transparent;
   color: var(--leaf-site-text);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
 }
 .leaf-playground__code code {
@@ -545,7 +715,7 @@ html.rp-dark {
   margin-left: auto;
   flex: none;
   color: var(--leaf-site-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .leaf-preview-card__preferences {
@@ -568,7 +738,7 @@ html.rp-dark {
   justify-content: space-between;
   margin-bottom: 18px;
   gap: 16px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .leaf-next {
   display: flex;
@@ -578,15 +748,15 @@ html.rp-dark {
   padding: 36px 0;
   border-top: 1px solid var(--leaf-site-border);
   h2 {
-    margin: 11px 0 9px;
-    font-size: 23px;
-    font-weight: 550;
-    letter-spacing: -0.5px;
+    margin: 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
   p {
     margin: 0;
-    font-size: 12px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.75;
     color: var(--leaf-site-muted);
   }
   > a {
@@ -599,13 +769,13 @@ html.rp-dark {
   gap: 18px;
   padding: 25px 0 32px;
   color: var(--leaf-site-muted);
-  font-size: 10px;
-  border-top: 1px solid var(--leaf-site-border);
+  font-size: 13px;
+  border-top: 1px solid var(--leaf-site-divider);
   > span:first-child {
     display: flex;
     align-items: center;
     gap: 7px;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--leaf-site-text);
   }
   p {
@@ -678,11 +848,11 @@ html.rp-dark {
     padding: 38px 0 30px;
   }
   .leaf-hero h1 {
-    font-size: 36px;
-    letter-spacing: -1.6px;
+    font-size: 34px;
+    letter-spacing: -0.03em;
   }
   .leaf-hero > p {
-    font-size: 12px;
+    font-size: 15px;
   }
   .leaf-features {
     grid-template-columns: minmax(0, 1fr);
@@ -696,7 +866,7 @@ html.rp-dark {
     font-size: 21px;
   }
   .leaf-section-heading p {
-    font-size: 12px;
+    font-size: 14px;
   }
   .leaf-home-motion,
   .leaf-home-playground {
@@ -730,6 +900,46 @@ html.rp-dark {
   }
 }
 
+.rp-doc-layout__sidebar .rp-sidebar-item {
+  min-height: 42px;
+  padding-block: 8px;
+  color: var(--leaf-site-nav-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 24px;
+
+  &:hover {
+    color: var(--leaf-site-text);
+  }
+
+  &--active,
+  &--active:hover {
+    color: var(--leaf-site-accent);
+    background: var(--rp-c-brand-tint);
+    font-weight: 500;
+  }
+}
+// Group headings read as quiet section labels rather than another level of links.
+.rp-doc-layout__sidebar .rp-sidebar-group[data-depth='0'] {
+  min-height: 30px;
+  margin-top: 14px;
+  padding-block: 4px;
+  color: var(--leaf-site-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: transparent;
+}
+.rp-doc-layout__sidebar .rp-sidebar-section-header {
+  padding-block: 8px;
+
+  &__left {
+    color: var(--leaf-site-text);
+    font-size: 15px;
+    font-weight: 500;
+  }
+}
 .rp-sidebar-item[href*='/components/'] {
   justify-content: flex-start;
   gap: 7px;
@@ -746,9 +956,10 @@ html.rp-dark {
     border-radius: 0;
     color: var(--leaf-site-muted);
     background: transparent;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     line-height: inherit;
+    opacity: 0.85;
   }
 }
 
@@ -756,8 +967,10 @@ html.rp-dark {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
-  gap: 12px;
   width: min(100%, 360px);
+  &:not(.leaf-form) {
+    gap: 12px;
+  }
 }
 .leaf-demo-stack--wide {
   width: 100%;
@@ -769,17 +982,38 @@ html.rp-dark {
 .leaf-demo-case {
   display: grid;
   align-content: start;
-  justify-items: start;
+  justify-items: center;
   min-width: 0;
   gap: 10px;
 }
+// A labelled case reads like a form field: label and control share the start edge.
+.leaf-demo-case:has(> .leaf-demo-label) {
+  justify-items: start;
+  gap: 6px;
+  > .leaf-demo-label + * {
+    justify-self: stretch;
+  }
+  > .leaf-demo-label + :is(.leaf-button, .leaf-switch, .leaf-rate, .leaf-segmented, .leaf-badge) {
+    justify-self: start;
+  }
+  > .leaf-demo-label + .leaf-badge {
+    margin-block-start: 4px;
+  }
+}
 .leaf-demo-label {
-  color: var(--leaf-site-muted);
-  font-size: 12px;
+  color: var(--leaf-color-text);
+  font-size: 14px;
   line-height: 1.5;
 }
+.leaf-demo-section-title {
+  @include mixins.section-label;
+}
 .leaf-demo-stack > .leaf-demo-case {
-  justify-items: stretch;
+  width: 100%;
+}
+.leaf-demo-case > p {
+  margin: 0;
+  text-align: center;
 }
 .leaf-demo-row > .leaf-demo-case {
   max-width: 100%;
@@ -791,7 +1025,7 @@ html.rp-dark {
   gap: 4px;
   max-width: 100%;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 12px;
   i {
     width: 5px;
     height: 5px;
@@ -805,17 +1039,18 @@ html.rp-dark {
   min-width: 0;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 12px 20px;
 }
 .leaf-demo-note {
   color: var(--leaf-site-muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
 }
 .leaf-demo-error {
-  margin-top: -6px;
+  margin-top: -2px;
   color: var(--leaf-color-danger);
-  font-size: 12px;
+  font-size: 13px;
 }
 .leaf-demo-control-row {
   display: grid;
@@ -825,12 +1060,12 @@ html.rp-dark {
 }
 .leaf-demo-size {
   color: var(--leaf-site-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 .leaf-demo-surface {
   padding: 24px;
   border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius);
+  border-radius: var(--leaf-radius-md);
   color: var(--leaf-color-text);
   background: var(--leaf-color-surface);
   p {

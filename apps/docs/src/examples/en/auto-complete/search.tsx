@@ -1,10 +1,10 @@
-import { AutoComplete, type AutoCompleteOption } from '@sudden3/leaf-ui';
+import { AutoComplete, type AutoCompleteOption, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function AutoCompleteSearch() {
   const [options, setOptions] = useState<AutoCompleteOption[]>([]);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Email address</span>
         <AutoComplete
@@ -27,6 +27,6 @@ export function AutoCompleteSearch() {
       <span className="leaf-demo-note">
         Suggestions are generated as you type. You can also enter a complete address.
       </span>
-    </div>
+    </Space>
   );
 }

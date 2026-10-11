@@ -1,9 +1,9 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 import { Mail, Search } from 'lucide-react';
 
 export function InputBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Project name</span>
         <Input aria-label="Project name" placeholder="Name your project" />
@@ -20,6 +20,6 @@ export function InputBasic() {
         <span className="leaf-demo-label">Read-only project name</span>
         <Input aria-label="Read-only project name" defaultValue="Leaf Garden" readOnly />
       </div>
-    </div>
+    </Space>
   );
 }

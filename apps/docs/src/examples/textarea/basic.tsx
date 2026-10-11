@@ -1,8 +1,8 @@
-import { Textarea } from '@sudden3/leaf-ui';
+import { Space, Textarea } from '@ifhover/leaf-ui';
 
 export function TextareaBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">项目简介</span>
         <Textarea
@@ -20,6 +20,6 @@ export function TextareaBasic() {
         <span className="leaf-demo-label">禁用介绍</span>
         <Textarea aria-label="禁用介绍" placeholder="暂时不可编辑" disabled rows={2} />
       </div>
-    </div>
+    </Space>
   );
 }

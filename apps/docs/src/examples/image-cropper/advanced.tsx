@@ -1,5 +1,5 @@
+import { ImageCropper } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { ImageCropper } from '@sudden3/leaf-ui';
 
 export function ImageCropperAvatar() {
   return (

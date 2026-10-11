@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 .leaf-dropdown {
   --leaf-surface-radius: var(
     --leaf-component-dropdown-radius,
@@ -26,19 +27,17 @@
   }
   &__danger {
     color: var(--leaf-color-danger);
-    &:hover,
-    &:focus-visible {
-      background: var(--leaf-color-danger-alpha-8);
-    }
   }
   .leaf-floating__option {
     position: relative;
     z-index: 1;
     gap: 8px;
     justify-content: flex-start;
-    min-height: 34px;
-    font-size: var(--leaf-font-size-sm);
-    &:hover:not(:disabled) {
+    min-height: var(--leaf-density-option-height);
+    font-size: var(--leaf-font-size);
+    // Keep shared option fills from covering or doubling the moving highlight.
+    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
+    &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
       background: transparent;
     }
     &[aria-expanded='true'] {
@@ -54,15 +53,21 @@
     top: 0;
     left: var(--leaf-surface-padding-left);
     right: var(--leaf-surface-padding-right);
-    height: var(--leaf-menu-highlight-height, 34px);
+    height: var(--leaf-menu-highlight-height, var(--leaf-density-option-height));
     translate: 0 var(--leaf-menu-highlight-y, 0px);
     border: 1px solid var(--leaf-color-border-alpha-55);
     border-radius: var(--leaf-floating-option-radius);
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-text-alpha-9);
+    &[data-danger='true'] {
+      background: var(--leaf-color-danger-alpha-8);
+      border-color: var(--leaf-color-danger-alpha-15);
+    }
     pointer-events: none;
     transition:
       translate var(--leaf-motion-duration) var(--leaf-motion-spring),
-      height var(--leaf-motion-fast) var(--leaf-motion-easing);
+      height var(--leaf-motion-fast) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[data-ready='false'] {
       visibility: hidden;
     }
@@ -80,10 +85,8 @@
 }
 
 .leaf-dropdown__group {
+  @include mixins.section-label;
   padding: 8px 10px 4px;
-  color: var(--leaf-color-text-muted);
-  font-size: var(--leaf-font-size-sm);
-  font-weight: 600;
 }
 .leaf-dropdown__arrow {
   margin-inline-start: auto;

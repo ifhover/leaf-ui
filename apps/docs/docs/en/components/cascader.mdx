@@ -67,6 +67,7 @@ A selection is committed at a leaf option. onChange supplies both the path and i
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
+| `children` | [`readonly CascaderOption[]`](#cascaderoption) | — | Content, or child nodes for hierarchical records. |
 ### CascaderOption
 
 | Property | Type | Default | Description |
@@ -81,7 +82,7 @@ A selection is committed at a leaf option. onChange supplies both the path and i
 Import CascaderProps to describe component props. Option types in the API table link to their detailed fields above.
 
 ```ts
-import type { CascaderProps, CascaderOption } from '@sudden3/leaf-ui';
+import type { CascaderProps, CascaderOption } from '@ifhover/leaf-ui';
 ```
 
 ## Forms and localization

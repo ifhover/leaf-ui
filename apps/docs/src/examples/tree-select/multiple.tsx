@@ -1,8 +1,8 @@
-import { TreeSelect } from '@sudden3/leaf-ui';
+import { Space, TreeSelect } from '@ifhover/leaf-ui';
 import { treeOptions } from './options';
 export function TreeSelectMultiple() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">多选 · 逐项选择</span>
         <TreeSelect options={treeOptions} multiple defaultValue={['visual']} defaultExpandAll />
@@ -26,6 +26,6 @@ export function TreeSelectMultiple() {
           defaultExpandAll
         />
       </div>
-    </div>
+    </Space>
   );
 }

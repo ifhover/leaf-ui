@@ -8,10 +8,11 @@ import {
 } from 'react';
 import { Dropdown, type DropdownItem, type DropdownProps } from '../dropdown';
 import { classes } from '../shared/classes';
+import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
 import { Button, type ButtonProps } from './button';
 export interface ButtonGroupProps extends FieldsetHTMLAttributes<HTMLFieldSetElement> {
-  size?: ButtonProps['size'];
+  size?: ControlSize;
   disabled?: boolean;
   attached?: boolean;
 }

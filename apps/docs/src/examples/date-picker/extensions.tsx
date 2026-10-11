@@ -1,4 +1,4 @@
-import { DatePicker, Space } from '@sudden3/leaf-ui';
+import { DatePicker, Space } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Space wrap>

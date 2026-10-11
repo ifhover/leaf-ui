@@ -1,8 +1,8 @@
-import { Textarea } from '@sudden3/leaf-ui';
+import { Space, Textarea } from '@ifhover/leaf-ui';
 
 export function TextareaBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Project description</span>
         <Textarea
@@ -30,6 +30,6 @@ export function TextareaBasic() {
           rows={2}
         />
       </div>
-    </div>
+    </Space>
   );
 }

@@ -1,4 +1,4 @@
-import { Button, Cascader, type CascaderOption, Space } from '@sudden3/leaf-ui';
+import { Button, Cascader, type CascaderOption, Space } from '@ifhover/leaf-ui';
 import { useCallback, useState } from 'react';
 
 const options = [
@@ -31,13 +31,13 @@ export function Capabilities({ english = false }) {
   }, []);
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Search, multiple paths and intermediate levels' : '搜索、多选与选择中间层'}
         </p>
         <Cascader options={options} showSearch multiple changeOnSelect />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Lazy loading and explicit cache refresh' : '懒加载与刷新缓存'}
         </p>

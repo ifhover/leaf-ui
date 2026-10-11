@@ -1,4 +1,4 @@
-import { Calendar } from '@sudden3/leaf-ui';
+import { Calendar } from '@ifhover/leaf-ui';
 export function CalendarMonth() {
   return <Calendar fullscreen={false} mode="month" defaultValue={new Date(2026, 9, 1)} />;
 }

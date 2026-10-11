@@ -14,7 +14,7 @@ import {
   Slider,
   Switch,
   useMessage,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 import { ArrowRight, Check, CheckCheck, Leaf, Mail, Save, Sparkles, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDocsLocale } from './i18n';
@@ -337,7 +337,7 @@ export function ComponentShowcase() {
               : t('可以专心做下一件事了。', 'You can focus on what comes next.')}
           </p>
           <div className="leaf-component-scene__save-actions">
-            <Button variant="soft" size="sm" loading={saving} onClick={save}>
+            <Button variant="outline" size="sm" loading={saving} onClick={save}>
               {t('保存更改', 'Save changes')}
             </Button>
             <Button variant="ghost" size="sm" disabled={saving} onClick={() => setDirty(false)}>

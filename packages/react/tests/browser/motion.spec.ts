@@ -362,7 +362,7 @@ test('a dialog uses its current constrained height after a viewport resize', asy
   await expect(dialog).toHaveCSS('height', '452px');
   expect(
     await dialog
-      .locator('.leaf-modal__body')
+      .locator('.leaf-modal__viewport')
       .evaluate((body) => body.scrollHeight > body.clientHeight),
   ).toBe(true);
   const heights = await changeModalStep(dialog);

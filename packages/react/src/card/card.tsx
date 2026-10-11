@@ -5,21 +5,26 @@ import { Skeleton } from '../skeleton';
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: ReactNode;
+  description?: ReactNode;
   extra?: ReactNode;
   cover?: ReactNode;
   footer?: ReactNode;
   loading?: boolean;
   bordered?: boolean;
+  /** Opt into section dividers and a muted footer surface. */
+  divided?: boolean;
   hoverable?: boolean;
   size?: 'sm' | 'md';
 }
 export function Card({
   title,
+  description,
   extra,
   cover,
   footer,
   loading = false,
   bordered = true,
+  divided = false,
   hoverable = false,
   size = 'md',
   children,
@@ -36,14 +41,20 @@ export function Card({
         'leaf-card',
         `leaf-card--${size}`,
         bordered && 'leaf-card--bordered',
+        divided && 'leaf-card--divided',
         hoverable && 'leaf-card--hoverable',
         className,
       )}
     >
       {cover != null && <div className="leaf-card__cover">{cover}</div>}
-      {(title != null || extra != null) && (
+      {(title != null || description != null || extra != null) && (
         <div className="leaf-card__header">
-          {title != null && <h3 className="leaf-card__title">{title}</h3>}
+          {(title != null || description != null) && (
+            <div className="leaf-card__heading">
+              {title != null && <h3 className="leaf-card__title">{title}</h3>}
+              {description != null && <div className="leaf-card__description">{description}</div>}
+            </div>
+          )}
           {extra != null && <div className="leaf-card__extra">{extra}</div>}
         </div>
       )}

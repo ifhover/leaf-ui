@@ -29,11 +29,11 @@ Add `--global` to share the skill across projects. It becomes available in a new
 
 ## Usage
 
-Install `@sudden3/leaf-ui` in your application, then describe the interface you need. For example:
+Install `@ifhover/leaf-ui` in your application, then describe the interface you need. For example:
 
 > Use the leaf-ui skill to build a login form with a password field, validation feedback and a submitting state.
 
-The skill resolves the package installed from the target application directory. A project using `0.2.0` receives `0.2.0` documentation rather than newer APIs. In a monorepo, specify the application directory you are editing.
+The skill resolves the installed package name and exact version from the target application directory, including legacy Leaf UI packages. Documentation always matches your dependency rather than newer APIs. In a monorepo, specify the application directory you are editing.
 
 Only the required component or guide is retrieved. If an API is missing from that version, the package is not installed, or documentation is unavailable, the assistant reports it and can check the installed TypeScript declarations.
 

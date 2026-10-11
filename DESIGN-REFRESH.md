@@ -5,7 +5,7 @@ Reference direction: Arc UI's neutral surfaces and precise proportions, beUI's c
 ## Shared contracts
 
 - Keep public APIs, React 18/19, server rendering, focus and native form behavior.
-- Keep the 34 / 28 / 40px control sizes and customizable 10px base radius.
+- Keep the 34 / 40 / 46px control sizes and customizable 10px base radius.
 - Green communicates selected actions and brand emphasis; text, surfaces and borders use a neutral scale.
 - Fast feedback, ordinary state transitions and larger layout transitions derive from the same per-region motion duration. Spatial transitions use a mild spring curve.
 - `theme.motion: false` stops CSS and JavaScript motion. A nested `motion: true` region can resume it. System reduced motion always takes precedence.
@@ -36,7 +36,7 @@ All 83 catalog entries were reviewed. The seven static or direct manipulation pr
 | Modal, Drawer, Confirm, Popover, Popconfirm, Tooltip, Dropdown, CommandPalette, Tour | Coordinated masks/surfaces, actual floating origins, moving highlights, natural content height changes, preserved inputs/focus, orderly exit presence, async generation isolation and correct Tour step references. |
 | Alert, Message, Notification, Loading, LoadingBar, Progress, Result, ErrorBoundary, Skeleton, Statistic | State/icon feedback, continuous queue collapse, progress changes and completion, resolved skeleton content reveal without an extra wrapper, immediate numeric values with subtle update motion. Empty uses the Result family. |
 | Card, Avatar, Badge, Tag, Timeline, List, Descriptions, Image, Typography | Neutral borders/surfaces, restrained elevation, consistent hierarchy, keyed list and tag movement, preserved disabled/cancelled opacity, image readiness and preference-aware preview, link/action focus. |
-| Form, FileList, Upload, InfiniteScroll, Sortable | Validation/status reveal, keyed field/file reordering, upload/cancel feedback and stable names; sortable positioning follows the drag library and scoped motion preferences. |
+| Form, FileList, Upload, InfiniteScroll | Validation/status reveal, keyed field/file reordering, upload/cancel feedback and stable names. Component-owned drag positioning follows the drag library and scoped motion preferences. |
 | Layout, ScrollArea | Neutral content/sider surfaces, measured sider transitions, clearer scroll thumb and focus. |
 | Divider, Grid, Space, Masonry, QRCode, VirtualList, Splitter | Reviewed for palette, density, overflow and interaction stability. Use shared styling and direct geometry without decorative entrance or reordering animations. QR codes retain static readable content. |
 

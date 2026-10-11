@@ -2,18 +2,30 @@
 
 Semantic colors, dimensions and spacing keep components consistent across light/dark appearance and comfortable/compact density. The full standard lives in `DESIGN-STANDARDS.md` in the repository.
 
+Warnings use a bright amber consistently for icons, field borders and status fills, with independently derived readable text colors. Customize the warning color through ConfigProvider's `theme.tokens.warningColor`.
+
+Dropdown hover, keyboard and pressed states share one moving background, with smooth color changes for danger items. Select uses the same fill for selected rows and its moving highlight, which remains continuous when crossing a selection; text and checkmarks distinguish the selected value.
+
 | Foundation | Comfortable | Compact |
 | --- | --- | --- |
-| Control height | 34px | 28px |
+| Control height | 40px | 34px |
 | Body text / line height | 14px / 1.6 | 14px / 1.6 |
 | Spacing unit | 8px | 6px |
-| Form row gap | 18px | 12px |
+| Form row gap | 24px | 16px |
+| Secondary text | 13px | 13px |
 | Dialog block / inline padding | 20px / 24px | 16px / 20px |
+| Radius: small / base / medium / large | 6 / 10 / 12 / 16px | 6 / 10 / 12 / 16px |
 
-Buttons shrink subtly around their center while pressed and return on release. Hover does not change their size; layout space and center position remain stable. Menus and tabs use color, opacity, borders and shadows for feedback; selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. Buttons do not scale when regional motion is disabled or system reduced motion is enabled; the system preference takes precedence.
+Solid and outlined buttons emit a wave that quickly expands outside their contour, then slowly fades, while the button and label remain stable; ghost buttons do not emit a wave. Solid buttons brighten on hover and deepen on press; outlined buttons change text and border colors. Menus and tabs use color, opacity, borders and shadows for feedback; selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. Buttons omit the wave when regional motion is disabled or system reduced motion is enabled; the system preference takes precedence.
+
+Radius, borders and type build the hierarchy together. Radii step down from the outside in: dialogs, drawers and popups use the large radius; content surfaces such as cards, alerts and choice cards use the medium radius; buttons, fields and table frames use the base radius; checkboxes and other small elements use the small radius; status tags are pills. Content surfaces are separated by hairline borders and muted fills, not shadows; shadows are reserved for layers that actually float, such as popups, dialogs, dragged items and slider handles. Type hierarchy comes from size and color: 14px body, 13px secondary text, weight 500 for component titles, labels and buttons, and 600 only for document headings. Option group headings use a 12px tracked muted style.
 
 Inset backgrounds use nested curves: `inner radius = max(0px, outer radius - padding - border width)`. The default popup has a 16px outer radius, 6px padding and a 1px border, so options use 9px. Hover, selected and moving highlights share the same curve and follow theme changes. Unequal padding is calculated per direction; additional insets in nested structures are included. Small and square themes clamp to zero. Independent controls, calendar cells, tags and icons keep their semantic radii.
 
 Acceptance covers default, hover, pressed, focus-visible, selected, disabled, loading, error and empty states. Text or ARIA must also express state. Icon-only actions need accessible names. Align icons with labels and dialog form edges with footer actions.
 
 Compact density suits pointer/keyboard interfaces and keeps body text readable. Prefer comfortable or larger explicit controls on touch; essential targets should be at least 24px, preferably 44px. Local component settings and explicit theme dimensions override density and defaults.
+
+Button inline padding follows its actual height, and component-level `padding` applies to every size. Small Steps keep body-size labels; card and list choice groups share a quiet section heading. Modal keeps a heading icon and subtle section dividers. Confirm is a compact API prompt with a bare icon beside its explanation and spacing-based sections. Headers without a description have less vertical space; Modal and Confirm actions use a compact footer.
+
+Link buttons have no background, border, padding or fixed control height. Hover and press change text color without a wave. Use Link for navigation and the Button link variant for text actions.

@@ -1,5 +1,5 @@
 import './component-example.scss';
-import { Button } from '@sudden3/leaf-ui';
+import { Button } from '@ifhover/leaf-ui';
 import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -25,13 +25,18 @@ export function ComponentExample({
   const [expanded, setExpanded] = useState(false);
   const [collapsible, setCollapsible] = useState(true);
   const [wrapCode, setWrapCode] = useState(false);
+  const [sourceHeight, setSourceHeight] = useState(COLLAPSED_HEIGHT);
   const sourceRef = useRef<HTMLDivElement>(null);
   const codeId = useId();
 
   useEffect(() => {
     const source = sourceRef.current;
     if (!source) return;
-    const measure = () => setCollapsible(source.scrollHeight > COLLAPSED_HEIGHT);
+    const measure = () => {
+      const height = Math.ceil(source.getBoundingClientRect().height);
+      setSourceHeight(height);
+      setCollapsible(height > COLLAPSED_HEIGHT);
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(source);
@@ -50,14 +55,9 @@ export function ComponentExample({
       data-collapsible={collapsible}
       data-wrap-code={wrapCode}
     >
-      <div className="leaf-component-example__preview-header">
-        <span>
-          <i aria-hidden="true" />
-          {title}
-        </span>
-        <span>{t('交互预览', 'Live preview')}</span>
+      <div className="leaf-component-example__preview rp-not-doc">
+        <div className="leaf-component-example__preview-content">{preview}</div>
       </div>
-      <div className="leaf-component-example__preview rp-not-doc">{preview}</div>
       <div className="leaf-component-example__code">
         <div className="leaf-component-example__code-header">
           <span>
@@ -78,7 +78,11 @@ export function ComponentExample({
             <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
           </div>
         </div>
-        <div className="leaf-component-example__code-viewport" id={codeId}>
+        <div
+          className="leaf-component-example__code-viewport"
+          id={codeId}
+          style={{ height: collapsible ? (expanded ? sourceHeight : COLLAPSED_HEIGHT) : undefined }}
+        >
           <div className="leaf-component-example__source" ref={sourceRef}>
             {children}
           </div>

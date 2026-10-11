@@ -2,14 +2,15 @@ import { LoaderCircle } from 'lucide-react';
 import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
+import { useButtonWave } from './wave';
 
-export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost';
+export type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'link';
 export type ButtonSize = ControlSize;
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual style. @default 'solid' */
   variant?: ButtonVariant;
-  /** Shared control size. @default 'md' (34px) */
+  /** Shared control size. @default 'md' (40px) */
   size?: ButtonSize;
   /** Uses the semantic danger color in every variant. */
   danger?: boolean;
@@ -36,6 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     children,
     startIcon,
     endIcon,
+    onClick,
     'aria-busy': ariaBusy,
     ...props
   },
@@ -44,6 +46,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const hasLabel =
     children !== undefined && children !== null && children !== false && children !== '';
   const iconOnly = !hasLabel && Boolean(startIcon || endIcon || loading);
+  const hasWave = variant === 'solid' || variant === 'outline';
+  const { wave, play } = useButtonWave(disabled || loading || !hasWave);
 
   return (
     <button
@@ -62,7 +66,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       aria-busy={loading || ariaBusy}
       data-loading={loading ? '' : undefined}
+      onClick={(event) => {
+        play(event.currentTarget);
+        onClick?.(event);
+      }}
     >
+      {hasWave && <span ref={wave} className="leaf-button__wave" aria-hidden="true" />}
       <span className="leaf-button__content">
         {startIcon && (
           <span className="leaf-button__icon" aria-hidden="true">

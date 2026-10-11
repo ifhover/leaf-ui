@@ -1,4 +1,4 @@
-import { Layout } from '@sudden3/leaf-ui';
+import { Layout } from '@ifhover/leaf-ui';
 
 export function LayoutBasic() {
   return (

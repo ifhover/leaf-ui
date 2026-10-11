@@ -1,9 +1,9 @@
-import { Button, Loading } from '@sudden3/leaf-ui';
+import { Button, Loading, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function LoadingOverlay() {
   const [spinning, setSpinning] = useState(true);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Button variant="outline" onClick={() => setSpinning(!spinning)}>
         {spinning ? 'Finish loading' : 'Start loading'}
       </Button>
@@ -14,6 +14,6 @@ export function LoadingOverlay() {
           <Button variant="outline">Edit project</Button>
         </div>
       </Loading>
-    </div>
+    </Space>
   );
 }

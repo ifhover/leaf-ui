@@ -1,4 +1,4 @@
-import { Form, FormField, InputNumber } from '@sudden3/leaf-ui';
+import { Form, FormField, InputNumber } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Form layout="vertical" className="leaf-demo-stack">

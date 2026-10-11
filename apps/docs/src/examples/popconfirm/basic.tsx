@@ -1,4 +1,4 @@
-import { Button, Popconfirm } from '@sudden3/leaf-ui';
+import { Button, Popconfirm } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function PopconfirmBasic() {
   const [removed, setRemoved] = useState(false);

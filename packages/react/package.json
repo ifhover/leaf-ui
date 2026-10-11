@@ -1,6 +1,6 @@
 {
-  "name": "@sudden3/leaf-ui",
-  "version": "0.4.2",
+  "name": "@ifhover/leaf-ui",
+  "version": "0.5.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -25,6 +25,16 @@
   "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/index.d.ts",
+          "default": "./dist/esm/browser/index.js"
+        },
+        "require": {
+          "types": "./dist/cjs/index.d.cts",
+          "default": "./dist/cjs/browser/index.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
@@ -35,6 +45,16 @@
       }
     },
     "./alert": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/alert/index.d.ts",
+          "default": "./dist/esm/browser/alert.js"
+        },
+        "require": {
+          "types": "./dist/cjs/alert/index.d.cts",
+          "default": "./dist/cjs/browser/alert.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/alert/index.d.ts",
         "default": "./dist/esm/alert/index.js"
@@ -46,6 +66,16 @@
     },
     "./alert/style.css": "./dist/esm/styles/alert.css",
     "./anchor": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/anchor/index.d.ts",
+          "default": "./dist/esm/browser/anchor.js"
+        },
+        "require": {
+          "types": "./dist/cjs/anchor/index.d.cts",
+          "default": "./dist/cjs/browser/anchor.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/anchor/index.d.ts",
         "default": "./dist/esm/anchor/index.js"
@@ -57,6 +87,16 @@
     },
     "./anchor/style.css": "./dist/esm/styles/anchor.css",
     "./app-bar": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/appbar/index.d.ts",
+          "default": "./dist/esm/browser/appbar.js"
+        },
+        "require": {
+          "types": "./dist/cjs/appbar/index.d.cts",
+          "default": "./dist/cjs/browser/appbar.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/appbar/index.d.ts",
         "default": "./dist/esm/appbar/index.js"
@@ -68,6 +108,16 @@
     },
     "./app-bar/style.css": "./dist/esm/styles/appbar.css",
     "./auto-complete": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/autocomplete/index.d.ts",
+          "default": "./dist/esm/browser/autocomplete.js"
+        },
+        "require": {
+          "types": "./dist/cjs/autocomplete/index.d.cts",
+          "default": "./dist/cjs/browser/autocomplete.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/autocomplete/index.d.ts",
         "default": "./dist/esm/autocomplete/index.js"
@@ -79,6 +129,16 @@
     },
     "./auto-complete/style.css": "./dist/esm/styles/autocomplete.css",
     "./avatar": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/avatar/index.d.ts",
+          "default": "./dist/esm/browser/avatar.js"
+        },
+        "require": {
+          "types": "./dist/cjs/avatar/index.d.cts",
+          "default": "./dist/cjs/browser/avatar.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/avatar/index.d.ts",
         "default": "./dist/esm/avatar/index.js"
@@ -90,6 +150,16 @@
     },
     "./avatar/style.css": "./dist/esm/styles/avatar.css",
     "./back-top": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/backtop/index.d.ts",
+          "default": "./dist/esm/browser/backtop.js"
+        },
+        "require": {
+          "types": "./dist/cjs/backtop/index.d.cts",
+          "default": "./dist/cjs/browser/backtop.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/backtop/index.d.ts",
         "default": "./dist/esm/backtop/index.js"
@@ -101,6 +171,16 @@
     },
     "./back-top/style.css": "./dist/esm/styles/backtop.css",
     "./badge": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/badge/index.d.ts",
+          "default": "./dist/esm/browser/badge.js"
+        },
+        "require": {
+          "types": "./dist/cjs/badge/index.d.cts",
+          "default": "./dist/cjs/browser/badge.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/badge/index.d.ts",
         "default": "./dist/esm/badge/index.js"
@@ -112,6 +192,16 @@
     },
     "./badge/style.css": "./dist/esm/styles/badge.css",
     "./breadcrumb": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/breadcrumb/index.d.ts",
+          "default": "./dist/esm/browser/breadcrumb.js"
+        },
+        "require": {
+          "types": "./dist/cjs/breadcrumb/index.d.cts",
+          "default": "./dist/cjs/browser/breadcrumb.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/breadcrumb/index.d.ts",
         "default": "./dist/esm/breadcrumb/index.js"
@@ -123,6 +213,16 @@
     },
     "./breadcrumb/style.css": "./dist/esm/styles/breadcrumb.css",
     "./button": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/button/index.d.ts",
+          "default": "./dist/esm/browser/button.js"
+        },
+        "require": {
+          "types": "./dist/cjs/button/index.d.cts",
+          "default": "./dist/cjs/browser/button.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/button/index.d.ts",
         "default": "./dist/esm/button/index.js"
@@ -134,6 +234,16 @@
     },
     "./button/style.css": "./dist/esm/styles/button.css",
     "./calendar": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/calendar/index.d.ts",
+          "default": "./dist/esm/browser/calendar.js"
+        },
+        "require": {
+          "types": "./dist/cjs/calendar/index.d.cts",
+          "default": "./dist/cjs/browser/calendar.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/calendar/index.d.ts",
         "default": "./dist/esm/calendar/index.js"
@@ -145,6 +255,16 @@
     },
     "./calendar/style.css": "./dist/esm/styles/calendar.css",
     "./card": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/card/index.d.ts",
+          "default": "./dist/esm/browser/card.js"
+        },
+        "require": {
+          "types": "./dist/cjs/card/index.d.cts",
+          "default": "./dist/cjs/browser/card.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/card/index.d.ts",
         "default": "./dist/esm/card/index.js"
@@ -156,6 +276,16 @@
     },
     "./card/style.css": "./dist/esm/styles/card.css",
     "./carousel": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/carousel/index.d.ts",
+          "default": "./dist/esm/browser/carousel.js"
+        },
+        "require": {
+          "types": "./dist/cjs/carousel/index.d.cts",
+          "default": "./dist/cjs/browser/carousel.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/carousel/index.d.ts",
         "default": "./dist/esm/carousel/index.js"
@@ -167,6 +297,16 @@
     },
     "./carousel/style.css": "./dist/esm/styles/carousel.css",
     "./cascader": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/cascader/index.d.ts",
+          "default": "./dist/esm/browser/cascader.js"
+        },
+        "require": {
+          "types": "./dist/cjs/cascader/index.d.cts",
+          "default": "./dist/cjs/browser/cascader.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/cascader/index.d.ts",
         "default": "./dist/esm/cascader/index.js"
@@ -178,6 +318,16 @@
     },
     "./cascader/style.css": "./dist/esm/styles/cascader.css",
     "./checkbox": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/checkbox/index.d.ts",
+          "default": "./dist/esm/browser/checkbox.js"
+        },
+        "require": {
+          "types": "./dist/cjs/checkbox/index.d.cts",
+          "default": "./dist/cjs/browser/checkbox.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/checkbox/index.d.ts",
         "default": "./dist/esm/checkbox/index.js"
@@ -189,6 +339,16 @@
     },
     "./checkbox/style.css": "./dist/esm/styles/checkbox.css",
     "./collapse": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/collapse/index.d.ts",
+          "default": "./dist/esm/browser/collapse.js"
+        },
+        "require": {
+          "types": "./dist/cjs/collapse/index.d.cts",
+          "default": "./dist/cjs/browser/collapse.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/collapse/index.d.ts",
         "default": "./dist/esm/collapse/index.js"
@@ -200,6 +360,16 @@
     },
     "./collapse/style.css": "./dist/esm/styles/collapse.css",
     "./color-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/colorpicker/index.d.ts",
+          "default": "./dist/esm/browser/colorpicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/colorpicker/index.d.cts",
+          "default": "./dist/cjs/browser/colorpicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/colorpicker/index.d.ts",
         "default": "./dist/esm/colorpicker/index.js"
@@ -211,6 +381,16 @@
     },
     "./color-picker/style.css": "./dist/esm/styles/colorpicker.css",
     "./command-palette": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/commandpalette/index.d.ts",
+          "default": "./dist/esm/browser/commandpalette.js"
+        },
+        "require": {
+          "types": "./dist/cjs/commandpalette/index.d.cts",
+          "default": "./dist/cjs/browser/commandpalette.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/commandpalette/index.d.ts",
         "default": "./dist/esm/commandpalette/index.js"
@@ -222,6 +402,16 @@
     },
     "./command-palette/style.css": "./dist/esm/styles/commandpalette.css",
     "./config-provider": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/config-provider/index.d.ts",
+          "default": "./dist/esm/browser/config-provider.js"
+        },
+        "require": {
+          "types": "./dist/cjs/config-provider/index.d.cts",
+          "default": "./dist/cjs/browser/config-provider.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/config-provider/index.d.ts",
         "default": "./dist/esm/config-provider/index.js"
@@ -233,6 +423,16 @@
     },
     "./config-provider/style.css": "./dist/esm/styles/config-provider.css",
     "./confirm": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/confirm/index.d.ts",
+          "default": "./dist/esm/browser/confirm.js"
+        },
+        "require": {
+          "types": "./dist/cjs/confirm/index.d.cts",
+          "default": "./dist/cjs/browser/confirm.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/confirm/index.d.ts",
         "default": "./dist/esm/confirm/index.js"
@@ -244,6 +444,16 @@
     },
     "./confirm/style.css": "./dist/esm/styles/confirm.css",
     "./date-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/datepicker/index.d.ts",
+          "default": "./dist/esm/browser/datepicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/datepicker/index.d.cts",
+          "default": "./dist/cjs/browser/datepicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/datepicker/index.d.ts",
         "default": "./dist/esm/datepicker/index.js"
@@ -255,6 +465,16 @@
     },
     "./date-picker/style.css": "./dist/esm/styles/datepicker.css",
     "./date-range-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/daterangepicker/index.d.ts",
+          "default": "./dist/esm/browser/daterangepicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/daterangepicker/index.d.cts",
+          "default": "./dist/cjs/browser/daterangepicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/daterangepicker/index.d.ts",
         "default": "./dist/esm/daterangepicker/index.js"
@@ -266,6 +486,16 @@
     },
     "./date-range-picker/style.css": "./dist/esm/styles/daterangepicker.css",
     "./date-time-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/datetimepicker/index.d.ts",
+          "default": "./dist/esm/browser/datetimepicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/datetimepicker/index.d.cts",
+          "default": "./dist/cjs/browser/datetimepicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/datetimepicker/index.d.ts",
         "default": "./dist/esm/datetimepicker/index.js"
@@ -277,6 +507,16 @@
     },
     "./date-time-picker/style.css": "./dist/esm/styles/datetimepicker.css",
     "./descriptions": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/descriptions/index.d.ts",
+          "default": "./dist/esm/browser/descriptions.js"
+        },
+        "require": {
+          "types": "./dist/cjs/descriptions/index.d.cts",
+          "default": "./dist/cjs/browser/descriptions.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/descriptions/index.d.ts",
         "default": "./dist/esm/descriptions/index.js"
@@ -288,6 +528,16 @@
     },
     "./descriptions/style.css": "./dist/esm/styles/descriptions.css",
     "./divider": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/divider/index.d.ts",
+          "default": "./dist/esm/browser/divider.js"
+        },
+        "require": {
+          "types": "./dist/cjs/divider/index.d.cts",
+          "default": "./dist/cjs/browser/divider.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/divider/index.d.ts",
         "default": "./dist/esm/divider/index.js"
@@ -299,6 +549,16 @@
     },
     "./divider/style.css": "./dist/esm/styles/divider.css",
     "./drawer": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/drawer/index.d.ts",
+          "default": "./dist/esm/browser/drawer.js"
+        },
+        "require": {
+          "types": "./dist/cjs/drawer/index.d.cts",
+          "default": "./dist/cjs/browser/drawer.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/drawer/index.d.ts",
         "default": "./dist/esm/drawer/index.js"
@@ -310,6 +570,16 @@
     },
     "./drawer/style.css": "./dist/esm/styles/drawer.css",
     "./dropdown": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/dropdown/index.d.ts",
+          "default": "./dist/esm/browser/dropdown.js"
+        },
+        "require": {
+          "types": "./dist/cjs/dropdown/index.d.cts",
+          "default": "./dist/cjs/browser/dropdown.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/dropdown/index.d.ts",
         "default": "./dist/esm/dropdown/index.js"
@@ -321,6 +591,16 @@
     },
     "./dropdown/style.css": "./dist/esm/styles/dropdown.css",
     "./empty": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/empty/index.d.ts",
+          "default": "./dist/esm/browser/empty.js"
+        },
+        "require": {
+          "types": "./dist/cjs/empty/index.d.cts",
+          "default": "./dist/cjs/browser/empty.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/empty/index.d.ts",
         "default": "./dist/esm/empty/index.js"
@@ -332,6 +612,16 @@
     },
     "./empty/style.css": "./dist/esm/styles/empty.css",
     "./error-boundary": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/errorboundary/index.d.ts",
+          "default": "./dist/esm/browser/errorboundary.js"
+        },
+        "require": {
+          "types": "./dist/cjs/errorboundary/index.d.cts",
+          "default": "./dist/cjs/browser/errorboundary.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/errorboundary/index.d.ts",
         "default": "./dist/esm/errorboundary/index.js"
@@ -343,6 +633,16 @@
     },
     "./error-boundary/style.css": "./dist/esm/styles/errorboundary.css",
     "./file-list": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/filelist/index.d.ts",
+          "default": "./dist/esm/browser/filelist.js"
+        },
+        "require": {
+          "types": "./dist/cjs/filelist/index.d.cts",
+          "default": "./dist/cjs/browser/filelist.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/filelist/index.d.ts",
         "default": "./dist/esm/filelist/index.js"
@@ -354,6 +654,16 @@
     },
     "./file-list/style.css": "./dist/esm/styles/filelist.css",
     "./float-button": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/floatbutton/index.d.ts",
+          "default": "./dist/esm/browser/floatbutton.js"
+        },
+        "require": {
+          "types": "./dist/cjs/floatbutton/index.d.cts",
+          "default": "./dist/cjs/browser/floatbutton.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/floatbutton/index.d.ts",
         "default": "./dist/esm/floatbutton/index.js"
@@ -365,6 +675,16 @@
     },
     "./float-button/style.css": "./dist/esm/styles/floatbutton.css",
     "./form": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/form/index.d.ts",
+          "default": "./dist/esm/browser/form.js"
+        },
+        "require": {
+          "types": "./dist/cjs/form/index.d.cts",
+          "default": "./dist/cjs/browser/form.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/form/index.d.ts",
         "default": "./dist/esm/form/index.js"
@@ -376,6 +696,16 @@
     },
     "./form/style.css": "./dist/esm/styles/form.css",
     "./grid": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/grid/index.d.ts",
+          "default": "./dist/esm/browser/grid.js"
+        },
+        "require": {
+          "types": "./dist/cjs/grid/index.d.cts",
+          "default": "./dist/cjs/browser/grid.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/grid/index.d.ts",
         "default": "./dist/esm/grid/index.js"
@@ -387,6 +717,16 @@
     },
     "./grid/style.css": "./dist/esm/styles/grid.css",
     "./image": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/image/index.d.ts",
+          "default": "./dist/esm/browser/image.js"
+        },
+        "require": {
+          "types": "./dist/cjs/image/index.d.cts",
+          "default": "./dist/cjs/browser/image.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/image/index.d.ts",
         "default": "./dist/esm/image/index.js"
@@ -397,6 +737,16 @@
       }
     },
     "./image-cropper": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/imagecropper/index.d.ts",
+          "default": "./dist/esm/browser/imagecropper.js"
+        },
+        "require": {
+          "types": "./dist/cjs/imagecropper/index.d.cts",
+          "default": "./dist/cjs/browser/imagecropper.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/imagecropper/index.d.ts",
         "default": "./dist/esm/imagecropper/index.js"
@@ -409,6 +759,16 @@
     "./image-cropper/style.css": "./dist/esm/styles/imagecropper.css",
     "./image/style.css": "./dist/esm/styles/image.css",
     "./infinite-scroll": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/infinitescroll/index.d.ts",
+          "default": "./dist/esm/browser/infinitescroll.js"
+        },
+        "require": {
+          "types": "./dist/cjs/infinitescroll/index.d.cts",
+          "default": "./dist/cjs/browser/infinitescroll.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/infinitescroll/index.d.ts",
         "default": "./dist/esm/infinitescroll/index.js"
@@ -420,6 +780,16 @@
     },
     "./infinite-scroll/style.css": "./dist/esm/styles/infinitescroll.css",
     "./input": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/input/index.d.ts",
+          "default": "./dist/esm/browser/input.js"
+        },
+        "require": {
+          "types": "./dist/cjs/input/index.d.cts",
+          "default": "./dist/cjs/browser/input.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/input/index.d.ts",
         "default": "./dist/esm/input/index.js"
@@ -430,6 +800,16 @@
       }
     },
     "./input-mask": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/inputmask/index.d.ts",
+          "default": "./dist/esm/browser/inputmask.js"
+        },
+        "require": {
+          "types": "./dist/cjs/inputmask/index.d.cts",
+          "default": "./dist/cjs/browser/inputmask.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/inputmask/index.d.ts",
         "default": "./dist/esm/inputmask/index.js"
@@ -441,6 +821,16 @@
     },
     "./input-mask/style.css": "./dist/esm/styles/inputmask.css",
     "./input-number": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/inputnumber/index.d.ts",
+          "default": "./dist/esm/browser/inputnumber.js"
+        },
+        "require": {
+          "types": "./dist/cjs/inputnumber/index.d.cts",
+          "default": "./dist/cjs/browser/inputnumber.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/inputnumber/index.d.ts",
         "default": "./dist/esm/inputnumber/index.js"
@@ -452,6 +842,16 @@
     },
     "./input-number/style.css": "./dist/esm/styles/inputnumber.css",
     "./input-otp": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/inputotp/index.d.ts",
+          "default": "./dist/esm/browser/inputotp.js"
+        },
+        "require": {
+          "types": "./dist/cjs/inputotp/index.d.cts",
+          "default": "./dist/cjs/browser/inputotp.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/inputotp/index.d.ts",
         "default": "./dist/esm/inputotp/index.js"
@@ -464,6 +864,16 @@
     "./input-otp/style.css": "./dist/esm/styles/inputotp.css",
     "./input/style.css": "./dist/esm/styles/input.css",
     "./layout": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/layout/index.d.ts",
+          "default": "./dist/esm/browser/layout.js"
+        },
+        "require": {
+          "types": "./dist/cjs/layout/index.d.cts",
+          "default": "./dist/cjs/browser/layout.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/layout/index.d.ts",
         "default": "./dist/esm/layout/index.js"
@@ -474,18 +884,17 @@
       }
     },
     "./layout/style.css": "./dist/esm/styles/layout.css",
-    "./list": {
-      "import": {
-        "types": "./dist/esm/list/index.d.ts",
-        "default": "./dist/esm/list/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/list/index.d.cts",
-        "default": "./dist/cjs/list/index.cjs"
-      }
-    },
-    "./list/style.css": "./dist/esm/styles/list.css",
     "./loading": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/loading/index.d.ts",
+          "default": "./dist/esm/browser/loading.js"
+        },
+        "require": {
+          "types": "./dist/cjs/loading/index.d.cts",
+          "default": "./dist/cjs/browser/loading.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/loading/index.d.ts",
         "default": "./dist/esm/loading/index.js"
@@ -496,6 +905,16 @@
       }
     },
     "./loading-bar": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/loadingbar/index.d.ts",
+          "default": "./dist/esm/browser/loadingbar.js"
+        },
+        "require": {
+          "types": "./dist/cjs/loadingbar/index.d.cts",
+          "default": "./dist/cjs/browser/loadingbar.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/loadingbar/index.d.ts",
         "default": "./dist/esm/loadingbar/index.js"
@@ -508,6 +927,16 @@
     "./loading-bar/style.css": "./dist/esm/styles/loadingbar.css",
     "./loading/style.css": "./dist/esm/styles/loading.css",
     "./masonry": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/masonry/index.d.ts",
+          "default": "./dist/esm/browser/masonry.js"
+        },
+        "require": {
+          "types": "./dist/cjs/masonry/index.d.cts",
+          "default": "./dist/cjs/browser/masonry.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/masonry/index.d.ts",
         "default": "./dist/esm/masonry/index.js"
@@ -519,6 +948,16 @@
     },
     "./masonry/style.css": "./dist/esm/styles/masonry.css",
     "./mentions": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/mentions/index.d.ts",
+          "default": "./dist/esm/browser/mentions.js"
+        },
+        "require": {
+          "types": "./dist/cjs/mentions/index.d.cts",
+          "default": "./dist/cjs/browser/mentions.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/mentions/index.d.ts",
         "default": "./dist/esm/mentions/index.js"
@@ -530,6 +969,16 @@
     },
     "./mentions/style.css": "./dist/esm/styles/mentions.css",
     "./menu": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/menu/index.d.ts",
+          "default": "./dist/esm/browser/menu.js"
+        },
+        "require": {
+          "types": "./dist/cjs/menu/index.d.cts",
+          "default": "./dist/cjs/browser/menu.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/menu/index.d.ts",
         "default": "./dist/esm/menu/index.js"
@@ -541,6 +990,16 @@
     },
     "./menu/style.css": "./dist/esm/styles/menu.css",
     "./message": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/message/index.d.ts",
+          "default": "./dist/esm/browser/message.js"
+        },
+        "require": {
+          "types": "./dist/cjs/message/index.d.cts",
+          "default": "./dist/cjs/browser/message.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/message/index.d.ts",
         "default": "./dist/esm/message/index.js"
@@ -552,6 +1011,16 @@
     },
     "./message/style.css": "./dist/esm/styles/message.css",
     "./modal": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/modal/index.d.ts",
+          "default": "./dist/esm/browser/modal.js"
+        },
+        "require": {
+          "types": "./dist/cjs/modal/index.d.cts",
+          "default": "./dist/cjs/browser/modal.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/modal/index.d.ts",
         "default": "./dist/esm/modal/index.js"
@@ -563,6 +1032,16 @@
     },
     "./modal/style.css": "./dist/esm/styles/modal.css",
     "./notification": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/notification/index.d.ts",
+          "default": "./dist/esm/browser/notification.js"
+        },
+        "require": {
+          "types": "./dist/cjs/notification/index.d.cts",
+          "default": "./dist/cjs/browser/notification.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/notification/index.d.ts",
         "default": "./dist/esm/notification/index.js"
@@ -573,19 +1052,18 @@
       }
     },
     "./notification/style.css": "./dist/esm/styles/notification.css",
-    "./org-chart": {
-      "import": {
-        "types": "./dist/esm/orgchart/index.d.ts",
-        "default": "./dist/esm/orgchart/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/orgchart/index.d.cts",
-        "default": "./dist/cjs/orgchart/index.cjs"
-      }
-    },
-    "./org-chart/style.css": "./dist/esm/styles/orgchart.css",
     "./package.json": "./package.json",
     "./pagination": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/pagination/index.d.ts",
+          "default": "./dist/esm/browser/pagination.js"
+        },
+        "require": {
+          "types": "./dist/cjs/pagination/index.d.cts",
+          "default": "./dist/cjs/browser/pagination.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/pagination/index.d.ts",
         "default": "./dist/esm/pagination/index.js"
@@ -597,6 +1075,16 @@
     },
     "./pagination/style.css": "./dist/esm/styles/pagination.css",
     "./popconfirm": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/popconfirm/index.d.ts",
+          "default": "./dist/esm/browser/popconfirm.js"
+        },
+        "require": {
+          "types": "./dist/cjs/popconfirm/index.d.cts",
+          "default": "./dist/cjs/browser/popconfirm.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/popconfirm/index.d.ts",
         "default": "./dist/esm/popconfirm/index.js"
@@ -608,6 +1096,16 @@
     },
     "./popconfirm/style.css": "./dist/esm/styles/popconfirm.css",
     "./popover": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/popover/index.d.ts",
+          "default": "./dist/esm/browser/popover.js"
+        },
+        "require": {
+          "types": "./dist/cjs/popover/index.d.cts",
+          "default": "./dist/cjs/browser/popover.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/popover/index.d.ts",
         "default": "./dist/esm/popover/index.js"
@@ -619,6 +1117,16 @@
     },
     "./popover/style.css": "./dist/esm/styles/popover.css",
     "./progress": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/progress/index.d.ts",
+          "default": "./dist/esm/browser/progress.js"
+        },
+        "require": {
+          "types": "./dist/cjs/progress/index.d.cts",
+          "default": "./dist/cjs/browser/progress.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/progress/index.d.ts",
         "default": "./dist/esm/progress/index.js"
@@ -630,6 +1138,16 @@
     },
     "./progress/style.css": "./dist/esm/styles/progress.css",
     "./qr-code": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/qrcode/index.d.ts",
+          "default": "./dist/esm/browser/qrcode.js"
+        },
+        "require": {
+          "types": "./dist/cjs/qrcode/index.d.cts",
+          "default": "./dist/cjs/browser/qrcode.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/qrcode/index.d.ts",
         "default": "./dist/esm/qrcode/index.js"
@@ -641,6 +1159,16 @@
     },
     "./qr-code/style.css": "./dist/esm/styles/qrcode.css",
     "./radio": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/radio/index.d.ts",
+          "default": "./dist/esm/browser/radio.js"
+        },
+        "require": {
+          "types": "./dist/cjs/radio/index.d.cts",
+          "default": "./dist/cjs/browser/radio.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/radio/index.d.ts",
         "default": "./dist/esm/radio/index.js"
@@ -652,6 +1180,16 @@
     },
     "./radio/style.css": "./dist/esm/styles/radio.css",
     "./rate": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/rate/index.d.ts",
+          "default": "./dist/esm/browser/rate.js"
+        },
+        "require": {
+          "types": "./dist/cjs/rate/index.d.cts",
+          "default": "./dist/cjs/browser/rate.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/rate/index.d.ts",
         "default": "./dist/esm/rate/index.js"
@@ -663,6 +1201,16 @@
     },
     "./rate/style.css": "./dist/esm/styles/rate.css",
     "./result": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/result/index.d.ts",
+          "default": "./dist/esm/browser/result.js"
+        },
+        "require": {
+          "types": "./dist/cjs/result/index.d.cts",
+          "default": "./dist/cjs/browser/result.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/result/index.d.ts",
         "default": "./dist/esm/result/index.js"
@@ -674,6 +1222,16 @@
     },
     "./result/style.css": "./dist/esm/styles/result.css",
     "./scroll-area": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/scrollarea/index.d.ts",
+          "default": "./dist/esm/browser/scrollarea.js"
+        },
+        "require": {
+          "types": "./dist/cjs/scrollarea/index.d.cts",
+          "default": "./dist/cjs/browser/scrollarea.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/scrollarea/index.d.ts",
         "default": "./dist/esm/scrollarea/index.js"
@@ -684,7 +1242,38 @@
       }
     },
     "./scroll-area/style.css": "./dist/esm/styles/scrollarea.css",
+    "./scrollbar": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/scrollbar/index.d.ts",
+          "default": "./dist/esm/browser/scrollbar.js"
+        },
+        "require": {
+          "types": "./dist/cjs/scrollbar/index.d.cts",
+          "default": "./dist/cjs/browser/scrollbar.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/esm/scrollbar/index.d.ts",
+        "default": "./dist/esm/scrollbar/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/scrollbar/index.d.cts",
+        "default": "./dist/cjs/scrollbar/index.cjs"
+      }
+    },
+    "./scrollbar/style.css": "./dist/esm/styles/scrollbar.css",
     "./segmented": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/segmented/index.d.ts",
+          "default": "./dist/esm/browser/segmented.js"
+        },
+        "require": {
+          "types": "./dist/cjs/segmented/index.d.cts",
+          "default": "./dist/cjs/browser/segmented.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/segmented/index.d.ts",
         "default": "./dist/esm/segmented/index.js"
@@ -696,6 +1285,16 @@
     },
     "./segmented/style.css": "./dist/esm/styles/segmented.css",
     "./select": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/select/index.d.ts",
+          "default": "./dist/esm/browser/select.js"
+        },
+        "require": {
+          "types": "./dist/cjs/select/index.d.cts",
+          "default": "./dist/cjs/browser/select.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/select/index.d.ts",
         "default": "./dist/esm/select/index.js"
@@ -707,6 +1306,16 @@
     },
     "./select/style.css": "./dist/esm/styles/select.css",
     "./signature-pad": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/signaturepad/index.d.ts",
+          "default": "./dist/esm/browser/signaturepad.js"
+        },
+        "require": {
+          "types": "./dist/cjs/signaturepad/index.d.cts",
+          "default": "./dist/cjs/browser/signaturepad.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/signaturepad/index.d.ts",
         "default": "./dist/esm/signaturepad/index.js"
@@ -718,6 +1327,16 @@
     },
     "./signature-pad/style.css": "./dist/esm/styles/signaturepad.css",
     "./skeleton": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/skeleton/index.d.ts",
+          "default": "./dist/esm/browser/skeleton.js"
+        },
+        "require": {
+          "types": "./dist/cjs/skeleton/index.d.cts",
+          "default": "./dist/cjs/browser/skeleton.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/skeleton/index.d.ts",
         "default": "./dist/esm/skeleton/index.js"
@@ -729,6 +1348,16 @@
     },
     "./skeleton/style.css": "./dist/esm/styles/skeleton.css",
     "./slider": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/slider/index.d.ts",
+          "default": "./dist/esm/browser/slider.js"
+        },
+        "require": {
+          "types": "./dist/cjs/slider/index.d.cts",
+          "default": "./dist/cjs/browser/slider.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/slider/index.d.ts",
         "default": "./dist/esm/slider/index.js"
@@ -739,18 +1368,17 @@
       }
     },
     "./slider/style.css": "./dist/esm/styles/slider.css",
-    "./sortable": {
-      "import": {
-        "types": "./dist/esm/sortable/index.d.ts",
-        "default": "./dist/esm/sortable/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/sortable/index.d.cts",
-        "default": "./dist/cjs/sortable/index.cjs"
-      }
-    },
-    "./sortable/style.css": "./dist/esm/styles/sortable.css",
     "./space": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/space/index.d.ts",
+          "default": "./dist/esm/browser/space.js"
+        },
+        "require": {
+          "types": "./dist/cjs/space/index.d.cts",
+          "default": "./dist/cjs/browser/space.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/space/index.d.ts",
         "default": "./dist/esm/space/index.js"
@@ -762,6 +1390,16 @@
     },
     "./space/style.css": "./dist/esm/styles/space.css",
     "./splitter": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/splitter/index.d.ts",
+          "default": "./dist/esm/browser/splitter.js"
+        },
+        "require": {
+          "types": "./dist/cjs/splitter/index.d.cts",
+          "default": "./dist/cjs/browser/splitter.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/splitter/index.d.ts",
         "default": "./dist/esm/splitter/index.js"
@@ -773,6 +1411,16 @@
     },
     "./splitter/style.css": "./dist/esm/styles/splitter.css",
     "./statistic": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/statistic/index.d.ts",
+          "default": "./dist/esm/browser/statistic.js"
+        },
+        "require": {
+          "types": "./dist/cjs/statistic/index.d.cts",
+          "default": "./dist/cjs/browser/statistic.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/statistic/index.d.ts",
         "default": "./dist/esm/statistic/index.js"
@@ -784,6 +1432,16 @@
     },
     "./statistic/style.css": "./dist/esm/styles/statistic.css",
     "./steps": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/steps/index.d.ts",
+          "default": "./dist/esm/browser/steps.js"
+        },
+        "require": {
+          "types": "./dist/cjs/steps/index.d.cts",
+          "default": "./dist/cjs/browser/steps.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/steps/index.d.ts",
         "default": "./dist/esm/steps/index.js"
@@ -794,8 +1452,18 @@
       }
     },
     "./steps/style.css": "./dist/esm/styles/steps.css",
-    "./styles.css": "./dist/esm/styles/index.css",
+    "./styles.css": "./dist/esm/styles/base.css",
     "./switch": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/switch/index.d.ts",
+          "default": "./dist/esm/browser/switch.js"
+        },
+        "require": {
+          "types": "./dist/cjs/switch/index.d.cts",
+          "default": "./dist/cjs/browser/switch.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/switch/index.d.ts",
         "default": "./dist/esm/switch/index.js"
@@ -806,7 +1474,59 @@
       }
     },
     "./switch/style.css": "./dist/esm/styles/switch.css",
+    "./table": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/table/index.d.ts",
+          "default": "./dist/esm/browser/table.js"
+        },
+        "require": {
+          "types": "./dist/cjs/table/index.d.cts",
+          "default": "./dist/cjs/browser/table.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/esm/table/index.d.ts",
+        "default": "./dist/esm/table/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/table/index.d.cts",
+        "default": "./dist/cjs/table/index.cjs"
+      }
+    },
+    "./table/style.css": "./dist/esm/styles/table.css",
+    "./table/tanstack": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tabletanstack/index.d.ts",
+          "default": "./dist/esm/browser/tabletanstack.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tabletanstack/index.d.cts",
+          "default": "./dist/cjs/browser/tabletanstack.cjs"
+        }
+      },
+      "import": {
+        "types": "./dist/esm/tabletanstack/index.d.ts",
+        "default": "./dist/esm/tabletanstack/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/tabletanstack/index.d.cts",
+        "default": "./dist/cjs/tabletanstack/index.cjs"
+      }
+    },
+    "./table/tanstack/style.css": "./dist/esm/styles/tabletanstack.css",
     "./tabs": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tabs/index.d.ts",
+          "default": "./dist/esm/browser/tabs.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tabs/index.d.cts",
+          "default": "./dist/cjs/browser/tabs.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/tabs/index.d.ts",
         "default": "./dist/esm/tabs/index.js"
@@ -818,6 +1538,16 @@
     },
     "./tabs/style.css": "./dist/esm/styles/tabs.css",
     "./tag": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tag/index.d.ts",
+          "default": "./dist/esm/browser/tag.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tag/index.d.cts",
+          "default": "./dist/cjs/browser/tag.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/tag/index.d.ts",
         "default": "./dist/esm/tag/index.js"
@@ -829,6 +1559,16 @@
     },
     "./tag/style.css": "./dist/esm/styles/tag.css",
     "./textarea": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/textarea/index.d.ts",
+          "default": "./dist/esm/browser/textarea.js"
+        },
+        "require": {
+          "types": "./dist/cjs/textarea/index.d.cts",
+          "default": "./dist/cjs/browser/textarea.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/textarea/index.d.ts",
         "default": "./dist/esm/textarea/index.js"
@@ -840,6 +1580,16 @@
     },
     "./textarea/style.css": "./dist/esm/styles/textarea.css",
     "./time-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/timepicker/index.d.ts",
+          "default": "./dist/esm/browser/timepicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/timepicker/index.d.cts",
+          "default": "./dist/cjs/browser/timepicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/timepicker/index.d.ts",
         "default": "./dist/esm/timepicker/index.js"
@@ -851,6 +1601,16 @@
     },
     "./time-picker/style.css": "./dist/esm/styles/timepicker.css",
     "./time-range-picker": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/timerangepicker/index.d.ts",
+          "default": "./dist/esm/browser/timerangepicker.js"
+        },
+        "require": {
+          "types": "./dist/cjs/timerangepicker/index.d.cts",
+          "default": "./dist/cjs/browser/timerangepicker.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/timerangepicker/index.d.ts",
         "default": "./dist/esm/timerangepicker/index.js"
@@ -862,6 +1622,16 @@
     },
     "./time-range-picker/style.css": "./dist/esm/styles/timerangepicker.css",
     "./timeline": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/timeline/index.d.ts",
+          "default": "./dist/esm/browser/timeline.js"
+        },
+        "require": {
+          "types": "./dist/cjs/timeline/index.d.cts",
+          "default": "./dist/cjs/browser/timeline.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/timeline/index.d.ts",
         "default": "./dist/esm/timeline/index.js"
@@ -873,6 +1643,16 @@
     },
     "./timeline/style.css": "./dist/esm/styles/timeline.css",
     "./tooltip": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tooltip/index.d.ts",
+          "default": "./dist/esm/browser/tooltip.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tooltip/index.d.cts",
+          "default": "./dist/cjs/browser/tooltip.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/tooltip/index.d.ts",
         "default": "./dist/esm/tooltip/index.js"
@@ -884,6 +1664,16 @@
     },
     "./tooltip/style.css": "./dist/esm/styles/tooltip.css",
     "./tour": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tour/index.d.ts",
+          "default": "./dist/esm/browser/tour.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tour/index.d.cts",
+          "default": "./dist/cjs/browser/tour.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/tour/index.d.ts",
         "default": "./dist/esm/tour/index.js"
@@ -895,6 +1685,16 @@
     },
     "./tour/style.css": "./dist/esm/styles/tour.css",
     "./transfer": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/transfer/index.d.ts",
+          "default": "./dist/esm/browser/transfer.js"
+        },
+        "require": {
+          "types": "./dist/cjs/transfer/index.d.cts",
+          "default": "./dist/cjs/browser/transfer.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/transfer/index.d.ts",
         "default": "./dist/esm/transfer/index.js"
@@ -906,6 +1706,16 @@
     },
     "./transfer/style.css": "./dist/esm/styles/transfer.css",
     "./tree": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/tree/index.d.ts",
+          "default": "./dist/esm/browser/tree.js"
+        },
+        "require": {
+          "types": "./dist/cjs/tree/index.d.cts",
+          "default": "./dist/cjs/browser/tree.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/tree/index.d.ts",
         "default": "./dist/esm/tree/index.js"
@@ -916,6 +1726,16 @@
       }
     },
     "./tree-select": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/treeselect/index.d.ts",
+          "default": "./dist/esm/browser/treeselect.js"
+        },
+        "require": {
+          "types": "./dist/cjs/treeselect/index.d.cts",
+          "default": "./dist/cjs/browser/treeselect.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/treeselect/index.d.ts",
         "default": "./dist/esm/treeselect/index.js"
@@ -928,6 +1748,16 @@
     "./tree-select/style.css": "./dist/esm/styles/treeselect.css",
     "./tree/style.css": "./dist/esm/styles/tree.css",
     "./typography": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/typography/index.d.ts",
+          "default": "./dist/esm/browser/typography.js"
+        },
+        "require": {
+          "types": "./dist/cjs/typography/index.d.cts",
+          "default": "./dist/cjs/browser/typography.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/typography/index.d.ts",
         "default": "./dist/esm/typography/index.js"
@@ -939,6 +1769,16 @@
     },
     "./typography/style.css": "./dist/esm/styles/typography.css",
     "./upload": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/upload/index.d.ts",
+          "default": "./dist/esm/browser/upload.js"
+        },
+        "require": {
+          "types": "./dist/cjs/upload/index.d.cts",
+          "default": "./dist/cjs/browser/upload.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/upload/index.d.ts",
         "default": "./dist/esm/upload/index.js"
@@ -950,6 +1790,16 @@
     },
     "./upload/style.css": "./dist/esm/styles/upload.css",
     "./virtual-list": {
+      "browser": {
+        "import": {
+          "types": "./dist/esm/virtuallist/index.d.ts",
+          "default": "./dist/esm/browser/virtuallist.js"
+        },
+        "require": {
+          "types": "./dist/cjs/virtuallist/index.d.cts",
+          "default": "./dist/cjs/browser/virtuallist.cjs"
+        }
+      },
       "import": {
         "types": "./dist/esm/virtuallist/index.d.ts",
         "default": "./dist/esm/virtuallist/index.js"
@@ -959,7 +1809,8 @@
         "default": "./dist/cjs/virtuallist/index.cjs"
       }
     },
-    "./virtual-list/style.css": "./dist/esm/styles/virtuallist.css"
+    "./virtual-list/style.css": "./dist/esm/styles/virtuallist.css",
+    "./styles/all.css": "./dist/esm/styles/index.css"
   },
   "files": [
     "dist",
@@ -970,7 +1821,7 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "node scripts/generate-palette.mjs --check && rslib build && node scripts/build-component-styles.mjs",
+    "build": "node scripts/generate-palette.mjs --check && rslib build && node scripts/build-component-styles.mjs && node scripts/build-browser-entries.mjs",
     "generate:palette": "node scripts/generate-palette.mjs",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",
@@ -978,19 +1829,26 @@
     "test:watch": "vitest",
     "prepublishOnly": "pnpm check:release && pnpm build && pnpm check:package",
     "check:release": "node ./scripts/check-release-notes.mjs",
-    "check:package": "node ./scripts/verify-package.mjs",
+    "check:package": "node ./scripts/verify-package.mjs && node ./scripts/verify-browser-styles.mjs",
     "test:browser": "playwright test",
     "measure:bundle": "node scripts/measure-bundle.mjs"
   },
   "peerDependencies": {
+    "@tanstack/react-table": "^8.21.3",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-table": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@rsbuild/plugin-react": "^2.1.1",
     "@rsbuild/plugin-sass": "^2.0.1",
     "@rslib/core": "^1.0.3",
+    "@tanstack/react-table": "^8.21.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

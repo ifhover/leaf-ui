@@ -1,11 +1,11 @@
-import { Cascader } from '@sudden3/leaf-ui';
+import { Cascader, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { regions } from './options';
 
 export function CascaderControlled() {
   const [value, setValue] = useState<string[]>(['zhejiang', 'hangzhou', 'xihu']);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Delivery region</span>
         <Cascader
@@ -16,6 +16,6 @@ export function CascaderControlled() {
         />
       </div>
       <span className="leaf-demo-note">Selected path:{value.join(' → ') || 'Not selected'}</span>
-    </div>
+    </Space>
   );
 }

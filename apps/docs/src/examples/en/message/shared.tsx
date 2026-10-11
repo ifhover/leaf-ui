@@ -1,4 +1,4 @@
-import { Button, useMessage } from '@sudden3/leaf-ui';
+import { Button, Space, useMessage } from '@ifhover/leaf-ui';
 
 function PublishAction() {
   const { message } = useMessage();
@@ -35,9 +35,9 @@ function PublishResult() {
 
 export function MessageShared() {
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       <PublishAction />
       <PublishResult />
-    </div>
+    </Space>
   );
 }

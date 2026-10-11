@@ -1,20 +1,37 @@
 import {
+  BackTop,
   Button,
   ButtonGroup,
   ConfigProvider,
   FileList,
+  FloatButton,
   FloatButtonGroup,
   Input,
-  List,
   Loading,
   Modal,
   Segmented,
   Select,
   Tabs,
   TimeRangePicker,
-} from '@sudden3/leaf-ui';
-import { useRef, useState } from 'react';
+} from '@ifhover/leaf-ui';
+import { Plus } from 'lucide-react';
+import { type CSSProperties, useRef, useState } from 'react';
 import { AppBarBasic } from '../../../../apps/docs/src/examples/app-bar/basic';
+import { useListMotion } from '../../src/shared/motion';
+
+function AnimatedRows({ rows }: { rows: string[] }) {
+  const root = useRef<HTMLUListElement>(null);
+  useListMotion(root, rows);
+  return (
+    <ul ref={root} aria-label="Animated rows" style={{ listStyle: 'none', padding: 0 }}>
+      {rows.map((row) => (
+        <li key={row} data-motion-key={row} style={{ height: 48 }}>
+          {row}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function MotionFixture() {
   const [enabled, setEnabled] = useState(true);
@@ -35,7 +52,7 @@ export function MotionFixture() {
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
         <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-          {(['solid', 'soft', 'outline', 'ghost'] as const).map((variant) => (
+          {(['solid', 'outline', 'ghost', 'link'] as const).map((variant) => (
             <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
               {variant}
             </Button>
@@ -51,17 +68,68 @@ export function MotionFixture() {
             Loading action
           </Button>
         </div>
+        <div style={{ display: 'flex', gap: 16, marginBlock: 16 }}>
+          <Button danger data-testid="press-danger">
+            Danger action
+          </Button>
+          <Button danger variant="outline" data-testid="press-danger-outline">
+            Danger outline
+          </Button>
+          <Button danger variant="ghost" data-testid="press-danger-ghost">
+            Danger ghost
+          </Button>
+          <Button startIcon={<Plus />} aria-label="Add action" data-testid="press-icon" />
+          <ConfigProvider theme={{ primaryColor: '#2563eb', borderRadius: 24 }}>
+            <Button data-testid="press-custom">Custom rounded action</Button>
+          </ConfigProvider>
+          <FloatButton
+            fixed={false}
+            aria-label="Floating action"
+            startIcon={<Plus />}
+            data-testid="press-float"
+          />
+          <BackTop
+            visibilityHeight={0}
+            data-testid="press-backtop"
+            style={{ position: 'relative', insetInlineEnd: 'auto', bottom: 'auto' }}
+          />
+        </div>
+        <ConfigProvider
+          style={{ '--button-primary': '#2563eb' } as CSSProperties}
+          theme={{
+            primaryColor: 'var(--button-primary)',
+            tokens: {
+              primaryHoverColor: '#7c3aed',
+              primaryActiveColor: '#4c1d95',
+              dangerHoverColor: '#e11d48',
+              dangerActiveColor: '#9f1239',
+            },
+          }}
+        >
+          <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
+            <Button data-testid="press-override-solid">Custom state colors</Button>
+            <Button variant="outline" data-testid="press-override-outline">
+              Custom outline state colors
+            </Button>
+            <Button danger data-testid="press-override-danger">
+              Custom danger state colors
+            </Button>
+          </div>
+        </ConfigProvider>
+        <div
+          data-testid="wave-scroll-frame"
+          style={{ width: 240, maxHeight: 50, overflow: 'auto' }}
+        >
+          <Button fullWidth data-testid="press-scroll">
+            Full-width scrolling action
+          </Button>
+        </div>
         <AppBarBasic english />
         <Button onClick={() => setRows((items) => [...items].reverse())}>Reverse</Button>
         <Button onClick={() => setRows((items) => [...items.slice(1), ...items.slice(0, 1)])}>
           Rotate
         </Button>
-        <List
-          aria-label="Animated rows"
-          items={rows}
-          itemKey={(item) => item}
-          renderItem={(item) => <div style={{ height: 48 }}>{item}</div>}
-        />
+        <AnimatedRows rows={rows} />
         <FileList
           data-testid="animated-files"
           items={rows.map((item) => ({

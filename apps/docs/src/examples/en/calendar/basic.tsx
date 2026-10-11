@@ -1,4 +1,4 @@
-import { Calendar } from '@sudden3/leaf-ui';
+import { Calendar, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const events: Record<number, { label: string; color: string }> = {
@@ -9,7 +9,7 @@ const events: Record<number, { label: string; color: string }> = {
 export function CalendarBasic() {
   const [value, setValue] = useState(new Date(2026, 9, 4));
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Calendar
         value={value}
         onChange={setValue}
@@ -26,6 +26,6 @@ export function CalendarBasic() {
       <output className="leaf-demo-note">
         Selected date: {value.getFullYear()}-{value.getMonth() + 1}-{value.getDate()}
       </output>
-    </div>
+    </Space>
   );
 }

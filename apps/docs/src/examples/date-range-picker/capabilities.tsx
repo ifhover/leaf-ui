@@ -1,12 +1,12 @@
-import { DateRangePicker, Space } from '@sudden3/leaf-ui';
+import { DateRangePicker, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>{english ? 'Quarter range' : '季度区间'}</p>
         <DateRangePicker picker="quarter" format="YYYY-[Q]Q" />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         {english
           ? 'Allow an open end, or use a recent-seven-day preset'
           : '允许结束为空，或选择最近七天'}

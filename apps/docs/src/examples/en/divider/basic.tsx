@@ -1,8 +1,8 @@
-import { Divider } from '@sudden3/leaf-ui';
+import { Divider, Space } from '@ifhover/leaf-ui';
 
 export function DividerBasic() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <p>Project details</p>
       <Divider>Settings</Divider>
       <Divider align="start" dashed>
@@ -15,6 +15,6 @@ export function DividerBasic() {
         <Divider type="vertical" dashed />
         Archive
       </div>
-    </div>
+    </Space>
   );
 }

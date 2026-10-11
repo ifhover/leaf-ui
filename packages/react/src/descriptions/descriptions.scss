@@ -12,9 +12,8 @@
     margin-bottom: 16px;
     h3 {
       margin: 0;
-      font-size: 16px;
-      font-weight: var(--leaf-heading-weight, 600);
-      letter-spacing: -0.015em;
+      font-size: calc(var(--leaf-font-size) + 1px);
+      font-weight: var(--leaf-font-weight);
     }
   }
   &__list {
@@ -48,14 +47,14 @@
     gap: 4px;
   }
   &--bordered {
-    padding: 16px;
+    padding: 16px 20px;
     border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius);
+    border-radius: var(--leaf-radius-md);
     background: var(--leaf-color-surface);
-    box-shadow: var(--leaf-shadow-xs);
     .leaf-descriptions__header {
-      padding-block-end: 14px;
-      border-bottom: 1px solid var(--leaf-color-border);
+      margin-inline: -20px;
+      padding: 0 20px 14px;
+      border-bottom: 1px solid var(--leaf-color-divider);
     }
   }
   &--sm &__list {

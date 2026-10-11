@@ -1,9 +1,9 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function InputClear() {
   const [value, setValue] = useState('Leaf Garden');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">项目名称</span>
         <Input
@@ -25,6 +25,6 @@ export function InputClear() {
         />
       </div>
       <p className="leaf-demo-note">当前内容：{value || '未填写'}</p>
-    </div>
+    </Space>
   );
 }

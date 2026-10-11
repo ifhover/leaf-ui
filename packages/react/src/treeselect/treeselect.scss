@@ -158,6 +158,7 @@
       var(--leaf-surface-border)
     );
     .leaf-tree__row {
+      min-height: var(--leaf-density-option-height);
       margin-block: var(--leaf-tree-select-row-margin);
       border-radius: var(--leaf-tree-select-option-radius);
       white-space: nowrap;

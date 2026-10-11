@@ -1,4 +1,4 @@
-import { Button, Space, Upload, type UploadHandle } from '@sudden3/leaf-ui';
+import { Button, Space, Upload, type UploadHandle } from '@ifhover/leaf-ui';
 import { useRef } from 'react';
 export function Capabilities({ english = false }) {
   const upload = useRef<UploadHandle>(null);

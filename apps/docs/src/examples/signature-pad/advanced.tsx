@@ -1,9 +1,9 @@
-import { Button, SignaturePad } from '@sudden3/leaf-ui';
+import { Button, SignaturePad, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function SignaturePadControlled() {
-  const [strokes, setStrokes] = useState<import('@sudden3/leaf-ui').SignatureStroke[]>([]);
+  const [strokes, setStrokes] = useState<import('@ifhover/leaf-ui').SignatureStroke[]>([]);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <SignaturePad
         value={strokes}
         onChange={setStrokes}
@@ -15,6 +15,6 @@ export function SignaturePadControlled() {
       <Button variant="ghost" onClick={() => setStrokes([])}>
         清空受控值
       </Button>
-    </div>
+    </Space>
   );
 }

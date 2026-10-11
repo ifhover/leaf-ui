@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { build } from 'esbuild';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
@@ -26,7 +27,7 @@ for (const [subpath, targets] of Object.entries(manifest.exports)) {
     for (const target of Object.values(targets[format]))
       assert.ok((await stat(new URL(target, packageRoot))).isFile(), `${subpath}: ${target}`);
   }
-  const specifier = `@sudden3/leaf-ui${subpath.slice(1)}`;
+  const specifier = `@ifhover/leaf-ui${subpath.slice(1)}`;
   const imports = await import(specifier),
     requires = require(specifier);
   assert.deepEqual(
@@ -51,16 +52,24 @@ for (const relativePath of [
 ]) {
   assert.ok((await stat(new URL(relativePath, packageRoot))).isFile(), relativePath);
 }
-const esm = await import('@sudden3/leaf-ui');
-const cjs = require('@sudden3/leaf-ui');
+const esm = await import('@ifhover/leaf-ui');
+const cjs = require('@ifhover/leaf-ui');
 const components = [
+  [
+    'Table',
+    { 'aria-label': 'Records' },
+    createElement(
+      esm.Table.Body,
+      null,
+      createElement(esm.Table.Row, null, createElement(esm.Table.Cell, null, 'Alice')),
+    ),
+    /<table/,
+  ],
   ['Typography', {}, 'Text', /leaf-typography/],
   ['Text', {}, 'Text', /leaf-text/],
   ['Title', { level: 2 }, 'Heading', /<h2/],
   ['Paragraph', {}, 'Paragraph', /<p/],
   ['Link', { href: '/guide' }, 'Guide', /<a/],
-  ['List', {}, createElement('li', null, 'Item'), /<ul/],
-  ['ListItem', { title: 'Alice' }, null, /<li/],
   ['Statistic', { title: 'Total', value: 1234 }, null, /1,234/],
   ['Countdown', { value: Date.now() + 3600000 }, null, /leaf-statistic/],
   ['Anchor', { items: [{ key: 'intro', title: 'Intro', href: '#intro' }] }, null, /<nav/],
@@ -171,7 +180,6 @@ const components = [
     false,
   ],
   ['Modal', { open: false, title: 'Details' }, null, /<span/, false],
-  ['Confirm', { open: false, title: 'Remove' }, null, /<span/, false],
   ['Message', { open: false, content: 'Saved' }, null, /<span/, false],
   ['MessageProvider', {}, 'Content', /Content/, false],
   ['Layout', {}, 'Content', /leaf-layout/],
@@ -181,6 +189,7 @@ const components = [
   ['Col', { md: 12 }, 'Column', /leaf-col/],
   ['Space', {}, 'Actions', /leaf-space/],
   ['ScrollArea', { height: 100 }, 'Content', /leaf-scroll-area/],
+  ['Scrollbar', { height: 100 }, 'Content', /leaf-scrollbar/],
   ['Masonry', {}, 'Cards', /leaf-masonry/],
   ['Segmented', { options: ['Daily', 'Monthly'] }, null, /role="radiogroup"/],
   ['Menu', { items: [{ key: 'home', label: 'Home' }] }, null, /role="menu"/],
@@ -225,17 +234,10 @@ const components = [
     'Items',
     /leaf-infinite-scroll/,
   ],
-  [
-    'Sortable',
-    { items: ['a', 'b'], itemKey: (item) => item, renderItem: (item) => item, onChange: () => {} },
-    null,
-    /leaf-sortable/,
-  ],
   ['FileList', { items: [{ url: '/report.pdf' }] }, null, /leaf-file-list/],
   ['Upload', {}, null, /leaf-upload/],
   ['ImageCropper', { src: '/image.png' }, null, /leaf-image-cropper/],
   ['SignaturePad', {}, null, /<canvas/],
-  ['OrgChart', { data: { key: 'team', label: 'Team' } }, null, /leaf-org-chart/],
   ['ButtonGroup', {}, createElement('button', { type: 'button' }, 'Save'), /<fieldset/],
   ['SplitButton', { items: [{ key: 'copy', label: 'Copy' }] }, 'Save', /leaf-button-group/],
   ['CheckboxGroup', { options: ['A', 'B'] }, null, /leaf-checkbox-group/],
@@ -297,6 +299,8 @@ for (const [format, api] of [
   assert.equal(api.ResizablePanels, api.Splitter);
   assert.equal(api.FAB, api.FloatButton);
   assert.equal(typeof api.ConfirmProvider, 'function', `${format} must export ConfirmProvider`);
+  assert.equal(api.Confirm, undefined, `${format} exposes confirmation only through its API`);
+  assert.equal(api.Sortable, undefined, `${format} must not export the removed Sortable component`);
   function ManagedFeedback() {
     const confirmation = api.useConfirm();
     const messages = api.useMessage();
@@ -347,9 +351,17 @@ assert.ok(
   !esmTypes.includes('.css') && !esmTypes.includes('.scss'),
   'Declarations must not reference extracted styles',
 );
-const css = await readFile(new URL(manifest.exports['./styles.css'], packageRoot), 'utf8');
-assert.match(css, /--leaf-control-height:\s*34px/);
+const baseCss = await readFile(new URL(manifest.exports['./styles.css'], packageRoot), 'utf8');
+assert.match(baseCss, /--leaf-control-height:\s*40px/);
+assert.match(baseCss, /components\/message\.css/);
+assert.match(baseCss, /components\/modal\.css/);
+assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary component styles');
+const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
+assert.match(css, /--leaf-control-height:\s*40px/);
 assert.match(css, /--leaf-color-danger/);
+assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]/);
+for (const name of ['List', 'ListItem', 'OrgChart'])
+  assert.ok(!(name in esm), `${name} is no longer exported`);
 for (const name of [
   'button',
   'input',
@@ -398,11 +410,13 @@ for (const name of [
   'grid',
   'space',
   'scroll-area',
+  'scrollbar',
   'masonry',
   'segmented',
   'menu',
   'back-top',
   'descriptions',
+  'table',
   'image',
   'qr-code',
   'timeline',
@@ -414,12 +428,10 @@ for (const name of [
   'popconfirm',
   'loading-bar',
   'infinite-scroll',
-  'sortable',
   'file-list',
   'upload',
   'image-cropper',
   'signature-pad',
-  'org-chart',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }
@@ -459,5 +471,76 @@ for (const dependency of ['react-dom', '@floating-ui/react-dom', 'tabbable']) {
 console.log(
   'All component exports, ESM/CommonJS rendering, declarations, compiled SCSS and dependencies verified.',
 );
+assert.equal(manifest.peerDependenciesMeta['@tanstack/react-table'].optional, true);
+assert.equal(
+  esm.DataTable,
+  undefined,
+  'The optional TanStack adapter must not enter the root barrel',
+);
+const adapter = await import('@ifhover/leaf-ui/table/tanstack');
+const headless = await import('@tanstack/react-table');
+function AdapterFixture() {
+  const table = headless.useReactTable({
+    data: [{ id: 'alice', name: 'Alice' }],
+    columns: [{ accessorKey: 'name', header: 'Name' }],
+    getRowId: (row) => row.id,
+    getCoreRowModel: headless.getCoreRowModel(),
+  });
+  return createElement(adapter.DataTable, { table, pagination: false, 'aria-label': 'Records' });
+}
+assert.match(renderToStaticMarkup(createElement(AdapterFixture)), /Alice/);
+const adapterCss = await readFile(
+  new URL(manifest.exports['./table/tanstack/style.css'], packageRoot),
+  'utf8',
+);
+for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination', 'popover'])
+  assert.ok(adapterCss.includes(`.leaf-${name}`), `Adapter CSS includes ${name}`);
+assert.ok(!adapterCss.includes('.leaf-image-cropper'), 'Adapter styles must remain scoped');
 console.log('Package root:', fileURLToPath(packageRoot));
 console.log(`Verified ${subpathCount} public JS subpaths and every CSS export.`);
+
+for (const [specifier, expected, excluded] of [
+  ['button', ['button', 'dropdown'], ['table', 'modal', 'input']],
+  ['table', ['table', 'scrollbar', 'loading'], ['image-cropper']],
+  ['table/tanstack', ['table', 'checkbox', 'pagination'], ['image-cropper']],
+  ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['image-cropper']],
+  ['config-provider', ['message', 'confirm', 'notification', 'loading-bar'], ['table']],
+]) {
+  const result = await build({
+    stdin: {
+      contents: `export * from '@ifhover/leaf-ui/${specifier}';`,
+      resolveDir: fileURLToPath(packageRoot),
+    },
+    bundle: true,
+    format: 'esm',
+    platform: 'browser',
+    outfile: 'automatic-styles.js',
+    write: false,
+    external: ['react', 'react-dom', 'react/*', 'react-dom/*'],
+  });
+  const styles = result.outputFiles.find((file) => file.path.endsWith('.css'))?.text ?? '';
+  for (const name of expected)
+    assert.ok(styles.includes(`.leaf-${name}`), `${specifier} automatically loads ${name}`);
+  for (const name of excluded)
+    assert.ok(!styles.includes(`.leaf-${name}`), `${specifier} excludes ${name}`);
+}
+const commonJsBrowser = await build({
+  stdin: {
+    contents: "module.exports = require('@ifhover/leaf-ui/button');",
+    resolveDir: fileURLToPath(packageRoot),
+  },
+  bundle: true,
+  format: 'cjs',
+  platform: 'browser',
+  outfile: 'cjs-browser.js',
+  write: false,
+  external: ['react', 'react-dom', 'react/*', 'react-dom/*'],
+});
+assert.ok(
+  commonJsBrowser.outputFiles.some(
+    (file) => file.path.endsWith('.css') && file.text.includes('.leaf-button'),
+  ),
+);
+console.log(
+  'Verified automatic browser CSS, scoped visual dependencies and CSS-free Node SSR entries.',
+);

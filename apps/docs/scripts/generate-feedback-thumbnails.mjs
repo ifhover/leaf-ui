@@ -21,6 +21,16 @@ const dialog = (title, body, confirm = false) =>
   rect(82, 78, 52, 22) +
   text(91, 93, 'Cancel', '#68686f', 9) +
   button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#c83c3c' : '#20834a');
+const confirmation =
+  rect(20, 13, 200, 102, '#00000026', 'none', 12) +
+  rect(36, 24, 168, 80, '#fff', '#e5e5e8', 10) +
+  text(48, 43, 'Delete project?', '#202024', 11) +
+  icon(CircleAlert, 48, 53, '#c83c3c') +
+  text(68, 64, 'This cannot be undone.', '#202024', 8) +
+  rect(94, 78, 43, 18, '#fff', '#e5e5e8', 5) +
+  text(103, 90, 'Cancel', '#202024', 8) +
+  rect(143, 78, 49, 18, '#c83c3c', 'none', 5) +
+  text(155, 90, 'Delete', '#fff', 8);
 const images = {
   form:
     text(24, 37, 'Name') +
@@ -40,7 +50,7 @@ const images = {
     text(160, 44, 'Chinese') +
     button(151, 66, 'Save', '#087f8c'),
   modal: dialog('Project settings', 'Name: Leaf Garden'),
-  confirm: dialog('Delete project?', 'This cannot be undone.', true),
+  confirm: confirmation,
   dropdown:
     rect(59, 7, 122, 25) +
     text(72, 24, 'More actions') +
@@ -60,7 +70,7 @@ const images = {
     icon(Info, 53, 37, '#1677ff') +
     text(76, 49, 'A new notification') +
     rect(31, 70, 178, 30) +
-    icon(CircleAlert, 43, 78, '#a9670e') +
+    icon(CircleAlert, 43, 78, '#faad14') +
     text(65, 90, 'Check your settings'),
   'date-time-picker':
     rect(20, 13, 200, 26) +
@@ -90,8 +100,11 @@ const images = {
     text(25, 106, '24   25   26   27', '#68686f', 8) +
     text(129, 106, '5     6     7     8', '#68686f', 8),
 };
-for (const [slug, content] of Object.entries(images))
+const selected = new Set(process.argv.slice(2));
+for (const [slug, content] of Object.entries(images)) {
+  if (selected.size && !selected.has(slug)) continue;
   await writeFile(
     new URL(`../docs/public/components/${slug}.svg`, import.meta.url),
     `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="128" viewBox="0 0 240 128" fill="none"><title>${slug}</title>${content}</svg>\n`,
   );
+}

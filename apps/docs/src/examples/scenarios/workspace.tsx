@@ -1,4 +1,3 @@
-import { useDark } from '@rspress/core/runtime';
 import {
   Alert,
   Button,
@@ -8,8 +7,6 @@ import {
   FormField,
   Input,
   Layout,
-  List,
-  ListItem,
   Menu,
   Modal,
   Result,
@@ -21,7 +18,8 @@ import {
   Tag,
   Textarea,
   useMessage,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
+import { useDark } from '@rspress/core/runtime';
 import { Folder, Plus, Settings } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { useDocsLocale } from '../../components/i18n';
@@ -230,84 +228,80 @@ function Workspace({
                 <div aria-live="polite" className="leaf-business__count">
                   {t(`找到 ${visible.length} 个项目`, `${visible.length} projects found`)}
                 </div>
-                <List
-                  divider
-                  items={visible}
-                  itemKey={(project) => project.id}
-                  aria-label={t('项目列表', 'Project list')}
-                  emptyContent={
-                    <Result
-                      status="empty"
-                      title={t('没有匹配的项目', 'No matching projects')}
-                      description={t(
-                        '调整筛选条件，或创建新的项目。',
-                        'Change the filters or create a project.',
-                      )}
-                      extra={
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setQuery('');
-                            setView('active');
-                          }}
-                        >
-                          {t('清除筛选', 'Clear filters')}
-                        </Button>
-                      }
-                    />
-                  }
-                  renderItem={(project) => (
-                    <ListItem
-                      title={project.name}
-                      description={
-                        <>
-                          {project.description}
-                          <br />
-                          <span>
+                {visible.length === 0 ? (
+                  <Result
+                    status="empty"
+                    title={t('没有匹配的项目', 'No matching projects')}
+                    description={t(
+                      '调整筛选条件，或创建新的项目。',
+                      'Change the filters or create a project.',
+                    )}
+                    extra={
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setQuery('');
+                          setView('active');
+                        }}
+                      >
+                        {t('清除筛选', 'Clear filters')}
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <ul
+                    className="leaf-business__projects"
+                    aria-label={t('项目列表', 'Project list')}
+                  >
+                    {visible.map((project) => (
+                      <li key={project.id} className="leaf-business__project">
+                        <div>
+                          <strong>{project.name}</strong>
+                          <p>
+                            {project.description}
+                            <br />
                             {t('负责人：', 'Owner: ')}
                             {project.owner}
-                          </span>
-                        </>
-                      }
-                      actions={[
-                        <Button
-                          key="edit"
-                          size="sm"
-                          variant="outline"
-                          aria-label={t(`编辑 ${project.name}`, `Edit ${project.name}`)}
-                          onClick={() => open(project)}
-                        >
-                          {t('编辑', 'Edit')}
-                        </Button>,
-                        <Button
-                          key="archive"
-                          size="sm"
-                          variant="ghost"
-                          aria-label={t(
-                            `${project.archived ? '恢复' : '归档'} ${project.name}`,
-                            `${project.archived ? 'Restore' : 'Archive'} ${project.name}`,
-                          )}
-                          onClick={() => {
-                            setProjects((previous) =>
-                              previous.map((item) =>
-                                item.id === project.id
-                                  ? { ...item, archived: !item.archived }
-                                  : item,
-                              ),
-                            );
-                            message.success(
-                              project.archived
-                                ? t('项目已恢复', 'Project restored')
-                                : t('项目已归档', 'Project archived'),
-                            );
-                          }}
-                        >
-                          {project.archived ? t('恢复', 'Restore') : t('归档', 'Archive')}
-                        </Button>,
-                      ]}
-                    />
-                  )}
-                />
+                          </p>
+                        </div>
+                        <Space wrap>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            aria-label={t(`编辑 ${project.name}`, `Edit ${project.name}`)}
+                            onClick={() => open(project)}
+                          >
+                            {t('编辑', 'Edit')}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            aria-label={t(
+                              `${project.archived ? '恢复' : '归档'} ${project.name}`,
+                              `${project.archived ? 'Restore' : 'Archive'} ${project.name}`,
+                            )}
+                            onClick={() => {
+                              setProjects((previous) =>
+                                previous.map((item) =>
+                                  item.id === project.id
+                                    ? { ...item, archived: !item.archived }
+                                    : item,
+                                ),
+                              );
+                              message.success(
+                                project.archived
+                                  ? t('项目已恢复', 'Project restored')
+                                  : t('项目已归档', 'Project archived'),
+                              );
+                            }}
+                          >
+                            {project.archived ? t('恢复', 'Restore') : t('归档', 'Archive')}
+                          </Button>
+                        </Space>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </Card>
             </>
           ) : (

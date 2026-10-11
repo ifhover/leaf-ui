@@ -1,3 +1,4 @@
+import { CardSections } from '../../src/examples/card/sections';
 import { ComponentExample } from '../../src/components/component-example';
 import { CardBasic } from '../../src/examples/card/basic';
 
@@ -14,15 +15,30 @@ import { CardBasic } from '../../src/examples/card/basic';
 
 </ComponentExample>
 
+## 内容分区
+
+默认以留白区分内容；设置 divided 可明确划分设置与操作区。
+
+<ComponentExample title="内容分区" preview={<CardSections />} fileName="sections.tsx">
+
+```tsx lineNumbers file="../../src/examples/card/sections.tsx"
+```
+
+</ComponentExample>
+
 ## Card API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `title / extra` | `ReactNode` | — | 标题 / 标题旁的内容 |
-| `cover / footer` | `ReactNode` | — | 顶部封面 / 底部内容 |
-| `children` | `ReactNode` | — | 卡片正文 |
+| `title` | `ReactNode` | — | 标题 / 标题旁的内容 |
+| `description` | `ReactNode` | — | 补充说明。 |
+| `extra` | `ReactNode` | — | 标题 / 标题旁的内容 |
+| `cover` | `ReactNode` | — | 顶部封面 / 底部内容 |
+| `footer` | `ReactNode` | — | 顶部封面 / 底部内容 |
 | `loading` | `boolean` | `false` | 使用骨架屏替换正文 |
-| `bordered / hoverable` | `boolean` | `true / false` | 显示外轮廓 / 悬停强调卡片 |
+| `bordered` | `boolean` | `true` | 显示外轮廓 / 悬停强调卡片 |
+| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
+| `hoverable` | `boolean` | `false` | 显示外轮廓 / 悬停强调卡片 |
 | `size` | `'sm' \| 'md'` | `'md'` | 内容间距 |
 
 ## 类型
@@ -30,9 +46,13 @@ import { CardBasic } from '../../src/examples/card/basic';
 定义组件属性或组装列表时可导入相关类型。
 
 ```ts
-import type { CardProps } from '@sudden3/leaf-ui';
+import type { CardProps } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
 
 extra 和 footer 可以放置按钮或链接。hoverable 提供视觉反馈，需要点击操作时请使用明确的按钮或链接。
+
+## 外观与丰富内容
+
+`description` 显示标题下的补充说明。默认不显示内部边框；设置 `divided` 使用分区边框和淡灰底部。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景和边框。

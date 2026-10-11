@@ -1,4 +1,11 @@
+export type DocsPackage = '@ifhover/leaf-ui' | '@sudden3/leaf-ui';
+
+export function isDocsPackage(value: unknown): value is DocsPackage {
+  return value === '@ifhover/leaf-ui' || value === '@sudden3/leaf-ui';
+}
+
 export interface PublishedDocsVersion {
+  package?: DocsPackage;
   version: string;
   sourceCommit: string;
   publishedAt: string;
@@ -7,7 +14,7 @@ export interface PublishedDocsVersion {
 
 export interface DocsVersions {
   schemaVersion: 1;
-  package: '@sudden3/leaf-ui';
+  package: DocsPackage;
   latest: string;
   versions: PublishedDocsVersion[];
 }

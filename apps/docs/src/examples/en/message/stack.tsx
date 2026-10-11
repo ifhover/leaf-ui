@@ -1,4 +1,4 @@
-import { Button, useMessage } from '@sudden3/leaf-ui';
+import { Button, useMessage } from '@ifhover/leaf-ui';
 
 export function MessageStack() {
   const { message } = useMessage();

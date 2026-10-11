@@ -151,7 +151,7 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 Import these types to define props or prepare data.
 
 ```ts
-import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo } from '@sudden3/leaf-ui';
+import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
@@ -168,7 +168,7 @@ Use up/down to move, right/left to expand/collapse, Home/End to jump, Enter to s
 ## Extension types
 
 ```ts
-import type { TreeDropInfo } from '@sudden3/leaf-ui';
+import type { TreeDropInfo } from '@ifhover/leaf-ui';
 ```
 
 ## TreeDropInfo API
@@ -185,7 +185,7 @@ import type { TreeDropInfo } from '@sudden3/leaf-ui';
 Move a node in a custom data operation. This pure function returns a new tree without changing its input. It returns `null` for missing targets, self moves or moves into descendants. Tree already includes the new data in its `onDrop` callback.
 
 ```ts
-import { moveTreeNode } from '@sudden3/leaf-ui';
+import { moveTreeNode } from '@ifhover/leaf-ui';
 
 const next = moveTreeNode(data, 'design', 'team', 'inside');
 ```

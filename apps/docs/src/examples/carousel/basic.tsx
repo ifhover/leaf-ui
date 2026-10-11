@@ -1,4 +1,4 @@
-import { Carousel } from '@sudden3/leaf-ui';
+import { Carousel } from '@ifhover/leaf-ui';
 
 const slides = [
   { key: 'plan', zh: '计划', en: 'Plan', color: '#edf6ee' },

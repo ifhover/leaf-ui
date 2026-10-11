@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rspress/core';
+import { remarkExampleSource } from './scripts/example-source.mjs';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
 
@@ -53,6 +54,7 @@ const componentSidebar = [
       { text: 'Grid', tag: '栅格', link: '/components/grid' },
       { text: 'Space', tag: '间距', link: '/components/space' },
       { text: 'ScrollArea', tag: '滚动区域', link: '/components/scroll-area' },
+      { text: 'Scrollbar', tag: '滚动条', link: '/components/scrollbar' },
       { text: 'Masonry', tag: '瀑布流', link: '/components/masonry' },
     ],
   },
@@ -76,13 +78,12 @@ const componentSidebar = [
     text: '数据展示',
     items: [
       { text: 'Statistic', tag: '统计数值', link: '/components/statistic' },
-      { text: 'List', tag: '列表', link: '/components/list' },
+      { text: 'Table', tag: '表格', link: '/components/table' },
       { text: 'Descriptions', tag: '描述列表', link: '/components/descriptions' },
       { text: 'QRCode', tag: '二维码', link: '/components/qr-code' },
       { text: 'Timeline', tag: '时间线', link: '/components/timeline' },
       { text: 'VirtualList', tag: '虚拟列表', link: '/components/virtual-list' },
       { text: 'InfiniteScroll', tag: '无限滚动', link: '/components/infinite-scroll' },
-      { text: 'OrgChart', tag: '组织结构图', link: '/components/org-chart' },
       { text: 'Tag', tag: '标签', link: '/components/tag' },
       { text: 'Badge', tag: '角标', link: '/components/badge' },
       { text: 'Avatar', tag: '头像', link: '/components/avatar' },
@@ -109,7 +110,6 @@ const componentSidebar = [
       { text: 'Transfer', tag: '穿梭框', link: '/components/transfer' },
       { text: 'InputOTP', tag: '验证码输入', link: '/components/input-otp' },
       { text: 'InputMask', tag: '格式输入', link: '/components/input-mask' },
-      { text: 'Sortable', tag: '拖拽排序', link: '/components/sortable' },
       { text: 'Input', tag: '输入框', link: '/components/input' },
       { text: 'InputNumber', tag: '数字输入框', link: '/components/input-number' },
       { text: 'Textarea', tag: '文本域', link: '/components/textarea' },
@@ -243,7 +243,7 @@ export default defineConfig({
   logoText: 'Leaf UI',
   outDir: 'doc_build',
   mediumZoom: { selector: '.rspress-doc img:not([data-no-zoom])' },
-  markdown: { link: { checkDeadLinks: true } },
+  markdown: { link: { checkDeadLinks: true }, remarkPlugins: [remarkExampleSource] },
   themeConfig: {
     llmsUI: { placement: 'outline', viewOptions: ['markdownLink'] },
     darkMode: 'light',
@@ -286,8 +286,12 @@ export default defineConfig({
     plugins: [pluginSass()],
     resolve: {
       alias: {
-        '@sudden3/leaf-ui$': path.resolve(directory, '../../packages/react/src/index.ts'),
-        '@sudden3/leaf-ui/styles.css$': path.resolve(
+        '@ifhover/leaf-ui/table/tanstack$': path.resolve(
+          directory,
+          '../../packages/react/src/tabletanstack/index.ts',
+        ),
+        '@ifhover/leaf-ui$': path.resolve(directory, '../../packages/react/src/index.ts'),
+        '@ifhover/leaf-ui/styles.css$': path.resolve(
           directory,
           '../../packages/react/src/styles/index.scss',
         ),

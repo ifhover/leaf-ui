@@ -1,41 +1,41 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { GettingStartedExample, GettingStartedForm } from '../../src/components/guide-examples';
+import { GettingStartedExample } from '../../src/components/guide-examples';
 
 # 安装&快速开始
 
-Leaf UI 的 React 组件包名为 `@sudden3/leaf-ui`，支持 React 18 与 React 19。安装组件包并引入样式后，就可以在 React 页面中使用。
+Leaf UI 支持 React 18 与 React 19。安装组件包并引入样式后，就可以在 React 页面中使用。
 
 ## 安装组件包
 
 在你的 React 项目目录下执行：
 
 ```bash
-pnpm add @sudden3/leaf-ui
+pnpm add @ifhover/leaf-ui
 ```
 
 也可以使用 npm 或 Yarn：
 
 ```bash
-npm install @sudden3/leaf-ui
+npm install @ifhover/leaf-ui
 # 或者
-yarn add @sudden3/leaf-ui
+yarn add @ifhover/leaf-ui
 ```
 
-React 和 React DOM 由你的应用提供。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@sudden3/leaf-ui) 查看最新版本。
+React 和 React DOM 由你的应用提供。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@ifhover/leaf-ui) 查看最新版本。
 
 ## 引入样式
 
-在应用入口导入一次 Leaf UI 样式：
+在应用入口导入一次基础样式，包含主题变量、公共浮层和 Confirm、Message 等 API 服务的样式：
 
 ```tsx title="src/main.tsx"
-import '@sudden3/leaf-ui/styles.css';
+import '@ifhover/leaf-ui/styles.css';
 ```
 
-样式已编译为 CSS，使用组件无需安装 Sass。调整颜色、圆角或尺寸时使用 [ConfigProvider](/components/config-provider)，业务 CSS 可以读取主题变量复用样式。Next.js 等框架的入口配置见 [SSR 使用](/guide/ssr)。
+浏览器打包时，组件入口会自动加载组件样式，无需再手动导入每个组件的 CSS，也无需安装 Sass。Next.js 等框架的配置见 [SSR 使用](/guide/ssr)。
 
-## 使用第一个组件
+## 使用组件
 
-导入 `Button`，像原生按钮一样添加内容和事件：
+直接从 `@ifhover/leaf-ui` 导入组件，添加内容和事件即可：
 
 <ComponentExample title="第一个按钮" preview={<GettingStartedExample />} fileName="getting-started.tsx">
 
@@ -44,53 +44,7 @@ import '@sudden3/leaf-ui/styles.css';
 
 </ComponentExample>
 
-## 使用原生属性
-
-组件保留原生 `button` 属性，例如 `onClick`、`disabled`、`type`、`className` 和 `aria-*`。
-
-```tsx
-<Button type="submit" disabled={submitting}>
-  提交表单
-</Button>
-```
-
-`Button` 的默认类型为 `button`。在表单中提交数据时，请显式设置 `type="submit"`。
-
-## 组合一个表单
-
-用输入框、选择器和按钮组合表单，通过 `name` 命名字段，用 `required` 标记必填项，提交时使用 `FormData` 读取内容。
-
-<ComponentExample title="组合一个表单" preview={<GettingStartedForm />} fileName="form.tsx">
-
-```tsx lineNumbers file="../../src/examples/guide/form.tsx"
-```
-
-</ComponentExample>
-
-## 换一种颜色
-
-在应用或需要定制的区域外包裹 ConfigProvider：
-
-```tsx
-import { Button, ConfigProvider } from '@sudden3/leaf-ui';
-
-<ConfigProvider theme={{ primaryColor: '#3264d9', borderRadius: 6 }}>
-  <Button>保存</Button>
-</ConfigProvider>
-```
-
-更多配置与样式复用见[定制主题](/guide/theming)。使用 Next.js 等框架时，可阅读 [SSR 使用](/guide/ssr)。
-
-## 添加图标
-
-在自己的应用代码中导入 Lucide 图标时，执行 `pnpm add lucide-react` 将它声明为应用依赖。具体示例见[使用图标](/guide/icons)。
-
-## 兼容性
-
-- React 18 / 19。
-- TypeScript 项目可以直接使用随包提供的类型声明。
-- 提供 ESM 和 CommonJS 模块入口。
-- 样式面向支持 CSS 变量的现代浏览器，派生色由 JavaScript 生成；支持目标与降级策略见[浏览器兼容性](./compatibility)。
+根入口是推荐的默认写法。在 Vite、Rsbuild / Rspack 的生产构建中，具名导入会按需保留组件及其内部依赖的样式，无需改用组件子路径。直接使用 esbuild 打包时，它会保留根入口遍历到的 CSS；此时可使用 `@ifhover/leaf-ui/button` 等子路径缩小样式体积。
 
 ## 接下来
 
@@ -98,3 +52,5 @@ import { Button, ConfigProvider } from '@sudden3/leaf-ui';
 - [Button 按钮](/components/button)：查看样式、尺寸、加载状态与完整 API。
 - [使用图标](/guide/icons)：通过 Lucide 图标表达操作。
 - [定制主题](/guide/theming)：实时调整颜色、圆角和外观。
+- [SSR 使用](/guide/ssr)：在 Next.js 等框架中使用组件。
+- [浏览器兼容性](./compatibility)：查看支持的浏览器与降级策略。

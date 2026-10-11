@@ -189,14 +189,6 @@ const images = {
     r(50, 20, 200, 112) +
     [0, 1, 2].map((i) => line(67, 38 + i * 23, 155)).join('') +
     t(113, 116, 'Loading…', 11, '#20834a'),
-  sortable: [0, 1, 2]
-    .map(
-      (i) =>
-        r(56 + (i === 1 ? 8 : 0), 22 + i * 39, 186, 31, i === 1 ? '#eaf4ed' : '#fff') +
-        t(70 + (i === 1 ? 8 : 0), 43 + i * 39, '⠿', 18, '#718078') +
-        t(92, 43 + i * 39, ['Design', 'Build', 'Ship'][i]),
-    )
-    .join(''),
   upload:
     r(38, 26, 224, 106, '#f4f7f5') +
     '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#20834a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
@@ -221,16 +213,6 @@ const images = {
       '60 99C88 32 74 107 105 72S96 117 132 93S131 116 170 93S196 107 230 78',
     ) +
     t(52, 141, 'Signature', 10, '#718078'),
-  'org-chart':
-    r(110, 19, 80, 30, '#eaf4ed') +
-    t(132, 39, 'Team') +
-    '<path d="M150 49V73M sixty" fill="none" stroke="#b9cebf"/>'.replace(
-      ' sixty',
-      '70 73H230M70 73V92M150 73V92M230 73V92',
-    ) +
-    [40, 120, 200]
-      .map((x, i) => r(x, 92, 60, 32) + t(x + 11, 112, ['Design', 'Build', 'Sales'][i], 10))
-      .join(''),
 };
 for (const [name, content] of Object.entries(images)) {
   const svg =

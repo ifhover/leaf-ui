@@ -1,4 +1,4 @@
-import { Card, ScrollArea, Space } from '@sudden3/leaf-ui';
+import { Card, ScrollArea, Space } from '@ifhover/leaf-ui';
 
 export function ScrollAreaHorizontal() {
   return (

@@ -1,4 +1,4 @@
-import { Space, Textarea } from '@sudden3/leaf-ui';
+import { Space, Textarea } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Space direction="vertical" align="stretch">

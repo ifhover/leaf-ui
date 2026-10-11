@@ -1,0 +1,117 @@
+@mixin sections($component) {
+  --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
+  --leaf-dialog-icon-size: calc(var(--leaf-control-height) + 6px);
+  --leaf-dialog-padding-start: var(
+    --leaf-component-#{$component}-padding-left,
+    var(--leaf-density-dialog-inline)
+  );
+  --leaf-dialog-padding-end: var(
+    --leaf-component-#{$component}-padding-right,
+    var(--leaf-density-dialog-inline)
+  );
+  --leaf-dialog-padding-block: var(
+    --leaf-component-#{$component}-padding-top,
+    var(--leaf-density-dialog-block)
+  );
+  --leaf-dialog-divider: var(
+    --leaf-component-#{$component}-border-color,
+    var(--leaf-color-divider)
+  );
+
+  &__header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: flex-start;
+    gap: var(--leaf-dialog-heading-gap);
+    padding: var(
+      --leaf-component-#{$component}-padding,
+      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+    );
+    padding-block-end: 0;
+    background: var(--leaf-component-#{$component}-header-background, transparent);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+  &__heading {
+    flex: 1;
+    min-width: 0;
+    align-self: center;
+    overflow-wrap: anywhere;
+    h2 {
+      margin: 0;
+      font-size: calc(var(--leaf-font-size) + 3px);
+      font-weight: var(--leaf-font-weight);
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+    }
+  }
+  &__description {
+    margin-block-start: 4px;
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size);
+    line-height: var(--leaf-line-height);
+  }
+  &__icon {
+    box-sizing: border-box;
+    flex: 0 0 var(--leaf-dialog-icon-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--leaf-dialog-icon-size);
+    height: var(--leaf-dialog-icon-size);
+    border: 1px solid var(--leaf-dialog-divider);
+    border-radius: 50%;
+    background: var(--leaf-color-surface-muted);
+    color: var(--leaf-color-text-muted);
+    > svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  &__body {
+    min-height: 0;
+    overflow: auto;
+    padding: var(
+      --leaf-component-#{$component}-padding,
+      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+    );
+    overscroll-behavior: contain;
+  }
+  &__content {
+    display: flow-root;
+    min-width: 0;
+  }
+  &__footer {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: var(
+      --leaf-component-#{$component}-padding,
+      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+    );
+    padding-block-start: 0;
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+    background: var(--leaf-component-#{$component}-footer-background, transparent);
+  }
+  &--divided > &__header:not(.leaf-#{$component}__header--compact) {
+    padding-block-end: var(--leaf-dialog-padding-block);
+    border-block-end: 1px solid var(--leaf-dialog-divider);
+  }
+  &--divided > &__footer {
+    padding-block-start: var(--leaf-dialog-padding-block);
+    padding-block-end: var(--leaf-dialog-padding-block);
+    border-block-start: 1px solid var(--leaf-dialog-divider);
+    background: var(
+      --leaf-component-#{$component}-footer-background,
+      var(--leaf-color-surface-muted)
+    );
+  }
+  @media (max-width: 480px) {
+    --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 10px);
+    --leaf-dialog-icon-size: var(--leaf-control-height);
+  }
+}

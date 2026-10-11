@@ -9,15 +9,15 @@ import { ThemePlayground } from '../../src/components/theme-playground';
 在应用最外层放置 ConfigProvider，并引入一次组件样式：
 
 ```tsx
-import { Button, ConfigProvider, Input } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export function App() {
   return (
     <ConfigProvider theme={{
       primaryColor: '#7654c6',
       borderRadius: 8,
-      controlHeight: 34,
+      controlHeight: 40,
     }}>
       <Input aria-label="项目名称" placeholder="项目名称" />
       <Button>保存</Button>
@@ -36,15 +36,17 @@ export function App() {
 
 ## 自动生成大小尺寸
 
-默认基础圆角为 10px，单行控件高度为 34px，字号为 14px。修改基础值后，其他尺寸会同步调整：
+默认基础圆角为 10px，单行控件高度为 40px，字号为 14px。修改基础值后，其他尺寸会同步调整：
 
 | 基础设置 | 自动生成的值 | 默认结果 |
 | --- | --- | --- |
-| `borderRadius` | 小圆角为基础值的 0.6 倍，大圆角为 1.6 倍 | `6px / 16px` |
-| `controlHeight` | 小尺寸减 6px，大尺寸加 6px | `28px / 40px` |
-| `fontSize` | 小字号减 2px，大字号加 2px | `12px / 16px` |
+| `borderRadius` | 小 / 中 / 大圆角分别为基础值的 0.6 / 1.2 / 1.6 倍 | `6px / 12px / 16px` |
+| `controlHeight` | 小尺寸减 6px，大尺寸加 6px | `34px / 46px` |
+| `fontSize` | 小字号减 1px，大字号加 2px | `13px / 16px` |
 
 数字表示像素，也可以传入带单位的 CSS 长度。按钮、输入框和选择器共用这套尺寸，放在一起时保持一致。
+
+圆角由外向内递减：弹窗、抽屉和浮层使用大圆角，卡片、提示和选项卡片等内容表面使用中圆角，按钮、输入框和表格外框使用基础圆角，复选框等小元素使用小圆角，状态标签为胶囊形。内容表面默认只用细边框区分层级，不叠加阴影。
 
 紧贴容器的选项与选中背景按外框圆角、内边距和边框自动推导圆角，默认浮层为 `16px − 6px − 1px = 9px`。通过 `theme.components.Floating` 可统一设置浮层的 `borderRadius` 和 `padding`，`Dropdown` 的局部设置优先；卡片式 `Tabs`、`Segmented` 和 `Menu` 同样跟随各自的容器。内边距支持数字、CSS 长度和 1–4 值简写（例如 `4px 8px`），各方向的内部圆弧会同步更新。
 
@@ -69,7 +71,7 @@ ConfigProvider 可以包裹整个应用，也可以只包裹一个区域。内�
 
 ```tsx
 import { useState } from 'react';
-import { Button, ConfigProvider } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider } from '@ifhover/leaf-ui';
 
 export function ThemeSwitch() {
   const [dark, setDark] = useState(false);
@@ -88,7 +90,7 @@ export function ThemeSwitch() {
 `theme.tokens` 可以单独调整自动生成的尺寸、语义色、表面色、文字色、动效或浮层层级：
 
 ```tsx
-import type { LeafTheme } from '@sudden3/leaf-ui';
+import type { LeafTheme } from '@ifhover/leaf-ui';
 
 const theme: LeafTheme = {
   controlHeight: 36,
@@ -156,7 +158,7 @@ CSS 变量用于读取当前区域的主题，方便自己编写的组件与 Lea
 | `--leaf-color-danger` / `--leaf-color-success` / `--leaf-color-warning` / `--leaf-color-info` | 语义状态色 |
 | `--leaf-color-text` / `--leaf-color-text-muted` | 主要 / 次要文字 |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` / `--leaf-color-border` | 表面与边框 |
-| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | 基础 / 小 / 大圆角 |
+| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-md` / `--leaf-radius-lg` | 基础 / 小 / 中 / 大圆角 |
 | `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | 基础 / 小 / 大控件高度 |
 | `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | 字体、字号与字重 |
 | `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | 基础 / 快速 / 布局过渡时间 |
@@ -170,7 +172,7 @@ CSS 变量用于读取当前区域的主题，方便自己编写的组件与 Lea
 
 ## 间距、字体与组件覆盖
 
-基础 `spacing` 会生成小、大间距，`lineHeight`、`headingWeight` 和 `elevation` 分别调整正文行高、标题字重和阴影。继续通过 ConfigProvider 配置；组件专属覆盖放在 `theme.components`：
+基础 `spacing` 会生成小、大间距，`lineHeight`、`headingWeight` 和 `elevation` 分别调整正文行高、Typography 标题字重和阴影；弹窗、卡片等组件标题使用 `tokens.fontWeight`。继续通过 ConfigProvider 配置；组件专属覆盖放在 `theme.components`：
 
 ```tsx
 const theme = {
@@ -191,7 +193,7 @@ const theme = {
 ## 系统外观、响应断点与对比度
 
 ```tsx
-import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@sudden3/leaf-ui';
+import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@ifhover/leaf-ui';
 
 function Application() {
   const appearance = useSystemAppearance('light');
@@ -208,6 +210,25 @@ const contrast = colorContrast('#ffffff', '#20834a');
 
 系统偏好在客户端接管后更新；SSR 的首次外观应来自服务端 Cookie 或一致的初始值，见 [SSR 使用](/guide/ssr)。
 
+## 分区与辅助表面
+
+弹窗分区、卡片选项和中性提示从同一基础主题派生外观。辅助面沿用 mutedSurfaceColor，分隔线可通过高级 dividerColor 覆盖。按组件覆盖分区背景时使用 components；Confirm 共用 Modal 的配置。headerBackground、footerBackground 用于 Modal、Drawer 和 Card；borderColor 也用于卡片选项、成组选项和 Alert 的边框。
+
+```tsx
+<ConfigProvider
+  theme={{
+    primaryColor: '#20834a',
+    borderRadius: 10,
+    components: {
+      Modal: { footerBackground: 'var(--leaf-color-surface-muted)' },
+      Card: { borderColor: 'var(--leaf-color-divider)' },
+    },
+  }}
+>
+  <App />
+</ConfigProvider>
+```
+
 ## LeafComponentTokens
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -219,6 +240,9 @@ const contrast = colorContrast('#ffffff', '#20834a');
 | `fontSize` | `string \| number` | — | 字号；数字表示像素。 |
 | `color` | `string` | — | 颜色或语义色。 |
 | `background` | `string` | — | 组件表面背景。 |
+| `borderColor` | `string` | — | 外层边框与分区分隔线颜色。 |
+| `headerBackground` | `string` | — | 标题区域背景；默认继承表面颜色。 |
+| `footerBackground` | `string` | — | 底部操作区域背景；分区外观默认使用淡灰辅助面。 |
 | `shadow` | `string` | — | CSS box-shadow 的值。 |
 
 ## LeafThemeStyle

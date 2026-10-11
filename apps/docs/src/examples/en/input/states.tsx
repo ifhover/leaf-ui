@@ -1,8 +1,8 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 
 export function InputStates() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Disabled input</span>
         <Input aria-label="Disabled input" disabled placeholder="Cannot edit right now" />
@@ -23,6 +23,6 @@ export function InputStates() {
         <span className="leaf-demo-label">Name warning</span>
         <Input aria-label="Name warning" status="warning" defaultValue="A similar name exists" />
       </div>
-    </div>
+    </Space>
   );
 }

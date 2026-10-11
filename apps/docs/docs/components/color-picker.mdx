@@ -70,7 +70,7 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 | `readOnly` | `boolean` | — | 锁定业务值，禁止输入、选择、清除和删除。 |
 | `popupWidth` | `number \| string` | `280` | 浮层宽度 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
-| `gradient` | `boolean` | — | 启用渐变颜色选择。 |
+| `gradient` | `boolean` | `false` | 启用渐变颜色选择。 |
 | `mode` | `'solid' \| 'gradient'` | — | 选择展示或编辑模式。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
@@ -90,7 +90,7 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 可导入以下类型定义属性、组装数据或处理回调。
 
 ```ts
-import type { ColorPickerProps, ColorPreset } from '@sudden3/leaf-ui';
+import type { ColorPickerProps, ColorPreset } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明

@@ -1,5 +1,23 @@
 export const componentCatalog = [
   [
+    'Scrollbar',
+    '滚动条',
+    'scrollbar',
+    '布局',
+    'Layout',
+    '在区域内平滑浏览较长或较宽的内容。',
+    'Browse long or wide content within a region.',
+  ],
+  [
+    'Table',
+    '表格',
+    'table',
+    '数据展示',
+    'Data display',
+    '浏览、筛选和管理结构化数据。',
+    'Browse, filter and manage structured data.',
+  ],
+  [
     'Button',
     '按钮',
     'button',
@@ -594,15 +612,6 @@ export const componentCatalog = [
     'Load more content when reaching the end of a list.',
   ],
   [
-    'Sortable',
-    '拖拽排序',
-    'sortable',
-    '数据录入',
-    'Data entry',
-    '通过拖动或键盘调整项目顺序。',
-    'Reorder items with dragging or the keyboard.',
-  ],
-  [
     'FileList',
     '文件列表',
     'file-list',
@@ -639,15 +648,6 @@ export const componentCatalog = [
     'Capture handwritten signatures and export images.',
   ],
   [
-    'OrgChart',
-    '组织结构图',
-    'org-chart',
-    '数据展示',
-    'Data display',
-    '展示组织与成员之间的层级。',
-    'Display hierarchies between teams and members.',
-  ],
-  [
     'Typography',
     '排版',
     'typography',
@@ -655,15 +655,6 @@ export const componentCatalog = [
     'General',
     '组织标题、正文和链接。',
     'Organize headings, body text and links.',
-  ],
-  [
-    'List',
-    '列表',
-    'list',
-    '数据展示',
-    'Data display',
-    '展示连续的内容和操作。',
-    'Present a collection of content and actions.',
   ],
   [
     'Statistic',

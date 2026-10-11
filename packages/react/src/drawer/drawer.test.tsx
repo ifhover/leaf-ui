@@ -5,6 +5,23 @@ import { describe, expect, it } from 'vitest';
 import { Button, ConfigProvider, Drawer, Input, Modal, Select } from '../index';
 
 describe('Drawer', () => {
+  it('provides a named header, supporting description and a decorative icon', () => {
+    render(
+      <Drawer
+        open
+        title="Workspace"
+        description="Manage the connected services"
+        icon={<span>Services icon</span>}
+        divided={false}
+      >
+        Details
+      </Drawer>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Workspace' });
+    expect(dialog).toHaveAccessibleDescription('Manage the connected services');
+    expect(dialog.querySelector('.leaf-drawer__icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(dialog).not.toHaveClass('leaf-drawer--divided');
+  });
   it('shares scroll and focus ownership with nested modals and picker portals', async () => {
     function Example() {
       const [drawer, setDrawer] = useState(false);

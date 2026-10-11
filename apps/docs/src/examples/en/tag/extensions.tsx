@@ -1,4 +1,4 @@
-import { CheckableTag, Space, TagGroup } from '@sudden3/leaf-ui';
+import { CheckableTag, Space, TagGroup } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Space direction="vertical" align="start">

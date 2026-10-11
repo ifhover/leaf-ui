@@ -1,10 +1,10 @@
+import { Image, ImagePreviewGroup, Space } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { Image, ImagePreviewGroup } from '@sudden3/leaf-ui';
 
 export function ImageGallery() {
   return (
     <ImagePreviewGroup thumbnails downloadable>
-      <div className="leaf-demo-row">
+      <Space wrap className="leaf-demo-row">
         {[1, 2, 3].map((index) => (
           <Image
             key={index}
@@ -14,7 +14,7 @@ export function ImageGallery() {
             alt={`风景 ${index}`}
           />
         ))}
-      </div>
+      </Space>
     </ImagePreviewGroup>
   );
 }

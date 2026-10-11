@@ -1,7 +1,7 @@
-import { Avatar, Badge } from '@sudden3/leaf-ui';
+import { Avatar, Badge, Space } from '@ifhover/leaf-ui';
 export function AvatarBasic() {
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Small</span>
         <Avatar size="sm">LF</Avatar>
@@ -22,6 +22,6 @@ export function AvatarBasic() {
           <Avatar alt="Unread messages">A</Avatar>
         </Badge>
       </div>
-    </div>
+    </Space>
   );
 }

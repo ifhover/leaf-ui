@@ -1,8 +1,8 @@
-import { Button, type ControlSize, Input, Select } from '@sudden3/leaf-ui';
+import { Button, type ControlSize, Input, Select, Space } from '@ifhover/leaf-ui';
 
 export function ControlSizes() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       {(['sm', 'md', 'lg'] as const).map((size: ControlSize) => (
         <div key={size} className="leaf-demo-control-row">
           <span className="leaf-demo-size">{size}</span>
@@ -19,6 +19,6 @@ export function ControlSizes() {
           <Button size={size}>Search</Button>
         </div>
       ))}
-    </div>
+    </Space>
   );
 }

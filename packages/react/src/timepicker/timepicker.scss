@@ -71,7 +71,7 @@
     position: absolute;
     inset-inline: 0;
     top: 0;
-    height: var(--leaf-time-selection-height, 32px);
+    height: var(--leaf-time-selection-height, var(--leaf-density-option-height));
     translate: 0 var(--leaf-time-selection-y, 0px);
     border: 1px solid var(--leaf-color-primary-alpha-15);
     border-radius: var(--leaf-floating-option-radius);

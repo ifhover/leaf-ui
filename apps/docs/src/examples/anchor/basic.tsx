@@ -1,4 +1,4 @@
-import { Affix, Anchor, Button } from '@sudden3/leaf-ui';
+import { Affix, Anchor, Button } from '@ifhover/leaf-ui';
 import { useCallback, useId, useRef } from 'react';
 export function AnchorBasic({ english = false }: { english?: boolean }) {
   const scroll = useRef<HTMLDivElement>(null),

@@ -20,6 +20,7 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import type { ControlSize, ControlStatus } from '../shared/types';
 
 export interface AutoCompleteOption {
@@ -150,6 +151,12 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   const expanded = open && !disabled && !readOnly;
   useFloatingDismiss(expanded, () => setOpen(false), inputRef, panelRef);
   useActiveOption(expanded, visibleOptions[active] ? `${listId}-${active}` : undefined, panelRef);
+  const highlight = useFloatingHighlight(
+    expanded,
+    panelRef,
+    visibleOptions[active] ? `${listId}-${active}` : undefined,
+    `${text}:${visibleOptions[active]?.value}:${visibleOptions.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
+  );
 
   const select = (option: AutoCompleteOption) => {
     if (option.disabled || readOnly || disabled) return;
@@ -254,6 +261,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         matchWidth
         id={listId}
         className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
+        data-hover-motion=""
         placement={popupPlacement}
         style={{ maxHeight: listHeight, ...popupStyle }}
         container={getPopupContainer}
@@ -266,6 +274,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
             : messages.noMatches
         }
       >
+        <FloatingHighlight style={highlight} selected />
         {loading && !visibleOptions.length ? (
           <div className="leaf-floating__empty">{messages.loading}</div>
         ) : errorContent ? (

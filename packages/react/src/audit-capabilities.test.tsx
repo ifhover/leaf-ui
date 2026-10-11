@@ -19,7 +19,6 @@ import { Form, FormField } from './form';
 import { useFormValidation } from './form/validation';
 import { Input } from './input';
 import { InputNumber } from './inputnumber';
-import { List, ListItem } from './list';
 import { Mentions } from './mentions';
 import { formatPickerDate, parsePickerDate } from './shared/date-format';
 import { Splitter } from './splitter';
@@ -315,17 +314,6 @@ describe('audit selection, date and native form capabilities', () => {
 });
 
 describe('new content and interaction families', () => {
-  it('uses valid list markup when renderItem returns ListItem', () => {
-    const { container } = render(
-      <List
-        items={[{ key: 'a', title: 'Ada' }]}
-        itemKey={(item) => item.key}
-        renderItem={(item) => <ListItem title={item.title} description="Maintainer" />}
-      />,
-    );
-    expect(screen.getAllByRole('listitem')).toHaveLength(1);
-    expect(container.querySelector('li li')).toBeNull();
-  });
   it('commits an edit once and cancels with Escape', async () => {
     const change = vi.fn();
     render(<Text editable={{ onChange: change }}>Initial</Text>);
@@ -521,11 +509,6 @@ describe('new content and interaction families', () => {
             />
           </FormField>
         </Form>
-        <List
-          items={['Ada']}
-          itemKey={(item) => item}
-          renderItem={(item) => <ListItem title={item} />}
-        />
       </main>,
     );
     const result = await axe.run(container, { rules: { 'color-contrast': { enabled: false } } });

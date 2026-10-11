@@ -1,4 +1,4 @@
-import { Badge } from '@sudden3/leaf-ui';
+import { Badge } from '@ifhover/leaf-ui';
 import { ButtonLink } from './button-link';
 import { componentCatalog } from './component-catalog';
 import { CopyButton } from './copy-button';
@@ -76,9 +76,9 @@ export function HomeLayout() {
         </div>
         <div className="leaf-install">
           <Icon name="code" width="15" height="15" />
-          <code>pnpm add @sudden3/leaf-ui</code>
+          <code>pnpm add @ifhover/leaf-ui</code>
           <CopyButton
-            text="pnpm add @sudden3/leaf-ui"
+            text="pnpm add @ifhover/leaf-ui"
             label={t('复制安装命令', 'Copy install command')}
           />
         </div>

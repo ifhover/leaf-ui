@@ -1,4 +1,4 @@
-import { Descriptions } from '@sudden3/leaf-ui';
+import { Descriptions } from '@ifhover/leaf-ui';
 
 export function DescriptionsVertical() {
   return (

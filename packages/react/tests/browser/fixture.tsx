@@ -18,8 +18,6 @@ import {
   FormField,
   Input,
   InputNumber,
-  List,
-  ListItem,
   Mentions,
   Menu,
   Progress,
@@ -35,7 +33,7 @@ import {
   Typography,
   VirtualList,
   type VirtualListHandle,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot } from 'react-dom/client';
@@ -48,7 +46,12 @@ import { ColorFixture } from './color-fixture';
 import { FeedbackFixture } from './feedback-fixture';
 import { MotionFixture } from './motion-fixture';
 import { RadiusFixture } from './radius-fixture';
+import { RefinementsFixture } from './refinements-fixture';
+import { ScrollbarFixture } from './scrollbar-fixture';
 import { SelectionFixture } from './selection-fixture';
+import { SurfaceFixture } from './surface-fixture';
+import { TableFixture } from './table-fixture';
+import { WarningFixture } from './warning-fixture';
 
 const params = new URLSearchParams(location.search);
 const options = [
@@ -259,10 +262,6 @@ function Visual() {
         <Statistic title="Revenue" value={1234.5} precision={2} />
         <Progress type="circle" dashboard percent={65} />
       </Space>
-      <List aria-label="People">
-        <ListItem title="Alice" description="Design" />
-        <ListItem title="Bob" description="Engineering" />
-      </List>
       <Calendar defaultValue={baseline} />
     </>
   );
@@ -336,20 +335,32 @@ if (!root) throw new Error('Missing fixture root');
 createRoot(root).render(
   <ConfigProvider
     locale="en-US"
+    density={params.get('compact') ? 'compact' : 'comfortable'}
     direction={params.get('rtl') ? 'rtl' : 'ltr'}
     theme={
       params.get('tokens')
         ? {
             appearance,
-            controlHeight: 38,
+            controlHeight: 44,
             borderRadius: 5,
-            components: { Button: { borderRadius: 2 }, Input: { borderRadius: 3 } },
+            components: {
+              Button: { borderRadius: 2, padding: '0 20px' },
+              Input: { borderRadius: 3 },
+            },
           }
         : { appearance }
     }
   >
     <main>
-      {fixture === 'radius' ? (
+      {fixture === 'surfaces' ? (
+        <SurfaceFixture />
+      ) : fixture === 'warning' ? (
+        <WarningFixture />
+      ) : fixture === 'scrollbar' ? (
+        <ScrollbarFixture />
+      ) : fixture === 'table' ? (
+        <TableFixture />
+      ) : fixture === 'radius' ? (
         <RadiusFixture />
       ) : fixture === 'colors' ? (
         <ColorFixture />
@@ -357,6 +368,8 @@ createRoot(root).render(
         <AccessibilityWorkbench english />
       ) : fixture === 'feedback' ? (
         <FeedbackFixture />
+      ) : fixture === 'refinements' ? (
+        <RefinementsFixture />
       ) : fixture === 'selection' ? (
         <SelectionFixture />
       ) : fixture === 'motion' ? (

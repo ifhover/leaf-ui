@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { ConfigContext, useLeafConfig } from '../config-provider/context';
 import { leafThemeVariables } from '../theme';
-import { Confirm } from './confirm';
+import { ConfirmDialog } from './confirm';
 import {
   type ConfirmApi,
   ConfirmContext,
@@ -50,7 +50,7 @@ function ConfirmHost({ store }: { store: ConfirmStore }) {
         data-leaf-theme={request.config.theme.appearance}
         style={leafThemeVariables(request.config.theme)}
       >
-        <Confirm
+        <ConfirmDialog
           key={request.id}
           {...request.options}
           open={request.open}

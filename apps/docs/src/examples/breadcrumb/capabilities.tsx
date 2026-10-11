@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@sudden3/leaf-ui';
+import { Breadcrumb } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Breadcrumb

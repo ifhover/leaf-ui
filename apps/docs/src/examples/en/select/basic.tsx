@@ -1,4 +1,4 @@
-import { Select } from '@sudden3/leaf-ui';
+import { Select, Space } from '@ifhover/leaf-ui';
 
 const options = [
   { label: 'Design studio', value: 'design' },
@@ -9,7 +9,7 @@ const options = [
 
 export function SelectBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Choose a team</span>
         <Select aria-label="Choose a team" options={options} placeholder="Select a team" />
@@ -22,6 +22,6 @@ export function SelectBasic() {
         <span className="leaf-demo-label">Disabled team</span>
         <Select aria-label="Disabled team" options={options} disabled defaultValue="product" />
       </div>
-    </div>
+    </Space>
   );
 }

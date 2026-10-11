@@ -4,7 +4,7 @@ Leaf UI supports server rendering. Import the compiled stylesheet at your framew
 
 ## Static styles and dynamic themes
 
-Layout, states and animations are compiled into `@sudden3/leaf-ui/styles.css`. ConfigProvider renders the region's theme variables into HTML; derived sizes use CSS calculations.
+Layout, states and animations use compiled static CSS. `styles.css` supplies base and API-service styles. Browser component entries load component styles; production builds with CSS pruning can retain styles for root named imports on demand. Direct Node entries do not load CSS; use `@ifhover/leaf-ui/styles/all.css` when managing SSR styles yourself. ConfigProvider renders the region's theme variables into HTML; derived sizes use CSS calculations.
 
 Server rendering and dynamic themes therefore work together: the server renders the initial HTML and theme, the client hydrates using the same settings, and React state handles later switches. No CSS-in-JS registry, server style extraction, Sass configuration or SSR opt-out is required.
 
@@ -15,8 +15,8 @@ Server rendering and dynamic themes therefore work together: the server renders 
 ```tsx title="app/layout.tsx"
 import type { ReactNode } from 'react';
 import { cookies } from 'next/headers';
-import type { LeafTheme } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import type { LeafTheme } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const initialTheme: LeafTheme = {
     primaryColor: '#7654c6',
     borderRadius: 8,
-    controlHeight: 34,
+    controlHeight: 40,
     appearance: store.get('leaf-appearance')?.value === 'dark' ? 'dark' : 'light',
   };
 
@@ -47,7 +47,7 @@ This example uses the current async Next.js cookies API. The appearance cookie i
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { Button, ConfigProvider, type LeafTheme } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, type LeafTheme } from '@ifhover/leaf-ui';
 
 export function Providers({
   initialTheme,
@@ -83,7 +83,7 @@ Passing server-rendered content through children preserves its Server Component 
 ```tsx title="app/project-form.tsx"
 'use client';
 
-import { Button, Form, FormField, Input } from '@sudden3/leaf-ui';
+import { Button, Form, FormField, Input } from '@ifhover/leaf-ui';
 
 export function ProjectForm() {
   return (
@@ -109,8 +109,8 @@ Import styles and wrap the page in `pages/_app.tsx`:
 
 ```tsx title="pages/_app.tsx"
 import type { AppProps } from 'next/app';
-import { ConfigProvider } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -152,16 +152,7 @@ FileList renders URL-based metadata on the server. Upload keeps browser-selected
 
 Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.
 
-## Component CSS imports
-
-Use subpaths and standalone CSS when using only part of the library:
-
-```tsx
-import { Button } from '@sudden3/leaf-ui/button';
-import '@sudden3/leaf-ui/button/style.css';
-```
-
-Each CSS entry includes shared styles and its internal visual dependencies. Import styles for each component you compose. When using ConfigProvider's feedback services, include `@sudden3/leaf-ui/config-provider/style.css`, or use the whole `styles.css`. Component subpaths retain the Next.js client boundary.
+See [getting started](/en/guide/getting-started) for styles on demand. Default Node entries remain free of CSS imports, so ESM and CommonJS can render directly on the server. Framework browser builds use automatic style entries and retain the Next.js client boundary. For custom SSR or a build without the `browser` export condition, import `@ifhover/leaf-ui/styles/all.css` in the entry that produces page styles and include its emitted stylesheet in the initial HTML.
 
 ## Date, number and popup hydration
 

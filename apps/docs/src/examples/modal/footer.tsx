@@ -1,4 +1,4 @@
-import { Button, Modal } from '@sudden3/leaf-ui';
+import { Button, Modal } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ModalFooter() {
   const [open, setOpen] = useState(false);

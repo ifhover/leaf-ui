@@ -18,6 +18,8 @@ export interface ProgressProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chi
   color?: string;
   size?: number;
   indeterminate?: boolean;
+  /** Animate a soft shimmer within the completed part of an unfinished line. */
+  active?: boolean;
   trailColor?: string;
   segments?: readonly ProgressSegment[];
   steps?: number;
@@ -34,6 +36,7 @@ export function Progress({
   color,
   size = 100,
   indeterminate = false,
+  active = true,
   trailColor,
   segments,
   steps,
@@ -71,6 +74,9 @@ export function Progress({
     remaining -= percent;
     return { ...segment, percent };
   });
+  const filled = sections?.length
+    ? sections.reduce((total, section) => total + section.percent, 0)
+    : value;
   return (
     <div
       {...props}
@@ -82,6 +88,16 @@ export function Progress({
       aria-valuetext={indeterminate ? messages.loading : `${value}%`}
       data-status={state}
       data-indeterminate={indeterminate || undefined}
+      data-active={
+        (active &&
+          type === 'line' &&
+          !stepCount &&
+          !indeterminate &&
+          state === 'normal' &&
+          filled > 0 &&
+          filled < 100) ||
+        undefined
+      }
       className={classes(
         'leaf-progress',
         `leaf-progress--${type}`,

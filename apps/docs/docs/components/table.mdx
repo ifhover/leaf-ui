@@ -1,0 +1,349 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { TableBasic, TableSimple, TableStates } from '../../src/examples/table/basic';
+import { TableData, TableColumns } from '../../src/examples/table/data';
+import { TableVirtual, TableServer, TableGrouped, TableEditable } from '../../src/examples/table/advanced';
+import { TableReordering } from '../../src/examples/table/reordering';
+
+# Table 表格
+
+浏览、筛选和管理结构化数据。
+
+## 选择用法
+
+- **Table**：用表头、行和单元格组合静态表格，或自行控制内容。无需安装表格引擎。
+- **DataTable**：传入数据与列即可使用排序和分页；复杂场景传入自己的 TanStack Table 实例，获得筛选、选择、展开和列管理的统一界面。
+
+```tsx
+import { Table } from '@ifhover/leaf-ui/table';
+```
+
+使用 DataTable 时安装可选依赖：
+
+```bash
+npm install @tanstack/react-table@^8.21.3
+```
+
+```tsx
+import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
+import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table/tanstack';
+```
+
+组件子路径自动加载所需样式，在应用入口按[快速开始](/guide/getting-started)导入一次基础样式即可。DataTable 及其类型只从适配器子路径导入，不从组件库根入口导出。
+
+## 基础用法
+
+<ComponentExample title="团队成员" preview={<TableBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/basic.tsx"
+```
+
+</ComponentExample>
+
+`Table` 与 `Table.Root` 等价。支持原生属性、DOM ref、`colSpan`、`rowSpan`、自定义表头和单元格；可用 `Table.Caption` 或 `aria-label` 为表格命名。
+
+## 快捷数据表格
+
+<ComponentExample title="传入数据和列" preview={<TableSimple />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/basic.tsx"
+```
+
+</ComponentExample>
+
+`data + columns + rowKey` 模式内部创建一个 TanStack 实例，复用与高级模式相同的界面。`rowKey` 必须是稳定且唯一的字符串或数字字段，或返回字符串的函数。默认启用本地排序、筛选、分页和展开；使用 `options` 定制初始状态、受控回调或服务端配置。`pagination={false}` 时展示全部行，不在内部截断数据。
+
+两种模式互斥：提供 `table` 后不要再传 `data`、`columns`、`rowKey` 或 `options`。高级分组、请求缓存等业务状态建议直接使用自己的 `useReactTable` 实例。
+
+## 排序、筛选、选择与分页
+
+<ComponentExample title="管理团队成员" preview={<TableData />} fileName="data.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/data.tsx"
+```
+
+</ComponentExample>
+
+`table` 是唯一的数据状态来源。Leaf UI 不重新排序或分页，不另建 `selectedRowKeys`、筛选和展开状态。需要哪种能力，就在 `useReactTable` 中配置对应的行模型：
+
+| 能力 | TanStack 配置 |
+| --- | --- |
+| 基础数据 | `getCoreRowModel()` |
+| 本地排序 | `getSortedRowModel()` |
+| 本地搜索与筛选 | `getFilteredRowModel()` |
+| 本地分页 | `getPaginationRowModel()` |
+| 树形或分组展开 | `getExpandedRowModel()`，树形数据同时配置 `getSubRows` |
+| 行详情 | `getRowCanExpand`，以及 DataTable 的 `renderExpandedRow` |
+| 分组与合计 | `getGroupedRowModel()`、列的 `aggregationFn` 与 `aggregatedCell` |
+
+使用稳定的 `getRowId`，不要用排序或分页后的数组下标。默认全选只影响当前页可选择的行；`selectAllMode="all"` 作用于实例已加载并参与筛选的数据，**不代表全选服务端尚未加载的记录**。跨页选择由 TanStack 的 `rowSelection` 保存；服务端场景通过这些 key 处理业务，不要只依赖当前页的 `getSelectedRowModel()`。
+
+`DataTable.Search` 默认更新全局搜索，指定 `columnId` 后只筛选该列。`DataTable.ColumnVisibility` 保留 `enableHiding: false` 的列。Shift 点击表头可多列排序；`aria-sort` 标记第一排序列。
+
+## 固定表头、固定列与列宽
+
+<ComponentExample title="紧凑布局与列调整" preview={<TableColumns />} fileName="data.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/data.tsx"
+```
+
+</ComponentExample>
+
+通过 `columnPinning` 控制固定列，`columnOrder` 控制列顺序，列的 `size`、`minSize` 和 `maxSize` 控制宽度。`left` / `right` 在 Leaf UI 中对应逻辑起始 / 结束侧，跟随 RTL 方向。RTL 场景同时给 TanStack 配置 `columnResizeDirection: 'rtl'`。
+
+表格默认填满所在容器，列所需宽度超过容器时才在内部横向滚动。表头默认固定；设置 `maxHeight` 后，超出的行在表体内滚动。悬浮滚动条使用 [Scrollbar](./scrollbar)，纵向条从表头下方开始；未溢出或到达滚动边界时，滚轮继续滚动页面。
+
+列宽手柄可拖动，也可聚焦后用左右方向键调整；Shift 增大步长，Home / End 跳到边界，双击恢复初始宽度。建议给可调整列设置合理的最大宽度。`ConfigProvider` 的 `density` 和 `theme.components.Table` 控制整个区域的密度、圆角、内边距、字号、颜色、背景和阴影。
+
+## 分组与聚合
+
+<ComponentExample title="按团队汇总" preview={<TableGrouped />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
+```
+
+</ComponentExample>
+
+## 编辑单元格
+
+<ComponentExample title="编辑成员姓名" preview={<TableEditable />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
+```
+
+</ComponentExample>
+
+通过列的 `cell` 渲染 Input、Select 或其他控件；业务数据、提交和校验仍由应用管理，不建立另一套表格表单仓库。行详情收起后保留已打开内容中的输入状态；未打开的详情不挂载业务内容。
+
+## 行和列排序
+
+<ComponentExample title="调整团队顺序" preview={<TableReordering />} fileName="reordering.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/reordering.tsx"
+```
+
+</ComponentExample>
+
+行首和表头的手柄支持鼠标、触摸和键盘。聚焦后按空格开始，方向键移动，空格确认，Escape 取消。`onRowReorder` 返回当前页重排后的行与稳定标识，应用负责更新业务数组或提交服务端；列拖拽直接更新 TanStack 的 `columnOrder`。
+
+行拖拽仅用于未排序、未筛选、未分组、未展开的平面非虚拟表格，其他模式不展示行手柄，避免视觉顺序和业务顺序冲突。列拖拽仅支持单层表头且不跨越固定列分区；多层表头仍可通过 `columnOrder` 明确控制。拖拽不会修改行选择或编辑器状态。
+
+## 大数据
+
+<ComponentExample title="一万行成员" preview={<TableVirtual />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
+```
+
+</ComponentExample>
+
+`virtual` 是显式的行虚拟化，默认不开启。为滚动区域设置 `maxHeight`，并按实际布局设置估算行高；动态高度会被重新测量，焦点所在的行不会因滚动而立即卸载。SSR 首屏输出估算窗口，客户端接管后测量实际高度。
+
+这不是电子表格式 DataGrid：不提供方向键逐单元格导航、列虚拟化或自动移动端卡片化。普通表格维持原生语义和横向滚动；需要浏览全部数据的屏幕阅读器用户可关闭虚拟化，改用分页。
+
+## 服务端数据
+
+<ComponentExample title="远程分页与重试" preview={<TableServer />} fileName="advanced.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
+```
+
+</ComponentExample>
+
+远程分页使用 `manualPagination: true` 与 `rowCount`。远程排序 / 筛选分别使用 `manualSorting` / `manualFiltering`；把 TanStack 的受控状态用于请求参数，并取消过期请求。没有总数时可配置 `pageCount: -1`，分页器只展示上一页与下一页，通过 `<DataTable.Pagination hasNextPage={hasMore} />` 控制能否继续翻页。
+
+刷新时保留已有行，展示 loading 遮罩并禁止重复交互。首次加载、空数据、请求失败使用独立状态行。`DataTable` 自动展示内容和分页器；若不分页，请传 `pagination={false}`；自定义布局时通过 `children` 显式排列 Toolbar、Content 和 Footer，此时只渲染提供的子组件。
+
+## 空数据、加载和错误
+
+<ComponentExample title="数据状态" preview={<TableStates />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/table/basic.tsx"
+```
+
+</ComponentExample>
+
+## Table API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 行的展示尺寸。 |
+| `bordered` | `boolean` | `false` | 展示列之间的分隔线。 |
+| `striped` | `boolean` | `false` | 展示交替行背景。 |
+| `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 滚动区域的最大高度。 |
+| `minWidth` | `CSSProperties['minWidth']` | — | 表格最小宽度。 |
+| `tableLayout` | `CSSProperties['tableLayout']` | — | 原生表格布局方式。 |
+| `tableStyle` | `CSSProperties` | — | 原生 table 的样式；style 与 className 用于外层。 |
+| `scrollRef` | `Ref<HTMLDivElement>` | — | 滚动区域的 DOM ref；组件 ref 指向 table。 |
+| `loading` | `boolean` | `false` | 保留内容并展示加载遮罩。 |
+
+## TableRow API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `selected` | `boolean` | — | 展示行的选中背景；交互状态由选择控件表达。 |
+
+## TableCell API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 单元格内容对齐。 |
+| `pinned` | `'start' \| 'end'` | — | 固定在逻辑起始或结束侧。 |
+| `pinOffset` | `number` | `0` | 距离该侧的像素数。 |
+| `pinEdge` | `boolean` | — | 展示固定列边缘的淡阴影。 |
+
+## TableColumnHeader API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头内容对齐。 |
+| `pinned` | `'start' \| 'end'` | — | 固定在逻辑起始或结束侧。 |
+| `pinOffset` | `number` | `0` | 距离该侧的像素数。 |
+| `pinEdge` | `boolean` | — | 展示固定列边缘的淡阴影。 |
+
+
+继承原生 `th` 属性，固定和对齐参数与 TableCell 相同。`scope` 默认是 `'col'`；分组表头可设置 `'colgroup'`。
+
+## TableState API
+
+用于 `Table.Empty` 和 `Table.Loading`；放在 Table.Body 中。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `colSpan` | `number` | `1` | 状态行跨越的列数。 |
+| `children` | `ReactNode` | — | 自定义状态内容。 |
+
+## TableError API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `colSpan` | `number` | `1` | 状态行跨越的列数。 |
+| `children` | `ReactNode` | — | 自定义失败提示。 |
+| `onRetry` | `() => void` | — | 传入后展示重试按钮。 |
+
+## DataTable API
+
+此表用于传入 `table` 实例的模式；直接传入数据时使用 [DataTableData API](#datatabledata-api)。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `table` | `TanStackTable<TData>` | — | 必需。由 useReactTable 创建的实例，唯一的数据与状态来源。 |
+| `children` | `ReactNode` | — | 自定义布局；传入后不再渲染默认 Content 和 Pagination。 |
+| `caption` | `ReactNode` | — | 表格说明。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `bordered` | `boolean` | `false` | 展示列之间的分隔线。 |
+| `striped` | `boolean` | `false` | 展示交替行背景。 |
+| `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
+| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | 滚动区域最大高度；虚拟模式未指定时使用 400。 |
+| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | 表格最小宽度；默认根据可见列宽计算。 |
+| `loading` | `boolean` | `false` | 展示加载状态。 |
+| `emptyContent` | `ReactNode` | — | 空数据内容。 |
+| `error` | `ReactNode` | — | 请求失败提示；null、undefined 或 false 不展示。 |
+| `onRetry` | `() => void` | — | 请求重试。 |
+| `selection` | `false \| 'single' \| 'multiple'` | `false` | 不选择、单选或多选。 |
+| `selectAllMode` | `'page' \| 'all'` | `'page'` | 全选当前页，或实例内已加载的可选择行。 |
+| `getRowLabel` | `(row: Row<TData>) => string` | — | 行操作的可访问名称；默认使用稳定 row.id。 |
+| `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | 渲染叶子行详情，同时配置 getRowCanExpand。 |
+| `getRowProps` | `(row: Row<TData>) => `[`TableRowProps`](#tablerow-api) | — | 自定义行属性与事件。 |
+| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`TableCellProps`](#tablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
+| `resizable` | `boolean` | `false` | 展示可调整列的宽度手柄。 |
+| `columnReordering` | `boolean` | `false` | 展示单层表头的拖拽手柄。 |
+| `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | 展示行拖拽手柄，并返回重排后的当前页行；应用负责更新数据。 |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | 启用行虚拟化。 |
+| `pagination` | `boolean` | `true` | 默认布局是否展示分页器。 |
+| `tableRef` | `Ref<HTMLTableElement>` | — | 原生表格 DOM ref。 |
+
+尺寸、边框、交替行、固定表头、滚动区域和 loading 与 Table 相同。`aria-label` / `aria-labelledby` 应用于原生表格，其他原生 div 属性用于外层。
+
+## DataTableSearch API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 默认跟随 DataTable 的尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 输入框的校验状态。 |
+| `prefix` | `ReactNode` | — | 前置内容；默认是搜索图标。 |
+| `suffix` | `ReactNode` | — | 后置内容。 |
+| `allowClear` | `boolean` | `true` | 展示清除操作。 |
+| `onClear` | `() => void` | — | 清除搜索内容时调用。 |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | 显示或定制输入字数。 |
+| `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | 按 Enter 时调用。 |
+| `columnId` | `string` | — | 指定筛选列；未指定时进行全局搜索。 |
+
+其余属性沿用 Input；value 与 onChange 由实例管理。
+
+## DataTableColumnVisibility API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 自定义按钮文字。 |
+| `label` | `string` | — | 面板的可访问名称。 |
+
+## DataTablePagination API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `showSizeChanger` | `boolean` | `true` | 展示每页条数选择器。 |
+| `pageSizeOptions` | `readonly number[]` | — | 可选择的每页条数。 |
+| `showQuickJumper` | `boolean` | — | 展示页码跳转输入框。 |
+| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | 定制总数及当前范围的展示。 |
+| `simple` | `boolean` | — | 使用简洁分页器。 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `hideOnSinglePage` | `boolean` | — | 只有一页时隐藏分页器。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 默认跟随 DataTable 的尺寸。 |
+| `hasNextPage` | `boolean` | — | 未知总数时控制下一页是否可用。 |
+
+
+沿用 Pagination 的展示参数，`total`、`current`、`pageSize` 和 `onChange` 由实例管理；`showSizeChanger` 默认开启。未知总数模式只提供上一页和下一页。
+
+## DataTableContent API
+
+`DataTable.Content` 支持原生 `div` 属性，包括 `className`、`style` 和事件。表格的布局、选择、展开与加载参数在 [DataTable](#datatable-api) 上配置，表格 DOM ref 使用 `tableRef`。公开类型为 `DataTableContentProps`。
+
+## DataTableColumnMeta
+
+可以在 TanStack 列定义的 `meta` 中使用以下属性。此类型可用于自己组装配置；函数式 header 建议同时设置 label。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `label` | `string` | — | 列管理与行操作使用的纯文字列名。 |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头和单元格对齐。 |
+| `cellClassName` | `string` | — | 单元格类名。 |
+| `headerClassName` | `string` | — | 表头类名。 |
+
+## DataTableVirtualOptions
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `estimateRowHeight` | `number` | `48` | 测量前的估算行高。 |
+| `overscan` | `number` | `5` | 在可视区前后额外渲染的行数。 |
+
+## 类型与组合
+
+```ts
+import type { TableProps, TableRowProps, TableCellProps, TableColumnHeaderProps, TableStateProps, TableErrorProps } from '@ifhover/leaf-ui/table';
+import type { DataTableProps, DataTableDataProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table/tanstack';
+import type { ColumnDef, Table as TanStackTable, Row, Cell } from '@tanstack/react-table';
+```
+
+Header / Body / Footer、Caption、Row 和 Cell 支持对应元素的原生属性与 DOM ref。DataTable.Toolbar / Footer / Content 支持原生 div 属性。TanStack 的 [列定义](https://tanstack.com/table/v8/docs/guide/column-defs)、[受控状态](https://tanstack.com/table/v8/docs/framework/react/guide/table-state)、[行选择](https://tanstack.com/table/v8/docs/guide/row-selection) 和 [列固定](https://tanstack.com/table/v8/docs/guide/column-pinning) 使用其原生类型与 API，不另造一套完整列配置。
+
+## DataTableData API
+
+此表展示快捷模式的额外属性；其余展示、选择、展开和滚动参数与 [DataTable API](#datatable-api) 相同，不接受 `table`。公开类型为 `DataTableDataProps<TData>`。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `data` | `readonly TData[]` | — | 必需。展示的数据，更新时使用新数组。 |
+| `columns` | `ColumnDef<TData>[]` | — | 必需。TanStack 的原生列定义。 |
+| `rowKey` | `keyof TData \| ((row: TData, index: number) => string)` | — | 必需。稳定唯一的标识字段，或返回字符串标识的函数。 |
+| `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调和服务端配置。 |
+
+## DataTableRowReorderInfo
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `rows` | `readonly Row<TData>[]` | — | 必需。当前页重排后的行；通过 row.original 取得业务数据。 |
+| `fromIndex` | `number` | — | 必需。原始当前页索引，从 0 开始。 |
+| `toIndex` | `number` | — | 必需。目标当前页索引，从 0 开始。 |
+| `activeRow` | `Row<TData>` | — | 必需。正在移动的行，包含稳定 row.id。 |
+| `overRow` | `Row<TData>` | — | 必需。放置目标行，包含稳定 row.id。 |

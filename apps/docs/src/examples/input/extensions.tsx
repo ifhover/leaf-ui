@@ -1,4 +1,4 @@
-import { Input, InputGroup, InputSearch, Select, Space } from '@sudden3/leaf-ui';
+import { Input, InputGroup, InputSearch, Select, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ExtensionDemo() {
   const [query, setQuery] = useState('');
@@ -14,7 +14,7 @@ export function ExtensionDemo() {
         />
       </label>
       <p role="status">搜索内容：{query || '未搜索'}</p>
-      <div>
+      <div className="leaf-demo-case">
         <p>输入组合</p>
         <InputGroup aria-label="网址">
           <Select

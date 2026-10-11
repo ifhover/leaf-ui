@@ -13,7 +13,7 @@ import {
   Space,
   Switch,
   Tabs,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 import { useId, useRef, useState } from 'react';
 
 /** The documentation and browser acceptance exercise this same interactive sample. */

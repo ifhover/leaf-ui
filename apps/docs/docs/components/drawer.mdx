@@ -1,3 +1,4 @@
+import { DrawerSections } from '../../src/examples/drawer/sections';
 import { Capabilities } from '../../src/examples/drawer/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { DrawerBasic } from '../../src/examples/drawer/basic';
@@ -24,6 +25,17 @@ import { DrawerBasic } from '../../src/examples/drawer/basic';
 
 </ComponentExample>
 
+## 通知偏好
+
+标题、内容与底部操作分区，适合较长的设置流程。
+
+<ComponentExample title="通知偏好" preview={<DrawerSections />} fileName="sections.tsx">
+
+```tsx lineNumbers file="../../src/examples/drawer/sections.tsx"
+```
+
+</ComponentExample>
+
 ## Drawer API
 
 | 属性 | 类型 | 默认值 | 说明 |
@@ -32,6 +44,9 @@ import { DrawerBasic } from '../../src/examples/drawer/basic';
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
 | `open` | `boolean` | 必填 | 必需。是否展开 |
 | `title` | `ReactNode` | — | 标题 |
+| `description` | `ReactNode` | — | 补充说明。 |
+| `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
+| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
 | `footer` | `ReactNode` | — | 底部内容 |
 | `extra` | `ReactNode` | — | 标题旁的操作内容 |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
@@ -42,14 +57,14 @@ import { DrawerBasic } from '../../src/examples/drawer/basic';
 | `keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩 / Escape 关闭 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `afterClose` | `() => void` | — | 关闭过渡结束后触发 |
-| `forceRender` | `boolean` | — | 打开前也挂载内容，关闭时保持隐藏。 |
-| `destroyOnClose` | `boolean` | — | 关闭过渡完成后卸载内容；默认保留。 |
+| `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
+| `destroyOnClose` | `boolean` | `false` | 关闭过渡完成后卸载内容；默认保留。 |
 | `preserve` | `boolean` | — | 显式控制关闭后是否保留内容，优先于 destroyOnClose。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 自定义挂载或滚动容器。 |
-| `push` | `boolean \| number` | — | 打开嵌套抽屉时推动父弹层，可指定距离。 |
-| `resizable` | `boolean` | — | 允许拖动和使用方向键调整大小。 |
-| `minSize` | `number` | — | 最小尺寸，单位为像素。 |
-| `maxSize` | `number` | — | 最大尺寸，单位为像素。 |
+| `push` | `boolean \| number` | `false` | 打开嵌套抽屉时推动父弹层，可指定距离。 |
+| `resizable` | `boolean` | `false` | 允许拖动和使用方向键调整大小。 |
+| `minSize` | `number` | `240` | 最小尺寸，单位为像素。 |
+| `maxSize` | `number` | `900` | 最大尺寸，单位为像素。 |
 | `onResize` | `(size: number) => void` | — | 大小改变时调用。 |
 
 ## 类型
@@ -57,9 +72,13 @@ import { DrawerBasic } from '../../src/examples/drawer/basic';
 定义组件属性或组装列表时可导入相关类型。
 
 ```ts
-import type { DrawerProps } from '@sudden3/leaf-ui';
+import type { DrawerProps } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
 
 通过 footer 放置取消、提交等操作；表单提交按钮可使用 form 属性关联抽屉内的表单。标题为空时请使用 aria-label 提供名称。支持嵌套弹窗和抽屉，关闭后焦点会回到打开位置。
+
+## 外观与丰富内容
+
+`description` 与 `icon` 用于说明当前任务。默认标题和底部操作有浅分隔线，底部使用淡灰辅助面；`divided={false}` 使用留白分区。

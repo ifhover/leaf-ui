@@ -47,8 +47,8 @@
   }
   &__label {
     color: var(--leaf-color-text-subtle);
-    font-size: 12px;
-    margin-bottom: 4px;
+    font-size: var(--leaf-font-size-sm);
+    margin-bottom: 2px;
   }
   &--right &__item {
     padding-inline: 0 26px;

@@ -1,16 +1,18 @@
 .leaf-popconfirm__content {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 .leaf-popconfirm__icon {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-popconfirm-icon-background);
+  width: 18px;
+  height: calc(var(--leaf-font-size) * 1.5);
+  > svg {
+    width: 18px;
+    height: 18px;
+  }
   &:empty {
     display: none;
   }
@@ -35,13 +37,14 @@
   min-width: 0;
 }
 .leaf-popconfirm__title {
-  font-weight: 600;
+  font-weight: var(--leaf-font-weight);
   color: var(--leaf-color-text);
-  letter-spacing: -0.015em;
+  line-height: 1.5;
 }
 .leaf-popconfirm__description {
-  margin-top: 5px;
+  margin-top: 2px;
   color: var(--leaf-color-text-muted);
+  font-size: var(--leaf-font-size-sm);
 }
 .leaf-popconfirm__actions {
   display: flex;

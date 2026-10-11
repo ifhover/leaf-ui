@@ -1,7 +1,7 @@
-import { TimePicker } from '@sudden3/leaf-ui';
+import { Space, TimePicker } from '@ifhover/leaf-ui';
 export function TimePickerTwelveHours() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">12小时制</span>
         <TimePicker aria-label="12小时制" use12Hours defaultValue="14:30" />
@@ -16,6 +16,6 @@ export function TimePickerTwelveHours() {
           defaultValue="00:05:30"
         />
       </div>
-    </div>
+    </Space>
   );
 }

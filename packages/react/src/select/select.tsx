@@ -23,6 +23,7 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import { useListMotion } from '../shared/motion';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useText } from '../shared/use-text';
@@ -301,6 +302,12 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     };
     useFloatingDismiss(open, close, input, panel, root);
     useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined, panel);
+    const highlight = useFloatingHighlight(
+      open,
+      panel,
+      highlighted >= 0 ? `${panelId}-${highlighted}` : undefined,
+      `${query}:${filtered[highlighted]?.value}:${rows.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
+    );
     useEffect(() => {
       if (!open) setQuery('');
     }, [open]);
@@ -655,6 +662,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           maxWidth={popupMaxWidth}
           id={panelId}
           className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}
+          data-hover-motion=""
           style={{ maxHeight: listHeight, ...popupStyle }}
           onScroll={onPopupScroll}
           role="listbox"
@@ -662,6 +670,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
           aria-label={inputProps['aria-label'] ?? messages.select}
           aria-multiselectable={multiple || undefined}
         >
+          <FloatingHighlight style={highlight} />
           {(popupRender ?? ((content: ReactNode) => content))(
             loading && !filtered.length ? (
               <div className="leaf-floating__empty">{messages.loading}</div>

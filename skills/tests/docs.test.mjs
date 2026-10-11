@@ -6,10 +6,13 @@ import test from 'node:test';
 import { pageUrl, queryDocs, resolveInstallation } from '../leaf-ui/scripts/docs.mjs';
 
 const packageName = '@sudden3/leaf-ui';
-const metadata = (version) => ({ package: packageName, version });
-const index = (version, name = 'Button') => ({
+const metadata = (version, installedPackage = packageName) => ({
+  package: installedPackage,
+  version,
+});
+const index = (version, name = 'Button', installedPackage = packageName) => ({
   schemaVersion: 1,
-  package: packageName,
+  package: installedPackage,
   version,
   exports: [{ name, kind: 'export' }],
   pages: ['en', 'zh'].map((language) => ({
@@ -19,39 +22,107 @@ const index = (version, name = 'Button') => ({
     symbols: [{ name, kind: 'export' }],
   })),
 });
-const markdown = (version) =>
-  `> Leaf UI ${version} · Package: ${packageName}\n\n# Button\n\n| Property | Type |\n| --- | --- |\n| children | ReactNode |`;
+const markdown = (version, installedPackage = packageName) =>
+  `> Leaf UI ${version} · Package: ${installedPackage}\n\n# Button\n\n| Property | Type |\n| --- | --- |\n| children | ReactNode |`;
 
 test('resolve installed packages independently for two apps, ignoring dependency ranges', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-skill-test-'));
   try {
-    for (const [app, version] of [
-      ['old', '0.2.0'],
-      ['new', '0.3.0'],
+    for (const [app, version, installedPackage] of [
+      ['old', '0.2.0', '@sudden3/leaf-ui'],
+      ['new', '0.5.0', '@ifhover/leaf-ui'],
     ]) {
       const directory = path.join(root, app);
-      const dependency = path.join(directory, 'node_modules/@sudden3/leaf-ui');
+      const dependency = path.join(directory, 'node_modules', installedPackage);
       await mkdir(dependency, { recursive: true });
       await writeFile(
         path.join(directory, 'package.json'),
-        JSON.stringify({ dependencies: { [packageName]: '^0.1.0' } }),
+        JSON.stringify({ dependencies: { [installedPackage]: '^0.1.0' } }),
       );
       await writeFile(
         path.join(dependency, 'package.json'),
         JSON.stringify({
-          name: packageName,
+          name: installedPackage,
           version,
           types: './dist/esm/index.d.ts',
           exports: { './package.json': './package.json' },
         }),
       );
       const resolved = await resolveInstallation(directory);
+      assert.equal(resolved.package, installedPackage);
       assert.equal(resolved.version, version);
       assert.equal(resolved.typesPath, path.join(dependency, 'dist/esm/index.d.ts'));
     }
     await assert.rejects(resolveInstallation(root), /Cannot resolve/);
   } finally {
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('an application resolving both scopes must select the package matching its imports', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-two-scopes-test-'));
+  try {
+    for (const [name, version] of [
+      ['@ifhover/leaf-ui', '0.5.0'],
+      ['@sudden3/leaf-ui', '0.4.2'],
+    ]) {
+      const dependency = path.join(root, 'node_modules', name);
+      await mkdir(dependency, { recursive: true });
+      await writeFile(
+        path.join(dependency, 'package.json'),
+        JSON.stringify({
+          name,
+          version,
+          exports: { './package.json': './package.json' },
+        }),
+      );
+      assert.equal((await resolveInstallation(root, name)).package, name);
+      assert.equal((await resolveInstallation(root, name)).version, version);
+    }
+    await assert.rejects(resolveInstallation(root), /Both Leaf UI packages/);
+    await assert.rejects(
+      resolveInstallation(root, 'another-package'),
+      /Unsupported Leaf UI package/,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('new scope reads its exact version and refuses the other scope even with an identical version', async () => {
+  const installedPackage = '@ifhover/leaf-ui';
+  const installation = metadata('0.5.0', installedPackage);
+  const correctIndex = index('0.5.0', 'Button', installedPackage);
+  const result = await queryDocs({
+    installation,
+    api: 'Button',
+    fetcher: async (url) =>
+      url.pathname.endsWith('.json')
+        ? Response.json(correctIndex)
+        : new Response(markdown('0.5.0', installedPackage)),
+  });
+  assert.equal(result.metadata.package, installedPackage);
+  assert.equal(result.page, 'https://ifhover.github.io/leaf-ui/v/0.5.0/en/components/button.md');
+  await assert.rejects(
+    queryDocs({
+      installation,
+      api: 'Button',
+      fetcher: async () => Response.json(index('0.5.0')),
+    }),
+    /metadata does not match/,
+  );
+  for (const otherPackage of ['@sudden3/leaf-ui', '@ifhover/leaf-ui-other']) {
+    await assert.rejects(
+      queryDocs({
+        installation,
+        api: 'Button',
+        fetcher: async (url) =>
+          url.pathname.endsWith('.json')
+            ? Response.json(correctIndex)
+            : new Response(markdown('0.5.0', otherPackage)),
+      }),
+      /does not identify/,
+    );
   }
 });
 

@@ -31,9 +31,8 @@
     padding: 24px 16px;
     box-sizing: border-box;
     border: 1px dashed var(--leaf-color-border);
-    border-radius: var(--leaf-radius-lg);
+    border-radius: var(--leaf-radius-md);
     background: var(--leaf-color-surface);
-    box-shadow: var(--leaf-shadow-xs);
     color: inherit;
     font: inherit;
     cursor: pointer;
@@ -45,7 +44,6 @@
     &:hover:not(:disabled) {
       border-color: var(--leaf-color-primary);
       background: var(--leaf-color-surface-raised);
-      box-shadow: var(--leaf-shadow-sm);
     }
     &:active:not(:disabled) {
       transform: scale(0.99);
@@ -66,12 +64,12 @@
   &__symbol {
     display: grid;
     place-items: center;
-    width: 52px;
-    height: 52px;
-    border-radius: var(--leaf-radius-lg);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     background: var(--leaf-color-surface-muted);
     color: var(--leaf-color-text-muted);
-    box-shadow: inset 0 0 0 1px var(--leaf-color-border);
+    box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
@@ -81,13 +79,13 @@
   &[data-dragging] &__symbol {
     color: var(--leaf-color-primary);
     background: var(--leaf-color-primary-surface-8);
-    transform: translateY(-4px) scale(1.06);
+    transform: translateY(-2px);
   }
   &__dropzone:active:not(:disabled) &__symbol {
     transform: translateY(-1px) scale(0.98);
   }
   &__title {
-    font-weight: 500;
+    font-weight: var(--leaf-font-weight);
   }
   &__hint {
     color: var(--leaf-color-text-muted);

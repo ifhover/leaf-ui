@@ -12,8 +12,8 @@ import { MessageShared } from '../../src/examples/message/shared';
 在应用入口使用 `ConfigProvider`，它会自动管理消息。页面和业务组件调用 `useMessage` 后即可显示消息。
 
 ```tsx
-import { ConfigProvider } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export function Root() {
   return <ConfigProvider><App /></ConfigProvider>;
@@ -64,7 +64,7 @@ export function Root() {
 未使用 `ConfigProvider` 时，可在入口使用 `MessageProvider`。显式添加它也可以为某个区域建立独立的消息队列。
 
 ```tsx
-import { MessageProvider } from '@sudden3/leaf-ui';
+import { MessageProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
   return <MessageProvider><App /></MessageProvider>;
@@ -111,7 +111,7 @@ export function Root() {
 定义组件属性或组装变量时可导入相关类型。
 
 ```ts
-import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@sudden3/leaf-ui';
+import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明

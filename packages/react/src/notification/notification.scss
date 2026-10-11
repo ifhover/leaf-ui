@@ -58,14 +58,14 @@
 .leaf-notification {
   display: flex;
   gap: var(--leaf-component-notification-gap, 12px);
-  padding: var(--leaf-component-notification-padding, 18px);
-  border: 1px solid var(--leaf-color-border);
+  padding: var(--leaf-component-notification-padding, 16px);
+  border: 1px solid var(--leaf-color-divider);
   border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
   background: var(
     --leaf-component-notification-background,
     var(--leaf-color-surface-raised, var(--leaf-color-surface))
   );
-  box-shadow: var(--leaf-component-notification-shadow, var(--leaf-shadow-lg));
+  box-shadow: var(--leaf-component-notification-shadow, var(--leaf-shadow-md));
   color: var(--leaf-component-notification-color, var(--leaf-color-text));
   font: var(--leaf-component-notification-font-size, var(--leaf-font-size))/1.6
     var(--leaf-font-family);
@@ -81,11 +81,13 @@
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: var(--leaf-radius);
+    width: 20px;
+    height: calc(1em * 1.6);
     color: var(--leaf-notification-color);
-    background: var(--leaf-notification-color-alpha-9);
+    > svg {
+      width: 20px;
+      height: 20px;
+    }
   }
   &__body {
     flex: 1;
@@ -95,8 +97,7 @@
   &__title {
     flex: 1;
     min-width: 0;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-weight: var(--leaf-font-weight);
   }
   &__header {
     display: flex;
@@ -104,7 +105,7 @@
     gap: 8px;
   }
   &__description {
-    margin-top: 5px;
+    margin-top: 2px;
     color: var(--leaf-color-text-muted);
   }
   &__actions {

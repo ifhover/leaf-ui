@@ -1,4 +1,4 @@
-import { Collapse, type CollapseItem, Input } from '@sudden3/leaf-ui';
+import { Collapse, type CollapseItem, Input, Space } from '@ifhover/leaf-ui';
 
 const items: CollapseItem[] = [
   { key: 'about', label: 'About the project', children: <p>About Leaf Garden.</p> },
@@ -16,7 +16,7 @@ const items: CollapseItem[] = [
 ];
 export function CollapseBasic() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Expand freely</span>
         <Collapse items={items} defaultActiveKey="about" />
@@ -25,6 +25,6 @@ export function CollapseBasic() {
         <span className="leaf-demo-label">Accordion · Compact</span>
         <Collapse items={items} accordion size="sm" />
       </div>
-    </div>
+    </Space>
   );
 }

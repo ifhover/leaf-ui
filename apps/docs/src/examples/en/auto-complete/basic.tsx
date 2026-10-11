@@ -1,4 +1,4 @@
-import { AutoComplete } from '@sudden3/leaf-ui';
+import { AutoComplete, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = [
@@ -12,7 +12,7 @@ export function AutoCompleteBasic() {
   const [value, setValue] = useState('');
   const [selected, setSelected] = useState('');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Project name</span>
         <AutoComplete
@@ -36,6 +36,6 @@ export function AutoCompleteBasic() {
           defaultValue="Leaf Garden"
         />
       </div>
-    </div>
+    </Space>
   );
 }

@@ -1,14 +1,11 @@
-import { Button } from '@sudden3/leaf-ui';
+import { Button, Space } from '@ifhover/leaf-ui';
 import { Trash2 } from 'lucide-react';
 
 export function ButtonDanger() {
   return (
-    <>
+    <Space wrap>
       <Button danger startIcon={<Trash2 />}>
         删除项目
-      </Button>
-      <Button danger variant="soft">
-        移除成员
       </Button>
       <Button danger variant="outline">
         撤销授权
@@ -22,6 +19,6 @@ export function ButtonDanger() {
       <Button danger loading>
         正在删除
       </Button>
-    </>
+    </Space>
   );
 }

@@ -1,10 +1,10 @@
-import { TimePicker } from '@sudden3/leaf-ui';
+import { Space, TimePicker } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function TimePickerControlled() {
   const [time, setTime] = useState<string | null>('14:30');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">会议时间</span>
         <TimePicker aria-label="会议时间" value={time} onChange={setTime} minuteStep={15} />
@@ -14,6 +14,6 @@ export function TimePickerControlled() {
         <span className="leaf-demo-label">保留不符合间隔的已有值</span>
         <TimePicker aria-label="保留时间" defaultValue="08:07" minuteStep={15} allowClear={false} />
       </div>
-    </div>
+    </Space>
   );
 }

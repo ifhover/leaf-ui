@@ -1,5 +1,5 @@
+import { type FileItem, FileList, Space } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { type FileItem, FileList } from '@sudden3/leaf-ui';
 import { useState } from 'react';
 export function FileListActions() {
   const [items, setItems] = useState<FileItem[]>([
@@ -8,7 +8,7 @@ export function FileListActions() {
     { uid: 'c', url: withBase('/media/empty.txt'), size: 0 },
   ]);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <p className="leaf-demo-note">
         Names can come from the URL; size is optional. Zero-byte files still display their size.
       </p>
@@ -17,6 +17,6 @@ export function FileListActions() {
         removable
         onRemove={(file) => setItems((current) => current.filter((item) => item.uid !== file.uid))}
       />
-    </div>
+    </Space>
   );
 }

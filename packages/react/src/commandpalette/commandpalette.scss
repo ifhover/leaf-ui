@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 .leaf-command-palette {
   .leaf-modal__header {
     padding: 18px 20px 10px;
@@ -44,10 +45,8 @@
     }
   }
   &__group {
-    padding: 12px 10px 5px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
+    @include mixins.section-label;
+    padding: 12px 10px 4px;
   }
   &__selection {
     box-sizing: border-box;
@@ -74,13 +73,13 @@
     margin-inline: -16px;
     margin-block-start: 12px;
     padding: 10px 20px;
-    border-block-start: 1px solid var(--leaf-color-border);
-    background: var(--leaf-color-surface-muted-alpha-50);
+    border-block-start: 1px solid var(--leaf-color-divider);
+    background: var(--leaf-color-surface-muted);
     color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
-    font-size: 11px;
+    font-size: 12px;
     kbd {
       margin-inline-end: 3px;
-      font-size: 11px;
+      font-size: 12px;
     }
   }
   &__error {

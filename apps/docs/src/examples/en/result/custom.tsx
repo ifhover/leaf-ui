@@ -1,4 +1,4 @@
-import { Result } from '@sudden3/leaf-ui';
+import { Result } from '@ifhover/leaf-ui';
 import { Leaf } from 'lucide-react';
 export function ResultCustom() {
   return (

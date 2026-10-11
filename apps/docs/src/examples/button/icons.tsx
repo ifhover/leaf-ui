@@ -1,15 +1,15 @@
-import { Button } from '@sudden3/leaf-ui';
+import { Button, Space } from '@ifhover/leaf-ui';
 import { ArrowRight, Plus, Trash2 } from 'lucide-react';
 
 export function ButtonIcons() {
   return (
-    <>
+    <Space wrap>
       <Button startIcon={<Plus />}>新建项目</Button>
       <Button variant="outline" endIcon={<ArrowRight />}>
         继续下一步
       </Button>
-      <Button variant="soft" aria-label="添加项目" startIcon={<Plus />} />
+      <Button variant="outline" aria-label="添加项目" startIcon={<Plus />} />
       <Button danger variant="outline" aria-label="删除项目" startIcon={<Trash2 />} />
-    </>
+    </Space>
   );
 }

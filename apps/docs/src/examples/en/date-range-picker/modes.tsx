@@ -1,7 +1,7 @@
-import { DateRangePicker } from '@sudden3/leaf-ui';
+import { DateRangePicker, Space } from '@ifhover/leaf-ui';
 export function DateRangePickerModes() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Year range</span>
         <DateRangePicker aria-label="Year range" picker="year" placeholder="Year range" />
@@ -23,6 +23,6 @@ export function DateRangePickerModes() {
           use12Hours
         />
       </div>
-    </div>
+    </Space>
   );
 }

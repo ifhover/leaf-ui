@@ -2,7 +2,7 @@
 
 轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 ConfigProvider 调整颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
 
-[在线文档](https://ifhover.github.io/leaf-ui/) · [更新记录](https://ifhover.github.io/leaf-ui/changelog.html) · [npm](https://www.npmjs.com/package/@sudden3/leaf-ui)
+[在线文档](https://ifhover.github.io/leaf-ui/) · [更新记录](https://ifhover.github.io/leaf-ui/changelog.html) · [npm](https://www.npmjs.com/package/@ifhover/leaf-ui)
 
 使用 AI 编写界面时，可在应用目录安装按项目实际版本查询 API 的 Skill：`npx skills add ifhover/leaf-ui --skill leaf-ui`。安装与使用见 [AI 与 Skills](https://ifhover.github.io/leaf-ui/guide/ai.html)，文档顶部可切换已发布版本。
 
@@ -11,14 +11,14 @@
 在你的 React 应用中安装组件包：
 
 ```bash
-pnpm add @sudden3/leaf-ui
+pnpm add @ifhover/leaf-ui
 ```
 
-也可以使用 `npm install @sudden3/leaf-ui` 或 `yarn add @sudden3/leaf-ui`。样式只需在应用入口引入一次，使用组件无需安装 Sass。
+也可以使用 `npm install @ifhover/leaf-ui` 或 `yarn add @ifhover/leaf-ui`。样式只需在应用入口引入一次，使用组件无需安装 Sass。
 
 ```tsx
-import { Button, DatePicker, Input, Select } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { Button, DatePicker, Input, Select } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export function App() {
   return (
@@ -38,7 +38,9 @@ export function App() {
 }
 ```
 
-单行控件默认高度统一为 **34px**，小 / 大尺寸为 **28 / 40px**。选择类组件使用统一的浮层，支持键盘操作、点击外部收起和局部主题。
+单行控件默认高度统一为 **40px**，小 / 大尺寸为 **34 / 46px**。选择类组件使用统一的浮层，支持键盘操作、点击外部收起和局部主题。
+
+浏览器组件入口会自动加载样式。`styles.css` 在应用入口引入一次，提供主题变量及 API 服务样式。Vite、Rsbuild / Rspack 的生产构建支持根入口的 ESM 具名导入按需保留组件及其内部依赖的样式，无需使用组件子路径。直接使用 esbuild 或 CommonJS 根入口时不能保证样式裁剪，可使用 `@ifhover/leaf-ui/button` 等子路径。自行管理 SSR 样式时可使用完整静态入口 `@ifhover/leaf-ui/styles/all.css`。
 
 ## 组件
 
@@ -73,9 +75,9 @@ export function App() {
 | `Alert` / `Message` / `useMessage` | 页内提示与短暂消息 |
 | `Layout` / `Grid` / `Row` / `Col` / `Space` / `ScrollArea` / `Masonry` | 页面布局、响应式栅格、间距、滚动与瀑布流 |
 | `Segmented` / `Menu` / `BackTop` | 分段切换、嵌套导航和回到顶部 |
-| `Descriptions` / `Timeline` / `QRCode` / `OrgChart` | 详情、事件、二维码和组织关系 |
+| `Descriptions` / `Timeline` / `QRCode` | 详情、事件和二维码 |
 | `Image` / `ImagePreviewGroup` / `ImagePreview` | 图片展示、缩放、图片组切换与全屏 |
-| `VirtualList` / `InfiniteScroll` / `Sortable` | 大量数据、分页加载和拖拽排序 |
+| `VirtualList` / `InfiniteScroll` | 大量数据和分页加载 |
 | `Transfer` / `InputOTP` / `InputMask` / `TimeRangePicker` | 穿梭选择、验证码、格式输入和时间范围 |
 | `Notification` / `useNotification` / `Popconfirm` / `ErrorBoundary` / `LoadingBar` / `useLoadingBar` | 通知、就地确认、异常恢复和任务进度 |
 | `Upload` / `FileList` / `ImageCropper` / `SignaturePad` | 文件上传、文件信息、图片裁剪和签名导出 |
@@ -89,7 +91,7 @@ export function App() {
 ## 区域主题与语言
 
 ```tsx
-import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-ui';
+import { ConfigProvider, DateTimePicker, Form, FormField } from '@ifhover/leaf-ui';
 
 <ConfigProvider locale="en-US" theme={{ primaryColor: '#7654c6', borderRadius: 6 }}>
   <Form labelWidth="auto">
@@ -103,7 +105,7 @@ import { ConfigProvider, DateTimePicker, Form, FormField } from '@sudden3/leaf-u
 嵌套配置继承未设置的选项；浮层、确认框与消息沿用调用区域的主题和语言。ConfigProvider 自动托管确认框、消息、通知和顶部加载条，子组件直接调用相应 hook：
 
 ```tsx
-import { Button, useMessage } from '@sudden3/leaf-ui';
+import { Button, useMessage } from '@ifhover/leaf-ui';
 
 export function SaveButton() {
   const { message } = useMessage();
@@ -114,7 +116,7 @@ export function SaveButton() {
 确认框同样直接使用：
 
 ```tsx
-import { Button, useConfirm } from '@sudden3/leaf-ui';
+import { Button, useConfirm } from '@ifhover/leaf-ui';
 
 export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void> }) {
   const { confirm } = useConfirm();
@@ -131,7 +133,7 @@ export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void
 通知和顶部加载条也由入口托管，子组件或自定义 hook 直接使用：
 
 ```tsx
-import { useLoadingBar, useNotification } from '@sudden3/leaf-ui';
+import { useLoadingBar, useNotification } from '@ifhover/leaf-ui';
 
 export function useProjectSave(saveProject: () => Promise<void>) {
   const notification = useNotification();

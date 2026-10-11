@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { Button, type ButtonProps } from '../button';
 import { useLeafConfig } from '../config-provider/context';
+import { Scrollbar } from '../scrollbar';
 import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
@@ -18,6 +19,12 @@ export interface ModalProps
     DialogFocusOptions {
   open: boolean;
   title?: ReactNode;
+  /** Supporting text displayed below the title. */
+  description?: ReactNode;
+  /** Decorative header icon. */
+  icon?: ReactNode;
+  /** Separate the header and footer with subtle borders. */
+  divided?: boolean;
   footer?: ReactNode | ((actions: ModalFooterActions) => ReactNode);
   confirmText?: ReactNode;
   cancelText?: ReactNode;
@@ -41,6 +48,9 @@ export interface ModalProps
 function ModalSurface({
   open,
   title,
+  description,
+  icon,
+  divided = true,
   footer,
   confirmText,
   cancelText,
@@ -154,6 +164,7 @@ function ModalSurface({
   const present = usePresence(open, backdrop);
   useNaturalHeightTransition(panel, content, open);
   const titleId = `${useId()}-title`;
+  const descriptionId = `${useId()}-description`;
   const modalId = `${useId()}-dialog`;
   const close = useRef(cancel);
   close.current = cancel;
@@ -197,15 +208,43 @@ function ModalSurface({
         id={props.id ?? modalId}
         role={props.role ?? 'dialog'}
         aria-modal="true"
-        aria-labelledby={title ? titleId : props['aria-labelledby']}
+        aria-labelledby={title != null ? titleId : props['aria-labelledby']}
+        aria-describedby={
+          [props['aria-describedby'], description != null && descriptionId]
+            .filter(Boolean)
+            .join(' ') || undefined
+        }
         tabIndex={-1}
-        className={classes('leaf-modal', className)}
+        className={classes('leaf-modal', divided && 'leaf-modal--divided', className)}
         style={{ width, ...style }}
       >
         <OverlayOwner.Provider value={modalId}>
-          {(title || closable) && (
-            <div className="leaf-modal__header">
-              {title && <h2 id={titleId}>{title}</h2>}
+          {(title != null || description != null || icon != null || closable) && (
+            <div
+              className={classes(
+                'leaf-modal__header',
+                description == null && 'leaf-modal__header--simple',
+                title == null &&
+                  description == null &&
+                  icon == null &&
+                  'leaf-modal__header--compact',
+              )}
+            >
+              {icon != null && (
+                <span className="leaf-modal__icon" aria-hidden="true">
+                  {icon}
+                </span>
+              )}
+              {(title != null || description != null) && (
+                <div className="leaf-modal__heading">
+                  {title != null && <h2 id={titleId}>{title}</h2>}
+                  {description != null && (
+                    <div id={descriptionId} className="leaf-modal__description">
+                      {description}
+                    </div>
+                  )}
+                </div>
+              )}
               {closable && (
                 <button
                   type="button"
@@ -218,16 +257,24 @@ function ModalSurface({
               )}
             </div>
           )}
-          <div className="leaf-modal__body">
-            <div ref={content} className="leaf-modal__content">
-              {children}
-              {error && (
-                <p role="alert" className="leaf-confirm-error">
-                  {error}
-                </p>
-              )}
-            </div>
-          </div>
+          {((children != null && children !== false) || error != null) && (
+            <Scrollbar
+              className="leaf-modal__body"
+              viewportClassName="leaf-modal__viewport"
+              orientation="vertical"
+              aria-labelledby={title != null ? titleId : undefined}
+              aria-label={title == null ? (props['aria-label'] ?? messages.confirm) : undefined}
+            >
+              <div ref={content} className="leaf-modal__content">
+                {children}
+                {error && (
+                  <p role="alert" className="leaf-confirm-error">
+                    {error}
+                  </p>
+                )}
+              </div>
+            </Scrollbar>
+          )}
           {renderedFooter != null && <div className="leaf-modal__footer">{renderedFooter}</div>}
         </OverlayOwner.Provider>
       </div>

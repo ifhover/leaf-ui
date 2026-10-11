@@ -1,4 +1,4 @@
-import { Button, Card, Space, Tour } from '@sudden3/leaf-ui';
+import { Button, Card, Space, Tour } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function TourBasic({ english = false }: { english?: boolean }) {
   const [open, setOpen] = useState(false),

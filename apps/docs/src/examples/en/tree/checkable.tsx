@@ -1,10 +1,10 @@
-import { Tree } from '@sudden3/leaf-ui';
+import { Space, Tree } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { treeData } from './data';
 export function TreeCheckable() {
   const [checked, setChecked] = useState<readonly string[]>(['components']);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <Tree
         data={treeData}
         checkable
@@ -15,6 +15,6 @@ export function TreeCheckable() {
         onCheck={setChecked}
       />
       <output className="leaf-demo-note">Checked keys: {checked.join(', ') || 'None'}</output>
-    </div>
+    </Space>
   );
 }

@@ -19,10 +19,11 @@ const dependencies = {
   treeselect: ['select', 'tree'],
   tree: ['checkbox', 'result'],
   slider: ['tooltip'],
-  cascader: ['input', 'checkbox'],
+  cascader: ['input', 'checkbox', 'scrollbar'],
   colorpicker: ['input', 'inputnumber', 'slider', 'tooltip'],
   form: [],
-  confirm: ['modal'],
+  modal: ['scrollbar'],
+  confirm: ['modal', 'alert'],
   drawer: ['modal'],
   message: ['alert'],
   notification: ['alert'],
@@ -31,7 +32,9 @@ const dependencies = {
   imagecropper: ['input', 'image'],
   transfer: ['checkbox', 'input', 'pagination'],
   pagination: ['select', 'inputnumber'],
-  list: ['avatar', 'loading', 'result'],
+  table: ['button', 'loading', 'scrollbar'],
+  scrollarea: ['scrollbar'],
+  tabletanstack: ['table', 'checkbox', 'radio', 'input', 'popover', 'pagination'],
   typography: [],
   tour: [],
   floatbutton: ['tooltip'],
@@ -93,6 +96,10 @@ for (const name of directories) {
   );
   for (const component of resolveStyles(name))
     if (await hasStyle(component)) modules.add(`@use '${component}/${component}';`);
+  if (
+    [...resolveStyles(name)].some((component) => ['datepicker', 'timepicker'].includes(component))
+  )
+    modules.add("@use 'shared/calendar';");
   const compiled = await compileStringAsync([...modules].join('\n'), {
     style: 'compressed',
     loadPaths: [source, path.join(root, 'node_modules'), path.join(root, '../../node_modules')],

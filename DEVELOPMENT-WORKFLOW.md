@@ -10,12 +10,14 @@ Leaf UI 使用 `main` 作为稳定发布分支。新功能、修复及对应使�
 | ------------------------------------------------- | ------------------------------------ |
 | `main` 中的组件源码、类型、样式与使用文档         | 本次正式版本的发布内容               |
 | `packages/react/package.json` 的 `version`        | 组件版本的唯一来源                   |
-| npm `@sudden3/leaf-ui` 的 `latest`                | 同一正式版本，`gitHead` 指向发布提交 |
+| npm `@ifhover/leaf-ui` 的 `latest`                | 同一正式版本，`gitHead` 指向发布提交 |
 | Git 标签 `vX.Y.Z`                                 | 指向 npm `gitHead` 对应的发布提交    |
 | 默认在线文档 `https://ifhover.github.io/leaf-ui/` | 从 npm `latest` 对应的发布提交构建   |
 | 固定版本文档 `/leaf-ui/v/X.Y.Z/`                  | 同一版本的源码、例子与 API 快照      |
 
 工作区根包和文档包是私有包，其版本不代表组件版本，无需随组件包一起升版。`versions.json`、`llms.txt`、组件 Markdown 和 `api/index.json` 也必须使用对应版本；AI 查询不能混入其他版本的 API。
+
+npm 新作用域为 `@ifhover/leaf-ui`；迁移前的稳定版仍属于 `@sudden3/leaf-ui`。新包首次正式发布前，默认在线文档继续展示旧包的已发布稳定版。迁移时不得复用旧包版本号，历史包与文档快照保持原来的包名，具体操作见 [作用域迁移](packages/react/RELEASING.md#npm-作用域迁移)。
 
 `main` 不积累待发布的组件改动。任何会改变组件行为、API、类型、样式、npm 产物或面向使用者的文档与示例的变更，合并时都必须安排新版本发布，不能在旧版本号下覆盖新的内容。
 

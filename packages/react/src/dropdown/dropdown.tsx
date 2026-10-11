@@ -434,6 +434,7 @@ function MenuPanel({
           className="leaf-dropdown__highlight"
           aria-hidden="true"
           data-ready={Boolean(highlight)}
+          data-danger={rows.find((item) => item.key === current)?.danger || undefined}
           style={highlight}
         />
         {rows.map((item) =>

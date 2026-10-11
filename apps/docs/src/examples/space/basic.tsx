@@ -1,4 +1,4 @@
-import { Button, Space } from '@sudden3/leaf-ui';
+import { Button, Space } from '@ifhover/leaf-ui';
 
 export function SpaceBasic() {
   return (

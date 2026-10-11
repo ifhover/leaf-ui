@@ -1,4 +1,4 @@
-import { Mentions } from '@sudden3/leaf-ui';
+import { Mentions } from '@ifhover/leaf-ui';
 export function MentionsBasic({ english = false }: { english?: boolean }) {
   return (
     <Mentions

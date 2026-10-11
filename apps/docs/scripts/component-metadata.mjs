@@ -145,6 +145,17 @@ export const additions = [
 ];
 
 export const updatedPages = new Set([
+  'button',
+  'float-button',
+  'popconfirm',
+  'alert',
+  'card',
+  'checkbox',
+  'radio',
+  'confirm',
+  'scrollbar',
+  'scroll-area',
+  'table',
   'auto-complete',
   'select',
   'tree',
@@ -182,6 +193,7 @@ export function documentationPage(entry) {
   if (entry.module === './shared/time') return 'components/time-picker';
   const module = entry.module.split('/').filter(Boolean)[1];
   const names = {
+    tabletanstack: 'table',
     autocomplete: 'auto-complete',
     backtop: 'back-top',
     colorpicker: 'color-picker',
@@ -197,7 +209,6 @@ export function documentationPage(entry) {
     imagecropper: 'image-cropper',
     infinitescroll: 'infinite-scroll',
     loadingbar: 'loading-bar',
-    orgchart: 'org-chart',
     scrollarea: 'scroll-area',
     signaturepad: 'signature-pad',
     timepicker: 'time-picker',

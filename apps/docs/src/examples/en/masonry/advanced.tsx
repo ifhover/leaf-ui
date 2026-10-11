@@ -1,5 +1,5 @@
+import { Image, Masonry } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { Image, Masonry } from '@sudden3/leaf-ui';
 
 export function MasonryImages() {
   return (

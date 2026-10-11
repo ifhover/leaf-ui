@@ -8,9 +8,12 @@ const root = path.resolve(import.meta.dirname, '..');
 const output = path.join(root, '.quality/bundles');
 await mkdir(output, { recursive: true });
 const cases = {
-  button: `import { Button } from '@sudden3/leaf-ui/button'; import '@sudden3/leaf-ui/button/style.css'; export { Button };`,
-  form: `import { ConfigProvider, Form, FormField, Input, InputNumber, Select, DatePicker, CheckboxGroup, Button } from '@sudden3/leaf-ui'; import '@sudden3/leaf-ui/form/style.css'; import '@sudden3/leaf-ui/input/style.css'; import '@sudden3/leaf-ui/input-number/style.css'; import '@sudden3/leaf-ui/select/style.css'; import '@sudden3/leaf-ui/date-picker/style.css'; import '@sudden3/leaf-ui/checkbox/style.css'; export { ConfigProvider, Form, FormField, Input, InputNumber, Select, DatePicker, CheckboxGroup, Button };`,
-  all: `export * from '@sudden3/leaf-ui'; import '@sudden3/leaf-ui/styles.css';`,
+  base: `import '@ifhover/leaf-ui/styles.css'; export const baseStyles = true;`,
+  button: `import { Button } from '@ifhover/leaf-ui/button'; export { Button };`,
+  table: `export { Table } from '@ifhover/leaf-ui/table';`,
+  tableAdapter: `export { DataTable } from '@ifhover/leaf-ui/table/tanstack';`,
+  form: `export { ConfigProvider } from '@ifhover/leaf-ui/config-provider'; export { Form, FormField } from '@ifhover/leaf-ui/form'; export { Input } from '@ifhover/leaf-ui/input'; export { InputNumber } from '@ifhover/leaf-ui/input-number'; export { Select } from '@ifhover/leaf-ui/select'; export { DatePicker } from '@ifhover/leaf-ui/date-picker'; export { CheckboxGroup } from '@ifhover/leaf-ui/checkbox'; export { Button } from '@ifhover/leaf-ui/button'; import '@ifhover/leaf-ui/styles.css';`,
+  all: `export * from '@ifhover/leaf-ui'; import '@ifhover/leaf-ui/styles.css';`,
 };
 const report = {
   node: process.version,
@@ -47,7 +50,21 @@ for (const [name, code] of Object.entries(cases)) {
     files.map((file) => [file.type, { bytes: file.bytes, gzip: file.gzip }]),
   );
   report.cases[name].modules = Object.keys(result.metafile.inputs).length;
+  if (name !== 'tableAdapter')
+    assert.ok(
+      !Object.keys(result.metafile.inputs).some((file) =>
+        /@tanstack[\\/]react-table|@tanstack[\\/]table-core|[\\/]tabletanstack[\\/]/u.test(file),
+      ),
+      `${name} must not load the optional table engine`,
+    );
+  if (name === 'table')
+    assert.ok(report.cases[name].js.gzip < 14 * 1024, 'Native Table JS exceeds 14 KiB gzip');
+  if (name === 'tableAdapter')
+    assert.ok(report.cases[name].js.gzip < 80 * 1024, 'Table adapter JS exceeds 80 KiB gzip');
   if (name === 'button') {
+    const css = await readFile(path.join(output, `${name}.css`), 'utf8');
+    assert.match(css, /\.leaf-button/);
+    assert.doesNotMatch(css, /\.leaf-table|\.leaf-input|\.leaf-modal/);
     // Guard against accidentally pulling in unrelated, expensive component families.
     assert.ok(
       !Object.keys(result.metafile.inputs).some((file) =>
@@ -55,15 +72,25 @@ for (const [name, code] of Object.entries(cases)) {
       ),
     );
     assert.ok(report.cases[name].js.gzip < 5 * 1024, 'Button-only JS regression: over 5 KiB gzip');
-    assert.ok(report.cases[name].css.gzip < 4 * 1024, 'Button CSS regression: over 4 KiB gzip');
+    // Readable danger ink adds ~0.05 KiB; the standalone entry still excludes rich choice styles.
+    assert.ok(
+      report.cases[name].css.gzip < 4.25 * 1024,
+      'Button CSS regression: over 4.25 KiB gzip',
+    );
   }
 }
 assert.ok(report.cases.form.js.gzip < 64 * 1024, 'Form JS regression: over 64 KiB gzip');
-assert.ok(report.cases.form.css.gzip < 10 * 1024, 'Form CSS regression: over 10 KiB gzip');
+// This fixture now includes the shared base and all API feedback services;
+// the previous standalone-import fixture omitted their CSS.
+assert.ok(
+  report.cases.form.css.gzip < 14 * 1024,
+  'Form + services CSS regression: over 14 KiB gzip',
+);
 assert.ok(report.cases.all.js.gzip < 250 * 1024, 'Library JS regression: over 250 KiB gzip');
 // Static light/dark derived palettes and inherited density add ~2.6 KiB to the full CSS.
 // Standalone styles prune unused derived colors and retain their existing budgets.
-assert.ok(report.cases.all.css.gzip < 37 * 1024, 'Library CSS regression: over 37 KiB gzip');
+// Dialog sections and card/list choices add ~1.75 KiB to full CSS, with no new runtime engine.
+assert.ok(report.cases.all.css.gzip < 41 * 1024, 'Library CSS regression: over 41 KiB gzip');
 assert.ok(
   report.cases.button.css.gzip < report.cases.all.css.gzip,
   'Component CSS must be smaller than the whole library',

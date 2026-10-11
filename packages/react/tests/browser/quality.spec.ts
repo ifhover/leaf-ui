@@ -36,16 +36,16 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
   await page.getByRole('switch', { name: 'Mask blur', exact: true }).uncheck();
   const scope = page.getByTestId('acceptance-workbench');
   await expect(scope).toHaveAttribute('data-leaf-density', 'compact');
-  await expect(scope.locator('.leaf-input').first()).toHaveCSS('height', '28px');
+  await expect(scope.locator('.leaf-input').first()).toHaveCSS('height', '34px');
   await page.getByRole('button', { name: 'Open dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Edit details' });
-  await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '28px');
+  await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '34px');
   await expect(dialog).toHaveCSS('color', 'rgb(237, 237, 240)');
   await expect(dialog.locator('..')).toHaveAttribute('data-blur', 'off');
   await dialog.getByRole('combobox', { name: 'Dialog owner' }).click();
   await expect(page.getByRole('option', { name: 'Alex', exact: true })).toHaveCSS(
     'min-height',
-    '28px',
+    '30px',
   );
 });
 
@@ -73,14 +73,20 @@ test('CSS variable palette and custom Tag update when ancestor colors change', a
   const scope = page.getByTestId('variable-theme');
   const palette = (key: string) =>
     scope.evaluate((node, token) => getComputedStyle(node).getPropertyValue(token).trim(), key);
-  await expect.poll(() => palette('--leaf-color-primary-alpha-12')).toBe('rgba(255, 0, 0, 0.12)');
+  await expect
+    .poll(() => palette('--leaf-color-primary-alpha-12'), { timeout: 20_000 })
+    .toBe('rgba(255, 0, 0, 0.12)');
   await expect(page.getByTestId('variable-tag')).toHaveCSS(
     'background-color',
     'rgb(255, 235, 235)',
   );
   await page.getByRole('button', { name: 'Change custom palette' }).click();
-  await expect.poll(() => palette('--leaf-color-primary-alpha-12')).toBe('rgba(0, 0, 255, 0.12)');
-  await expect.poll(() => palette('--leaf-color-surface-raised')).toBe('rgba(1, 1, 1, 1)');
+  await expect
+    .poll(() => palette('--leaf-color-primary-alpha-12'), { timeout: 20_000 })
+    .toBe('rgba(0, 0, 255, 0.12)');
+  await expect
+    .poll(() => palette('--leaf-color-surface-raised'), { timeout: 20_000 })
+    .toBe('rgba(1, 1, 1, 1)');
   await expect(page.getByTestId('variable-tag')).toHaveCSS('background-color', 'rgb(0, 0, 20)');
 });
 

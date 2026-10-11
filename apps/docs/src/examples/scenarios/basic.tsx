@@ -10,7 +10,7 @@ import {
   Space,
   Upload,
   useFormValidation,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 export function CompositeForm({ english = false }: { english?: boolean }) {
   const validation = useFormValidation({

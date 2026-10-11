@@ -1,3 +1,4 @@
+import { AccessScope } from '../../../src/examples/modal/access-scope';
 import { Capabilities } from '../../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ComponentExample } from '../../../src/components/component-example';
@@ -35,6 +36,19 @@ Display content or complete an action in a dialog.
 
 </ComponentExample>
 
+## Access settings
+
+Combine a descriptive heading, card choices and grouped permissions.
+
+<ComponentExample title="Access settings" preview={<AccessScope english />} fileName="access-scope.tsx">
+
+```tsx lineNumbers file="../../../src/examples/modal/access-scope.tsx"
+```
+
+</ComponentExample>
+
+The body uses Scrollbar; long content scrolls while the heading and actions remain visible. Headers without a description and the footer use compact vertical spacing.
+
 ## Modal API
 
 | Property | Type | Default | Description |
@@ -43,6 +57,9 @@ Display content or complete an action in a dialog.
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
 | `open` | `boolean` | Required | Required. Whether the dialog is visible |
 | `title` | `ReactNode` | — | Title / content |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
+| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
 | `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
 | `confirmText` | `ReactNode` | Locale default | Button labels |
 | `cancelText` | `ReactNode` | Locale default | Button labels |
@@ -57,8 +74,8 @@ Display content or complete an action in a dialog.
 | `keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
-| `forceRender` | `boolean` | — | Mount before opening and keep hidden while closed. |
-| `destroyOnClose` | `boolean` | — | Unmount content after the closing transition; preserved by default. |
+| `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
+| `destroyOnClose` | `boolean` | `false` | Unmount content after the closing transition; preserved by default. |
 | `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
 
@@ -74,7 +91,7 @@ Display content or complete an action in a dialog.
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { ModalProps, ModalFooterActions } from '@sudden3/leaf-ui';
+import type { ModalProps, ModalFooterActions } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
@@ -83,7 +100,7 @@ Focus moves into the dialog when opened and returns to the trigger on dismissal.
 
 Customize footer actions or place a Form inside the body. Picker overlays inside a dialog retain its regional theme.
 
-The default footer has Cancel followed by OK. With onConfirm, update open after the action; without it, OK calls onClose. Promises show loading and prevent duplicates. Submit forms with requestSubmit() in onConfirm or a submit type and form ID in confirmButtonProps. Native validation still applies. A footer function extends default buttons; footer={null} hides the footer.
+The default footer has Cancel followed by OK. With onConfirm, update open after the action; without it, OK calls onClose. Promises show loading and prevent duplicates. Submit forms with requestSubmit() in onConfirm or a submit type and form ID in confirmButtonProps. Native validation still applies. A footer function extends default buttons; `footer={null}` hides the footer.
 
 ## DialogFocusOptions
 
@@ -91,3 +108,7 @@ The default footer has Cancel followed by OK. With onConfirm, update open after 
 | --- | --- | --- | --- |
 | `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
+
+## Surfaces and rich content
+
+Use `description` for supporting text and `icon` for a decorative heading icon. Divided dialogs have subtle dividers and a muted footer by default; `divided={false}` groups content with spacing. A `footer` function can add status text on the left. Group its buttons with `Space` so they wrap together and stay aligned to the right on narrow screens.

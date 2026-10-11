@@ -1,3 +1,5 @@
+import { CheckboxCards } from '../../../src/examples/checkbox/surfaces';
+import { CheckboxList } from '../../../src/examples/checkbox/surfaces';
 import { ExtensionDemo } from '../../../src/examples/en/checkbox/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
@@ -33,16 +35,43 @@ Read event.target.checked in onChange. Use indeterminate to represent a partiall
 
 </ComponentExample>
 
+## Card choices
+
+Make the whole card clickable for choices with icons and descriptions.
+
+<ComponentExample title="Card choices" preview={<CheckboxCards english />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/checkbox/surfaces.tsx"
+```
+
+</ComponentExample>
+
+## Grouped choices
+
+Related options share borders and row dividers, with supplementary status on the right.
+
+<ComponentExample title="Grouped choices" preview={<CheckboxList english />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/checkbox/surfaces.tsx"
+```
+
+</ComponentExample>
+
 ## Checkbox API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
-| `indeterminate` | `boolean` | `false` | Partially checked state |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.checked |
-| `disabled` | `boolean` | `false` | Disable the option |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `children` | `ReactNode` | — | Clickable label |
+| `variant` | `'plain' \| 'card'` | `'plain'` | Plain choice or a card with a full clickable surface. |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
+| `indeterminate` | `boolean` | `false` | Partially checked state |
+| `checked` | `boolean` | — | Controlled checked state / initial checked state |
+| `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Called when the value changes. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ## Types
@@ -50,7 +79,7 @@ Read event.target.checked in onChange. Use indeterminate to represent a partiall
 Import CheckboxProps to describe component props. Option types in the API table link to their detailed fields above.
 
 ```ts
-import type { CheckboxProps } from '@sudden3/leaf-ui';
+import type { CheckboxProps } from '@ifhover/leaf-ui';
 ```
 
 ## Forms and localization
@@ -60,28 +89,36 @@ Use name to include values in FormData. Uncontrolled fields follow form reset; r
 ## Extension types
 
 ```ts
-import type { CheckboxGroupProps, CheckboxOption } from '@sudden3/leaf-ui';
+import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 ```
 
 ## CheckboxGroupProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | [`readonly (CheckboxOption \| string)[]`](#checkboxoption-api) | Required | Available options |
+| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | Required | Required. Available options |
 | `value` | `readonly string[]` | — | Controlled value |
 | `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: string[]) => void` | — | Value change callback |
 | `legend` | `ReactNode` | — | Field group title |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | Plain choices, a card grid or a list with shared borders and dividers. |
 | `minCount` | `number` | `0` | Minimum selection count |
 | `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
-| `required` | `boolean` | — | Required form validation |
+| `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout or movement direction |
 
 ## CheckboxOption API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Controlled value |
-| `label` | `ReactNode` | Required | Display label |
-| `disabled` | `boolean` | — | Disable interactions |
+| `value` | `string` | Required | Required. Controlled value |
+| `label` | `ReactNode` | Required | Required. Display label |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
+| `disabled` | `boolean` | — | Disable interaction. |
+
+## Surfaces and rich content
+
+Checkbox variant="card" makes the whole label clickable. CheckboxGroup variant="card" arranges cards; variant="list" groups rows into one surface. description and extra provide accessible descriptions; icon is decorative. Keep extra to non-interactive status, without buttons or links. Native names, values, forms, reset and keyboard behavior remain available.

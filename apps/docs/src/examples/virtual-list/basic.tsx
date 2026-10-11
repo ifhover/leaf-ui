@@ -1,4 +1,4 @@
-import { VirtualList } from '@sudden3/leaf-ui';
+import { VirtualList } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function VirtualListBasic() {
   const [items] = useState(() =>

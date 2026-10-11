@@ -1,3 +1,4 @@
+import { DrawerSections } from '../../../src/examples/drawer/sections';
 import { Capabilities } from '../../../src/examples/drawer/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DrawerBasic } from '../../../src/examples/en/drawer/basic';
@@ -24,6 +25,17 @@ Open content from a page edge to view details or complete actions.
 
 </ComponentExample>
 
+## Notification preferences
+
+Separate the heading, settings and footer actions.
+
+<ComponentExample title="Notification preferences" preview={<DrawerSections english />} fileName="sections.tsx">
+
+```tsx lineNumbers file="../../../src/examples/drawer/sections.tsx"
+```
+
+</ComponentExample>
+
 ## Drawer API
 
 | Property | Type | Default | Description |
@@ -32,6 +44,9 @@ Open content from a page edge to view details or complete actions.
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
 | `open` | `boolean` | Required | Required. Whether the drawer is open |
 | `title` | `ReactNode` | — | Title |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
+| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
 | `footer` | `ReactNode` | — | Footer content |
 | `extra` | `ReactNode` | — | Actions beside the title |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
@@ -42,14 +57,14 @@ Open content from a page edge to view details or complete actions.
 | `keyboard` | `boolean` | `true` | Close button / backdrop click / Escape |
 | `onClose` | `() => void` | — | Close request; update open in application state |
 | `afterClose` | `() => void` | — | Called after the closing transition |
-| `forceRender` | `boolean` | — | Mount before opening and keep hidden while closed. |
-| `destroyOnClose` | `boolean` | — | Unmount content after the closing transition; preserved by default. |
+| `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
+| `destroyOnClose` | `boolean` | `false` | Unmount content after the closing transition; preserved by default. |
 | `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
-| `push` | `boolean \| number` | — | Push the parent overlay when a nested drawer opens; accepts a distance. |
-| `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
-| `minSize` | `number` | — | Minimum size in pixels. |
-| `maxSize` | `number` | — | Maximum size in pixels. |
+| `push` | `boolean \| number` | `false` | Push the parent overlay when a nested drawer opens; accepts a distance. |
+| `resizable` | `boolean` | `false` | Allow resizing by dragging or arrow keys. |
+| `minSize` | `number` | `240` | Minimum size in pixels. |
+| `maxSize` | `number` | `900` | Maximum size in pixels. |
 | `onResize` | `(size: number) => void` | — | Called while resizing. |
 
 ## Types
@@ -57,9 +72,13 @@ Open content from a page edge to view details or complete actions.
 Import the component props and item types when preparing your own values.
 
 ```ts
-import type { DrawerProps } from '@sudden3/leaf-ui';
+import type { DrawerProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
 
 Place actions in footer. A submit button can use its form attribute to target a form inside the drawer. Provide aria-label if there is no title. Nested dialogs are supported, and focus returns to the opener after closing.
+
+## Surfaces and rich content
+
+Use `description` and `icon` to explain the current task. The heading and muted footer have subtle dividers by default; `divided={false}` groups content with spacing.

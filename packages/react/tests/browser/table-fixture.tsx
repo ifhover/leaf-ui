@@ -1,0 +1,123 @@
+import { Button, ConfigProvider, Input, Table } from '@ifhover/leaf-ui';
+import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
+import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useState } from 'react';
+import { TableGrouped, TableServer } from '../../../../apps/docs/src/examples/table/advanced';
+import {
+  TableBasic,
+  TableSimple,
+  TableStates,
+} from '../../../../apps/docs/src/examples/table/basic';
+import { TableColumns, TableData } from '../../../../apps/docs/src/examples/table/data';
+import { TableReordering } from '../../../../apps/docs/src/examples/table/reordering';
+
+const records = Array.from({ length: 10000 }, (_, index) => ({
+  id: String(index),
+  name: `Person ${String(index).padStart(5, '0')}`,
+  description:
+    index % 3 === 0
+      ? 'A longer description that wraps onto multiple lines when the available space changes.'
+      : 'A short description.',
+}));
+type RecordRow = (typeof records)[number];
+const columns: ColumnDef<RecordRow>[] = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 200,
+    cell: ({ row }) => (
+      <Input aria-label={`Edit ${row.original.name}`} defaultValue={row.original.name} />
+    ),
+  },
+  { accessorKey: 'description', header: 'Description', size: 260 },
+];
+
+function VirtualTable() {
+  const [narrow, setNarrow] = useState(false);
+  const table = useReactTable({
+    data: records,
+    columns,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    getRowCanExpand: () => true,
+  });
+  return (
+    <section aria-label="Virtual table demo">
+      <h2>Virtual data</h2>
+      <Button onClick={() => setNarrow((value) => !value)}>Toggle virtual width</Button>
+      <div style={{ width: narrow ? 460 : '100%', marginTop: 12 }}>
+        <DataTable
+          table={table}
+          aria-label="Large table"
+          maxHeight={320}
+          virtual
+          stickyHeader
+          pagination={false}
+          renderExpandedRow={(row) => (
+            <div style={{ height: Number(row.id) % 2 === 0 ? 160 : 72 }}>
+              Details for {row.original.name}
+            </div>
+          )}
+        />
+      </div>
+    </section>
+  );
+}
+
+export function TableFixture() {
+  return (
+    <div style={{ display: 'grid', gap: 32, maxWidth: 1000, minWidth: 0 }}>
+      <h1>Table acceptance</h1>
+      <section aria-label="Basic table demo">
+        <h2>Native table</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+          <TableBasic english />
+          <TableSimple english />
+        </div>
+      </section>
+      <section aria-label="Data table demo">
+        <h2>Manage members</h2>
+        <TableData english />
+      </section>
+      <section aria-label="Pinned table demo">
+        <h2>Pinned columns</h2>
+        <TableColumns english />
+      </section>
+      <section aria-label="Grouped table demo">
+        <h2>Grouping</h2>
+        <TableGrouped english />
+      </section>
+      <section aria-label="Server table demo">
+        <h2>Server data</h2>
+        <TableServer english />
+      </section>
+      <VirtualTable />
+      <section aria-label="Reordering table demo">
+        <h2>Row and column reordering</h2>
+        <TableReordering english />
+      </section>
+      <section aria-label="State table demo">
+        <h2>Data states</h2>
+        <TableStates english />
+      </section>
+      <ConfigProvider
+        theme={{
+          primaryColor: '#1d9bf0',
+          borderRadius: 8,
+          components: {
+            Table: { padding: '8px 12px', background: '#fafafa', color: '#333333', fontSize: 13 },
+          },
+        }}
+        density="compact"
+      >
+        <Table aria-label="Custom theme">
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>Custom tokens</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+      </ConfigProvider>
+    </div>
+  );
+}

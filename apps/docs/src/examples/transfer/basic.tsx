@@ -1,4 +1,4 @@
-import { Transfer } from '@sudden3/leaf-ui';
+import { Transfer } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function TransferBasic() {
   const items = Array.from({ length: 12 }, (_, index) => ({

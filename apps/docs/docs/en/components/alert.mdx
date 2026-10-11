@@ -1,3 +1,4 @@
+import { NeutralAlerts } from '../../../src/examples/alert/neutral';
 import { ComponentExample } from '../../../src/components/component-example';
 import { AlertBasic } from '../../../src/examples/en/alert/basic';
 
@@ -14,13 +15,25 @@ Show a result or information that needs attention within a page.
 
 </ComponentExample>
 
+## Neutral alerts
+
+Present supporting information on a neutral surface with semantic icon colors.
+
+<ComponentExample title="Neutral alerts" preview={<NeutralAlerts english />} fileName="neutral.tsx">
+
+```tsx lineNumbers file="../../../src/examples/alert/neutral.tsx"
+```
+
+</ComponentExample>
+
 ## Alert API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | Required | Main content |
+| `title` | `ReactNode` | Required | Required. Main content |
 | `description` | `ReactNode` | — | Additional details |
 | `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Feedback type |
+| `icon` | `ReactNode` | — | Icon content. |
 | `showIcon` | `boolean` | `true` | Show the feedback icon |
 | `closable` | `boolean` | `false` | Allow dismissal |
 | `onClose` | `() => void` | — | Called after dismissal |
@@ -30,9 +43,13 @@ Show a result or information that needs attention within a page.
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { AlertProps, FeedbackType } from '@sudden3/leaf-ui';
+import type { AlertProps, FeedbackType } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
 
 Success, information, warning and error messages use distinct semantic colors. Supply application text yourself; the close button follows the ConfigProvider language.
+
+## Surfaces and rich content
+
+The neutral surface keeps the icon color and announcement semantics of `type`. Override `icon` or use `showIcon={false}` to hide it.

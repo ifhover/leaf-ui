@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Form, FormField, Input, Select, Space } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, Form, FormField, Input, Select, Space } from '@ifhover/leaf-ui';
 import { useDocsLocale } from '../../components/i18n';
 
 export function ConfigProviderDensity() {

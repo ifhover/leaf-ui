@@ -1,5 +1,5 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { BadgeBasic } from '../../src/examples/badge/basic';
+import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/examples/badge/basic';
 
 # Badge 角标
 
@@ -8,6 +8,39 @@ import { BadgeBasic } from '../../src/examples/badge/basic';
 ## 基础用法
 
 <ComponentExample title="基础用法" preview={<BadgeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## 数值规则
+
+超过 `max` 的数值展示为上限加号；使用 `showZero` 展示零值。
+
+<ComponentExample title="数值规则" preview={<BadgeCounts />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## 红点提醒
+
+只提示有新内容，不展示具体数量。
+
+<ComponentExample title="红点提醒" preview={<BadgeDot />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## 状态标记
+
+用圆点和文字说明当前状态。
+
+<ComponentExample title="状态标记" preview={<BadgeStatuses />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
 ```
@@ -32,7 +65,7 @@ import { BadgeBasic } from '../../src/examples/badge/basic';
 定义组件属性或组装列表时可导入相关类型。
 
 ```ts
-import type { BadgeProps } from '@sudden3/leaf-ui';
+import type { BadgeProps } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明

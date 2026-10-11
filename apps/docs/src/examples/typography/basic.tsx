@@ -1,4 +1,4 @@
-import { Link, Paragraph, Text, Title, Typography } from '@sudden3/leaf-ui';
+import { Link, Paragraph, Text, Title, Typography } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function TypographyBasic({ english = false }: { english?: boolean }) {

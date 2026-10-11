@@ -2,6 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { leafThemeVariables, mergeLeafTheme } from './theme';
 
 describe('component padding geometry', () => {
+  it('merges and emits section surfaces through ConfigProvider theme inputs', () => {
+    const theme = mergeLeafTheme(
+      { components: { Modal: { footerBackground: '#f5f5f5', borderColor: '#ddd' } } },
+      { tokens: { dividerColor: '#ccc' }, components: { Modal: { headerBackground: '#fff' } } },
+    );
+    const variables = leafThemeVariables(theme);
+    expect(variables['--leaf-color-divider']).toBe('#ccc');
+    expect(variables['--leaf-component-modal-footer-background']).toBe('#f5f5f5');
+    expect(variables['--leaf-component-modal-header-background']).toBe('#fff');
+    expect(variables['--leaf-component-modal-border-color']).toBe('#ddd');
+  });
   it.each([
     [6, ['6px', '6px', '6px', '6px']],
     ['4px 8px', ['4px', '8px', '4px', '8px']],

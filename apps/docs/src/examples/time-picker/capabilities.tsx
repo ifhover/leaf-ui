@@ -1,8 +1,8 @@
-import { Space, TimePicker } from '@sudden3/leaf-ui';
+import { Space, TimePicker } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         {english
           ? 'Business hours; disabled choices cannot be submitted'
           : '营业时间；禁用项无法选择或通过输入提交'}

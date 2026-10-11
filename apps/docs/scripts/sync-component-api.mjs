@@ -3,14 +3,17 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { properties, readApiRows, typeExpression } from './api-model.mjs';
 import { additions, documentationPage, updatedPages } from './component-metadata.mjs';
-import { publicExports } from './export-ai-docs.mjs';
+import { publicApi } from './export-ai-docs.mjs';
 
 const repository = path.resolve(import.meta.dirname, '../../..');
+const selectedPage = process.argv
+  .find((argument) => argument.startsWith('--page='))
+  ?.slice('--page='.length);
 const baselineRef = process.argv
   .find((argument) => argument.startsWith('--from-ref='))
   ?.slice('--from-ref='.length);
 const entry = path.join(repository, 'packages/react/src/index.ts');
-const exported = publicExports(await readFile(entry, 'utf8'));
+const exported = await publicApi(repository);
 const types = exported.filter((item) => item.kind === 'type');
 const byPage = new Map();
 for (const item of types) {
@@ -20,11 +23,11 @@ for (const item of types) {
   byPage.set(page, list);
 }
 const schema = new Map();
-for (const type of types) schema.set(type.name, await properties(entry, type.name));
+for (const type of types) schema.set(type.name, await properties(type.entry ?? entry, type.name));
 const expressions = new Map();
 for (const type of types)
   if (!schema.get(type.name)?.size)
-    expressions.set(type.name, await typeExpression(entry, type.name));
+    expressions.set(type.name, await typeExpression(type.entry ?? entry, type.name));
 const descriptions = {
   density: [
     '控件、表单、菜单、列表与浮层的区域密度；嵌套继承，显式尺寸优先。',
@@ -43,6 +46,23 @@ const descriptions = {
   label: ['展示文字或内容。', 'Visible label or content.'],
   title: ['标题内容。', 'Title content.'],
   description: ['补充说明。', 'Additional description.'],
+  divided: [
+    '用浅分隔线划分标题、内容和底部操作区。',
+    'Separate the heading, content and footer with subtle borders.',
+  ],
+  headerBackground: [
+    '标题区域背景；默认继承表面颜色。',
+    'Header background; inherits the surface by default.',
+  ],
+  footerBackground: [
+    '底部操作区域背景；分区外观默认使用淡灰辅助面。',
+    'Footer background; divided surfaces use the muted surface by default.',
+  ],
+  dividerColor: [
+    '分区分隔线颜色；默认从边框和表面颜色派生。',
+    'Section divider color, derived from border and surface colors by default.',
+  ],
+  borderColor: ['外层边框与分区分隔线颜色。', 'Color of outer borders and section dividers.'],
   children: [
     '子内容；嵌套数据类型表示子节点。',
     'Content, or child nodes for hierarchical records.',
@@ -433,6 +453,166 @@ const descriptions = {
   focus: ['聚焦控件。', 'Focus the control.'],
 };
 const specific = {
+  'CheckboxProps.variant': [
+    '普通选项或整块可点击的卡片选项。',
+    'Plain choice or a card with a full clickable surface.',
+  ],
+  'RadioProps.variant': [
+    '普通选项或整块可点击的卡片选项。',
+    'Plain choice or a card with a full clickable surface.',
+  ],
+  'CheckboxGroupProps.variant': [
+    '普通排列、卡片网格或带分隔线的成组列表。',
+    'Plain choices, a card grid or a list with shared borders and dividers.',
+  ],
+  'RadioGroupProps.variant': [
+    '普通排列、卡片网格或带分隔线的成组列表。',
+    'Plain choices, a card grid or a list with shared borders and dividers.',
+  ],
+  'AlertProps.variant': [
+    'soft 使用状态底色；neutral 使用中性底色并保留语义图标颜色。',
+    'Soft uses a semantic surface; neutral uses a neutral surface with a semantic icon.',
+  ],
+  'ModalProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
+  'DrawerProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
+  'ConfirmOptions.icon': [
+    '正文左侧的状态图标；传入 null 隐藏图标。',
+    'Semantic icon beside the explanation; null hides the icon.',
+  ],
+  'ProgressProps.active': [
+    '未完成的线形进度默认显示流光；设为 false 关闭，完成、错误或不确定进度时自动停止。',
+    'Shimmer inside an unfinished line; false disables it. Completed, failed and indeterminate progress omit it.',
+  ],
+  'CheckboxProps.onChange': [
+    '从 event.target.checked 读取选中状态。',
+    'Read the selection from event.target.checked.',
+  ],
+  'RadioProps.onChange': [
+    '从 event.target.value 读取所选值。',
+    'Read the selected value from event.target.value.',
+  ],
+  'CheckboxProps.children': ['可点击的选项标签。', 'Clickable choice label.'],
+  'RadioProps.children': ['可点击的选项标签。', 'Clickable choice label.'],
+  'CheckboxProps.extra': [
+    '补充状态文字或标签；不要放置交互控件。',
+    'Supplementary status or tags; avoid interactive controls.',
+  ],
+  'RadioProps.extra': [
+    '补充状态文字或标签；不要放置交互控件。',
+    'Supplementary status or tags; avoid interactive controls.',
+  ],
+  'CheckboxOption.extra': [
+    '补充状态文字或标签；不要放置交互控件。',
+    'Supplementary status or tags; avoid interactive controls.',
+  ],
+  'RadioOption.extra': [
+    '补充状态文字或标签；不要放置交互控件。',
+    'Supplementary status or tags; avoid interactive controls.',
+  ],
+  'DataTableProps.table': [
+    '由 useReactTable 创建的实例，唯一的数据与状态来源。',
+    'Instance created by useReactTable; the sole data and state owner.',
+  ],
+  'DataTableProps.bordered': ['展示列之间的分隔线。', 'Show vertical column separators.'],
+  'DataTableProps.striped': ['展示交替行背景。', 'Alternate row backgrounds.'],
+  'DataTableProps.stickyHeader': [
+    '表头保持在滚动区域顶部。',
+    'Keep headers at the top of the scroll region.',
+  ],
+  'DataTableProps.maxHeight': [
+    '滚动区域最大高度；虚拟模式未指定时使用 400。',
+    'Maximum scroll height; virtual mode defaults to 400 when omitted.',
+  ],
+  'DataTableProps.minWidth': [
+    '表格最小宽度；默认根据可见列宽计算。',
+    'Minimum table width; defaults to visible column sizes.',
+  ],
+  'DataTableProps.columnReordering': [
+    '展示单层表头的拖拽手柄。',
+    'Show drag handles for single-level headers.',
+  ],
+  'DataTableProps.onRowReorder': [
+    '展示行拖拽手柄，并返回重排后的当前页行；应用负责更新数据。',
+    'Show row handles and return reordered current-page rows; the application updates the data.',
+  ],
+  'DataTableSearchProps.size': [
+    '默认跟随 DataTable 的尺寸。',
+    'Inherit DataTable size by default.',
+  ],
+  'DataTableSearchProps.status': ['输入框的校验状态。', 'Input validation status.'],
+  'DataTableSearchProps.prefix': [
+    '前置内容；默认是搜索图标。',
+    'Leading content; defaults to a search icon.',
+  ],
+  'DataTableSearchProps.onClear': ['清除搜索内容时调用。', 'Called when the search is cleared.'],
+  'DataTableSearchProps.showCount': [
+    '显示或定制输入字数。',
+    'Display or customize the input count.',
+  ],
+  'DataTableSearchProps.onPressEnter': ['按 Enter 时调用。', 'Called on Enter.'],
+  'DataTablePaginationProps.showSizeChanger': [
+    '展示每页条数选择器。',
+    'Show the page-size selector.',
+  ],
+  'DataTablePaginationProps.pageSizeOptions': ['可选择的每页条数。', 'Available page sizes.'],
+  'DataTablePaginationProps.showQuickJumper': ['展示页码跳转输入框。', 'Show a page-number input.'],
+  'DataTablePaginationProps.showTotal': [
+    '定制总数及当前范围的展示。',
+    'Customize the total and current range.',
+  ],
+  'DataTablePaginationProps.simple': ['使用简洁分页器。', 'Use compact pagination.'],
+  'DataTablePaginationProps.hideOnSinglePage': [
+    '只有一页时隐藏分页器。',
+    'Hide when only one page exists.',
+  ],
+  'DataTablePaginationProps.size': [
+    '默认跟随 DataTable 的尺寸。',
+    'Inherit DataTable size by default.',
+  ],
+  'DataTablePaginationProps.hasNextPage': [
+    '未知总数时控制下一页是否可用。',
+    'Control next-page availability when the total is unknown.',
+  ],
+  'DataTableDataProps.data': [
+    '展示的数据，更新时使用新数组。',
+    'Data to display; provide a new array when updating.',
+  ],
+  'DataTableDataProps.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
+  'DataTableDataProps.rowKey': [
+    '稳定唯一的标识字段，或返回字符串标识的函数。',
+    'A stable unique key field or a function returning a string identifier.',
+  ],
+  'DataTableDataProps.options': [
+    '定制 TanStack 的状态、回调和服务端配置。',
+    'Customize TanStack state, callbacks and server configuration.',
+  ],
+  'DataTableRowReorderInfo.rows': [
+    '当前页重排后的行；通过 row.original 取得业务数据。',
+    'Reordered current-page rows; read business data from row.original.',
+  ],
+  'DataTableRowReorderInfo.fromIndex': [
+    '原始当前页索引，从 0 开始。',
+    'Original zero-based current-page index.',
+  ],
+  'DataTableRowReorderInfo.toIndex': [
+    '目标当前页索引，从 0 开始。',
+    'Destination zero-based current-page index.',
+  ],
+  'DataTableRowReorderInfo.activeRow': [
+    '正在移动的行，包含稳定 row.id。',
+    'The moved row, including its stable row.id.',
+  ],
+  'DataTableRowReorderInfo.overRow': [
+    '放置目标行，包含稳定 row.id。',
+    'The target row, including its stable row.id.',
+  ],
+  'TableColumnHeaderProps.align': ['表头内容对齐。', 'Header content alignment.'],
+  'TableColumnHeaderProps.pinned': ['固定在逻辑起始或结束侧。', 'Pin to the logical start or end.'],
+  'TableColumnHeaderProps.pinOffset': ['距离该侧的像素数。', 'Pixel offset from that side.'],
+  'TableColumnHeaderProps.pinEdge': [
+    '展示固定列边缘的淡阴影。',
+    'Show a subtle pinned-edge shadow.',
+  ],
   'LeafTheme.motion': [
     '启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。',
     'Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it.',
@@ -580,6 +760,7 @@ const contractDescriptions = new Set([
   'cacheKey',
 ]);
 for (const [page, names] of byPage) {
+  if (selectedPage && page !== selectedPage) continue;
   const slug = page.split('/').at(-1);
   const addition = additions.find((item) => item[2] === slug);
   if (!addition && !updatedPages.has(slug) && !updatedPages.has(page)) continue;
@@ -632,6 +813,12 @@ for (const [page, names] of byPage) {
         '| --- | --- | --- | --- |',
       ];
       for (const [property, value] of props) {
+        if (value.type === 'never') continue;
+        if (
+          name === 'DataTableDataProps' &&
+          !['data', 'columns', 'rowKey', 'options'].includes(property)
+        )
+          continue;
         const previous = old.get(property);
         const pair =
           specific[`${name}.${property}`] ??
@@ -661,7 +848,14 @@ for (const [page, names] of byPage) {
             'form',
             'required',
             'readOnly',
+            'checked',
+            'defaultChecked',
+            'defaultValue',
+            'value',
+            'onChange',
+            'children',
             'disabled',
+            'type',
             'className',
             'style',
             'ref',
@@ -689,7 +883,7 @@ for (const [page, names] of byPage) {
         document += `\n## ${name.endsWith('Props') ? `${name.replace(/Props$/u, '')} API` : name}\n\n${table}\n`;
     }
     if (addition && !document.includes(english ? '## Types and interaction' : '## 类型与交互'))
-      document += `\n## ${english ? 'Types and interaction' : '类型与交互'}\n\n${english ? 'Import the props and data types when creating reusable configuration.' : '组装可复用配置时，可导入对应的属性和数据类型。'}\n\n\`\`\`ts\nimport type { ${names.join(', ')} } from '@sudden3/leaf-ui';\n\`\`\`\n\n${english ? 'Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.' : '为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。'}\n`;
+      document += `\n## ${english ? 'Types and interaction' : '类型与交互'}\n\n${english ? 'Import the props and data types when creating reusable configuration.' : '组装可复用配置时，可导入对应的属性和数据类型。'}\n\n\`\`\`ts\nimport type { ${names.join(', ')} } from '@ifhover/leaf-ui';\n\`\`\`\n\n${english ? 'Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.' : '为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。'}\n`;
     await mkdir(path.dirname(file), { recursive: true });
     await writeFile(file, document);
   }

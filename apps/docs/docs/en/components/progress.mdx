@@ -44,6 +44,8 @@ Display task completion.
 
 </ComponentExample>
 
+Unfinished line progress has a soft shimmer within its filled portion. Set `active={false}` for a static bar. Completed, failed, indeterminate and stepped progress omit the shimmer. Motion preferences from the system and ConfigProvider are respected.
+
 ## Progress API
 
 | Property | Type | Default | Description |
@@ -57,6 +59,7 @@ Display task completion.
 | `color` | `string` | — | Custom progress color |
 | `size` | `number` | `100` | Circular diameter in pixels |
 | `indeterminate` | `boolean` | `false` | Animated loading when the total progress is unknown; no percentage |
+| `active` | `boolean` | `true` | Shimmer inside an unfinished line; false disables it. Completed, failed and indeterminate progress omit it. |
 | `trailColor` | `string` | — | Track color |
 | `segments` | `readonly `[`ProgressSegment`](#progresssegment)`[]` | — | Display multiple sections with proportions and colors. |
 | `steps` | `number` | — | Number of discrete progress steps. |
@@ -68,7 +71,7 @@ Display task completion.
 Import the component props and item types when preparing your own values.
 
 ```ts
-import type { ProgressProps } from '@sudden3/leaf-ui';
+import type { ProgressProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes

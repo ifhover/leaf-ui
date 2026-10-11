@@ -1,7 +1,7 @@
-import { Button, Popover } from '@sudden3/leaf-ui';
+import { Button, Popover, Space } from '@ifhover/leaf-ui';
 export function PopoverBasic() {
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       <Popover title="Project details" content="See project details and recent updates here.">
         <Button variant="outline">Click for details</Button>
       </Popover>
@@ -11,8 +11,8 @@ export function PopoverBasic() {
         placement="right"
         content="Find more project information here."
       >
-        <Button variant="soft">Hover for details</Button>
+        <Button variant="outline">Hover for details</Button>
       </Popover>
-    </div>
+    </Space>
   );
 }

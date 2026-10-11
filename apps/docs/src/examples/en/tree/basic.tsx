@@ -1,10 +1,10 @@
-import { Tree } from '@sudden3/leaf-ui';
+import { Space, Tree } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { treeData } from './data';
 export function TreeBasic() {
   const [selected, setSelected] = useState<readonly string[]>([]);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <Tree
         data={treeData}
         defaultExpandedKeys={['design']}
@@ -13,6 +13,6 @@ export function TreeBasic() {
         onSelect={setSelected}
       />
       <output className="leaf-demo-note">Selected: {selected.join(', ') || 'None'}</output>
-    </div>
+    </Space>
   );
 }

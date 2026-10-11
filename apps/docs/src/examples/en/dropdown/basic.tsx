@@ -1,4 +1,4 @@
-import { Button, Dropdown, type DropdownItem, useMessage } from '@sudden3/leaf-ui';
+import { Button, Dropdown, type DropdownItem, useMessage } from '@ifhover/leaf-ui';
 import { ChevronDown, Copy, Pencil, Trash2 } from 'lucide-react';
 
 const items: DropdownItem[] = [
