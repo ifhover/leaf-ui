@@ -11,7 +11,8 @@ test('compound required fields, exact decimals, formatted date and native reset'
   const alice = page.getByRole('checkbox', { name: 'Alice', exact: true });
   await alice.check();
   const date = page.getByRole('combobox', { name: 'Start date' });
-  await date.fill('08/10/2026');
+  await date.press('ControlOrMeta+A');
+  await date.pressSequentially('08/10/2026');
   await date.press('Enter');
   await expect(date).toHaveValue('08/10/2026');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
