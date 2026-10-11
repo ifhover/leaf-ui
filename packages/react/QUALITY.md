@@ -8,7 +8,9 @@
 
 开发分支完整 `pnpm check` 与 `pnpm build` 通过：56 个组件测试文件 / 316 项测试、13 项发布规则、17 项文档与 9 项 Skill 测试，84 个公共 JS 子路径、ESM / CommonJS SSR 和 Vite / Rspack 共 20 个按需 CSS 生产构建场景。DTCG / SVG / Figma 设计资源及体积预算通过，整库 JS / CSS gzip 为 207.02 / 40.48 KiB。打包演练确认新作用域、0.5.0 版本及公共产物。
 
-浏览器回归和 GitHub 审查继续执行；合并后需在实际发布提交重新检查与构建，再完成 npm、Git 标签、Pages 和旧包迁移提示。此处仅记录发布准备，不代表已发布。过程日志与本地验收证据位于仓库根目录 `.quality/release-0.5.0/`，真实 npm / Pages 状态以最终验收为准。
+浏览器初跑发现验收用例仍查找旧复选框名称 `People Alice`，修正为组件真实的 `Alice` 名称。Windows WebKit 的 `fill` 在可见、可编辑的日期框超时；改用真实键盘输入并保留格式、精确提交值和 reset 断言后，Chromium 与 WebKit 定向复测通过，Firefox 独立程序也通过复测。初始 GitHub 检查中完整构建、React 18 / 19、Chromium 与 Firefox 通过；WebKit 失败详情及最新提交的完整 CI 仍待核对，本机 GitHub HTTP 连续中断。不得将这些结果视为全部浏览器回归通过。
+
+合并后需在实际发布提交重新检查与构建，再完成 npm、Git 标签、Pages 和旧包迁移提示。跨过本地午夜后正式更新记录日期调整为 2026-10-12。此处仅记录发布准备，不代表已发布。过程日志与本地验收证据位于仓库根目录 `.quality/release-0.5.0/`，真实 npm / Pages 状态以最终验收为准。
 
 ## npm 作用域迁移（2026-10-11）
 

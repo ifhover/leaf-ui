@@ -8,7 +8,7 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
-## 0.5.0 - 2026-10-11
+## 0.5.0 - 2026-10-12
 
 ### Added
 
