@@ -1,5 +1,5 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { BadgeBasic } from '../../../src/examples/en/badge/basic';
+import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../../src/examples/en/badge/basic';
 
 # Badge
 
@@ -8,6 +8,39 @@ Show counts, unread notifications or brief statuses.
 ## Basic usage
 
 <ComponentExample title="Basic usage" preview={<BadgeBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## Count rules
+
+Counts above `max` show the limit with a plus sign. Use `showZero` to display zero.
+
+<ComponentExample title="Count rules" preview={<BadgeCounts />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## Dot reminders
+
+Indicate new content without displaying a count.
+
+<ComponentExample title="Dot reminders" preview={<BadgeDot />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```
+
+</ComponentExample>
+
+## Status indicators
+
+Describe the current status with a dot and text.
+
+<ComponentExample title="Status indicators" preview={<BadgeStatuses />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
 ```
@@ -32,7 +65,7 @@ Show counts, unread notifications or brief statuses.
 Import the component props and item types when preparing your own values.
 
 ```ts
-import type { BadgeProps } from '@sudden3/leaf-ui';
+import type { BadgeProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes

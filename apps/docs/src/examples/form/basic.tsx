@@ -1,4 +1,4 @@
-import { Button, Form, FormField, Input, Select } from '@sudden3/leaf-ui';
+import { Button, Form, FormField, Input, Select, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function FormBasic() {
   const [result, setResult] = useState('');
@@ -28,12 +28,12 @@ export function FormBasic() {
         />
       </FormField>
       <FormField>
-        <div className="leaf-demo-row">
+        <Space wrap className="leaf-demo-row">
           <Button type="submit">提交</Button>
           <Button type="reset" variant="outline">
             重置
           </Button>
-        </div>
+        </Space>
       </FormField>
       {result && <output className="leaf-demo-note">{result}</output>}
     </Form>

@@ -1,10 +1,10 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 import { Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { useState } from 'react';
 export function InputPassword() {
   const [visible, setVisible] = useState(false);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Password</span>
         <Input
@@ -39,6 +39,6 @@ export function InputPassword() {
           visibilityToggle={false}
         />
       </div>
-    </div>
+    </Space>
   );
 }

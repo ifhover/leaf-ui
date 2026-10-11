@@ -9,15 +9,15 @@ Configure components with [ConfigProvider](/en/components/config-provider). Star
 Wrap the application and import the stylesheet once:
 
 ```tsx
-import { Button, ConfigProvider, Input } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export function App() {
   return (
     <ConfigProvider theme={{
       primaryColor: '#7654c6',
       borderRadius: 8,
-      controlHeight: 34,
+      controlHeight: 40,
     }}>
       <Input aria-label="Project name" placeholder="Project name" />
       <Button>Save</Button>
@@ -36,15 +36,17 @@ Choose a preset or a custom color, then adjust radius and appearance. Expand the
 
 ## Derived sizes
 
-The defaults are a 10px base radius, 34px control height and 14px font size:
+The defaults are a 10px base radius, 40px control height and 14px font size:
 
 | Base setting | Derived values | Default result |
 | --- | --- | --- |
-| `borderRadius` | Small radius × 0.6; large radius × 1.6 | `6px / 16px` |
-| `controlHeight` | Small height − 6px; large height + 6px | `28px / 40px` |
-| `fontSize` | Small font − 2px; large font + 2px | `12px / 16px` |
+| `borderRadius` | Small / medium / large radius × 0.6 / 1.2 / 1.6 | `6px / 12px / 16px` |
+| `controlHeight` | Small height − 6px; large height + 6px | `34px / 46px` |
+| `fontSize` | Small font − 1px; large font + 2px | `13px / 16px` |
 
 Numbers are pixels; CSS lengths with units are also accepted. Buttons, inputs and pickers share the same sizes.
+
+Radii step down from the outside in: dialogs, drawers and popups use the large radius; content surfaces such as cards, alerts and choice cards use the medium radius; buttons, fields and table frames use the base radius; checkboxes and other small elements use the small radius; status tags are pills. Content surfaces are separated by hairline borders rather than shadows.
 
 Inset options and selected backgrounds derive their radius from the surface radius, padding and border: the default popup uses `16px - 6px - 1px = 9px`. Set `borderRadius` and `padding` through `theme.components.Floating` for shared popups; local `Dropdown` settings take precedence. Card `Tabs`, `Segmented` and `Menu` follow their own surfaces. Padding accepts numbers, CSS lengths and 1–4 value shorthand (such as `4px 8px`), updating the inner curves in each direction.
 
@@ -67,7 +69,7 @@ Floating panels, Modal, confirmations and messages inherit their calling region�
 
 ```tsx
 import { useState } from 'react';
-import { Button, ConfigProvider } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider } from '@ifhover/leaf-ui';
 
 export function ThemeSwitch() {
   const [dark, setDark] = useState(false);
@@ -86,7 +88,7 @@ Dark appearance supplies suitable text, surface, border and status colors. Expli
 Use `theme.tokens` when you need specific derived sizes, semantic colors, surfaces, typography, motion or overlay stacking:
 
 ```tsx
-import type { LeafTheme } from '@sudden3/leaf-ui';
+import type { LeafTheme } from '@ifhover/leaf-ui';
 
 const theme: LeafTheme = {
   controlHeight: 36,
@@ -154,7 +156,7 @@ Read the current region's CSS variables in your application styles. Use ConfigPr
 | `--leaf-color-danger` / `--leaf-color-success` / `--leaf-color-warning` / `--leaf-color-info` | Semantic colors |
 | `--leaf-color-text` / `--leaf-color-text-muted` | Main / secondary text |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` / `--leaf-color-border` | Surfaces and borders |
-| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-lg` | Base / small / large radius |
+| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-md` / `--leaf-radius-lg` | Base / small / medium / large radius |
 | `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | Base / small / large height |
 | `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | Typography |
 | `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | Base / fast / layout transition duration |
@@ -168,7 +170,7 @@ Static CSS and dynamic themes work together without generating CSS at runtime. S
 
 ## Spacing, typography and component overrides
 
-`spacing` derives small and large spacing. `lineHeight`, `headingWeight` and `elevation` configure body line height, heading weight and shadows. Keep configuring through ConfigProvider; use `theme.components` for scoped component overrides:
+`spacing` derives small and large spacing. `lineHeight`, `headingWeight` and `elevation` configure body line height, Typography heading weight and shadows; dialog, card and other component titles use `tokens.fontWeight`. Keep configuring through ConfigProvider; use `theme.components` for scoped component overrides:
 
 ```tsx
 const theme = {
@@ -186,7 +188,7 @@ Use exported component names. Each component consumes tokens relevant to its lay
 ## System appearance, responsive breakpoints and contrast
 
 ```tsx
-import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@sudden3/leaf-ui';
+import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@ifhover/leaf-ui';
 function Application() {
   const appearance = useSystemAppearance('light');
   return <ConfigProvider theme={{ appearance, breakpoints: { md: 800 } }}><Content /></ConfigProvider>;
@@ -202,6 +204,25 @@ const contrast = colorContrast('#ffffff', '#20834a');
 
 System preferences update after client hydration. For SSR, start with a server Cookie or a consistent fallback; see [SSR](/en/guide/ssr).
 
+## Section surfaces
+
+Dialog sections, rich choices and neutral alerts derive their appearance from the same base theme. The muted surface controls supporting areas, and dividerColor is an optional advanced override. Configure individual section backgrounds through components; Confirm shares Modal settings. Header and footer backgrounds apply to Modal, Drawer and Card; borderColor also applies to rich Checkbox/Radio and Alert surfaces.
+
+```tsx
+<ConfigProvider
+  theme={{
+    primaryColor: '#20834a',
+    borderRadius: 10,
+    components: {
+      Modal: { footerBackground: 'var(--leaf-color-surface-muted)' },
+      Card: { borderColor: 'var(--leaf-color-divider)' },
+    },
+  }}
+>
+  <App />
+</ConfigProvider>
+```
+
 ## LeafComponentTokens
 
 | Property | Type | Default | Description |
@@ -213,6 +234,9 @@ System preferences update after client hydration. For SSR, start with a server C
 | `fontSize` | `string \| number` | — | Font size; numbers are pixels. |
 | `color` | `string` | — | Color or semantic tone. |
 | `background` | `string` | — | Component surface background. |
+| `borderColor` | `string` | — | Color of outer borders and section dividers. |
+| `headerBackground` | `string` | — | Header background; inherits the surface by default. |
+| `footerBackground` | `string` | — | Footer background; divided surfaces use the muted surface by default. |
 | `shadow` | `string` | — | CSS box-shadow value. |
 
 ## LeafThemeStyle

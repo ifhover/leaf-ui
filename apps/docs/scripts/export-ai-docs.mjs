@@ -33,24 +33,73 @@ export function publicExports(source) {
   );
 }
 
+export async function publicApi(repository) {
+  const { name } = JSON.parse(
+    await readFile(path.join(repository, 'packages/react/package.json'), 'utf8'),
+  );
+  if (!['@ifhover/leaf-ui', '@sudden3/leaf-ui'].includes(name))
+    throw new Error('The snapshot must identify a supported Leaf UI package.');
+  const files = ['packages/react/src/index.ts', 'packages/react/src/tabletanstack/index.ts'];
+  const entries = [];
+  for (const relative of files) {
+    const entry = path.join(repository, relative);
+    let source;
+    try {
+      source = await readFile(entry, 'utf8');
+    } catch (error) {
+      if (relative !== files[0] && error.code === 'ENOENT') continue;
+      throw error;
+    }
+    entries.push(
+      ...publicExports(source).map((item) => ({
+        ...item,
+        entry,
+        importPath: relative === files[0] ? name : `${name}/table/tanstack`,
+      })),
+    );
+  }
+  return entries;
+}
+
 export async function exportAiDocs({ repository, output, base, sourceCommit = null }) {
   const manifest = JSON.parse(
     await readFile(path.join(repository, 'packages/react/package.json'), 'utf8'),
   );
   const version = manifest.version;
-  const exports = publicExports(
-    await readFile(path.join(repository, 'packages/react/src/index.ts'), 'utf8'),
-  );
+  const exports = await publicApi(repository);
   const files = await walkFiles(output);
   const pages = [];
   const normalize = (value) => value.replace(/[^a-z0-9]/gi, '').toLowerCase();
   const origin = 'https://ifhover.github.io';
+  let exampleSource;
   for (const file of files.filter((candidate) => candidate.endsWith('.md'))) {
     const relative = path.relative(output, file).replaceAll(path.sep, '/');
     if (!/^(en\/)?(components|guide)\/.+\.md$/.test(relative)) continue;
     const english = relative.startsWith('en/');
     const id = relative.replace(/^en\//, '').replace(/\.md$/, '');
-    const source = await readFile(file, 'utf8');
+    let document;
+    try {
+      document = await readFile(
+        path.join(repository, 'apps/docs/docs', relative.replace(/\.md$/, '.mdx')),
+        'utf8',
+      );
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      try {
+        document = await readFile(path.join(repository, 'apps/docs/docs', relative), 'utf8');
+      } catch (missing) {
+        if (missing.code !== 'ENOENT') throw missing;
+      }
+    }
+    const original = await readFile(file, 'utf8');
+    let source = original;
+    if (document?.includes('<ComponentExample')) {
+      exampleSource ??= await import(
+        process.env.LEAF_DOCS_EXAMPLE_SOURCE ??
+          new URL('./example-source.mjs', import.meta.url).href
+      );
+      source = exampleSource.extractExampleMarkdown(original, document);
+    }
     const title = source.match(/^#\s+(.+)$/m)?.[1] ?? id;
     const html = relative.replace(/\.md$/, '.html');
     const symbols = exports
@@ -65,10 +114,25 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
           id.startsWith('components/') && normalize(module) === normalize(id.split('/').at(-1))
         );
       })
-      .map(({ name, kind }) => ({ name, kind }));
-    const header = `> Leaf UI ${version} · Package: @sudden3/leaf-ui${sourceCommit ? ` · Source: ${sourceCommit}` : ''}\n> Browser documentation: ${origin}${base}${html}\n\n`;
+      .map(({ name, kind, importPath }) => ({ name, kind, importPath }));
+    const header = `> Leaf UI ${version} · Package: ${manifest.name}${sourceCommit ? ` · Source: ${sourceCommit}` : ''}\n> Browser documentation: ${origin}${base}${html}\n\n`;
     await writeFile(file, header + source, 'utf8');
     pages.push({ id, language: english ? 'en' : 'zh', title, markdown: relative, html, symbols });
+  }
+  for (const file of files.filter((candidate) => path.basename(candidate) === 'llms-full.txt')) {
+    const directory = path.dirname(file);
+    const fullPages = await walkFiles(directory);
+    const chunks = await Promise.all(
+      fullPages
+        .filter((page) => page.endsWith('.md'))
+        .filter(
+          (page) =>
+            directory !== output || !path.relative(output, page).startsWith(`en${path.sep}`),
+        )
+        .sort()
+        .map((page) => readFile(page, 'utf8')),
+    );
+    await writeFile(file, chunks.join('\n\n'), 'utf8');
   }
   if (!pages.some((page) => page.id === 'components/button'))
     throw new Error(
@@ -83,16 +147,16 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
     );
   const index = {
     schemaVersion: 1,
-    package: '@sudden3/leaf-ui',
+    package: manifest.name,
     version,
     sourceCommit,
-    exports: exports.map(({ name, kind }) => ({ name, kind })),
+    exports: exports.map(({ name, kind, importPath }) => ({ name, kind, importPath })),
     pages: pages.sort((a, b) => `${a.id}/${a.language}`.localeCompare(`${b.id}/${b.language}`)),
   };
   await mkdir(path.join(output, 'api'), { recursive: true });
   await writeFile(path.join(output, 'api/index.json'), `${JSON.stringify(index, null, 2)}\n`);
   const llms = await readFile(path.join(output, 'llms.txt'), 'utf8');
-  const text = `# Leaf UI ${version}\n\n> Version-specific documentation for @sudden3/leaf-ui@${version}.\n\nRead only the pages required for your task. Match the version installed in the application; do not substitute the latest version.\n\n## API discovery\n\n- [API and exported type index](${origin}${base}api/index.json): Map exact public exports to individual Markdown pages.\n\n${llms.replace(/^# .+\n/, '')}`;
+  const text = `# Leaf UI ${version}\n\n> Version-specific documentation for ${manifest.name}@${version}.\n\nRead only the pages required for your task. Match the package name and version installed in the application; do not substitute the latest version.\n\n## API discovery\n\n- [API and exported type index](${origin}${base}api/index.json): Map exact public exports to individual Markdown pages.\n\n${llms.replace(/^# .+\n/, '')}`;
   await writeFile(path.join(output, 'llms.txt'), text, 'utf8');
   await writeFile(path.join(output, 'llm.txt'), text, 'utf8');
   console.log(`AI documentation exported for Leaf UI ${version}: ${pages.length} Markdown pages.`);

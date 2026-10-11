@@ -1,4 +1,4 @@
-import { Cascader } from '@sudden3/leaf-ui';
+import { Cascader, Space } from '@ifhover/leaf-ui';
 
 const options = [
   {
@@ -22,7 +22,7 @@ const options = [
 
 export function CascaderBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Project category</span>
         <Cascader aria-label="Project category" options={options} placeholder="Choose a category" />
@@ -39,6 +39,6 @@ export function CascaderBasic() {
         <span className="leaf-demo-label">Disabled category</span>
         <Cascader aria-label="Disabled category" options={options} disabled />
       </div>
-    </div>
+    </Space>
   );
 }

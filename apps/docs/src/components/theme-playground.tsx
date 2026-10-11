@@ -1,4 +1,3 @@
-import { CodeBlockRuntime } from '@rspress/core/theme-original';
 import {
   Avatar,
   Badge,
@@ -10,7 +9,8 @@ import {
   RadioGroup,
   Slider,
   Switch,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
+import { CodeBlockRuntime } from '@rspress/core/theme-original';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
@@ -30,7 +30,7 @@ export function ThemePlayground() {
   const [priority, setPriority] = useState(64);
   const id = useId();
   const source = [
-    "import { Button, ConfigProvider } from '@sudden3/leaf-ui';",
+    "import { Button, ConfigProvider } from '@ifhover/leaf-ui';",
     '',
     `<ConfigProvider density="${density}" theme={{`,
     `  primaryColor: '${color}',`,
@@ -141,16 +141,16 @@ export function ThemePlayground() {
             <span>Solid</span>
           </div>
           <div>
-            <Button size="sm" variant="soft">
-              {t('柔和按钮', 'Soft')}
+            <Button size="sm" variant="outline">
+              {t('描边按钮', 'Outline')}
             </Button>
-            <span>Soft</span>
+            <span>Outline</span>
           </div>
           <div>
-            <Button size="sm" variant="outline">
-              {t('灰底按钮', 'Neutral')}
+            <Button size="sm" variant="outline" danger>
+              {t('危险操作', 'Danger')}
             </Button>
-            <span>Neutral</span>
+            <span>Danger</span>
           </div>
           <div>
             <Button size="sm" variant="ghost">

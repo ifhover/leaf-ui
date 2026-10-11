@@ -4,11 +4,10 @@
   overflow-wrap: anywhere;
   border-color: var(--leaf-color-border-alpha-85);
   &__title {
-    margin-block-end: 8px;
+    margin-block-end: 6px;
     color: var(--leaf-color-text);
-    font-weight: 600;
+    font-weight: var(--leaf-font-weight);
     font-size: var(--leaf-font-size);
-    letter-spacing: -0.015em;
   }
   &__content {
     min-width: 0;

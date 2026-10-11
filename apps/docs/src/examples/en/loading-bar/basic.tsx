@@ -1,4 +1,4 @@
-import { Button, useLoadingBar } from '@sudden3/leaf-ui';
+import { Button, useLoadingBar } from '@ifhover/leaf-ui';
 
 export function LoadingBarBasic() {
   const bar = useLoadingBar();

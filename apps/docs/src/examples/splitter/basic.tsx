@@ -1,4 +1,4 @@
-import { Splitter } from '@sudden3/leaf-ui';
+import { Splitter } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function SplitterBasic({ english = false }: { english?: boolean }) {
   const [sizes, setSizes] = useState<readonly number[]>([35, 65]);

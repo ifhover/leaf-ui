@@ -1,0 +1,154 @@
+@use './mixins';
+
+@mixin item($component) {
+  &__copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-wrap: anywhere;
+  }
+  &__description {
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+    line-height: 1.5;
+  }
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--leaf-current-control-height) - 4px);
+    height: calc(var(--leaf-current-control-height) - 4px);
+    box-sizing: border-box;
+    border: 1px solid var(--leaf-color-divider);
+    border-radius: var(--leaf-radius-sm);
+    color: var(--leaf-color-text-muted);
+    background: var(--leaf-color-surface-muted);
+    > svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+  &__extra {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+    max-width: 45%;
+    overflow-wrap: anywhere;
+  }
+  &--described:not(.leaf-#{$component}--card) {
+    align-items: flex-start;
+    .leaf-#{$component}__control {
+      margin-block-start: 2px;
+    }
+  }
+  &--card {
+    width: 100%;
+    gap: var(--leaf-component-#{$component}-gap, 12px);
+    min-height: calc(var(--leaf-current-control-height) + 24px);
+    padding: var(--leaf-component-#{$component}-padding, calc(var(--leaf-spacing) * 1.75));
+    border: 1px solid var(--leaf-component-#{$component}-border-color, var(--leaf-color-border));
+    border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius-md));
+    color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
+    background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
+    box-shadow: var(--leaf-component-#{$component}-shadow, none);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    .leaf-#{$component}__icon {
+      order: 1;
+    }
+    .leaf-#{$component}__copy {
+      flex: 1;
+      order: 2;
+    }
+    .leaf-#{$component}__extra {
+      order: 3;
+    }
+    .leaf-#{$component}__control {
+      order: 4;
+    }
+    &:hover:not([data-disabled]) {
+      border-color: var(--leaf-color-border-hover);
+      background: var(--leaf-color-surface-muted);
+    }
+    &:has(.leaf-#{$component}__input:checked),
+    &:has(.leaf-#{$component}__input:indeterminate) {
+      border-color: var(--leaf-color-primary);
+    }
+    &:has(.leaf-#{$component}__input:focus-visible) {
+      @include mixins.focus-ring;
+      .leaf-#{$component}__input {
+        outline: none;
+      }
+    }
+  }
+  @media (forced-colors: active) {
+    &--card {
+      border-color: ButtonBorder;
+      &:has(.leaf-#{$component}__input:checked),
+      &:has(.leaf-#{$component}__input:indeterminate) {
+        border-color: Highlight;
+      }
+      &:has(.leaf-#{$component}__input:focus-visible) {
+        outline-color: Highlight;
+      }
+    }
+  }
+}
+
+@mixin group($component) {
+  &--card,
+  &--list {
+    width: 100%;
+    > legend {
+      @include mixins.section-label;
+      margin-block-end: 10px;
+    }
+    .leaf-#{$component}__copy {
+      flex: 1;
+    }
+  }
+  &--card &__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    align-items: stretch;
+    gap: 12px;
+  }
+  &--card.leaf-#{$component}-group--vertical &__options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  &--list &__options {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    border: 1px solid var(--leaf-component-#{$component}-border-color, var(--leaf-color-border));
+    border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius-md));
+    background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
+    > .leaf-#{$component} {
+      width: 100%;
+      min-width: 0;
+      padding: var(--leaf-component-#{$component}-padding, 12px 16px);
+      gap: var(--leaf-component-#{$component}-gap, 12px);
+      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &:first-child {
+        border-start-start-radius: inherit;
+        border-start-end-radius: inherit;
+      }
+      &:last-child {
+        border-end-start-radius: inherit;
+        border-end-end-radius: inherit;
+      }
+      &:not(:first-child) {
+        border-block-start: 1px solid var(--leaf-color-divider);
+      }
+      &:hover:not([data-disabled]) {
+        background: var(--leaf-color-surface-muted);
+      }
+    }
+  }
+}

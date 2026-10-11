@@ -8,6 +8,32 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.5.0 - 2026-10-11
+
+### 新增
+
+- npm 包迁移为 `@ifhover/leaf-ui`，与 GitHub 维护账号统一。旧包的历史版本与文档快照继续保留，版本菜单和 AI Skill 按实际安装的包名与版本查询文档。
+- 新增 `Table` 组合式表格和可选的 `DataTable` 适配器，支持排序、筛选、选择、分页、固定列、列宽调整、分组、展开、编辑、虚拟行及行列排序。适配器从 `@ifhover/leaf-ui/table/tanstack` 导入，需要单独安装 `@tanstack/react-table`。
+- 新增 `Scrollbar`，提供不占用内容宽度的悬浮滚动条、拖动与键盘控制；Table、Modal、Cascader 和 ScrollArea 共用该实现。
+- Button 新增 `variant="link"`；Checkbox、Radio 及其分组新增卡片和列表外观，支持说明、图标与补充内容。Card、Modal 和 Drawer 新增副标题与分区配置。
+- Progress 新增默认开启的 `active` 流光效果，仅在未完成的线形进度范围内播放，支持关闭和减少动态效果。
+
+### 改进与修复
+
+- 统一控件默认高度为 40px，小、大尺寸为 34px / 46px；按钮内边距随高度派生，下拉选项与表单间距同步调整。内容卡片采用平整表面和基础圆角，弹窗保留更大的外层圆角。
+- 按钮点击改为外缘波纹，悬停与按下平滑变色；文字和链接按钮不显示波纹。统一明亮警告色、弹窗分区、紧凑页脚、Confirm 正文图标以及 Alert 与 Result 的对齐。
+- 根入口 ESM 具名导入支持随组件加载所需样式，已验证 Vite 与 Rspack 生产构建；根入口和子路径共用组件及上下文，Node 默认入口保持无 CSS 的服务端渲染。
+- 修复下拉选中与悬停背景切换、级联展开短暂溢出、角标错位和偏外、表格窄容器滚动与页面滚动衔接等问题；表格默认固定表头，限制高度时在表体内滚动。
+- 重整双语文档、首页、侧栏和示例布局；代码示例只展示当前演示所需源码，移除文档专用语言参数，展开与收起增加短过渡和渐变遮罩。快速开始合并安装与基础用法。
+
+### 升级说明
+
+- 安装 `@ifhover/leaf-ui`，将应用中的 `@sudden3/leaf-ui` 导入改为新包名，包括 CSS 路径。首次新作用域版本为 0.5.0，旧作用域停留在 0.4.2。
+- 在应用入口导入一次 `@ifhover/leaf-ui/styles.css`，提供主题、公共浮层和 Confirm / Message / Notification / LoadingBar 服务样式；此入口不再包含整库 CSS。需要完整静态样式时使用 `@ifhover/leaf-ui/styles/all.css`。CommonJS 或不能裁剪根入口 CSS 的构建器仍可使用组件子路径。
+- Button 移除 `soft` 外观，改用 `outline`；需要保留较矮的控件可通过 `ConfigProvider` 设置 `theme.controlHeight`。
+- Confirm 仅保留 `useConfirm().confirm(options)` 调用，移除受控 `Confirm` 组件与 `ConfirmProps`，不再继承 Modal 的完整配置。需要复杂正文、自定义页脚或受控显示时使用 Modal；危险确认通过 `type="danger"` 设置。
+- 移除独立的 `Sortable`、`List` / `ListItem` 和 `OrgChart`，以及相关类型和子路径。列表展示使用原生布局；Tabs、Tree 和 DataTable 自身的排序能力保留。
+
 ## 0.4.2 - 2026-10-08
 
 ### 修复

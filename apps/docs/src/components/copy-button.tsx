@@ -1,4 +1,4 @@
-import { Button } from '@sudden3/leaf-ui';
+import { Button } from '@ifhover/leaf-ui';
 import { useEffect, useState } from 'react';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';

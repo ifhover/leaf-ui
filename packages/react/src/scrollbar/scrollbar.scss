@@ -1,0 +1,114 @@
+@use '../styles/mixins' as mixins;
+
+.leaf-scrollbar {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+
+  &__viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overscroll-behavior: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    &:focus-visible {
+      @include mixins.focus-ring;
+      outline-offset: -3px;
+    }
+  }
+  &__content {
+    display: flow-root;
+    min-width: 100%;
+  }
+  &__bar {
+    position: absolute;
+    z-index: 4;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &--vertical {
+      inset-inline-end: 4px;
+      width: 8px;
+    }
+    &--horizontal {
+      bottom: 4px;
+      height: 8px;
+    }
+  }
+  &__thumb {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: var(--leaf-color-text-muted);
+    background-clip: padding-box;
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+  }
+  &__bar--horizontal &__thumb {
+    left: 0;
+    right: auto;
+  }
+  &__bar:hover &__thumb,
+  &__bar:focus-within &__thumb,
+  &[data-dragging] &__thumb {
+    opacity: 0.75;
+  }
+  &__control {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    touch-action: none;
+  }
+  &__bar:has(:focus-visible) {
+    outline: 2px solid var(--leaf-color-primary);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+  &__viewport:focus:not(:focus-visible) {
+    outline: none;
+  }
+  &:hover > &__bar,
+  &:focus-within > &__bar,
+  &[data-scrollbar='always'] > &__bar,
+  &[data-scrolling] > &__bar,
+  &[data-dragging] > &__bar {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-scrollbar__bar,
+  .leaf-scrollbar__thumb {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .leaf-scrollbar__thumb {
+    background: CanvasText;
+    opacity: 1;
+    forced-color-adjust: none;
+  }
+}

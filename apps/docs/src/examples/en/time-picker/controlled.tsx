@@ -1,10 +1,10 @@
-import { TimePicker } from '@sudden3/leaf-ui';
+import { Space, TimePicker } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function TimePickerControlled() {
   const [time, setTime] = useState<string | null>('14:30');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Meeting time</span>
         <TimePicker aria-label="Meeting time" value={time} onChange={setTime} minuteStep={15} />
@@ -19,6 +19,6 @@ export function TimePickerControlled() {
           allowClear={false}
         />
       </div>
-    </div>
+    </Space>
   );
 }

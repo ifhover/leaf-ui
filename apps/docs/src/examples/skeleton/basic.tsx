@@ -1,10 +1,10 @@
-import { Button, Skeleton } from '@sudden3/leaf-ui';
+import { Button, Skeleton, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SkeletonBasic() {
   const [loading, setLoading] = useState(true);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Button variant="outline" onClick={() => setLoading(!loading)}>
         切换加载状态
       </Button>
@@ -18,6 +18,6 @@ export function SkeletonBasic() {
         <span className="leaf-demo-label">静态占位</span>
         <Skeleton active={false} title={false} rows={2} />
       </div>
-    </div>
+    </Space>
   );
 }

@@ -4,7 +4,7 @@ import { closeSync, openSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { walkFiles } from './export-ai-docs.mjs';
 
 const repository = fileURLToPath(new URL('../../../', import.meta.url));
@@ -12,6 +12,8 @@ export const platformFiles = [
   'apps/docs/scripts/build-versioned-site.mjs',
   'apps/docs/scripts/export-ai-docs.mjs',
   'apps/docs/scripts/component-metadata.mjs',
+  'apps/docs/scripts/example-source.mjs',
+  'apps/docs/scripts/example-source.d.mts',
   'apps/docs/src/components/version-path.ts',
   'apps/docs/src/components/version-switcher.tsx',
   'apps/docs/src/components/version-switcher.scss',
@@ -19,7 +21,18 @@ export const platformFiles = [
   'apps/docs/docs/en/guide/ai.md',
 ];
 
-export function publishedReleases(registry) {
+const currentPackage = '@ifhover/leaf-ui';
+const legacyPackage = '@sudden3/leaf-ui';
+
+function compareVersions(a, b) {
+  const left = a.version.split('.').map(Number);
+  const right = b.version.split('.').map(Number);
+  return right[0] - left[0] || right[1] - left[1] || right[2] - left[2];
+}
+
+export function publishedReleases(registry, { allowEmpty = false } = {}) {
+  if (![currentPackage, legacyPackage].includes(registry.name))
+    throw new Error('Unsupported npm package in documentation release metadata.');
   const versions = Object.entries(registry.versions)
     .filter(([version]) => /^\d+\.\d+\.\d+$/.test(version))
     .map(([version, entry]) => {
@@ -27,17 +40,56 @@ export function publishedReleases(registry) {
       const publishedAt = registry.time[version];
       if (!/^[a-f0-9]{40}$/.test(sourceCommit) || !Number.isFinite(Date.parse(publishedAt)))
         throw new Error(`Published version ${version} has no reproducible source commit or date.`);
-      return { version, sourceCommit, publishedAt };
+      if (entry.name && entry.name !== registry.name)
+        throw new Error(`Published version ${version} has mismatched package metadata.`);
+      return { package: registry.name, version, sourceCommit, publishedAt };
     })
-    .sort((a, b) => {
-      const left = a.version.split('.').map(Number);
-      const right = b.version.split('.').map(Number);
-      return right[0] - left[0] || right[1] - left[1] || right[2] - left[2];
-    });
+    .sort(compareVersions);
+  if (allowEmpty && versions.length === 0) return null;
   const latest = registry['dist-tags'].latest;
   if (!versions.some((release) => release.version === latest))
     throw new Error('The npm latest tag must refer to a published stable version.');
-  return { latest, versions };
+  return { package: registry.name, latest, versions };
+}
+
+export function mergePublishedReleases(current, legacy) {
+  const preferred = current ?? legacy;
+  if (!preferred) throw new Error('No published stable Leaf UI documentation source.');
+  const releases = new Map();
+  for (const source of [current, legacy].filter(Boolean)) {
+    for (const release of source.versions) {
+      if (releases.has(release.version))
+        throw new Error(
+          `Version ${release.version} exists in both npm packages. Publish the new package with a distinct higher version to preserve /v/${release.version}/.`,
+        );
+      releases.set(release.version, release);
+    }
+  }
+  if (current && legacy && compareVersions({ version: current.latest }, legacy.versions[0]) >= 0)
+    throw new Error(
+      `The new npm package's stable latest must be higher than legacy ${legacy.versions[0].version}.`,
+    );
+  return {
+    package: preferred.package,
+    latest: preferred.latest,
+    versions: [...releases.values()].sort(compareVersions),
+  };
+}
+
+export async function loadPublishedReleases(fetcher = fetch) {
+  const responses = await Promise.all(
+    [currentPackage, legacyPackage].map(async (name) => {
+      const response = await fetcher(`https://registry.npmjs.org/${name.replace('/', '%2F')}`, {
+        signal: AbortSignal.timeout(30000),
+      });
+      if (name === currentPackage && response.status === 404) return null;
+      if (!response.ok) throw new Error(`npm registry returned ${response.status} for ${name}`);
+      const registry = await response.json();
+      if (registry.name !== name) throw new Error(`npm registry package mismatch for ${name}`);
+      return publishedReleases(registry, { allowEmpty: name === currentPackage });
+    }),
+  );
+  return mergePublishedReleases(...responses);
 }
 
 async function run(command, args, cwd, log, env = {}) {
@@ -75,8 +127,22 @@ async function run(command, args, cwd, log, env = {}) {
   }
 }
 
-async function installPlatform(snapshot) {
+async function cleanSnapshots(staging, buildError) {
+  try {
+    await rm(staging, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  } catch (error) {
+    if (buildError) console.error(`Temporary snapshot cleanup failed: ${error.message}`);
+    else throw error;
+  }
+}
+
+export async function installPlatform(snapshot) {
   const docs = path.join(snapshot, 'apps/docs');
+  const { name } = JSON.parse(
+    await readFile(path.join(snapshot, 'packages/react/package.json'), 'utf8'),
+  );
+  if (![currentPackage, legacyPackage].includes(name))
+    throw new Error('Unsupported Leaf UI snapshot package.');
   for (const file of platformFiles.filter((file) => !file.endsWith('build-versioned-site.mjs'))) {
     // 0.1.0 predates English documentation; do not create an incomplete locale.
     if (file.includes('/docs/en/')) {
@@ -86,7 +152,19 @@ async function installPlatform(snapshot) {
         continue;
       }
     }
-    await cp(path.join(repository, file), path.join(snapshot, file));
+    const target = path.join(snapshot, file);
+    await mkdir(path.dirname(target), { recursive: true });
+    if (
+      file.endsWith('version-switcher.tsx') ||
+      file.includes('/docs/guide/') ||
+      file.includes('/docs/en/guide/')
+    ) {
+      // Infrastructure overlays must use the package present in this published snapshot.
+      const source = await readFile(path.join(repository, file), 'utf8');
+      await writeFile(target, source.replaceAll(currentPackage, name));
+    } else {
+      await cp(path.join(repository, file), target);
+    }
   }
   await rename(path.join(docs, 'rspress.config.ts'), path.join(docs, 'rspress.release.config.ts'));
   await writeFile(
@@ -157,28 +235,27 @@ export async function buildVersionedSite() {
   const base = `${(process.env.LEAF_DOCS_BASE || '/leaf-ui/').replace(/\/$/, '')}/`;
   if (!/^\/(?:[\w-]+\/)*$/.test(base))
     throw new Error('LEAF_DOCS_BASE must be an absolute site path.');
-  const response = await fetch('https://registry.npmjs.org/@sudden3%2Fleaf-ui', {
-    signal: AbortSignal.timeout(30000),
-  });
-  if (!response.ok) throw new Error(`npm registry returned ${response.status}`);
-  const manifest = publishedReleases(await response.json());
+  const manifest = await loadPublishedReleases();
   const hash = createHash('sha256').update(base);
   for (const file of platformFiles) hash.update(await readFile(path.join(repository, file)));
   const platformHash = hash.digest('hex').slice(0, 16);
   const cache = path.join(repository, 'apps/docs/.version-cache');
   const output = path.join(repository, 'apps/docs/site_build');
   const staging = await mkdtemp(path.join(tmpdir(), 'leaf-ui-docs-'));
+  let buildError;
   try {
     const buildSnapshot = async (release, docsBase, variant) => {
       const cached = path.join(
         cache,
-        `${variant}-${release.version}-${release.sourceCommit}-${platformHash}`,
+        `${variant}-${release.package.slice(1).replace('/', '-')}-${release.version}-${release.sourceCommit}-${platformHash}`,
       );
       let validCache = false;
       try {
         const index = JSON.parse(await readFile(path.join(cached, 'api/index.json'), 'utf8'));
         validCache =
-          index.version === release.version && index.sourceCommit === release.sourceCommit;
+          index.package === release.package &&
+          index.version === release.version &&
+          index.sourceCommit === release.sourceCommit;
       } catch {
         // A cache miss builds the exact published commit below.
       }
@@ -199,8 +276,10 @@ export async function buildVersionedSite() {
         const info = JSON.parse(
           await readFile(path.join(snapshot, 'packages/react/package.json'), 'utf8'),
         );
-        if (info.version !== release.version)
-          throw new Error(`Source version mismatch for ${release.version}`);
+        if (info.name !== release.package || info.version !== release.version)
+          throw new Error(
+            `Source package or version mismatch for ${release.package}@${release.version}`,
+          );
         await installPlatform(snapshot);
         const log = path.join(staging, `${variant}-${release.version}.log`);
         await run('pnpm', ['install', '--frozen-lockfile'], snapshot, log);
@@ -208,6 +287,9 @@ export async function buildVersionedSite() {
           LEAF_DOCS_BASE: docsBase,
           LEAF_DOCS_SITE_BASE: base,
           LEAF_DOCS_SOURCE_COMMIT: release.sourceCommit,
+          LEAF_DOCS_EXAMPLE_SOURCE: pathToFileURL(
+            path.join(repository, 'apps/docs/scripts/example-source.mjs'),
+          ).href,
         });
         // cached is always inside the fixed, generated cache directory.
         await rm(cached, { recursive: true, force: true });
@@ -237,7 +319,6 @@ export async function buildVersionedSite() {
       `${JSON.stringify(
         {
           schemaVersion: 1,
-          package: '@sudden3/leaf-ui',
           ...manifest,
         },
         null,
@@ -258,9 +339,12 @@ export async function buildVersionedSite() {
     await cp(site, output, { recursive: true });
     console.log(`Versioned site ready: ${output} (latest ${manifest.latest})`);
     return manifest;
+  } catch (error) {
+    buildError = error;
+    throw error;
   } finally {
     // staging is created by mkdtemp above; it never refers to a user checkout.
-    await rm(staging, { recursive: true, force: true });
+    await cleanSnapshots(staging, buildError);
   }
 }
 

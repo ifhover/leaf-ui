@@ -1,10 +1,10 @@
-import { RadioGroup } from '@sudden3/leaf-ui';
+import { RadioGroup, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function RadioControlled() {
   const [value, setValue] = useState('daily');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <RadioGroup
         label="Notification frequency"
         direction="vertical"
@@ -17,6 +17,6 @@ export function RadioControlled() {
         ]}
       />
       <span className="leaf-demo-note">Selected:{value}</span>
-    </div>
+    </Space>
   );
 }

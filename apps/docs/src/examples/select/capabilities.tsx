@@ -1,4 +1,4 @@
-import { Button, Select, Space, Tag } from '@sudden3/leaf-ui';
+import { Button, Select, Space, Tag } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = ['Design', 'Engineering', 'Marketing', 'Operations'].map((label) => ({
@@ -9,7 +9,7 @@ export function Capabilities({ english = false }) {
   const [open, setOpen] = useState(false);
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Responsive tags, constrained to the available width' : '根据宽度自动折叠标签'}
         </p>
@@ -27,7 +27,7 @@ export function Capabilities({ english = false }) {
           )}
         />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Controlled popup with an extra action' : '受控浮层与附加操作'}
         </p>

@@ -2,10 +2,55 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { Button, ConfigProvider, Confirm, Select, useConfirm } from '../index';
+import { ConfirmDialog } from '../confirm/confirm';
+import { Button, ConfigProvider, Select, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
+  it('associates supporting text with the dialog and keeps decorative icons outside its name', () => {
+    render(
+      <Modal
+        open
+        title="Access"
+        description="Choose the services this agent may access"
+        icon={<span>Shield</span>}
+        aria-describedby="extra-description"
+        footer={null}
+      >
+        <p id="extra-description">Changes take effect immediately</p>
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Access' });
+    expect(dialog).toHaveAccessibleDescription(
+      'Changes take effect immediately Choose the services this agent may access',
+    );
+    expect(dialog.querySelector('.leaf-modal__icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(dialog).not.toHaveAttribute('divided');
+  });
+  it('places a custom confirmation icon beside the explanation, outside its accessible name', () => {
+    render(
+      <ConfirmDialog
+        open
+        type="danger"
+        title="Delete project"
+        icon={<span>Lock</span>}
+        onClose={() => {}}
+      >
+        This cannot be undone.
+      </ConfirmDialog>,
+    );
+    expect(screen.getByRole('alertdialog', { name: 'Delete project' })).toHaveAccessibleDescription(
+      'This cannot be undone.',
+    );
+    expect(screen.getByText('Lock').closest('.leaf-confirm__icon')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(screen.getByText('Lock').closest('.leaf-modal__header')).toBeNull();
+    expect(screen.getByText('Lock').closest('.leaf-confirm__body')).not.toBeNull();
+    expect(screen.getByRole('alertdialog')).not.toHaveClass('leaf-modal--divided');
+    expect(screen.getByRole('alertdialog').querySelector('.leaf-modal__close')).toBeNull();
+  });
   it.each(['modal', 'confirm'] as const)(
     'ignores a stale async %s error after closing and reopening',
     async (kind) => {
@@ -14,7 +59,7 @@ describe('Modal and Confirm', () => {
         reject = rejectPromise;
       });
       const close = vi.fn();
-      const Surface = kind === 'modal' ? Modal : Confirm;
+      const Surface = kind === 'modal' ? Modal : ConfirmDialog;
       const example = (open: boolean) => (
         <ConfigProvider locale="en-US">
           <Surface open={open} title="Save" onConfirm={() => request} onClose={close}>
@@ -86,16 +131,22 @@ describe('Modal and Confirm', () => {
     (type) => {
       render(
         <ConfigProvider locale="en-US">
-          <Confirm open type={type} title="Continue">
+          <ConfirmDialog open type={type} title="Continue" onClose={() => {}}>
             Notice
-          </Confirm>
+          </ConfirmDialog>
         </ConfigProvider>,
       );
       const dialog = screen.getByRole('alertdialog');
-      expect(dialog.querySelector('.leaf-confirm-icon svg') !== null).toBe(type !== 'default');
+      expect(dialog.querySelector('.leaf-confirm__body > .leaf-confirm__icon svg') !== null).toBe(
+        type !== 'default',
+      );
+      if (type === 'danger')
+        expect(dialog.querySelector('.leaf-confirm__icon .lucide-circle-alert')).not.toBeNull();
+      expect(dialog.querySelector('.leaf-modal__header .leaf-modal__icon')).toBeNull();
       const title = screen.getByRole('heading', { name: 'Continue' });
       expect(title.querySelector('svg')).toBeNull();
-      expect(title.parentElement).toBe(screen.getByText('Notice').parentElement);
+      expect(title.closest('.leaf-modal__header')).not.toBeNull();
+      expect(screen.getByText('Notice').closest('.leaf-modal__body')).not.toBeNull();
       expect(dialog).toHaveAccessibleName('Continue');
       expect(screen.queryByRole('button', { name: 'Cancel' }) !== null).toBe(type !== 'success');
       expect(
@@ -147,9 +198,9 @@ describe('Modal and Confirm', () => {
     render(
       <StrictMode>
         <ConfigProvider locale="en-US">
-          <Confirm open title="Delete" onConfirm={confirm} onClose={close}>
+          <ConfirmDialog open title="Delete" onConfirm={confirm} onClose={close}>
             Delete this item?
-          </Confirm>
+          </ConfirmDialog>
         </ConfigProvider>
       </StrictMode>,
     );

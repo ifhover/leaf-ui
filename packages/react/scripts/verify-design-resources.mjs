@@ -8,8 +8,8 @@ const root = path.resolve(import.meta.dirname, '../../..'),
 const tokens = JSON.parse(await readFile(path.join(assets, 'leaf.tokens.json'), 'utf8'));
 assert.equal(tokens.light.color.primary.$value.hex, '#20834a');
 assert.equal(tokens.dark.color.primary.$value.hex, '#83cf9e');
-assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 34);
-assert.equal(tokens.compact.dimension['control-height'].$value.value, 28);
+assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 40);
+assert.equal(tokens.compact.dimension['control-height'].$value.value, 34);
 for (const mode of ['light', 'dark']) {
   for (const value of Object.values(tokens[mode].color)) {
     assert.equal(value.$type, 'color');

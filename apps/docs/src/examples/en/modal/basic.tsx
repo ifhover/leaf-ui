@@ -1,4 +1,4 @@
-import { Button, Form, FormField, Input, Modal, Select } from '@sudden3/leaf-ui';
+import { Button, Form, FormField, Input, Modal, Select } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function ModalBasic() {
   const [open, setOpen] = useState(false);

@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Tag } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, Tag } from '@ifhover/leaf-ui';
 import { type CSSProperties, useState } from 'react';
 
 export function ColorFixture() {

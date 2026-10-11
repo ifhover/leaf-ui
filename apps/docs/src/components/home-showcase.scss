@@ -21,8 +21,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     svg {
       color: var(--leaf-showroom-ink);
     }
@@ -33,7 +33,7 @@
     gap: 6px;
     margin-inline-start: auto;
     color: var(--leaf-site-muted);
-    font-size: 10px;
+    font-size: 13px;
     > span {
       width: 5px;
       height: 5px;
@@ -54,7 +54,6 @@
     border-inline-end: 1px solid var(--leaf-site-border);
     background: var(--leaf-site-soft);
     .leaf-menu {
-      font-size: 12px;
       background: transparent;
     }
   }
@@ -64,12 +63,12 @@
     gap: 10px;
     padding: 0 8px 28px;
     > span {
-      font-weight: 600;
+      font-weight: 500;
     }
     small {
       display: block;
       margin-top: 4px;
-      font-size: 9px;
+      font-size: 13px;
       font-weight: 400;
       color: var(--leaf-site-muted);
     }
@@ -77,7 +76,7 @@
   &__label {
     display: block;
     color: var(--leaf-site-muted);
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: 1.2px;
   }
@@ -96,7 +95,7 @@
     p {
       max-width: 130px;
       margin: 8px 0 0;
-      font-size: 11px;
+      font-size: 13px;
       line-height: 1.8;
     }
   }
@@ -106,7 +105,7 @@
     gap: 8px;
     padding: 14px 6px 0;
     border-top: 1px solid var(--leaf-site-border);
-    font-size: 10px;
+    font-size: 13px;
   }
   &__status-dot {
     width: 5px;
@@ -130,13 +129,13 @@
       color: inherit;
       font-size: 24px;
       line-height: 1.35;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: -0.7px;
     }
     p {
       margin: 0;
       color: var(--leaf-site-muted);
-      font-size: 11px;
+      font-size: 13px;
     }
     > .leaf-button {
       flex: none;
@@ -159,14 +158,14 @@
   }
   &__count {
     color: var(--leaf-site-muted);
-    font-size: 10px;
+    font-size: 12px;
     white-space: nowrap;
   }
   &__list {
     min-height: 204px;
-    .leaf-list__row {
-      padding: 0;
-    }
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
   &__task {
     display: flex;
@@ -177,7 +176,7 @@
     border-bottom: 1px solid var(--leaf-site-border);
     .leaf-tag {
       flex: none;
-      font-size: 9px;
+      font-size: 12px;
     }
     > .leaf-button {
       flex: none;
@@ -189,7 +188,7 @@
     min-width: 0;
     > span {
       display: block;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 1.6;
       transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
@@ -197,7 +196,7 @@
       display: block;
       color: var(--leaf-site-muted);
       margin-top: 3px;
-      font-size: 9px;
+      font-size: 13px;
       font-variant-numeric: tabular-nums;
     }
   }
@@ -215,7 +214,7 @@
     align-items: center;
     gap: 9px;
     color: var(--leaf-site-muted);
-    font-size: 9px;
+    font-size: 12px;
     > span:last-child {
       margin-inline-start: auto;
     }
@@ -225,21 +224,14 @@
   }
   &__progress {
     .leaf-card__header {
-      padding: 14px 16px 0;
-      border: 0;
-      font-size: 10px;
-      font-weight: 500;
       color: var(--leaf-site-muted);
-    }
-    .leaf-card__body {
-      padding: 12px 16px 15px;
     }
     .leaf-statistic {
       margin-bottom: 12px;
     }
     .leaf-statistic__value {
       font-size: 30px;
-      font-weight: 550;
+      font-weight: 600;
     }
     .leaf-statistic__suffix {
       font-size: 17px;
@@ -247,7 +239,7 @@
     p {
       margin: 10px 0 0;
       color: var(--leaf-site-muted);
-      font-size: 10px;
+      font-size: 13px;
     }
   }
   &__settings {
@@ -255,7 +247,7 @@
     label {
       display: block;
       margin-bottom: 8px;
-      font-size: 10px;
+      font-size: 13px;
       color: var(--leaf-site-muted);
     }
     > div:last-child {
@@ -268,7 +260,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        font-size: 10px;
+        font-size: 12px;
       }
     }
   }
@@ -312,7 +304,7 @@
     padding-block: 4px 10px;
     label {
       margin-top: 7px;
-      font-size: 12px;
+      font-size: 14px;
       color: var(--leaf-color-text-muted);
     }
   }
@@ -331,7 +323,7 @@
     h3 {
       margin: 18px 0 9px;
       font-size: 18px;
-      font-weight: 550;
+      font-weight: 500;
       overflow-wrap: anywhere;
     }
     p {
@@ -359,7 +351,7 @@
     > h3 {
       margin: 10px 0 26px;
       font-size: 17px;
-      font-weight: 550;
+      font-weight: 600;
       letter-spacing: -0.3px;
     }
   }
@@ -383,7 +375,7 @@
     padding-top: 6px;
     .leaf-statistic__title,
     .leaf-badge__text {
-      font-size: 10px;
+      font-size: 12px;
     }
     .leaf-statistic__value {
       font-size: 26px;
@@ -400,12 +392,12 @@
     p {
       flex: 1;
       margin: 0;
-      font-size: 11px;
+      font-size: 14px;
     }
     small {
       display: block;
       margin-top: 7px;
-      font-size: 10px;
+      font-size: 13px;
       color: var(--leaf-site-muted);
     }
     > svg {
@@ -418,7 +410,7 @@
     gap: 14px;
     align-items: start;
     padding-top: 8px;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--leaf-site-muted);
   }
   &__slider {
@@ -434,7 +426,7 @@
     text-align: center;
     p {
       margin: 0;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--leaf-site-muted);
     }
     .leaf-button {
@@ -510,7 +502,7 @@
       gap: 9px;
     }
     &__live {
-      font-size: 8px;
+      font-size: 12px;
     }
     &__main {
       padding: 24px 16px 18px;
@@ -522,7 +514,7 @@
         font-size: 21px;
       }
       p {
-        font-size: 10px;
+        font-size: 13px;
         line-height: 1.7;
       }
     }
@@ -549,7 +541,7 @@
       display: none;
     }
     &__task-copy > span {
-      font-size: 11px;
+      font-size: 14px;
     }
     &__task .leaf-tag {
       display: inline-flex;

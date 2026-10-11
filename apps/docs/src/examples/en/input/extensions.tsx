@@ -1,4 +1,4 @@
-import { Input, InputGroup, InputSearch, Select, Space } from '@sudden3/leaf-ui';
+import { Input, InputGroup, InputSearch, Select, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ExtensionDemo() {
   const [query, setQuery] = useState('');
@@ -14,7 +14,7 @@ export function ExtensionDemo() {
         />
       </label>
       <p role="status">Search: {query || 'No search yet'}</p>
-      <div>
+      <div className="leaf-demo-case">
         <p>Input group</p>
         <InputGroup aria-label="URL">
           <Select

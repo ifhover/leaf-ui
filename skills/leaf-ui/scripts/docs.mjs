@@ -5,34 +5,45 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 
-export const packageName = '@sudden3/leaf-ui';
+export const packageName = '@ifhover/leaf-ui';
+export const supportedPackages = [packageName, '@sudden3/leaf-ui'];
 export const docsSite = 'https://ifhover.github.io/leaf-ui/';
 
-export async function resolveInstallation(project) {
+export async function resolveInstallation(project, requestedPackage) {
+  if (requestedPackage && !supportedPackages.includes(requestedPackage))
+    throw new Error(`Unsupported Leaf UI package: ${requestedPackage}`);
   const directory = path.resolve(project);
   const require = createRequire(pathToFileURL(path.join(directory, '__leaf_ui_resolve__.cjs')));
-  let manifestPath;
-  try {
-    manifestPath = require.resolve(`${packageName}/package.json`);
-  } catch {
-    throw new Error(
-      `Cannot resolve ${packageName} from ${directory}. Use the target application directory and install its intended dependency version first.`,
-    );
+  const installations = [];
+  for (const name of requestedPackage ? [requestedPackage] : supportedPackages) {
+    let manifestPath;
+    try {
+      manifestPath = require.resolve(`${name}/package.json`);
+    } catch (error) {
+      if (!['MODULE_NOT_FOUND', 'ERR_PACKAGE_PATH_NOT_EXPORTED'].includes(error.code)) throw error;
+      continue;
+    }
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    if (manifest.name !== name || !/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)*$/.test(manifest.version))
+      throw new Error(`Invalid installed Leaf UI package metadata at ${manifestPath}`);
+    const types = manifest.types ?? manifest.exports?.['.']?.import?.types;
+    installations.push({
+      package: name,
+      version: manifest.version,
+      project: directory,
+      packagePath: manifestPath,
+      typesPath: typeof types === 'string' ? path.resolve(path.dirname(manifestPath), types) : null,
+    });
   }
-  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-  if (
-    manifest.name !== packageName ||
-    !/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)*$/.test(manifest.version)
-  )
-    throw new Error(`Invalid installed Leaf UI package metadata at ${manifestPath}`);
-  const types = manifest.types ?? manifest.exports?.['.']?.import?.types;
-  return {
-    package: packageName,
-    version: manifest.version,
-    project: directory,
-    packagePath: manifestPath,
-    typesPath: typeof types === 'string' ? path.resolve(path.dirname(manifestPath), types) : null,
-  };
+  if (installations.length === 0)
+    throw new Error(
+      `Cannot resolve ${requestedPackage ?? supportedPackages.join(' or ')} from ${directory}. Use the target application directory and install its intended dependency version first.`,
+    );
+  if (installations.length > 1)
+    throw new Error(
+      'Both Leaf UI packages resolve from this application. Specify --package @ifhover/leaf-ui or --package @sudden3/leaf-ui to match its imports.',
+    );
+  return installations[0];
 }
 
 export function versionRoot(site, version) {
@@ -76,17 +87,20 @@ export async function queryDocs({
 }) {
   if (api && guide) throw new Error('Query one API or one guide at a time.');
   if (!['en', 'zh'].includes(lang)) throw new Error('Supported languages: en, zh.');
+  if (!supportedPackages.includes(installation.package))
+    throw new Error(`Unsupported installed Leaf UI package: ${installation.package}`);
+  const installedPackage = installation.package;
   const root = versionRoot(site, installation.version);
   const index = JSON.parse(await readUrl(new URL('api/index.json', root), fetcher));
   if (
     index.schemaVersion !== 1 ||
-    index.package !== packageName ||
+    index.package !== installedPackage ||
     index.version !== installation.version ||
     !Array.isArray(index.pages) ||
     !Array.isArray(index.exports)
   )
     throw new Error(
-      `Documentation metadata does not match installed ${packageName}@${installation.version}.`,
+      `Documentation metadata does not match installed ${installedPackage}@${installation.version}.`,
     );
   const metadata = { ...installation, documentation: root.href };
   if (list)
@@ -104,7 +118,7 @@ export async function queryDocs({
   if (!api && !guide) return { metadata };
   if (api && !index.exports.some((entry) => entry.name === api))
     throw new Error(
-      `${api} is not exported by ${packageName}@${installation.version}. No newer version will be substituted.`,
+      `${api} is not exported by ${installedPackage}@${installation.version}. No newer version will be substituted.`,
     );
   const matches = index.pages.filter((page) =>
     api ? page.symbols?.some((entry) => entry.name === api) : page.id === `guide/${guide}`,
@@ -118,7 +132,11 @@ export async function queryDocs({
     );
   const url = pageUrl(root, page.markdown);
   const markdown = await readUrl(url, fetcher);
-  if (!markdown.startsWith(`> Leaf UI ${installation.version} · Package: ${packageName}`))
+  const identity = markdown.split('\n', 1)[0].trimEnd().split(' · ');
+  if (
+    identity[0] !== `> Leaf UI ${installation.version}` ||
+    identity[1] !== `Package: ${installedPackage}`
+  )
     throw new Error('The Markdown page does not identify the installed package version.');
   return { metadata, page: url.href, markdown };
 }
@@ -128,6 +146,7 @@ export async function main(args = process.argv.slice(2)) {
     args,
     options: {
       project: { type: 'string', default: process.cwd() },
+      package: { type: 'string' },
       api: { type: 'string' },
       guide: { type: 'string' },
       lang: { type: 'string', default: 'en' },
@@ -138,11 +157,11 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'Usage: node docs.mjs --project <app> [--api <export> | --guide <name> | --list] [--lang en|zh]\nUses the exact installed Leaf UI version. --docs-site supports a self-hosted versioned documentation site.',
+      'Usage: node docs.mjs --project <app> [--api <export> | --guide <name> | --list] [--lang en|zh] [--package @ifhover/leaf-ui|@sudden3/leaf-ui]\nUses the exact installed Leaf UI package and version. --docs-site supports a self-hosted versioned documentation site.',
     );
     return;
   }
-  const installation = await resolveInstallation(values.project);
+  const installation = await resolveInstallation(values.project, values.package);
   console.log(JSON.stringify(installation, null, 2));
   const result = await queryDocs({
     installation,

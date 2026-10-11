@@ -1,11 +1,16 @@
-import { Button, Result } from '@sudden3/leaf-ui';
+import { Button, Result, Space } from '@ifhover/leaf-ui';
 export function ResultBasic() {
   return (
     <Result
       status="success"
       title="Project created"
       description="Everything is ready for your next great idea."
-      extra={<Button>Open project</Button>}
+      extra={
+        <Space>
+          <Button variant="outline">Back to list</Button>
+          <Button>Open project</Button>
+        </Space>
+      }
     />
   );
 }

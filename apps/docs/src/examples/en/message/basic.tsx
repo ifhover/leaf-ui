@@ -1,4 +1,4 @@
-import { Button, useMessage } from '@sudden3/leaf-ui';
+import { Button, Space, useMessage } from '@ifhover/leaf-ui';
 export function MessageBasic() {
   const { message } = useMessage();
   async function save() {
@@ -13,15 +13,15 @@ export function MessageBasic() {
     });
   }
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       <Button onClick={save}>Save asynchronously</Button>
       <Button variant="outline" onClick={() => message.info('An information message')}>
         Information
       </Button>
-      <Button danger variant="soft" onClick={() => message.error('Failed. Please try again.')}>
+      <Button danger variant="outline" onClick={() => message.error('Failed. Please try again.')}>
         Error
       </Button>
-      <Button variant="soft" onClick={() => message.success('Completed successfully')}>
+      <Button variant="outline" onClick={() => message.success('Completed successfully')}>
         Success
       </Button>
       <Button variant="outline" onClick={() => message.warning('Please check your input')}>
@@ -30,6 +30,6 @@ export function MessageBasic() {
       <Button variant="ghost" onClick={() => message.close()}>
         Clear messages
       </Button>
-    </div>
+    </Space>
   );
 }

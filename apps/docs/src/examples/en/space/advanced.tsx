@@ -1,4 +1,4 @@
-import { Space, Tag } from '@sudden3/leaf-ui';
+import { Space, Tag } from '@ifhover/leaf-ui';
 
 export function SpaceVertical() {
   return (

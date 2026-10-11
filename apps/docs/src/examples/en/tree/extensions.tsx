@@ -1,4 +1,4 @@
-import { Space, Tree, type TreeNode } from '@sudden3/leaf-ui';
+import { Space, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const initial: TreeNode[] = [

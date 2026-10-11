@@ -1,4 +1,4 @@
-import { Alert, Button, ConfigProvider, Drawer, Result, useMessage } from '@sudden3/leaf-ui';
+import { Alert, Button, ConfigProvider, Drawer, Result, useMessage } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { ExtensionDemo } from '../../../../apps/docs/src/examples/form/extensions';
 import { ModalBasic } from '../../../../apps/docs/src/examples/modal/basic';

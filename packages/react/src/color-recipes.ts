@@ -1,5 +1,10 @@
 // Semantic recipes shared by runtime themes and generated static palettes.
 export const colorRecipes: Record<string, readonly [string, string, number]> = {
+  '--leaf-color-primary-text-80': ['primary', 'text', 80],
+  '--leaf-color-success-text-80': ['success', 'text', 80],
+  '--leaf-color-warning-text-80': ['warning', 'text', 80],
+  '--leaf-color-danger-text-80': ['danger', 'text', 80],
+  '--leaf-color-info-text-80': ['info', 'text', 80],
   '--leaf-color-border-alpha-55': ['border', 'alpha', 55],
   '--leaf-color-border-alpha-60': ['border', 'alpha', 60],
   '--leaf-color-border-alpha-65': ['border', 'alpha', 65],

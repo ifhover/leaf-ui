@@ -1,4 +1,4 @@
-import { Timeline } from '@sudden3/leaf-ui';
+import { Timeline } from '@ifhover/leaf-ui';
 
 export function TimelineAlternate() {
   return (

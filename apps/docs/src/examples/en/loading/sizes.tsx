@@ -1,7 +1,7 @@
-import { Loading } from '@sudden3/leaf-ui';
+import { Loading, Space } from '@ifhover/leaf-ui';
 export function LoadingSizes() {
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Small</span>
         <Loading size="sm" />
@@ -14,6 +14,6 @@ export function LoadingSizes() {
         <span className="leaf-demo-label">Large</span>
         <Loading size="lg" />
       </div>
-    </div>
+    </Space>
   );
 }

@@ -72,7 +72,7 @@
       transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-checked='true'] {
       color: var(--leaf-color-text);
-      font-weight: 550;
+      font-weight: var(--leaf-font-weight);
     }
     &:hover:not(:disabled) {
       color: var(--leaf-color-text);

@@ -1,4 +1,4 @@
-import { Upload, type UploadRequest } from '@sudden3/leaf-ui';
+import { Space, Upload, type UploadRequest } from '@ifhover/leaf-ui';
 
 const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   new Promise<void>((resolve, reject) => {
@@ -24,7 +24,7 @@ const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   });
 export function UploadDrag() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <p className="leaf-demo-note">
         此示例在本地模拟上传进度，使用 action 或 customRequest 接入实际上传服务。
       </p>
@@ -36,6 +36,6 @@ export function UploadDrag() {
         customRequest={demoRequest}
         hint="仅限图片 · 支持取消与重试"
       />
-    </div>
+    </Space>
   );
 }

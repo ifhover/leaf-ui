@@ -1,8 +1,8 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 
 export function InputStates() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">禁用输入</span>
         <Input aria-label="禁用输入" disabled placeholder="暂时不可编辑" />
@@ -23,6 +23,6 @@ export function InputStates() {
         <span className="leaf-demo-label">名称警告</span>
         <Input aria-label="名称警告" status="warning" defaultValue="已经存在相似名称" />
       </div>
-    </div>
+    </Space>
   );
 }

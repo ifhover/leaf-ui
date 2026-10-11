@@ -81,7 +81,11 @@ for (const [mode, density] of Object.entries(densityTokens)) {
   };
 }
 tokens.foundation = {
+  radiusSm: { $type: 'dimension', $value: { value: 6, unit: 'px' } },
   radius: { $type: 'dimension', $value: { value: 10, unit: 'px' } },
+  radiusMd: { $type: 'dimension', $value: { value: 12, unit: 'px' } },
+  radiusLg: { $type: 'dimension', $value: { value: 16, unit: 'px' } },
+  fontSizeSm: { $type: 'dimension', $value: { value: 13, unit: 'px' } },
   fontSize: { $type: 'dimension', $value: { value: 14, unit: 'px' } },
   lineHeight: { $type: 'number', $value: 1.6 },
   motionDuration: { $type: 'duration', $value: { value: 200, unit: 'ms' } },
@@ -112,11 +116,11 @@ for (const [mode, p] of Object.entries(palettes)) {
     text(32, 542, 'Typography · Inter / system sans-serif', 20, p.text, 600) +
     text(32, 580, 'Heading 24 / 600', 24, p.text, 600) +
     text(32, 614, 'Body 14 / 1.6 · Semantic colors and stable geometry', 14, p.text) +
-    text(32, 650, 'Comfortable: 34px controls / 8px spacing', 14, p['text-muted']) +
-    text(32, 680, 'Compact: 28px controls / 6px spacing', 14, p['text-muted']);
+    text(32, 650, 'Comfortable: 40px controls / 8px spacing', 14, p['text-muted']) +
+    text(32, 680, 'Compact: 34px controls / 6px spacing', 14, p['text-muted']);
   let components = text(32, 50, `Leaf UI / ${mode} component states`, 28, p.text, 600);
   const states = ['Default', 'Hover', 'Pressed', 'Disabled'];
-  for (const [row, variant] of ['solid', 'soft', 'outline', 'ghost'].entries()) {
+  for (const [row, variant] of ['solid', 'outline', 'ghost'].entries()) {
     const y = 94 + row * 84;
     components += text(32, y + 24, variant, 14, p['text-muted']);
     for (const [col, state] of states.entries()) {
@@ -126,26 +130,26 @@ for (const [mode, p] of Object.entries(palettes)) {
           ? state === 'Hover' || state === 'Pressed'
             ? p['primary-white-97-5']
             : p.primary
-          : variant === 'soft'
-            ? p[`primary-alpha-${state === 'Hover' ? 18 : state === 'Pressed' ? 25 : 11}`]
-            : variant === 'outline'
-              ? p[`surface-muted-border-${['Hover', 'Pressed'].includes(state) ? 75 : 65}`]
-              : state === 'Hover'
-                ? p['surface-muted']
-                : state === 'Pressed'
-                  ? p.border
-                  : 'none';
-      components += `<g id="button-${variant}-${state.toLowerCase()}" opacity="${state === 'Disabled' ? 0.45 : 1}">${rect(x, y, 136, 34, bg, 10)}${text(x + 24, y + 22, state, 14, variant === 'solid' ? p['on-primary'] : variant === 'soft' ? p.primary : p.text, 500)}</g>`;
+          : variant === 'outline'
+            ? state === 'Hover' || state === 'Pressed'
+              ? p['surface-muted']
+              : p.surface
+            : state === 'Hover'
+              ? p['surface-muted']
+              : state === 'Pressed'
+                ? p.border
+                : 'none';
+      components += `<g id="button-${variant}-${state.toLowerCase()}" opacity="${state === 'Disabled' ? 0.45 : 1}">${rect(x, y, 136, 40, bg, 10, variant === 'outline' ? p.border : undefined)}${text(x + 24, y + 25, state, 14, variant === 'solid' ? p['on-primary'] : p.text, 500)}</g>`;
     }
   }
   components += text(32, 450, 'Fields / default · focus · error', 20, p.text, 600);
   for (const [index, state] of ['Default', 'Focus', 'Error'].entries()) {
     const x = 32 + index * 264;
-    components += `<g id="input-${state.toLowerCase()}">${state === 'Focus' ? rect(x - 3, 484, 246, 40, 'none', 12, p['primary-alpha-42']) : ''}${rect(x, 487, 240, 34, p.surface, 10, state === 'Error' ? p.danger : state === 'Focus' ? p.primary : p.border)}${text(x + 10, 509, state, 14, p.text)}</g>`;
+    components += `<g id="input-${state.toLowerCase()}">${state === 'Focus' ? rect(x - 3, 484, 246, 46, 'none', 12, p['primary-alpha-42']) : ''}${rect(x, 487, 240, 40, p.surface, 10, state === 'Error' ? p.danger : state === 'Focus' ? p.primary : p.border)}${text(x + 10, 512, state, 14, p.text)}</g>`;
   }
-  components += `<g id="alert-info">${rect(32, 557, 784, 72, p['info-surface-5'], 10, p['info-border-12'])}${rect(48, 577, 28, 28, p['info-alpha-10'], 8)}${text(59, 596, 'i', 18, p.info, 600)}${text(90, 584, 'Keep the team informed', 14, p.text, 600)}${text(90, 608, 'Readable spacing and a semantic status icon.', 14, p['text-muted'])}</g>`;
-  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 16, p.border)}${rect(392, 681, 64, 64, p['success-surface-9'], 16)}<path d="M410 713 L420 723 L439 702" fill="none" stroke="${p.success}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${text(332, 778, 'Project saved', 24, p.text, 600)}${text(278, 812, 'Your changes are ready for the team.', 14, p['text-muted'])}</g>`;
-  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p['surface-raised'], 10, p.border)}${text(56, 917, 'Dialog heading', 17, p.text, 600)}${rect(56, 933, 736, 34, p.surface, 10, p.border)}${text(66, 955, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(680, 993, 112, 34, p.primary, 10)}${text(710, 1015, 'Save', 14, p['on-primary'], 500)}</g>`;
+  components += `<g id="alert-info">${rect(32, 557, 784, 72, p['surface-muted'], 16, p['border-surface-70'])}${text(59, 596, 'i', 18, p.info, 600)}${text(90, 584, 'Keep the team informed', 14, p.text, 500)}${text(90, 608, 'Readable spacing and a semantic status icon.', 14, p['text-muted'])}</g>`;
+  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 16, p.border)}${rect(392, 681, 64, 64, p['surface-muted'], 32)}<path d="M410 713 L420 723 L439 702" fill="none" stroke="${p.success}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${text(332, 778, 'Project saved', 24, p.text, 600)}${text(278, 812, 'Your changes are ready for the team.', 14, p['text-muted'])}</g>`;
+  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p.surface, 16, p.border)}${rect(33, 985, 782, 61, p['surface-muted'], 15)}${rect(33, 985, 782, 30, p['surface-muted'], 0)}<path d="M33 929 H815 M33 985 H815" stroke="${p['border-surface-70']}"/>${text(56, 910, 'Dialog heading', 17, p.text, 600)}${rect(56, 940, 736, 40, p.surface, 10, p.border)}${text(66, 965, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(680, 997, 112, 40, p.primary, 10)}${text(710, 1022, 'Save', 14, p['on-primary'], 500)}</g>`;
   const svg = (height, content) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="848" height="${height}" viewBox="0 0 848 ${height}" font-family="Inter, Arial, sans-serif"><title>Leaf UI ${mode} design resources</title>${rect(0, 0, 848, height, p.surface, 0)}${content}</svg>\n`;
   await fs.writeFile(path.join(publicPath, `leaf-${mode}-foundations.svg`), svg(724, foundation));

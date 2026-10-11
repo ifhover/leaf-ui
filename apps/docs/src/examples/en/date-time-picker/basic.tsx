@@ -1,7 +1,7 @@
-import { DateTimePicker } from '@sudden3/leaf-ui';
+import { DateTimePicker, Space } from '@ifhover/leaf-ui';
 export function DateTimePickerBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Appointment</span>
         <DateTimePicker aria-label="Appointment" defaultValue={new Date(2026, 9, 3, 14, 30)} />
@@ -24,6 +24,6 @@ export function DateTimePickerBasic() {
           placeholder="Select a time in October"
         />
       </div>
-    </div>
+    </Space>
   );
 }

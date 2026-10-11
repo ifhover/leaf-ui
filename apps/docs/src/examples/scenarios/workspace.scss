@@ -70,6 +70,26 @@
     font-size: 12px;
     margin-top: 12px;
   }
+  &__projects {
+    padding: 0;
+    margin: 16px 0 0;
+    list-style: none;
+  }
+  &__project {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px 0;
+    & + & {
+      border-top: 1px solid var(--leaf-color-divider);
+    }
+    p {
+      margin: 4px 0 0;
+      color: var(--leaf-color-text-muted);
+    }
+  }
   .leaf-alert {
     margin-bottom: 16px;
   }

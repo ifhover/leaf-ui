@@ -7,6 +7,9 @@ import { Checkbox } from './checkbox';
 export interface CheckboxOption {
   value: string;
   label: ReactNode;
+  description?: ReactNode;
+  icon?: ReactNode;
+  extra?: ReactNode;
   disabled?: boolean;
 }
 export interface CheckboxGroupProps
@@ -17,6 +20,7 @@ export interface CheckboxGroupProps
   onChange?: (values: string[]) => void;
   legend?: ReactNode;
   size?: ControlSize;
+  variant?: 'plain' | 'card' | 'list';
   minCount?: number;
   maxCount?: number;
   required?: boolean;
@@ -29,6 +33,7 @@ export function CheckboxGroup({
   onChange,
   legend,
   size,
+  variant = 'plain',
   minCount = 0,
   maxCount = Infinity,
   direction = 'horizontal',
@@ -44,14 +49,19 @@ export function CheckboxGroup({
   const disabled = disabledProp || field?.disabled;
   const trigger = useRef<HTMLInputElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
-  const items = options.map((option) =>
+  const items: CheckboxOption[] = options.map((option) =>
     typeof option === 'string' ? { value: option, label: option } : option,
   );
   return (
     <fieldset
       {...props}
       disabled={disabled}
-      className={classes('leaf-checkbox-group', `leaf-checkbox-group--${direction}`, className)}
+      className={classes(
+        'leaf-checkbox-group',
+        `leaf-checkbox-group--${direction}`,
+        `leaf-checkbox-group--${variant}`,
+        className,
+      )}
       aria-describedby={
         [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
       }
@@ -70,6 +80,10 @@ export function CheckboxGroup({
                 id={index === 0 ? (field?.id ?? `${id}-${index}`) : `${id}-${index}`}
                 ref={index === 0 ? trigger : undefined}
                 size={size}
+                variant={variant === 'card' ? 'card' : 'plain'}
+                description={item.description}
+                icon={item.icon}
+                extra={item.extra}
                 name={name}
                 form={form}
                 value={item.value}

@@ -1,7 +1,7 @@
-import { Button, Image, SignaturePad } from '@sudden3/leaf-ui';
+import { Button, Image, SignaturePad, Space } from '@ifhover/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 export function SignaturePadBasic() {
-  const pad = useRef<import('@sudden3/leaf-ui').SignaturePadHandle>(null);
+  const pad = useRef<import('@ifhover/leaf-ui').SignaturePadHandle>(null);
   const [result, setResult] = useState<Blob | null>(null);
   const [preview, setPreview] = useState('');
   useEffect(() => {
@@ -11,7 +11,7 @@ export function SignaturePadBasic() {
     return () => URL.revokeObjectURL(url);
   }, [result]);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <SignaturePad ref={pad} />
       <Button
         variant="outline"
@@ -41,6 +41,6 @@ export function SignaturePadBasic() {
           />
         </div>
       )}
-    </div>
+    </Space>
   );
 }

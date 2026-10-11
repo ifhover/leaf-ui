@@ -28,14 +28,16 @@ test('modal form shares the footer edge and uses balanced spacing', async ({ pag
   const input = await dialog.locator('.leaf-input').boundingBox();
   const save = await dialog.getByRole('button', { name: '保存', exact: true }).boundingBox();
   expect((input?.x ?? 0) + (input?.width ?? 0)).toBeCloseTo((save?.x ?? 0) + (save?.width ?? 0), 0);
-  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '20px');
-  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '20px');
+  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '16px');
+  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '12px');
   const heading = await dialog.locator('h2').boundingBox();
   const form = await dialog.locator('form').boundingBox();
   const select = await dialog.locator('.leaf-select').boundingBox();
   const titleGap = (form?.y ?? 0) - (heading?.y ?? 0) - (heading?.height ?? 0);
   const footerGap = (save?.y ?? 0) - (select?.y ?? 0) - (select?.height ?? 0);
-  expect(Math.abs(titleGap - footerGap)).toBeLessThan(5);
+  expect(titleGap).toBeGreaterThanOrEqual(16);
+  expect(footerGap).toBeGreaterThanOrEqual(24);
+  expect(footerGap).toBeLessThanOrEqual(36);
 });
 
 for (const surface of ['modal', 'drawer']) {

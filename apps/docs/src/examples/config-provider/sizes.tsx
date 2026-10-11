@@ -1,11 +1,11 @@
-import { Button, ConfigProvider, Input, Slider } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, Input, Slider, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function ConfigProviderSizes() {
   const [height, setHeight] = useState(34);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
-      <div>
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+      <div className="leaf-demo-case">
         <p>基础高度：{height}px</p>
         <Slider
           aria-label="基础控件高度"
@@ -35,6 +35,6 @@ export function ConfigProviderSizes() {
           高级覆盖：小尺寸固定为 26px
         </Button>
       </ConfigProvider>
-    </div>
+    </Space>
   );
 }

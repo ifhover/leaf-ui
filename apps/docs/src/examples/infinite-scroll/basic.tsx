@@ -1,4 +1,4 @@
-import { InfiniteScroll, ScrollArea } from '@sudden3/leaf-ui';
+import { InfiniteScroll, ScrollArea } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function InfiniteScrollBasic() {
   const root = useRef<HTMLDivElement>(null);

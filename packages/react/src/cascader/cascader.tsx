@@ -12,6 +12,7 @@ import {
 import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
 import { Input } from '../input';
+import { Scrollbar } from '../scrollbar';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
@@ -411,7 +412,13 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
           </FieldScope>
         )}
         {query ? (
-          <div role="listbox" aria-label={messages.search} className="leaf-cascader__column">
+          <Scrollbar
+            role="listbox"
+            aria-label={messages.search}
+            className="leaf-cascader__column"
+            orientation="vertical"
+            maxHeight={256}
+          >
             {searchResults.length ? (
               searchResults.map((path) => (
                 <button
@@ -432,13 +439,15 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
             ) : (
               <div className="leaf-floating__empty">{messages.empty}</div>
             )}
-          </div>
+          </Scrollbar>
         ) : (
           <div className="leaf-cascader__columns">
             {levels.map((level, depth) => (
-              <div
+              <Scrollbar
                 key={depth === 0 ? 'root' : draft[depth - 1]}
                 className="leaf-cascader__column"
+                orientation="vertical"
+                maxHeight={256}
                 data-level={depth}
                 role="listbox"
                 aria-label={locale === 'en-US' ? `Level ${depth + 1}` : `第 ${depth + 1} 级`}
@@ -517,7 +526,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                 ) : (
                   <div className="leaf-floating__empty">{messages.empty}</div>
                 )}
-              </div>
+              </Scrollbar>
             ))}
           </div>
         )}

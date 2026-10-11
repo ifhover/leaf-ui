@@ -1,4 +1,4 @@
-import { RadioGroup } from '@sudden3/leaf-ui';
+import { RadioGroup } from '@ifhover/leaf-ui';
 
 export function RadioBasic() {
   return (

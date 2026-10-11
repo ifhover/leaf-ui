@@ -1,7 +1,7 @@
-import { Alert } from '@sudden3/leaf-ui';
+import { Alert, Space } from '@ifhover/leaf-ui';
 export function AlertBasic() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Alert title="Project saved" type="success" />
       <Alert
         title="A new version is available"
@@ -14,6 +14,6 @@ export function AlertBasic() {
         description="Try again later or contact your team administrator."
         type="error"
       />
-    </div>
+    </Space>
   );
 }

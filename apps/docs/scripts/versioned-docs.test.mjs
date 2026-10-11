@@ -4,8 +4,131 @@ import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { parse } from '@babel/parser';
 import { versionTarget } from '../src/components/version-path.ts';
 import { properties, readApiRows } from './api-model.mjs';
+import {
+  extractExampleMarkdown,
+  extractExampleSource,
+  localizeExampleSource,
+  remarkExampleSource,
+} from './example-source.mjs';
+
+test('example language props and translation helpers disappear while real locale state remains', () => {
+  const source = `import { Button } from '@ifhover/leaf-ui';
+export function Demo({ english = false }: { english?: boolean }) {
+  const t = (zh: string, en: string) => english ? en : zh;
+  return <Button aria-label={english ? 'Save changes' : '保存修改'}>{t('保存', 'Save')}</Button>;
+}
+export function LocaleDemo() {
+  const [english, setEnglish] = useState(false);
+  return <Switch checked={english} onChange={() => setEnglish(!english)} />;
+}`;
+  for (const english of [false, true]) {
+    const code = extractExampleSource(source, 'Demo', { english });
+    parse(code, { sourceType: 'module', plugins: ['typescript', 'jsx'] });
+    assert.doesNotMatch(code, /english|const t\s*=|\bt\(/);
+    assert.match(code, english ? /Save changes/ : /保存修改/);
+    assert.doesNotMatch(code, english ? /保存/ : /Save/);
+  }
+  assert.match(localizeExampleSource(source), /checked=\{english\}/);
+  const nested =
+    'export function Demo({ english = false }) { return <p>{english ? "A" : !english ? "乙" : "B"}</p>; }';
+  assert.match(extractExampleSource(nested, 'Demo'), /"乙"/);
+});
+
+import { publicApi, walkFiles } from './export-ai-docs.mjs';
+
+test('example code keeps only the selected preview and its scoped dependencies', () => {
+  const source = `import { Button, Input, type ButtonProps } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+import './demo.scss';
+type Settings = { tone: ButtonProps['variant'] };
+const initial: Settings = { tone: 'outline' }, unused = 'Unused constant';
+function format(value: string) { return value.toUpperCase(); }
+export function OtherDemo() { return <Input />; }
+export function ActiveDemo() {
+  const [label] = useState('Save');
+  const OtherDemo = 'local variable';
+  return <Button variant={initial.tone} title={OtherDemo}>{format(label)}</Button>;
+}`;
+  const selected = extractExampleSource(source, 'ActiveDemo');
+  assert.match(selected, /type ButtonProps/);
+  assert.match(selected, /type Settings/);
+  assert.match(selected, /function format/);
+  assert.match(selected, /const OtherDemo = 'local variable'/);
+  assert.match(selected, /import '\.\/demo.scss'/);
+  assert.doesNotMatch(selected, /function OtherDemo|Unused constant|\bInput\b/);
+  parse(selected, { sourceType: 'module', plugins: ['typescript', 'jsx'] });
+  assert.throws(() => extractExampleSource(source, 'MissingDemo'), /Example export not found/);
+});
+
+test('rendered and AI example code resolve aliases to the same export', () => {
+  const source =
+    'export function First() { return <span>First</span>; }\nexport function Second() { return <span>Second</span>; }';
+  const mdx = `import { First as Preview } from './basic';\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n\`\`\`tsx file="./basic.tsx"\n\`\`\`\n\n</ComponentExample>`;
+  const markdown = `\`\`\`tsx file="./basic.tsx"\n${source}\n\`\`\``;
+  const extracted = extractExampleMarkdown(markdown, mdx);
+  assert.match(extracted, /function First/);
+  assert.doesNotMatch(extracted, /function Second/);
+  const code = { type: 'code', lang: 'tsx', meta: 'file="./basic.tsx"', value: source };
+  const tree = {
+    children: [
+      { type: 'mdxjsEsm', value: "import { First as Preview } from './basic';" },
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'ComponentExample',
+        attributes: [{ name: 'preview', value: { value: '<Preview />' } }],
+        children: [code],
+      },
+    ],
+  };
+  remarkExampleSource()(tree);
+  assert.equal(code.value.trim(), extractExampleSource(source, 'First').trim());
+});
+
+test('every component preview has a valid, independently extracted code sample', async () => {
+  const directory = path.resolve(import.meta.dirname, '../docs');
+  let count = 0;
+  for (const file of (await walkFiles(directory)).filter((candidate) =>
+    candidate.endsWith('.mdx'),
+  )) {
+    const document = await readFile(file, 'utf8');
+    for (const example of document.matchAll(/<ComponentExample\b[\s\S]*?<\/ComponentExample>/g)) {
+      for (const fence of example[0].matchAll(
+        /```(?:tsx|ts|jsx|js)[^\n]*\bfile="([^"]+)"[^\n]*\n[\s\S]*?```/g,
+      )) {
+        const source = await readFile(path.resolve(path.dirname(file), fence[1]), 'utf8');
+        const markdown = `${fence[0].slice(0, fence[0].indexOf('\n'))}\n${source}\n\`\`\``;
+        try {
+          const extracted = extractExampleMarkdown(
+            markdown,
+            document.slice(0, document.indexOf('<ComponentExample')) + example[0],
+          );
+          const code = extracted.slice(extracted.indexOf('\n') + 1, extracted.lastIndexOf('\n```'));
+          assert.doesNotMatch(
+            code,
+            /\{\s*english\s*=|english\s*\?:/,
+            'No documentation-only language API',
+          );
+          parse(code, {
+            sourceType: 'module',
+            plugins: ['typescript', 'jsx'],
+          });
+        } catch (error) {
+          throw new Error(`${file}: ${fence[1]}: ${error.message}`, { cause: error });
+        }
+        count++;
+      }
+    }
+  }
+  assert.ok(count > 400, `Expected all component examples, received ${count}`);
+  const basic = await readFile(path.resolve(directory, '../src/examples/table/basic.tsx'), 'utf8');
+  assert.doesNotMatch(
+    extractExampleSource(basic, 'TableBasic'),
+    /TableStates|TableSimple|useState|DataTable/,
+  );
+});
 
 test('component defaults stay scoped to their own function rather than sibling components', async () => {
   const entry = path.resolve(import.meta.dirname, '../../../packages/react/src/index.ts');
@@ -17,7 +140,14 @@ test('component defaults stay scoped to their own function rather than sibling c
   assert.equal((await properties(entry, 'LinkProps')).get('underline').defaultValue, 'true');
 });
 
-import { platformFiles, publishedReleases, redirectPage } from './build-versioned-site.mjs';
+import {
+  installPlatform,
+  loadPublishedReleases,
+  mergePublishedReleases,
+  platformFiles,
+  publishedReleases,
+  redirectPage,
+} from './build-versioned-site.mjs';
 
 test('API tables retain data-type descriptions and split grouped defaults correctly', () => {
   const rows = readApiRows(
@@ -31,6 +161,28 @@ test('API tables retain data-type descriptions and split grouped defaults correc
   assert.equal(rows.get('multiple').defaultValue, '`false`');
   assert.equal(rows.get('selectable').defaultValue, '`true`');
   assert.equal(rows.get('filter').description, 'Custom filter');
+});
+
+test('API defaults use the declared parameter type for composed table roots', async () => {
+  const root = path.resolve(import.meta.dirname, '../../..');
+  const entry = path.join(root, 'packages/react/src/index.ts');
+  const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
+  assert.equal((await properties(entry, 'TableProps')).get('size').defaultValue, "'md'");
+  assert.equal(
+    (await properties(adapter, 'DataTableProps')).get('pagination').defaultValue,
+    'true',
+  );
+});
+
+test('AI discovery records the optional adapter import path separately from native Table', async () => {
+  const root = path.resolve(import.meta.dirname, '../../..');
+  const api = await publicApi(root);
+  assert.equal(api.find((item) => item.name === 'Table')?.importPath, '@ifhover/leaf-ui');
+  assert.equal(
+    api.find((item) => item.name === 'DataTable')?.importPath,
+    '@ifhover/leaf-ui/table/tanstack',
+  );
+  assert.equal(api.find((item) => item.name === 'DataTableRowReorderInfo')?.kind, 'type');
 });
 
 test('version switch preserves the page, language and anchor when available', () => {
@@ -124,6 +276,7 @@ test('missing pages fall back without an unrelated anchor; old Chinese-only rele
 test('versions are discovered from published npm metadata and source commits', () => {
   const sha = 'a'.repeat(40);
   const data = {
+    name: '@sudden3/leaf-ui',
     'dist-tags': { latest: '0.10.0' },
     versions: {
       '0.2.0': { gitHead: sha },
@@ -144,75 +297,209 @@ test('versions are discovered from published npm metadata and source commits', (
   assert.match(redirectPage('/leaf-ui/components/index.html'), /location.search\+location.hash/);
 });
 
-test('AI index comes from snapshot exports and maps nested types to component docs', async () => {
-  const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-export-test-'));
-  const output = path.join(root, 'output');
-  try {
-    await mkdir(path.join(root, 'packages/react/src'), { recursive: true });
-    await mkdir(path.join(output, 'components'), { recursive: true });
-    await writeFile(
-      path.join(root, 'packages/react/package.json'),
-      JSON.stringify({ version: '0.1.0' }),
-    );
-    await writeFile(
-      path.join(root, 'packages/react/src/index.ts'),
-      "export { Button } from './button';\nexport type { ButtonProps } from './button';\nexport type { TextareaAutoSize } from './textarea/textarea';",
-    );
-    await writeFile(
-      path.join(output, 'components/button.md'),
-      '# Button\n\n| property | type |\n| --- | --- |\n| children | ReactNode |',
-    );
-    await writeFile(path.join(output, 'components/textarea.md'), '# Textarea\n');
-    await writeFile(path.join(output, 'llms.txt'), '# Leaf UI\n\n## Components\n');
-    // Run from the staged historical snapshot, which has no current workspace dependencies.
-    const scripts = platformFiles.filter(
-      (file) => file.startsWith('apps/docs/scripts/') && !file.endsWith('build-versioned-site.mjs'),
-    );
-    for (const file of scripts) {
-      const target = path.join(root, file);
-      await mkdir(path.dirname(target), { recursive: true });
-      await cp(new URL(`../../../${file}`, import.meta.url), target);
-    }
-    execFileSync(
-      process.execPath,
-      [path.join(root, 'apps/docs/scripts/export-ai-docs.mjs'), root, output],
-      {
-        env: {
-          ...process.env,
-          LEAF_DOCS_BASE: '/leaf-ui/v/0.1.0/',
-          LEAF_DOCS_SOURCE_COMMIT: 'a'.repeat(40),
+for (const [packageName, version] of [
+  ['@sudden3/leaf-ui', '0.1.0'],
+  ['@ifhover/leaf-ui', '0.5.0'],
+])
+  test(`AI export uses ${packageName} metadata from its isolated snapshot`, async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-export-test-'));
+    const output = path.join(root, 'output');
+    try {
+      await mkdir(path.join(root, 'packages/react/src'), { recursive: true });
+      await mkdir(path.join(output, 'components'), { recursive: true });
+      await mkdir(path.join(root, 'apps/docs/docs/components'), { recursive: true });
+      await mkdir(path.join(output, 'en/components'), { recursive: true });
+      await writeFile(
+        path.join(root, 'packages/react/package.json'),
+        JSON.stringify({ name: packageName, version }),
+      );
+      await writeFile(
+        path.join(root, 'packages/react/src/index.ts'),
+        "export { Button } from './button';\nexport type { ButtonProps } from './button';\nexport type { TextareaAutoSize } from './textarea/textarea';",
+      );
+      await writeFile(
+        path.join(output, 'components/button.md'),
+        '# Button\n\n| property | type |\n| --- | --- |\n| children | ReactNode |',
+      );
+      await writeFile(path.join(output, 'components/textarea.md'), '# Textarea\n');
+      await writeFile(path.join(output, 'llms.txt'), '# Leaf UI\n\n## Components\n');
+      const source =
+        'export function First() { return <span>First</span>; }\nexport function Second() { return <span>Second</span>; }';
+      const document =
+        'import { First as Preview } from \'./basic\';\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n```tsx file="./basic.tsx"\n```\n\n</ComponentExample>';
+      await writeFile(path.join(root, 'apps/docs/docs/components/button.mdx'), document);
+      await writeFile(
+        path.join(output, 'components/button.md'),
+        `# Button\n\n\`\`\`tsx file="./basic.tsx"\n${source}\n\`\`\``,
+      );
+      await writeFile(path.join(output, 'en/components/textarea.md'), '# Textarea English\n');
+      await writeFile(path.join(output, 'llms-full.txt'), 'Stale bundle');
+      await writeFile(path.join(output, 'en/llms-full.txt'), 'Stale bundle');
+      // Run from the staged historical snapshot, which has no current workspace dependencies.
+      const scripts = platformFiles.filter(
+        (file) =>
+          file.startsWith('apps/docs/scripts/') && !file.endsWith('build-versioned-site.mjs'),
+      );
+      for (const file of scripts) {
+        const target = path.join(root, file);
+        await mkdir(path.dirname(target), { recursive: true });
+        await cp(new URL(`../../../${file}`, import.meta.url), target);
+      }
+      execFileSync(
+        process.execPath,
+        [path.join(root, 'apps/docs/scripts/export-ai-docs.mjs'), root, output],
+        {
+          env: {
+            ...process.env,
+            LEAF_DOCS_BASE: `/leaf-ui/v/${version}/`,
+            LEAF_DOCS_SOURCE_COMMIT: 'a'.repeat(40),
+            LEAF_DOCS_EXAMPLE_SOURCE: new URL('./example-source.mjs', import.meta.url).href,
+          },
+          stdio: 'pipe',
         },
-        stdio: 'pipe',
-      },
-    );
-    const result = JSON.parse(await readFile(path.join(output, 'api/index.json'), 'utf8'));
-    assert.equal(result.version, '0.1.0');
-    assert.equal(
-      result.exports.some((entry) => entry.name === 'Menu'),
-      false,
-    );
-    assert.ok(
-      result.pages
-        .find((page) => page.id === 'components/button')
-        .symbols.some((entry) => entry.name === 'ButtonProps'),
-    );
-    assert.ok(
-      result.pages
-        .find((page) => page.id === 'components/textarea')
-        .symbols.some((entry) => entry.name === 'TextareaAutoSize'),
-    );
-    assert.match(
-      await readFile(path.join(output, 'components/button.md'), 'utf8'),
-      /https:\/\/ifhover.github.io\/leaf-ui\/v\/0.1.0\/components\/button.html/,
-    );
-    assert.equal(
-      await readFile(path.join(output, 'llm.txt'), 'utf8'),
-      await readFile(path.join(output, 'llms.txt'), 'utf8'),
-    );
-    assert.match(
-      await readFile(path.join(output, 'llm.txt'), 'utf8'),
-      /\/v\/0.1.0\/api\/index.json/,
-    );
+      );
+      const result = JSON.parse(await readFile(path.join(output, 'api/index.json'), 'utf8'));
+      assert.equal(result.package, packageName);
+      assert.equal(result.version, version);
+      assert.ok(result.exports.every((entry) => entry.importPath === packageName));
+      assert.equal(
+        result.exports.some((entry) => entry.name === 'Menu'),
+        false,
+      );
+      assert.ok(
+        result.pages
+          .find((page) => page.id === 'components/button')
+          .symbols.some((entry) => entry.name === 'ButtonProps'),
+      );
+      assert.ok(
+        result.pages
+          .find((page) => page.id === 'components/textarea')
+          .symbols.some((entry) => entry.name === 'TextareaAutoSize'),
+      );
+      assert.match(
+        await readFile(path.join(output, 'components/button.md'), 'utf8'),
+        new RegExp(
+          `https://ifhover.github.io/leaf-ui/v/${version.replaceAll('.', '\\.')}/components/button.html`,
+        ),
+      );
+      assert.equal(
+        await readFile(path.join(output, 'llm.txt'), 'utf8'),
+        await readFile(path.join(output, 'llms.txt'), 'utf8'),
+      );
+      assert.match(
+        await readFile(path.join(output, 'llm.txt'), 'utf8'),
+        new RegExp(`/v/${version.replaceAll('.', '\\.')}/api/index.json`),
+      );
+      const code = await readFile(path.join(output, 'components/button.md'), 'utf8');
+      assert.ok(code.startsWith(`> Leaf UI ${version} · Package: ${packageName} · Source: `));
+      assert.match(code, /function First/);
+      assert.doesNotMatch(code, /function Second/);
+      const bundle = await readFile(path.join(output, 'llms-full.txt'), 'utf8');
+      assert.ok(bundle.includes(`Leaf UI ${version} · Package: ${packageName}`));
+      assert.match(bundle, /function First/);
+      assert.doesNotMatch(bundle, /function Second|Textare[a] English|Stale bundle/);
+      assert.match(
+        await readFile(path.join(output, 'en/llms-full.txt'), 'utf8'),
+        /Textarea English/,
+      );
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+const registryFixture = (name, version, commit = 'a'.repeat(40)) => ({
+  name,
+  'dist-tags': { latest: version },
+  versions: { [version]: { name, gitHead: commit } },
+  time: { [version]: '2026-10-11T00:00:00Z' },
+});
+
+test('new npm scope becomes default while legacy releases retain their package and source', () => {
+  const current = publishedReleases(registryFixture('@ifhover/leaf-ui', '0.5.0', 'b'.repeat(40)));
+  const legacy = publishedReleases(registryFixture('@sudden3/leaf-ui', '0.4.2'));
+  const merged = mergePublishedReleases(current, legacy);
+  assert.equal(merged.package, '@ifhover/leaf-ui');
+  assert.equal(merged.latest, '0.5.0');
+  assert.deepEqual(merged.versions, [...current.versions, ...legacy.versions]);
+  assert.deepEqual(mergePublishedReleases(null, legacy), legacy);
+  assert.throws(
+    () =>
+      mergePublishedReleases(
+        publishedReleases(registryFixture('@ifhover/leaf-ui', '0.4.2')),
+        legacy,
+      ),
+    /exists in both npm packages/,
+  );
+  assert.throws(
+    () =>
+      mergePublishedReleases(
+        publishedReleases(registryFixture('@ifhover/leaf-ui', '0.3.1')),
+        legacy,
+      ),
+    /must be higher than legacy 0.4.2/,
+  );
+});
+
+test('unpublished or prerelease-only new package keeps the published default; registry failures are not hidden', async () => {
+  const legacy = registryFixture('@sudden3/leaf-ui', '0.4.2');
+  for (const current of [null, registryFixture('@ifhover/leaf-ui', '0.5.0-dev.1')]) {
+    const requests = [];
+    const manifest = await loadPublishedReleases(async (url) => {
+      requests.push(url);
+      return url.includes('@ifhover')
+        ? current
+          ? Response.json(current)
+          : new Response('', { status: 404 })
+        : Response.json(legacy);
+    });
+    assert.equal(manifest.package, '@sudden3/leaf-ui');
+    assert.equal(manifest.latest, '0.4.2');
+    assert.equal(manifest.versions.length, 1);
+    assert.equal(requests.length, 2);
+  }
+  await assert.rejects(
+    loadPublishedReleases(async (url) =>
+      url.includes('@ifhover') ? new Response('', { status: 503 }) : Response.json(legacy),
+    ),
+    /503/,
+  );
+  await assert.rejects(
+    loadPublishedReleases(async () => Response.json(legacy)),
+    /package mismatch/,
+  );
+});
+
+test('historical platform overlays resolve components and installation instructions from the snapshot package', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-platform-test-'));
+  try {
+    for (const packageName of ['@sudden3/leaf-ui', '@ifhover/leaf-ui']) {
+      const snapshot = path.join(root, packageName.slice(1).replace('/', '-'));
+      const docs = path.join(snapshot, 'apps/docs');
+      await mkdir(path.join(snapshot, 'packages/react'), { recursive: true });
+      await mkdir(path.join(docs, 'theme'), { recursive: true });
+      await mkdir(path.join(docs, 'docs/en'), { recursive: true });
+      await writeFile(
+        path.join(snapshot, 'packages/react/package.json'),
+        JSON.stringify({ name: packageName, version: '0.5.0' }),
+      );
+      await writeFile(path.join(docs, 'docs/en/index.mdx'), '# Leaf UI');
+      await writeFile(path.join(docs, 'rspress.config.ts'), 'export default {};');
+      await writeFile(
+        path.join(docs, 'theme/index.tsx'),
+        'export function Layout() { return null; }',
+      );
+      await installPlatform(snapshot);
+      const switcher = await readFile(
+        path.join(docs, 'src/components/version-switcher.tsx'),
+        'utf8',
+      );
+      assert.ok(switcher.includes(`from '${packageName}'`));
+      for (const relative of ['docs/guide/ai.md', 'docs/en/guide/ai.md']) {
+        assert.ok(
+          (await readFile(path.join(docs, relative), 'utf8')).includes(`\`${packageName}\``),
+        );
+      }
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }

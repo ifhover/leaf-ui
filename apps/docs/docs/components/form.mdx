@@ -60,7 +60,7 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 定义组件属性或组装变量时可导入相关类型。
 
 ```ts
-import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
+import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
@@ -72,7 +72,7 @@ import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
 ## 扩展类型
 
 ```ts
-import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@sudden3/leaf-ui';
+import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@ifhover/leaf-ui';
 ```
 
 ## FormGroupProps API
@@ -132,7 +132,7 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 
 ```tsx
 import { useForm, Controller } from 'react-hook-form';
-import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@sudden3/leaf-ui';
+import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@ifhover/leaf-ui';
 
 export function AccountForm() {
   const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });

@@ -1,4 +1,4 @@
-import { ConfigProvider, type LeafTheme, Select } from '@sudden3/leaf-ui';
+import { ConfigProvider, type LeafTheme, Select } from '@ifhover/leaf-ui';
 
 const theme: LeafTheme = {
   primaryColor: '#7654c6',

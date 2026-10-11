@@ -3,14 +3,14 @@ import { ConfirmBasic } from '../../../src/examples/en/confirm/basic';
 
 # Confirm
 
-Ask for confirmation before an important action.
+Ask for confirmation before an important action. Call the API and await the user's choice.
 
-## Application setup
+## Configure the entry once
 
-Place `ConfigProvider` at the application entry. Descendants call `useConfirm()` directly and inherit their region’s theme and language.
+Wrap the application in `ConfigProvider` and call `useConfirm()` in a child component. Each confirmation inherits the caller's theme and language without managing open state.
 
 ```tsx
-import { ConfigProvider } from '@sudden3/leaf-ui';
+import { ConfigProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
   return <ConfigProvider><App /></ConfigProvider>;
@@ -26,37 +26,44 @@ export function Root() {
 
 </ComponentExample>
 
-## Confirm API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | `boolean` | Required | Whether the dialog is visible |
-| `title / children` | `ReactNode` | — | Title / confirmation content |
-| `width` | `number \| string` | `480` | Width; numbers are pixels |
-| `closable / keyboard` | `boolean` | `true` | Close button / Escape dismissal |
-| `maskClosable` | `boolean` | `false` | Backdrop dismissal |
-| `onClose` | `() => void` | — | Requests closure; update open in the application |
-| `afterClose` | `() => void` | — | Called after the closing animation finishes |
-| `confirmText / cancelText` | `ReactNode` | Locale default | Confirm / cancel labels from the current locale |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Icon and color; only danger changes the confirm button |
-| `showCancel` | `boolean` | false for success; true otherwise | Show the cancel button |
-| `danger` | `boolean` | `false` | Legacy shorthand for type="danger" |
-| `onConfirm` | `() => void \| Promise<void>` | — | Confirm action; resolves to close, rejects to show an error |
-
 ## useConfirm API
 
-The returned object is typed as [`ConfirmApi`](#useconfirm-api).
+The returned object is [`ConfirmApi`](#confirmapi).
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or caller unmount. |
+
+## ConfirmOptions
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or unmount |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Initial focus target. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Return focus after closing; set a target or disable with false. |
+| `title` | `ReactNode` | — | Confirmation heading. |
+| `children` | `ReactNode` | — | A short explanation of the action's consequences. |
+| `icon` | `ReactNode` | — | Semantic icon beside the explanation; null hides the icon. |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Semantic icon and color; only danger changes the confirm button color. |
+| `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
+| `confirmText` | `ReactNode` | Locale default | Confirm button label. |
+| `cancelText` | `ReactNode` | Locale default | Cancel button label. |
+| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Confirm button props. |
+| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Cancel button props. |
+| `onConfirm` | `() => void \| Promise<void>` | — | Close after success; keep the dialog open and show the error on rejection. |
+| `onCancel` | `() => void` | — | Called on cancellation. |
+| `width` | `number \| string` | `420` | Dialog width, in pixels for numbers. |
+| `closable` | `boolean` | `false` | Show a close button in the corner. |
+| `maskClosable` | `boolean` | `false` | Cancel when the backdrop is clicked. |
+| `keyboard` | `boolean` | `true` | Cancel when Escape is pressed. |
+| `className` | `string` | — | Dialog class name. |
+| `style` | `CSSProperties` | — | Dialog styles. |
 
 ## ConfirmProvider API
 
-Without `ConfigProvider`, wrap the application in `ConfirmProvider`. An explicit provider also creates an independent confirmation queue for a region.
+Use `ConfirmProvider` at the entry when `ConfigProvider` is absent. An explicit provider can also create an independent queue for a region.
 
 ```tsx
-import { ConfirmProvider } from '@sudden3/leaf-ui';
+import { ConfirmProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
   return <ConfirmProvider><App /></ConfirmProvider>;
@@ -65,38 +72,26 @@ export function Root() {
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Components sharing the confirmation queue |
+| `children` | `ReactNode` | — | Components sharing this confirmation queue. |
 
-## ConfirmOptions
+## ConfirmApi
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title / children` | `ReactNode` | — | Title and confirmation content |
-| `confirmText / cancelText` | `ReactNode` | Locale default | Button labels |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Icon and color; only danger changes the confirm button |
-| `showCancel` | `boolean` | false for success; true otherwise | Show the cancel button |
-| `danger` | `boolean` | `false` | Legacy shorthand for type="danger" |
-| `onConfirm` | `() => void \| Promise<void>` | — | Runs on confirmation; rejection keeps the dialog open |
-| `width` | `number \| string` | `480` | Dialog width |
-| `closable / keyboard` | `boolean` | `true` | Close button / Escape dismissal |
-| `maskClosable` | `boolean` | `false` | Backdrop dismissal |
+| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | — | Required. Request confirmation and await the choice. |
 
 ## Types
 
-Import types when defining reusable component props or assembling options.
+Import these types when composing options.
 
 ```ts
-import type { ConfirmProps, ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@sudden3/leaf-ui';
+import type { ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@ifhover/leaf-ui';
 ```
 
-## Usage notes
+## Usage
 
-`useConfirm()` returns `{ confirm }`. Requests under the same entry appear in order, with the next dialog opening after the previous dismissal finishes. Confirmation resolves to `true`; cancellation or unmounting the calling component or provider resolves to `false`.
+`useConfirm()` returns `{ confirm }`. Requests sharing an entry appear in sequence, after the previous dialog finishes closing. Async confirmation shows loading and prevents duplicate actions; rejected actions keep the dialog open with an error and can be retried.
 
-Async confirmation shows a loading state and prevents duplicate actions. Rejection displays an error and keeps the dialog open for retry. Nested `ConfigProvider` regions share the queue while preserving each caller’s theme and language.
+The default type has no status icon. Info, warning, success and danger show a bare semantic icon beside the content; danger uses a red exclamation mark. Success hides the cancel button unless `showCancel` is set.
 
-You can also render `Confirm` directly and control `open` and `onClose`.
-
-See [Modal API](/en/components/modal#modal-api) for inherited attributes.
-
-default has no icon. info, warning, success and danger have distinct icons and colors. Only danger has a red OK button; success hides Cancel by default. Use showCancel to override it. Button props follow Modal. onCancel notifies cancellation before onClose.
+Confirm is an API-only prompt for brief decisions. Use [Modal](/en/components/modal) for forms, multiple steps or complex content.

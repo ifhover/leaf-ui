@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../src/examples/scrollbar/basic';
+
+# Scrollbar 滚动条
+
+在区域内浏览较长或较宽的内容。
+
+## 基本用法
+
+鼠标移入区域时，滚动条平滑出现；移出后淡出，不占用内容宽度。滚轮、触摸与键盘保留浏览器的滚动行为。
+
+<ComponentExample title="项目动态" preview={<ScrollbarBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## 横向与常显
+
+`orientation` 控制可滚动的方向。`scrollbar="always"` 常显，`hidden` 仅隐藏滚动条，内容仍可滚动。拖动滑块或点击轨道可定位内容。
+
+<ComponentExample title="项目看板" preview={<ScrollbarHorizontal />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## 动态内容与滚动控制
+
+内容和容器尺寸变化后，滑块自动更新。`ref` 指向实际滚动容器，可调用 `scrollTo`、读取 `scrollTop`，也可传给 BackTop 等组件。到达边缘或没有溢出时，滚轮继续滚动页面。
+
+<ComponentExample title="增加内容" preview={<ScrollbarDynamic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Scrollbar API
+
+```ts
+import type { ScrollbarProps } from '@ifhover/leaf-ui';
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `height` | `CSSProperties['height']` | — | 滚动区域高度。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 最大高度；未设置高度限制时跟随内容。 |
+| `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'both'` | 滚动方向。 |
+| `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | 滚动条显示方式。 |
+| `viewportClassName` | `string` | — | 实际滚动容器的类名。 |
+| `viewportStyle` | `CSSProperties` | — | 实际滚动容器的样式。 |
+| `contentClassName` | `string` | — | 内容容器的类名。 |
+| `contentStyle` | `CSSProperties` | — | 内容容器的样式。 |
+| `verticalOffset` | `number` | `0` | 纵向轨道顶部预留空间，适用于固定表头。 |
+
+`style` 与 `className` 用于外层；`id`、`role`、`tabIndex`、区域名称与 `onScroll` 用于实际滚动容器。建议提供 `aria-label` 或 `aria-labelledby` 为滚动区域命名。滑块可通过 Tab 聚焦，支持方向键、PageUp / PageDown 与 Home / End。
+
+`ScrollArea` 使用相同的滚动条实现，默认仅纵向滚动；已有用法可以继续使用。

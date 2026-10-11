@@ -1,4 +1,4 @@
-import { Select, type SelectOption } from '@sudden3/leaf-ui';
+import { Select, type SelectOption, Space } from '@ifhover/leaf-ui';
 
 const options: SelectOption[] = [
   { value: 'garden', label: 'Leaf Garden Design System' },
@@ -7,7 +7,7 @@ const options: SelectOption[] = [
 ];
 export function SelectPopup() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">自动浮层宽度</span>
         <Select
@@ -53,6 +53,6 @@ export function SelectPopup() {
         <span className="leaf-demo-label">空选项</span>
         <Select aria-label="空选项" options={[]} notFoundContent="还没有项目" />
       </div>
-    </div>
+    </Space>
   );
 }

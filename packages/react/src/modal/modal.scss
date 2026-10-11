@@ -1,4 +1,5 @@
 @use '../shared/backdrop';
+@use '../styles/dialog-sections';
 
 .leaf-modal-mask {
   box-sizing: border-box;
@@ -22,22 +23,20 @@
   padding: 0;
   border: 0;
   cursor: default;
-  background: rgba(8, 12, 18, 0.38);
+  background: rgb(0 0 0 / 0.38);
   @include backdrop.blur('.leaf-modal-mask');
 }
 .leaf-modal {
+  @include dialog-sections.sections(modal);
   position: relative;
   box-sizing: border-box;
   max-width: 100%;
   max-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--leaf-color-border-alpha-85);
-  border-radius: var(--leaf-component-modal-radius, var(--leaf-radius));
-  background: var(
-    --leaf-component-modal-background,
-    var(--leaf-color-surface-raised, var(--leaf-color-surface))
-  );
+  border: 1px solid var(--leaf-component-modal-border-color, var(--leaf-color-divider));
+  border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-lg));
+  background: var(--leaf-component-modal-background, var(--leaf-color-surface));
   color: var(--leaf-component-modal-color, var(--leaf-color-text));
   font: var(--leaf-component-modal-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   box-shadow: var(--leaf-component-modal-shadow, var(--leaf-shadow-lg));
@@ -51,33 +50,49 @@
     opacity: 0;
     transform: translateY(18px) scale(0.96);
   }
-  &__header {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 16px;
-    padding: var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-      var(--leaf-spacing-sm);
+  &__header--simple {
+    --leaf-dialog-padding-block: var(
+      --leaf-component-modal-padding-top,
+      calc(var(--leaf-spacing) * 2)
+    );
+    padding-block-start: var(--leaf-dialog-padding-block);
   }
-  &__header h2 {
-    flex: 1;
-    margin: 0;
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: -0.025em;
+  &__body {
+    flex: 1 1 auto;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+  &__viewport {
+    overscroll-behavior: contain;
+  }
+  &__content {
+    box-sizing: border-box;
+    padding: var(
+      --leaf-component-modal-padding,
+      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+    );
+  }
+  &__footer {
+    --leaf-dialog-padding-block: var(
+      --leaf-component-modal-padding-top,
+      calc(var(--leaf-spacing) * 1.5)
+    );
+    padding-block-end: var(--leaf-dialog-padding-block);
   }
   &__close {
     margin-inline-start: auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
     padding: 4px;
     border: 0;
-    border-radius: var(--leaf-radius-sm);
+    border-radius: 50%;
     color: var(--leaf-color-text-muted);
-    background: transparent;
+    background: var(--leaf-color-surface-muted);
     cursor: pointer;
     transition:
       color var(--leaf-motion-fast) var(--leaf-motion-easing),
@@ -85,7 +100,7 @@
       scale var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
       color: var(--leaf-color-text);
-      background: var(--leaf-color-surface-muted);
+      background: var(--leaf-color-border-surface-35);
     }
     &:active {
       scale: 0.9;
@@ -93,28 +108,6 @@
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary);
     }
-  }
-  &__body {
-    min-height: 0;
-    overflow: auto;
-    padding: var(--leaf-spacing-sm) var(--leaf-density-dialog-inline)
-      var(--leaf-density-dialog-block);
-    overscroll-behavior: contain;
-  }
-  &__content {
-    display: flow-root;
-    min-width: 0;
-  }
-  &__body:first-child {
-    padding-block-start: var(--leaf-density-dialog-block);
-  }
-  &__footer {
-    display: flex;
-    flex-shrink: 0;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 var(--leaf-density-dialog-inline) var(--leaf-density-dialog-block);
   }
 }
 @media (prefers-reduced-motion: reduce) {

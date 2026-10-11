@@ -1,4 +1,4 @@
-import { Button, Input, Modal } from '@sudden3/leaf-ui';
+import { Button, Input, Modal } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function Capabilities({ english = false }) {
   const [open, setOpen] = useState(false);

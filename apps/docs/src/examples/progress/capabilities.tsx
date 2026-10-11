@@ -1,8 +1,8 @@
-import { Progress, Space } from '@sudden3/leaf-ui';
+import { Progress, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>{english ? 'Segmented tasks' : '分段任务'}</p>
         <Progress
           percent={75}
@@ -12,11 +12,11 @@ export function Capabilities({ english = false }) {
           ]}
         />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>{english ? 'Discrete steps' : '分步进度'}</p>
         <Progress percent={60} steps={10} />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>{english ? 'Dashboard' : '仪表盘'}</p>
         <Progress type="circle" dashboard percent={65} successPercent={30} />
       </div>

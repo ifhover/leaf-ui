@@ -1,8 +1,8 @@
-import { Segmented } from '@sudden3/leaf-ui';
+import { Segmented, Space } from '@ifhover/leaf-ui';
 
 export function SegmentedOptions() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <strong className="leaf-demo-note">Fill container</strong>
       <Segmented
         block
@@ -14,6 +14,6 @@ export function SegmentedOptions() {
       />
       <strong className="leaf-demo-note">Small size</strong>
       <Segmented size="sm" options={['A', 'B', 'C']} />
-    </div>
+    </Space>
   );
 }

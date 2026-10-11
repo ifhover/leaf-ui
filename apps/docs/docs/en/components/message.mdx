@@ -12,8 +12,8 @@ Provide brief feedback about an operation.
 Wrap your application in `ConfigProvider`. It manages messages automatically, so pages and business components can call `useMessage` directly.
 
 ```tsx
-import { ConfigProvider } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export function Root() {
   return <ConfigProvider><App /></ConfigProvider>;
@@ -64,7 +64,7 @@ When a message closes, those below it move up smoothly. Content of different hei
 If your application has no `ConfigProvider`, add `MessageProvider` at the entry point. An explicit `MessageProvider` also creates an independent queue for a region.
 
 ```tsx
-import { MessageProvider } from '@sudden3/leaf-ui';
+import { MessageProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
   return <MessageProvider><App /></MessageProvider>;
@@ -111,7 +111,7 @@ export function Root() {
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@sudden3/leaf-ui';
+import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes

@@ -3,19 +3,19 @@
   font-family: var(--leaf-font-family);
   &__title {
     color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size);
-    margin-bottom: 8px;
-    font-weight: 450;
+    font-size: var(--leaf-font-size-sm);
+    margin-bottom: 6px;
+    font-weight: 400;
   }
   &__value {
     font-size: 28px;
-    font-weight: 600;
+    font-weight: var(--leaf-font-weight);
     display: flex;
     align-items: baseline;
     gap: 6px;
     font-variant-numeric: tabular-nums;
     line-height: 1.15;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
   }
   &__number {
     display: inline-block;

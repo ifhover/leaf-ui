@@ -1,4 +1,4 @@
-import { Menu, type MenuItem } from '@sudden3/leaf-ui';
+import { Menu, type MenuItem, Space } from '@ifhover/leaf-ui';
 import { BookOpen, House, Settings } from 'lucide-react';
 import {
   type AnchorHTMLAttributes,
@@ -28,7 +28,7 @@ export function MenuRouting({ english = false }: { english?: boolean }) {
     },
   ];
   return (
-    <div>
+    <Space direction="vertical" align="center" className="leaf-demo-stack">
       <Menu
         aria-label={english ? 'Application navigation' : '应用导航'}
         items={items}
@@ -51,6 +51,6 @@ export function MenuRouting({ english = false }: { english?: boolean }) {
           ? `Current page: ${selected}. The example updates local state; replace the anchor with your router Link and retain its props.`
           : `当前页面：${selected}。示例切换本地状态；接入路由时使用自己的 Link，并保留传入属性。`}
       </p>
-    </div>
+    </Space>
   );
 }

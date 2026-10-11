@@ -1,14 +1,11 @@
-import { Button } from '@sudden3/leaf-ui';
+import { Button, Space } from '@ifhover/leaf-ui';
 import { Trash2 } from 'lucide-react';
 
 export function ButtonDanger() {
   return (
-    <>
+    <Space wrap>
       <Button danger startIcon={<Trash2 />}>
         Delete project
-      </Button>
-      <Button danger variant="soft">
-        Remove member
       </Button>
       <Button danger variant="outline">
         Revoke access
@@ -22,6 +19,6 @@ export function ButtonDanger() {
       <Button danger loading>
         Deleting
       </Button>
-    </>
+    </Space>
   );
 }

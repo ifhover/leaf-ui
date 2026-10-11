@@ -1,10 +1,10 @@
-import { AutoComplete, type AutoCompleteOption } from '@sudden3/leaf-ui';
+import { AutoComplete, type AutoCompleteOption, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function AutoCompleteSearch() {
   const [options, setOptions] = useState<AutoCompleteOption[]>([]);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">邮箱地址</span>
         <AutoComplete
@@ -25,6 +25,6 @@ export function AutoCompleteSearch() {
         />
       </div>
       <span className="leaf-demo-note">建议由输入动态生成，也可以直接填写完整地址。</span>
-    </div>
+    </Space>
   );
 }

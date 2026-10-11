@@ -9,14 +9,23 @@ for (const variant of ['light', 'dark', 'rtl', 'narrow', 'reduced', 'tokens']) {
     );
     await expect(page.getByRole('heading', { name: 'Theme and direction' })).toBeVisible();
     for (const [size, height] of [
-      ['sm', 28],
-      ['md', 34],
-      ['lg', 40],
+      ['sm', 34],
+      ['md', 40],
+      ['lg', 46],
     ] as const) {
       const expectedHeight = height + (variant === 'tokens' ? 4 : 0);
       const button = page.getByTestId(`button-${size}`);
       expect(Math.round((await button.boundingBox())?.height ?? 0)).toBe(expectedHeight);
+      const inlinePadding = await button.evaluate((node) =>
+        parseFloat(getComputedStyle(node).paddingInlineStart),
+      );
+      expect(inlinePadding).toBeCloseTo(variant === 'tokens' ? 20 : expectedHeight * 0.42, 1);
       if (variant === 'tokens') await expect(button).toHaveCSS('border-radius', '2px');
+    }
+    const controlHeight = variant === 'tokens' ? 44 : 40;
+    for (const selector of ['.leaf-input', '.leaf-select', '.leaf-date-picker']) {
+      for (const control of await page.locator(selector).all())
+        expect(Math.round((await control.boundingBox())?.height ?? 0)).toBe(controlHeight);
     }
     await expect(page.getByRole('textbox', { name: 'Invalid name' })).toHaveAttribute(
       'aria-invalid',

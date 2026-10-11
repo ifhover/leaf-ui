@@ -1,8 +1,8 @@
-import { Col, Row } from '@sudden3/leaf-ui';
+import { Col, Row, Space } from '@ifhover/leaf-ui';
 
 export function GridColumns() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Row gutter={[12, 12]}>
         <Col span={8}>
           <div
@@ -51,6 +51,6 @@ export function GridColumns() {
           </div>
         </Col>
       </Row>
-    </div>
+    </Space>
   );
 }

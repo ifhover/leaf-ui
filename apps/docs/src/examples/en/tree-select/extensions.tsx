@@ -1,4 +1,4 @@
-import { TreeSelect } from '@sudden3/leaf-ui';
+import { TreeSelect } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <TreeSelect

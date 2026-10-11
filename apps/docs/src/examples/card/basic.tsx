@@ -1,9 +1,11 @@
-import { Avatar, Button, Card, Tag } from '@sudden3/leaf-ui';
+import { Avatar, Button, Card, Space, Tag } from '@ifhover/leaf-ui';
 import { ArrowUpRight, Leaf } from 'lucide-react';
 
 export function CardBasic() {
   return (
-    <div
+    <Space
+      direction="vertical"
+      align="stretch"
       className="leaf-demo-stack leaf-demo-stack--wide"
       style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 20 }}
     >
@@ -46,6 +48,6 @@ export function CardBasic() {
       <Card title="紧凑卡片" size="sm" bordered={false} style={{ gridColumn: '1 / -1' }}>
         适合内容密集的页面。
       </Card>
-    </div>
+    </Space>
   );
 }

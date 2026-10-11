@@ -8,6 +8,32 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.5.0 - 2026-10-11
+
+### Added
+
+- The npm package moves to `@ifhover/leaf-ui`, matching the GitHub maintainer account. Previous package releases and documentation snapshots remain available. Version navigation and the AI Skill resolve documentation using the installed package name and version.
+- Composable `Table` and an optional `DataTable` adapter, with sorting, filtering, selection, pagination, pinned columns, resizing, grouping, expansion, editing, virtual rows and row / column reordering. Import the adapter from `@ifhover/leaf-ui/table/tanstack` and install `@tanstack/react-table` separately.
+- `Scrollbar` provides overlay tracks without consuming content width, with dragging and keyboard controls. Table, Modal, Cascader and ScrollArea share this implementation.
+- Button supports `variant="link"`. Checkbox, Radio and their groups offer card and list appearances with descriptions, icons and supplementary content. Card, Modal and Drawer support descriptions and section styling.
+- Progress supports an enabled-by-default `active` shimmer within the filled portion of incomplete linear progress. It can be disabled and respects reduced-motion preferences.
+
+### Improved and fixed
+
+- Default controls use a 40px height, with 34px / 46px small and large sizes. Button padding derives from height; popup options and form spacing follow the updated scale. Content cards use flat surfaces and the base radius, while dialogs retain a larger outer radius.
+- Buttons use an outer wave for activation and smooth hover / press color changes. Text and link buttons omit the wave. Brighter warning colors, dialog sections, compact footers, Confirm body icons, and Alert / Result alignment are consistent.
+- Named ESM imports from the root load component styles on demand in verified Vite and Rspack production builds. Root and subpath imports share component identity and context; default Node entries remain free of CSS for server rendering.
+- Fixed popup selection / hover color changes, transient Cascader overflow, stretched or overly offset badges, and narrow-table scrolling with page scroll chaining. Headers are sticky by default; a height limit enables scrolling within the table body.
+- Refined bilingual documentation, home, navigation and example layouts. Code examples include only the source needed for the current demo, omit documentation-only language props, and expand / collapse with a short transition and gradient mask. Getting started combines installation and basic usage.
+
+### Migration
+
+- Install `@ifhover/leaf-ui` and replace application imports from `@sudden3/leaf-ui`, including CSS paths. The new scope starts at 0.5.0; the legacy scope remains at 0.4.2.
+- Import `@ifhover/leaf-ui/styles.css` once at the application entry for theme variables, shared popups and Confirm / Message / Notification / LoadingBar services. It no longer contains all component CSS. Use `@ifhover/leaf-ui/styles/all.css` for a complete static stylesheet. Component subpaths remain available for CommonJS or bundlers that cannot prune root-entry CSS.
+- Button removes the `soft` variant; use `outline`. Set `theme.controlHeight` through ConfigProvider to retain a shorter control height.
+- Confirm now uses only `useConfirm().confirm(options)`. The controlled `Confirm` component and `ConfirmProps` are removed, and confirmation options no longer inherit the full Modal API. Use Modal for complex content, custom footers or controlled visibility; use `type="danger"` for destructive confirmations.
+- Standalone `Sortable`, `List` / `ListItem` and `OrgChart`, their types and subpaths are removed. Use native layout for lists. Reordering within Tabs, Tree and DataTable remains available.
+
 ## 0.4.2 - 2026-10-08
 
 ### Fixed

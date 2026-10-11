@@ -3,12 +3,12 @@ function Content({ broken }: { broken: boolean }) {
   return <span>The fallback replaces only the failed section.</span>;
 }
 
-import { Alert, Button, ErrorBoundary } from '@sudden3/leaf-ui';
+import { Alert, Button, ErrorBoundary, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ErrorBoundaryCustom() {
   const [broken, setBroken] = useState(false);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <Button variant="outline" onClick={() => setBroken(true)}>
         Test fallback
       </Button>
@@ -28,6 +28,6 @@ export function ErrorBoundaryCustom() {
       >
         <Content broken={broken} />
       </ErrorBoundary>
-    </div>
+    </Space>
   );
 }

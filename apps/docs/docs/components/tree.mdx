@@ -151,7 +151,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 可导入以下类型定义属性、组装数据或处理回调。
 
 ```ts
-import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo } from '@sudden3/leaf-ui';
+import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
@@ -168,7 +168,7 @@ import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo
 ## 扩展类型
 
 ```ts
-import type { TreeDropInfo } from '@sudden3/leaf-ui';
+import type { TreeDropInfo } from '@ifhover/leaf-ui';
 ```
 
 ## TreeDropInfo API
@@ -185,7 +185,7 @@ import type { TreeDropInfo } from '@sudden3/leaf-ui';
 需要自行调整树数据时可导入此纯函数。返回新树，不修改原数据；目标不存在、移动到自身或后代节点时返回 `null`。Tree 的 `onDrop` 已直接提供调整后的 data。
 
 ```ts
-import { moveTreeNode } from '@sudden3/leaf-ui';
+import { moveTreeNode } from '@ifhover/leaf-ui';
 
 const next = moveTreeNode(data, 'design', 'team', 'inside');
 ```

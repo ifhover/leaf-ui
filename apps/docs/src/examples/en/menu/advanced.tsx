@@ -1,4 +1,4 @@
-import { Button, Menu, type MenuItem, Space } from '@sudden3/leaf-ui';
+import { Button, Menu, type MenuItem, Space } from '@ifhover/leaf-ui';
 import { BookOpen, Folder, House, Palette, Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -19,11 +19,11 @@ export function MenuHorizontal() {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Space direction="vertical" align="start" size={20}>
-      <div>
+      <div className="leaf-demo-case">
         <p className="leaf-demo-note">Horizontal navigation</p>
         <Menu mode="horizontal" items={items} defaultSelectedKey="home" />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p className="leaf-demo-note">Collapsible sidebar</p>
         <Button variant="ghost" size="sm" onClick={() => setCollapsed((value) => !value)}>
           Toggle sidebar

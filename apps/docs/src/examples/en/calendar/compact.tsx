@@ -1,7 +1,7 @@
-import { Calendar } from '@sudden3/leaf-ui';
+import { Calendar, Space } from '@ifhover/leaf-ui';
 export function CalendarCompact() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <Calendar
         fullscreen={false}
         defaultValue={new Date(2026, 9, 4)}
@@ -10,6 +10,6 @@ export function CalendarCompact() {
       <p className="leaf-demo-note">
         Weekends are unavailable; an existing selection remains readable.
       </p>
-    </div>
+    </Space>
   );
 }

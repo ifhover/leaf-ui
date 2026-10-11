@@ -1,5 +1,5 @@
+import { Button } from '@ifhover/leaf-ui';
 import type { SearchButtonProps } from '@rspress/core/theme-original';
-import { Button } from '@sudden3/leaf-ui';
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDocsLocale } from './i18n';
@@ -23,7 +23,7 @@ export function SearchButton({ setFocused }: SearchButtonProps) {
         endIcon={<kbd>{shortcut}</kbd>}
         onClick={() => setFocused(true)}
       >
-        {label}
+        <span className="leaf-docs-search-label">{label}</span>
       </Button>
       <Button
         className="leaf-docs-search-mobile"

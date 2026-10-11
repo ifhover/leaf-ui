@@ -7,16 +7,15 @@
   --leaf-color-on-primary: #ffffff;
   --leaf-color-danger: #c83c3c;
   --leaf-color-on-danger: #ffffff;
-  --leaf-color-warning: #a9670e;
+  --leaf-color-warning: #faad14;
   --leaf-color-info: #1677ff;
   --leaf-color-success: #20834a;
-  --leaf-control-height: 34px;
-  --leaf-density-form-gap: 18px;
+  --leaf-control-height: 40px;
+  --leaf-density-form-gap: 24px;
   --leaf-density-label-gap: 6px;
   --leaf-density-row-padding: 12px;
-  --leaf-density-option-height: 32px;
+  --leaf-density-option-height: max(24px, calc(var(--leaf-control-height) - 4px));
   --leaf-density-option-padding: 6px;
-  --leaf-density-button-padding: 14px;
   --leaf-density-field-padding: 10px;
   --leaf-density-dialog-block: 20px;
   --leaf-density-dialog-inline: 24px;
@@ -33,11 +32,14 @@
   --leaf-color-border: #e5e5e8;
   --leaf-radius: 10px;
   --leaf-radius-sm: calc(var(--leaf-radius) * 0.6);
+  --leaf-radius-md: calc(var(--leaf-radius) * 1.2);
   --leaf-radius-lg: calc(var(--leaf-radius) * 1.6);
   --leaf-choice-radius: calc(var(--leaf-radius) * 0.5);
-  --leaf-font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --leaf-font-family:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
   --leaf-font-size: 14px;
-  --leaf-font-size-sm: max(1px, calc(var(--leaf-font-size) - 2px));
+  --leaf-font-size-sm: max(1px, calc(var(--leaf-font-size) - 1px));
   --leaf-font-size-lg: calc(var(--leaf-font-size) + 2px);
   --leaf-font-weight: 500;
   --leaf-motion-duration: 200ms;
@@ -53,7 +55,7 @@
   --leaf-color-danger: #c83c3c;
   --leaf-color-on-danger: #ffffff;
   --leaf-color-success: #20834a;
-  --leaf-color-warning: #a9670e;
+  --leaf-color-warning: #faad14;
   --leaf-color-info: #1677ff;
   color-scheme: light;
   --leaf-color-text: #202024;
@@ -71,7 +73,7 @@
   --leaf-color-success: #83cf9e;
   --leaf-color-danger: #ef8585;
   --leaf-color-on-danger: #381818;
-  --leaf-color-warning: #e0b76e;
+  --leaf-color-warning: #ffc53d;
   color-scheme: dark;
   --leaf-color-text: #ededf0;
   --leaf-color-text-muted: #a5a5ae;
@@ -105,6 +107,7 @@
   --leaf-color-text-subtle: var(--leaf-color-text-muted-surface-92);
   --leaf-color-surface-raised: var(--leaf-color-surface-text-98);
   --leaf-color-border-hover: var(--leaf-color-border-text-muted-65);
+  --leaf-color-divider: var(--leaf-color-border-surface-70);
 }
 
 @keyframes leaf-content-in {

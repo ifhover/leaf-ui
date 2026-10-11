@@ -5,15 +5,15 @@ A lightweight React component library with a green default theme, ConfigProvider
 ## Usage
 
 ```bash
-npm install @sudden3/leaf-ui
+npm install @ifhover/leaf-ui
 ```
 
 [Documentation](https://ifhover.github.io/leaf-ui/) · [Changelog](https://ifhover.github.io/leaf-ui/en/changelog.html) · [Source](https://github.com/ifhover/leaf-ui) · [Issues](https://github.com/ifhover/leaf-ui/issues)
 
 ```tsx
-import { Button, Input, Select } from '@sudden3/leaf-ui';
+import { Button, Input, Select } from '@ifhover/leaf-ui';
 import { Plus } from 'lucide-react';
-import '@sudden3/leaf-ui/styles.css';
+import '@ifhover/leaf-ui/styles.css';
 
 export function App() {
   return (
@@ -27,6 +27,8 @@ export function App() {
 ```
 
 Import the compiled stylesheet once in your application entry; consumers do not need Sass. JavaScript is available as ESM and CommonJS, with TypeScript declarations.
+
+Browser component entries load CSS automatically. Import `styles.css` once for theme variables and API services. Vite and Rsbuild / Rspack production builds retain styles for root ESM named imports and their internal dependencies on demand; component subpaths are optional. Direct esbuild bundles and CommonJS root imports do not guarantee CSS pruning; use subpaths such as `@ifhover/leaf-ui/button` in those cases. A full static stylesheet remains available at `@ifhover/leaf-ui/styles/all.css` for custom SSR pipelines.
 
 ## Components
 
@@ -51,25 +53,25 @@ Import the compiled stylesheet once in your application entry; consumers do not 
 - Message / useMessage: transient feedback, loading and keyed updates.
 - Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
 - Segmented / Menu / BackTop: compact selection, nested navigation and scroll-to-top.
-- Descriptions / Timeline / QRCode / OrgChart: details, event histories, QR codes and organization trees.
+- Descriptions / Timeline / QRCode: details, event histories, QR codes.
 - Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
-- VirtualList / InfiniteScroll / Sortable: measured virtual rows, abortable loading and pointer/touch/keyboard sorting.
+- VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
 - Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
 - Upload / FileList / ImageCropper / SignaturePad: upload progress and cancellation, file metadata and browser media previews, movable crop selections and signature strokes.
 
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
-Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
+Single-line controls share sm / md / lg sizes of **34 / 40 / 46px**. The default **40px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 
 ## Theming
 
 Use ConfigProvider to customize a region. Start with primaryColor, borderRadius and controlHeight; smaller and larger sizes are generated automatically. Advanced overrides live in theme.tokens.
 
 ```tsx
-import { ConfigProvider, Button } from '@sudden3/leaf-ui';
+import { ConfigProvider, Button } from '@ifhover/leaf-ui';
 
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8, controlHeight: 34, appearance: 'light' }}>
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8, controlHeight: 40, appearance: 'light' }}>
   <Button>Save</Button>
 </ConfigProvider>
 ```
@@ -81,7 +83,7 @@ Floating panels inherit the trigger's scoped theme, mount on opening and stay mo
 ConfigProvider manages messages and confirmations once at the application entry. Descendants call useMessage or useConfirm directly:
 
 ```tsx
-import { Button, useMessage } from '@sudden3/leaf-ui';
+import { Button, useMessage } from '@ifhover/leaf-ui';
 
 export function SaveButton() {
   const { message } = useMessage();
@@ -92,7 +94,7 @@ export function SaveButton() {
 If you do not use ConfigProvider, wrap your application in MessageProvider instead. Components share one queue and can update a message using the same key. Use ConfirmProvider for a standalone confirmation scope.
 
 ```tsx
-import { Button, useConfirm } from '@sudden3/leaf-ui';
+import { Button, useConfirm } from '@ifhover/leaf-ui';
 
 export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void> }) {
   const { confirm } = useConfirm();

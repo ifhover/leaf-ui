@@ -1,8 +1,8 @@
-import { DatePicker } from '@sudden3/leaf-ui';
+import { DatePicker, Space } from '@ifhover/leaf-ui';
 
 export function DatePickerBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">选择日期</span>
         <DatePicker aria-label="选择日期" placeholder="选择一个好日子" />
@@ -15,6 +15,6 @@ export function DatePickerBasic() {
         <span className="leaf-demo-label">禁用日期</span>
         <DatePicker aria-label="禁用日期" defaultValue={new Date(2026, 9, 15)} disabled />
       </div>
-    </div>
+    </Space>
   );
 }

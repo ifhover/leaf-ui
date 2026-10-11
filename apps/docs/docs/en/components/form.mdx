@@ -60,7 +60,7 @@ Organize fields, labels and validation feedback, and collect form data.
 Import types when defining reusable component props or assembling options.
 
 ```ts
-import type { FormProps, FormFieldProps } from '@sudden3/leaf-ui';
+import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
@@ -72,7 +72,7 @@ Read named controls with FormData. Use required, type and minLength for basic va
 ## Extension types
 
 ```ts
-import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@sudden3/leaf-ui';
+import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@ifhover/leaf-ui';
 ```
 
 ## FormGroupProps API
@@ -132,7 +132,7 @@ Install react-hook-form in your application. Use register with native inputs and
 
 ```tsx
 import { useForm, Controller } from 'react-hook-form';
-import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@sudden3/leaf-ui';
+import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@ifhover/leaf-ui';
 
 export function AccountForm() {
   const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });

@@ -1,4 +1,4 @@
-import { Grid } from '@sudden3/leaf-ui';
+import { Grid } from '@ifhover/leaf-ui';
 
 export function GridBasic() {
   return (

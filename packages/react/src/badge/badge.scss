@@ -49,8 +49,8 @@
   }
   &--attached &__indicator {
     position: absolute;
-    top: 0;
-    inset-inline-end: 0;
+    top: 4px;
+    inset-inline-end: 4px;
     transform: translate(calc(50% * var(--leaf-badge-direction)), -50%);
     box-shadow: 0 0 0 2px var(--leaf-color-surface);
     pointer-events: none;

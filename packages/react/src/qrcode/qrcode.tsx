@@ -75,7 +75,7 @@ export function QRCode({
             {status === 'loading' ? (
               <Loading />
             ) : (
-              <Button variant="soft" startIcon={<RefreshCw />} onClick={onRefresh}>
+              <Button variant="outline" startIcon={<RefreshCw />} onClick={onRefresh}>
                 {t('刷新二维码', 'Refresh code')}
               </Button>
             )}

@@ -2,17 +2,16 @@
 .leaf-collapse {
   @include mixins.control-size;
   min-width: 0;
-  border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius));
+  border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius-md));
   color: var(--leaf-component-collapse-color, var(--leaf-color-text));
   background: var(--leaf-component-collapse-background, var(--leaf-color-surface));
   font: var(--leaf-component-collapse-font-size, var(--leaf-current-font-size))/1.6
     var(--leaf-font-family);
   &--bordered {
     border: 1px solid var(--leaf-color-border);
-    box-shadow: var(--leaf-shadow-xs);
   }
   &__item + &__item {
-    border-top: 1px solid var(--leaf-color-border);
+    border-top: 1px solid var(--leaf-color-divider);
   }
   &__header {
     display: flex;
@@ -31,7 +30,7 @@
     border: 0;
     background: transparent;
     color: inherit;
-    font: 500 1em/1.5 var(--leaf-font-family);
+    font: var(--leaf-font-weight) 1em/1.5 var(--leaf-font-family);
     text-align: start;
     cursor: pointer;
     transition:

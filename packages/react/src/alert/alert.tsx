@@ -9,6 +9,7 @@ export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'
   title: ReactNode;
   description?: ReactNode;
   type?: FeedbackType;
+  icon?: ReactNode;
   showIcon?: boolean;
   closable?: boolean;
   onClose?: () => void;
@@ -33,6 +34,7 @@ export function Alert({
   title,
   description,
   type = 'info',
+  icon,
   showIcon = true,
   closable,
   onClose,
@@ -52,13 +54,14 @@ export function Alert({
       {...inertProps(closed)}
       ref={root}
       data-state={closed ? 'closing' : undefined}
+      data-description={description ? '' : undefined}
       aria-hidden={closed || props['aria-hidden']}
       role={props.role ?? (type === 'error' || type === 'warning' ? 'alert' : 'status')}
       className={classes('leaf-alert', `leaf-alert--${type}`, className)}
     >
       {showIcon && (
         <span className="leaf-alert__icon" aria-hidden="true">
-          <FeedbackIcon type={type} />
+          {icon ?? <FeedbackIcon type={type} />}
         </span>
       )}
       <div className="leaf-alert__content" ref={content}>

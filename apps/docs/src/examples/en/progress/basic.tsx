@@ -1,11 +1,11 @@
-import { Button, Progress } from '@sudden3/leaf-ui';
+import { Button, Progress, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ProgressBasic() {
   const [percent, setPercent] = useState(45);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Progress percent={percent} aria-label="Upload progress" />
-      <div className="leaf-demo-row">
+      <Space wrap className="leaf-demo-row">
         <Button
           variant="outline"
           disabled={percent === 0}
@@ -16,7 +16,7 @@ export function ProgressBasic() {
         <Button disabled={percent === 100} onClick={() => setPercent(Math.min(100, percent + 10))}>
           Increase
         </Button>
-      </div>
-    </div>
+      </Space>
+    </Space>
   );
 }

@@ -1,10 +1,10 @@
-import { Textarea } from '@sudden3/leaf-ui';
+import { Space, Textarea } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function TextareaControlled() {
   const [value, setValue] = useState('');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-field">
         <Textarea
           aria-label="Comment"
@@ -20,6 +20,6 @@ export function TextareaControlled() {
         <span className="leaf-demo-label">Comment error · Error</span>
         <Textarea aria-label="Comment error" status="error" placeholder="Add a description" />
       </div>
-    </div>
+    </Space>
   );
 }

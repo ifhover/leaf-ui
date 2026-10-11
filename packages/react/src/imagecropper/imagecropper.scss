@@ -14,9 +14,8 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    border-radius: var(--leaf-radius-lg);
+    border-radius: var(--leaf-radius-md);
     border: 1px solid var(--leaf-color-border);
-    box-shadow: var(--leaf-shadow-xs);
     background: repeating-conic-gradient(
         var(--leaf-color-surface-muted) 0% 25%,
         var(--leaf-color-border-surface-35) 0% 50%
@@ -27,7 +26,7 @@
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:focus-within {
       border-color: var(--leaf-color-border-hover);
-      box-shadow: var(--leaf-shadow-sm);
+      box-shadow: 0 0 0 3px var(--leaf-color-primary-alpha-12);
     }
     --rc-drag-handle-bg-colour: #fff;
     --rc-drag-handle-border-colour: #0006;

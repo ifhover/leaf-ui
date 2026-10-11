@@ -1,4 +1,4 @@
-import { Button, Dropdown } from '@sudden3/leaf-ui';
+import { Button, Dropdown } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ExtensionDemo() {
   const [checked, setChecked] = useState(true);

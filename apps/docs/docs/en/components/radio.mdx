@@ -1,3 +1,5 @@
+import { RadioCards } from '../../../src/examples/radio/surfaces';
+import { RadioList } from '../../../src/examples/radio/surfaces';
 import { ComponentExample } from '../../../src/components/component-example';
 import { RadioBasic, RadioControlled } from '../../../src/components/en-form-examples';
 
@@ -23,30 +25,61 @@ RadioGroup builds options and supplies a group name. Provide label, aria-label o
 
 </ComponentExample>
 
+## Card choices
+
+Use icons and descriptions to help people choose a plan.
+
+<ComponentExample title="Card choices" preview={<RadioCards english />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/radio/surfaces.tsx"
+```
+
+</ComponentExample>
+
+## Grouped choices
+
+Group choices into one list while retaining native arrow-key navigation.
+
+<ComponentExample title="Grouped choices" preview={<RadioList english />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/radio/surfaces.tsx"
+```
+
+</ComponentExample>
+
 ## RadioGroup API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | [`readonly RadioOption[]`](#radiooption) | Required | Options |
-| `value` / `defaultValue` | `string` | — | Controlled value / initial uncontrolled value |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
+| `options` | `readonly `[`RadioOption`](#radiooption)`[]` | Required | Required. Options |
+| `value` | `string` | — | Controlled value / initial uncontrolled value |
+| `defaultValue` | `string` | — | Controlled value / initial uncontrolled value |
 | `name` | `string` | Generated | Shared field name; specify it for form submission |
-| `label` | `string` | — | Group name |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `label` | `ReactNode` | — | Group name |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `disabled` / `required` | `boolean` | `false` | Disable the group / require a selection |
+| `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | Plain choices, a card grid or a list with shared borders and dividers. |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFieldSetElement>` | — | DOM reference |
 ## Radio API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
-| `value` | `string \| number \| readonly string[]` | — | The submitted value for this option |
-| `name` | `string` | — | Radio controls with the same name form a group |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.value |
-| `disabled` / `required` | `boolean` | `false` | Disable the option / require a selection |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `children` | `ReactNode` | — | Clickable label |
+| `variant` | `'plain' \| 'card'` | `'plain'` | Plain choice or a card with a full clickable surface. |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
+| `checked` | `boolean` | — | Controlled checked state / initial checked state |
+| `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `value` | `string` | Required | Controlled value. |
+| `name` | `string` | — | Field name in native FormData. |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Called when the value changes. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 ### RadioOption
 
@@ -61,9 +94,24 @@ RadioGroup builds options and supplies a group name. Provide label, aria-label o
 Import RadioProps to describe component props. Option types in the API table link to their detailed fields above.
 
 ```ts
-import type { RadioProps, RadioGroupProps, RadioOption } from '@sudden3/leaf-ui';
+import type { RadioProps, RadioGroupProps, RadioOption } from '@ifhover/leaf-ui';
 ```
 
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
+
+## Surfaces and rich content
+
+Radio and RadioGroup support icons, descriptions and status tags. RadioGroup variant="card" arranges cards; variant="list" creates grouped rows. description and extra are accessible descriptions; avoid buttons or links in extra. Groups retain native arrow keys, disabled-option skipping and form submission.
+
+## RadioOption
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `description` | `ReactNode` | — | Additional description. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
+| `value` | `string` | — | Required. Controlled value. |
+| `disabled` | `boolean` | — | Disable interaction. |

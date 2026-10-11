@@ -1,4 +1,4 @@
-import { Button, useNotification } from '@sudden3/leaf-ui';
+import { Button, useNotification } from '@ifhover/leaf-ui';
 
 export function NotificationBasic() {
   const notification = useNotification();

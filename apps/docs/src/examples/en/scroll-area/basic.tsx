@@ -1,4 +1,4 @@
-import { ScrollArea } from '@sudden3/leaf-ui';
+import { ScrollArea } from '@ifhover/leaf-ui';
 
 export function ScrollAreaBasic() {
   return (

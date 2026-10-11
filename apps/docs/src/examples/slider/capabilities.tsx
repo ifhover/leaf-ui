@@ -1,8 +1,8 @@
-import { Slider, Space } from '@sudden3/leaf-ui';
+import { Slider, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Discrete marks with formatted tooltip' : '只选择指定刻度与自定义提示'}
         </p>

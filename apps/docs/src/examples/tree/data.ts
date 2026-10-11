@@ -1,4 +1,4 @@
-import type { TreeNode } from '@sudden3/leaf-ui';
+import type { TreeNode } from '@ifhover/leaf-ui';
 export const treeData: readonly TreeNode[] = [
   {
     key: 'design',

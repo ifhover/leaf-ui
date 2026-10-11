@@ -3,7 +3,10 @@
   "compilerOptions": {
     "noEmit": true,
     "types": ["node", "react", "react-dom"],
-    "paths": { "@sudden3/leaf-ui": ["../../packages/react/src/index.ts"] }
+    "paths": {
+      "@ifhover/leaf-ui": ["../../packages/react/src/index.ts"],
+      "@ifhover/leaf-ui/table/tanstack": ["../../packages/react/src/tabletanstack/index.ts"]
+    }
   },
   "include": ["rspress.config.ts", "theme", "src", "docs", "env.d.ts"]
 }

@@ -1,7 +1,7 @@
-import { Button, Result } from '@sudden3/leaf-ui';
+import { Button, Result, Space } from '@ifhover/leaf-ui';
 export function ResultStates() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Result
         status="empty"
         size="sm"
@@ -23,6 +23,6 @@ export function ResultStates() {
         extra={<Button variant="outline">重试</Button>}
       />
       <Result status="info" size="sm" title="审核正在进行" description="完成后将在项目页面更新。" />
-    </div>
+    </Space>
   );
 }

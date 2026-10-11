@@ -6,15 +6,12 @@
   border-radius: 50%;
   box-shadow: var(--leaf-shadow-md);
   transition:
-    transform var(--leaf-motion-fast) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   &:hover:not(:disabled) {
-    transform: translateY(-2px);
     box-shadow: var(--leaf-shadow-lg);
   }
   &:active:not(:disabled) {
-    transform: scale(0.94);
     box-shadow: var(--leaf-shadow-sm);
   }
   &--fixed {
@@ -51,13 +48,13 @@
   &__actions-inner {
     min-height: 0;
     overflow: hidden;
-    margin-inline: -8px;
+    margin-inline: -12px;
   }
   &__actions-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 8px;
+    padding: 12px;
   }
   &__action {
     transform: translateY(8px) scale(0.9);

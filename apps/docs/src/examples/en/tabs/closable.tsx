@@ -1,4 +1,4 @@
-import { Button, type TabItem, Tabs } from '@sudden3/leaf-ui';
+import { Button, type TabItem, Tabs } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function TabsClosable() {
   const sequence = useRef(2);

@@ -1,8 +1,8 @@
-import { Button, Tooltip } from '@sudden3/leaf-ui';
+import { Button, Space, Tooltip } from '@ifhover/leaf-ui';
 import { Info } from 'lucide-react';
 export function TooltipBasic() {
   return (
-    <div className="leaf-demo-row">
+    <Space wrap className="leaf-demo-row">
       {(['top', 'right', 'bottom', 'left'] as const).map((placement) => (
         <Tooltip
           key={placement}
@@ -15,6 +15,6 @@ export function TooltipBasic() {
       <Tooltip content="This setting applies to all projects">
         <Button variant="ghost" startIcon={<Info />} aria-label="Settings information" />
       </Tooltip>
-    </div>
+    </Space>
   );
 }

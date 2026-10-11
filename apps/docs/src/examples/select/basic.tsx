@@ -1,4 +1,4 @@
-import { Select } from '@sudden3/leaf-ui';
+import { Select, Space } from '@ifhover/leaf-ui';
 
 const options = [
   { label: '设计工作室', value: 'design' },
@@ -9,7 +9,7 @@ const options = [
 
 export function SelectBasic() {
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">选择团队</span>
         <Select aria-label="选择团队" options={options} placeholder="请选择团队" />
@@ -22,6 +22,6 @@ export function SelectBasic() {
         <span className="leaf-demo-label">禁用团队</span>
         <Select aria-label="禁用团队" options={options} disabled defaultValue="product" />
       </div>
-    </div>
+    </Space>
   );
 }

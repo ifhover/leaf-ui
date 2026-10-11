@@ -48,6 +48,7 @@
 @use '../grid/grid';
 @use '../space/space';
 @use '../scrollarea/scrollarea';
+@use '../scrollbar/scrollbar';
 @use '../masonry/masonry';
 @use '../segmented/segmented';
 @use '../backtop/backtop';
@@ -56,9 +57,7 @@
 @use '../menu/menu';
 @use '../virtuallist/virtuallist';
 @use '../infinitescroll/infinitescroll';
-@use '../sortable/sortable';
 @use '../qrcode/qrcode';
-@use '../orgchart/orgchart';
 @use '../image/image';
 @use '../imagecropper/imagecropper';
 @use '../inputotp/inputotp';
@@ -71,8 +70,6 @@
 @use '../loadingbar/loadingbar';
 
 @use '../typography/typography';
-
-@use '../list/list';
 
 @use '../statistic/statistic';
 
@@ -91,3 +88,5 @@
 @use '../commandpalette/commandpalette';
 
 @use '../appbar/appbar';
+@use '../table/table';
+@use '../tabletanstack/tabletanstack';

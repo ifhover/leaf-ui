@@ -1,0 +1,61 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../../src/examples/scrollbar/basic';
+
+# Scrollbar
+
+Browse long or wide content inside a region.
+
+## Basic usage
+
+Scrollbars fade in when the pointer enters the region and fade out when it leaves, without taking up content space. Wheel, touch and keyboard scrolling retain native behavior.
+
+<ComponentExample title="Project activity" preview={<ScrollbarBasic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Horizontal and always visible
+
+`orientation` controls the scrolling axes. Use `scrollbar="always"` to keep bars visible, or `hidden` to hide them without disabling scrolling. Drag a thumb or click its track to move through the content.
+
+<ComponentExample title="Project board" preview={<ScrollbarHorizontal english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Dynamic content and scroll control
+
+Thumbs update when content or container sizes change. The forwarded `ref` points to the scrolling viewport: call `scrollTo`, read `scrollTop`, or use it with BackTop. At a scroll boundary, or when content fits, the wheel continues scrolling the page.
+
+<ComponentExample title="Add content" preview={<ScrollbarDynamic english />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```
+
+</ComponentExample>
+
+## Scrollbar API
+
+```ts
+import type { ScrollbarProps } from '@ifhover/leaf-ui';
+```
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `height` | `CSSProperties['height']` | — | Viewport height. |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum height; unconstrained content determines its own height. |
+| `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'both'` | Scrolling axes. |
+| `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | Scrollbar visibility. |
+| `viewportClassName` | `string` | — | Class for the scrolling viewport. |
+| `viewportStyle` | `CSSProperties` | — | Styles for the scrolling viewport. |
+| `contentClassName` | `string` | — | Class for the content container. |
+| `contentStyle` | `CSSProperties` | — | Styles for the content container. |
+| `verticalOffset` | `number` | `0` | Top inset for the vertical track, useful with sticky headers. |
+
+`style` and `className` apply to the outer wrapper. `id`, `role`, `tabIndex`, region names and `onScroll` apply to the scrolling viewport. Provide `aria-label` or `aria-labelledby` to name it. Focus a thumb with Tab and use arrow keys, PageUp / PageDown or Home / End.
+
+`ScrollArea` uses the same scrollbar implementation and defaults to vertical scrolling. Existing usage remains supported.

@@ -1,4 +1,4 @@
-import { Menu } from '@sudden3/leaf-ui';
+import { Menu } from '@ifhover/leaf-ui';
 import { FolderKanban, House, Palette, Rocket, Settings, Users } from 'lucide-react';
 export function MenuBasic() {
   return (

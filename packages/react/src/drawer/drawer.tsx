@@ -21,6 +21,9 @@ export interface DrawerProps
     DialogFocusOptions {
   open: boolean;
   title?: ReactNode;
+  description?: ReactNode;
+  icon?: ReactNode;
+  divided?: boolean;
   footer?: ReactNode;
   extra?: ReactNode;
   placement?: 'left' | 'right' | 'top' | 'bottom';
@@ -44,6 +47,9 @@ export interface DrawerProps
 function DrawerSurface({
   open,
   title,
+  description,
+  icon,
+  divided = true,
   footer,
   extra,
   placement = 'right',
@@ -139,9 +145,14 @@ function DrawerSurface({
         id={props.id ?? id}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? `${id}-title` : props['aria-labelledby']}
+        aria-labelledby={title != null ? `${id}-title` : props['aria-labelledby']}
+        aria-describedby={
+          [props['aria-describedby'], description != null && `${id}-description`]
+            .filter(Boolean)
+            .join(' ') || undefined
+        }
         tabIndex={-1}
-        className={classes('leaf-drawer', className)}
+        className={classes('leaf-drawer', divided && 'leaf-drawer--divided', className)}
         style={{
           ...(horizontal
             ? { width: resized ?? width, height: '100%' }
@@ -217,9 +228,31 @@ function DrawerSurface({
           />
         )}
         <OverlayOwner.Provider value={id}>
-          {(title || closable || extra) && (
-            <div className="leaf-drawer__header">
-              {title && <h2 id={`${id}-title`}>{title}</h2>}
+          {(title != null || description != null || icon != null || closable || extra) && (
+            <div
+              className={classes(
+                'leaf-drawer__header',
+                title == null &&
+                  description == null &&
+                  icon == null &&
+                  'leaf-drawer__header--compact',
+              )}
+            >
+              {icon != null && (
+                <span className="leaf-drawer__icon" aria-hidden="true">
+                  {icon}
+                </span>
+              )}
+              {(title != null || description != null) && (
+                <div className="leaf-drawer__heading">
+                  {title != null && <h2 id={`${id}-title`}>{title}</h2>}
+                  {description != null && (
+                    <div id={`${id}-description`} className="leaf-drawer__description">
+                      {description}
+                    </div>
+                  )}
+                </div>
+              )}
               {extra && <div className="leaf-drawer__extra">{extra}</div>}
               {closable && (
                 <button

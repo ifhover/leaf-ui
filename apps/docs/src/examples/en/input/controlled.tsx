@@ -1,11 +1,11 @@
-import { Input } from '@sudden3/leaf-ui';
+import { Input, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function InputControlled() {
   const [value, setValue] = useState('');
   const [submitted, setSubmitted] = useState('');
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Enter and submit</span>
         <Input
@@ -19,6 +19,6 @@ export function InputControlled() {
       <span className="leaf-demo-note" aria-live="polite">
         Submitted:{submitted || 'Waiting for input'}
       </span>
-    </div>
+    </Space>
   );
 }

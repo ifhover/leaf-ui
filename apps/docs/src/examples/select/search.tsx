@@ -1,4 +1,4 @@
-import { Select, type SelectOption } from '@sudden3/leaf-ui';
+import { Select, type SelectOption, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options: SelectOption[] = [
@@ -9,7 +9,7 @@ const options: SelectOption[] = [
 export function SelectSearch() {
   const [teams, setTeams] = useState<string[]>(['design']);
   return (
-    <div className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">搜索团队</span>
         <Select
@@ -33,6 +33,6 @@ export function SelectSearch() {
         />
       </div>
       <output className="leaf-demo-note">{teams.join(', ') || '—'}</output>
-    </div>
+    </Space>
   );
 }

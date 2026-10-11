@@ -1,4 +1,4 @@
-import { Avatar, AvatarGroup } from '@sudden3/leaf-ui';
+import { Avatar, AvatarGroup } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <AvatarGroup maxCount={3}>

@@ -1,10 +1,10 @@
-import { Pagination } from '@sudden3/leaf-ui';
+import { Pagination, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function PaginationBasic() {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <Pagination
         total={240}
         current={current}
@@ -22,6 +22,6 @@ export function PaginationBasic() {
       <p className="leaf-demo-note">
         当前第 {current} 页，每页 {pageSize} 条。
       </p>
-    </div>
+    </Space>
   );
 }

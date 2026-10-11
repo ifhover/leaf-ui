@@ -8,7 +8,9 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 基础用法
 
-`solid` 适合主要操作，`soft` 适合柔和强调，`outline` 使用无描边的浅灰底，适合次要操作，`ghost` 适合低优先级操作。
+`solid` 适合主要操作，`outline` 使用白底、正文色和细边框，适合次要操作，`ghost` 适合低优先级操作，`link` 使用主题色文字，无内边距、边框和固定控件高度。页面跳转使用 Link 组件。
+
+主按钮和描边按钮点击时，外缘波纹快速扩散后缓慢淡出，按钮与文字保持稳定；文字和链接按钮不展示波纹。主按钮悬停时提亮、按下时加深；描边按钮保持底色，通过文字和边框变色反馈。危险操作使用红色，波纹跟随主题；关闭动效或启用系统减少动态效果后不展示波纹。
 
 <ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -17,7 +19,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 </ComponentExample>
 
-使用前，在应用入口导入一次 `@sudden3/leaf-ui/styles.css`。接入步骤见[快速开始](/guide/getting-started)。
+使用前，在应用入口导入一次 `@ifhover/leaf-ui/styles.css`。接入步骤见[快速开始](/guide/getting-started)。
 
 ## 危险操作
 
@@ -98,14 +100,14 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | 视觉样式 |
+| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | `'solid'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
 | `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
-| `disabled` | `boolean` | `false` | 禁用交互 |
 | `fullWidth` | `boolean` | `false` | 填满父容器宽度 |
 | `startIcon` | `ReactNode` | — | 文字前的图标，加载时由指示器替代 |
 | `endIcon` | `ReactNode` | — | 文字后的图标 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | 原生按钮类型 |
 | `ref` | `Ref<HTMLButtonElement>` | — | 按钮 DOM 引用 |
 
@@ -116,7 +118,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 可导入 [`ButtonProps`](#button-api) 定义组件属性，或单独使用以下样式、尺寸类型：
 
 ```ts
-import type { ButtonProps, ButtonVariant, ButtonSize } from '@sudden3/leaf-ui';
+import type { ButtonProps, ButtonVariant, ButtonSize } from '@ifhover/leaf-ui';
 ```
 
 ## 表单与键盘
@@ -138,7 +140,7 @@ import type { ButtonProps, ButtonVariant, ButtonSize } from '@sudden3/leaf-ui';
 ## 扩展类型
 
 ```ts
-import type { ButtonGroupProps, SplitButtonProps } from '@sudden3/leaf-ui';
+import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 ```
 
 ## ButtonGroupProps API
@@ -146,20 +148,20 @@ import type { ButtonGroupProps, SplitButtonProps } from '@sudden3/leaf-ui';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
-| `disabled` | `boolean` | — | 禁止交互 |
+| `disabled` | `boolean` | — | 禁用交互。 |
 | `attached` | `boolean` | `true` | 连接相邻按钮 |
 
 ## SplitButtonProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | — | 按钮样式 |
+| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | — | 按钮样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
 | `danger` | `boolean` | — | 危险操作颜色 |
 | `loading` | `boolean` | — | 加载状态 |
 | `fullWidth` | `boolean` | — | 占满宽度 |
 | `startIcon` | `ReactNode` | — | 前置图标 |
 | `endIcon` | `ReactNode` | — | 后置图标 |
-| `items` | [`readonly DropdownItem[]`](/components/dropdown#dropdownitem) | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `items` | `readonly `[`DropdownItem`](../components/dropdown#dropdownitem)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
 | `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
-| `dropdownProps` | [`Omit<DropdownProps, 'items' \| 'children' \| 'disabled'>`](/components/dropdown#dropdown-api) | — | 操作菜单属性 |
+| `dropdownProps` | `Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |

@@ -19,7 +19,7 @@
       },
       "warning": {
         "type": "color",
-        "value": "#a9670e"
+        "value": "#faad14"
       },
       "info": {
         "type": "color",
@@ -48,6 +48,26 @@
       "border": {
         "type": "color",
         "value": "#e5e5e8"
+      },
+      "primary-text-80": {
+        "type": "color",
+        "value": "rgba(32, 111, 66, 1)"
+      },
+      "success-text-80": {
+        "type": "color",
+        "value": "rgba(32, 111, 66, 1)"
+      },
+      "warning-text-80": {
+        "type": "color",
+        "value": "rgba(141, 103, 28, 1)"
+      },
+      "danger-text-80": {
+        "type": "color",
+        "value": "rgba(166, 54, 55, 1)"
+      },
+      "info-text-80": {
+        "type": "color",
+        "value": "rgba(24, 102, 211, 1)"
       },
       "border-alpha-55": {
         "type": "color",
@@ -447,55 +467,55 @@
       },
       "warning-alpha-10": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.1)"
+        "value": "rgba(250, 173, 20, 0.1)"
       },
       "warning-alpha-12": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.12)"
+        "value": "rgba(250, 173, 20, 0.12)"
       },
       "warning-alpha-15": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.15)"
+        "value": "rgba(250, 173, 20, 0.15)"
       },
       "warning-alpha-16": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.16)"
+        "value": "rgba(250, 173, 20, 0.16)"
       },
       "warning-alpha-22": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.22)"
+        "value": "rgba(250, 173, 20, 0.22)"
       },
       "warning-alpha-8": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.08)"
+        "value": "rgba(250, 173, 20, 0.08)"
       },
       "warning-alpha-9": {
         "type": "color",
-        "value": "rgba(169, 103, 14, 0.09)"
+        "value": "rgba(250, 173, 20, 0.09)"
       },
       "warning-border-12": {
         "type": "color",
-        "value": "rgba(222, 214, 206, 1)"
+        "value": "rgba(232, 222, 207, 1)"
       },
       "warning-border-30": {
         "type": "color",
-        "value": "rgba(211, 191, 167, 1)"
+        "value": "rgba(235, 212, 168, 1)"
       },
       "warning-surface-11": {
         "type": "color",
-        "value": "rgba(246, 238, 228, 1)"
+        "value": "rgba(254, 246, 229, 1)"
       },
       "warning-surface-5": {
         "type": "color",
-        "value": "rgba(251, 247, 243, 1)"
+        "value": "rgba(255, 251, 243, 1)"
       },
       "warning-surface-8": {
         "type": "color",
-        "value": "rgba(248, 243, 236, 1)"
+        "value": "rgba(255, 248, 236, 1)"
       },
       "warning-surface-9": {
         "type": "color",
-        "value": "rgba(247, 241, 233, 1)"
+        "value": "rgba(255, 248, 234, 1)"
       },
       "text-subtle": {
         "type": "color",
@@ -508,6 +528,26 @@
       "border-hover": {
         "type": "color",
         "value": "rgba(185, 185, 190, 1)"
+      },
+      "on-warning": {
+        "type": "color",
+        "value": "#202024"
+      },
+      "primary-hover": {
+        "type": "color",
+        "value": "rgba(38, 134, 79, 1)"
+      },
+      "primary-active": {
+        "type": "color",
+        "value": "rgba(27, 111, 63, 1)"
+      },
+      "danger-hover": {
+        "type": "color",
+        "value": "rgba(203, 72, 72, 1)"
+      },
+      "danger-active": {
+        "type": "color",
+        "value": "rgba(170, 51, 51, 1)"
       }
     }
   },
@@ -531,7 +571,7 @@
       },
       "warning": {
         "type": "color",
-        "value": "#e0b76e"
+        "value": "#ffc53d"
       },
       "info": {
         "type": "color",
@@ -560,6 +600,26 @@
       "border": {
         "type": "color",
         "value": "#38383f"
+      },
+      "primary-text-80": {
+        "type": "color",
+        "value": "rgba(152, 213, 174, 1)"
+      },
+      "success-text-80": {
+        "type": "color",
+        "value": "rgba(152, 213, 174, 1)"
+      },
+      "warning-text-80": {
+        "type": "color",
+        "value": "rgba(251, 205, 97, 1)"
+      },
+      "danger-text-80": {
+        "type": "color",
+        "value": "rgba(239, 154, 154, 1)"
+      },
+      "info-text-80": {
+        "type": "color",
+        "value": "rgba(131, 189, 252, 1)"
       },
       "border-alpha-55": {
         "type": "color",
@@ -959,55 +1019,55 @@
       },
       "warning-alpha-10": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.1)"
+        "value": "rgba(255, 197, 61, 0.1)"
       },
       "warning-alpha-12": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.12)"
+        "value": "rgba(255, 197, 61, 0.12)"
       },
       "warning-alpha-15": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.15)"
+        "value": "rgba(255, 197, 61, 0.15)"
       },
       "warning-alpha-16": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.16)"
+        "value": "rgba(255, 197, 61, 0.16)"
       },
       "warning-alpha-22": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.22)"
+        "value": "rgba(255, 197, 61, 0.22)"
       },
       "warning-alpha-8": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.08)"
+        "value": "rgba(255, 197, 61, 0.08)"
       },
       "warning-alpha-9": {
         "type": "color",
-        "value": "rgba(224, 183, 110, 0.09)"
+        "value": "rgba(255, 197, 61, 0.09)"
       },
       "warning-border-12": {
         "type": "color",
-        "value": "rgba(76, 71, 69, 1)"
+        "value": "rgba(80, 73, 63, 1)"
       },
       "warning-border-30": {
         "type": "color",
-        "value": "rgba(106, 94, 77, 1)"
+        "value": "rgba(116, 98, 62, 1)"
       },
       "warning-surface-11": {
         "type": "color",
-        "value": "rgba(50, 45, 41, 1)"
+        "value": "rgba(53, 47, 35, 1)"
       },
       "warning-surface-5": {
         "type": "color",
-        "value": "rgba(38, 36, 36, 1)"
+        "value": "rgba(39, 36, 33, 1)"
       },
       "warning-surface-8": {
         "type": "color",
-        "value": "rgba(44, 40, 38, 1)"
+        "value": "rgba(46, 42, 34, 1)"
       },
       "warning-surface-9": {
         "type": "color",
-        "value": "rgba(46, 42, 39, 1)"
+        "value": "rgba(48, 43, 35, 1)"
       },
       "text-subtle": {
         "type": "color",
@@ -1020,6 +1080,26 @@
       "border-hover": {
         "type": "color",
         "value": "rgba(94, 94, 102, 1)"
+      },
+      "on-warning": {
+        "type": "color",
+        "value": "#202024"
+      },
+      "primary-hover": {
+        "type": "color",
+        "value": "rgba(143, 212, 168, 1)"
+      },
+      "primary-active": {
+        "type": "color",
+        "value": "rgba(111, 176, 134, 1)"
+      },
+      "danger-hover": {
+        "type": "color",
+        "value": "rgba(241, 145, 145, 1)"
+      },
+      "danger-active": {
+        "type": "color",
+        "value": "rgba(203, 113, 113, 1)"
       }
     }
   },
@@ -1027,7 +1107,7 @@
     "dimension": {
       "control-height": {
         "type": "dimension",
-        "value": "34px"
+        "value": "40px"
       },
       "spacing": {
         "type": "dimension",
@@ -1035,7 +1115,7 @@
       },
       "density-form-gap": {
         "type": "dimension",
-        "value": "18px"
+        "value": "24px"
       },
       "density-label-gap": {
         "type": "dimension",
@@ -1047,15 +1127,11 @@
       },
       "density-option-height": {
         "type": "dimension",
-        "value": "32px"
+        "value": "36px"
       },
       "density-option-padding": {
         "type": "dimension",
         "value": "6px"
-      },
-      "density-button-padding": {
-        "type": "dimension",
-        "value": "14px"
       },
       "density-field-padding": {
         "type": "dimension",
@@ -1079,7 +1155,7 @@
     "dimension": {
       "control-height": {
         "type": "dimension",
-        "value": "28px"
+        "value": "34px"
       },
       "spacing": {
         "type": "dimension",
@@ -1087,7 +1163,7 @@
       },
       "density-form-gap": {
         "type": "dimension",
-        "value": "12px"
+        "value": "16px"
       },
       "density-label-gap": {
         "type": "dimension",
@@ -1099,15 +1175,11 @@
       },
       "density-option-height": {
         "type": "dimension",
-        "value": "28px"
+        "value": "30px"
       },
       "density-option-padding": {
         "type": "dimension",
         "value": "4px"
-      },
-      "density-button-padding": {
-        "type": "dimension",
-        "value": "10px"
       },
       "density-field-padding": {
         "type": "dimension",

@@ -5,9 +5,10 @@
   &__trigger.leaf-button {
     gap: 5px;
     padding-inline: 8px;
-    color: var(--leaf-color-text-muted);
+    color: var(--leaf-site-nav-text, var(--leaf-color-text-muted));
     font-family: var(--rp-font-family-mono, monospace);
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 500;
     background: var(--leaf-color-surface-muted);
     border-radius: var(--leaf-radius-sm);
   }
@@ -50,14 +51,14 @@
     }
     small {
       color: var(--leaf-color-text-muted);
-      font-size: 11px;
+      font-size: 12px;
     }
   }
   &__caption {
     display: block;
     padding: 6px 10px;
     color: var(--leaf-color-text-muted);
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 

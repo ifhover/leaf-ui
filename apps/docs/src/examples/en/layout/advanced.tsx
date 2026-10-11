@@ -1,4 +1,4 @@
-import { Layout, Menu } from '@sudden3/leaf-ui';
+import { Layout, Menu } from '@ifhover/leaf-ui';
 import {
   Folder,
   LayoutDashboard,

@@ -1,4 +1,4 @@
-import { Button, type StepItem, Steps } from '@sudden3/leaf-ui';
+import { Button, Space, type StepItem, Steps } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const items: readonly StepItem[] = [
@@ -9,23 +9,23 @@ const items: readonly StepItem[] = [
 export function StepsBasic() {
   const [current, setCurrent] = useState(1);
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Interactive steps</span>
         <Steps items={items} current={current} onChange={setCurrent} />
       </div>
-      <div className="leaf-demo-row">
+      <Space wrap className="leaf-demo-row">
         <Button variant="outline" disabled={current === 0} onClick={() => setCurrent(current - 1)}>
           Previous
         </Button>
         <Button disabled={current === 2} onClick={() => setCurrent(current + 1)}>
           Next
         </Button>
-      </div>
+      </Space>
       <div className="leaf-demo-case">
         <span className="leaf-demo-label">Error feedback</span>
         <Steps items={items} current={1} direction="vertical" status="error" size="sm" />
       </div>
-    </div>
+    </Space>
   );
 }

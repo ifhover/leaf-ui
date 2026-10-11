@@ -1,7 +1,7 @@
-import { DateTimePicker } from '@sudden3/leaf-ui';
+import { DateTimePicker, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
-    <div>
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
       <p style={{ margin: '0 0 8px' }}>
         {english ? 'Business hours, custom format and preset' : '营业时间、自定义格式与快捷预设'}
       </p>
@@ -22,6 +22,6 @@ export function Capabilities({ english = false }) {
           },
         ]}
       />
-    </div>
+    </Space>
   );
 }

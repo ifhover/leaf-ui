@@ -62,8 +62,8 @@ export type {
 export { ConfigProvider } from './config-provider';
 export type { LeafDirection, LeafMessages } from './config-provider/context';
 export { colorContrast, useBreakpoint, useSystemAppearance } from './config-provider/helpers';
-export type { ConfirmApi, ConfirmOptions, ConfirmProps, ConfirmProviderProps } from './confirm';
-export { Confirm, ConfirmProvider, useConfirm } from './confirm';
+export type { ConfirmApi, ConfirmOptions, ConfirmProviderProps } from './confirm';
+export { ConfirmProvider, useConfirm } from './confirm';
 export type { DatePickerProps, MultipleDatePickerProps, SingleDatePickerProps } from './datepicker';
 export { DatePicker } from './datepicker';
 export type { DateRange, DateRangePickerProps } from './daterangepicker';
@@ -132,8 +132,6 @@ export type { InputOTPProps } from './inputotp';
 export { InputOTP } from './inputotp';
 export type { LayoutProps, LayoutSiderProps } from './layout';
 export { Layout, LayoutContent, LayoutFooter, LayoutHeader, LayoutSider } from './layout';
-export type { ListItemProps, ListProps } from './list';
-export { List, ListItem } from './list';
 export type { LoadingProps } from './loading';
 export { Loading } from './loading';
 export type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from './loadingbar';
@@ -155,8 +153,6 @@ export type {
   NotificationProviderProps,
 } from './notification';
 export { Notification, NotificationProvider, useNotification } from './notification';
-export type { OrgChartNode, OrgChartProps } from './orgchart';
-export { OrgChart } from './orgchart';
 export type { PaginationProps } from './pagination';
 export { Pagination } from './pagination';
 export type { PopconfirmProps } from './popconfirm';
@@ -175,6 +171,8 @@ export type { ResultProps } from './result';
 export { Result } from './result';
 export type { ScrollAreaProps } from './scrollarea';
 export { ScrollArea } from './scrollarea';
+export type { ScrollbarProps } from './scrollbar';
+export { Scrollbar } from './scrollbar';
 export type { SegmentedOption, SegmentedProps } from './segmented';
 export { Segmented } from './segmented';
 export type { SelectOption, SelectOptionGroup, SelectProps } from './select';
@@ -195,8 +193,6 @@ export type { SkeletonProps } from './skeleton';
 export { Skeleton } from './skeleton';
 export type { SliderMark, SliderProps } from './slider';
 export { Slider } from './slider';
-export type { SortableChangeInfo, SortableProps, SortableRenderInfo } from './sortable';
-export { Sortable } from './sortable';
 export type { SpaceProps } from './space';
 export { Space } from './space';
 export type { SplitterPanel, SplitterProps } from './splitter';
@@ -207,6 +203,27 @@ export type { StepItem, StepsProps } from './steps';
 export { Steps } from './steps';
 export type { SwitchProps } from './switch';
 export { Switch } from './switch';
+export type {
+  TableCellProps,
+  TableColumnHeaderProps,
+  TableErrorProps,
+  TableProps,
+  TableRowProps,
+  TableStateProps,
+} from './table';
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableColumnHeader,
+  TableEmpty,
+  TableError,
+  TableFooter,
+  TableHeader,
+  TableLoading,
+  TableRow,
+} from './table';
 export type { TabItem, TabsProps } from './tabs';
 export { Tabs } from './tabs';
 export type { CheckableTagProps, TagGroupProps, TagOption, TagProps } from './tag';

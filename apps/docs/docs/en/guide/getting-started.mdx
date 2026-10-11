@@ -1,34 +1,35 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { GettingStartedExample } from '../../../src/examples/en/guide/getting-started';
-import { FormBasic } from '../../../src/examples/en/form/basic';
 
 # Installation & quick start
 
-Install Leaf UI and import its stylesheet to start using components in your React application.
+Leaf UI supports React 18 and React 19. Install the package and import its styles to start using components in your application.
 
 ## Install the package
 
 ```bash
-pnpm add @sudden3/leaf-ui
+pnpm add @ifhover/leaf-ui
 # or
-npm install @sudden3/leaf-ui
+npm install @ifhover/leaf-ui
 # or
-yarn add @sudden3/leaf-ui
+yarn add @ifhover/leaf-ui
 ```
 
-React 18 or 19 and the matching React DOM version must be installed in your application. If needed, run `pnpm add react react-dom`. See the current release on [npm](https://www.npmjs.com/package/@sudden3/leaf-ui).
+React 18 or 19 and the matching React DOM version must be installed in your application. If needed, run `pnpm add react react-dom`. See the current release on [npm](https://www.npmjs.com/package/@ifhover/leaf-ui).
 
 ## Styles
 
-Import the compiled stylesheet once in the application entry:
+Import the base stylesheet once in the application entry. It includes theme variables, shared popup styles and API services such as Confirm and Message:
 
 ```tsx
-import '@sudden3/leaf-ui/styles.css';
+import '@ifhover/leaf-ui/styles.css';
 ```
 
-Consuming Leaf UI does not require Sass. Configure colors, shapes and sizes through [ConfigProvider](/en/components/config-provider). Custom components can read the resulting CSS variables. See [SSR usage](/en/guide/ssr) for framework entry points.
+Browser component entries load their styles automatically. No separate component CSS imports or Sass installation are needed. See [SSR usage](/en/guide/ssr) for Next.js and other frameworks.
 
-## Your first button
+## Use a component
+
+Import components directly from `@ifhover/leaf-ui` and add content and events:
 
 <ComponentExample title="Your first button" preview={<GettingStartedExample />} fileName="getting-started.tsx">
 
@@ -37,44 +38,13 @@ Consuming Leaf UI does not require Sass. Configure colors, shapes and sizes thro
 
 </ComponentExample>
 
-## Build a form
-
-Use `FormField` for labels and validation feedback. Read named values with `FormData` in the submission handler. `Button` defaults to `type="button"`; specify `type="submit"` when submitting a form.
-
-<ComponentExample title="Form submission" preview={<FormBasic />} fileName="basic.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/form/basic.tsx"
-```
-
-</ComponentExample>
-
-## Choose a theme and language
-
-```tsx
-import { ConfigProvider, DatePicker } from '@sudden3/leaf-ui';
-
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#3264d9', borderRadius: 6 }}>
-  <DatePicker aria-label="Deadline" />
-</ConfigProvider>
-```
-
-## Icons
-
-When importing Lucide icons in your application, install the dependency:
-
-```bash
-pnpm add lucide-react
-```
-
-See [icons](/en/guide/icons) for examples.
-
-## Compatibility
-
-- React 18 / 19.
-- TypeScript declarations included.
-- ESM and CommonJS entry points.
-- Modern browsers with CSS variables; JavaScript generates derived colors. See [browser compatibility](./compatibility) for targets and fallbacks.
+The root entry is the recommended default. Vite and Rsbuild / Rspack production builds retain styles for named imports and their internal dependencies on demand; component subpaths are optional. Direct esbuild bundles retain CSS traversed through the root entry. In that case, use subpaths such as `@ifhover/leaf-ui/button` to reduce stylesheet size.
 
 ## Next steps
 
-Explore [components](/en/components/), [icons](/en/guide/icons) and [theming](/en/guide/theming).
+- [Components](/en/components/): explore available components.
+- [Button](/en/components/button): styles, sizes, loading states and API.
+- [Icons](/en/guide/icons): use Lucide icons for actions.
+- [Theming](/en/guide/theming): customize colors, shapes and appearance.
+- [SSR usage](/en/guide/ssr): use components in Next.js and other frameworks.
+- [Browser compatibility](./compatibility): supported browsers and fallbacks.

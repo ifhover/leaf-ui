@@ -52,4 +52,43 @@ describe('RadioGroup', () => {
     await userEvent.click(screen.getByRole('radio', { name: '深色' }));
     expect(screen.getByRole('radio', { name: '浅色' })).toBeChecked();
   });
+  it.each(['card', 'list'] as const)(
+    'keeps native arrow keys and descriptions in %s choices',
+    async (variant) => {
+      render(
+        <form aria-label="Preferences">
+          <RadioGroup
+            variant={variant}
+            name="appearance"
+            label="Appearance"
+            defaultValue="light"
+            options={[
+              {
+                label: 'Light',
+                value: 'light',
+                description: 'Bright surface',
+                icon: <span>Sun icon</span>,
+              },
+              { label: 'Dark', value: 'dark', description: 'Dim surface', extra: 'Recommended' },
+              { label: 'Custom', value: 'custom', disabled: true },
+            ]}
+          />
+        </form>,
+      );
+      const light = screen.getByRole('radio', { name: 'Light' });
+      const dark = screen.getByRole('radio', { name: 'Dark' });
+      expect(dark).toHaveAccessibleDescription('Dim surface Recommended');
+      await userEvent.tab();
+      expect(light).toHaveFocus();
+      await userEvent.keyboard('{ArrowRight}');
+      expect(dark).toBeChecked();
+      expect(new FormData(screen.getByRole('form') as HTMLFormElement).get('appearance')).toBe(
+        'dark',
+      );
+      await userEvent.keyboard('{ArrowRight}');
+      expect(light).toBeChecked();
+      await userEvent.click(screen.getByText('Dim surface'));
+      expect(dark).toBeChecked();
+    },
+  );
 });

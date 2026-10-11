@@ -59,8 +59,15 @@ async function load(file) {
   modules.set(file, result);
   function visit(node, owner) {
     if (!node || typeof node !== 'object') return;
-    if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression')
-      owner = node.id?.name ? `${node.id.name}Props` : owner;
+    if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') {
+      const parameterType = node.params?.[0]?.typeAnnotation?.typeAnnotation;
+      owner =
+        parameterType?.type === 'TSTypeReference' && parameterType.typeName.type === 'Identifier'
+          ? parameterType.typeName.name
+          : node.id?.name
+            ? `${node.id.name}Props`
+            : owner;
+    }
     if (
       owner &&
       node.type === 'ObjectProperty' &&

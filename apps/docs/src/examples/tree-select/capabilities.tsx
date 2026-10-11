@@ -1,4 +1,4 @@
-import { Space, TreeSelect } from '@sudden3/leaf-ui';
+import { Space, TreeSelect } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = [
@@ -16,7 +16,7 @@ export function Capabilities({ english = false }) {
   const [expanded, setExpanded] = useState<readonly string[]>(['team']);
   return (
     <Space direction="vertical" align="stretch">
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english
             ? 'Choose up to two people; keep one tag visible'

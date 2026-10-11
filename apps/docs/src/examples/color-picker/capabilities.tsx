@@ -1,12 +1,12 @@
-import { ColorPicker, Space } from '@sudden3/leaf-ui';
+import { ColorPicker, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>{english ? 'Solid color' : '纯色'}</p>
         <ColorPicker showText />
       </div>
-      <div>
+      <div className="leaf-demo-case">
         <p style={{ margin: '0 0 8px' }}>
           {english ? 'Gradient: select, add or remove stops' : '渐变：选择、添加或移除色标'}
         </p>

@@ -25,7 +25,7 @@ pnpm dev
 
 ## 尺寸与样式约定
 
-**默认单行控件高度是 34px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 28 / 40px）。不要在每个组件中重复建立不同的尺寸基准。
+**默认单行控件高度是 40px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 34 / 46px）。不要在每个组件中重复建立不同的尺寸基准。
 
 公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。组件状态的派生色在组件自身计算，确保局部主题继承正确。
 
@@ -55,9 +55,9 @@ pnpm build:lib
 pnpm --dir packages/react pack
 ```
 
-Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明，外部入口仍为 @sudden3/leaf-ui/styles.css。
+Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明，外部入口仍为 @ifhover/leaf-ui/styles.css。
 
-check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、34px 公共 token、编译后的样式及 React / Lucide 外部依赖。
+check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、40px 公共 token、编译后的样式及 React / Lucide 外部依赖。
 
 ## 自定义浮层与表单
 
@@ -71,6 +71,16 @@ DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格
 
 包产物包含 dist、package.json、使用说明及第三方许可证。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
 
+### 自动样式入口
+
+`build-browser-entries.mjs` 生成独立的浏览器 ESM / CommonJS 模块图，把组件 CSS 导入放在对应的 TSX 实现模块内；纯导出入口不导入整库 CSS。根入口与组件子路径共用这份模块图，保证组件身份和 React 上下文一致。Node 模块图保持无 CSS，源码映射同步调整路径与插入行。
+
+根入口 ESM 具名导入的样式裁剪已在 Vite、Rspack 生产构建验证；不要把 CSS 放在纯 re-export 包装模块内，它们可能被优化绕过并丢失样式。`sideEffects` 只保留 CSS，未使用的组件实现和对应样式可一起裁剪。esbuild 会保留遍历到的 CSS，即使 JS 已裁剪；直接 esbuild 打包或 CommonJS 根入口仍推荐组件子路径，不能承诺所有构建器都支持根入口样式裁剪。`verify-browser-styles.mjs` 比较实际产物中的根入口、子路径、未使用导入、组合组件和服务样式，并纳入 `check:package`。
+
+`styles.css` 提供主题变量、公共浮层与 Confirm / Message / Notification / LoadingBar 服务的样式，应用只需导入一次。`styles/all.css` 是完整静态入口；旧的 `<component>/style.css` 保留供显式管理 CSS 的构建使用。`browser` 导出条件选择带样式入口，Node 默认入口不导入 CSS，保持直接 SSR 可用。声明统一指向原组件，浏览器与 Node API 一致。
+
+开发分支移除普通 List / ListItem 和 OrgChart，业务列表使用原生 HTML、Space 或 Grid 组合；VirtualList、FileList 和 FormList 保留。`styles.css` 从整库改为基础样式，自行管理 SSR CSS 的应用迁移到 `styles/all.css`。这些兼容性变化应纳入下一次正式发布的迁移说明。
+
 ## 发布 npm
 
 每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
@@ -83,9 +93,11 @@ Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加�
 
 异步加载组件必须支持 AbortSignal 与卸载清理；InfiniteScroll 同一 dataLength 不会重复请求，失败时可重试，缺少 IntersectionObserver 时提供手动加载。Tree、TreeSelect 和 Cascader 的 key 必须稳定，异步子树在实例内缓存。更换 data / options、loadData 或 cacheKey 时清除缓存，取消旧请求并隔离返回结果；调用方应稳定数据与加载函数的引用。Select 只缓存已选项的回显标签，不保留所有历史搜索结果。虚拟列表通过 TanStack 测量实际行高，移动焦点时先滚动再聚焦。
 
-Sortable / Tabs / Tree 通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
+Tabs、Tree 与 DataTable 的排序能力通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。签名是一种 Canvas 输入，应用应提供键盘可用的替代签署方法。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
 ConfigProvider 自动提供 Confirm、Message、Notification 与 LoadingBar 的作用域。useConfirm / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，调用区域卸载时取消待处理请求；任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
+
+Confirm 只公开 `useConfirm().confirm(options)`，不再导出受控 `Confirm` 与 `ConfirmProps`。配置使用 `ConfirmOptions`，正文只展示简短的操作说明；包含表单或多步骤的流程迁移到 Modal。移除独立 Sortable 组件及其样式子路径，Tabs / Tree / DataTable 自身的排序能力保持可用。这些是开发分支上的 API 迁移，正式发布时需要纳入迁移说明。
 
 ## 公共契约与生成资源
 
@@ -111,6 +123,6 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 验证范围、命令、兼容矩阵与体积基线见 [QUALITY.md](QUALITY.md)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
 ## 设计资源与验收支持
 
-`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @sudden3/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @sudden3/leaf-ui generate:palette`; the library build rejects stale palettes.
+`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
 
 `DESIGN-STANDARDS.md` defines state and geometry rules. `ACCESSIBILITY.md` records executed browser coverage and pending device/screen-reader acceptance. Both guides and the workbench are available in Chinese and English documentation. Automatic screenshot baseline comparison remains deferred.

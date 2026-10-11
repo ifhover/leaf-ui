@@ -1,4 +1,5 @@
 @use '../shared/backdrop';
+@use '../styles/dialog-sections';
 
 .leaf-drawer-mask {
   position: fixed;
@@ -22,21 +23,30 @@
     justify-content: flex-start;
     --leaf-drawer-enter: translateX(-100%);
     .leaf-drawer {
-      border-radius: 0 var(--leaf-radius-lg) var(--leaf-radius-lg) 0;
+      border-radius: var(
+        --leaf-component-drawer-radius,
+        0 var(--leaf-radius-lg) var(--leaf-radius-lg) 0
+      );
     }
   }
   &--top {
     align-items: flex-start;
     --leaf-drawer-enter: translateY(-100%);
     .leaf-drawer {
-      border-radius: 0 0 var(--leaf-radius-lg) var(--leaf-radius-lg);
+      border-radius: var(
+        --leaf-component-drawer-radius,
+        0 0 var(--leaf-radius-lg) var(--leaf-radius-lg)
+      );
     }
   }
   &--bottom {
     align-items: flex-end;
     --leaf-drawer-enter: translateY(100%);
     .leaf-drawer {
-      border-radius: var(--leaf-radius-lg) var(--leaf-radius-lg) 0 0;
+      border-radius: var(
+        --leaf-component-drawer-radius,
+        var(--leaf-radius-lg) var(--leaf-radius-lg) 0 0
+      );
     }
   }
 }
@@ -47,11 +57,12 @@
   height: 100%;
   border: 0;
   padding: 0;
-  background: rgba(8, 12, 18, 0.38);
+  background: rgb(0 0 0 / 0.38);
   @include backdrop.blur('.leaf-drawer-mask');
   cursor: default;
 }
 .leaf-drawer {
+  @include dialog-sections.sections(drawer);
   --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
   position: relative;
   box-sizing: border-box;
@@ -59,13 +70,10 @@
   flex-direction: column;
   max-width: 100%;
   max-height: 100%;
-  color: var(--leaf-color-text);
-  border: 1px solid var(--leaf-color-border);
-  background: var(
-    --leaf-component-drawer-background,
-    var(--leaf-color-surface-raised, var(--leaf-color-surface))
-  );
-  font: var(--leaf-font-size)/1.6 var(--leaf-font-family);
+  color: var(--leaf-component-drawer-color, var(--leaf-color-text));
+  border: 1px solid var(--leaf-component-drawer-border-color, var(--leaf-color-divider));
+  background: var(--leaf-component-drawer-background, var(--leaf-color-surface));
+  font: var(--leaf-component-drawer-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   box-shadow: var(--leaf-component-drawer-shadow, var(--leaf-shadow-lg));
   outline: none;
   transform: translate(0);
@@ -77,44 +85,11 @@
     opacity: 0;
     transform: var(--leaf-drawer-enter);
   }
-  &__header {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 12px;
-    padding: var(--leaf-spacing-lg) var(--leaf-density-dialog-inline) var(--leaf-spacing-md);
-    h2 {
-      flex: 1;
-      margin: 0;
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.025em;
-    }
-  }
   &__extra {
     margin-inline-start: auto;
   }
   &__body {
     flex: 1;
-    overflow: auto;
-    padding: var(--leaf-spacing-lg) var(--leaf-density-dialog-inline);
-    overscroll-behavior: contain;
-  }
-  &__content {
-    display: flow-root;
-    min-width: 0;
-  }
-  &__header + &__body {
-    padding-block-start: var(--leaf-density-dialog-gap);
-  }
-  &__footer {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 var(--leaf-density-dialog-inline) var(--leaf-spacing-lg);
   }
 }
 .leaf-drawer-mask[data-state='closing'] .leaf-drawer {

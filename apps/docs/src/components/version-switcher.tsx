@@ -1,9 +1,9 @@
+import { Button } from '@ifhover/leaf-ui';
 import { useLang } from '@rspress/core/runtime';
-import { Button } from '@sudden3/leaf-ui';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import packageInfo from '../../../../packages/react/package.json';
-import { type DocsVersions, versionTarget } from './version-path';
+import { type DocsVersions, isDocsPackage, versionTarget } from './version-path';
 import './version-switcher.scss';
 
 export function VersionSwitcher() {
@@ -25,11 +25,14 @@ export function VersionSwitcher() {
         const data = (await response.json()) as DocsVersions;
         if (
           data.schemaVersion !== 1 ||
-          data.package !== '@sudden3/leaf-ui' ||
+          !isDocsPackage(data.package) ||
           !Array.isArray(data.versions) ||
           !data.versions.some((release) => release.version === data.latest) ||
           data.versions.some(
-            (release) => !/^\d+\.\d+\.\d+$/.test(release.version) || !Array.isArray(release.pages),
+            (release) =>
+              !/^\d+\.\d+\.\d+$/.test(release.version) ||
+              !Array.isArray(release.pages) ||
+              (release.package !== undefined && !isDocsPackage(release.package)),
           )
         )
           throw new Error('Unsupported version index');

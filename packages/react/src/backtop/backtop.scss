@@ -18,11 +18,9 @@
     transform: none;
   }
   &[data-visible]:hover:not(:disabled) {
-    transform: translateY(-2px);
     box-shadow: var(--leaf-shadow-lg);
   }
   &[data-visible]:active:not(:disabled) {
-    transform: scale(0.95);
     box-shadow: var(--leaf-shadow-sm);
   }
 }

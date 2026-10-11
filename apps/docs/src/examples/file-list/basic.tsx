@@ -1,8 +1,8 @@
+import { FileList, Space } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
-import { FileList } from '@sudden3/leaf-ui';
 export function FileListBasic() {
   return (
-    <div className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
       <FileList
         items={[
           { url: withBase('/media/landscape-1.svg'), name: '夏日风景.svg', size: 414 },
@@ -15,6 +15,6 @@ export function FileListBasic() {
           { url: withBase('/media/quarterly-data.csv'), name: '季度数据.csv' },
         ]}
       />
-    </div>
+    </Space>
   );
 }

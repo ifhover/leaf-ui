@@ -28,19 +28,26 @@ Browse content inside a bounded scroll area.
 
 Constrain the region with height or maxHeight. orientation controls the axes and scrollbar controls visibility. Wheel, touch and keyboard scrolling use native scrolling behavior.
 
+Overlay scrollbars fade in on hover without taking up content space. The forwarded `ref` points to the scrolling viewport; `style` and `className` apply to the outer wrapper. See [Scrollbar](./scrollbar) for styling and keyboard controls. When content fits or reaches a boundary, the wheel continues scrolling the page.
+
 ## Types
 
 Import these types for data, callbacks and refs.
 
 ```ts
-import type { ScrollAreaProps } from '@sudden3/leaf-ui';
+import type { ScrollAreaProps } from '@ifhover/leaf-ui';
 ```
 
 ## ScrollAreaProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `height` | `number \| string` | — | Height, numbers are in pixels |
-| `maxHeight` | `number \| string` | — | Maximum height |
+| `height` | `CSSProperties['height']` | — | Height, numbers are in pixels |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum height |
 | `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Scrolling direction |
 | `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | Scrollbar visibility |
+| `viewportClassName` | `string` | — | Class for the scrolling viewport. |
+| `viewportStyle` | `CSSProperties` | — | Styles for the scrolling viewport. |
+| `contentClassName` | `string` | — | Class for the content container. |
+| `contentStyle` | `CSSProperties` | — | Styles for the content container. |
+| `verticalOffset` | `number` | `0` | Top inset for the vertical track. |

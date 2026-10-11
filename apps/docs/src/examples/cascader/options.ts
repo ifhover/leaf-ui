@@ -1,4 +1,4 @@
-import type { CascaderOption } from '@sudden3/leaf-ui';
+import type { CascaderOption } from '@ifhover/leaf-ui';
 
 export const regions: CascaderOption[] = [
   {

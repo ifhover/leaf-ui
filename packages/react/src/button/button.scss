@@ -2,16 +2,13 @@
 
 .leaf-button {
   --leaf-button-color: var(--leaf-color-primary);
-  --leaf-button-color-white-97-5: var(--leaf-color-primary-white-97-5);
-  --leaf-button-color-alpha-11: var(--leaf-color-primary-alpha-11);
   --leaf-button-color-alpha-18: var(--leaf-color-primary-alpha-18);
   --leaf-button-color-alpha-25: var(--leaf-color-primary-alpha-25);
   --leaf-button-color-alpha-42: var(--leaf-color-primary-alpha-42);
   --leaf-button-on-color: var(--leaf-color-on-primary);
   --leaf-focus-color: var(--leaf-button-color-alpha-42);
-  --leaf-button-hover: var(--leaf-color-primary-hover, var(--leaf-button-color-white-97-5));
-  --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-hover));
-  --leaf-button-soft: var(--leaf-color-primary-soft, var(--leaf-button-color-alpha-11));
+  --leaf-button-hover: var(--leaf-color-primary-hover, var(--leaf-button-color));
+  --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
   --leaf-button-soft-hover: var(--leaf-color-primary-soft-hover, var(--leaf-button-color-alpha-18));
   --leaf-button-soft-active: var(
     --leaf-color-primary-soft-active,
@@ -25,7 +22,10 @@
   justify-content: center;
   gap: var(--leaf-component-button-gap, 6px);
   min-height: var(--leaf-button-height, var(--leaf-current-control-height));
-  padding: var(--leaf-component-button-padding, 0 var(--leaf-density-button-padding));
+  padding: var(
+    --leaf-component-button-padding,
+    0 calc(var(--leaf-button-height, var(--leaf-current-control-height)) * 0.42)
+  );
   border: 1px solid transparent;
   border-radius: var(--leaf-component-button-radius, var(--leaf-button-radius, var(--leaf-radius)));
   font-family: var(--leaf-font-family);
@@ -38,22 +38,16 @@
   cursor: pointer;
   user-select: none;
   appearance: none;
-  transform-origin: center;
-  scale: 1;
   transition:
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     color var(--leaf-motion-duration) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-    scale var(--leaf-motion-duration) var(--leaf-motion-easing);
+    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   @include mixins.control-size;
 
   &:focus-visible {
     @include mixins.focus-ring(var(--leaf-button-color));
-  }
-  &:active:not(:disabled):not([aria-disabled='true']) {
-    scale: var(--leaf-button-press-scale, 0.97);
   }
   &:disabled {
     cursor: not-allowed;
@@ -62,6 +56,17 @@
   &[data-loading] {
     cursor: default;
     opacity: 1;
+  }
+  &__wave {
+    position: absolute;
+    z-index: 1;
+    inset: -1px;
+    box-sizing: border-box;
+    border-radius: inherit;
+    color: var(--leaf-button-color);
+    box-shadow: 0 0 0 0 currentColor;
+    opacity: 0;
+    pointer-events: none;
   }
   &__content {
     display: inline-flex;
@@ -103,15 +108,12 @@
 
   &--danger {
     --leaf-button-color: var(--leaf-color-danger);
-    --leaf-button-color-white-97-5: var(--leaf-color-danger-white-97-5);
-    --leaf-button-color-alpha-11: var(--leaf-color-danger-alpha-11);
     --leaf-button-color-alpha-18: var(--leaf-color-danger-alpha-18);
     --leaf-button-color-alpha-25: var(--leaf-color-danger-alpha-25);
     --leaf-button-color-alpha-42: var(--leaf-color-danger-alpha-42);
     --leaf-button-on-color: var(--leaf-color-on-danger);
-    --leaf-button-hover: var(--leaf-color-danger-hover, var(--leaf-button-color-white-97-5));
-    --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-hover));
-    --leaf-button-soft: var(--leaf-button-color-alpha-11);
+    --leaf-button-hover: var(--leaf-color-danger-hover, var(--leaf-button-color));
+    --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
     --leaf-button-soft-hover: var(--leaf-button-color-alpha-18);
     --leaf-button-soft-active: var(--leaf-button-color-alpha-25);
     --leaf-button-border: var(--leaf-button-color-alpha-42);
@@ -131,19 +133,6 @@
     }
   }
 
-  &--soft,
-  &--ghost {
-    color: var(--leaf-button-color);
-    &:hover:not(:disabled) {
-      background: var(--leaf-button-soft-hover);
-    }
-    &:active:not(:disabled) {
-      background: var(--leaf-button-soft-active);
-    }
-  }
-  &--soft {
-    background: var(--leaf-button-soft);
-  }
   &--ghost {
     color: var(--leaf-color-text);
     background: transparent;
@@ -157,39 +146,60 @@
   &--danger#{&}--ghost {
     color: var(--leaf-button-color);
     &:hover:not(:disabled) {
+      color: var(--leaf-button-hover);
       background: var(--leaf-button-soft-hover);
     }
     &:active:not(:disabled) {
+      color: var(--leaf-button-active);
       background: var(--leaf-button-soft-active);
     }
   }
 
   &--outline {
     color: var(--leaf-color-text);
-    background: var(--leaf-color-surface-muted-border-65);
+    background: var(--leaf-color-surface);
+    border-color: var(--leaf-component-button-border-color, var(--leaf-color-border));
+    box-shadow: var(--leaf-component-button-shadow, 0 1px 2px rgb(0 0 0 / 0.04));
     &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted-border-75);
+      color: var(--leaf-button-hover);
+      border-color: var(--leaf-button-hover);
     }
     &:active:not(:disabled) {
-      background: var(--leaf-color-surface-muted-border-75);
+      color: var(--leaf-button-active);
+      border-color: var(--leaf-button-active);
     }
   }
   &--danger#{&}--outline {
-    color: var(--leaf-button-color);
+    color: var(--leaf-color-danger);
+    border-color: var(--leaf-component-button-border-color, var(--leaf-button-border));
   }
 
-  &--sm {
-    padding-inline: 10px;
-  }
-  &--lg {
-    padding-inline: 18px;
-  }
   &--icon-only {
     width: var(--leaf-button-height, var(--leaf-current-control-height));
     padding: 0;
   }
   &--full-width {
     width: 100%;
+  }
+
+  &--link {
+    align-self: center;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--leaf-button-color);
+    background: transparent;
+    box-shadow: none;
+    &:hover:not(:disabled) {
+      color: var(--leaf-button-hover);
+    }
+    &:active:not(:disabled) {
+      color: var(--leaf-button-active);
+    }
+    &.leaf-button--icon-only {
+      width: auto;
+    }
   }
 
   &__icon,
@@ -214,9 +224,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .leaf-button {
-    --leaf-button-press-scale: 1;
-  }
   .leaf-button,
   .leaf-button__content,
   .leaf-button__loading {
@@ -225,16 +232,15 @@
   .leaf-button[data-loading] .leaf-button__spinner {
     animation: none;
   }
-}
-
-[data-leaf-motion='off'] {
-  --leaf-button-press-scale: 1;
-}
-[data-leaf-motion='on'] {
-  --leaf-button-press-scale: 0.97;
+  .leaf-button__wave {
+    display: none;
+  }
 }
 
 @media (forced-colors: active) {
+  .leaf-button__wave {
+    display: none;
+  }
   .leaf-button {
     border-color: ButtonText;
     &:disabled {
@@ -265,6 +271,8 @@
       border-start-end-radius: 0;
       border-end-end-radius: 0;
     }
+    &:hover:not(:disabled),
+    &:active:not(:disabled),
     &:focus-visible {
       z-index: 1;
     }

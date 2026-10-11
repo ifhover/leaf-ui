@@ -1,4 +1,4 @@
-import { Button, CommandPalette, useMessage } from '@sudden3/leaf-ui';
+import { Button, CommandPalette, useMessage } from '@ifhover/leaf-ui';
 import { FilePlus2, Search, Settings } from 'lucide-react';
 import { useState } from 'react';
 export function CommandPaletteBasic({ english = false }: { english?: boolean }) {

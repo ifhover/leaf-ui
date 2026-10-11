@@ -4,9 +4,8 @@
   width: 300px;
   max-width: 100%;
   border: 1px solid var(--leaf-color-border);
-  border-radius: var(--leaf-radius);
+  border-radius: var(--leaf-radius-md);
   background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
-  box-shadow: var(--leaf-shadow-xs);
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   .leaf-calendar {
@@ -15,8 +14,6 @@
   &--full {
     width: 100%;
     border-color: var(--leaf-color-border-surface-70);
-    border-radius: var(--leaf-radius-lg);
-    box-shadow: var(--leaf-shadow-sm);
     .leaf-calendar {
       padding: 20px;
     }
@@ -37,7 +34,7 @@
       grid-row: 1;
       justify-self: end;
       min-width: 0;
-      font-size: 12px;
+      font-size: var(--leaf-font-size-sm);
       color: var(--leaf-color-text-muted);
     }
     .leaf-date-picker__nav {
@@ -96,7 +93,7 @@
       gap: 4px;
       flex-direction: column;
       border-color: var(--leaf-color-border-surface-65);
-      border-radius: var(--leaf-radius-lg);
+      border-radius: var(--leaf-radius);
       font-size: var(--leaf-font-size);
       transition:
         background-color var(--leaf-motion-fast) var(--leaf-motion-easing),

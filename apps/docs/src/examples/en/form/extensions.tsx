@@ -7,7 +7,7 @@ import {
   FormList,
   Input,
   Space,
-} from '@sudden3/leaf-ui';
+} from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Form layout="vertical" onSubmit={(e) => e.preventDefault()}>
@@ -15,7 +15,7 @@ export function ExtensionDemo() {
       <FormGroup legend="Contacts" description="Add, remove or reorder contacts.">
         <FormList name="contacts" defaultValue={['']}>
           {(fields, ops) => (
-            <Space direction="vertical" align="stretch">
+            <>
               {fields.map((field) => (
                 <FormField key={field.key} label={`Contact ${field.index + 1}`} required>
                   <Space size="sm">
@@ -43,7 +43,7 @@ export function ExtensionDemo() {
               <Button variant="outline" onClick={() => ops.add('')}>
                 Add contact
               </Button>
-            </Space>
+            </>
           )}
         </FormList>
       </FormGroup>

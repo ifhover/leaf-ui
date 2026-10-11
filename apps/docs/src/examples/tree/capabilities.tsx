@@ -1,4 +1,4 @@
-import { Button, Space, Tree, type TreeNode } from '@sudden3/leaf-ui';
+import { Button, Space, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useCallback, useMemo, useState } from 'react';
 
 export function TreeCacheRefresh({ english = false }: { english?: boolean }) {

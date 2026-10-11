@@ -4,7 +4,7 @@ Leaf UI 支持服务端渲染。将编译好的样式导入框架入口，再通
 
 ## 静态样式与动态主题
 
-组件布局、状态和动画已经编译到 `@sudden3/leaf-ui/styles.css`。ConfigProvider 在渲染时输出当前区域的主题变量，大小尺寸使用 CSS 计算，浏览器直接应用它们。
+组件布局、状态和动画使用编译好的静态 CSS。`styles.css` 提供基础与 API 服务样式，浏览器组件入口自动加载组件样式；支持 CSS 裁剪的生产构建可从根入口按需保留具名导入的样式。直接 Node 入口不加载 CSS，自行管理 SSR 样式时使用完整静态入口 `@ifhover/leaf-ui/styles/all.css`。ConfigProvider 在渲染时输出当前区域的主题变量，大小尺寸使用 CSS 计算，浏览器直接应用它们。
 
 因此 SSR 和动态主题可以同时保留：服务端输出首屏 HTML 与初始主题，客户端使用同一份配置接管后，再通过 React 状态切换主题。无需 CSS-in-JS 注册器、服务端提取样式、Sass 配置或关闭 SSR。
 
@@ -15,8 +15,8 @@ Leaf UI 支持服务端渲染。将编译好的样式导入框架入口，再通
 ```tsx title="app/layout.tsx"
 import type { ReactNode } from 'react';
 import { cookies } from 'next/headers';
-import type { LeafTheme } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import type { LeafTheme } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const initialTheme: LeafTheme = {
     primaryColor: '#7654c6',
     borderRadius: 8,
-    controlHeight: 34,
+    controlHeight: 40,
     appearance: store.get('leaf-appearance')?.value === 'dark' ? 'dark' : 'light',
   };
 
@@ -47,7 +47,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { Button, ConfigProvider, type LeafTheme } from '@sudden3/leaf-ui';
+import { Button, ConfigProvider, type LeafTheme } from '@ifhover/leaf-ui';
 
 export function Providers({
   initialTheme,
@@ -83,7 +83,7 @@ export function Providers({
 ```tsx title="app/project-form.tsx"
 'use client';
 
-import { Button, Form, FormField, Input } from '@sudden3/leaf-ui';
+import { Button, Form, FormField, Input } from '@ifhover/leaf-ui';
 
 export function ProjectForm() {
   return (
@@ -109,8 +109,8 @@ export function ProjectForm() {
 
 ```tsx title="pages/_app.tsx"
 import type { AppProps } from 'next/app';
-import { ConfigProvider } from '@sudden3/leaf-ui';
-import '@sudden3/leaf-ui/styles.css';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import '@ifhover/leaf-ui/styles.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -152,16 +152,7 @@ FileList 可在服务端展示基于 URL 的文件信息。Upload 选择的 File
 
 这些交互组件需要客户端 JavaScript 才能响应操作。样式复用与高级主题配置见[定制主题](/guide/theming)。
 
-## 按组件导入样式
-
-只使用部分组件时可选择子路径与独立样式：
-
-```tsx
-import { Button } from '@sudden3/leaf-ui/button';
-import '@sudden3/leaf-ui/button/style.css';
-```
-
-每个组件样式入口包含自身需要的基础样式与内部视觉依赖；组合业务组件时引入每个使用组件的样式。使用 ConfigProvider 的反馈服务时还需导入 `@sudden3/leaf-ui/config-provider/style.css`，或直接用整库 `styles.css`。子路径保留 Next.js 所需的客户端边界。
+按需样式的用法统一见[安装&快速开始](/guide/getting-started)。包的 Node 默认入口不导入 CSS，ESM / CommonJS 可直接用于服务端渲染；支持 CSS 的框架浏览器构建使用自动样式入口，并保留 Next.js 客户端边界。若自行搭建 SSR，或构建器未启用 `browser` 导出条件，请在负责生成页面样式的入口导入 `@ifhover/leaf-ui/styles/all.css`，将输出的 CSS 链接加入首屏 HTML。
 
 ## 日期、数字与浮层的首屏
 

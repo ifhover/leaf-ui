@@ -122,7 +122,7 @@ const images = {
     rect(90, 34, 54, 25, '#edf5ff', '#bbd7fc') +
     text(101, 51, 'Design', '#1677ff') +
     rect(154, 34, 64, 25, '#fff6e9', '#e8d1af') +
-    text(164, 51, 'Pending', '#a9670e') +
+    text(164, 51, 'Pending', '#8d671c') +
     rect(56, 74, 61, 25, '#20834a', 'none') +
     text(68, 91, 'Ready', '#fff') +
     rect(129, 74, 61, 25, '#f4effb', '#d9cdee') +
@@ -229,8 +229,11 @@ const images = {
     rect(63, 83, 114, 6, 'url(#h)', 'none', 3) +
     text(77, 108, '#20834A', '#68686f', 10),
 };
-for (const [slug, content] of Object.entries(images))
+const selected = new Set(process.argv.slice(2));
+for (const [slug, content] of Object.entries(images)) {
+  if (selected.size && !selected.has(slug)) continue;
   await writeFile(
     new URL(`../docs/public/components/${slug}.svg`, import.meta.url),
     `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="128" viewBox="0 0 240 128" fill="none"><title>${slug}</title>${content}</svg>\n`,
   );
+}
