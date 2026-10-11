@@ -2,15 +2,19 @@
 
 面向源码维护者。新增能力必须验证用户行为、公开产物和相应文档，不能仅以组件数量或测试数量判断成熟度。审计对应清单见 [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md)。
 
-## 0.5.0 发布准备（2026-10-11）
+## 0.5.0 正式发布验收（2026-10-12）
 
 汇总开发分支的 Table / DataTable、Scrollbar、组件外观与动效、按需 CSS、双语示例及 npm 作用域迁移，组件版本提升至 `@ifhover/leaf-ui@0.5.0`。中英文正式更新记录包含旧包迁移、40px 默认高度、Confirm API 收敛、soft 外观与三个独立组件的移除，以及基础 / 完整 CSS 入口的区别；历史版本内容继续保留。
 
-开发分支完整 `pnpm check` 与 `pnpm build` 通过：56 个组件测试文件 / 316 项测试、13 项发布规则、17 项文档与 9 项 Skill 测试，84 个公共 JS 子路径、ESM / CommonJS SSR 和 Vite / Rspack 共 20 个按需 CSS 生产构建场景。DTCG / SVG / Figma 设计资源及体积预算通过，整库 JS / CSS gzip 为 207.02 / 40.48 KiB。打包演练确认新作用域、0.5.0 版本及公共产物。
+开发分支与实际合并提交的完整 `pnpm check`、`pnpm build` 和发布演练通过：56 个组件测试文件 / 316 项测试、13 项发布规则、17 项文档与 9 项 Skill 测试，84 个公共 JS 子路径、ESM / CommonJS SSR 和 Vite / Rspack 共 20 个按需 CSS 生产构建场景。DTCG / SVG / Figma 设计资源及体积预算通过，整库 JS / CSS gzip 为 207.02 / 40.48 KiB。
 
-浏览器初跑发现验收用例仍查找旧复选框名称 `People Alice`，修正为组件真实的 `Alice` 名称。Windows WebKit 的 `fill` 在可见、可编辑的日期框超时；改用真实键盘输入并保留格式、精确提交值和 reset 断言后，Chromium 与 WebKit 定向复测通过，Firefox 独立程序也通过复测。初始 GitHub 检查中完整构建、React 18 / 19、Chromium 与 Firefox 通过；WebKit 失败详情及最新提交的完整 CI 仍待核对，本机 GitHub HTTP 连续中断。不得将这些结果视为全部浏览器回归通过。
+浏览器验收同步了复选框的真实可访问名称，并在 Windows WebKit 日期框中使用真实键盘输入，保留格式、精确提交值与 reset 断言。[发布提交的完整 CI](https://github.com/ifhover/leaf-ui/actions/runs/38163407483) 六项检查均通过，包括 React 18 / 19、Chromium、Firefox 和 WebKit。浏览器共 322 项通过、2 项平台跳过：Chromium 108 项，Firefox 与 WebKit 各 107 项通过、1 项跳过。未将跳过用例计入通过数。
 
-合并后需在实际发布提交重新检查与构建，再完成 npm、Git 标签、Pages 和旧包迁移提示。跨过本地午夜后正式更新记录日期调整为 2026-10-12。此处仅记录发布准备，不代表已发布。过程日志与本地验收证据位于仓库根目录 `.quality/release-0.5.0/`，真实 npm / Pages 状态以最终验收为准。
+`@ifhover/leaf-ui@0.5.0` 已公开发布，npm `latest`、`gitHead` 与 Git 标签 `v0.5.0` 对应提交 `95af2382a2dbd9b201bc0b6ce9e8e2c0d9a2c9dc`。[正式文档部署](https://github.com/ifhover/leaf-ui/actions/runs/38164201260) 成功，默认入口直接展示 0.5.0，固定快照及旧包六个版本继续保留。逐版核对包名、版本、源码提交、`llm.txt` / `llms.txt`、Markdown、API 索引与 Skill 查询；中英文更新记录、交互示例、七项版本菜单及旧版切回根地址通过验证。线上中英文关键页面、搜索跳转、直接刷新、JS / CSS 资源与 375px 快速开始、Table 页面通过，未发现运行错误或页面横向溢出，已查看截图。
+
+匿名从公开 npm registry 安装后，真实消费应用的 ESM / CommonJS SSR、根入口与子路径组件身份、独立样式和 Vite 生产按需 CSS 通过。浏览器按快速开始引入一次基础 CSS 后，Button 交互与默认 40px 高度正确；只有 Button 的根入口构建 CSS 为 7,766 字节，不含 Input、Table、Modal 或 Select 样式。实际 Next.js 应用、独立 Webpack、真机和读屏软件未在本轮验证。
+
+旧包六个版本的废弃提示已统一指向 `@ifhover/leaf-ui` 与迁移文档，原 tarball、完整性信息、版本与提交未变，均可下载。旧包维护者包含 `sudden3` 和已接受邀请的 `ifhover`。独立 Skill 1.0.1 的仓库发现通过，标签 `leaf-ui-skill-v1.0.1` 已推送。没有创建临时在线开发预览；旧账号临时 npm 会话已退出并移除配置，默认 CLI 保持 `ifhover`。过程日志、脚本、报告和截图位于仓库根目录 `.quality/release-0.5.0/`。
 
 ## npm 作用域迁移（2026-10-11）
 
