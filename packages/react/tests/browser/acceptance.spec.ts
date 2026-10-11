@@ -8,7 +8,8 @@ test.beforeEach(async ({ page }) => {
 test('compound required fields, exact decimals, formatted date and native reset', async ({
   page,
 }) => {
-  await page.getByRole('checkbox', { name: 'People Alice', exact: true }).check();
+  const alice = page.getByRole('checkbox', { name: 'Alice', exact: true });
+  await alice.check();
   const date = page.getByRole('combobox', { name: 'Start date' });
   await date.fill('08/10/2026');
   await date.press('Enter');
@@ -18,7 +19,7 @@ test('compound required fields, exact decimals, formatted date and native reset'
   await expect(page.getByTestId('saved')).toContainText('2026-10-08');
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
   await expect(date).toHaveValue('05/10/2026');
-  await expect(page.getByRole('checkbox', { name: 'People Alice', exact: true })).not.toBeChecked();
+  await expect(alice).not.toBeChecked();
 });
 
 test('remote labels persist and clicking a select edge opens a correctly positioned popup', async ({
