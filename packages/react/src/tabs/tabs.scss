@@ -70,10 +70,10 @@
       color var(--leaf-motion-fast) var(--leaf-motion-easing),
       transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-selected='true'] {
-      color: var(--leaf-color-text);
+      color: var(--leaf-color-primary);
       font-weight: var(--leaf-font-weight);
     }
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not([aria-selected='true']) {
       color: var(--leaf-color-text);
     }
     &:active:not(:disabled) {
@@ -285,5 +285,8 @@
   }
   .leaf-tabs--card .leaf-tabs__tab[aria-selected='true'] {
     color: HighlightText;
+  }
+  .leaf-tabs--line .leaf-tabs__tab[aria-selected='true'] {
+    color: Highlight;
   }
 }
