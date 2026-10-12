@@ -220,8 +220,9 @@ export function FormField({
           setValidationError(target.validity?.valueMissing ? messages.required : messages.invalid);
           document.getElementById(inputId)?.focus();
         }}
-        onInputCapture={(event) => {
-          props.onInputCapture?.(event);
+        onInput={(event) => {
+          props.onInput?.(event);
+          // Capture-phase updates can restore a controlled input before its onChange runs.
           setValidationError(undefined);
         }}
       >
