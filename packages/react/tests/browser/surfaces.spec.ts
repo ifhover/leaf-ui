@@ -165,10 +165,24 @@ test('theme settings reach portalled section surfaces and dense choices', async 
   const footer = dialog.locator('.leaf-modal__footer');
   const color = await footer.evaluate((element) => getComputedStyle(element).backgroundColor);
   expect(color).not.toBe('rgb(246, 246, 247)');
-  await expect(dialog.getByRole('button', { name: 'Save access', exact: true })).toHaveCSS(
-    'min-height',
-    '30px',
-  );
+  await expect
+    .poll(() =>
+      dialog.getByRole('button', { name: 'Save access', exact: true }).evaluate((node) => {
+        const css = getComputedStyle(node);
+        const portal = node.closest('.leaf-portal-scope');
+        return {
+          minHeight: css.minHeight,
+          controlHeight: css.getPropertyValue('--leaf-control-height').trim(),
+          currentHeight: css.getPropertyValue('--leaf-current-control-height').trim(),
+          buttonHeight: css.getPropertyValue('--leaf-button-height').trim(),
+          componentHeight: css.getPropertyValue('--leaf-component-button-height').trim(),
+          portalHeight: portal
+            ? getComputedStyle(portal).getPropertyValue('--leaf-control-height').trim()
+            : '',
+        };
+      }),
+    )
+    .toMatchObject({ minHeight: '30px', controlHeight: '30px', currentHeight: '30px' });
 });
 
 test('long modal content scrolls through Scrollbar without moving the heading or actions', async ({

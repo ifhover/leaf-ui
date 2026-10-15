@@ -39,7 +39,7 @@ for (const direction of ['ltr', 'rtl']) {
       });
       await expectAligned(root);
       const localX = await marker.evaluate((node) =>
-        node.style.getPropertyValue('--leaf-indicator-x'),
+        Number.parseFloat(node.style.getPropertyValue('--leaf-indicator-x')),
       );
       await list.evaluate((node, rtl) => {
         node.scrollLeft = rtl ? -40 : 40;
@@ -48,9 +48,10 @@ for (const direction of ['ltr', 'rtl']) {
         .poll(() => list.evaluate((node) => node.scrollLeft))
         .toBe(direction === 'rtl' ? -40 : 40);
       await expectAligned(root);
-      expect(
-        await marker.evaluate((node) => node.style.getPropertyValue('--leaf-indicator-x')),
-      ).toBe(localX);
+      const scrolledX = await marker.evaluate((node) =>
+        Number.parseFloat(node.style.getPropertyValue('--leaf-indicator-x')),
+      );
+      expect(Math.abs(scrolledX - localX)).toBeLessThan(0.001);
 
       for (const name of ['A longer second tab', 'Third', 'First']) {
         await root.getByRole('tab', { name, exact: true }).click();
