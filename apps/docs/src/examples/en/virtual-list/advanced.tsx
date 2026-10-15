@@ -9,7 +9,7 @@ export function VirtualListDynamic() {
     })),
   );
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Button variant="outline" onClick={() => list.current?.scrollToIndex(500, 'start')}>
         Go to item 501
       </Button>

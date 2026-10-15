@@ -1,42 +1,32 @@
-import { Button, Card, Space, Tag } from '@ifhover/leaf-ui';
-import { useState } from 'react';
-
+import { Button, Card, Flex, Space, Tag } from '@ifhover/leaf-ui';
 export function CardSections({ english = false }: { english?: boolean }) {
   const t = (zh: string, en: string) => (english ? en : zh);
-  const [saved, setSaved] = useState(false);
   return (
-    <Space direction="vertical" align="stretch" style={{ width: '100%' }}>
+    <Space direction="vertical" align="stretch" size="lg">
       <Card
-        title={t('团队空间', 'Team workspace')}
-        description={t('通过留白组织内容', 'Group content with spacing')}
-        extra={<Tag>{t('默认', 'Default')}</Tag>}
+        title={t('项目概览', 'Project overview')}
+        description={t('默认通过留白组织内容', 'Group content with spacing')}
+        extra={<Tag>{t('进行中', 'In progress')}</Tag>}
       >
         {t(
-          '适合展示概览、项目或其他轻量内容。',
-          'Use for summaries, projects and lightweight content.',
+          '标题、说明和正文自然分组。',
+          'The heading, description and body form natural sections.',
         )}
       </Card>
       <Card
         divided
-        title={t('通知设置', 'Notification settings')}
-        description={t('使用分区组织操作', 'Group settings and actions into sections')}
+        title={t('内容分区', 'Content sections')}
         footer={
-          <Space style={{ justifyContent: 'flex-end' }}>
-            <Button variant="outline" onClick={() => setSaved(false)}>
-              {t('重置', 'Reset')}
-            </Button>
-            <Button onClick={() => setSaved(true)}>{t('保存', 'Save')}</Button>
-          </Space>
+          <Flex justify="end" gap="sm" wrap>
+            <Button variant="outline">{t('取消', 'Cancel')}</Button>
+            <Button>{t('确认', 'Confirm')}</Button>
+          </Flex>
         }
       >
-        <span role={saved ? 'status' : undefined}>
-          {saved
-            ? t('设置已保存。', 'Settings saved.')
-            : t(
-                '接收重要事件提醒，每周汇总一次活动。',
-                'Receive important updates and a weekly activity summary.',
-              )}
-        </span>
+        {t(
+          '设置 divided 后，标题、正文和底部操作使用分隔线划分。',
+          'Enable divided to separate the heading, body and footer actions.',
+        )}
       </Card>
     </Space>
   );

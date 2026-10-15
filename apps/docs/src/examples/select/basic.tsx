@@ -1,4 +1,4 @@
-import { Select, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Select } from '@ifhover/leaf-ui';
 
 const options = [
   { label: '设计工作室', value: 'design' },
@@ -9,19 +9,16 @@ const options = [
 
 export function SelectBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">选择团队</span>
+    <Form layout="vertical">
+      <FormField label="选择团队">
         <Select aria-label="选择团队" options={options} placeholder="请选择团队" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">默认团队</span>
+      </FormField>
+      <FormField label="默认团队">
         <Select aria-label="默认团队" options={options} defaultValue="design" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用团队</span>
+      </FormField>
+      <FormField label="禁用团队">
         <Select aria-label="禁用团队" options={options} disabled defaultValue="product" />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

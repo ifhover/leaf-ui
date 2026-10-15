@@ -1,0 +1,98 @@
+import { withBase } from '@rspress/core/runtime';
+
+# Translation resources
+
+Add languages with ConfigProvider `translations`. Use `locale` to choose the active language and fallback order. [Runnable example](/en/components/config-provider#add-your-own-language).
+
+## Start with JSON
+
+Copy the <a href={withBase('/locales/en-US.json')} download>complete English template</a>, keeping its keys. It is the same resource used by the components. Read the installed version from the package:
+
+```ts
+import enUS from '@ifhover/leaf-ui/locales/en-US.json';
+```
+
+Built-in `zh-CN.json`, `zh-TW.json`, `ja-JP.json` and `ko-KR.json` use the same path. Set `locale` to use a built-in language without importing these files. Resources contain text grouped by component, with shared actions in `common`. No registration or helper function is required.
+
+This example uses playful “Martian” text with the private-use tag `zh-CN-x-mars`. Dates and numbers retain Simplified Chinese regional formatting:
+
+```tsx
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import mars from './locales/zh-CN-x-mars.json';
+
+const translations = { 'zh-CN-x-mars': mars };
+
+<ConfigProvider locale={['zh-CN-x-mars', 'en-US']} translations={translations}>
+  <App />
+</ConfigProvider>;
+```
+
+## Fallback and inheritance
+
+| Case | Behavior |
+| --- | --- |
+| `locale="zh-CN-x-mars"` | Equivalent to `['zh-CN-x-mars']`; missing entries use built-in English |
+| `locale={['zh-CN-x-mars', 'zh-CN']}` | Look up each entry in Martian text, Simplified Chinese, then built-in English |
+| First tag | Controls `lang` and regional Intl date and number formats, regardless of individual fallback entries |
+| Built-in language overrides | A resource with the same tag overrides only the supplied entries |
+| Nested `translations` | Merge by language, group and entry, with inner values taking precedence |
+| Nested `locale` | Omit to inherit; an explicit value replaces the whole chain |
+| Empty string | Kept as empty; only missing or `undefined` entries fall back |
+| Weekday arrays | Replace all 7 entries, Monday through Sunday; `weekStartsOn` controls display order |
+
+Use valid BCP 47 tags. Empty chains and invalid tags throw an error. Specify `fr-CA → fr` explicitly when desired. The final fallback always uses built-in English. Include `en-US` in the chain if your English overrides should participate.
+
+Component props and `components` text take precedence. Translate application content separately. Resources do not change `direction` or `weekStartsOn`; configure those independently.
+
+## Variable sentences
+
+Sentences use ICU MessageFormat so translators can control word order and plurals:
+
+```json
+{
+  "pagination": {
+    "total": "{total, plural, one {# item} other {# items}}"
+  }
+}
+```
+
+Keep the variable names from the English template, such as `{total}` and `{label}`. Plurals use the language supplying the entry. Malformed templates fall back to built-in English and log the entry in development. Output is rendered as plain text.
+
+## Validate translations
+
+The package provides a <a href={withBase('/locales/schema.json')} download>JSON Schema</a> for editor validation. You may add `$schema` at the resource root pointing to the installed `dist/locales/schema.json`; runtime translation ignores it.
+
+Check unknown keys, missing entries and ICU arguments:
+
+```bash
+pnpm exec leaf-ui-check-translations ./locales/zh-CN-x-mars.json --allow-partial
+```
+
+Use `--allow-partial` for intentionally incomplete resources. Structure, spelling and variables are still checked; missing entries are listed without failing. Run the check again after upgrading to find new entries.
+
+## Types
+
+```ts
+import type { LeafTranslation, LeafTranslations } from '@ifhover/leaf-ui';
+
+const mars = {
+  select: { placeholder: '挑①個唄' },
+} satisfies LeafTranslation;
+
+const translations = { 'zh-CN-x-mars': mars } satisfies LeafTranslations;
+```
+
+### LeafTranslations
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `[languageTag]` | [`LeafTranslation`](#leaftranslation) | Partial or complete resources, indexed by a canonicalized BCP 47 tag |
+
+### LeafTranslation
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `[group]` | `Partial<Record<entry, string \| readonly string[]>>` | Groups and entries from the English template, such as `common.confirm` and `select.placeholder`; completion only allows existing keys |
+| `$schema` | `string` | Optional editor schema location, ignored at runtime |
+
+Treat resources as immutable and pass a new object when updating them. Resources stay within the Provider rather than a global registry. For SSR, use the same chain, JSON and initial values on server and client. See [SSR](/en/guide/ssr).

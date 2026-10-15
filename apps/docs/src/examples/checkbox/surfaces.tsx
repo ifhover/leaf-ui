@@ -4,7 +4,7 @@ import { HardDrive, Mail, MessageSquare } from 'lucide-react';
 export function CheckboxCards({ english = false }: { english?: boolean }) {
   const t = (zh: string, en: string) => (english ? en : zh);
   return (
-    <Space direction="vertical" align="stretch" style={{ width: '100%' }}>
+    <Space direction="vertical" align="stretch">
       <CheckboxGroup
         variant="card"
         legend={t('连接服务', 'Connected services')}

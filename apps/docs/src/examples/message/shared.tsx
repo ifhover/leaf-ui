@@ -1,4 +1,4 @@
-import { Button, Space, useMessage } from '@ifhover/leaf-ui';
+import { Button, Flex, useMessage } from '@ifhover/leaf-ui';
 
 function PublishAction() {
   const { message } = useMessage();
@@ -35,9 +35,9 @@ function PublishResult() {
 
 export function MessageShared() {
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <PublishAction />
       <PublishResult />
-    </Space>
+    </Flex>
   );
 }

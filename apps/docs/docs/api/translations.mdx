@@ -1,0 +1,98 @@
+import { withBase } from '@rspress/core/runtime';
+
+# 翻译资源
+
+通过 ConfigProvider 的 `translations` 补充语言，`locale` 决定当前语言与回退顺序。[查看可运行示例](/components/config-provider#补充自己的语言)。
+
+## 从 JSON 开始
+
+复制<a href={withBase('/locales/en-US.json')} download>完整英文模板</a>，按原有键翻译内容。模板与组件实际使用的资源一致，也可从安装的包中读取：
+
+```ts
+import enUS from '@ifhover/leaf-ui/locales/en-US.json';
+```
+
+内置的 `zh-CN.json`、`zh-TW.json`、`ja-JP.json`、`ko-KR.json` 使用同一路径。使用内置语言只需设置 `locale`，无需导入这些文件。JSON 只保存文本；对象按组件分组，通用动作在 `common` 中。不需要注册或调用辅助函数。
+
+以下用火星文演示自定义资源，`zh-CN-x-mars` 是私用语言标记，日期和数字按简体中文格式显示：
+
+```tsx
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import mars from './locales/zh-CN-x-mars.json';
+
+const translations = { 'zh-CN-x-mars': mars };
+
+<ConfigProvider locale={['zh-CN-x-mars', 'en-US']} translations={translations}>
+  <App />
+</ConfigProvider>;
+```
+
+## 回退与继承
+
+| 情况 | 行为 |
+| --- | --- |
+| `locale="zh-CN-x-mars"` | 等价于 `['zh-CN-x-mars']`；缺词时回退内置英文 |
+| `locale={['zh-CN-x-mars', 'zh-CN']}` | 每个词条先找火星文，再找简体中文，最后找内置英文 |
+| 第一项语言 | 决定区域的 `lang`、日期和数字的 Intl 格式，不随单个词条回退而变化 |
+| 覆盖内置语言 | 提供同名语言资源，只覆盖写出的词条 |
+| 嵌套 `translations` | 按语言、分组和词条合并，内层覆盖外层 |
+| 嵌套 `locale` | 未传则继承，传入后替换整条链，不拼接 |
+| 空字符串 | 保留为空；只有缺失或 `undefined` 才继续回退 |
+| 星期数组 | 完整替换，固定为周一到周日的 7 项；`weekStartsOn` 决定显示顺序 |
+
+语言代码使用有效的 BCP 47 标签；空数组或无效标签会抛出错误。需要 `fr-CA → fr` 时显式写出这两项。最终英文兜底始终使用库内置资源，若需自定义英文也参与查找，请把 `en-US` 放进链中。
+
+组件实例参数与 `components` 提供的文字优先于翻译资源。业务内容由应用翻译。翻译不会自动改变 `direction` 或 `weekStartsOn`，需要时单独设置。
+
+## 动态文本
+
+句子使用 ICU MessageFormat 占位符，译者可以调整完整语序，也可以定义复数：
+
+```json
+{
+  "pagination": {
+    "total": "{total, plural, one {# item} other {# items}}"
+  }
+}
+```
+
+保留英文模板中的变量名，例如 `{total}`、`{label}`。复数规则使用实际提供该词条的语言。模板无效时该句回退内置英文，开发环境会输出对应词条的警告；内容作为普通文本渲染。
+
+## 检查翻译
+
+安装包提供 <a href={withBase('/locales/schema.json')} download>JSON Schema</a>，编辑器可将它关联到翻译文件。也可在 JSON 顶层添加 `$schema` 指向本地安装包的 `dist/locales/schema.json`，运行时会忽略此字段。
+
+检查未知键、遗漏和 ICU 变量：
+
+```bash
+pnpm exec leaf-ui-check-translations ./locales/zh-CN-x-mars.json --allow-partial
+```
+
+有意只翻译部分词条时使用 `--allow-partial`。此时仍检查结构、拼写和变量，缺失项只输出清单。组件升级后重新检查，可找到需要补充的词条。
+
+## 类型
+
+```ts
+import type { LeafTranslation, LeafTranslations } from '@ifhover/leaf-ui';
+
+const mars = {
+  select: { placeholder: '挑①個唄' },
+} satisfies LeafTranslation;
+
+const translations = { 'zh-CN-x-mars': mars } satisfies LeafTranslations;
+```
+
+### LeafTranslations
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `[languageTag]` | [`LeafTranslation`](#leaftranslation) | 该语言的部分或完整翻译；标签大小写会按 BCP 47 规范化 |
+
+### LeafTranslation
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `[group]` | `Partial<Record<entry, string \| readonly string[]>>` | 英文模板定义的分组和词条，例如 `common.confirm`、`select.placeholder`；类型提示限制为实际存在的键 |
+| `$schema` | `string` | 可选的编辑器校验路径，不参与运行时翻译 |
+
+翻译资源是只读配置；更新时传入新对象。资源保留在当前 Provider 内，不写入全局注册表。SSR 时服务端与客户端传入相同的语言链、JSON 和初始值，详见 [服务端渲染](/guide/ssr)。

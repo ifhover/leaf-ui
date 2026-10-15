@@ -1,9 +1,9 @@
-import { Image, Space } from '@ifhover/leaf-ui';
+import { Flex, Image } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
 
 export function ImageBasic() {
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <Image src={withBase('/media/landscape-1.svg')} width={240} height={160} alt="Green valley" />
       <Image
         src="data:image/png;base64,invalid"
@@ -12,6 +12,6 @@ export function ImageBasic() {
         alt="Failed image example"
         fallback={<span>No image</span>}
       />
-    </Space>
+    </Flex>
   );
 }

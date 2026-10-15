@@ -1,11 +1,16 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { PaginationBasic } from '../../../src/examples/en/pagination/basic';
+import { PaginationSizes } from '../../../src/examples/en/pagination/sizes';
+import { PaginationControlled } from '../../../src/examples/en/pagination/controlled';
+import { PaginationStates } from '../../../src/examples/en/pagination/states';
 
 # Pagination
 
 Browse large datasets one page at a time.
 
 ## Basic usage
+
+Buttons use outlines by default. Set `variant="ghost"` for borderless buttons.
 
 <ComponentExample title="Basic usage" preview={<PaginationBasic />} fileName="basic.tsx">
 
@@ -14,25 +19,62 @@ Browse large datasets one page at a time.
 
 </ComponentExample>
 
+## Sizes
+
+Compare small, default and large controls.
+
+<ComponentExample title="Sizes" preview={<PaginationSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/sizes.tsx"
+```
+
+</ComponentExample>
+
+## Controlled pagination
+
+Control the page and page size together, with a total, size selector and quick jumper.
+
+<ComponentExample title="Controlled pagination" preview={<PaginationControlled />} width={720} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/controlled.tsx"
+```
+
+</ComponentExample>
+
+## Simple and disabled
+
+Use `simple` for previous/next controls and a page count. `disabled` blocks all interaction.
+
+<ComponentExample title="Simple and disabled" preview={<PaginationStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/states.tsx"
+```
+
+</ComponentExample>
+
 ## Pagination API
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `total` | `number` | Required | Total number of items |
-| `current / defaultCurrent` | `number` | `1` | Controlled / initial page |
-| `pageSize / defaultPageSize` | `number` | `10` | Controlled / initial page size |
-| `onChange` | `(page: number, pageSize: number) => void` | — | Page or page size changes |
-| `showSizeChanger` | `boolean` | `false` | Show page size selector |
-| `pageSizeOptions` | `readonly number[]` | — | Available page sizes |
-| `showQuickJumper` | `boolean` | `false` | Allow typing a page and pressing Enter |
-| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | Custom total and visible range description |
-| `simple` | `boolean` | `false` | Use compact page display |
-| `disabled / hideOnSinglePage` | `boolean` | `false` | Disable / hide when only one page exists |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `total` | `number` | Required | Required. Total number of items. |
+| `current` | `number` | — | Controlled page, starting at 1. |
+| `defaultCurrent` | `number` | `1` | Initial page in uncontrolled mode. |
+| `pageSize` | `number` | — | Controlled number of items per page. |
+| `defaultPageSize` | `number` | `10` | Initial page size in uncontrolled mode. |
+| `onChange` | `(page: number, pageSize: number) => void` | — | Called once when the page or size actually changes, with both values. |
+| `showSizeChanger` | `boolean` | `false` | Show the page size selector. |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | Available sizes; includes the current size, removes duplicates and ignores invalid values. |
+| `showQuickJumper` | `boolean` | `false` | Commit on Enter or when leaving the pagination region; other pagination controls take precedence. |
+| `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true shows a localized total; pass a function for a custom total and visible item range. |
+| `simple` | `boolean` | `false` | Show only previous/next controls and the current / total page count. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `hideOnSinglePage` | `boolean` | `false` | Hide when there are fewer than two pages. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size of page buttons, size selector and jump input. |
+| `variant` | `'outline' \| 'ghost'` | `'outline'` | Button appearance: outlined or borderless. |
+
+The component also accepts native `<nav>` attributes such as `aria-label`, `className` and `style`.
 
 ## Types
-
-Import the component props and item types when preparing your own values.
 
 ```ts
 import type { PaginationProps } from '@ifhover/leaf-ui';
@@ -40,4 +82,15 @@ import type { PaginationProps } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-Pages start at 1. Load data in response to onChange. Page size changes preserve the current item position where possible, and out of range pages are bounded automatically.
+Only `total` is required for basic use; uncontrolled pages and page sizes are managed internally. Use `current` and `pageSize` when loading remote data, and update both in `onChange`. Keep `total` equal to the full result count, rather than the number of items on the current page.
+
+Changing page size preserves the current item position where possible. For example, page 3 at 10 items per page becomes page 2 at 20 items per page. Out-of-range pages are clamped; an empty dataset displays page 1 and disables both arrows. Changes to props do not emit `onChange`.
+
+`showTotal` uses the nearest ConfigProvider language. To describe the visible range, pass a render function:
+
+```tsx
+<Pagination
+  total={240}
+  showTotal={(total, [start, end]) => `${start}–${end} / ${total} items`}
+/>
+```

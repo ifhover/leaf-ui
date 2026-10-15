@@ -306,11 +306,6 @@ const descriptions = {
     'Offset; color stops use a percentage from 0 to 100.',
   ],
   color: ['颜色或语义色。', 'Color or semantic tone.'],
-  messages: ['覆盖内置组件的语言文本。', 'Override built-in component messages.'],
-  textMessages: [
-    '以英文原文为 key，覆盖扩展组件的文本。',
-    'Override extended component labels using the English source text as the key.',
-  ],
   direction: ['文字和交互方向。', 'Text and interaction direction.'],
   weekStartsOn: [
     '一周起始日，0 表示周日、1 表示周一。',
@@ -555,10 +550,17 @@ const specific = {
     'Show the page-size selector.',
   ],
   'DataTablePaginationProps.pageSizeOptions': ['可选择的每页条数。', 'Available page sizes.'],
-  'DataTablePaginationProps.showQuickJumper': ['展示页码跳转输入框。', 'Show a page-number input.'],
+  'DataTablePaginationProps.showQuickJumper': [
+    '回车或离开分页区域时跳转。',
+    'Commit a quick jump on Enter or when leaving the pagination region.',
+  ],
   'DataTablePaginationProps.showTotal': [
-    '定制总数及当前范围的展示。',
-    'Customize the total and current range.',
+    'true 展示默认统计，也可传入函数定制总数及当前范围。',
+    'true shows a localized total; pass a function to customize the total and visible range.',
+  ],
+  'DataTablePaginationProps.variant': [
+    '分页按钮样式：描边 / 无边框。',
+    'Pagination button appearance: outlined or borderless.',
   ],
   'DataTablePaginationProps.simple': ['使用简洁分页器。', 'Use compact pagination.'],
   'DataTablePaginationProps.hideOnSinglePage': [
@@ -687,6 +689,7 @@ const specific = {
   ],
 };
 const headings = new Map();
+const documentedTypes = new Set();
 for (const english of [false, true]) {
   for (const [page, names] of byPage) {
     let document = '';
@@ -697,6 +700,7 @@ for (const english of [false, true]) {
       );
     } catch {}
     for (const name of names) {
+      if (sectionMatch(document, name)) documentedTypes.add(`${english}/${name}`);
       headings.set(
         `${english}/${name}`,
         sectionMatch(document, name)?.heading ??
@@ -724,12 +728,13 @@ function typeCell(value, page, english) {
   let position = 0;
   for (const match of text.matchAll(/\b[A-Za-z_]\w*\b/gu)) {
     const type = types.find((item) => item.name === match[0]);
-    if (!type || !schema.get(type.name)?.size) continue;
+    if (!type || (!schema.get(type.name)?.size && !documentedTypes.has(`${english}/${type.name}`)))
+      continue;
     const target = documentationPage(type);
     const url =
       target === page
         ? `#${anchor(type.name, english)}`
-        : `${target.startsWith('guide/') ? '../guide/' : '../components/'}${target.split('/').at(-1)}#${anchor(type.name, english)}`;
+        : `${path.posix.relative(path.posix.dirname(page), target)}#${anchor(type.name, english)}`;
     if (match.index > position) pieces.push(code(text.slice(position, match.index)));
     pieces.push(`[${code(match[0])}](${url})`);
     position = match.index + match[0].length;
@@ -743,12 +748,14 @@ function escapePattern(value) {
 function sectionMatch(document, name) {
   const headings = [`${name.replace(/Props$/u, '')} API`, `${name} API`, name];
   for (const heading of headings) {
-    const expression = new RegExp(
-      `(^## ${escapePattern(heading)}\\r?\\n)([\\s\\S]*?)(?=^## |$(?![\\s\\S]))`,
-      'mu',
-    );
-    const match = document.match(expression);
-    if (match) return { match, heading, expression };
+    for (let level = 2; level <= 6; level++) {
+      const expression = new RegExp(
+        `(^#{${level}} ${escapePattern(heading)}\\r?\\n)([\\s\\S]*?)(?=^#{1,${level}} |$(?![\\s\\S]))`,
+        'mu',
+      );
+      const match = document.match(expression);
+      if (match) return { match, heading, expression };
+    }
   }
   return null;
 }
@@ -770,7 +777,7 @@ for (const [page, names] of byPage) {
     try {
       document = await readFile(file, 'utf8');
     } catch {
-      if (!addition && page !== 'guide/control-contracts') continue;
+      if (!addition) continue;
       document = '';
     }
     if (addition && !document) {
@@ -790,10 +797,6 @@ for (const [page, names] of byPage) {
       const prefix = english ? '../../../src' : '../../src';
       document = `import { ComponentExample } from '${prefix}/components/component-example';\nimport { ${basic}, ${advanced} } from '${prefix}/examples/${slug}/basic';\n\n# ${name}${english ? '' : ` ${zh}`}\n\n${english ? enDescription : description}\n\n## ${english ? 'Basic usage' : '基础用法'}\n\n<ComponentExample title="${english ? 'Basic usage' : '基础用法'}" preview={<${basic}${english ? ' english' : ''} />} fileName="basic.tsx">\n\n\`\`\`tsx lineNumbers file="${prefix}/examples/${slug}/basic.tsx"\n\`\`\`\n\n</ComponentExample>\n\n## ${english ? enAdvancedTitle : advancedTitle}\n\n<ComponentExample title="${english ? enAdvancedTitle : advancedTitle}" preview={<${advanced}${english ? ' english' : ''} />} fileName="basic.tsx">\n\n\`\`\`tsx lineNumbers file="${prefix}/examples/${slug}/basic.tsx"\n\`\`\`\n\n</ComponentExample>\n`;
     }
-    if (page === 'guide/control-contracts' && !document)
-      document = english
-        ? '# Control and popup contracts\n\nA common contract for fields and floating panels.\n'
-        : '# 控件与浮层\n\n输入控件与浮层使用一致的状态约定。\n';
     let original = document;
     try {
       if (baselineRef)
@@ -808,9 +811,13 @@ for (const [page, names] of byPage) {
       if (!props?.size) continue;
       const section = sectionMatch(document, name);
       const old = readApiRows(sectionMatch(original, name)?.match[2] ?? section?.match[2] ?? '');
+      const hasDefault =
+        !/^\| (?:属性 \| 类型 \| 说明|Property \| Type \| Description) \|\r?$/mu.test(
+          section?.match[2] ?? '',
+        );
       const rows = [
-        `| ${english ? 'Property | Type | Default | Description' : '属性 | 类型 | 默认值 | 说明'} |`,
-        '| --- | --- | --- | --- |',
+        `| ${english ? 'Property | Type' : '属性 | 类型'} | ${hasDefault ? `${english ? 'Default' : '默认值'} | ` : ''}${english ? 'Description' : '说明'} |`,
+        hasDefault ? '| --- | --- | --- | --- |' : '| --- | --- | --- |',
       ];
       for (const [property, value] of props) {
         if (value.type === 'never') continue;
@@ -837,7 +844,7 @@ for (const [page, names] of byPage) {
                 : `设置 ${property}。`))
         ).replace(/^(?:Required\.\s*|必需。)+/u, '');
         rows.push(
-          `| ${code(property)} | ${typeCell(value.type, page, english)} | ${value.defaultValue ? code(value.defaultValue) : ((!addition ? previous?.defaultValue : undefined) ?? '—')} | ${!value.optional ? (english ? 'Required. ' : '必需。') : ''}${description} |`,
+          `| ${code(property)} | ${typeCell(value.type, page, english)} | ${hasDefault ? `${value.defaultValue ? code(value.defaultValue) : ((!addition ? previous?.defaultValue : undefined) ?? '—')} | ` : ''}${!value.optional ? (english ? 'Required. ' : '必需。') : ''}${description} |`,
         );
       }
       for (const [property, value] of old)
@@ -867,7 +874,7 @@ for (const [page, names] of byPage) {
           ].includes(property)
         )
           rows.push(
-            `| ${code(property)} | ${value.type} | ${value.defaultValue} | ${descriptions[property]?.[english ? 1 : 0] ?? value.description} |`,
+            `| ${code(property)} | ${value.type} | ${hasDefault ? `${value.defaultValue} | ` : ''}${descriptions[property]?.[english ? 1 : 0] ?? value.description} |`,
           );
       const table = rows.join('\n');
       if (section) {

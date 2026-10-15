@@ -13,13 +13,16 @@ import {
 import { CodeBlockRuntime } from '@rspress/core/theme-original';
 import { useId, useState } from 'react';
 import { CopyButton } from './copy-button';
+import { useDocsTheme } from './docs-theme';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
-import { defaultThemeColor, normalizeThemeColor, themeColorPresets } from './theme-colors';
+import { normalizeThemeColor, themeColorPresets } from './theme-colors';
 
 export function ThemePlayground() {
   const { t } = useDocsLocale();
-  const [color, setColor] = useState<string>(defaultThemeColor);
+  const { color: docsColor } = useDocsTheme();
+  const [customColor, setColor] = useState<string>();
+  const color = customColor ?? docsColor;
   const [radius, setRadius] = useState(10);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
@@ -44,7 +47,7 @@ export function ThemePlayground() {
   ].join('\n');
 
   function reset() {
-    setColor(defaultThemeColor);
+    setColor(undefined);
     setRadius(10);
     setMode('light');
     setDensity('comfortable');

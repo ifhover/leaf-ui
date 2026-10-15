@@ -3,10 +3,15 @@ import { ExtensionDemo } from '../../src/examples/tabs/extensions';
 import { TabsClosable } from '../../src/examples/tabs/closable';
 import { ComponentExample } from '../../src/components/component-example';
 import { TabsBasic } from '../../src/examples/tabs/basic';
+import { TabsSizes } from '../../src/examples/tabs/sizes';
 
 # Tabs 标签页
 
 在同一区域切换不同内容。
+
+切换时正文和内容区域高度立即更新，不使用过渡动画；标签栏的选中指示线保留移动效果。
+
+卡片样式的标签栏默认随标签内容调整宽度，空间不足时在栏内滚动。`size` 控制整个标签栏的尺寸，正文区域使用可用宽度。
 
 ## 基础用法
 
@@ -17,7 +22,20 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 
 </ComponentExample>
 
+## 不同尺寸
+
+线形与卡片标签分别展示小、默认和大尺寸。
+
+<ComponentExample title="不同尺寸" preview={<TabsSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
+```
+
+</ComponentExample>
+
 ## 可关闭标签页
+
+点击加号新增标签页。全部关闭后组件隐藏，可使用示例中的新增按钮重新打开。
 
 <ComponentExample title="可关闭标签页" preview={<TabsClosable />} fileName="closable.tsx">
 
@@ -48,13 +66,13 @@ import { TabsBasic } from '../../src/examples/tabs/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](#tabitem)`[]` | 必填 | 必需。标签页列表 |
+| `items` | `readonly `[`TabItem`](#tabitem)`[]` | 必填 | 标签页列表；为空时不渲染组件 |
 | `activeKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
 | `defaultActiveKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
 | `onChange` | `(key: string) => void` | — | 激活项变化 |
 | `type` | `'line' \| 'card'` | `'line'` | 标签形态 |
 | `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | 标签栏位置 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸；卡片样式包含标签栏的内边距和边框 |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活 / 回车或空格激活 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
 | `extra` | `ReactNode` | — | 标签栏附加内容 |

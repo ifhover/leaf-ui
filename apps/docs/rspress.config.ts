@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rspress/core';
+import tailwindcss from '@tailwindcss/postcss';
+import { rehypeApiTypes } from './scripts/api-type-display.mjs';
 import { remarkExampleSource } from './scripts/example-source.mjs';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
@@ -13,22 +15,18 @@ const guideSidebar = [
     items: [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
       { text: '安装&快速开始', link: '/guide/getting-started' },
-      { text: 'SSR 使用', link: '/guide/ssr' },
+      { text: '服务端渲染', tag: 'SSR', link: '/guide/ssr' },
       { text: 'AI 与 Skills', link: '/guide/ai' },
-      { text: '控件与浮层', link: '/guide/control-contracts' },
-      { text: '业务场景', link: '/guide/scenarios' },
-      { text: '完整工作空间', link: '/guide/workspace' },
       { text: '浏览器兼容性', link: '/guide/compatibility' },
-      { text: '可访问性验收', link: '/guide/accessibility' },
     ],
   },
   {
     text: '个性化',
     items: [
       { text: '定制主题', link: '/guide/theming' },
+      { text: 'Tailwind CSS', link: '/guide/tailwindcss' },
+      { text: '切换语言', link: '/guide/internationalization' },
       { text: '视觉与交互规范', link: '/guide/design-standards' },
-      { text: '设计资源', link: '/guide/design-resources' },
-      { text: '使用图标', link: '/guide/icons' },
     ],
   },
 ];
@@ -36,11 +34,15 @@ const guideSidebar = [
 const componentSidebar = [
   {
     text: '组件',
-    items: [{ text: '组件总览', link: '/components/' }],
+    items: [
+      { text: '组件总览', link: '/components/' },
+      { text: '使用图标', link: '/components/icons' },
+    ],
   },
   {
     text: '通用',
     items: [
+      { text: 'ConfigProvider', tag: '全局配置,配置', link: '/components/config-provider' },
       { text: 'Typography', tag: '排版', link: '/components/typography' },
       { text: 'Button', tag: '按钮', link: '/components/button' },
       { text: 'Divider', tag: '分割线', link: '/components/divider' },
@@ -52,6 +54,7 @@ const componentSidebar = [
       { text: 'Splitter', tag: '分割面板', link: '/components/splitter' },
       { text: 'Layout', tag: '布局', link: '/components/layout' },
       { text: 'Grid', tag: '栅格', link: '/components/grid' },
+      { text: 'Flex', tag: '弹性布局', link: '/components/flex' },
       { text: 'Space', tag: '间距', link: '/components/space' },
       { text: 'ScrollArea', tag: '滚动区域', link: '/components/scroll-area' },
       { text: 'Scrollbar', tag: '滚动条', link: '/components/scrollbar' },
@@ -98,8 +101,6 @@ const componentSidebar = [
       { text: 'Carousel', tag: '轮播', link: '/components/carousel' },
       { text: 'Image', tag: '图片', link: '/components/image' },
       { text: 'FileList', tag: '文件列表', link: '/components/file-list' },
-      { text: 'ImageCropper', tag: '图片裁剪', link: '/components/image-cropper' },
-      { text: 'SignaturePad', tag: '签名板', link: '/components/signature-pad' },
     ],
   },
   {
@@ -159,27 +160,39 @@ const componentSidebar = [
       { text: 'Popover', tag: '气泡卡片', link: '/components/popover' },
     ],
   },
+];
+
+const apiSidebar = [
   {
-    text: '配置',
-    items: [{ text: 'ConfigProvider', tag: '全局配置', link: '/components/config-provider' }],
+    text: 'API 参考',
+    items: [{ text: '参考总览', link: '/api/' }],
+  },
+  {
+    text: '全局配置',
+    items: [
+      { text: 'LeafComponentDefaults', link: '/api/component-defaults' },
+      { text: 'LeafThemeTokens', link: '/api/theme-tokens' },
+      { text: 'PopupOptions', link: '/api/popup-options' },
+      { text: '翻译资源', link: '/api/translations' },
+    ],
   },
 ];
 
 const englishLabels: Record<string, string> = {
-  控件与浮层: 'Control and popup contracts',
-  业务场景: 'Application scenarios',
-  完整工作空间: 'Complete workspace',
+  'API 参考': 'API reference',
+  参考总览: 'Overview',
+  翻译资源: 'Translation resources',
+  全局配置: 'Configuration',
   浏览器兼容性: 'Browser compatibility',
-  可访问性验收: 'Accessibility acceptance',
   视觉与交互规范: 'Visual and interaction standard',
-  设计资源: 'Design resources',
   开始使用: 'Getting started',
   '认识 Leaf UI': 'Introduction',
   '安装&快速开始': 'Installation & quick start',
-  'SSR 使用': 'SSR usage',
+  服务端渲染: 'Server-side rendering',
   'AI 与 Skills': 'AI & Skills',
   个性化: 'Personalization',
   定制主题: 'Theming',
+  切换语言: 'Switch languages',
   使用图标: 'Icons',
   组件: 'Components',
   组件总览: 'Overview',
@@ -193,14 +206,20 @@ const englishLabels: Record<string, string> = {
   反馈与交互: 'Feedback',
   配置: 'Configuration',
 };
-const englishSidebar = (items: typeof guideSidebar | typeof componentSidebar): typeof items =>
+const englishSidebarTags: Record<string, string> = {
+  '/guide/ssr': 'SSR',
+  '/components/config-provider': 'Config',
+};
+const englishSidebar = (
+  items: typeof guideSidebar | typeof componentSidebar | typeof apiSidebar,
+): typeof items =>
   items.map((item) => ({
     ...item,
     text: englishLabels[item.text] ?? item.text,
     items: item.items.map((child) => ({
       ...child,
       text: englishLabels[child.text] ?? child.text,
-      tag: undefined,
+      tag: englishSidebarTags[child.link],
     })),
   }));
 
@@ -243,7 +262,11 @@ export default defineConfig({
   logoText: 'Leaf UI',
   outDir: 'doc_build',
   mediumZoom: { selector: '.rspress-doc img:not([data-no-zoom])' },
-  markdown: { link: { checkDeadLinks: true }, remarkPlugins: [remarkExampleSource] },
+  markdown: {
+    link: { checkDeadLinks: true },
+    remarkPlugins: [remarkExampleSource],
+    rehypePlugins: [rehypeApiTypes],
+  },
   themeConfig: {
     llmsUI: { placement: 'outline', viewOptions: ['markdownLink'] },
     darkMode: 'light',
@@ -251,7 +274,7 @@ export default defineConfig({
       {
         lang: 'zh',
         label: '简体中文',
-        sidebar: { '/guide/': guideSidebar, '/components/': componentSidebar },
+        sidebar: { '/guide/': guideSidebar, '/components/': componentSidebar, '/api/': apiSidebar },
       },
       {
         lang: 'en',
@@ -259,20 +282,23 @@ export default defineConfig({
         nav: [
           { text: 'Guide', link: '/guide/introduction', activeMatch: '^/en/guide/' },
           { text: 'Components', link: '/components/', activeMatch: '^/en/components/' },
+          { text: 'API', link: '/api/', activeMatch: '^/en/api/' },
           { text: 'Changelog', link: '/changelog', activeMatch: '^/en/changelog' },
         ],
         sidebar: {
           '/en/guide/': englishSidebar(guideSidebar),
           '/en/components/': englishSidebar(componentSidebar),
+          '/en/api/': englishSidebar(apiSidebar),
         },
       },
     ],
     nav: [
       { text: '指南', link: '/guide/introduction', activeMatch: '^/guide/' },
       { text: '组件', link: '/components/', activeMatch: '^/components/' },
+      { text: 'API', link: '/api/', activeMatch: '^/api/' },
       { text: '更新记录', link: '/changelog', activeMatch: '^/changelog' },
     ],
-    sidebar: { '/guide/': guideSidebar, '/components/': componentSidebar },
+    sidebar: { '/guide/': guideSidebar, '/components/': componentSidebar, '/api/': apiSidebar },
     socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/ifhover/leaf-ui' }],
   },
   builderConfig: {
@@ -284,6 +310,13 @@ export default defineConfig({
       },
     },
     plugins: [pluginSass()],
+    tools: {
+      postcss: {
+        postcssOptions: {
+          plugins: [tailwindcss()],
+        },
+      },
+    },
     resolve: {
       alias: {
         '@ifhover/leaf-ui/table/tanstack$': path.resolve(

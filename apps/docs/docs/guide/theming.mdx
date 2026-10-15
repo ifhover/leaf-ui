@@ -1,259 +1,199 @@
-import { ThemePlayground } from '../../src/components/theme-playground';
+import { ComponentExample } from '../../src/components/component-example';
+import { ThemeBasic } from '../../src/examples/theming/basic';
+import { ThemeAppearance } from '../../src/examples/theming/appearance';
+import { ThemeScoped } from '../../src/examples/theming/scoped';
 
 # 定制主题
 
-通过 [ConfigProvider](/components/config-provider) 设置组件的主题。通常只需调整主题色、基础圆角和控件高度，其余样式会自动配合。
+颜色、圆角和深色模式都通过 ConfigProvider 的 `theme` 设置。通常几行配置就够了，其他样式会自动跟随。
 
-## 从几个设置开始
+## 改颜色和圆角
 
-在应用最外层放置 ConfigProvider，并引入一次组件样式：
+在应用入口用 ConfigProvider 包住页面。下面把主题色改成紫色，基础圆角改成 8px：
 
-```tsx
-import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
+<ComponentExample title="颜色与圆角" preview={<ThemeBasic />} fileName="basic.tsx" width="fit-content">
 
-export function App() {
-  return (
-    <ConfigProvider theme={{
-      primaryColor: '#7654c6',
-      borderRadius: 8,
-      controlHeight: 40,
-    }}>
-      <Input aria-label="项目名称" placeholder="项目名称" />
-      <Button>保存</Button>
-    </ConfigProvider>
-  );
-}
+```tsx lineNumbers file="../../src/examples/theming/basic.tsx"
 ```
 
-未传入的选项使用默认值。悬停、按下、浅色背景和焦点颜色会跟随主题色，不需要分别配置。
+</ComponentExample>
 
-## 试试你的风格
+把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；悬停、按下和焦点颜色会自动生成。
 
-选择预设配色或自定义颜色，调整圆角和外观，预览会立即更新。展开主题代码或直接复制，即可应用到自己的页面。
+`borderRadius` 是圆角的基准值。卡片、弹窗等会按各自的层级生成圆角，因此不必逐个组件设置。数字表示像素，也支持 `'0.5rem'` 等 CSS 长度。
 
-<ThemePlayground />
+### 常用参数
 
-## 自动生成大小尺寸
+下面这些参数都放在 `theme` 中，只写需要修改的项。
 
-默认基础圆角为 10px，单行控件高度为 40px，字号为 14px。修改基础值后，其他尺寸会同步调整：
-
-| 基础设置 | 自动生成的值 | 默认结果 |
+| 参数 | 常见写法 | 用途 |
 | --- | --- | --- |
-| `borderRadius` | 小 / 中 / 大圆角分别为基础值的 0.6 / 1.2 / 1.6 倍 | `6px / 12px / 16px` |
-| `controlHeight` | 小尺寸减 6px，大尺寸加 6px | `34px / 46px` |
-| `fontSize` | 小字号减 1px，大字号加 2px | `13px / 16px` |
+| `primaryColor` | `'#7654c6'` | 设置主题色，相关交互颜色自动生成。 |
+| `borderRadius` | `8` | 调整基础圆角，`0` 为直角。 |
+| `appearance` | `'light'` / `'dark'` | 设置浅色或深色外观。 |
+| `controlHeight` | `40` | 调整单行控件的基础高度，小、大尺寸同步变化。 |
+| `fontSize` | `14` | 设置组件基础字号。 |
+| `fontFamily` | `'Inter, sans-serif'` | 设置字体；字体文件由应用加载。 |
+| `motion` | `false` | 关闭当前区域的动效，保留正常操作。 |
 
-数字表示像素，也可以传入带单位的 CSS 长度。按钮、输入框和选择器共用这套尺寸，放在一起时保持一致。
+未设置的字段继承外层配置。默认使用浅色外观、10px 基础圆角、36px 基础控件高度和 14px 字号。
 
-圆角由外向内递减：弹窗、抽屉和浮层使用大圆角，卡片、提示和选项卡片等内容表面使用中圆角，按钮、输入框和表格外框使用基础圆角，复选框等小元素使用小圆角，状态标签为胶囊形。内容表面默认只用细边框区分层级，不叠加阴影。
+完整参数见 [LeafTheme](/components/config-provider#leaftheme)。需要单独调整文字色、背景色或某个尺寸时，再查阅 [LeafThemeTokens](/api/theme-tokens#leafthemetokens)。
 
-紧贴容器的选项与选中背景按外框圆角、内边距和边框自动推导圆角，默认浮层为 `16px − 6px − 1px = 9px`。通过 `theme.components.Floating` 可统一设置浮层的 `borderRadius` 和 `padding`，`Dropdown` 的局部设置优先；卡片式 `Tabs`、`Segmented` 和 `Menu` 同样跟随各自的容器。内边距支持数字、CSS 长度和 1–4 值简写（例如 `4px 8px`），各方向的内部圆弧会同步更新。
+## 使用深色模式
 
-## 局部主题与嵌套
-
-ConfigProvider 可以包裹整个应用，也可以只包裹一个区域。内层只覆盖明确设置的选项：
-
-```tsx
-<ConfigProvider theme={{ primaryColor: '#20834a', controlHeight: 36 }}>
-  <Button>默认区域</Button>
-  <ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 16 }}>
-    <Button>活动区域</Button>
-  </ConfigProvider>
-</ConfigProvider>
-```
-
-浮层、Modal、确认框与消息会继承调用区域的主题。ConfigProvider 自动托管确认框和消息，子组件通过 useConfirm 和 useMessage 调用。语言通过 ConfigProvider 的 `locale` 单独设置。
-
-## 深色外观与动态切换
-
-使用 `appearance` 切换浅色与深色；主题是普通 React 属性，可以用状态动态更新：
+设置 `appearance: 'dark'` 即可；改回 `'light'` 恢复浅色：
 
 ```tsx
-import { useState } from 'react';
-import { Button, ConfigProvider } from '@ifhover/leaf-ui';
-
-export function ThemeSwitch() {
-  const [dark, setDark] = useState(false);
-  return (
-    <ConfigProvider theme={{ appearance: dark ? 'dark' : 'light' }}>
-      <Button onClick={() => setDark(!dark)}>切换外观</Button>
-    </ConfigProvider>
-  );
-}
-```
-
-深色外观会提供适合深色表面的文字、边框和状态色。显式设置的主题色保留原值；很浅的品牌色可以在高级配置中搭配 `onPrimaryColor`。
-
-## 有特殊需求时再覆盖
-
-`theme.tokens` 可以单独调整自动生成的尺寸、语义色、表面色、文字色、动效或浮层层级：
-
-```tsx
-import type { LeafTheme } from '@ifhover/leaf-ui';
-
-const theme: LeafTheme = {
-  controlHeight: 36,
-  borderRadius: 8,
-  tokens: {
-    controlHeightSm: 28,
-    borderRadiusLg: 18,
-    infoColor: '#1677ff',
-    motionDuration: 200,
-  },
-};
-```
-
-手动设置的小 / 大尺寸优先于自动生成的值。嵌套配置按字段合并，包括 tokens；未覆盖的配置继续继承。完整选项见 [LeafThemeTokens](/components/config-provider#leafthemetokens)。
-
-## 调整交互节奏
-
-默认基础过渡时间为 200ms。按压和悬停采用更短的反馈，选中指示条、展开与浮层使用与变化幅度相配的时间；列表重排和弹窗内容高度变化会从当前位置继续过渡。
-
-通过 `tokens.motionDuration` 调整当前区域的整体节奏，`motionEasing` 调整普通过渡，`motionSpring` 调整选择和形状变化的弹性曲线：
-
-```tsx
-<ConfigProvider theme={{ tokens: {
-  motionDuration: 240,
-  motionEasing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-  motionSpring: 'cubic-bezier(0.22, 1.28, 0.36, 1)',
-} }}>
-  <YourProduct />
-</ConfigProvider>
-```
-
-`motion: false` 关闭当前区域的 CSS 与 JavaScript 动画，包括加载旋转和浮层。内层可通过 `motion: true` 单独启用。系统的“减少动态效果”偏好始终优先。输入、拖动和裁剪等直接操作保持即时响应。
-
-表面与文字使用中性灰阶；主题色用于操作和选择。需要更精细地调整层次时，可使用 `subtleTextColor`、`raisedSurfaceColor`、`borderHoverColor` 和 `shadowXs`。
-
-## 在自己的组件中复用样式
-
-CSS 变量用于读取当前区域的主题，方便自己编写的组件与 Leaf UI 保持一致。调整库组件的主题时使用 ConfigProvider；在业务 CSS 中通过 `var()` 消费这些变量：
-
-```tsx
-<ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 8 }}>
-  <button className="product-button" type="button">自己的按钮</button>
-  <Button>Leaf UI 按钮</Button>
-</ConfigProvider>
-```
-
-```scss
-.product-button {
-  min-height: var(--leaf-control-height);
-  padding: 0 14px;
-  border: 0;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-primary);
-  color: var(--leaf-color-on-primary);
-  font-family: var(--leaf-font-family);
-  font-size: var(--leaf-font-size);
-  font-weight: var(--leaf-font-weight);
-  cursor: pointer;
-}
-```
-
-| 可读取的变量 | 用途 |
-| --- | --- |
-| `--leaf-color-primary` / `--leaf-color-on-primary` | 主题背景与其上的文字 |
-| `--leaf-color-danger` / `--leaf-color-success` / `--leaf-color-warning` / `--leaf-color-info` | 语义状态色 |
-| `--leaf-color-text` / `--leaf-color-text-muted` | 主要 / 次要文字 |
-| `--leaf-color-surface` / `--leaf-color-surface-muted` / `--leaf-color-border` | 表面与边框 |
-| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-md` / `--leaf-radius-lg` | 基础 / 小 / 中 / 大圆角 |
-| `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | 基础 / 小 / 大控件高度 |
-| `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | 字体、字号与字重 |
-| `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | 基础 / 快速 / 布局过渡时间 |
-| `--leaf-motion-easing` / `--leaf-motion-spring` | 普通过渡 / 弹性曲线 |
-
-业务组件需要位于相应的 ConfigProvider 区域内，才能读取该区域的主题。使用者只需引入编译好的 `styles.css`，无需安装 Sass。
-
-## 服务端渲染
-
-静态 CSS 与动态主题可以一起使用，不需要运行时生成 CSS。Next.js 与其他 SSR 框架的接入方法见 [SSR 使用](/guide/ssr)。
-
-## 间距、字体与组件覆盖
-
-基础 `spacing` 会生成小、大间距，`lineHeight`、`headingWeight` 和 `elevation` 分别调整正文行高、Typography 标题字重和阴影；弹窗、卡片等组件标题使用 `tokens.fontWeight`。继续通过 ConfigProvider 配置；组件专属覆盖放在 `theme.components`：
-
-```tsx
-const theme = {
-  spacing: 8,
-  lineHeight: 1.6,
-  headingWeight: 600,
-  elevation: 'soft',
-  components: {
-    Button: { borderRadius: 6, padding: '0 18px' },
-    Input: { borderRadius: 6, controlHeight: 36 },
-    Card: { padding: 16, shadow: '0 6px 20px #0001' },
-  },
-} satisfies LeafTheme;
-```
-
-组件名使用导出的名称。覆盖只作用于该区域中对应组件；每类组件使用与其布局相关的 token：输入组件支持圆角、高度、背景、字号，容器支持内边距和阴影，排列组件支持间距。通过组件本身的 `className` / `style` 与浮层的 `popupClassName` / `popupStyle` 可进一步定制。
-
-## 系统外观、响应断点与对比度
-
-```tsx
-import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@ifhover/leaf-ui';
-
-function Application() {
-  const appearance = useSystemAppearance('light');
-  return <ConfigProvider theme={{ appearance, breakpoints: { md: 800 } }}><Content /></ConfigProvider>;
-}
-function Content() {
-  const { md } = useBreakpoint({ md: false });
-  return <p>{md ? '宽屏布局' : '紧凑布局'}</p>;
-}
-const contrast = colorContrast('#ffffff', '#20834a');
-```
-
-`useBreakpoint` 按当前区域的断点生成布尔值，可用于业务布局。Grid 的现有 `sm/md/lg` CSS 响应规则仍使用组件文档中的固定断点。`colorContrast` 返回 WCAG 对比度比值，无法解析颜色时返回 `null`；透明颜色会先与背景和可选第三参数的底色合成。普通文字建议至少 4.5，较大文字至少 3。
-
-系统偏好在客户端接管后更新；SSR 的首次外观应来自服务端 Cookie 或一致的初始值，见 [SSR 使用](/guide/ssr)。
-
-## 分区与辅助表面
-
-弹窗分区、卡片选项和中性提示从同一基础主题派生外观。辅助面沿用 mutedSurfaceColor，分隔线可通过高级 dividerColor 覆盖。按组件覆盖分区背景时使用 components；Confirm 共用 Modal 的配置。headerBackground、footerBackground 用于 Modal、Drawer 和 Card；borderColor 也用于卡片选项、成组选项和 Alert 的边框。
-
-```tsx
-<ConfigProvider
-  theme={{
-    primaryColor: '#20834a',
-    borderRadius: 10,
-    components: {
-      Modal: { footerBackground: 'var(--leaf-color-surface-muted)' },
-      Card: { borderColor: 'var(--leaf-color-divider)' },
-    },
-  }}
->
+<ConfigProvider theme={{ appearance: 'dark' }}>
   <App />
 </ConfigProvider>
 ```
 
-## LeafComponentTokens
+组件的文字、背景和边框会一起切换。显式设置的 `primaryColor` 会保留原色；没有指定时使用该外观的默认主题色。
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `borderRadius` | `string \| number` | — | 圆角；数字表示像素。 |
-| `controlHeight` | `string \| number` | — | 基础控件高度；其他尺寸由此生成。 |
-| `padding` | `string \| number` | — | 内容或高亮目标的内边距。 |
-| `gap` | `string \| number` | — | 子项之间的间距；数字表示像素。 |
-| `fontSize` | `string \| number` | — | 字号；数字表示像素。 |
-| `color` | `string` | — | 颜色或语义色。 |
-| `background` | `string` | — | 组件表面背景。 |
-| `borderColor` | `string` | — | 外层边框与分区分隔线颜色。 |
-| `headerBackground` | `string` | — | 标题区域背景；默认继承表面颜色。 |
-| `footerBackground` | `string` | — | 底部操作区域背景；分区外观默认使用淡灰辅助面。 |
-| `shadow` | `string` | — | CSS box-shadow 的值。 |
+ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动添加背景。业务页面的背景和文字也需要跟随外观时，可使用下文的 [CSS 变量](#在业务样式中使用主题)。
 
-## LeafThemeStyle
+### 加一个切换开关
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | 可复用的 CSS 自定义属性。 |
+主题是普通 React 参数，可以用状态更新。打开下面的开关，查看卡片、按钮和文字一起切换：
 
+<ComponentExample title="切换深色模式" preview={<ThemeAppearance />} fileName="appearance.tsx" width={360}>
 
-## 密度与兼容色板
+```tsx lineNumbers file="../../src/examples/theming/appearance.tsx"
+```
 
-使用 `<ConfigProvider density="compact">` 同时调整区域及浮层的控件高度与间距。显式主题尺寸优先。派生色由 JavaScript 生成；静态深浅色板支持独立 CSS 和 SSR。需要确定的首屏颜色时传入具体颜色，CSS 变量在浏览器中解析。
+</ComponentExample>
 
-参见[浏览器兼容性](./compatibility)、[设计资源](./design-resources)与[视觉规范](./design-standards)。
+### 跟随系统外观
+
+希望随操作系统切换时，使用 `useSystemAppearance`，并把结果传给 `theme.appearance`：
+
+```tsx
+import { ConfigProvider, useSystemAppearance } from '@ifhover/leaf-ui';
+
+export function AppTheme() {
+  const appearance = useSystemAppearance('light');
+
+  return (
+    <ConfigProvider theme={{ appearance }}>
+      <App />
+    </ConfigProvider>
+  );
+}
+```
+
+这里的 `'light'` 是首次渲染使用的外观，挂载后会读取并监听系统偏好。用户手动选择外观时，由应用保存选择并决定是否继续跟随系统。
+
+## 只调整一个区域
+
+嵌套一个 ConfigProvider，就能为某块内容设置独立主题。内层只覆盖写出的字段，其他配置继续继承：
+
+<ComponentExample title="局部主题" preview={<ThemeScoped />} fileName="scoped.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/theming/scoped.tsx"
+```
+
+</ComponentExample>
+
+示例中两个按钮的基础圆角都是 8px，内层只把主题色改成紫色。从该区域打开的 Select 浮层、Modal，以及通过 `useConfirm`、`useMessage` 创建的反馈也会使用所在区域的主题。
+
+## 调整控件尺寸和密度
+
+只调整一个控件时，优先使用它的 `size="sm"` 或 `size="lg"`。要让整个区域的控件更紧凑，可以设置 ConfigProvider 的 `density`：
+
+```tsx
+<ConfigProvider density="compact">
+  <App />
+</ConfigProvider>
+```
+
+`density` 与 `theme` 同级。默认值为 `'comfortable'`；`'compact'` 会同时收紧控件、表单和浮层的间距，基础控件高度从 36px 调整为 30px，字号保持不变。
+
+需要指定高度时再设置 `theme.controlHeight`，它优先于密度预设。例如 `controlHeight: 40` 会生成 34px / 40px / 46px 三种控件高度。尺寸对比见 [ConfigProvider](/components/config-provider#基础高度)。
+
+## 进阶定制
+
+下面的配置适合已有明确设计要求的项目。只改颜色、圆角或外观时，使用前面的基础参数即可。
+
+### 单独覆盖颜色或尺寸
+
+`theme.tokens` 用于修改基础参数之外的具体样式。例如只调整成功色、大圆角和动效时长：
+
+```tsx
+import type { LeafTheme } from '@ifhover/leaf-ui';
+
+const theme = {
+  primaryColor: '#7654c6',
+  borderRadius: 8,
+  tokens: {
+    successColor: '#20834a',
+    borderRadiusLg: 18,
+    motionDuration: 160,
+  },
+} satisfies LeafTheme;
+```
+
+将这个对象传给 `<ConfigProvider theme={theme}>`。这里的 `borderRadiusLg` 会覆盖自动生成的大圆角；`motionDuration` 的数字单位是毫秒。完整字段和说明见 [LeafThemeTokens](/api/theme-tokens#leafthemetokens)。
+
+如果使用很浅的主题色，可通过 `tokens.onPrimaryColor` 设置实色按钮上的文字色。自定义配色后，应检查正常、悬停和禁用状态的可读性。`motion: false` 可以关闭区域动效，系统的“减少动态效果”偏好始终优先。
+
+### 只调整某类组件的样式
+
+`theme.components` 按组件名称设置样式。例如让按钮使用 4px 圆角，同时调整卡片内边距：
+
+```tsx
+<ConfigProvider theme={{
+  components: {
+    Button: { borderRadius: 4 },
+    Card: { padding: 24 },
+  },
+}}>
+  <App />
+</ConfigProvider>
+```
+
+可用样式字段见 [LeafComponentTokens](/api/theme-tokens#leafcomponenttokens)，具体组件支持的字段以其文档为准。
+
+这里的 `theme.components` 调整样式。如果想统一按钮的 `size`、`variant` 或其他组件参数，使用 ConfigProvider 上的 `components`，见 [组件默认值](/components/config-provider#组件默认值)。
+
+### 在业务样式中使用主题
+
+ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内容位于该区域内时，可以读取当前主题，随颜色和外观一起更新：
+
+```tsx
+<ConfigProvider theme={{ appearance: 'dark' }}>
+  <section className="app-panel">业务内容</section>
+</ConfigProvider>
+```
+
+```css
+.app-panel {
+  padding: 16px;
+  color: var(--leaf-color-text);
+  background: var(--leaf-color-surface);
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+}
+```
+
+| 常用变量 | 用途 |
+| --- | --- |
+| `--leaf-color-primary` | 当前主题色。 |
+| `--leaf-color-on-primary` | 实色主题背景上的文字色。 |
+| `--leaf-color-text` / `--leaf-color-text-muted` | 主要、次要文字色。 |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。 |
+| `--leaf-color-border` | 边框颜色。 |
+| `--leaf-radius` | 基础圆角。 |
+
+调整 Leaf UI 组件的主题仍通过 ConfigProvider，业务 CSS 用这些变量读取结果。仅修改某个基础 CSS 变量，不会重新生成整套交互颜色。
+
+使用 Tailwind CSS 时，可直接引入包提供的配置，通过 `bg-leaf-surface`、`text-leaf-primary` 等工具类复用主题。Tailwind 3 / 4 的接入方式见 [Tailwind CSS](/guide/tailwindcss)。
+
+## 服务端渲染
+
+服务端和客户端首次渲染应使用相同的外观。需要记住用户选择时，可由服务端读取 Cookie 并传入初始值；使用系统外观时，挂载后再更新。
+
+主题色优先传入具体的 HEX、RGB 或 HSL 颜色。`var(--brand-color)` 需要在浏览器挂载后解析，不能保证服务端首屏就得到对应的派生颜色。
+
+安装见 [安装&快速开始](/guide/getting-started)，Next.js 等框架的接入见 [服务端渲染](/guide/ssr)，支持范围见 [浏览器兼容性](/guide/compatibility)。

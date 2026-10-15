@@ -1,4 +1,5 @@
-import { Button, Menu, type MenuItem, Space } from '@ifhover/leaf-ui';
+import type { MenuItem } from '@ifhover/leaf-ui';
+import { Button, Flex, Menu, Text } from '@ifhover/leaf-ui';
 import { BookOpen, Folder, House, Palette, Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -18,18 +19,18 @@ const items: MenuItem[] = [
 export function MenuHorizontal() {
   const [collapsed, setCollapsed] = useState(false);
   return (
-    <Space direction="vertical" align="start" size={20}>
-      <div className="leaf-demo-case">
-        <p className="leaf-demo-note">横向导航</p>
+    <Flex direction="column" gap={20}>
+      <Flex direction="column" gap="sm" align="center">
+        <Text tone="muted">横向导航</Text>
         <Menu mode="horizontal" items={items} defaultSelectedKey="home" />
-      </div>
-      <div className="leaf-demo-case">
-        <p className="leaf-demo-note">可折叠侧栏</p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text tone="muted">可折叠侧栏</Text>
         <Button variant="ghost" size="sm" onClick={() => setCollapsed((value) => !value)}>
           切换折叠
         </Button>
         <Menu collapsed={collapsed} items={items} defaultSelectedKey="home" />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

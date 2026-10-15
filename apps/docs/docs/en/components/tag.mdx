@@ -1,4 +1,3 @@
-import { ExtensionDemo } from '../../../src/examples/en/tag/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
 
@@ -15,22 +14,13 @@ Label content categories or statuses.
 
 </ComponentExample>
 
-## Extended features
-
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/tag/extensions.tsx"
-```
-
-</ComponentExample>
-
 ## Tag API
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Tag content |
 | `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| string` | `'default'` | Semantic or custom color |
-| `variant` | `'soft' \| 'outline' \| 'solid'` | `'soft'` | Visual style |
+| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, both borderless with small rounded corners |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
 | `icon` | `ReactNode` | — | Leading icon |
 | `closable` | `boolean` | `false` | Show a close button |
@@ -41,18 +31,14 @@ Label content categories or statuses.
 Import the component props and item types when preparing your own values.
 
 ```ts
-import type { TagProps } from '@ifhover/leaf-ui';
+import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
 
+Tags use borderless fills and small rounded corners, with tinted and solid appearances. The radius follows the regional theme; set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override.
+
 Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
-
-## Extension types
-
-```ts
-import type { CheckableTagProps, TagGroupProps, TagOption } from '@ifhover/leaf-ui';
-```
 
 ## CheckableTagProps API
 

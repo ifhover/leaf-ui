@@ -1,0 +1,10 @@
+/* Keep Rspress and Leaf UI's reset; utilities override the existing unlayered styles. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" source(none);
+
+/* Read the shared preset from source so guide previews need no library build. */
+@config "../../../packages/react/src/tailwind.ts";
+
+@source "../src";
+@source "../docs";
+@source ".";

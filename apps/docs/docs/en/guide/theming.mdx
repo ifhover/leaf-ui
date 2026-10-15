@@ -1,253 +1,199 @@
-import { ThemePlayground } from '../../../src/components/theme-playground';
+import { ComponentExample } from '../../../src/components/component-example';
+import { ThemeBasic } from '../../../src/examples/en/theming/basic';
+import { ThemeAppearance } from '../../../src/examples/en/theming/appearance';
+import { ThemeScoped } from '../../../src/examples/en/theming/scoped';
 
 # Theming
 
-Configure components with [ConfigProvider](/en/components/config-provider). Start with a primary color, base radius and control height; related sizes and interaction colors are derived for you.
+Set colors, corner radii and dark mode through ConfigProvider's `theme`. A few settings are usually enough; related styles update automatically.
 
-## Start with a few settings
+## Change colors and corners
 
-Wrap the application and import the stylesheet once:
+Wrap your application in ConfigProvider. This example uses a purple primary color and an 8px base radius:
 
-```tsx
-import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
+<ComponentExample title="Colors and corners" preview={<ThemeBasic />} fileName="basic.tsx" width="fit-content">
 
-export function App() {
-  return (
-    <ConfigProvider theme={{
-      primaryColor: '#7654c6',
-      borderRadius: 8,
-      controlHeight: 40,
-    }}>
-      <Input aria-label="Project name" placeholder="Project name" />
-      <Button>Save</Button>
-    </ConfigProvider>
-  );
-}
+```tsx lineNumbers file="../../../src/examples/en/theming/basic.tsx"
 ```
 
-Omitted settings use defaults. Hover, pressed, soft backgrounds and focus colors follow the primary color automatically.
+</ComponentExample>
 
-## Try your theme
+Replace Button with your application content. Buttons, fields, selectors and popups share the theme. Hover, pressed and focus colors derive automatically.
 
-Choose a preset or a custom color, then adjust radius and appearance. Expand the theme code or copy it directly into your application.
+`borderRadius` sets the base radius. Cards, dialogs and other surfaces derive radii for their own level, so you do not need to configure each component. Numbers represent pixels; CSS lengths such as `'0.5rem'` also work.
 
-<ThemePlayground />
+### Common settings
 
-## Derived sizes
+These fields all belong inside `theme`. Set only what you want to change.
 
-The defaults are a 10px base radius, 40px control height and 14px font size:
-
-| Base setting | Derived values | Default result |
+| Setting | Example | Purpose |
 | --- | --- | --- |
-| `borderRadius` | Small / medium / large radius × 0.6 / 1.2 / 1.6 | `6px / 12px / 16px` |
-| `controlHeight` | Small height − 6px; large height + 6px | `34px / 46px` |
-| `fontSize` | Small font − 1px; large font + 2px | `13px / 16px` |
+| `primaryColor` | `'#7654c6'` | Set the primary color and derive related interaction colors. |
+| `borderRadius` | `8` | Set the base radius; use `0` for square corners. |
+| `appearance` | `'light'` / `'dark'` | Choose light or dark appearance. |
+| `controlHeight` | `40` | Set the base single-line control height; small and large sizes follow. |
+| `fontSize` | `14` | Set the base component font size. |
+| `fontFamily` | `'Inter, sans-serif'` | Set the font family; your application loads the font files. |
+| `motion` | `false` | Disable regional animations while keeping interactions available. |
 
-Numbers are pixels; CSS lengths with units are also accepted. Buttons, inputs and pickers share the same sizes.
+Unspecified fields inherit the outer configuration. Defaults are light appearance, a 10px base radius, 36px base control height and 14px font size.
 
-Radii step down from the outside in: dialogs, drawers and popups use the large radius; content surfaces such as cards, alerts and choice cards use the medium radius; buttons, fields and table frames use the base radius; checkboxes and other small elements use the small radius; status tags are pills. Content surfaces are separated by hairline borders rather than shadows.
+See [LeafTheme](/en/components/config-provider#leaftheme) for all theme fields. For individual text colors, backgrounds or sizes, use [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens).
 
-Inset options and selected backgrounds derive their radius from the surface radius, padding and border: the default popup uses `16px - 6px - 1px = 9px`. Set `borderRadius` and `padding` through `theme.components.Floating` for shared popups; local `Dropdown` settings take precedence. Card `Tabs`, `Segmented` and `Menu` follow their own surfaces. Padding accepts numbers, CSS lengths and 1–4 value shorthand (such as `4px 8px`), updating the inner curves in each direction.
+## Use dark mode
 
-## Regional themes
-
-Nested providers override only supplied settings, including individual token overrides:
-
-```tsx
-<ConfigProvider theme={{ primaryColor: '#20834a', controlHeight: 36 }}>
-  <Button>Default region</Button>
-  <ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 16 }}>
-    <Button>Campaign region</Button>
-  </ConfigProvider>
-</ConfigProvider>
-```
-
-Floating panels, Modal, confirmations and messages inherit their calling region’s theme. ConfigProvider manages confirmations and messages automatically; descendants call useConfirm and useMessage. Set `locale` separately for built-in text.
-
-## Appearance and switching
+Set `appearance: 'dark'`. Use `'light'` to switch back:
 
 ```tsx
-import { useState } from 'react';
-import { Button, ConfigProvider } from '@ifhover/leaf-ui';
-
-export function ThemeSwitch() {
-  const [dark, setDark] = useState(false);
-  return (
-    <ConfigProvider theme={{ appearance: dark ? 'dark' : 'light' }}>
-      <Button onClick={() => setDark(!dark)}>Switch appearance</Button>
-    </ConfigProvider>
-  );
-}
-```
-
-Dark appearance supplies suitable text, surface, border and status colors. Explicit primary colors keep their value. Pair very light brand colors with a suitable `onPrimaryColor` override.
-
-## Advanced overrides
-
-Use `theme.tokens` when you need specific derived sizes, semantic colors, surfaces, typography, motion or overlay stacking:
-
-```tsx
-import type { LeafTheme } from '@ifhover/leaf-ui';
-
-const theme: LeafTheme = {
-  controlHeight: 36,
-  borderRadius: 8,
-  tokens: {
-    controlHeightSm: 28,
-    borderRadiusLg: 18,
-    infoColor: '#1677ff',
-    motionDuration: 200,
-  },
-};
-```
-
-Explicit small and large sizes take precedence over derived values. See [LeafThemeTokens](/en/components/config-provider#leafthemetokens) for all options.
-
-## Tune the interaction rhythm
-
-The default base duration is 200ms. Press and hover feedback use a shorter duration; selection, disclosure and overlays use timing suited to their change. Row reordering and dialog height changes continue from the current visual position.
-
-Use `tokens.motionDuration` to adjust the region's pace, `motionEasing` for ordinary transitions, and `motionSpring` for selection and shape changes:
-
-```tsx
-<ConfigProvider theme={{ tokens: {
-  motionDuration: 240,
-  motionEasing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-  motionSpring: 'cubic-bezier(0.22, 1.28, 0.36, 1)',
-} }}>
-  <YourProduct />
-</ConfigProvider>
-```
-
-`motion: false` stops CSS and JavaScript animations in the region, including loading rotation and portals. An inner `motion: true` region can resume motion. The system's reduced-motion preference always takes precedence. Direct interactions such as typing, dragging and cropping respond immediately.
-
-Surfaces and text use neutral grays, with the primary color reserved for actions and selection. Use `subtleTextColor`, `raisedSurfaceColor`, `borderHoverColor` and `shadowXs` to refine the hierarchy.
-
-## Reuse styles in your own components
-
-Read the current region's CSS variables in your application styles. Use ConfigProvider to configure Leaf UI, and `var()` to make custom components follow that configuration:
-
-```tsx
-<ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 8 }}>
-  <button className="product-button" type="button">Custom button</button>
-  <Button>Leaf UI button</Button>
-</ConfigProvider>
-```
-
-```scss
-.product-button {
-  min-height: var(--leaf-control-height);
-  padding: 0 14px;
-  border: 0;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-primary);
-  color: var(--leaf-color-on-primary);
-  font-family: var(--leaf-font-family);
-  font-size: var(--leaf-font-size);
-  font-weight: var(--leaf-font-weight);
-  cursor: pointer;
-}
-```
-
-| Variables to read | Purpose |
-| --- | --- |
-| `--leaf-color-primary` / `--leaf-color-on-primary` | Primary background and foreground |
-| `--leaf-color-danger` / `--leaf-color-success` / `--leaf-color-warning` / `--leaf-color-info` | Semantic colors |
-| `--leaf-color-text` / `--leaf-color-text-muted` | Main / secondary text |
-| `--leaf-color-surface` / `--leaf-color-surface-muted` / `--leaf-color-border` | Surfaces and borders |
-| `--leaf-radius` / `--leaf-radius-sm` / `--leaf-radius-md` / `--leaf-radius-lg` | Base / small / medium / large radius |
-| `--leaf-control-height` / `--leaf-control-height-sm` / `--leaf-control-height-lg` | Base / small / large height |
-| `--leaf-font-family` / `--leaf-font-size` / `--leaf-font-weight` | Typography |
-| `--leaf-motion-duration` / `--leaf-motion-fast` / `--leaf-motion-slow` | Base / fast / layout transition duration |
-| `--leaf-motion-easing` / `--leaf-motion-spring` | Ordinary / spring easing |
-
-Place custom components inside the intended provider. Import the compiled `styles.css`; consumers do not need Sass.
-
-## Server rendering
-
-Static CSS and dynamic themes work together without generating CSS at runtime. See [SSR usage](/en/guide/ssr) for Next.js and other frameworks.
-
-## Spacing, typography and component overrides
-
-`spacing` derives small and large spacing. `lineHeight`, `headingWeight` and `elevation` configure body line height, Typography heading weight and shadows; dialog, card and other component titles use `tokens.fontWeight`. Keep configuring through ConfigProvider; use `theme.components` for scoped component overrides:
-
-```tsx
-const theme = {
-  spacing: 8, lineHeight: 1.6, headingWeight: 600, elevation: 'soft',
-  components: {
-    Button: { borderRadius: 6, padding: '0 18px' },
-    Input: { borderRadius: 6, controlHeight: 36 },
-    Card: { padding: 16, shadow: '0 6px 20px #0001' },
-  },
-} satisfies LeafTheme;
-```
-
-Use exported component names. Each component consumes tokens relevant to its layout: input controls use radius, height, background and font size; containers use padding and shadow; layout components use gaps. For further changes, use component `className` / `style` and popup `popupClassName` / `popupStyle`.
-
-## System appearance, responsive breakpoints and contrast
-
-```tsx
-import { ConfigProvider, colorContrast, useBreakpoint, useSystemAppearance } from '@ifhover/leaf-ui';
-function Application() {
-  const appearance = useSystemAppearance('light');
-  return <ConfigProvider theme={{ appearance, breakpoints: { md: 800 } }}><Content /></ConfigProvider>;
-}
-function Content() {
-  const { md } = useBreakpoint({ md: false });
-  return <p>{md ? 'Wide layout' : 'Compact layout'}</p>;
-}
-const contrast = colorContrast('#ffffff', '#20834a');
-```
-
-`useBreakpoint` reads breakpoints from the current region for your application layout. Grid's existing `sm/md/lg` CSS rules still use the fixed breakpoints listed in its docs. `colorContrast` returns a WCAG contrast ratio, or `null` for invalid colors. Transparent colors are composited with the background and optional third canvas argument. Aim for 4.5 for ordinary text, or 3 for large text.
-
-System preferences update after client hydration. For SSR, start with a server Cookie or a consistent fallback; see [SSR](/en/guide/ssr).
-
-## Section surfaces
-
-Dialog sections, rich choices and neutral alerts derive their appearance from the same base theme. The muted surface controls supporting areas, and dividerColor is an optional advanced override. Configure individual section backgrounds through components; Confirm shares Modal settings. Header and footer backgrounds apply to Modal, Drawer and Card; borderColor also applies to rich Checkbox/Radio and Alert surfaces.
-
-```tsx
-<ConfigProvider
-  theme={{
-    primaryColor: '#20834a',
-    borderRadius: 10,
-    components: {
-      Modal: { footerBackground: 'var(--leaf-color-surface-muted)' },
-      Card: { borderColor: 'var(--leaf-color-divider)' },
-    },
-  }}
->
+<ConfigProvider theme={{ appearance: 'dark' }}>
   <App />
 </ConfigProvider>
 ```
 
-## LeafComponentTokens
+Component text, backgrounds and borders change together. An explicit `primaryColor` keeps its value; otherwise, the appearance supplies its default primary color.
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `borderRadius` | `string \| number` | — | Border radius; numbers are pixels. |
-| `controlHeight` | `string \| number` | — | Base control height, deriving other sizes. |
-| `padding` | `string \| number` | — | Padding for content or a highlighted target. |
-| `gap` | `string \| number` | — | Gap between items; numbers are pixels. |
-| `fontSize` | `string \| number` | — | Font size; numbers are pixels. |
-| `color` | `string` | — | Color or semantic tone. |
-| `background` | `string` | — | Component surface background. |
-| `borderColor` | `string` | — | Color of outer borders and section dividers. |
-| `headerBackground` | `string` | — | Header background; inherits the surface by default. |
-| `footerBackground` | `string` | — | Footer background; divided surfaces use the muted surface by default. |
-| `shadow` | `string` | — | CSS box-shadow value. |
+ConfigProvider styles the components in its region. It does not add a background to the page's `body`. To update your own page backgrounds and text, use the [CSS variables](#use-the-theme-in-application-css) below.
 
-## LeafThemeStyle
+### Add an appearance switch
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | Reusable CSS custom property. |
+Theme settings are ordinary React props, so state can update them. Toggle the switch below to change the card, button and text together:
 
+<ComponentExample title="Switch dark mode" preview={<ThemeAppearance />} fileName="appearance.tsx" width={360}>
 
-## Density and portable colors
+```tsx lineNumbers file="../../../src/examples/en/theming/appearance.tsx"
+```
 
-Use `<ConfigProvider density="compact">` to reduce control heights and spacing throughout a region, including portals. Explicit theme sizes take precedence. Derived colors are calculated in JavaScript; static light/dark palettes support standalone CSS and SSR. Pass concrete colors for a deterministic first frame; CSS variables resolve in the browser.
+</ComponentExample>
 
-See [Browser compatibility](./compatibility), [Design resources](./design-resources) and [Visual standards](./design-standards).
+### Follow the system
+
+Use `useSystemAppearance` and pass its result to `theme.appearance` to follow the operating system:
+
+```tsx
+import { ConfigProvider, useSystemAppearance } from '@ifhover/leaf-ui';
+
+export function AppTheme() {
+  const appearance = useSystemAppearance('light');
+
+  return (
+    <ConfigProvider theme={{ appearance }}>
+      <App />
+    </ConfigProvider>
+  );
+}
+```
+
+The `'light'` argument is the initial appearance. After mounting, the hook reads and watches system preferences. Your application stores manual choices and decides when to keep following the system.
+
+## Theme one region
+
+Nest another ConfigProvider to theme a specific area. The inner provider overrides only the supplied fields and inherits the rest:
+
+<ComponentExample title="Local theme" preview={<ThemeScoped />} fileName="scoped.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/theming/scoped.tsx"
+```
+
+</ComponentExample>
+
+Both buttons use an 8px base radius. The inner provider changes only the primary color to purple. Select popups, Modal, and feedback created with `useConfirm` or `useMessage` also use their calling region's theme.
+
+## Adjust control size and density
+
+For one control, prefer its `size="sm"` or `size="lg"` prop. To make an entire region more compact, set ConfigProvider's `density`:
+
+```tsx
+<ConfigProvider density="compact">
+  <App />
+</ConfigProvider>
+```
+
+`density` is a sibling of `theme`. It defaults to `'comfortable'`. The `'compact'` preset tightens control, form and popup spacing and changes the base control height from 36px to 30px without reducing text size.
+
+Set `theme.controlHeight` when you need an explicit height; it overrides the density preset. For example, `controlHeight: 40` produces 34px / 40px / 46px controls. See [ConfigProvider](/en/components/config-provider#base-height) for a size comparison.
+
+## Advanced customization
+
+Use the settings below when your design needs more specific overrides. For colors, corners and appearance, the basic settings above are sufficient.
+
+### Override individual colors or sizes
+
+Use `theme.tokens` for specific styles beyond the basic settings. This example adjusts the success color, large radius and animation duration:
+
+```tsx
+import type { LeafTheme } from '@ifhover/leaf-ui';
+
+const theme = {
+  primaryColor: '#7654c6',
+  borderRadius: 8,
+  tokens: {
+    successColor: '#20834a',
+    borderRadiusLg: 18,
+    motionDuration: 160,
+  },
+} satisfies LeafTheme;
+```
+
+Pass this object to `<ConfigProvider theme={theme}>`. Here, `borderRadiusLg` overrides the derived large radius, and numeric `motionDuration` values are milliseconds. See [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens) for the complete reference.
+
+For a very light primary color, use `tokens.onPrimaryColor` to set the text color on solid primary buttons. Check readability in normal, hovered and disabled states after changing your palette. `motion: false` disables regional animations; system reduced-motion preferences always take precedence.
+
+### Style one component type
+
+`theme.components` assigns styles by component name. For example, use 4px button corners and change card padding:
+
+```tsx
+<ConfigProvider theme={{
+  components: {
+    Button: { borderRadius: 4 },
+    Card: { padding: 24 },
+  },
+}}>
+  <App />
+</ConfigProvider>
+```
+
+See [LeafComponentTokens](/en/api/theme-tokens#leafcomponenttokens) for style fields, and each component's documentation for the fields it supports.
+
+`theme.components` changes styles. To set default button `size`, `variant` or other component props, use ConfigProvider's separate `components` prop; see [Component defaults](/en/components/config-provider#component-defaults).
+
+### Use the theme in application CSS
+
+ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own content can read them to follow color and appearance changes:
+
+```tsx
+<ConfigProvider theme={{ appearance: 'dark' }}>
+  <section className="app-panel">Application content</section>
+</ConfigProvider>
+```
+
+```css
+.app-panel {
+  padding: 16px;
+  color: var(--leaf-color-text);
+  background: var(--leaf-color-surface);
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius);
+}
+```
+
+| Common variable | Purpose |
+| --- | --- |
+| `--leaf-color-primary` | Current primary color. |
+| `--leaf-color-on-primary` | Text on a solid primary background. |
+| `--leaf-color-text` / `--leaf-color-text-muted` | Primary and secondary text. |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` | Content and supporting backgrounds. |
+| `--leaf-color-border` | Border color. |
+| `--leaf-radius` | Base radius. |
+
+Configure Leaf UI component themes through ConfigProvider and read the results from application CSS. Changing a single base CSS variable does not regenerate the full set of interaction colors.
+
+For Tailwind CSS, import the package configuration to reuse the theme through utilities such as `bg-leaf-surface` and `text-leaf-primary`. See [Tailwind CSS](/en/guide/tailwindcss) for Tailwind 3 / 4 setup.
+
+## Server rendering
+
+Use the same appearance for the server and the client's initial render. To remember a user's choice, read a cookie on the server and supply that initial value. System appearance updates after mounting.
+
+Prefer concrete HEX, RGB or HSL colors. A color such as `var(--brand-color)` resolves after mounting in the browser and cannot guarantee matching derived colors in the server's first frame.
+
+See [Installation & quick start](/en/guide/getting-started) for setup, [server-side rendering](/en/guide/ssr) for frameworks such as Next.js, and [Browser compatibility](/en/guide/compatibility) for support targets.

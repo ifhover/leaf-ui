@@ -1,0 +1,158 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { DocsCollapse } from '../../../src/components/docs-collapse';
+import { TailwindBasic } from '../../../src/examples/en/tailwindcss/basic';
+import { TailwindTheme } from '../../../src/examples/en/tailwindcss/theme';
+
+# Tailwind CSS
+
+Reuse Leaf UI colors, radii and spacing in Tailwind.
+
+## Quick setup
+
+For a project with Tailwind installed, choose the configuration for your version. Versions 3.x and 4.x are supported; upgrade first if you use 2.x or earlier.
+
+### Tailwind CSS 4
+
+Add one import to your CSS entry:
+
+```css title="app.css"
+@import 'tailwindcss';
+@import '@ifhover/leaf-ui/tailwind.css';
+```
+
+<DocsCollapse title="Keep your existing base styles">
+
+To omit Tailwind's Preflight reset, use this entry instead:
+
+```css title="app.css"
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@ifhover/leaf-ui/tailwind.css';
+```
+
+</DocsCollapse>
+
+### Tailwind CSS 3
+
+Add the preset and adjust `content` to match your source directories:
+
+```js title="tailwind.config.cjs"
+const leafPreset = require('@ifhover/leaf-ui/tailwind').default;
+
+module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  presets: [leafPreset],
+};
+```
+
+Keep the Tailwind 3 directives in your CSS entry:
+
+```css title="app.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+For an existing configuration, append the preset and keep your source paths and plugins.
+
+<DocsCollapse title="Use a TypeScript configuration (3.3+)">
+
+```ts title="tailwind.config.ts"
+import type { Config } from 'tailwindcss';
+import leafPreset from '@ifhover/leaf-ui/tailwind';
+
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  presets: [leafPreset],
+} satisfies Config;
+```
+
+To disable Preflight, add `corePlugins: { preflight: false }` to the configuration.
+
+</DocsCollapse>
+
+## Examples
+
+### Basic usage
+
+After setup, use `leaf-` names in utilities to share styles with components:
+
+<ComponentExample title="Reuse design variables" preview={<TailwindBasic />} fileName="basic.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/tailwindcss/basic.tsx"
+
+```
+
+</ComponentExample>
+
+`bg-leaf-surface` sets the background, `p-leaf-md` sets padding, and `rounded-leaf` sets the radius. Standard Tailwind utilities and variants such as `hover:` and `md:` still work.
+
+### Follow the theme
+
+Utilities inside ConfigProvider follow its regional theme. Turn on dark mode to see the panel and button change together:
+
+<ComponentExample title="Follow the theme" preview={<TailwindTheme />} fileName="theme.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/tailwindcss/theme.tsx"
+
+```
+
+</ComponentExample>
+
+Backgrounds, text and borders read the current region's variables without extra `dark:` classes. Color and density changes do not require rebuilding Tailwind. See [Theming](/en/guide/theming) for more options.
+
+## Common design variables
+
+Both versions use the same utility names and extend the theme while keeping Tailwind defaults.
+
+<div className="leaf-tailwind-table">
+
+| Design variable        | Utility examples                                                               |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| Primary color          | `bg-leaf-primary`, `text-leaf-primary`, `text-leaf-on-primary`                 |
+| Status colors          | `text-leaf-success`, `text-leaf-warning`, `text-leaf-danger`, `text-leaf-info` |
+| Text colors            | `text-leaf-text`, `text-leaf-muted`, `text-leaf-subtle`                        |
+| Backgrounds            | `bg-leaf-surface`, `bg-leaf-surface-muted`, `bg-leaf-surface-raised`           |
+| Borders and focus      | `border-leaf-border`, `border-leaf-divider`, `ring-leaf-focus`                 |
+| Radii                  | `rounded-leaf`, `rounded-leaf-sm`, `rounded-leaf-md`, `rounded-leaf-lg`        |
+| Spacing                | `p-leaf`, `p-leaf-xs`, `gap-leaf-sm`, `p-leaf-md`, `gap-leaf-lg`, `m-leaf-xl`  |
+| Control heights        | `h-leaf-control`, `h-leaf-control-sm`, `h-leaf-control-lg`                     |
+| Font and type sizes    | `font-leaf`, `text-leaf`, `text-leaf-sm`, `text-leaf-lg`                       |
+| Weight and line height | `font-leaf-medium`, `font-leaf-heading`, `leading-leaf`                        |
+| Shadows                | `shadow-leaf-xs`, `shadow-leaf-sm`, `shadow-leaf-md`, `shadow-leaf-lg`         |
+
+</div>
+
+Color names also work with `border-*`, `ring-*`, `fill-*` and similar utilities. Type size utilities include the theme line height.
+
+<DocsCollapse title="More design variables">
+
+<div className="leaf-tailwind-table">
+
+| Design variable         | Utility examples                                                                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primary interactions    | `hover:bg-leaf-primary-hover`, `active:bg-leaf-primary-active`                                                                                 |
+| Danger interactions     | `hover:bg-leaf-danger-hover`, `active:bg-leaf-danger-active`                                                                                   |
+| Text on status colors   | `text-leaf-on-warning`, `text-leaf-on-danger`                                                                                                  |
+| Border and option hover | `hover:border-leaf-border-hover`, `hover:bg-leaf-option-hover`                                                                                 |
+| Choice control radius   | `rounded-leaf-choice`                                                                                                                          |
+| Density spacing         | `gap-leaf-form-gap`, `gap-leaf-label-gap`, `py-leaf-row-padding`, `min-h-leaf-option-height`, `p-leaf-option-padding`, `px-leaf-field-padding` |
+| Dialog spacing          | `py-leaf-dialog-block`, `px-leaf-dialog-inline`, `gap-leaf-dialog-gap`                                                                         |
+| Transition durations    | `duration-leaf`, `duration-leaf-fast`, `duration-leaf-slow`                                                                                    |
+| Easing                  | `ease-leaf`, `ease-leaf-spring`                                                                                                                |
+| Overlay stacking        | `z-leaf-popup`, `z-leaf-modal`, `z-leaf-message`                                                                                               |
+
+</div>
+
+Combine motion utilities as `transition-colors duration-leaf ease-leaf motion-reduce:transition-none`. `theme.motion: false` disables regional transitions; `motion-reduce:` respects the system's reduced-motion preference.
+
+</DocsCollapse>
+
+## Usage tips
+
+- **Opacity**: Tailwind 4 supports `bg-leaf-primary/50`. In Tailwind 3, these colors do not support `/50`, `bg-opacity-*` or `text-opacity-*`; define translucent colors in application CSS.
+- **Source scanning**: Write complete class names such as `bg-leaf-primary` instead of constructing `bg-leaf-${color}`.
+- **Base styles**: A CSS-only page with no Leaf UI component imports also needs `@ifhover/leaf-ui/styles.css`.
+- **Breakpoints**: `sm:` and `md:` use your Tailwind configuration, independently of ConfigProvider breakpoints. Follow Tailwind 4's official browser support requirements.
+- **Regions and overlays**: Custom Portal content needs the intended theme scope too. Leaf UI overlays synchronize themes automatically. Configure component-specific variables through [ConfigProvider](/en/guide/theming).

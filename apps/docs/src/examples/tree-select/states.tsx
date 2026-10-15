@@ -1,20 +1,17 @@
-import { Space, TreeSelect } from '@ifhover/leaf-ui';
+import { Form, FormField, TreeSelect } from '@ifhover/leaf-ui';
 import { treeOptions } from './options';
 export function TreeSelectStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用</span>
+    <Form layout="vertical">
+      <FormField label="禁用">
         <TreeSelect options={treeOptions} disabled defaultValue="web" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">校验反馈</span>
+      </FormField>
+      <FormField label="校验反馈">
         <TreeSelect options={treeOptions} status="error" placeholder="请选择一个团队" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">自定义浮层宽度</span>
+      </FormField>
+      <FormField label="自定义浮层宽度">
         <TreeSelect options={treeOptions} popupWidth={320} popupMaxWidth={360} defaultExpandAll />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

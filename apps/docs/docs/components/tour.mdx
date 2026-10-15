@@ -16,7 +16,7 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 
 ## 欢迎说明
 
-<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="basic.tsx">
+<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
 ```
@@ -31,7 +31,7 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 | `title` | `ReactNode` | — | 必需。标题内容。 |
 | `description` | `ReactNode` | — | 补充说明。 |
 | `target` | `string \| (() => HTMLElement \| null)` | — | 目标的选择器或返回元素的函数；省略时居中。 |
-| `placement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | 布局或展示位置。 |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 布局或展示位置。 |
 
 ## Tour API
 
@@ -47,7 +47,7 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 | `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | 目标缺失时居中、跳过或关闭。 |
 | `mask` | `boolean` | `true` | 展示引导遮罩。 |
 | `padding` | `number` | `8` | 内容或高亮目标的内边距。 |
-| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 
 ## 类型与交互
 

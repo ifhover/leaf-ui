@@ -1,16 +1,16 @@
-import { Button, ButtonGroup, Space, SplitButton } from '@ifhover/leaf-ui';
+import { Button, ButtonGroup, Flex, Space, SplitButton, Text } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Space direction="vertical" align="start">
-      <div className="leaf-demo-case">
-        <p>按钮组</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>按钮组</Text>
         <ButtonGroup>
           <Button variant="outline">上一步</Button>
           <Button variant="outline">下一步</Button>
         </ButtonGroup>
-      </div>
-      <div className="leaf-demo-case">
-        <p>分裂按钮</p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>分裂按钮</Text>
         <SplitButton
           items={[
             { key: 'copy', label: '保存副本' },
@@ -19,7 +19,7 @@ export function ExtensionDemo() {
         >
           保存
         </SplitButton>
-      </div>
+      </Flex>
     </Space>
   );
 }

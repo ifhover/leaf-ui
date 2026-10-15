@@ -30,7 +30,7 @@ export function TableReordering({ english = false }: { english?: boolean }) {
         accessorKey: 'status',
         header: english ? 'Status' : '状态',
         cell: ({ getValue }) => (
-          <Tag variant="outline" color={getValue() === 'active' ? 'success' : 'default'}>
+          <Tag color={getValue() === 'active' ? 'success' : 'default'}>
             {getValue() === 'active'
               ? english
                 ? 'Active'
@@ -45,7 +45,7 @@ export function TableReordering({ english = false }: { english?: boolean }) {
     [english],
   );
   return (
-    <Space direction="vertical" align="stretch" style={{ width: '100%' }}>
+    <Space direction="vertical" align="stretch">
       <p>
         {english ? 'Use the handles to reorder rows or columns.' : '使用行首和表头的手柄调整顺序。'}
       </p>

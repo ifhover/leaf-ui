@@ -9,7 +9,7 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 ## 提交与校验
 
-<ComponentExample title="提交与校验" preview={<FormBasic />} fileName="basic.tsx">
+<ComponentExample title="提交与校验" preview={<FormBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/basic.tsx"
 ```
@@ -18,7 +18,7 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 ## 标签宽度
 
-<ComponentExample title="标签宽度" preview={<FormLabelWidth />} fileName="label-width.tsx">
+<ComponentExample title="标签宽度" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/label-width.tsx"
 ```
@@ -27,7 +27,7 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 ## 扩展用法
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/extensions.tsx"
 ```
@@ -48,11 +48,11 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
+| `label` | `ReactNode` | — | 字段标签 |
 | `htmlFor` | `string` | 自动生成 | 与输入控件的 id 关联；一个字段对应一个控件或组 |
 | `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
-| `help` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
-| `error` | `ReactNode` | — | 标签 / 提示 / 业务错误 |
+| `help` | `ReactNode` | — | 显示在控件下方的辅助提示，占据正常布局空间 |
+| `error` | `ReactNode` | — | 错误提示，优先于 help 展示 |
 | `labelWidth` | `number` | — | 当前字段的标签宽度，单位像素 |
 
 ## 类型
@@ -66,6 +66,8 @@ import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 ## 使用说明
 
 默认自动计算同一 Form 中最宽的标签。标签文本、字体或可见字段变化时更新；窄屏和 vertical 布局按纵向排列。支持 onSubmit、onReset、action、method 等表单属性。
+
+help 和错误提示会占据正常布局空间，并与下一项保留表单间距；文字换行后自然增加高度。
 
 用 FormData 读取控件上的 name。简单校验使用 required、type、minLength 等属性，错误提示跟随字段显示；业务与服务端错误通过 error 传入。设置 noValidate 可以接管校验。FormData 返回字符串，不会自动转换为数字或嵌套对象，未勾选复选框不会提交 false。受控字段的重置由应用处理。
 

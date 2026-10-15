@@ -1,6 +1,5 @@
 ---
-pageType: doc-wide
-sidebar: false
+sidebar: placeholder
 footer: false
 ---
 

@@ -1,6 +1,21 @@
+import { withBase } from '@rspress/core/runtime';
+
 # Browser compatibility
 
-Use the current and previous stable Chrome, Edge, Firefox or Safari. Engineering targets are Chrome/Edge 109, Firefox 121 and Safari 16.4. These minimum versions are support targets, not a claim that each version has been tested. IE and older WebViews are outside the supported range.
+Use the current or previous stable release of Chrome, Edge, Firefox or Safari.
+
+## Minimum versions
+
+| Browser | Minimum version |
+| --- | --- |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/chrome.svg')} width={20} height={20} alt="" /> Google Chrome</span> | 109 or later |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/edge.svg')} width={20} height={20} alt="" /> Microsoft Edge</span> | 109 or later |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/firefox.svg')} width={20} height={20} alt="" /> Mozilla Firefox</span> | 121 or later |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/safari.svg')} width={20} height={20} alt="" /> Safari</span> | 16.4 or later |
+
+These versions are Leaf UI's minimum support targets, not a claim that every version has been tested. IE, legacy Edge (EdgeHTML) and older WebViews are outside the supported range.
+
+## Features and fallbacks
 
 | Capability | Implementation and fallback |
 | --- | --- |
@@ -20,5 +35,7 @@ Use the current and previous stable Chrome, Edge, Firefox or Safari. Engineering
 ```
 
 Use concrete hex/rgb/hsl/named colors through `theme` and `tokens`. A server cannot resolve CSS variables: `var(...)` colors resolve after mounting and synchronize when ancestor class/style attributes change. Pass concrete colors for a deterministic SSR first frame. Changing only a base CSS color does not recalculate the full palette.
+
+## Validation coverage
 
 CI covers Chromium, Firefox, WebKit, React 18/19, SSR and package exports. WebKit coverage does not imply physical Safari/iOS coverage. Local Firefox currently fails to launch (`spawn UNKNOWN`) and is not recorded as passed. See `packages/react/ACCESSIBILITY.md` in the repository for executed checks and manual limits.

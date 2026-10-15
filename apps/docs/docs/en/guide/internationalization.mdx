@@ -1,0 +1,29 @@
+# Switch languages
+
+Set `locale` on ConfigProvider to change built-in text in date panels, empty states and clear actions.
+
+## Set a language
+
+Wrap your application with ConfigProvider and pass a language tag. This example switches the date panel's built-in text to English:
+
+```tsx
+import { ConfigProvider, DatePicker } from '@ifhover/leaf-ui';
+
+export default function App() {
+  return (
+    <ConfigProvider locale="en-US">
+      <DatePicker />
+    </ConfigProvider>
+  );
+}
+```
+
+Replace DatePicker with your application content to share the language across components and popups. The default is Simplified Chinese. See [ConfigProvider → Built-in languages](/en/components/config-provider#built-in-languages) for the full list and language tags.
+
+## Switch in your application
+
+If your application already has a language selector, pass its current language state to `locale`. Components in the region update when that state changes. See the [interactive ConfigProvider example](/en/components/config-provider#switch-languages).
+
+To change only part of a page, nest a ConfigProvider around that region. An omitted `locale` inherits the parent language.
+
+Translate page headings, field labels and options in your application. For another language or custom built-in text, see [ConfigProvider → Add your own language](/en/components/config-provider#add-your-own-language).

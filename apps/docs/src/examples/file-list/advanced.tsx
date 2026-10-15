@@ -1,4 +1,4 @@
-import { type FileItem, FileList, Space } from '@ifhover/leaf-ui';
+import { type FileItem, FileList, Space, Text } from '@ifhover/leaf-ui';
 import { withBase } from '@rspress/core/runtime';
 import { useState } from 'react';
 export function FileListActions() {
@@ -8,10 +8,8 @@ export function FileListActions() {
     { uid: 'c', url: withBase('/media/empty.txt'), size: 0 },
   ]);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <p className="leaf-demo-note">
-        名称可以从 URL 获取，文件大小可不提供。零字节文件也会展示大小。
-      </p>
+    <Space direction="vertical" align="stretch">
+      <Text tone="muted">名称可以从 URL 获取，文件大小可不提供。零字节文件也会展示大小。</Text>
       <FileList
         items={items}
         removable

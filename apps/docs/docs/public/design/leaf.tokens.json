@@ -109,6 +109,15 @@
           "hex": "#e5e5e8"
         }
       },
+      "option-hover": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.9215686274509803, 0.9215686274509803, 0.9215686274509803],
+          "alpha": 1,
+          "hex": "#ebebeb"
+        }
+      },
       "primary-text-80": {
         "$type": "color",
         "$value": {
@@ -1346,6 +1355,15 @@
           "hex": "#38383f"
         }
       },
+      "option-hover": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.1843137254901961, 0.1843137254901961, 0.2],
+          "alpha": 1,
+          "hex": "#2f2f33"
+        }
+      },
       "primary-text-80": {
         "$type": "color",
         "$value": {
@@ -2478,7 +2496,7 @@
       "control-height": {
         "$type": "dimension",
         "$value": {
-          "value": 40,
+          "value": 36,
           "unit": "px"
         }
       },
@@ -2513,7 +2531,7 @@
       "density-option-height": {
         "$type": "dimension",
         "$value": {
-          "value": 36,
+          "value": 32,
           "unit": "px"
         }
       },
@@ -2559,7 +2577,7 @@
       "control-height": {
         "$type": "dimension",
         "$value": {
-          "value": 34,
+          "value": 30,
           "unit": "px"
         }
       },
@@ -2594,7 +2612,7 @@
       "density-option-height": {
         "$type": "dimension",
         "$value": {
-          "value": 30,
+          "value": 26,
           "unit": "px"
         }
       },

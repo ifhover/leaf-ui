@@ -1,10 +1,10 @@
-import { Space, Tree } from '@ifhover/leaf-ui';
+import { Space, Text, Tree } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { treeData } from './data';
 export function TreeCheckable() {
   const [checked, setChecked] = useState<readonly string[]>(['components']);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <Tree
         data={treeData}
         checkable
@@ -14,7 +14,9 @@ export function TreeCheckable() {
         checkedKeys={checked}
         onCheck={setChecked}
       />
-      <output className="leaf-demo-note">勾选节点: {checked.join(', ') || '暂无'}</output>
+      <output>
+        <Text tone="muted">勾选节点: {checked.join(', ') || '暂无'}</Text>
+      </output>
     </Space>
   );
 }

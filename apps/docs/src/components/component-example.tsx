@@ -1,6 +1,6 @@
 import './component-example.scss';
 import { Button } from '@ifhover/leaf-ui';
-import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
@@ -12,6 +12,8 @@ interface ComponentExampleProps {
   preview: ReactNode;
   children: ReactNode;
   fileName?: string;
+  /** Preview width in pixels or a CSS length; always limited to the available space. */
+  width?: CSSProperties['width'];
 }
 
 /** A build-highlighted MDX code fence paired with its live React preview. */
@@ -20,6 +22,7 @@ export function ComponentExample({
   preview,
   children,
   fileName = 'example.tsx',
+  width = 480,
 }: ComponentExampleProps) {
   const { t } = useDocsLocale();
   const [expanded, setExpanded] = useState(false);
@@ -47,6 +50,17 @@ export function ComponentExample({
     return sourceRef.current?.querySelector('code')?.textContent ?? '';
   }
 
+  function toggleExpanded() {
+    const code = sourceRef.current?.closest('.leaf-component-example__code');
+    if (expanded && code) {
+      const scrollMargin = Number.parseFloat(getComputedStyle(code).scrollMarginTop);
+      if (code.getBoundingClientRect().top < scrollMargin) {
+        code.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }
+    }
+    setExpanded(!expanded);
+  }
+
   return (
     <section
       className="leaf-component-example"
@@ -56,7 +70,9 @@ export function ComponentExample({
       data-wrap-code={wrapCode}
     >
       <div className="leaf-component-example__preview rp-not-doc">
-        <div className="leaf-component-example__preview-content">{preview}</div>
+        <div className="leaf-component-example__preview-content" style={{ width }}>
+          {preview}
+        </div>
       </div>
       <div className="leaf-component-example__code">
         <div className="leaf-component-example__code-header">
@@ -94,7 +110,7 @@ export function ComponentExample({
               variant="outline"
               aria-expanded={expanded}
               aria-controls={codeId}
-              onClick={() => setExpanded(!expanded)}
+              onClick={toggleExpanded}
               endIcon={<Icon name="chevron" />}
             >
               {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}

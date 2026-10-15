@@ -1,12 +1,11 @@
-import { AutoComplete, type AutoCompleteOption, Space } from '@ifhover/leaf-ui';
+import { AutoComplete, type AutoCompleteOption, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function AutoCompleteSearch() {
   const [options, setOptions] = useState<AutoCompleteOption[]>([]);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">邮箱地址</span>
+    <Form layout="vertical">
+      <FormField label="邮箱地址">
         <AutoComplete
           aria-label="邮箱地址"
           placeholder="输入邮箱前缀"
@@ -23,8 +22,8 @@ export function AutoCompleteSearch() {
             );
           }}
         />
-      </div>
-      <span className="leaf-demo-note">建议由输入动态生成，也可以直接填写完整地址。</span>
-    </Space>
+      </FormField>
+      <Text tone="muted">建议由输入动态生成，也可以直接填写完整地址。</Text>
+    </Form>
   );
 }

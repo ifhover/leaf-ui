@@ -1,20 +1,17 @@
-import { Space, TreeSelect } from '@ifhover/leaf-ui';
+import { Form, FormField, TreeSelect } from '@ifhover/leaf-ui';
 import { treeOptions } from './options';
 export function TreeSelectStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled</span>
+    <Form layout="vertical">
+      <FormField label="Disabled">
         <TreeSelect options={treeOptions} disabled defaultValue="web" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Validation feedback</span>
+      </FormField>
+      <FormField label="Validation feedback">
         <TreeSelect options={treeOptions} status="error" placeholder="Select a team" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Custom popup width</span>
+      </FormField>
+      <FormField label="Custom popup width">
         <TreeSelect options={treeOptions} popupWidth={320} popupMaxWidth={360} defaultExpandAll />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

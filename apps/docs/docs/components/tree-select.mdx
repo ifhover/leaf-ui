@@ -1,3 +1,4 @@
+import { SingleLine } from '../../src/examples/tree-select/single-line';
 import { Capabilities } from '../../src/examples/tree-select/capabilities';
 import { ExtensionDemo } from '../../src/examples/tree-select/extensions';
 import { ComponentExample } from '../../src/components/component-example';
@@ -11,7 +12,7 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 ## 选择与搜索
 
-<ComponentExample title="选择与搜索" preview={<TreeSelectBasic />} fileName="basic.tsx">
+<ComponentExample title="选择与搜索" preview={<TreeSelectBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree-select/basic.tsx"
 ```
@@ -20,7 +21,7 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 ## 多选与勾选
 
-<ComponentExample title="多选与勾选" preview={<TreeSelectMultiple />} fileName="multiple.tsx">
+<ComponentExample title="多选与勾选" preview={<TreeSelectMultiple />} fileName="multiple.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree-select/multiple.tsx"
 ```
@@ -29,7 +30,7 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 ## 状态与浮层
 
-<ComponentExample title="状态与浮层" preview={<TreeSelectStates />} fileName="states.tsx">
+<ComponentExample title="状态与浮层" preview={<TreeSelectStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree-select/states.tsx"
 ```
@@ -50,6 +51,19 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 <ComponentExample title="选择限制与节点展示" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tree-select/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## 单行多选
+
+设置 `tagWrap={false}` 后，已选项始终展示在一行内。长文字自动省略，放不下的选项合并为 `+N`；空间很窄时只显示数量，打开浮层可查看和修改选择。`maxTagCount` 可进一步限制标签数量，`maxTagCount="responsive"` 也会启用单行自动折叠。
+
+再次打开会保留上次展开的分支。不可选分类可点击整行展开；勾选模式可点击整行或按 Enter / 空格勾选，箭头只负责展开或收起。搜索临时展开匹配分支，不改变原有展开状态。
+
+<ComponentExample title="单行多选" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/single-line.tsx"
 ```
 
 </ComponentExample>
@@ -81,11 +95,12 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 | `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | 加载失败，再次展开可重试 |
 | `virtual` | `boolean` | `false` | 仅渲染可见项目 |
 | `listHeight` | `number` | `256` | 列表高度 |
-| `itemHeight` | `number` | `34` | 虚拟列表预估行高 |
+| `itemHeight` | `number` | `38` | 跟随区域控件高度和密度的预估行高，包含行间距；实际行会被测量。 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
-| `maxTagCount` | `number` | — | 最多展示的标签数；responsive 根据可用宽度折叠。 |
+| `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
+| `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
 | `maxCount` | `number` | — | 最多可选的数量。 |
 | `treeExpandedKeys` | `readonly string[]` | — | 受控的展开节点。 |
 | `onExpand` | `(keys: string[]) => void` | — | 展开节点发生变化时调用。 |

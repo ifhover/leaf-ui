@@ -1,11 +1,11 @@
-import { InputMask, Space } from '@ifhover/leaf-ui';
+import { InputMask, Space, Text } from '@ifhover/leaf-ui';
 
 export function InputMaskFormats() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <strong className="leaf-demo-note">Card number format</strong>
+    <Space direction="vertical" align="stretch">
+      <Text tone="muted">Card number format</Text>
       <InputMask mask="0000 0000 0000 0000" lazy={false} aria-label="Card number" />
-      <strong className="leaf-demo-note">Custom letter and digit rules</strong>
+      <Text tone="muted">Custom letter and digit rules</Text>
       <InputMask
         mask="AA-0000"
         definitions={{ A: /[A-Z]/ }}

@@ -1,10 +1,8 @@
-import { Space, TimeRangePicker } from '@ifhover/leaf-ui';
+import { Space, Text, TimeRangePicker } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <p style={{ margin: '0 0 8px' }}>
-        {english ? 'Business hours for both endpoints' : '开始与结束均限制在营业时间'}
-      </p>
+    <Space direction="vertical" align="stretch">
+      <Text>{english ? 'Business hours for both endpoints' : '开始与结束均限制在营业时间'}</Text>
       <TimeRangePicker
         defaultValue={['09:00', '17:30']}
         disabledTime={(time) => time.hour < 9 || time.hour > 18}

@@ -1,4 +1,4 @@
-import { Button, Scrollbar } from '@ifhover/leaf-ui';
+import { Button, Flex, Scrollbar } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 
 export function ScrollbarBasic({ english = false }: { english?: boolean }) {
@@ -43,8 +43,8 @@ export function ScrollbarDynamic({ english = false }: { english?: boolean }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [count, setCount] = useState(3);
   return (
-    <div className="demo-stack">
-      <div className="demo-row">
+    <Flex direction="column" gap="md">
+      <Flex gap="sm" wrap>
         <Button variant="outline" onClick={() => setCount((previous) => previous + 3)}>
           {english ? 'Add items' : '增加内容'}
         </Button>
@@ -54,7 +54,7 @@ export function ScrollbarDynamic({ english = false }: { english?: boolean }) {
         >
           {english ? 'Back to top' : '返回顶部'}
         </Button>
-      </div>
+      </Flex>
       <Scrollbar ref={viewport} maxHeight={200} aria-label={english ? 'Dynamic list' : '动态列表'}>
         {Array.from({ length: count }, (_, index) => (
           <div key={String(index)} style={{ padding: '12px 20px' }}>
@@ -62,6 +62,6 @@ export function ScrollbarDynamic({ english = false }: { english?: boolean }) {
           </div>
         ))}
       </Scrollbar>
-    </div>
+    </Flex>
   );
 }

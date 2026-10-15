@@ -9,7 +9,7 @@ Organize fields, labels and validation feedback, and collect form data.
 
 ## Submission and validation
 
-<ComponentExample title="Submission and validation" preview={<FormBasic />} fileName="basic.tsx">
+<ComponentExample title="Submission and validation" preview={<FormBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/basic.tsx"
 ```
@@ -18,7 +18,7 @@ Organize fields, labels and validation feedback, and collect form data.
 
 ## Label widths
 
-<ComponentExample title="Label widths" preview={<FormLabelWidth />} fileName="label-width.tsx">
+<ComponentExample title="Label widths" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/label-width.tsx"
 ```
@@ -27,7 +27,7 @@ Organize fields, labels and validation feedback, and collect form data.
 
 ## Extended features
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/extensions.tsx"
 ```
@@ -48,11 +48,11 @@ Organize fields, labels and validation feedback, and collect form data.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | Label / help text / application error |
+| `label` | `ReactNode` | — | Field label |
 | `htmlFor` | `string` | Generated | The associated control ID; one field wraps one control or group |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
-| `help` | `ReactNode` | — | Label / help text / application error |
-| `error` | `ReactNode` | — | Label / help text / application error |
+| `help` | `ReactNode` | — | Supporting text below the control, included in the field layout |
+| `error` | `ReactNode` | — | Error message, displayed instead of help |
 | `labelWidth` | `number` | — | Override this field’s label width in pixels |
 
 ## Types
@@ -66,6 +66,8 @@ import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 ## Usage notes
 
 By default, all labels in one Form use the width of its widest label. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
+
+Help and error messages occupy normal layout space and preserve the form gap before the next field. Wrapped text naturally adds height.
 
 Read named controls with FormData. Use required, type and minLength for basic validation; errors appear beside their fields. Pass application or server errors through error. Set noValidate when handling validation yourself. FormData contains strings, does not build nested objects, and omits unchecked checkboxes. Reset controlled fields in application state.
 

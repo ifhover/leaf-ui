@@ -1,10 +1,10 @@
-import { RadioGroup, Space } from '@ifhover/leaf-ui';
+import { RadioGroup, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function RadioControlled() {
   const [value, setValue] = useState('daily');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <RadioGroup
         label="提醒频率"
         direction="vertical"
@@ -16,7 +16,7 @@ export function RadioControlled() {
           { label: '仅重要消息', value: 'important' },
         ]}
       />
-      <span className="leaf-demo-note">当前选择：{value}</span>
+      <Text tone="muted">当前选择：{value}</Text>
     </Space>
   );
 }

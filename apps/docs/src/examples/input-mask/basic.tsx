@@ -1,9 +1,9 @@
-import { InputMask, Space } from '@ifhover/leaf-ui';
+import { InputMask, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function InputMaskBasic() {
   const [value, setValue] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <InputMask
         mask="+{86} 000 0000 0000"
         placeholder="+86 138 0000 0000"
@@ -12,7 +12,9 @@ export function InputMaskBasic() {
         onChange={setValue}
         aria-label="电话号码"
       />
-      <output className="leaf-demo-note">原始值: {value || '—'}</output>
+      <output>
+        <Text tone="muted">原始值: {value || '—'}</Text>
+      </output>
     </Space>
   );
 }

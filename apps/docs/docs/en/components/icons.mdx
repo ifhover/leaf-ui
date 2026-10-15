@@ -1,0 +1,42 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ButtonIcons } from '../../../src/examples/en/button/icons';
+
+# Icons
+
+Leaf UI's internal icons and the examples on this page use **Lucide**, but `lucide-react` is one of many options. Button's `startIcon` / `endIcon` and Input's `prefix` / `suffix` accept `ReactNode`, so you can use React components from other icon libraries.
+
+## Browse icons online
+
+Open the [Lucide icon directory](https://lucide.dev/icons/) to search by name or keyword and preview icons. Source code is available in the [Lucide GitHub repository](https://github.com/lucide-icons/lucide).
+
+You can also choose a library that matches your project's style and existing dependencies:
+
+| Icon library | Online directory | GitHub |
+| --- | --- | --- |
+| React Icons (`react-icons`) | [Browse icons](https://react-icons.github.io/react-icons/) | [react-icons/react-icons](https://github.com/react-icons/react-icons) |
+| Heroicons | [Browse icons](https://heroicons.com/) | [tailwindlabs/heroicons](https://github.com/tailwindlabs/heroicons) |
+| Tabler Icons | [Browse icons](https://tabler.io/icons) | [tabler/tabler-icons](https://github.com/tabler/tabler-icons) |
+| Phosphor | [Browse icons](https://phosphoricons.com/) | [phosphor-icons/react](https://github.com/phosphor-icons/react) |
+
+## Install and import
+
+The example below uses `lucide-react`. Add it as an application dependency when importing icons directly. For another library, install its package and replace the icon imports.
+
+```bash
+pnpm add lucide-react
+```
+
+Import only the icons you need. Icons follow the component's icon container size and inherit its current text color.
+
+<ComponentExample title="Icon buttons" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## Accessible names
+
+Text supplies the name of a text button; its leading and trailing icons are decorative. Supply `aria-label` for icon-only buttons, such as “Add project” or “Delete project”. Icons should not be the only indication of an action.
+
+Button's danger state applies the danger color to both its icon and text, so you do not need to hardcode a color on the icon.

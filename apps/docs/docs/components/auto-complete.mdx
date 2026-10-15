@@ -10,7 +10,7 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 
 通过 `options` 设置建议，默认按显示文本进行不区分大小写的包含匹配。`onChange` 响应输入和选择，`onSelect` 仅响应选择建议。
 
-<ComponentExample title="输入与选择建议" preview={<AutoCompleteBasic />} fileName="basic.tsx">
+<ComponentExample title="输入与选择建议" preview={<AutoCompleteBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/auto-complete/basic.tsx"
 ```
@@ -21,7 +21,7 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 
 `onSearch` 接收用户输入。建议由你生成或从服务端获取时，可设置 `filterOption={false}` 直接展示传入结果。
 
-<ComponentExample title="动态邮箱建议" preview={<AutoCompleteSearch />} fileName="search.tsx">
+<ComponentExample title="动态邮箱建议" preview={<AutoCompleteSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/auto-complete/search.tsx"
 ```
@@ -62,12 +62,12 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 | `allowClear` | `boolean` | — | 展示清除操作。 |
 | `virtual` | `boolean` | — | 启用虚拟滚动；大量选项默认启用。 |
 | `listHeight` | `number` | `248` | 可视列表高度。 |
-| `optionHeight` | `number` | `36` | 虚拟选项的估算高度；实际行会被测量。 |
-| `popupPlacement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | 浮层相对触发控件的位置。 |
+| `optionHeight` | `number` | `32` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
+| `popupPlacement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 浮层相对触发控件的位置。 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
-| `popupStyle` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupStyle']` | — | 浮层的自定义样式。 |
-| `popupRender` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupRender']` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
-| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `popupStyle` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupStyle']` | — | 浮层的自定义样式。 |
+| `popupRender` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupRender']` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `readOnly` | `boolean` | `false` | 锁定业务值，禁止输入、选择、清除和删除。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |

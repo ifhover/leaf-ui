@@ -1,37 +1,40 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { GettingStartedExample } from '../../src/components/guide-examples';
+import { PackageInstall } from '../../src/components/package-install';
 
 # 安装&快速开始
 
-Leaf UI 支持 React 18 与 React 19。安装组件包并引入样式后，就可以在 React 页面中使用。
+Leaf UI 支持 React 18 与 React 19。安装后即可在 React 页面中使用，基础样式与组件样式会自动加载。
 
 ## 安装组件包
 
 在你的 React 项目目录下执行：
 
+<PackageInstall>
+
+```bash
+npm install @ifhover/leaf-ui
+```
+
+```bash
+yarn add @ifhover/leaf-ui
+```
+
 ```bash
 pnpm add @ifhover/leaf-ui
 ```
 
-也可以使用 npm 或 Yarn：
-
 ```bash
-npm install @ifhover/leaf-ui
-# 或者
-yarn add @ifhover/leaf-ui
+bun add @ifhover/leaf-ui
 ```
+
+</PackageInstall>
 
 React 和 React DOM 由你的应用提供。如果项目尚未安装，请先执行 `pnpm add react react-dom`。可在 [npm](https://www.npmjs.com/package/@ifhover/leaf-ui) 查看最新版本。
 
-## 引入样式
+浏览器打包时，组件入口会自动加载主题变量、公共样式与所需的组件和服务样式，无需手动导入 CSS 或安装 Sass。Next.js、TanStack Start 等框架的额外配置见[服务端渲染](/guide/ssr)。
 
-在应用入口导入一次基础样式，包含主题变量、公共浮层和 Confirm、Message 等 API 服务的样式：
-
-```tsx title="src/main.tsx"
-import '@ifhover/leaf-ui/styles.css';
-```
-
-浏览器打包时，组件入口会自动加载组件样式，无需再手动导入每个组件的 CSS，也无需安装 Sass。Next.js 等框架的配置见 [SSR 使用](/guide/ssr)。
+示例通过 Flex、Space、Grid 和 FormField 组织布局，无需安装 Tailwind CSS。
 
 ## 使用组件
 
@@ -50,7 +53,7 @@ import '@ifhover/leaf-ui/styles.css';
 
 - [组件总览](/components/)：浏览可用组件。
 - [Button 按钮](/components/button)：查看样式、尺寸、加载状态与完整 API。
-- [使用图标](/guide/icons)：通过 Lucide 图标表达操作。
-- [定制主题](/guide/theming)：实时调整颜色、圆角和外观。
-- [SSR 使用](/guide/ssr)：在 Next.js 等框架中使用组件。
+- [使用图标](/components/icons)：通过 Lucide 图标表达操作。
+- [定制主题](/guide/theming)：设置主题色、圆角和深色模式。
+- [服务端渲染](/guide/ssr)：Next.js、TanStack Start 等框架的额外配置。
 - [浏览器兼容性](./compatibility)：查看支持的浏览器与降级策略。

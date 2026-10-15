@@ -1,4 +1,13 @@
-import { Alert, Button, Form, FormField, Input, Space, useFormValidation } from '@ifhover/leaf-ui';
+import {
+  Alert,
+  Button,
+  Form,
+  FormField,
+  Input,
+  Space,
+  Text,
+  useFormValidation,
+} from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -67,11 +76,11 @@ export function SchemaForm({ english = false }: { english?: boolean }) {
           {english ? 'Reset' : '重置'}
         </Button>
       </Space>
-      <p className="leaf-demo-note">
+      <Text tone="muted">
         {english
           ? 'An account shorter than three characters fails schema validation. Use reserved with a valid email to see a server field error.'
           : '账号不足三个字符会出现 Schema 校验错误；使用 reserved 并填写有效邮箱，可查看服务端字段错误。'}
-      </p>
+      </Text>
       {saved && <Alert type="success" title={english ? 'Saved successfully.' : '保存成功。'} />}
     </Form>
   );

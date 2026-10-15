@@ -1,4 +1,4 @@
-import { Button, Select, Space, Tag } from '@ifhover/leaf-ui';
+import { Button, Flex, Select, Space, Tag, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = ['Design', 'Engineering', 'Marketing', 'Operations'].map((label) => ({
@@ -9,28 +9,25 @@ export function Capabilities({ english = false }) {
   const [open, setOpen] = useState(false);
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>
           {english ? 'Responsive tags, constrained to the available width' : '根据宽度自动折叠标签'}
-        </p>
+        </Text>
         <Select
           multiple
           showSearch
           defaultValue={['Design', 'Engineering', 'Marketing']}
           options={options}
           maxTagCount="responsive"
-          style={{ width: 300 }}
           tagRender={(option, remove) => (
             <Tag closable onClose={remove}>
               {option.label}
             </Tag>
           )}
         />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
-          {english ? 'Controlled popup with an extra action' : '受控浮层与附加操作'}
-        </p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Controlled popup with an extra action' : '受控浮层与附加操作'}</Text>
         <Select
           options={options}
           open={open}
@@ -45,7 +42,7 @@ export function Capabilities({ english = false }) {
             </>
           )}
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

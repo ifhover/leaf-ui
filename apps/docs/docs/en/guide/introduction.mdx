@@ -1,19 +1,101 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import {
+  IntroductionBrowsers,
+  IntroductionFeature,
+  IntroductionFeatures,
+  IntroductionHero,
+} from '../../../src/components/introduction';
+import { PackageInstall } from '../../../src/components/package-install';
+import { GettingStartedExample } from '../../../src/examples/en/guide/getting-started';
+
 # Introduction
 
-Leaf UI is a lightweight React component library with a natural visual style. Start with its green theme, then adapt it to your product.
+<IntroductionHero>
 
-## Your own theme
+A UI component library for React applications. Start with a natural green theme, then make room for your own brand and ideas.
 
-Use [ConfigProvider](/en/components/config-provider) to customize colors, base radius, control height, typography, motion and language. Other sizes are derived automatically. Nested regions inherit omitted settings, and custom components can consume the same CSS variables.
+</IntroductionHero>
 
-## Familiar React patterns
+## Why Leaf UI
 
-Components support React 18 and 19, controlled and uncontrolled values, standard HTML attributes and DOM refs. TypeScript declarations are included. [Form](/en/components/form) organizes labels and feedback while preserving normal form submission and FormData.
+<IntroductionFeatures>
+  <IntroductionFeature icon="leaf" title="A natural starting point">
 
-## Everyday components
+Quiet colors, comfortable corners, and clear interaction states keep the focus on your content. Ready to use, with room for your own design.
 
-Leaf UI includes buttons, text fields, selection controls, date and time pickers, forms, menus, dialogs and feedback. Explore the [component overview](/en/components/).
+  </IntroductionFeature>
+  <IntroductionFeature icon="palette" title="Your theme, your style">
 
-Keyboard interaction, visible focus, disabled states and reduced-motion preferences are supported. Built-in text supports Chinese and English; application labels remain under your control.
+Configure colors, radii, control heights, typography, and light or dark appearance with ConfigProvider. Nested themes, popups, and messages share the settings of their region.
 
-Start with [installation & quick start](/en/guide/getting-started), or try the [theme playground](/en/guide/theming).
+  </IntroductionFeature>
+  <IntroductionFeature icon="types" title="Familiar React patterns">
+
+TypeScript declarations, native HTML attributes, and DOM refs are included. Use controlled or uncontrolled values, native form submission, and FormData.
+
+  </IntroductionFeature>
+  <IntroductionFeature icon="components" title="Everyday components, in sync">
+
+Buttons, inputs, date pickers, tables, navigation, and feedback share consistent sizing and interaction rules. Use Lucide icons or pass your own icon nodes.
+
+  </IntroductionFeature>
+  <IntroductionFeature icon="languages" title="Ready for different languages">
+
+Built-in locales, custom translations, language fallbacks, and RTL direction are supported. Configure component messages while keeping application titles and labels in your own translation system.
+
+  </IntroductionFeature>
+  <IntroductionFeature icon="keyboard" title="Thoughtful interactions">
+
+Keyboard navigation, visible focus, disabled and loading states, and reduced-motion preferences are supported. Add an aria-label to icon-only buttons to give them an accessible name.
+
+  </IntroductionFeature>
+</IntroductionFeatures>
+
+## Environment support
+
+Supports **React 18 / 19**, **ESM / CommonJS**, and server-side rendering. We recommend the current or previous stable release of a modern browser.
+
+<IntroductionBrowsers />
+
+These are minimum support targets. See [browser compatibility](/en/guide/compatibility) for tested environments and fallbacks, or [server-side rendering](/en/guide/ssr) for Next.js, TanStack Start, and other frameworks.
+
+## Start with one component
+
+Install the library in an existing React project:
+
+<PackageInstall>
+
+```bash
+npm install @ifhover/leaf-ui
+```
+
+```bash
+yarn add @ifhover/leaf-ui
+```
+
+```bash
+pnpm add @ifhover/leaf-ui
+```
+
+```bash
+bun add @ifhover/leaf-ui
+```
+
+</PackageInstall>
+
+Import a component and start using it. Browser builds load the required styles automatically; you do not need Sass. Try the button below:
+
+<ComponentExample title="Your first button" preview={<GettingStartedExample />} width="fit-content" fileName="getting-started.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/guide/getting-started.tsx"
+
+```
+
+</ComponentExample>
+
+## Next steps
+
+- [Installation and quick start](/en/guide/getting-started): Set up the library in your project.
+- [Component overview](/en/components/): Find the components your interface needs.
+- [Theming](/en/guide/theming): Customize brand colors, corners, and dark mode.
+- [Internationalization](/en/guide/internationalization): Configure component languages for your application.

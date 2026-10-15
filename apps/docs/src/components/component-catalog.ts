@@ -1,5 +1,14 @@
 export const componentCatalog = [
   [
+    'Flex',
+    '弹性布局',
+    'flex',
+    '布局',
+    'Layout',
+    '控制内容方向、对齐、间距与换行。',
+    'Control direction, alignment, spacing and wrapping.',
+  ],
+  [
     'Scrollbar',
     '滚动条',
     'scrollbar',
@@ -628,24 +637,6 @@ export const componentCatalog = [
     'Data entry',
     '选择或拖拽文件并上传。',
     'Choose or drop files to upload.',
-  ],
-  [
-    'ImageCropper',
-    '图片裁剪',
-    'image-cropper',
-    '媒体',
-    'Media',
-    '移动选框并调整裁剪范围。',
-    'Move and resize a selection to crop images.',
-  ],
-  [
-    'SignaturePad',
-    '签名板',
-    'signature-pad',
-    '媒体',
-    'Media',
-    '手写签名并导出图片。',
-    'Capture handwritten signatures and export images.',
   ],
   [
     'Typography',

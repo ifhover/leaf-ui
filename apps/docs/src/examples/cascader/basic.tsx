@@ -1,4 +1,4 @@
-import { Cascader, Space } from '@ifhover/leaf-ui';
+import { Cascader, Form, FormField } from '@ifhover/leaf-ui';
 
 const options = [
   {
@@ -22,19 +22,16 @@ const options = [
 
 export function CascaderBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">项目分类</span>
+    <Form layout="vertical">
+      <FormField label="项目分类">
         <Cascader aria-label="项目分类" options={options} placeholder="选择项目分类" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">默认分类</span>
+      </FormField>
+      <FormField label="默认分类">
         <Cascader aria-label="默认分类" options={options} defaultValue={['design', 'interface']} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用分类</span>
+      </FormField>
+      <FormField label="禁用分类">
         <Cascader aria-label="禁用分类" options={options} disabled />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

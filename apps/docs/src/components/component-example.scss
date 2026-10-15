@@ -3,7 +3,7 @@
   --rp-code-block-bg: var(--leaf-example-code-bg);
   --rp-code-font-size: 13px;
   min-width: 0;
-  overflow: hidden;
+  overflow: clip;
   margin: 20px 0 32px;
   border: 1px solid var(--leaf-site-border);
   border-radius: 12px;
@@ -29,26 +29,24 @@
 }
 
 .leaf-component-example__preview-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
-  width: 100%;
   min-width: 0;
+  max-width: 100%;
 }
 
-.leaf-component-example__preview-content > .leaf-demo-stack {
-  margin-inline: auto;
-}
-
-.leaf-component-example__preview-content > * {
+:where(.leaf-component-example__preview-content) > * {
   min-width: 0;
   max-width: 100%;
 }
 
 .leaf-component-example__code {
   border-top: 1px solid var(--leaf-site-divider);
+  background: var(--leaf-example-code-bg);
+  scroll-margin-top: calc(
+    var(--rp-nav-height) + var(--rp-sidebar-menu-height) + var(--rp-banner-height, 0px) + 16px
+  );
 }
 
 // Keep the documentation's prose list rules out of component previews.
@@ -127,6 +125,7 @@
 .leaf-component-example__code-viewport::after {
   content: '';
   position: absolute;
+  z-index: 2;
   inset: auto 0 0;
   height: 88px;
   background: linear-gradient(to bottom, transparent 5%, var(--leaf-example-code-bg) 90%);
@@ -167,7 +166,7 @@
 }
 
 .leaf-component-example__expand {
-  z-index: 1;
+  z-index: 3;
   display: flex;
   justify-content: center;
   position: relative;
@@ -180,12 +179,20 @@
 }
 
 .leaf-component-example[data-expanded='true'] .leaf-component-example__expand {
+  position: sticky;
+  bottom: 0;
   margin-top: 0;
   padding-top: 6px;
+  pointer-events: none;
 }
 
 .leaf-component-example__expand > button {
   background: var(--leaf-site-panel);
+  pointer-events: auto;
+}
+
+.leaf-component-example[data-expanded='true'] .leaf-component-example__expand > button {
+  box-shadow: none;
 }
 
 .leaf-component-example__expand svg {

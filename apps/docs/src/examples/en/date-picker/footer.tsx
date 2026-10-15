@@ -1,4 +1,4 @@
-import { Button, DatePicker } from '@ifhover/leaf-ui';
+import { Button, DatePicker, Flex, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function DatePickerFooter() {
   const [value, setValue] = useState<Date | null>(null);
@@ -9,8 +9,8 @@ export function DatePickerFooter() {
     setValue(next);
   };
   return (
-    <div className="leaf-demo-case">
-      <span className="leaf-demo-label">Custom date shortcuts</span>
+    <Flex direction="column" gap="sm" align="start">
+      <Text>Custom date shortcuts</Text>
       <DatePicker
         aria-label="Custom date shortcuts"
         value={value}
@@ -22,6 +22,6 @@ export function DatePickerFooter() {
           </Button>
         }
       />
-    </div>
+    </Flex>
   );
 }

@@ -13,7 +13,6 @@ import { MessageShared } from '../../src/examples/message/shared';
 
 ```tsx
 import { ConfigProvider } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
 
 export function Root() {
   return <ConfigProvider><App /></ConfigProvider>;
@@ -46,7 +45,7 @@ export function Root() {
 
 消息关闭时，后续消息会平滑上移。不同高度的内容会按照实际占用空间收起。
 
-<ComponentExample title="多条消息" preview={<MessageStack />} fileName="stack.tsx">
+<ComponentExample title="多条消息" preview={<MessageStack />} fileName="stack.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/message/stack.tsx"
 ```

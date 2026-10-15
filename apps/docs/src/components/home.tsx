@@ -1,10 +1,10 @@
 import { Badge } from '@ifhover/leaf-ui';
 import { ButtonLink } from './button-link';
 import { componentCatalog } from './component-catalog';
-import { CopyButton } from './copy-button';
-import { HomeShowcase, MotionGallery } from './home-showcase';
+import { HomeShowcase } from './home-showcase';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
+import { PackageInstall } from './package-install';
 import { ThemePlayground } from './theme-playground';
 
 export function HomeLayout() {
@@ -12,26 +12,32 @@ export function HomeLayout() {
   const features = [
     {
       icon: 'sliders',
-      title: t('顺着你的动作。', 'In step with you.'),
+      title: t('交互顺手，细节到位。', 'Small details. Smoother interactions.'),
       text: t(
-        '选择、展开、加载，每一步都接得自然。细节让界面更顺手。',
-        'Selection, disclosure and loading flow into one another. Details make the interface feel effortless.',
+        '清楚的状态反馈、自然的动效、完整的键盘操作。常用的交互，已经替你照顾好。',
+        'Clear feedback, natural motion and keyboard support. The everyday interactions are taken care of.',
       ),
     },
     {
       icon: 'leaf',
-      title: t('留白，也是设计。', 'Room to breathe.'),
+      title: t('你的品牌，自有风格。', 'Your brand. Your style.'),
       text: t(
-        '清晰的层次，安静的底色。让品牌和内容拥有自己的表达。',
-        'Clear hierarchy and calm surfaces give your brand and content their own voice.',
+        '从主题色、圆角到深浅外观，几处设置就能融入你的产品。默认好看，也经得起定制。',
+        'Make it yours with colors, corners and light or dark themes. Start with thoughtful defaults and adapt them to your product.',
       ),
     },
     {
       icon: 'code',
-      title: t('从细节到整个产品。', 'From detail to product.'),
+      title: t('常用参数，只设一次。', 'Set it once. Use it everywhere.'),
       text: t(
-        `${componentCatalog.length} 个 React 组件，照顾表单、键盘、主题和每一种状态。`,
-        `${componentCatalog.length} React components with care for forms, keyboards, themes and every state.`,
+        '按钮样式、输入提示、弹窗防误关，一处配置，全站沿用。省去重复传参，个别组件仍可单独调整。',
+        'Share button styles, input hints and modal closing behavior across your app. Skip repeated props and override individual components when needed.',
+      ),
+      href: url(
+        t(
+          '/components/config-provider.html#组件默认值',
+          '/components/config-provider.html#component-defaults',
+        ),
       ),
     },
   ] as const;
@@ -43,23 +49,25 @@ export function HomeLayout() {
           status="success"
           color="var(--leaf-color-primary)"
           text={t(
-            `${componentCatalog.length} 个组件 · 一个顺手的体验`,
-            `${componentCatalog.length} components · One effortless experience`,
+            `${componentCatalog.length} 个 React 组件 · 开箱即用，随你定制`,
+            `${componentCatalog.length} React components · Ready to make your own`,
           )}
         />
         <h1>
-          {t('让界面，', 'Interfaces that ')}
-          <span>{t('流动起来。', 'feel alive.')}</span>
+          <span className="leaf-hero__brand">Leaf UI</span>
+          <span className="leaf-hero__headline">
+            {t('让好想法，长成好界面。', 'Good ideas deserve great interfaces.')}
+          </span>
         </h1>
         <p>
           {t(
-            '从一次轻巧的按下，到流畅的状态变化。',
-            'From a subtle press to a seamless change of state.',
+            '轻盈、好用、随你定制的 React 组件库。',
+            'A lightweight React component library that feels right at home.',
           )}
           <br />
           {t(
-            '用 Leaf UI，构建清晰、自然、有回应的产品。',
-            'Build clear, thoughtful, responsive products with Leaf UI.',
+            '从按钮到表单，细节已经就位，接下来随你发挥。',
+            'From buttons to forms, the details are ready. Make something of your own.',
           )}
         </p>
         <div className="leaf-hero__actions">
@@ -74,44 +82,25 @@ export function HomeLayout() {
             {t('探索组件', 'Explore components')}
           </ButtonLink>
         </div>
-        <div className="leaf-install">
-          <Icon name="code" width="15" height="15" />
-          <code>pnpm add @ifhover/leaf-ui</code>
-          <CopyButton
-            text="pnpm add @ifhover/leaf-ui"
-            label={t('复制安装命令', 'Copy install command')}
-          />
-        </div>
+        <PackageInstall variant="hero" />
         <span className="leaf-hero__note">
           React 18 / 19 <span>·</span> TypeScript <span>·</span> CSS Variables
         </span>
       </section>
       <HomeShowcase />
-      <section className="leaf-features" aria-label={t('设计理念', 'Design principles')}>
+      <section className="leaf-features" aria-label={t('产品特点', 'Product features')}>
         {features.map((feature) => (
           <article key={feature.icon}>
             <Icon name={feature.icon} width="19" height="19" />
             <h2>{feature.title}</h2>
             <p>{feature.text}</p>
+            {'href' in feature && (
+              <ButtonLink variant="link" href={feature.href} endIcon={<Icon name="arrow" />}>
+                {t('了解组件默认值', 'Explore component defaults')}
+              </ButtonLink>
+            )}
           </article>
         ))}
-      </section>
-      <section className="leaf-home-motion" aria-labelledby="motion-heading">
-        <div className="leaf-section-heading">
-          <div>
-            <span className="leaf-eyebrow">SMALL DETAILS. BETTER FEEL.</span>
-            <h2 id="motion-heading">
-              {t('亲手试一下，会更有感觉。', 'A little interaction goes a long way.')}
-            </h2>
-            <p>
-              {t(
-                '切换、展开、保存。好体验，藏在每一次操作里。',
-                'Switch, unfold, save. The experience is in every little action.',
-              )}
-            </p>
-          </div>
-        </div>
-        <MotionGallery />
       </section>
       <section className="leaf-home-playground" aria-labelledby="playground-heading">
         <div className="leaf-section-heading">

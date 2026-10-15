@@ -1,0 +1,35 @@
+.rp-doc-layout__sidebar:has(.leaf-component-sidebar) {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+
+.leaf-component-sidebar {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  &__filter {
+    flex: 0 0 auto;
+    padding: var(--rp-sidebar-padding);
+    border-bottom: 1px solid var(--leaf-site-divider);
+    background: var(--rp-c-bg);
+  }
+
+  &__list {
+    flex: 1;
+    min-height: 0;
+    padding: 0 var(--rp-sidebar-padding) var(--rp-sidebar-padding);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  &__empty {
+    margin-block: var(--rp-sidebar-padding);
+    color: var(--leaf-site-muted);
+    font-size: 13px;
+  }
+}

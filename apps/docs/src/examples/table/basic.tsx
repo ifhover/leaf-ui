@@ -46,7 +46,7 @@ export function TableBasic({ english = false }: { english?: boolean }) {
             <Table.Cell>{person.email}</Table.Cell>
             <Table.Cell>{person.role}</Table.Cell>
             <Table.Cell>
-              <Tag variant="outline" color={person.active ? 'success' : 'default'}>
+              <Tag color={person.active ? 'success' : 'default'}>
                 {person.active ? (english ? 'Active' : '活跃') : english ? 'Invited' : '已邀请'}
               </Tag>
             </Table.Cell>
@@ -60,7 +60,7 @@ export function TableBasic({ english = false }: { english?: boolean }) {
 export function TableStates({ english = false }: { english?: boolean }) {
   const [state, setState] = useState<'empty' | 'loading' | 'error'>('empty');
   return (
-    <Space direction="vertical" align="stretch" style={{ width: '100%' }}>
+    <Space direction="vertical" align="stretch">
       <Space wrap>
         <Button variant={state === 'empty' ? 'outline' : 'ghost'} onClick={() => setState('empty')}>
           {english ? 'Empty' : '空数据'}

@@ -1,7 +1,7 @@
-import { Button, Popover, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Popover } from '@ifhover/leaf-ui';
 export function PopoverPlacements() {
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       {(['top', 'bottom', 'left', 'right'] as const).map((placement) => (
         <Popover
           key={placement}
@@ -14,6 +14,6 @@ export function PopoverPlacements() {
           </Button>
         </Popover>
       ))}
-    </Space>
+    </Flex>
   );
 }

@@ -1,11 +1,11 @@
-import { Slider, Space } from '@ifhover/leaf-ui';
+import { Flex, Slider, Space, Text } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>
           {english ? 'Discrete marks with formatted tooltip' : '只选择指定刻度与自定义提示'}
-        </p>
+        </Text>
         <Slider
           defaultValue={25}
           step={null}
@@ -17,7 +17,7 @@ export function Capabilities({ english = false }) {
           ]}
           tooltip={{ formatter: (value) => `${value}%` }}
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

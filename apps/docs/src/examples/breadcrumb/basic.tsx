@@ -1,4 +1,5 @@
-import { Breadcrumb, type BreadcrumbItem, Space } from '@ifhover/leaf-ui';
+import type { BreadcrumbItem } from '@ifhover/leaf-ui';
+import { Breadcrumb, Space } from '@ifhover/leaf-ui';
 import { House } from 'lucide-react';
 
 const items: readonly BreadcrumbItem[] = [
@@ -8,7 +9,7 @@ const items: readonly BreadcrumbItem[] = [
 ];
 export function BreadcrumbBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Breadcrumb items={items} />
       <Breadcrumb items={items} separator="/" />
     </Space>

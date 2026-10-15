@@ -1,15 +1,15 @@
-import { QRCode, Space } from '@ifhover/leaf-ui';
+import { Flex, QRCode, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function QRCodeStatus() {
   const [expired, setExpired] = useState(true);
   return (
-    <Space wrap className="leaf-demo-row">
-      <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-        <strong className="leaf-demo-note">Loading</strong>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Space direction="vertical" align="stretch">
+        <Text tone="muted">Loading</Text>
         <QRCode value="Leaf UI" size={140} status="loading" />
       </Space>
-      <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-        <strong className="leaf-demo-note">Refresh after expiry</strong>
+      <Space direction="vertical" align="stretch">
+        <Text tone="muted">Refresh after expiry</Text>
         <QRCode
           value="Leaf UI"
           size={140}
@@ -17,10 +17,10 @@ export function QRCodeStatus() {
           onRefresh={() => setExpired(false)}
         />
       </Space>
-      <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-        <strong className="leaf-demo-note">Custom color</strong>
+      <Space direction="vertical" align="stretch">
+        <Text tone="muted">Custom color</Text>
         <QRCode value="Leaf UI" size={140} color="#2463eb" />
       </Space>
-    </Space>
+    </Flex>
   );
 }

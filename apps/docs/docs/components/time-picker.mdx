@@ -11,7 +11,7 @@ import { TimePickerTwelveHours } from '../../src/examples/time-picker/twelve-hou
 
 输入时间或在面板中选择小时、分钟和秒，点击确定后生效。关闭面板会放弃未确认的调整。
 
-<ComponentExample title="基础选择" preview={<TimePickerBasic />} fileName="basic.tsx">
+<ComponentExample title="基础选择" preview={<TimePickerBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/time-picker/basic.tsx"
 ```
@@ -22,7 +22,7 @@ import { TimePickerTwelveHours } from '../../src/examples/time-picker/twelve-hou
 
 通过 `value` / `onChange` 管理值，`minuteStep` 调整分钟选项的间隔。已有值的分钟不在间隔内时，仍会保留为可选项。
 
-<ComponentExample title="受控与分钟间隔" preview={<TimePickerControlled />} fileName="controlled.tsx">
+<ComponentExample title="受控与分钟间隔" preview={<TimePickerControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/time-picker/controlled.tsx"
 ```
@@ -33,7 +33,7 @@ import { TimePickerTwelveHours } from '../../src/examples/time-picker/twelve-hou
 
 设置 `use12Hours` 展示上午、下午选项；`showSeconds` 开启秒。12 小时制只改变显示，值仍使用 24 小时格式。
 
-<ComponentExample title="12 小时制与秒" preview={<TimePickerTwelveHours />} fileName="twelve-hours.tsx">
+<ComponentExample title="12 小时制与秒" preview={<TimePickerTwelveHours />} fileName="twelve-hours.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/time-picker/twelve-hours.tsx"
 ```

@@ -1,4 +1,4 @@
-import { Input, InputGroup, InputSearch, Select, Space } from '@ifhover/leaf-ui';
+import { Flex, Input, InputGroup, InputSearch, Select, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ExtensionDemo() {
   const [query, setQuery] = useState('');
@@ -14,8 +14,8 @@ export function ExtensionDemo() {
         />
       </label>
       <p role="status">搜索内容：{query || '未搜索'}</p>
-      <div className="leaf-demo-case">
-        <p>输入组合</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>输入组合</Text>
         <InputGroup aria-label="网址">
           <Select
             style={{ width: 110 }}
@@ -24,7 +24,7 @@ export function ExtensionDemo() {
           />
           <Input aria-label="域名" placeholder="example.com" />
         </InputGroup>
-      </div>
+      </Flex>
     </Space>
   );
 }

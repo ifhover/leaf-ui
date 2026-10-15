@@ -1,20 +1,17 @@
-import { Space, TimePicker } from '@ifhover/leaf-ui';
+import { Form, FormField, TimePicker } from '@ifhover/leaf-ui';
 
 export function TimePickerBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Choose a time</span>
+    <Form layout="vertical">
+      <FormField label="Choose a time">
         <TimePicker aria-label="Choose a time" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Default time</span>
+      </FormField>
+      <FormField label="Default time">
         <TimePicker aria-label="Default time" defaultValue="09:30" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled time</span>
+      </FormField>
+      <FormField label="Disabled time">
         <TimePicker aria-label="Disabled time" defaultValue="18:00" disabled />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

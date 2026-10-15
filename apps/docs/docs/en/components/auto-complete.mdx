@@ -10,14 +10,14 @@ Suggest values while allowing free-text input.
 
 Use options for suggestions and onChange for typed or selected text. onSelect fires only when choosing a suggestion; onSearch fires only for typing. Set filterOption=false for server-generated suggestions. Handle debouncing and request order in your application.
 
-<ComponentExample title="Input and suggestions" preview={<AutoCompleteBasic />} fileName="basic.tsx">
+<ComponentExample title="Input and suggestions" preview={<AutoCompleteBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/auto-complete/basic.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Dynamic email suggestions" preview={<AutoCompleteSearch />} fileName="search.tsx">
+<ComponentExample title="Dynamic email suggestions" preview={<AutoCompleteSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/auto-complete/search.tsx"
 ```
@@ -56,12 +56,12 @@ Use options for suggestions and onChange for typed or selected text. onSelect fi
 | `allowClear` | `boolean` | — | Show a clear action. |
 | `virtual` | `boolean` | — | Enable virtual scrolling; enabled by default for large option sets. |
 | `listHeight` | `number` | `248` | Height of the visible list. |
-| `optionHeight` | `number` | `36` | Estimated virtual option height; actual rows are measured. |
-| `popupPlacement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | Placement relative to the trigger. |
+| `optionHeight` | `number` | `32` | Estimated virtual row height; follows the regional height and density. Actual rows are measured. |
+| `popupPlacement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
-| `popupStyle` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupStyle']` | — | Custom popup styles. |
-| `popupRender` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupRender']` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
-| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
+| `popupStyle` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupStyle']` | — | Custom popup styles. |
+| `popupRender` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupRender']` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |

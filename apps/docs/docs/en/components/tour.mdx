@@ -16,7 +16,7 @@ Introduce features in a sequence of steps.
 
 ## Welcome step
 
-<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="basic.tsx">
+<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/tour/basic.tsx"
 ```
@@ -31,7 +31,7 @@ Introduce features in a sequence of steps.
 | `title` | `ReactNode` | — | Required. Title content. |
 | `description` | `ReactNode` | — | Additional description. |
 | `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or element getter; omit to center the step. |
-| `placement` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['popupPlacement']` | — | Layout or display placement. |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Layout or display placement. |
 
 ## Tour API
 
@@ -47,7 +47,7 @@ Introduce features in a sequence of steps.
 | `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | Center, skip or close when a target is missing. |
 | `mask` | `boolean` | `true` | Show a tour mask. |
 | `padding` | `number` | `8` | Padding for content or a highlighted target. |
-| `getPopupContainer` | [`PopupOptions`](../guide/control-contracts#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
+| `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
 
 ## Types and interaction
 

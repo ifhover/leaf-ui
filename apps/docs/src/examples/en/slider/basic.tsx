@@ -1,4 +1,5 @@
-import { Slider, type SliderMark, Space } from '@ifhover/leaf-ui';
+import type { SliderMark } from '@ifhover/leaf-ui';
+import { Form, FormField, Slider, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const marks: SliderMark[] = [
@@ -9,24 +10,20 @@ const marks: SliderMark[] = [
 export function SliderBasic() {
   const [value, setValue] = useState(35);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Volume</span>
+    <Form layout="vertical">
+      <FormField label="Volume">
         <Slider aria-label="Volume" value={value} onChange={setValue} marks={marks} />
-      </div>
-      <p className="leaf-demo-note">Current value: {value}</p>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Budget</span>
+      </FormField>
+      <Text tone="muted">Current value: {value}</Text>
+      <FormField label="Budget">
         <Slider aria-label="Budget" range defaultValue={[20, 70]} marks={marks} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled value</span>
+      </FormField>
+      <FormField label="Disabled value">
         <Slider aria-label="Disabled value" defaultValue={45} disabled />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Vertical value</span>
+      </FormField>
+      <FormField label="Vertical value">
         <Slider aria-label="Vertical value" vertical defaultValue={60} />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

@@ -1,4 +1,5 @@
-import { Button, Cascader, type CascaderOption, Space } from '@ifhover/leaf-ui';
+import type { CascaderOption } from '@ifhover/leaf-ui';
+import { Button, Cascader, Flex, Space, Text } from '@ifhover/leaf-ui';
 import { useCallback, useState } from 'react';
 
 const options = [
@@ -31,18 +32,16 @@ export function Capabilities({ english = false }) {
   }, []);
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>
           {english ? 'Search, multiple paths and intermediate levels' : '搜索、多选与选择中间层'}
-        </p>
+        </Text>
         <Cascader options={options} showSearch multiple changeOnSelect />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
-          {english ? 'Lazy loading and explicit cache refresh' : '懒加载与刷新缓存'}
-        </p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Lazy loading and explicit cache refresh' : '懒加载与刷新缓存'}</Text>
         <Cascader options={lazy} loadData={load} cacheKey={version} allowClear />
-      </div>
+      </Flex>
       <Button variant="outline" onClick={() => setVersion(version + 1)}>
         {english ? 'Refresh data' : '刷新数据'}
       </Button>

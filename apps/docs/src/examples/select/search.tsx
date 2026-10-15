@@ -1,4 +1,5 @@
-import { Select, type SelectOption, Space } from '@ifhover/leaf-ui';
+import type { SelectOption } from '@ifhover/leaf-ui';
+import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options: SelectOption[] = [
@@ -9,9 +10,8 @@ const options: SelectOption[] = [
 export function SelectSearch() {
   const [teams, setTeams] = useState<string[]>(['design']);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">搜索团队</span>
+    <Form layout="vertical">
+      <FormField label="搜索团队">
         <Select
           aria-label="搜索团队"
           showSearch
@@ -19,9 +19,8 @@ export function SelectSearch() {
           options={options}
           placeholder="输入搜索团队"
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">多选团队</span>
+      </FormField>
+      <FormField label="多选团队">
         <Select
           aria-label="多选团队"
           multiple
@@ -31,8 +30,10 @@ export function SelectSearch() {
           value={teams}
           onChange={setTeams}
         />
-      </div>
-      <output className="leaf-demo-note">{teams.join(', ') || '—'}</output>
-    </Space>
+      </FormField>
+      <output>
+        <Text tone="muted">{teams.join(', ') || '—'}</Text>
+      </output>
+    </Form>
   );
 }

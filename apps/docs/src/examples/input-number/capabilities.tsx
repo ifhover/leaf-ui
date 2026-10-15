@@ -1,7 +1,7 @@
 import { Form, FormField, InputNumber } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
-    <Form layout="vertical" className="leaf-demo-stack">
+    <Form layout="vertical">
       <FormField label={english ? 'Grouped amount' : '金额与千分位'}>
         <InputNumber defaultValue={12345.67} precision={2} grouping prefix="$" />
       </FormField>

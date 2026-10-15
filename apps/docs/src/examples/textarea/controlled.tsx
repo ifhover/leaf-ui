@@ -1,25 +1,21 @@
-import { Space, Textarea } from '@ifhover/leaf-ui';
+import { Form, FormField, Textarea } from '@ifhover/leaf-ui';
 import { useState } from 'react';
-
 export function TextareaControlled() {
   const [value, setValue] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-field">
+    <Form layout="vertical">
+      <FormField label="留言" help={`${value.length} / 120`}>
         <Textarea
-          aria-label="留言"
           value={value}
           maxLength={120}
           resize="none"
           placeholder="最多 120 个字符"
           onChange={(event) => setValue(event.target.value)}
         />
-        <span className="leaf-demo-note">{value.length} / 120</span>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">错误留言</span>
-        <Textarea aria-label="错误留言" status="error" placeholder="请补充描述" />
-      </div>
-    </Space>
+      </FormField>
+      <FormField label="错误留言" error="请补充描述。">
+        <Textarea placeholder="请补充描述" />
+      </FormField>
+    </Form>
   );
 }

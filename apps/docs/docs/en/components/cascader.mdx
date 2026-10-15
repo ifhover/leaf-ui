@@ -1,3 +1,4 @@
+import { SingleLine } from '../../../src/examples/en/cascader/single-line';
 import { Capabilities } from '../../../src/examples/cascader/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CascaderBasic, CascaderControlled } from '../../../src/components/en-form-examples';
@@ -10,14 +11,14 @@ Choose a value through a hierarchy of options.
 
 A selection is committed at a leaf option. onChange supplies both the path and its options. Named fields submit a JSON array string. Use arrow keys to navigate levels, Enter to choose and Escape to close.
 
-<ComponentExample title="Interactive example" preview={<CascaderBasic />} fileName="basic.tsx">
+<ComponentExample title="Interactive example" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/basic.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Interactive example" preview={<CascaderControlled />} fileName="controlled.tsx">
+<ComponentExample title="Interactive example" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/controlled.tsx"
 ```
@@ -29,6 +30,17 @@ A selection is committed at a leaf option. onChange supplies both the path and i
 <ComponentExample title="Search, multiple paths and lazy loading" preview={<Capabilities english />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/cascader/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## Single-line selections
+
+Set `tagWrap={false}` to keep selected values on one line. Long labels truncate; extra values collapse into `+N`. In very narrow controls, only the count is shown. Open the popup to review or change selections. `maxTagCount` can further limit the visible tags; `maxTagCount="responsive"` also enables automatic single-line collapsing.
+
+<ComponentExample title="Single-line selections" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/single-line.tsx"
 ```
 
 </ComponentExample>
@@ -60,6 +72,8 @@ A selection is committed at a leaf option. onChange supplies both the path and i
 | `loadData` | `(option: `[`CascaderOption`](#cascaderoption)`, signal: AbortSignal) => Promise<readonly `[`CascaderOption`](#cascaderoption)`[]>` | — | Load child nodes asynchronously and respect AbortSignal. |
 | `onLoadError` | `(error: unknown, option: `[`CascaderOption`](#cascaderoption)`) => void` | — | Called on loading failure, for retry feedback. |
 | `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
+| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
 | `multiple` | `false \| true` | `false` | Enable multiple selection; value and callback types change accordingly. |
 | `value` | `readonly string[] \| readonly (readonly string[])[]` | Required | Value; unique at the same level |
 | `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | Controlled path / initial uncontrolled path |

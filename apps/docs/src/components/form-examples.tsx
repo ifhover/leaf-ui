@@ -14,7 +14,6 @@ export { RadioBasic } from '../examples/radio/basic';
 export { RadioControlled } from '../examples/radio/controlled';
 export { SelectBasic } from '../examples/select/basic';
 export { SelectControlled } from '../examples/select/controlled';
-export { SelectTheme } from '../examples/select/theme';
 export { SwitchBasic } from '../examples/switch/basic';
 export { SwitchControlled } from '../examples/switch/controlled';
 export { TextareaBasic } from '../examples/textarea/basic';

@@ -2,7 +2,7 @@ import { Divider, Space } from '@ifhover/leaf-ui';
 
 export function DividerBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <p>项目信息</p>
       <Divider>设置</Divider>
       <Divider align="start" dashed>

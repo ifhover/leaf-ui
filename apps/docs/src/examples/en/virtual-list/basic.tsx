@@ -9,7 +9,6 @@ export function VirtualListBasic() {
   );
   return (
     <VirtualList
-      style={{ width: '100%' }}
       items={items}
       itemKey={(item) => item.id}
       height={240}

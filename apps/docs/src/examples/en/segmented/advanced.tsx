@@ -1,9 +1,9 @@
-import { Segmented, Space } from '@ifhover/leaf-ui';
+import { Segmented, Space, Text } from '@ifhover/leaf-ui';
 
 export function SegmentedOptions() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <strong className="leaf-demo-note">Fill container</strong>
+    <Space direction="vertical" align="stretch">
+      <Text tone="muted">Fill container</Text>
       <Segmented
         block
         options={[
@@ -12,7 +12,7 @@ export function SegmentedOptions() {
           { value: 'archived', label: 'Archive (unavailable', disabled: true },
         ]}
       />
-      <strong className="leaf-demo-note">Small size</strong>
+      <Text tone="muted">Small size</Text>
       <Segmented size="sm" options={['A', 'B', 'C']} />
     </Space>
   );

@@ -1,4 +1,5 @@
-import { ColorPicker, type ColorPreset, Space } from '@ifhover/leaf-ui';
+import type { ColorPreset } from '@ifhover/leaf-ui';
+import { ColorPicker, Flex, Text } from '@ifhover/leaf-ui';
 
 const presets: readonly ColorPreset[] = [
   { label: '品牌颜色', colors: ['#20834a', '#1677ff', '#7654c6', '#f49b23'] },
@@ -6,15 +7,15 @@ const presets: readonly ColorPreset[] = [
 ];
 export function ColorPickerPresets() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">自定义预设 · 可清除</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>自定义预设 · 可清除</Text>
         <ColorPicker presets={presets} allowClear showText />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>禁用</Text>
         <ColorPicker disabled defaultValue="#1677ff" showText />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

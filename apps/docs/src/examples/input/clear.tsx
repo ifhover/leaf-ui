@@ -1,11 +1,10 @@
-import { Input, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Input, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function InputClear() {
   const [value, setValue] = useState('Leaf Garden');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">项目名称</span>
+    <Form layout="vertical">
+      <FormField label="项目名称">
         <Input
           aria-label="项目名称"
           value={value}
@@ -14,17 +13,16 @@ export function InputClear() {
           showCount
           maxLength={30}
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">关键词</span>
+      </FormField>
+      <FormField label="关键词">
         <Input
           aria-label="关键词"
           defaultValue="Leaf"
           allowClear
           showCount={(text) => `${text.length} 字`}
         />
-      </div>
-      <p className="leaf-demo-note">当前内容：{value || '未填写'}</p>
-    </Space>
+      </FormField>
+      <Text tone="muted">当前内容：{value || '未填写'}</Text>
+    </Form>
   );
 }

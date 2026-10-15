@@ -1,4 +1,4 @@
-import { Button, Space, useMessage } from '@ifhover/leaf-ui';
+import { Button, Flex, useMessage } from '@ifhover/leaf-ui';
 export function MessageBasic() {
   const { message } = useMessage();
   async function save() {
@@ -13,7 +13,7 @@ export function MessageBasic() {
     });
   }
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <Button onClick={save}>Save asynchronously</Button>
       <Button variant="outline" onClick={() => message.info('An information message')}>
         Information
@@ -30,6 +30,6 @@ export function MessageBasic() {
       <Button variant="ghost" onClick={() => message.close()}>
         Clear messages
       </Button>
-    </Space>
+    </Flex>
   );
 }

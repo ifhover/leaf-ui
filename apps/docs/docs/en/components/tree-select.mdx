@@ -1,3 +1,4 @@
+import { SingleLine } from '../../../src/examples/en/tree-select/single-line';
 import { Capabilities } from '../../../src/examples/tree-select/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/tree-select/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
@@ -11,7 +12,7 @@ Choose one or more values from hierarchical data.
 
 ## Selection and search
 
-<ComponentExample title="Selection and search" preview={<TreeSelectBasic />} fileName="basic.tsx">
+<ComponentExample title="Selection and search" preview={<TreeSelectBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/basic.tsx"
 ```
@@ -20,7 +21,7 @@ Choose one or more values from hierarchical data.
 
 ## Multiple selection and checks
 
-<ComponentExample title="Multiple selection and checks" preview={<TreeSelectMultiple />} fileName="multiple.tsx">
+<ComponentExample title="Multiple selection and checks" preview={<TreeSelectMultiple />} fileName="multiple.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/multiple.tsx"
 ```
@@ -29,7 +30,7 @@ Choose one or more values from hierarchical data.
 
 ## States and panel width
 
-<ComponentExample title="States and panel width" preview={<TreeSelectStates />} fileName="states.tsx">
+<ComponentExample title="States and panel width" preview={<TreeSelectStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/states.tsx"
 ```
@@ -50,6 +51,19 @@ Choose one or more values from hierarchical data.
 <ComponentExample title="Selection limits and node rendering" preview={<Capabilities english />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/tree-select/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## Single-line selections
+
+Set `tagWrap={false}` to keep selected values on one line. Long labels truncate; extra values collapse into `+N`. In very narrow controls, only the count is shown. Open the popup to review or change selections. `maxTagCount` can further limit the visible tags; `maxTagCount="responsive"` also enables automatic single-line collapsing.
+
+Reopening preserves the expanded branches. Click a category that cannot be selected to expand it; in checkbox mode, click anywhere on a row or press Enter / Space to check it. The arrow only expands or collapses the branch. Search temporarily reveals matching branches without changing the saved expansion.
+
+<ComponentExample title="Single-line selections" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/single-line.tsx"
 ```
 
 </ComponentExample>
@@ -81,11 +95,12 @@ Choose one or more values from hierarchical data.
 | `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | Loading failed; expand again to retry |
 | `virtual` | `boolean` | `false` | Render visible items only |
 | `listHeight` | `number` | `256` | List height |
-| `itemHeight` | `number` | `34` | Estimated virtual row height |
+| `itemHeight` | `number` | `38` | Estimated virtual row height including spacing; follows the regional height and density. Actual rows are measured. |
 | `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
 | `open` | `boolean` | — | Control whether the panel is open. |
 | `defaultOpen` | `boolean` | — | Initial open state. |
-| `maxTagCount` | `number` | — | Maximum visible tags; responsive collapses tags to available width. |
+| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
+| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
 | `maxCount` | `number` | — | Maximum selection count. |
 | `treeExpandedKeys` | `readonly string[]` | — | Controlled expanded nodes. |
 | `onExpand` | `(keys: string[]) => void` | — | Called when expanded nodes change. |

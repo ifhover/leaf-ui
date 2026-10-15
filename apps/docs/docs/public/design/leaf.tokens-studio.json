@@ -49,6 +49,10 @@
         "type": "color",
         "value": "#e5e5e8"
       },
+      "option-hover": {
+        "type": "color",
+        "value": "rgba(235, 235, 235, 1)"
+      },
       "primary-text-80": {
         "type": "color",
         "value": "rgba(32, 111, 66, 1)"
@@ -601,6 +605,10 @@
         "type": "color",
         "value": "#38383f"
       },
+      "option-hover": {
+        "type": "color",
+        "value": "rgba(47, 47, 51, 1)"
+      },
       "primary-text-80": {
         "type": "color",
         "value": "rgba(152, 213, 174, 1)"
@@ -1107,7 +1115,7 @@
     "dimension": {
       "control-height": {
         "type": "dimension",
-        "value": "40px"
+        "value": "36px"
       },
       "spacing": {
         "type": "dimension",
@@ -1127,7 +1135,7 @@
       },
       "density-option-height": {
         "type": "dimension",
-        "value": "36px"
+        "value": "32px"
       },
       "density-option-padding": {
         "type": "dimension",
@@ -1155,7 +1163,7 @@
     "dimension": {
       "control-height": {
         "type": "dimension",
-        "value": "34px"
+        "value": "30px"
       },
       "spacing": {
         "type": "dimension",
@@ -1175,7 +1183,7 @@
       },
       "density-option-height": {
         "type": "dimension",
-        "value": "30px"
+        "value": "26px"
       },
       "density-option-padding": {
         "type": "dimension",

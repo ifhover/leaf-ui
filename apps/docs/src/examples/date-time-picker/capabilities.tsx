@@ -1,10 +1,10 @@
-import { DateTimePicker, Space } from '@ifhover/leaf-ui';
+import { DateTimePicker, Space, Text } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <p style={{ margin: '0 0 8px' }}>
+    <Space direction="vertical" align="stretch">
+      <Text>
         {english ? 'Business hours, custom format and preset' : '营业时间、自定义格式与快捷预设'}
-      </p>
+      </Text>
       <DateTimePicker
         format="DD/MM/YYYY HH:mm"
         showSeconds={false}

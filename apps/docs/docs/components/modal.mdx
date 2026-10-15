@@ -1,4 +1,4 @@
-import { AccessScope } from '../../src/examples/modal/access-scope';
+import { ModalDescription } from '../../src/examples/modal/description';
 import { Capabilities } from '../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../src/examples/modal/footer';
 import { ComponentExample } from '../../src/components/component-example';
@@ -10,7 +10,7 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 
 ## 编辑内容
 
-<ComponentExample title="编辑内容" preview={<ModalBasic />} fileName="basic.tsx">
+<ComponentExample title="编辑内容" preview={<ModalBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/basic.tsx"
 ```
@@ -20,7 +20,7 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 
 ## 自定义底部
 
-<ComponentExample title="自定义底部" preview={<ModalFooter />} fileName="footer.tsx">
+<ComponentExample title="自定义底部" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/footer.tsx"
 ```
@@ -29,20 +29,20 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 
 ## 状态销毁与初始焦点
 
-<ComponentExample title="状态销毁与初始焦点" preview={<Capabilities />} fileName="capabilities.tsx">
+<ComponentExample title="状态销毁与初始焦点" preview={<Capabilities />} fileName="capabilities.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/capabilities.tsx"
 ```
 
 </ComponentExample>
 
-## 权限设置
+## 图标与说明
 
-结合标题说明、卡片选项和成组权限列表完成设置。
+使用 `icon` 和 `description` 为操作补充上下文。
 
-<ComponentExample title="权限设置" preview={<AccessScope />} fileName="access-scope.tsx">
+<ComponentExample title="图标与说明" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../src/examples/modal/access-scope.tsx"
+```tsx lineNumbers file="../../src/examples/modal/description.tsx"
 ```
 
 </ComponentExample>

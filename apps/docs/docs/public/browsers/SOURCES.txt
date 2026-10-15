@@ -1,0 +1,12 @@
+Browser logos identify the browsers in the compatibility guide.
+
+Source: https://github.com/alrra/browser-logos
+Revision: 58881b84c4d73adc03c06fa2c275a7abee02d935
+
+chrome.svg: src/chrome/chrome.svg
+edge.svg: src/edge/edge.svg
+firefox.svg: src/firefox/firefox.svg
+safari.svg: src/safari/safari.svg
+
+The upstream MIT license is included in LICENSE.txt.
+Browser names and logos belong to their respective owners.

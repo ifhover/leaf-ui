@@ -1,28 +1,24 @@
-import { DateRangePicker, Space } from '@ifhover/leaf-ui';
+import { DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
 export function DateRangePickerModes() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">年份区间</span>
+    <Form layout="vertical">
+      <FormField label="年份区间">
         <DateRangePicker aria-label="年份区间" picker="year" placeholder="年份区间" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">月份区间</span>
+      </FormField>
+      <FormField label="月份区间">
         <DateRangePicker aria-label="月份区间" picker="month" placeholder="月份区间" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">周区间</span>
+      </FormField>
+      <FormField label="周区间">
         <DateRangePicker aria-label="周区间" picker="week" placeholder="周区间" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">日期时间区间</span>
+      </FormField>
+      <FormField label="日期时间区间">
         <DateRangePicker
           aria-label="日期时间区间"
           picker="datetime"
           placeholder="日期时间区间"
           use12Hours
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

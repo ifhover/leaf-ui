@@ -32,7 +32,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 基础用法
 
-<ComponentExample title="团队成员" preview={<TableBasic />} fileName="basic.tsx">
+<ComponentExample title="团队成员" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/basic.tsx"
 ```
@@ -43,7 +43,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 快捷数据表格
 
-<ComponentExample title="传入数据和列" preview={<TableSimple />} fileName="basic.tsx">
+<ComponentExample title="传入数据和列" preview={<TableSimple />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/basic.tsx"
 ```
@@ -56,7 +56,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 排序、筛选、选择与分页
 
-<ComponentExample title="管理团队成员" preview={<TableData />} fileName="data.tsx">
+<ComponentExample title="管理团队成员" preview={<TableData />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/data.tsx"
 ```
@@ -81,7 +81,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 固定表头、固定列与列宽
 
-<ComponentExample title="紧凑布局与列调整" preview={<TableColumns />} fileName="data.tsx">
+<ComponentExample title="紧凑布局与列调整" preview={<TableColumns />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/data.tsx"
 ```
@@ -96,7 +96,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 分组与聚合
 
-<ComponentExample title="按团队汇总" preview={<TableGrouped />} fileName="advanced.tsx">
+<ComponentExample title="按团队汇总" preview={<TableGrouped />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
 ```
@@ -105,7 +105,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 编辑单元格
 
-<ComponentExample title="编辑成员姓名" preview={<TableEditable />} fileName="advanced.tsx">
+<ComponentExample title="编辑成员姓名" preview={<TableEditable />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
 ```
@@ -116,7 +116,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 行和列排序
 
-<ComponentExample title="调整团队顺序" preview={<TableReordering />} fileName="reordering.tsx">
+<ComponentExample title="调整团队顺序" preview={<TableReordering />} fileName="reordering.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/reordering.tsx"
 ```
@@ -129,7 +129,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 大数据
 
-<ComponentExample title="一万行成员" preview={<TableVirtual />} fileName="advanced.tsx">
+<ComponentExample title="一万行成员" preview={<TableVirtual />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
 ```
@@ -142,7 +142,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 服务端数据
 
-<ComponentExample title="远程分页与重试" preview={<TableServer />} fileName="advanced.tsx">
+<ComponentExample title="远程分页与重试" preview={<TableServer />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/advanced.tsx"
 ```
@@ -155,7 +155,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 空数据、加载和错误
 
-<ComponentExample title="数据状态" preview={<TableStates />} fileName="basic.tsx">
+<ComponentExample title="数据状态" preview={<TableStates />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/basic.tsx"
 ```
@@ -227,7 +227,6 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `table` | `TanStackTable<TData>` | — | 必需。由 useReactTable 创建的实例，唯一的数据与状态来源。 |
 | `children` | `ReactNode` | — | 自定义布局；传入后不再渲染默认 Content 和 Pagination。 |
 | `caption` | `ReactNode` | — | 表格说明。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
@@ -242,16 +241,17 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 | `onRetry` | `() => void` | — | 请求重试。 |
 | `selection` | `false \| 'single' \| 'multiple'` | `false` | 不选择、单选或多选。 |
 | `selectAllMode` | `'page' \| 'all'` | `'page'` | 全选当前页，或实例内已加载的可选择行。 |
+| `resizable` | `boolean` | `false` | 展示可调整列的宽度手柄。 |
+| `columnReordering` | `boolean` | `false` | 展示单层表头的拖拽手柄。 |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | 启用行虚拟化。 |
+| `pagination` | `boolean` | `true` | 默认布局是否展示分页器。 |
+| `tableRef` | `Ref<HTMLTableElement>` | — | 原生表格 DOM ref。 |
+| `table` | `TanStackTable<TData>` | — | 必需。由 useReactTable 创建的实例，唯一的数据与状态来源。 |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | 行操作的可访问名称；默认使用稳定 row.id。 |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | 渲染叶子行详情，同时配置 getRowCanExpand。 |
 | `getRowProps` | `(row: Row<TData>) => `[`TableRowProps`](#tablerow-api) | — | 自定义行属性与事件。 |
 | `getCellProps` | `(cell: Cell<TData, unknown>) => `[`TableCellProps`](#tablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
-| `resizable` | `boolean` | `false` | 展示可调整列的宽度手柄。 |
-| `columnReordering` | `boolean` | `false` | 展示单层表头的拖拽手柄。 |
 | `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | 展示行拖拽手柄，并返回重排后的当前页行；应用负责更新数据。 |
-| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | 启用行虚拟化。 |
-| `pagination` | `boolean` | `true` | 默认布局是否展示分页器。 |
-| `tableRef` | `Ref<HTMLTableElement>` | — | 原生表格 DOM ref。 |
 
 尺寸、边框、交替行、固定表头、滚动区域和 loading 与 Table 相同。`aria-label` / `aria-labelledby` 应用于原生表格，其他原生 div 属性用于外层。
 
@@ -284,18 +284,24 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 | --- | --- | --- | --- |
 | `showSizeChanger` | `boolean` | `true` | 展示每页条数选择器。 |
 | `pageSizeOptions` | `readonly number[]` | — | 可选择的每页条数。 |
-| `showQuickJumper` | `boolean` | — | 展示页码跳转输入框。 |
-| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | 定制总数及当前范围的展示。 |
+| `showQuickJumper` | `boolean` | `false` | 回车或离开分页区域时跳转。 |
+| `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true 展示默认统计，也可传入函数定制总数及当前范围。 |
 | `simple` | `boolean` | — | 使用简洁分页器。 |
 | `disabled` | `boolean` | — | 禁用交互。 |
 | `hideOnSinglePage` | `boolean` | — | 只有一页时隐藏分页器。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 默认跟随 DataTable 的尺寸。 |
+| `variant` | `'outline' \| 'ghost'` | `'outline'` | 分页按钮样式：描边 / 无边框。 |
 | `hasNextPage` | `boolean` | — | 未知总数时控制下一页是否可用。 |
 
 
 沿用 Pagination 的展示参数，`total`、`current`、`pageSize` 和 `onChange` 由实例管理；`showSizeChanger` 默认开启。未知总数模式只提供上一页和下一页。
 
 ## DataTableContent API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `className` | `string` | — | 内容区域的自定义类名。 |
+| `style` | `CSSProperties` | — | 内容区域的内联样式。 |
 
 `DataTable.Content` 支持原生 `div` 属性，包括 `className`、`style` 和事件。表格的布局、选择、展开与加载参数在 [DataTable](#datatable-api) 上配置，表格 DOM ref 使用 `tableRef`。公开类型为 `DataTableContentProps`。
 
@@ -347,3 +353,29 @@ Header / Body / Footer、Caption、Row 和 Cell 支持对应元素的原生属�
 | `toIndex` | `number` | — | 必需。目标当前页索引，从 0 开始。 |
 | `activeRow` | `Row<TData>` | — | 必需。正在移动的行，包含稳定 row.id。 |
 | `overRow` | `Row<TData>` | — | 必需。放置目标行，包含稳定 row.id。 |
+
+## DataTablePresentation API
+
+ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参数。可从 `@ifhover/leaf-ui` 导入 `DataTablePresentationProps` 组装配置；只配置默认参数不需要安装 TanStack Table，使用 DataTable 时仍需要安装。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
+| `caption` | `ReactNode` | — | 设置 caption。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 展示尺寸。 |
+| `bordered` | `boolean` | — | 设置 bordered。 |
+| `striped` | `boolean` | — | 设置 striped。 |
+| `stickyHeader` | `boolean` | — | 设置 stickyHeader。 |
+| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | 设置 maxHeight。 |
+| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | 设置 minWidth。 |
+| `loading` | `boolean` | — | 展示加载状态。 |
+| `emptyContent` | `ReactNode` | — | 没有内容时的展示。 |
+| `error` | `ReactNode` | — | 设置 error。 |
+| `onRetry` | `() => void` | — | 设置 onRetry。 |
+| `selection` | `false \| 'single' \| 'multiple'` | — | 设置 selection。 |
+| `selectAllMode` | `'page' \| 'all'` | — | 设置 selectAllMode。 |
+| `resizable` | `boolean` | — | 允许拖动和使用方向键调整大小。 |
+| `columnReordering` | `boolean` | — | 设置 columnReordering。 |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | 启用虚拟滚动；大量选项默认启用。 |
+| `pagination` | `boolean` | — | 设置 pagination。 |
+| `tableRef` | `Ref<HTMLTableElement>` | — | 设置 tableRef。 |

@@ -1,0 +1,11 @@
+.leaf-component-filter {
+  min-width: 0;
+
+  > .leaf-input {
+    width: 100%;
+  }
+
+  input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}

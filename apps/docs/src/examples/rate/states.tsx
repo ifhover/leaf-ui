@@ -1,15 +1,15 @@
-import { Rate, Space } from '@ifhover/leaf-ui';
+import { Flex, Rate, Space, Text } from '@ifhover/leaf-ui';
 export function RateStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">只读评分</span>
+    <Space direction="vertical" align="stretch">
+      <Flex direction="column" gap="sm">
+        <Text>只读评分</Text>
         <Rate defaultValue={4} readOnly />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用评分</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>禁用评分</Text>
         <Rate defaultValue={2} disabled size="sm" />
-      </div>
+      </Flex>
     </Space>
   );
 }

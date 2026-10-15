@@ -1,27 +1,27 @@
-import { Avatar, Badge, Space } from '@ifhover/leaf-ui';
+import { Avatar, Badge, Flex, Text } from '@ifhover/leaf-ui';
 export function AvatarBasic() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Small</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Small</Text>
         <Avatar size="sm">LF</Avatar>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Medium</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Medium</Text>
         <Avatar>LE</Avatar>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Large · Square</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Large · Square</Text>
         <Avatar size="lg" shape="square">
           UI
         </Avatar>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Unread indicator</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Unread indicator</Text>
         <Badge dot>
           <Avatar alt="Unread messages">A</Avatar>
         </Badge>
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

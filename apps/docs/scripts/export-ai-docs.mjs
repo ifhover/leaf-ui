@@ -68,13 +68,25 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
   const version = manifest.version;
   const exports = await publicApi(repository);
   const files = await walkFiles(output);
+  const markdownFiles = files.filter((file) => {
+    const relative = path.relative(output, file).replaceAll(path.sep, '/');
+    return /^(en\/)?(components|guide|api)\/.+\.md$/.test(relative);
+  });
+  const availablePages = new Set(
+    markdownFiles.map((file) =>
+      path
+        .relative(output, file)
+        .replaceAll(path.sep, '/')
+        .replace(/^en\//, '')
+        .replace(/\.md$/, ''),
+    ),
+  );
   const pages = [];
   const normalize = (value) => value.replace(/[^a-z0-9]/gi, '').toLowerCase();
   const origin = 'https://ifhover.github.io';
   let exampleSource;
-  for (const file of files.filter((candidate) => candidate.endsWith('.md'))) {
+  for (const file of markdownFiles) {
     const relative = path.relative(output, file).replaceAll(path.sep, '/');
-    if (!/^(en\/)?(components|guide)\/.+\.md$/.test(relative)) continue;
     const english = relative.startsWith('en/');
     const id = relative.replace(/^en\//, '').replace(/\.md$/, '');
     let document;
@@ -104,7 +116,9 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
     const html = relative.replace(/\.md$/, '.html');
     const symbols = exports
       .filter((entry) => {
-        if (documentationPage(entry) === id) return true;
+        const target = documentationPage(entry, availablePages);
+        if (target.startsWith('api/')) return target === id;
+        if (target === id) return true;
         const module = entry.module.split('/').filter(Boolean).at(-1);
         if (id === 'components/result' && module === 'empty') return true;
         if (id === 'components/textarea' && entry.module.startsWith('./textarea/')) return true;
@@ -155,6 +169,25 @@ export async function exportAiDocs({ repository, output, base, sourceCommit = nu
   };
   await mkdir(path.join(output, 'api'), { recursive: true });
   await writeFile(path.join(output, 'api/index.json'), `${JSON.stringify(index, null, 2)}\n`);
+  // Copy only resources from this snapshot. Older releases without JSON stay unchanged.
+  for (const name of [
+    'en-US.json',
+    'zh-CN.json',
+    'zh-TW.json',
+    'ja-JP.json',
+    'ko-KR.json',
+    'schema.json',
+  ]) {
+    let resource;
+    try {
+      resource = await readFile(path.join(repository, 'packages/react/src/locales', name));
+    } catch (error) {
+      if (error.code === 'ENOENT') continue;
+      throw error;
+    }
+    await mkdir(path.join(output, 'locales'), { recursive: true });
+    await writeFile(path.join(output, 'locales', name), resource);
+  }
   const llms = await readFile(path.join(output, 'llms.txt'), 'utf8');
   const text = `# Leaf UI ${version}\n\n> Version-specific documentation for ${manifest.name}@${version}.\n\nRead only the pages required for your task. Match the package name and version installed in the application; do not substitute the latest version.\n\n## API discovery\n\n- [API and exported type index](${origin}${base}api/index.json): Map exact public exports to individual Markdown pages.\n\n${llms.replace(/^# .+\n/, '')}`;
   await writeFile(path.join(output, 'llms.txt'), text, 'utf8');

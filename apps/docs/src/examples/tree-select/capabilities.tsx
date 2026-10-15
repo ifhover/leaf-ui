@@ -1,4 +1,4 @@
-import { Space, TreeSelect } from '@ifhover/leaf-ui';
+import { Flex, Space, Text, TreeSelect } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = [
@@ -16,12 +16,12 @@ export function Capabilities({ english = false }) {
   const [expanded, setExpanded] = useState<readonly string[]>(['team']);
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>
           {english
             ? 'Choose up to two people; keep one tag visible'
             : '最多选择两人，只展示一个标签'}
-        </p>
+        </Text>
         <TreeSelect
           treeCheckable
           options={options}
@@ -35,7 +35,7 @@ export function Capabilities({ english = false }) {
           }
           showSearch
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

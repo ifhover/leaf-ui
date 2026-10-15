@@ -100,6 +100,7 @@ const images = {
     rect(22, 72, 196, 26, '#f6f6f7', 'none') +
     text(33, 89, 'Home / Projects / Leaf Garden', '#68686f', 9),
   pagination:
+    rect(12, 40, 28, 28, '#fff', '#e5e5e8') +
     icon(ChevronLeft, 20, 48, '#68686f') +
     [1, 2, 3, 4, 5]
       .map(
@@ -114,18 +115,19 @@ const images = {
           ) + text(53 + i * 31, 58, n, n === 2 ? '#20834a' : '#202024'),
       )
       .join('') +
-    icon(ChevronRight, 204, 48, '#68686f') +
+    rect(200, 40, 28, 28, '#fff', '#e5e5e8') +
+    icon(ChevronRight, 208, 48, '#68686f') +
     text(73, 92, '11–20 / 50 items', '#68686f', 9),
   tag:
-    rect(21, 34, 59, 25, '#eaf4ed', '#bddcc7') +
+    rect(21, 34, 59, 25, '#eaf4ed', 'none', 5) +
     text(30, 51, 'Published', '#20834a', 9) +
-    rect(90, 34, 54, 25, '#edf5ff', '#bbd7fc') +
+    rect(90, 34, 54, 25, '#edf5ff', 'none', 5) +
     text(101, 51, 'Design', '#1677ff') +
-    rect(154, 34, 64, 25, '#fff6e9', '#e8d1af') +
+    rect(154, 34, 64, 25, '#fff6e9', 'none', 5) +
     text(164, 51, 'Pending', '#8d671c') +
-    rect(56, 74, 61, 25, '#20834a', 'none') +
+    rect(56, 74, 61, 25, '#20834a', 'none', 5) +
     text(68, 91, 'Ready', '#fff') +
-    rect(129, 74, 61, 25, '#f4effb', '#d9cdee') +
+    rect(129, 74, 61, 25, '#f4effb', 'none', 5) +
     text(141, 91, 'Leaf', '#7654c6') +
     icon(X, 169, 80, '#7654c6', 12),
   badge:

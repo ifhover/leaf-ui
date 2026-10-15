@@ -1,7 +1,7 @@
-import { Button, Popover, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Popover } from '@ifhover/leaf-ui';
 export function PopoverBasic() {
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <Popover title="项目信息" content="在此查看项目概览和最近更新。">
         <Button variant="outline">点击查看</Button>
       </Popover>
@@ -13,6 +13,6 @@ export function PopoverBasic() {
       >
         <Button variant="outline">悬停查看</Button>
       </Popover>
-    </Space>
+    </Flex>
   );
 }

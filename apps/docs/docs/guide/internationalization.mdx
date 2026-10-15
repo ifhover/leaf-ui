@@ -1,0 +1,29 @@
+# 切换语言
+
+通过 ConfigProvider 的 `locale` 设置组件语言，日期面板、空状态、清除按钮等内置文本会一起切换。
+
+## 设置语言
+
+在应用入口用 ConfigProvider 包住页面，指定语言代码即可。下面将日期面板的内置文本切换为英文：
+
+```tsx
+import { ConfigProvider, DatePicker } from '@ifhover/leaf-ui';
+
+export default function App() {
+  return (
+    <ConfigProvider locale="en-US">
+      <DatePicker />
+    </ConfigProvider>
+  );
+}
+```
+
+把 DatePicker 换成你的应用内容，就能统一设置应用内组件及浮层的语言。默认使用简体中文；所有内置语言及代码见 [ConfigProvider → 内置语言](/components/config-provider#内置语言)。
+
+## 在应用中切换
+
+如果应用已有语言选择器，将当前语言状态传给 `locale` 即可。状态变化后，区域内的组件会随之更新，参见 [ConfigProvider 的切换示例](/components/config-provider#切换语言)。
+
+只想改变一部分页面时，可以在该区域嵌套 ConfigProvider。内层未设置 `locale` 时会继承外层语言。
+
+页面标题、字段标签和选项内容仍由应用自行翻译。如果需要内置列表以外的语言，或想修改某条提示，请参阅 [ConfigProvider → 补充自己的语言](/components/config-provider#补充自己的语言)。

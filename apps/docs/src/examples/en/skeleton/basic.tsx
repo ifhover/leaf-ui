@@ -1,23 +1,23 @@
-import { Button, Skeleton, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Skeleton, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SkeletonBasic() {
   const [loading, setLoading] = useState(true);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Button variant="outline" onClick={() => setLoading(!loading)}>
         Toggle loading
       </Button>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Loading content</span>
+      <Flex direction="column" gap="sm">
+        <Text>Loading content</Text>
         <Skeleton loading={loading} avatar rows={3} rowWidths={['100%', '85%', '55%']} round>
           <p>Project content is ready.</p>
         </Skeleton>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Static placeholder</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Static placeholder</Text>
         <Skeleton active={false} title={false} rows={2} />
-      </div>
+      </Flex>
     </Space>
   );
 }

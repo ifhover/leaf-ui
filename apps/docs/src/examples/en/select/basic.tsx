@@ -1,4 +1,4 @@
-import { Select, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Select } from '@ifhover/leaf-ui';
 
 const options = [
   { label: 'Design studio', value: 'design' },
@@ -9,19 +9,16 @@ const options = [
 
 export function SelectBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Choose a team</span>
+    <Form layout="vertical">
+      <FormField label="Choose a team">
         <Select aria-label="Choose a team" options={options} placeholder="Select a team" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Default team</span>
+      </FormField>
+      <FormField label="Default team">
         <Select aria-label="Default team" options={options} defaultValue="design" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled team</span>
+      </FormField>
+      <FormField label="Disabled team">
         <Select aria-label="Disabled team" options={options} disabled defaultValue="product" />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

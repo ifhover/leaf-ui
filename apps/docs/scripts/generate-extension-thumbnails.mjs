@@ -194,25 +194,21 @@ const images = {
     '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#20834a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
     t(108, 117, 'Upload files', 11),
   'file-list':
-    r(48, 16, 204, 126, '#f4f7f5') +
-    r(81, 23, 138, 112) +
-    t(101, 48, 'Project report', 11) +
-    line(101, 61, 93) +
-    line(101, 77, 98) +
-    line(101, 93, 85) +
-    t(129, 125, '1 / 4', 9, '#718078'),
-  'image-cropper':
-    r(43, 24, 214, 112, '#d9eddf', 'none') +
-    '<path d="M43 136L112 61L173 117L222 63L257 136Z" fill="#81b58f"/>' +
-    r(84, 36, 132, 86, 'none', '#fff', 0) +
-    '<path d="M128 36V122M172 36V122M84 65H216M84 94H216" stroke="#fff" stroke-opacity=".5"/>',
-  'signature-pad':
-    r(32, 30, 236, 94) +
-    '<path d="M sixty" fill="none"/>'.replace(
-      ' sixty',
-      '60 99C88 32 74 107 105 72S96 117 132 93S131 116 170 93S196 107 230 78',
-    ) +
-    t(52, 141, 'Signature', 10, '#718078'),
+    r(28, 22, 244, 112) +
+    [0, 1]
+      .map((i) => {
+        const y = 35 + i * 54;
+        return (
+          r(42, y, 30, 30, i ? '#eff5ff' : '#fff1f1') +
+          t(83, y + 10, i ? 'Project notes.md' : 'Project report.pdf', 11) +
+          t(83, y + 28, i ? 'MD · 4 KB' : 'PDF · 2.4 MB', 9, '#718078') +
+          '<g transform="translate(240 ' +
+          (y + 9) +
+          ')" stroke="#718078" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0V10M-4 6L0 10L4 6M-6 12V15H6V12"/></g>'
+        );
+      })
+      .join('') +
+    '<path d="M28 78H272" stroke="#e5e5e8"/>',
 };
 for (const [name, content] of Object.entries(images)) {
   const svg =

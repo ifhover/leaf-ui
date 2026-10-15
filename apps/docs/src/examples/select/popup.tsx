@@ -1,4 +1,5 @@
-import { Select, type SelectOption, Space } from '@ifhover/leaf-ui';
+import type { SelectOption } from '@ifhover/leaf-ui';
+import { Form, FormField, Select } from '@ifhover/leaf-ui';
 
 const options: SelectOption[] = [
   { value: 'garden', label: 'Leaf Garden Design System' },
@@ -7,18 +8,16 @@ const options: SelectOption[] = [
 ];
 export function SelectPopup() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">自动浮层宽度</span>
+    <Form layout="vertical">
+      <FormField label="自动浮层宽度">
         <Select
           aria-label="自动浮层宽度"
           style={{ width: 180 }}
           options={options}
           defaultValue="studio"
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">固定浮层宽度</span>
+      </FormField>
+      <FormField label="固定浮层宽度">
         <Select
           aria-label="固定浮层宽度"
           popupWidth={300}
@@ -32,9 +31,8 @@ export function SelectPopup() {
             </div>
           )}
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">多选数量限制</span>
+      </FormField>
+      <FormField label="多选数量限制">
         <Select
           aria-label="多选数量限制"
           multiple
@@ -44,15 +42,13 @@ export function SelectPopup() {
           maxTagCount={1}
           allowClear
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">加载选项</span>
+      </FormField>
+      <FormField label="加载选项">
         <Select aria-label="加载选项" options={[]} loading placeholder="加载中" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">空选项</span>
+      </FormField>
+      <FormField label="空选项">
         <Select aria-label="空选项" options={[]} notFoundContent="还没有项目" />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

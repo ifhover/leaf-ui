@@ -13,7 +13,6 @@ npm install @ifhover/leaf-ui
 ```tsx
 import { Button, Input, Select } from '@ifhover/leaf-ui';
 import { Plus } from 'lucide-react';
-import '@ifhover/leaf-ui/styles.css';
 
 export function App() {
   return (
@@ -26,9 +25,9 @@ export function App() {
 }
 ```
 
-Import the compiled stylesheet once in your application entry; consumers do not need Sass. JavaScript is available as ESM and CommonJS, with TypeScript declarations.
+Styles load automatically with components; consumers do not need manual CSS imports or Sass. JavaScript is available as ESM and CommonJS, with TypeScript declarations.
 
-Browser component entries load CSS automatically. Import `styles.css` once for theme variables and API services. Vite and Rsbuild / Rspack production builds retain styles for root ESM named imports and their internal dependencies on demand; component subpaths are optional. Direct esbuild bundles and CommonJS root imports do not guarantee CSS pruning; use subpaths such as `@ifhover/leaf-ui/button` in those cases. A full static stylesheet remains available at `@ifhover/leaf-ui/styles/all.css` for custom SSR pipelines.
+Browser component entries automatically load theme variables, shared popup styles and the required component and service styles. The optional `styles.css` entry remains available for existing integrations. Vite and Rsbuild / Rspack production builds retain styles for root ESM named imports and their internal dependencies on demand; component subpaths are optional. Direct esbuild bundles and CommonJS root imports do not guarantee CSS pruning; use subpaths such as `@ifhover/leaf-ui/button` in those cases. A full static stylesheet remains available at `@ifhover/leaf-ui/styles/all.css` for custom SSR pipelines.
 
 ## Components
 
@@ -58,11 +57,11 @@ Browser component entries load CSS automatically. Import `styles.css` once for t
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
 - Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
-- Upload / FileList / ImageCropper / SignaturePad: upload progress and cancellation, file metadata and browser media previews, movable crop selections and signature strokes.
+- Upload / FileList: upload progress and cancellation, file metadata, downloads and browser media previews.
 
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
-Single-line controls share sm / md / lg sizes of **34 / 40 / 46px**. The default **40px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
+Single-line controls share sm / md / lg sizes of **30 / 36 / 42px**. The default **36px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 
 ## Theming
 
@@ -71,7 +70,7 @@ Use ConfigProvider to customize a region. Start with primaryColor, borderRadius 
 ```tsx
 import { ConfigProvider, Button } from '@ifhover/leaf-ui';
 
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8, controlHeight: 40, appearance: 'light' }}>
+<ConfigProvider locale="en-US" theme={{ primaryColor: '#087f8c', borderRadius: 8, controlHeight: 36, appearance: 'light' }}>
   <Button>Save</Button>
 </ConfigProvider>
 ```
@@ -108,9 +107,13 @@ export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void
 
 Custom components can read var(--leaf-color-primary), var(--leaf-radius), var(--leaf-control-height) and other shared variables inside the region. Use ConfigProvider to change library styles, and CSS variables to reuse the resulting values. See [theming](https://ifhover.github.io/leaf-ui/guide/theming.html).
 
+## Tailwind CSS
+
+For Tailwind CSS 4, add `@import "@ifhover/leaf-ui/tailwind.css";` after your Tailwind CSS import. For Tailwind CSS 3, add `require('@ifhover/leaf-ui/tailwind').default` to your configuration's `presets` array. Both provide `leaf-` utilities for colors, spacing, typography, radii, shadows and motion that follow the surrounding ConfigProvider. See the [Tailwind CSS guide](https://ifhover.github.io/leaf-ui/en/guide/tailwindcss.html).
+
 ## Server rendering
 
-Import the static stylesheet in the framework's root entry and provide the same initial theme to server rendering and client hydration. React state can switch themes afterward without generating CSS at runtime. See [SSR usage](https://ifhover.github.io/leaf-ui/en/guide/ssr.html) for Next.js App Router, Pages Router and other React SSR frameworks.
+Framework builds load styles automatically. Use the same initial theme during server rendering and client hydration. See [Server-side rendering](https://ifhover.github.io/leaf-ui/en/guide/ssr.html) for Next.js App Router, Pages Router and TanStack Start.
 
 ## Forms
 

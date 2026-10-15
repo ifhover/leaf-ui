@@ -8,7 +8,7 @@ import { useState } from 'react';
 export function ErrorBoundaryBasic() {
   const [broken, setBroken] = useState(false);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <Button variant="outline" onClick={() => setBroken(true)}>
         Simulate a rendering error
       </Button>
