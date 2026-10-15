@@ -7,6 +7,32 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.6.0 - 2026-10-16
+
+### Added
+
+- `ConfigProvider.components` supplies scoped defaults for public components, compound parts and the Confirm API. Instance props override inner and outer scopes; `undefined` inherits and a `null` component entry clears inherited defaults. Configuration updates preserve uncontrolled values, DOM identity, focus and form semantics.
+- BCP 47 language tags, explicit fallback chains and custom `translations` JSON, with built-in Simplified Chinese, Traditional Chinese, English, Japanese and Korean. Variable sentences support ICU arguments and plurals. Translation types, JSON Schema, all five resource files and the `leaf-ui-check-translations` CLI are available.
+- A public `Flex` layout component, the Tailwind CSS 3 preset `@ifhover/leaf-ui/tailwind` and the Tailwind CSS 4 theme entry `@ifhover/leaf-ui/tailwind.css`, sharing regional colors, sizing, spacing and motion variables.
+- Card adds a large size and integrated `tabs`; FileList supports text, picture and picture-card layouts; Pagination adds `outline` / `ghost` appearances and a boolean `showTotal` for localized totals.
+
+### Improved and fixed
+
+- Default controls use a 36px height, with 30px / 42px small and large sizes and a 30px compact baseline. Forms, date and time panels, virtual-row estimates and card Tabs follow the same sizing rules.
+- Browser entries automatically load shared foundation and used component styles, without a manual CSS import. CSS-free Node entries and the complete static stylesheet remain available, with expanded Next.js, TanStack Start and server-rendering guidance.
+- Consistent neutral candidate feedback, wrapped and collapsed selection tags, Menu and Tabs corners, card surfaces, borderless tags and pagination feedback. Tab content switches immediately while selection indicators retain their movement.
+- Fixed the first input being lost after FormField validation, selected Tab text ignoring the theme color, TreeSelect expansion and option activation, reopened selector carets and narrow multi-selection layouts.
+- Fixed quick jumps overriding another pagination action and duplicate page / page-size callbacks. Internal controls no longer inherit unrelated public component defaults that accidentally change submission, read-only or disabled behavior.
+- Reworked bilingual introductions, getting started, theming, internationalization, API references and focused examples. Component filtering, persisted theme and package-manager preferences, narrow and dark layouts, and source expansion improve documentation browsing.
+
+### Migration
+
+- This `0.x` minor release includes API and default appearance changes. Review the following before upgrading.
+- `ConfigProvider.messages`, `textMessages` and `LeafMessages` are removed. Use language-indexed `translations` with `LeafTranslation` / `LeafTranslations`. List language fallbacks explicitly in the `locale` array; the final fallback is built-in English.
+- `ImageCropper`, `SignaturePad`, their types and component / stylesheet subpaths are removed. Integrate a dedicated dependency in the application when cropping or signing is required.
+- Card removes `hoverable`. Tag removes `variant="outline"`; use the default `soft` or `solid`. Pagination now uses outlined controls by default; set `variant="ghost"` to retain borderless controls.
+- Set `theme={{ controlHeight: 40 }}` through `ConfigProvider` to retain the 0.5.0 control-height baseline. Continue using `@ifhover/leaf-ui/styles/all.css` when managing SSR styles explicitly.
+
 ## 0.5.0 - 2026-10-12
 
 ### Added

@@ -7,6 +7,32 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.6.0 - 2026-10-16
+
+### 新增
+
+- `ConfigProvider.components` 为公开组件、复合组件部件及 Confirm API 提供区域默认参数。实例优先于内层、外层配置；`undefined` 继承，组件配置项的 `null` 清除继承。配置更新保留非受控值、DOM、焦点与表单语义。
+- 多语言配置支持 BCP 47 语言代码、显式回退链和自定义 `translations` JSON，内置简体中文、繁体中文、英文、日文与韩文。动态文案支持 ICU 变量与复数，提供翻译类型、JSON Schema、五种语言资源及 `leaf-ui-check-translations` 检查命令。
+- 新增 `Flex` 布局组件，以及 Tailwind CSS 3 preset `@ifhover/leaf-ui/tailwind` 和 Tailwind CSS 4 主题入口 `@ifhover/leaf-ui/tailwind.css`，复用区域颜色、尺寸、间距与动效变量。
+- Card 新增大尺寸和内嵌 `tabs`；FileList 提供文本、图片列表和图片卡片布局；Pagination 新增 `outline` / `ghost` 外观，`showTotal` 支持直接显示本地化总数。
+
+### 改进与修复
+
+- 默认控件高度统一为 36px，小、大尺寸为 30px / 42px，紧凑密度以 30px 为基准；表单、日期时间面板、虚拟列表估算和卡片式 Tabs 同步尺寸规则。
+- 浏览器入口自动加载共享基础样式与使用到的组件样式，无需手动导入 CSS；保留不加载 CSS 的 Node 入口与完整静态样式入口，并完善 Next.js、TanStack Start 与服务端渲染说明。
+- 统一选择器的中性候选背景、多选标签换行与折叠、菜单和 Tab 圆角、卡片层次、无边框标签及分页反馈。Tabs 内容立即切换，选中指示器保留移动动效。
+- 修复 FormField 校验后首次输入丢失、Tabs 选中文字未跟随主题色、TreeSelect 展开状态与选项点击、选择器重开光标和窄屏多选布局等问题。
+- 修复分页快速跳转与点击其他分页操作相互覆盖、页码和每页条数重复回调的问题；内部按钮与输入控件不再被其他公开组件的区域默认参数误改为提交、只读或禁用。
+- 重整中英文介绍、快速开始、主题、多语言、API 参考与基础示例；新增组件筛选、主题配色和包管理器偏好记忆，改善桌面、窄屏、深色外观与源码展开体验。
+
+### 迁移说明
+
+- 本次 `0.x` 次版本包含 API 与默认外观变化，升级前请检查以下项目。
+- 移除 `ConfigProvider.messages`、`textMessages` 和 `LeafMessages` 类型，改用按语言代码组织的 `translations` 及 `LeafTranslation` / `LeafTranslations`。语言回退需要在 `locale` 数组中显式列出，最终回退到内置英文。
+- 移除 `ImageCropper`、`SignaturePad`、相关类型及组件与样式子路径。需要图片裁剪或签名时，在应用中接入相应专用依赖。
+- Card 移除 `hoverable`；Tag 移除 `variant="outline"`，改用默认的 `soft` 或 `solid`。Pagination 默认使用带边框的按钮，原来的无边框外观可设置 `variant="ghost"`。
+- 如需保留 0.5.0 的基础控件高度，在 `ConfigProvider` 中设置 `theme={{ controlHeight: 40 }}`；需要自行管理 SSR 样式时继续使用 `@ifhover/leaf-ui/styles/all.css`。
+
 ## 0.5.0 - 2026-10-12
 
 ### 新增
