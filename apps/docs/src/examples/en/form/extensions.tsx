@@ -1,5 +1,6 @@
 import {
   Button,
+  Flex,
   Form,
   FormErrorSummary,
   FormField,
@@ -18,8 +19,9 @@ export function ExtensionDemo() {
             <>
               {fields.map((field) => (
                 <FormField key={field.key} label={`Contact ${field.index + 1}`} required>
-                  <Space size="sm" wrap>
+                  <Flex gap="sm" align="start">
                     <Input
+                      style={{ flex: 1, minWidth: 0 }}
                       name={`${field.name}.email`}
                       type="email"
                       value={field.value}
@@ -36,7 +38,7 @@ export function ExtensionDemo() {
                         Move up
                       </Button>
                     )}
-                  </Space>
+                  </Flex>
                 </FormField>
               ))}
               <Button variant="outline" onClick={() => ops.add('')}>

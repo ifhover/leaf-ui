@@ -236,7 +236,9 @@ test('a second row reorder starts from the running visual position and settles t
       'click',
       () => {
         requestAnimationFrame(() => {
-          const file = document.querySelector('[data-motion-key="file-Alpha"]');
+          const file = document
+            .querySelector('[data-testid="animated-files"] [title="Alpha.txt"]')
+            ?.closest('li');
           const motion = file
             ?.getAnimations()
             .find(
