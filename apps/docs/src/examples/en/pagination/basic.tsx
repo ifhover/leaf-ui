@@ -1,27 +1,16 @@
-import { Pagination, Space } from '@ifhover/leaf-ui';
-import { useState } from 'react';
+import { Pagination, Space, Text } from '@ifhover/leaf-ui';
+
 export function PaginationBasic() {
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <Pagination
-        total={240}
-        current={current}
-        pageSize={pageSize}
-        showSizeChanger
-        showQuickJumper
-        showTotal={(total, [start, end]) => `${start}–${end} / ${total} items`}
-        onChange={(page, size) => {
-          setCurrent(page);
-          setPageSize(size);
-        }}
-      />
-      <Pagination total={50} size="sm" />
-      <Pagination total={240} simple disabled />
-      <p className="leaf-demo-note">
-        Current page: {current}; page size: {pageSize} items.
-      </p>
+    <Space direction="vertical" align="center" size="lg">
+      <Space direction="vertical" align="start" size="sm">
+        <Text tone="muted">Outline (default)</Text>
+        <Pagination total={50} defaultCurrent={2} />
+      </Space>
+      <Space direction="vertical" align="start" size="sm">
+        <Text tone="muted">Ghost</Text>
+        <Pagination total={50} defaultCurrent={2} variant="ghost" />
+      </Space>
     </Space>
   );
 }

@@ -1,5 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import { forwardRef, type InputHTMLAttributes } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -9,7 +10,10 @@ export interface SwitchProps
   loading?: boolean;
 }
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-  {
+  rawProps: SwitchProps,
+  ref,
+) {
+  const {
     size = 'md',
     loading = false,
     disabled: disabledProp,
@@ -18,9 +22,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
     style,
     'aria-busy': ariaBusy,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Switch', rawProps);
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   return (

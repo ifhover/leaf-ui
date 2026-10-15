@@ -1,4 +1,5 @@
-import { Select, type SelectOption, Space } from '@ifhover/leaf-ui';
+import type { SelectOption } from '@ifhover/leaf-ui';
+import { Form, FormField, Select } from '@ifhover/leaf-ui';
 
 const options: SelectOption[] = [
   { value: 'garden', label: 'Leaf Garden Design System' },
@@ -7,18 +8,16 @@ const options: SelectOption[] = [
 ];
 export function SelectPopup() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Automatic popup width</span>
+    <Form layout="vertical">
+      <FormField label="Automatic popup width">
         <Select
           aria-label="Automatic popup width"
           style={{ width: 180 }}
           options={options}
           defaultValue="studio"
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Fixed popup width</span>
+      </FormField>
+      <FormField label="Fixed popup width">
         <Select
           aria-label="Fixed popup width"
           popupWidth={300}
@@ -32,9 +31,8 @@ export function SelectPopup() {
             </div>
           )}
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Selection limit</span>
+      </FormField>
+      <FormField label="Selection limit">
         <Select
           aria-label="Selection limit"
           multiple
@@ -44,15 +42,13 @@ export function SelectPopup() {
           maxTagCount={1}
           allowClear
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Loading options</span>
+      </FormField>
+      <FormField label="Loading options">
         <Select aria-label="Loading options" options={[]} loading placeholder="Loading" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Empty options</span>
+      </FormField>
+      <FormField label="Empty options">
         <Select aria-label="Empty options" options={[]} notFoundContent="No projects yet" />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

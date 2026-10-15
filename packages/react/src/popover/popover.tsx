@@ -12,6 +12,7 @@ import {
   version,
 } from 'react';
 import { tabbable } from 'tabbable';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
@@ -50,7 +51,7 @@ export interface PopoverProps extends PopupOptions {
   style?: CSSProperties;
   'aria-label'?: string;
 }
-export function Popover({
+export function PopoverControl({
   children,
   title,
   content,
@@ -217,4 +218,9 @@ export function Popover({
       </FloatingPanel>
     </>
   );
+}
+
+export function Popover(rawProps: PopoverProps) {
+  const props = useComponentProps('Popover', rawProps);
+  return <PopoverControl {...props} />;
 }

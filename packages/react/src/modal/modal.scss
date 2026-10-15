@@ -73,13 +73,6 @@
       var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
     );
   }
-  &__footer {
-    --leaf-dialog-padding-block: var(
-      --leaf-component-modal-padding-top,
-      calc(var(--leaf-spacing) * 1.5)
-    );
-    padding-block-end: var(--leaf-dialog-padding-block);
-  }
   &__close {
     margin-inline-start: auto;
     display: inline-flex;

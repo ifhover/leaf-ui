@@ -1,25 +1,21 @@
-import { Input, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Input } from '@ifhover/leaf-ui';
 import { Mail, Search } from 'lucide-react';
 
 export function InputBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Project name</span>
+    <Form layout="vertical">
+      <FormField label="Project name">
         <Input aria-label="Project name" placeholder="Name your project" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Search projects</span>
+      </FormField>
+      <FormField label="Search projects">
         <Input aria-label="Search projects" prefix={<Search />} placeholder="Search projects" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Email</span>
+      </FormField>
+      <FormField label="Email">
         <Input aria-label="Email" type="email" prefix={<Mail />} placeholder="hello@leaf.design" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Read-only project name</span>
+      </FormField>
+      <FormField label="Read-only project name">
         <Input aria-label="Read-only project name" defaultValue="Leaf Garden" readOnly />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

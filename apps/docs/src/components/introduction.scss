@@ -1,0 +1,117 @@
+.leaf-intro-hero {
+  margin-block: 24px 8px;
+  padding: 36px 24px;
+  border: 1px solid var(--leaf-site-border);
+  border-radius: 16px;
+  background: var(--leaf-site-soft);
+  text-align: center;
+
+  &__name {
+    margin: 0;
+    color: var(--leaf-site-text);
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+
+  &__tagline {
+    margin: 0;
+    color: var(--leaf-color-primary-text-55);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  &__description {
+    max-inline-size: 500px;
+    color: var(--leaf-site-muted);
+    font-size: 15px;
+    line-height: 1.8;
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  &__badges {
+    margin-block: 2px 8px;
+
+    > span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border: 1px solid var(--leaf-site-border);
+      border-radius: 6px;
+      color: var(--leaf-site-muted);
+      background: var(--leaf-site-panel);
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+  }
+}
+
+.leaf-intro-features {
+  margin-block: 20px;
+}
+
+.leaf-intro-feature {
+  min-inline-size: 0;
+
+  &__icon {
+    flex-shrink: 0;
+    color: var(--leaf-site-accent);
+  }
+
+  &__description {
+    color: var(--leaf-site-muted);
+    font-size: 14px;
+    line-height: 1.8;
+
+    > p {
+      margin: 0;
+    }
+  }
+}
+
+.leaf-intro-browsers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 20px 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--leaf-site-border);
+  border-radius: 12px;
+  background: var(--leaf-site-panel);
+  list-style: none;
+
+  > li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+    padding: 20px 8px;
+    color: var(--leaf-site-text);
+    font-size: 14px;
+    font-weight: 500;
+
+    + li {
+      border-inline-start: 1px solid var(--leaf-site-border);
+    }
+  }
+
+  &__version {
+    color: var(--leaf-site-muted);
+    font-size: 13px;
+    font-weight: 400;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaf-intro-hero {
+    padding: 28px 16px;
+  }
+}

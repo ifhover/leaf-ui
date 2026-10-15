@@ -1,4 +1,5 @@
 import { forwardRef, type HTMLAttributes } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
 
@@ -8,8 +9,8 @@ export interface GridProps extends HTMLAttributes<HTMLDivElement> {
   gap?: number | string | readonly [number | string, number | string];
   align?: 'start' | 'center' | 'end' | 'stretch';
 }
-export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
-  { columns = 3, gap = 16, align = 'stretch', className, style, ...props },
+export const GridControl = forwardRef<HTMLDivElement, GridProps>(function GridControl(
+  { columns = 3, gap = 16, align = 'stretch', className, style, ...props }: GridProps,
   ref,
 ) {
   const variables: LeafThemeStyle = {
@@ -34,10 +35,8 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
 export interface RowProps extends Omit<GridProps, 'columns' | 'gap'> {
   gutter?: GridProps['gap'];
 }
-export const Row = forwardRef<HTMLDivElement, RowProps>(function Row(
-  { gutter = 16, className, style, ...props },
-  ref,
-) {
+export const Row = forwardRef<HTMLDivElement, RowProps>(function Row(rawProps: RowProps, ref) {
+  const { gutter = 16, className, style, ...props } = useComponentProps('Row', rawProps);
   const [vertical, horizontal] = typeof gutter === 'object' ? gutter : [gutter, gutter];
   const unit = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
   const variables: LeafThemeStyle = {
@@ -47,7 +46,7 @@ export const Row = forwardRef<HTMLDivElement, RowProps>(function Row(
     ...style,
   };
   return (
-    <Grid
+    <GridControl
       {...props}
       ref={ref}
       columns={24}
@@ -66,10 +65,19 @@ export interface ColProps extends HTMLAttributes<HTMLDivElement> {
   lg?: number;
   xl?: number;
 }
-export const Col = forwardRef<HTMLDivElement, ColProps>(function Col(
-  { span = 24, offset = 0, xs, sm, md, lg, xl, className, style, ...props },
-  ref,
-) {
+export const Col = forwardRef<HTMLDivElement, ColProps>(function Col(rawProps: ColProps, ref) {
+  const {
+    span = 24,
+    offset = 0,
+    xs,
+    sm,
+    md,
+    lg,
+    xl,
+    className,
+    style,
+    ...props
+  } = useComponentProps('Col', rawProps);
   const variables: LeafThemeStyle = { ...style };
   let last = span;
   for (const [point, value] of Object.entries({ xs, sm, md, lg, xl })) {
@@ -94,3 +102,9 @@ export const Col = forwardRef<HTMLDivElement, ColProps>(function Col(
     </>
   );
 });
+
+export const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(rawProps: GridProps, ref) {
+  const props = useComponentProps('Grid', rawProps);
+  return <GridControl {...props} ref={ref} />;
+});
+Grid.displayName = 'Grid';

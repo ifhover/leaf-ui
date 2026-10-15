@@ -1,17 +1,17 @@
-import { Avatar, Space } from '@ifhover/leaf-ui';
+import { Avatar, Flex, Text } from '@ifhover/leaf-ui';
 export function AvatarFallback() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Text fallback</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Text fallback</Text>
         <Avatar src="data:image/png;base64,broken" alt="Failed image">
           LF
         </Avatar>
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Default icon</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Default icon</Text>
         <Avatar alt="Guest" />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

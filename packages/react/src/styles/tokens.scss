@@ -10,7 +10,7 @@
   --leaf-color-warning: #faad14;
   --leaf-color-info: #1677ff;
   --leaf-color-success: #20834a;
-  --leaf-control-height: 40px;
+  --leaf-control-height: 36px;
   --leaf-density-form-gap: 24px;
   --leaf-density-label-gap: 6px;
   --leaf-density-row-padding: 12px;
@@ -20,8 +20,6 @@
   --leaf-density-dialog-block: 20px;
   --leaf-density-dialog-inline: 24px;
   --leaf-density-dialog-gap: 16px;
-  --leaf-control-height-sm: max(1px, calc(var(--leaf-control-height) - 6px));
-  --leaf-control-height-lg: calc(var(--leaf-control-height) + 6px);
   --leaf-z-index-popup: 1000;
   --leaf-z-index-modal: 1100;
   --leaf-z-index-message: 1200;
@@ -85,11 +83,6 @@
 :root,
 :host {
   --leaf-spacing: 8px;
-  --leaf-spacing-xs: calc(var(--leaf-spacing) * 0.5);
-  --leaf-spacing-sm: var(--leaf-spacing);
-  --leaf-spacing-md: calc(var(--leaf-spacing) * 2);
-  --leaf-spacing-lg: calc(var(--leaf-spacing) * 3);
-  --leaf-spacing-xl: calc(var(--leaf-spacing) * 4);
   --leaf-line-height: 1.6;
   --leaf-heading-weight: 600;
   --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.02);
@@ -102,6 +95,13 @@
 :root,
 :host,
 [data-leaf-scope] {
+  --leaf-spacing-xs: calc(var(--leaf-spacing) * 0.5);
+  --leaf-spacing-sm: var(--leaf-spacing);
+  --leaf-spacing-md: calc(var(--leaf-spacing) * 2);
+  --leaf-spacing-lg: calc(var(--leaf-spacing) * 3);
+  --leaf-spacing-xl: calc(var(--leaf-spacing) * 4);
+  --leaf-control-height-sm: max(1px, calc(var(--leaf-control-height) - 6px));
+  --leaf-control-height-lg: calc(var(--leaf-control-height) + 6px);
   --leaf-motion-fast: calc(var(--leaf-motion-duration) * 0.6);
   --leaf-motion-slow: calc(var(--leaf-motion-duration) * 1.6);
   --leaf-color-text-subtle: var(--leaf-color-text-muted-surface-92);

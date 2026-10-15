@@ -3,10 +3,15 @@ import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
 import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TabsBasic } from '../../../src/examples/en/tabs/basic';
+import { TabsSizes } from '../../../src/examples/en/tabs/sizes';
 
 # Tabs
 
 Switch between content views within the same region.
+
+Content and panel height update immediately without transition animations. The tab bar's selection indicator keeps its movement animation.
+
+The card-style tab bar fits its labels by default and scrolls within the bar when space is limited. `size` controls the entire tab bar; content panels use the available width.
 
 ## Basic usage
 
@@ -17,7 +22,20 @@ Switch between content views within the same region.
 
 </ComponentExample>
 
+## Sizes
+
+Compare small, default and large sizes for both line and card tabs.
+
+<ComponentExample title="Sizes" preview={<TabsSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/sizes.tsx"
+```
+
+</ComponentExample>
+
 ## Closable tabs
+
+Use the plus button to add a tab. Closing every tab hides the component; the example's add button can reopen it.
 
 <ComponentExample title="Closable tabs" preview={<TabsClosable />} fileName="closable.tsx">
 
@@ -48,13 +66,13 @@ Switch between content views within the same region.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Required. Tab items |
+| `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Tab items; an empty array hides the component |
 | `activeKey` | `string` | First enabled item | Controlled / initial active key |
 | `defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card'` | `'line'` | Tab appearance |
 | `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tab bar placement |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size; the card style includes the tab bar padding and border |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
 | `extra` | `ReactNode` | — | Extra tab bar content |

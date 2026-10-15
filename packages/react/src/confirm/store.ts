@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import type { LeafComponentDefaults } from '../config-provider/component-defaults';
 import type { LeafConfig } from '../config-provider/context';
 import type { ConfirmOptions } from './confirm';
 
@@ -10,6 +11,7 @@ interface ConfirmRequest {
   options: ConfirmOptions;
   scope: string;
   config: LeafConfig;
+  components?: LeafComponentDefaults;
   open: boolean;
   resolve: (result: boolean) => void;
 }
@@ -45,20 +47,36 @@ export function createConfirmStore() {
         }
       };
     },
-    confirm: (scope: string, config: LeafConfig, options: ConfirmOptions) => {
+    confirm: (
+      scope: string,
+      config: LeafConfig,
+      options: ConfirmOptions,
+      components?: LeafComponentDefaults,
+    ) => {
       if (!available) return Promise.resolve(false);
       return new Promise<boolean>((resolve) => {
-        publish([...requests, { id: ++sequence, options, scope, config, open: true, resolve }]);
+        publish([
+          ...requests,
+          { id: ++sequence, options, scope, config, components, open: true, resolve },
+        ]);
       });
     },
     close,
     remove: (id: number) => {
       if (requests[0]?.id === id && !requests[0].open) publish(requests.slice(1));
     },
-    updateScope: (scope: string, config: LeafConfig) => {
-      if (requests.some((request) => request.scope === scope && request.config !== config))
+    updateScope: (scope: string, config: LeafConfig, components?: LeafComponentDefaults) => {
+      if (
+        requests.some(
+          (request) =>
+            request.scope === scope &&
+            (request.config !== config || request.components !== components),
+        )
+      )
         publish(
-          requests.map((request) => (request.scope === scope ? { ...request, config } : request)),
+          requests.map((request) =>
+            request.scope === scope ? { ...request, config, components } : request,
+          ),
         );
     },
     cancelScope: (scope: string) => {

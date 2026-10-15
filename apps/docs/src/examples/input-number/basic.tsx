@@ -1,9 +1,9 @@
-import { Form, FormField, InputNumber } from '@ifhover/leaf-ui';
+import { Form, FormField, InputNumber, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function InputNumberBasic() {
   const [value, setValue] = useState<number | null>(3);
   return (
-    <Form layout="vertical" className="leaf-demo-stack">
+    <Form layout="vertical">
       <FormField label="数量">
         <InputNumber name="quantity" min={0} max={20} value={value} onChange={setValue} />
       </FormField>
@@ -19,7 +19,7 @@ export function InputNumberBasic() {
       <FormField label="禁用">
         <InputNumber defaultValue={8} disabled />
       </FormField>
-      <p className="leaf-demo-note">当前数量：{value ?? '未填写'}</p>
+      <Text tone="muted">当前数量：{value ?? '未填写'}</Text>
     </Form>
   );
 }

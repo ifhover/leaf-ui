@@ -1,4 +1,5 @@
-import { Input, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
+import type { TabItem } from '@ifhover/leaf-ui';
+import { Input, Space, Tabs } from '@ifhover/leaf-ui';
 import { ChartNoAxesColumn, Settings } from 'lucide-react';
 
 const items: readonly TabItem[] = [
@@ -6,7 +7,7 @@ const items: readonly TabItem[] = [
     key: 'overview',
     label: '概览',
     icon: <ChartNoAxesColumn />,
-    children: <p>查看项目活动、成员和最近更新。</p>,
+    children: '查看项目活动、成员和最近更新。',
   },
   {
     key: 'settings',
@@ -18,19 +19,19 @@ const items: readonly TabItem[] = [
 ];
 export function TabsBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">线形标签</span>
+    <Space direction="vertical" align="stretch">
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>线形标签</span>
         <Tabs aria-label="项目信息" items={items} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">卡片标签</span>
-        <Tabs items={items} type="card" size="sm" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">纵向标签</span>
-        <Tabs items={items} placement="left" />
-      </div>
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>卡片标签</span>
+        <Tabs aria-label="卡片标签" items={items} type="card" />
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>纵向标签</span>
+        <Tabs aria-label="纵向标签" items={items} placement="left" />
+      </Space>
     </Space>
   );
 }

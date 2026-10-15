@@ -1,11 +1,16 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { PaginationBasic } from '../../src/examples/pagination/basic';
+import { PaginationSizes } from '../../src/examples/pagination/sizes';
+import { PaginationControlled } from '../../src/examples/pagination/controlled';
+import { PaginationStates } from '../../src/examples/pagination/states';
 
 # Pagination 分页
 
 按页浏览较多的数据。
 
 ## 基础用法
+
+默认使用描边按钮，也可以通过 `variant="ghost"` 使用无边框按钮。
 
 <ComponentExample title="基础用法" preview={<PaginationBasic />} fileName="basic.tsx">
 
@@ -14,25 +19,62 @@ import { PaginationBasic } from '../../src/examples/pagination/basic';
 
 </ComponentExample>
 
+## 不同尺寸
+
+分别展示小、默认和大尺寸。
+
+<ComponentExample title="不同尺寸" preview={<PaginationSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/pagination/sizes.tsx"
+```
+
+</ComponentExample>
+
+## 数据控制
+
+同时控制页码和每页条数；开启统计、条数选择和页码跳转。
+
+<ComponentExample title="数据控制" preview={<PaginationControlled />} width={720} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/pagination/controlled.tsx"
+```
+
+</ComponentExample>
+
+## 简洁与禁用
+
+`simple` 只保留前后翻页和当前页信息；`disabled` 禁用所有操作。
+
+<ComponentExample title="简洁与禁用" preview={<PaginationStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/pagination/states.tsx"
+```
+
+</ComponentExample>
+
 ## Pagination API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `total` | `number` | 必填 | 数据总条数 |
-| `current / defaultCurrent` | `number` | `1` | 受控页码 / 初始页码 |
-| `pageSize / defaultPageSize` | `number` | `10` | 受控每页条数 / 初始条数 |
-| `onChange` | `(page: number, pageSize: number) => void` | — | 页码或每页条数变化 |
+| `total` | `number` | 必填 | 必需。数据总条数 |
+| `current` | `number` | — | 受控页码，从 1 开始 |
+| `defaultCurrent` | `number` | `1` | 非受控初始页码 |
+| `pageSize` | `number` | — | 受控每页条数 |
+| `defaultPageSize` | `number` | `10` | 非受控初始每页条数 |
+| `onChange` | `(page: number, pageSize: number) => void` | — | 页码或条数实际变化时调用一次，同时返回两者 |
 | `showSizeChanger` | `boolean` | `false` | 展示每页条数选择器 |
-| `pageSizeOptions` | `readonly number[]` | — | 可选每页条数 |
-| `showQuickJumper` | `boolean` | `false` | 允许输入页码，回车跳转 |
-| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | 自定义总数说明 |
-| `simple` | `boolean` | `false` | 使用简洁页码展示 |
-| `disabled / hideOnSinglePage` | `boolean` | `false` | 禁用 / 单页时隐藏 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | 可选每页条数；自动包含当前条数，忽略无效值并去重 |
+| `showQuickJumper` | `boolean` | `false` | 回车或离开分页区域时跳转；点击其他分页控件时以该操作为准 |
+| `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true 展示默认统计，也可传入函数自定义；range 为当前页首末条目的序号 |
+| `simple` | `boolean` | `false` | 只展示前后翻页和当前页 / 总页数 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `hideOnSinglePage` | `boolean` | `false` | 总页数不足两页时隐藏 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 页码按钮、条数选择器和跳转输入框的尺寸 |
+| `variant` | `'outline' \| 'ghost'` | `'outline'` | 按钮样式：描边 / 无边框 |
+
+组件同时支持 `aria-label`、`className`、`style` 等原生 `<nav>` 属性。
 
 ## 类型
-
-定义组件属性或组装列表时可导入相关类型。
 
 ```ts
 import type { PaginationProps } from '@ifhover/leaf-ui';
@@ -40,4 +82,15 @@ import type { PaginationProps } from '@ifhover/leaf-ui';
 
 ## 使用说明
 
-页码从 1 开始。应用根据 onChange 加载对应数据；改变每页条数时，页码会尽量保留当前数据的位置。越界页码会自动限制到有效范围。
+基础分页只需提供 `total`，组件自行管理页码和条数。加载远程数据时使用 `current` 和 `pageSize`，在 `onChange` 中一起更新并请求数据；`total` 应是完整结果的总条数，而非当前页条数。
+
+改变每页条数时尽量保留当前数据位置，例如从每页 10 条的第 3 页切换到每页 20 条，会进入第 2 页。越界页码自动限制到有效范围；空数据保留第 1 页，前后按钮均禁用。外部属性变化不会额外触发 `onChange`。
+
+`showTotal` 的默认统计跟随 ConfigProvider 的语言。需要展示当前数据范围时，可以传入渲染函数：
+
+```tsx
+<Pagination
+  total={240}
+  showTotal={(total, [start, end]) => `${start}–${end} / ${total} 条`}
+/>
+```

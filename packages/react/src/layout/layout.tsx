@@ -1,5 +1,6 @@
 import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
@@ -7,10 +8,8 @@ import { useText } from '../shared/use-text';
 export interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
   direction?: 'horizontal' | 'vertical';
 }
-const LayoutRoot = forwardRef<HTMLDivElement, LayoutProps>(function Layout(
-  { direction = 'vertical', className, ...props },
-  ref,
-) {
+const LayoutRoot = forwardRef<HTMLDivElement, LayoutProps>(function Layout(rawProps, ref) {
+  const { direction = 'vertical', className, ...props } = useComponentProps('Layout', rawProps);
   return (
     <div
       {...props}
@@ -30,7 +29,10 @@ export interface LayoutSiderProps extends HTMLAttributes<HTMLElement> {
   trigger?: ReactNode;
 }
 export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function LayoutSider(
-  {
+  rawProps: LayoutSiderProps,
+  ref,
+) {
+  const {
     width = 220,
     collapsedWidth = 64,
     collapsed,
@@ -43,9 +45,7 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
     children,
     style,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('LayoutSider', rawProps);
   const t = useText();
   const [compact, setCompact] = useControllable(collapsed, defaultCollapsed, onCollapse);
   const [narrow, setNarrow] = useState(false);
@@ -68,32 +68,34 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
     >
       <div className="leaf-layout__sider-content">{children}</div>
       {collapsible && !narrow && (
-        <Button
+        <ButtonControl
           variant="ghost"
           size="sm"
           onClick={() => setCompact(!compact)}
           aria-expanded={!folded}
-          aria-label={folded ? t('展开侧栏', 'Expand sidebar') : t('收起侧栏', 'Collapse sidebar')}
+          aria-label={folded ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
         >
-          {trigger ??
-            (folded ? t('展开侧栏', 'Expand sidebar') : t('收起侧栏', 'Collapse sidebar'))}
-        </Button>
+          {trigger ?? (folded ? t('layout.expandSidebar') : t('layout.collapseSidebar'))}
+        </ButtonControl>
       )}
     </aside>
   );
 });
 export const LayoutHeader = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
-  function LayoutHeader({ className, ...props }, ref) {
+  function LayoutHeader(rawProps: HTMLAttributes<HTMLElement>, ref) {
+    const { className, ...props } = useComponentProps('LayoutHeader', rawProps);
     return <header {...props} ref={ref} className={classes('leaf-layout__header', className)} />;
   },
 );
 export const LayoutContent = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
-  function LayoutContent({ className, ...props }, ref) {
+  function LayoutContent(rawProps: HTMLAttributes<HTMLElement>, ref) {
+    const { className, ...props } = useComponentProps('LayoutContent', rawProps);
     return <main {...props} ref={ref} className={classes('leaf-layout__content', className)} />;
   },
 );
 export const LayoutFooter = forwardRef<HTMLElement, HTMLAttributes<HTMLElement>>(
-  function LayoutFooter({ className, ...props }, ref) {
+  function LayoutFooter(rawProps: HTMLAttributes<HTMLElement>, ref) {
+    const { className, ...props } = useComponentProps('LayoutFooter', rawProps);
     return <footer {...props} ref={ref} className={classes('leaf-layout__footer', className)} />;
   },
 );

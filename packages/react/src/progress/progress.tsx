@@ -1,5 +1,6 @@
 import { Check, X } from 'lucide-react';
 import type { HTMLAttributes, ReactNode } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 
@@ -26,27 +27,28 @@ export interface ProgressProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chi
   dashboard?: boolean;
   successPercent?: number;
 }
-export function Progress({
-  percent = 0,
-  type = 'line',
-  status = 'normal',
-  showInfo = true,
-  format,
-  strokeWidth,
-  color,
-  size = 100,
-  indeterminate = false,
-  active = true,
-  trailColor,
-  segments,
-  steps,
-  dashboard = false,
-  successPercent,
-  className,
-  style,
-  'aria-label': label,
-  ...props
-}: ProgressProps) {
+export function Progress(rawProps: ProgressProps) {
+  const {
+    percent = 0,
+    type = 'line',
+    status = 'normal',
+    showInfo = true,
+    format,
+    strokeWidth,
+    color,
+    size = 100,
+    indeterminate = false,
+    active = true,
+    trailColor,
+    segments,
+    steps,
+    dashboard = false,
+    successPercent,
+    className,
+    style,
+    'aria-label': label,
+    ...props
+  } = useComponentProps('Progress', rawProps);
   const { messages } = useLeafConfig();
   const value = Math.max(0, Math.min(100, Number.isFinite(percent) ? percent : 0));
   const state = !indeterminate && status === 'normal' && value === 100 ? 'success' : status;
@@ -84,8 +86,8 @@ export function Progress({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={indeterminate ? undefined : value}
-      aria-label={label ?? messages.progress}
-      aria-valuetext={indeterminate ? messages.loading : `${value}%`}
+      aria-label={label ?? messages.progress.label}
+      aria-valuetext={indeterminate ? messages.common.loading : `${value}%`}
       data-status={state}
       data-indeterminate={indeterminate || undefined}
       data-active={

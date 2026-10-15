@@ -1,7 +1,7 @@
 import { Space, Upload } from '@ifhover/leaf-ui';
 export function UploadBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Upload
         multiple
         accept="image/*,.pdf,.txt"

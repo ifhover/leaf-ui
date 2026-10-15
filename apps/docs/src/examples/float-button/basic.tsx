@@ -24,27 +24,22 @@ export function FloatButtonBasic({ english = false }: { english?: boolean }) {
 export function FloatButtonActions({ english = false }: { english?: boolean }) {
   const { message } = useMessage();
   return (
-    <div style={{ position: 'relative', height: 160 }}>
-      <FloatButtonGroup
-        className="demo-float-group"
-        actions={[
-          {
-            key: 'share',
-            label: english ? 'Share' : '分享',
-            icon: <Share2 size={18} />,
-            onClick: () => message.info(english ? 'Share link copied' : '分享链接已复制'),
-          },
-          {
-            key: 'mail',
-            label: english ? 'Contact' : '联系',
-            icon: <Mail size={18} />,
-            onClick: () => message.info(english ? 'Contact action' : '联系操作'),
-          },
-        ]}
-      />
-      <style>
-        {'.demo-float-group{position:absolute!important;inset:auto 16px 16px auto!important;}'}
-      </style>
-    </div>
+    <FloatButtonGroup
+      fixed={false}
+      actions={[
+        {
+          key: 'share',
+          label: english ? 'Share' : '分享',
+          icon: <Share2 size={18} />,
+          onClick: () => message.info(english ? 'Share link copied' : '分享链接已复制'),
+        },
+        {
+          key: 'mail',
+          label: english ? 'Contact' : '联系',
+          icon: <Mail size={18} />,
+          onClick: () => message.info(english ? 'Contact action' : '联系操作'),
+        },
+      ]}
+    />
   );
 }

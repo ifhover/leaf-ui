@@ -9,4 +9,5 @@ export { Form, FormErrorSummary, FormField, FormGroup } from './form';
 export type { FormListField, FormListOperations, FormListProps } from './list';
 export { FormList } from './list';
 
-export * from './validation';
+export type { FormValidationApi, FormValidationOptions } from './validation';
+export { useFormValidation } from './validation';

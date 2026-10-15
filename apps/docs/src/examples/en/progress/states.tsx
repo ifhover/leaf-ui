@@ -1,23 +1,23 @@
-import { Progress, Space } from '@ifhover/leaf-ui';
+import { Flex, Progress, Space, Text } from '@ifhover/leaf-ui';
 export function ProgressStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Static progress</span>
+    <Space direction="vertical" align="stretch">
+      <Flex direction="column" gap="sm">
+        <Text>Static progress</Text>
         <Progress percent={45} active={false} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Task failed</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Task failed</Text>
         <Progress percent={70} status="error" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Task complete</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Task complete</Text>
         <Progress percent={100} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Unknown duration</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Unknown duration</Text>
         <Progress indeterminate />
-      </div>
+      </Flex>
     </Space>
   );
 }

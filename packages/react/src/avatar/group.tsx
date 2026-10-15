@@ -6,27 +6,31 @@ import {
   type ReactNode,
   useRef,
 } from 'react';
-import { Popover } from '../popover';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { PopoverControl as Popover } from '../popover/popover';
 import { classes } from '../shared/classes';
 import { useListMotion } from '../shared/motion';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import { Avatar, type AvatarProps } from './avatar';
+import { AvatarControl as Avatar, type AvatarProps } from './avatar';
 export interface AvatarGroupProps extends HTMLAttributes<HTMLDivElement> {
   maxCount?: number;
   size?: AvatarProps['size'];
   shape?: AvatarProps['shape'];
   maxContent?: (hiddenCount: number) => ReactNode;
 }
-export function AvatarGroup({
-  maxCount = Infinity,
-  size,
-  shape,
-  maxContent,
-  className,
-  children,
-  ...props
-}: AvatarGroupProps) {
+export function AvatarGroup(rawProps: AvatarGroupProps) {
+  const {
+    maxCount = Infinity,
+    size,
+    shape,
+    maxContent,
+    className,
+    children,
+    ...props
+  } = useComponentProps('AvatarGroup', rawProps);
   const t = useText();
+  const format = useFormattedText();
   const root = useRef<HTMLDivElement>(null);
   const items = Children.toArray(children).map((child) =>
     isValidElement<AvatarProps>(child)
@@ -51,9 +55,9 @@ export function AvatarGroup({
           <button
             type="button"
             className="leaf-avatar-group__more"
-            aria-label={t(`查看其余 ${hidden.length} 位成员`, `Show ${hidden.length} more members`)}
+            aria-label={format('avatar.showMore', { count: hidden.length })}
           >
-            <Avatar size={size} shape={shape} alt={t('更多成员', 'More members')}>
+            <Avatar size={size} shape={shape} alt={t('avatar.moreMembers')}>
               {maxContent?.(hidden.length) ?? `+${hidden.length}`}
             </Avatar>
           </button>

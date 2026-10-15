@@ -1,4 +1,5 @@
-import { Collapse, type CollapseItem, Input, Space } from '@ifhover/leaf-ui';
+import type { CollapseItem } from '@ifhover/leaf-ui';
+import { Collapse, Flex, Input, Space, Text } from '@ifhover/leaf-ui';
 
 const items: CollapseItem[] = [
   { key: 'about', label: 'About the project', children: <p>About Leaf Garden.</p> },
@@ -6,25 +7,25 @@ const items: CollapseItem[] = [
     key: 'settings',
     label: 'Settings',
     children: (
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Project name</span>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Project name</Text>
         <Input aria-label="Project name" placeholder="Type a draft, then collapse to keep it" />
-      </div>
+      </Flex>
     ),
   },
   { key: 'archived', label: 'Archived', children: null, disabled: true },
 ];
 export function CollapseBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Expand freely</span>
+    <Space direction="vertical" align="stretch">
+      <Flex direction="column" gap="sm">
+        <Text>Expand freely</Text>
         <Collapse items={items} defaultActiveKey="about" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Accordion · Compact</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Accordion · Compact</Text>
         <Collapse items={items} accordion size="sm" />
-      </div>
+      </Flex>
     </Space>
   );
 }

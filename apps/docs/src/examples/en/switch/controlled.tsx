@@ -1,17 +1,17 @@
-import { Space, Switch } from '@ifhover/leaf-ui';
+import { Flex, Space, Switch, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SwitchControlled() {
   const [checked, setChecked] = useState(true);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <Switch checked={checked} onChange={(event) => setChecked(event.target.checked)}>
         Receive email
       </Switch>
-      <span className="leaf-demo-note" aria-live="polite">
+      <Text tone="muted" aria-live="polite">
         {checked ? 'Email notifications enabled' : 'Email notifications disabled'}
-      </span>
-      <Space wrap className="leaf-demo-row">
+      </Text>
+      <Flex gap="md" align="center" wrap justify="center">
         <Switch size="sm" defaultChecked>
           Small
         </Switch>
@@ -19,7 +19,7 @@ export function SwitchControlled() {
         <Switch size="lg" defaultChecked>
           Large
         </Switch>
-      </Space>
+      </Flex>
     </Space>
   );
 }

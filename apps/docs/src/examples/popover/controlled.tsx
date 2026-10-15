@@ -1,7 +1,6 @@
-import { Button, Input, Popover, Space } from '@ifhover/leaf-ui';
-import { useId, useState } from 'react';
+import { Button, Form, FormField, Input, Popover } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 export function PopoverControlled() {
-  const id = useId();
   const [open, setOpen] = useState(false);
   return (
     <Popover
@@ -10,13 +9,18 @@ export function PopoverControlled() {
       onOpenChange={setOpen}
       width={260}
       content={
-        <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-          <label className="leaf-demo-field" htmlFor={id}>
-            项目名称
-            <Input id={id} defaultValue="Leaf Garden" />
-          </label>
-          <Button onClick={() => setOpen(false)}>保存并关闭</Button>
-        </Space>
+        <Form
+          layout="vertical"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setOpen(false);
+          }}
+        >
+          <FormField label="项目名称">
+            <Input defaultValue="Leaf Garden" />
+          </FormField>
+          <Button type="submit">保存并关闭</Button>
+        </Form>
       }
     >
       <Button variant="outline">点击编辑</Button>

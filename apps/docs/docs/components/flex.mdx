@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { FlexBasic } from '../../src/examples/flex/basic';
+import { FlexAlignment } from '../../src/examples/flex/alignment';
+
+# Flex 弹性布局
+
+控制内容的排列方向、对齐、间距与换行，不为子元素添加额外容器。
+
+## 基础用法
+
+通过 `gap` 设置间距，`wrap` 允许内容在空间不足时换行。
+
+<ComponentExample title="基础用法" preview={<FlexBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../src/examples/flex/basic.tsx"
+```
+
+</ComponentExample>
+
+## 方向与对齐
+
+`direction` 控制排列方向，`align` 控制交叉轴对齐，`justify` 控制主轴对齐；`start` / `end` 跟随对应弹性轴的方向。
+
+<ComponentExample title="方向与对齐" preview={<FlexAlignment />} fileName="alignment.tsx">
+
+```tsx lineNumbers file="../../src/examples/flex/alignment.tsx"
+```
+
+</ComponentExample>
+
+## Flex API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `direction` | `'row' \| 'row-reverse' \| 'column' \| 'column-reverse'` | `'row'` | 排列方向。反向排列不改变 DOM 阅读与键盘顺序。 |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `0` | 间距；数字为 px，支持 CSS 长度和 `sm` / `md` / `lg` 主题间距。数组为 [行间距, 列间距]。 |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'stretch'` | 交叉轴对齐。 |
+| `justify` | `'start' \| 'center' \| 'end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `'start'` | 主轴对齐。 |
+| `wrap` | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'` | `false` | 是否换行或具体换行方向。 |
+| `inline` | `boolean` | `false` | 使用行内弹性布局。 |
+
+## 类型
+
+```ts
+import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
+```
+
+`FlexGap` 为 `number | string`。组件支持原生 `div` 属性、`className`、`style` 和 DOM ref；显式 `style` 优先于布局属性。
+
+## 使用说明
+
+简单等间距排列可使用 Space；需要主轴对齐、反向排列或行内布局时使用 Flex；多列布局使用 Grid。Flex 不改变子元素的外观和尺寸。

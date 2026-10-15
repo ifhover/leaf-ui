@@ -1,16 +1,16 @@
-import { Button, ButtonGroup, Space, SplitButton } from '@ifhover/leaf-ui';
+import { Button, ButtonGroup, Flex, Space, SplitButton, Text } from '@ifhover/leaf-ui';
 export function ExtensionDemo() {
   return (
     <Space direction="vertical" align="start">
-      <div className="leaf-demo-case">
-        <p>Button group</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>Button group</Text>
         <ButtonGroup>
           <Button variant="outline">Previous</Button>
           <Button variant="outline">Next</Button>
         </ButtonGroup>
-      </div>
-      <div className="leaf-demo-case">
-        <p>Split button</p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>Split button</Text>
         <SplitButton
           items={[
             { key: 'copy', label: 'Save a copy' },
@@ -19,7 +19,7 @@ export function ExtensionDemo() {
         >
           Save
         </SplitButton>
-      </div>
+      </Flex>
     </Space>
   );
 }

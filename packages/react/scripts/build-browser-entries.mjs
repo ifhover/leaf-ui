@@ -95,9 +95,10 @@ for (const format of ['esm', 'cjs']) {
   await mkdir(modules, { recursive: true });
   await mkdir(styles, { recursive: true });
   for (const [name, css] of componentCss) await writeFile(path.join(styles, `${name}.css`), css);
+  await writeFile(path.join(output, 'styles/foundation.css'), base.css);
   await writeFile(
     path.join(output, 'styles/base.css'),
-    `${serviceStyles.map((name) => `@import './components/${name}.css';`).join('\n')}\n${base.css}`,
+    `@import './foundation.css';\n${serviceStyles.map((name) => `@import './components/${name}.css';`).join('\n')}\n`,
   );
   // CSS belongs to the implementation, not a re-export wrapper. Bundlers may
   // bypass side-effect-free barrels, but keep a used component's own module.
@@ -121,11 +122,16 @@ for (const format of ['esm', 'cjs']) {
       /^(?:(?:"use (?:client|strict)"|'use (?:client|strict)');\s*)*/,
     )[0];
     const css = owner
-      ? path
-          .relative(path.dirname(destination), path.join(styles, `${owner}.css`))
-          .replaceAll(path.sep, '/')
-      : null;
-    const added = css ? (format === 'esm' ? `import '${css}';\n` : `require('${css}');\n`) : '';
+      ? [path.join(output, 'styles/foundation.css'), path.join(styles, `${owner}.css`)]
+      : [];
+    const added = css
+      .map((file) => {
+        const relativeCss = path
+          .relative(path.dirname(destination), file)
+          .replaceAll(path.sep, '/');
+        return format === 'esm' ? `import '${relativeCss}';\n` : `require('${relativeCss}');\n`;
+      })
+      .join('');
     await mkdir(path.dirname(destination), { recursive: true });
     await writeFile(destination, prefix + added + original.slice(prefix.length));
     try {
@@ -139,7 +145,11 @@ for (const format of ['esm', 'cjs']) {
       );
       if (added) {
         const lines = map.mappings.split(';');
-        lines.splice(prefix.split('\n').length - 1, 0, '');
+        lines.splice(
+          prefix.split('\n').length - 1,
+          0,
+          ...Array(added.split('\n').length - 1).fill(''),
+        );
         map.mappings = lines.join(';');
       }
       await writeFile(`${destination}.map`, JSON.stringify(map));

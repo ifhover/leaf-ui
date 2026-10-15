@@ -1,3 +1,4 @@
+import { SingleLine } from '../../src/examples/cascader/single-line';
 import { Capabilities } from '../../src/examples/cascader/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { CascaderBasic, CascaderControlled } from '../../src/components/form-examples';
@@ -10,7 +11,7 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 
 `children` 定义子选项。点击父项展开下一列，点击末级选项确认完整路径；`disabled` 可以禁用一个分支。
 
-<ComponentExample title="两级分类" preview={<CascaderBasic />} fileName="basic.tsx">
+<ComponentExample title="两级分类" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/basic.tsx"
 ```
@@ -21,7 +22,7 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 
 `value` 是从根节点到末级节点的 value 数组，`onChange` 同时提供完整的选项对象路径。切换父项后会清除旧分支的后续选择。
 
-<ComponentExample title="三级地区" preview={<CascaderControlled />} fileName="controlled.tsx">
+<ComponentExample title="三级地区" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/controlled.tsx"
 ```
@@ -38,6 +39,17 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 <ComponentExample title="搜索、多选与异步加载" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/cascader/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## 单行多选
+
+设置 `tagWrap={false}` 后，已选项始终展示在一行内。长文字自动省略，放不下的选项合并为 `+N`；空间很窄时只显示数量，打开浮层可查看和修改选择。`maxTagCount` 可进一步限制标签数量，`maxTagCount="responsive"` 也会启用单行自动折叠。
+
+<ComponentExample title="单行多选" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/cascader/single-line.tsx"
 ```
 
 </ComponentExample>
@@ -69,6 +81,8 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 | `loadData` | `(option: `[`CascaderOption`](#cascaderoption)`, signal: AbortSignal) => Promise<readonly `[`CascaderOption`](#cascaderoption)`[]>` | — | 异步加载子节点；应响应 AbortSignal。 |
 | `onLoadError` | `(error: unknown, option: `[`CascaderOption`](#cascaderoption)`) => void` | — | 加载失败时调用，可展示重试提示。 |
 | `cacheKey` | `string \| number` | — | 数据版本改变时清空懒加载缓存，并取消旧请求。 |
+| `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
+| `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
 | `multiple` | `false \| true` | `false` | 启用多选；value 和回调的类型随之变化。 |
 | `value` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 受控路径 / 非受控初始路径 |
 | `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 受控路径 / 非受控初始路径 |

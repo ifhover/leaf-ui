@@ -1,19 +1,19 @@
-import { Progress, Space } from '@ifhover/leaf-ui';
+import { Flex, Progress, Text } from '@ifhover/leaf-ui';
 export function ProgressCircles() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">进行中</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>进行中</Text>
         <Progress percent={45} type="circle" size={80} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">已完成</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>已完成</Text>
         <Progress percent={100} type="circle" size={80} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">失败</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>失败</Text>
         <Progress percent={60} type="circle" status="error" size={80} />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

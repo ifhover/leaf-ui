@@ -1,5 +1,6 @@
 import { Check, LoaderCircle, X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
@@ -26,19 +27,20 @@ export interface StepsProps extends Omit<HTMLAttributes<HTMLOListElement>, 'onCh
   percent?: number;
 }
 
-export function Steps({
-  items,
-  current = 0,
-  status = 'process',
-  direction = 'horizontal',
-  size = 'md',
-  loading = false,
-  onChange,
-  progressDot,
-  percent,
-  className,
-  ...props
-}: StepsProps) {
+export function Steps(rawProps: StepsProps) {
+  const {
+    items,
+    current = 0,
+    status = 'process',
+    direction = 'horizontal',
+    size = 'md',
+    loading = false,
+    onChange,
+    progressDot,
+    percent,
+    className,
+    ...props
+  } = useComponentProps('Steps', rawProps);
   const root = useRef<HTMLOListElement>(null);
   const motion = useMotionEnabled();
   const states = items.map(

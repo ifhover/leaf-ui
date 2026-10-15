@@ -1,17 +1,17 @@
-import { InputOTP, Space } from '@ifhover/leaf-ui';
+import { InputOTP, Space, Text } from '@ifhover/leaf-ui';
 
 export function InputOTPOptions() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <strong className="leaf-demo-note">字母与数字</strong>
+    <Space direction="vertical" align="stretch">
+      <Text tone="muted">字母与数字</Text>
       <InputOTP
         mode="alphanumeric"
         length={8}
         separator={(index) => (index === 3 ? <span>—</span> : null)}
       />
-      <strong className="leaf-demo-note">隐藏字符</strong>
+      <Text tone="muted">隐藏字符</Text>
       <InputOTP length={4} mask size="lg" />
-      <strong className="leaf-demo-note">禁用</strong>
+      <Text tone="muted">禁用</Text>
       <InputOTP defaultValue="123456" disabled />
     </Space>
   );

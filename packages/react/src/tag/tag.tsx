@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { defaultColors, mixColors } from '../colors';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { composedParent } from '../shared/dom';
@@ -17,25 +18,26 @@ import type { ControlSize } from '../shared/types';
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   color?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | (string & {});
-  variant?: 'soft' | 'outline' | 'solid';
+  variant?: 'soft' | 'solid';
   size?: ControlSize;
   icon?: ReactNode;
   closable?: boolean;
   onClose?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 const presets = ['default', 'primary', 'success', 'warning', 'error', 'info'];
-export function Tag({
-  color = 'default',
-  variant = 'soft',
-  size = 'md',
-  icon,
-  closable = false,
-  onClose,
-  className,
-  style,
-  children,
-  ...props
-}: TagProps) {
+export function Tag(rawProps: TagProps) {
+  const {
+    color = 'default',
+    variant = 'soft',
+    size = 'md',
+    icon,
+    closable = false,
+    onClose,
+    className,
+    style,
+    children,
+    ...props
+  } = useComponentProps('Tag', rawProps);
   const { messages, theme } = useLeafConfig();
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
@@ -45,7 +47,6 @@ export function Tag({
   const customVariables = custom
     ? {
         '--leaf-tag-color': color,
-        '--leaf-tag-color-alpha-22': mixColors(color, 'transparent', 22),
         '--leaf-tag-color-alpha-10': mixColors(color, 'transparent', 10),
         '--leaf-tag-color-surface-8': mixColors(color, surface, 8),
       }
@@ -63,7 +64,6 @@ export function Tag({
         getComputedStyle(node).getPropertyValue('--leaf-color-surface').trim() || surface;
       probe.remove();
       for (const [suffix, target, weight] of [
-        ['alpha-22', 'transparent', 22],
         ['alpha-10', 'transparent', 10],
         ['surface-8', background, 8],
       ] as const) {
@@ -106,7 +106,7 @@ export function Tag({
         <button
           type="button"
           className="leaf-tag__close"
-          aria-label={messages.remove}
+          aria-label={messages.common.remove}
           onClick={(event) => {
             onClose?.(event);
             if (!event.defaultPrevented) {

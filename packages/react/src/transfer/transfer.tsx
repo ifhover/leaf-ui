@@ -1,15 +1,18 @@
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
-import { Button } from '../button';
-import { Checkbox } from '../checkbox';
+import { ButtonControl } from '../button/button';
+import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { useLeafConfig } from '../config-provider/context';
+import { estimateControlHeight } from '../density';
 import { FieldScope, useFormField } from '../form/form';
-import { Input } from '../input';
-import { Result } from '../result';
+import { InputControl } from '../input/input';
+import { ResultControl as Result } from '../result/result';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import { useListMotion } from '../shared/motion';
 import { useText } from '../shared/use-text';
-import { VirtualList } from '../virtuallist/virtuallist';
+import { VirtualListControl as VirtualList } from '../virtuallist/virtuallist';
 export interface TransferItem {
   key: string;
   label: ReactNode;
@@ -40,27 +43,29 @@ export interface TransferProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onC
   required?: boolean;
   oneWay?: boolean;
 }
-export function Transfer({
-  items,
-  value,
-  defaultValue = [],
-  onChange,
-  selectedKeys,
-  onSelectionChange,
-  titles,
-  searchable = true,
-  filterOption,
-  renderItem,
-  disabled: disabledProp,
-  height = 180,
-  virtual = false,
-  name,
-  form,
-  required,
-  oneWay = false,
-  className,
-  ...props
-}: TransferProps) {
+export function Transfer(rawProps: TransferProps) {
+  const {
+    items,
+    value,
+    defaultValue = [],
+    onChange,
+    selectedKeys,
+    onSelectionChange,
+    titles,
+    searchable = true,
+    filterOption,
+    renderItem,
+    disabled: disabledProp,
+    height = 180,
+    virtual = false,
+    name,
+    form,
+    required,
+    oneWay = false,
+    className,
+    ...props
+  } = useComponentProps('Transfer', rawProps);
+  const { theme, density } = useLeafConfig();
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const t = useText();
@@ -139,7 +144,7 @@ export function Transfer({
       <section className="leaf-transfer__panel" aria-labelledby={`${id}-${side}`}>
         <header className="leaf-transfer__header">
           <Checkbox
-            aria-label={t('选择本页全部', 'Select all visible items')}
+            aria-label={t('transfer.selectAllVisibleItems')}
             disabled={disabled || !enabled.length}
             checked={enabled.length > 0 && checked.length === enabled.length}
             indeterminate={checked.length > 0 && checked.length < enabled.length}
@@ -152,8 +157,7 @@ export function Transfer({
             }
           />
           <span id={`${id}-${side}`}>
-            {titles?.[side] ??
-              (side === 0 ? t('可选项目', 'Available') : t('已选项目', 'Selected'))}
+            {titles?.[side] ?? (side === 0 ? t('transfer.available') : t('transfer.selected'))}
           </span>
           <small>
             {checked.length ? `${checked.length} / ` : ''}
@@ -162,14 +166,12 @@ export function Transfer({
         </header>
         {searchable && (
           <div className="leaf-transfer__search">
-            <Input
+            <InputControl
               size="sm"
               allowClear
               prefix={<Search size={14} />}
               aria-label={
-                side === 0
-                  ? t('搜索可选项目', 'Search available items')
-                  : t('搜索已选项目', 'Search selected items')
+                side === 0 ? t('transfer.searchAvailableItems') : t('transfer.searchSelectedItems')
               }
               value={query}
               onChange={(event) =>
@@ -186,15 +188,17 @@ export function Transfer({
             itemKey={(item) => item.key}
             renderItem={row}
             height={height}
-            estimateSize={items.some((item) => item.description) ? 54 : 40}
-            emptyContent={<Result size="sm" icon={null} title={t('暂无项目', 'No items')} />}
+            estimateSize={(item) =>
+              Math.max(estimateControlHeight(theme, density), item.description ? 42 : 0) + 6
+            }
+            emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
           />
         ) : (
           <div className="leaf-transfer__list" style={{ height }}>
             {list.length ? (
               list.map((item) => <div key={item.key}>{row(item)}</div>)
             ) : (
-              <Result size="sm" icon={null} title={t('暂无项目', 'No items')} />
+              <Result size="sm" icon={null} title={t('transfer.noItems')} />
             )}
           </div>
         )}
@@ -210,12 +214,12 @@ export function Transfer({
     >
       <FieldScope>{panel(0)}</FieldScope>
       <div className="leaf-transfer__actions">
-        <Button
+        <ButtonControl
           ref={trigger}
           id={props.id ?? field?.id}
           size="sm"
           startIcon={<ArrowRight size={16} />}
-          aria-label={t('移至已选', 'Move to selected')}
+          aria-label={t('transfer.moveToSelected')}
           disabled={
             disabled ||
             !items.some(
@@ -226,11 +230,11 @@ export function Transfer({
           onClick={() => move('right')}
         />
         {!oneWay && (
-          <Button
+          <ButtonControl
             size="sm"
             variant="outline"
             startIcon={<ArrowLeft size={16} />}
-            aria-label={t('移回可选', 'Move to available')}
+            aria-label={t('transfer.moveToAvailable')}
             disabled={
               disabled ||
               !items.some(

@@ -1,0 +1,15 @@
+# PopupOptions
+
+Select、日期与时间选择器等组件共用的浮层参数。单个组件的配置优先于 ConfigProvider 的 `getPopupContainer`；Modal、Drawer 的挂载容器参数名为 `container`。
+
+## PopupOptions
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+
+容器应在交互前挂载，并避免裁剪浮层。通过函数延迟访问 DOM；使用 ShadowRoot 时，也需在对应的影子根内加载组件样式。各组件的默认位置和附加选项见对应组件文档。

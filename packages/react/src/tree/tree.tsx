@@ -11,11 +11,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Checkbox } from '../checkbox';
+import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Result } from '../result';
+import { estimateControlHeight } from '../density';
+import { ResultControl as Result } from '../result/result';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { TreeDragRow, TreeDragScope } from './drag';
 import { treeChecks, treeMatches, treeModel } from './model';
 
@@ -87,7 +90,7 @@ export interface TreeProps
   allowDrop?: (info: Omit<TreeDropInfo, 'data'>) => boolean;
   onDrop?: (info: TreeDropInfo) => void;
 }
-export function Tree({
+export function TreeControl({
   data: suppliedData,
   selectedKeys,
   defaultSelectedKeys = [],
@@ -95,6 +98,8 @@ export function Tree({
   multiple = false,
   selectable = true,
   checkable = false,
+  checkOnClick = false,
+  expandOnClick = false,
   checkStrictly = false,
   checkedKeys,
   defaultCheckedKeys = [],
@@ -116,15 +121,17 @@ export function Tree({
   onLoadError,
   virtual = false,
   height = 320,
-  itemHeight = 34,
+  itemHeight: itemHeightProp,
   draggable = false,
   allowDrop,
   onDrop,
   className,
   'aria-label': label,
   ...props
-}: TreeProps) {
-  const { messages, direction } = useLeafConfig();
+}: TreeProps & { checkOnClick?: boolean; expandOnClick?: boolean }) {
+  const { messages, direction, theme, density } = useLeafConfig();
+  const format = useFormattedText();
+  const itemHeight = itemHeightProp ?? estimateControlHeight(theme, density) + 6;
   const [loaded, setLoaded] = useState<Map<string, readonly TreeNode[]>>(new Map());
   const [loading, setLoading] = useState<readonly string[]>([]);
   const requests = useRef(new Map<string, AbortController>());
@@ -328,7 +335,9 @@ export function Tree({
       if (hasChildren && isExpanded(node.key)) expand(node, false);
       else focus(records.get(node.key)?.parent);
     } else if (event.key === ' ' || event.key === 'Enter') {
-      if (checkable && event.key === ' ') check(node);
+      if (checkable && (event.key === ' ' || checkOnClick)) check(node);
+      else if (expandOnClick && hasChildren && (!selectable || node.selectable === false))
+        expand(node, !isExpanded(node.key));
       else select(node, event);
     } else if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
       const now = Date.now();
@@ -403,7 +412,10 @@ export function Tree({
           )
             return;
           focus(node.key);
-          select(node, event);
+          if (checkable && checkOnClick) check(node);
+          else if (expandOnClick && hasChildren && (!selectable || node.selectable === false))
+            expand(node, !opened);
+          else select(node, event);
         }}
       >
         <TreeRow
@@ -424,7 +436,9 @@ export function Tree({
               type="button"
               className="leaf-tree__toggle"
               tabIndex={-1}
-              aria-label={`${opened ? messages.collapseNode : messages.expand} ${node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key)}`}
+              aria-label={format(opened ? 'tree.collapseNode' : 'tree.expandNode', {
+                label: node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key),
+              })}
               disabled={disabled}
               data-hidden={!hasChildren || undefined}
               data-open={opened || undefined}
@@ -493,7 +507,7 @@ export function Tree({
       ref={root}
       style={{ ...(virtual ? { height, overflow: 'auto' } : {}), ...props.style }}
       role="tree"
-      aria-label={label ?? messages.tree}
+      aria-label={label ?? messages.tree.label}
       aria-multiselectable={multiple || checkable || undefined}
       aria-disabled={disabled || undefined}
       className={classes('leaf-tree', showLine && 'leaf-tree--lines', className)}
@@ -536,7 +550,7 @@ export function Tree({
           renderNodes(data, 1)
         )
       ) : (
-        (notFoundContent ?? <Result size="sm" title={messages.empty} icon={null} />)
+        (notFoundContent ?? <Result size="sm" title={messages.select.empty} icon={null} />)
       )}
     </div>
   );
@@ -593,4 +607,9 @@ function TreeRow({
   ) : (
     children
   );
+}
+
+export function Tree(rawProps: TreeProps) {
+  const props = useComponentProps('Tree', rawProps);
+  return <TreeControl {...props} />;
 }

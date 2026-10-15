@@ -1,5 +1,4 @@
 import { Button } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
 import { useState } from 'react';
 
 export function GettingStartedExample() {

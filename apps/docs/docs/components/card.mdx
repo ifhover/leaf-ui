@@ -1,6 +1,9 @@
 import { CardSections } from '../../src/examples/card/sections';
 import { ComponentExample } from '../../src/components/component-example';
 import { CardBasic } from '../../src/examples/card/basic';
+import { CardSizes } from '../../src/examples/card/sizes';
+import { CardTabs } from '../../src/examples/card/tabs';
+import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 # Card 卡片
 
@@ -8,20 +11,55 @@ import { CardBasic } from '../../src/examples/card/basic';
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<CardBasic />} fileName="basic.tsx">
+<ComponentExample title="基础用法" preview={<CardBasic />} fileName="basic.tsx" width={520}>
 
 ```tsx lineNumbers file="../../src/examples/card/basic.tsx"
 ```
 
 </ComponentExample>
 
+## 尺寸
+
+`size` 提供小、默认和大三种尺寸，同时调整卡片内边距、标题字号与标题栏高度。内嵌 Tabs 默认跟随卡片尺寸，也可通过 `tabs.size` 单独设置；卡片内的按钮、输入框等控件使用各自的 `size`。
+
+下面的三张卡片展示相同内容，方便对比标题、标签栏与正文留白；每张卡片的标签均可独立切换。
+
+<ComponentExample title="尺寸" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
+
+```tsx lineNumbers file="../../src/examples/card/sizes.tsx"
+```
+
+</ComponentExample>
+
 ## 内容分区
 
-默认以留白区分内容；设置 divided 可明确划分设置与操作区。
+默认以留白组织内容；设置 `divided` 可划分标题、正文与底部操作区。
 
-<ComponentExample title="内容分区" preview={<CardSections />} fileName="sections.tsx">
+<ComponentExample title="内容分区" preview={<CardSections />} fileName="sections.tsx" width={560}>
 
 ```tsx lineNumbers file="../../src/examples/card/sections.tsx"
+```
+
+</ComponentExample>
+
+## 标签页卡片
+
+通过 `tabs.items` 设置标签与对应内容。没有标题时，标签占满标题栏高度，文字上下留白一致；卡片的 `extra` 显示在标签栏右侧。
+
+<ComponentExample title="标签页卡片" preview={<CardTabs />} fileName="tabs.tsx" width={520}>
+
+```tsx lineNumbers file="../../src/examples/card/tabs.tsx"
+```
+
+</ComponentExample>
+
+## 标题与标签页
+
+有 `title` 或 `description` 时，标签栏位于标题区域下方，两者之间没有分割线，分割线只展示在标签栏下方。`tabs.activeKey` / `tabs.onChange` 控制当前标签，默认保留已访问页面的输入内容；`divided` 继续控制底部操作区的分隔线和背景。
+
+<ComponentExample title="标题与标签页" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx" width={520}>
+
+```tsx lineNumbers file="../../src/examples/card/tabs-with-title.tsx"
 ```
 
 </ComponentExample>
@@ -30,29 +68,52 @@ import { CardBasic } from '../../src/examples/card/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | — | 标题 / 标题旁的内容 |
+| `title` | `ReactNode` | — | 卡片标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
-| `extra` | `ReactNode` | — | 标题 / 标题旁的内容 |
-| `cover` | `ReactNode` | — | 顶部封面 / 底部内容 |
-| `footer` | `ReactNode` | — | 顶部封面 / 底部内容 |
+| `extra` | `ReactNode` | — | 标题旁的操作；没有标题时显示在标签栏右侧。 |
+| `tabs` | [`CardTabsProps`](#cardtabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方。 |
+| `cover` | `ReactNode` | — | 顶部封面。 |
+| `footer` | `ReactNode` | — | 底部内容或操作。 |
 | `loading` | `boolean` | `false` | 使用骨架屏替换正文 |
-| `bordered` | `boolean` | `true` | 显示外轮廓 / 悬停强调卡片 |
+| `bordered` | `boolean` | `true` | 显示外轮廓 |
 | `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
-| `hoverable` | `boolean` | `false` | 显示外轮廓 / 悬停强调卡片 |
-| `size` | `'sm' \| 'md'` | `'md'` | 内容间距 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 卡片尺寸，影响内边距、标题字号、标题栏高度及内嵌 Tabs 的默认尺寸。 |
 
 ## 类型
 
 定义组件属性或组装列表时可导入相关类型。
 
 ```ts
-import type { CardProps } from '@ifhover/leaf-ui';
+import type { CardProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
 
-extra 和 footer 可以放置按钮或链接。hoverable 提供视觉反馈，需要点击操作时请使用明确的按钮或链接。
+extra 和 footer 可以放置按钮或链接。需要点击操作时请使用明确的按钮或链接。
+
+`tabs` 复用 Tabs 的配置和交互，固定使用顶部线形标签。`tabs.items[].children` 是对应页面内容；Card 的 `children` 可放置在所有页面下方的公共说明。`loading` 替换正文为骨架屏，标题、标签栏和操作保持可用。标签默认跟随卡片的 `size`，可用 `tabs.size` 单独调整；标签数组为空时恢复普通卡片。
+
+可在 `tabs` 中设置禁用、图标、手动键盘激活、保留或销毁页面、溢出菜单以及增删、排序回调。`tabs.extra` 始终属于标签栏；有标题时 Card 的 `extra` 仍位于标题右侧。
 
 ## 外观与丰富内容
 
-`description` 显示标题下的补充说明。默认不显示内部边框；设置 `divided` 使用分区边框和淡灰底部。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景和边框。
+`description` 显示标题下的补充说明。普通卡片默认不显示内部边框，标签页卡片始终在标签栏下方展示分割线；设置 `divided` 可增加底部的分隔线与淡灰背景，操作区与 Modal、Drawer 使用一致的纵向留白。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景和边框。
+
+## CardTabs API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`TabItem`](../components/tabs#tabitem)`[]` | 必填 | 必需。标签与页面列表；为空时恢复普通卡片。 |
+| `activeKey` | `string` | 首个可用项 | 受控的激活项。 |
+| `defaultActiveKey` | `string` | 首个可用项 | 初始激活项。 |
+| `onChange` | `(key: string) => void` | — | 激活项变化时调用。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | Card 的 `size` | 标签尺寸，可单独覆盖。 |
+| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活，或回车 / 空格激活。 |
+| `destroyInactive` | `boolean` | `false` | 切走时卸载内容；默认保留已访问页面。 |
+| `extra` | `ReactNode` | — | 标签栏右侧的附加内容。 |
+| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除对应项；可阻止默认切换。 |
+| `onAdd` | `() => void` | — | 添加页签，传入后显示添加按钮。 |
+| `addLabel` | `string` | 当前语言的提示 | 添加按钮的可访问名称。 |
+| `overflow` | `boolean` | `true` | 溢出页签收进更多菜单。 |
+| `sortable` | `boolean` | `false` | 启用排序，配合 `onReorder` 使用。 |
+| `onReorder` | `(items: `[`TabItem`](../components/tabs#tabitem)`[]) => void` | — | 返回排序后的原始页签，由应用更新列表。 |

@@ -1,0 +1,52 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { FlexBasic } from '../../../src/examples/en/flex/basic';
+import { FlexAlignment } from '../../../src/examples/en/flex/alignment';
+
+# Flex
+
+Control direction, alignment, spacing and wrapping without adding wrappers around children.
+
+## Basic usage
+
+Use `gap` for spacing and `wrap` to allow items to move onto another line.
+
+<ComponentExample title="Basic usage" preview={<FlexBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/flex/basic.tsx"
+```
+
+</ComponentExample>
+
+## Direction and alignment
+
+`direction` controls flow, `align` controls cross-axis alignment and `justify` controls main-axis alignment. `start` / `end` follow the corresponding flex axis.
+
+<ComponentExample title="Direction and alignment" preview={<FlexAlignment />} fileName="alignment.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/flex/alignment.tsx"
+```
+
+</ComponentExample>
+
+## Flex API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `direction` | `'row' \| 'row-reverse' \| 'column' \| 'column-reverse'` | `'row'` | Flow direction. Reversing layout does not change DOM reading or keyboard order. |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `0` | Numbers are px. Supports CSS lengths and themed `sm` / `md` / `lg` spacing. A pair means [row gap, column gap]. |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'stretch'` | Cross-axis alignment. |
+| `justify` | `'start' \| 'center' \| 'end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `'start'` | Main-axis alignment. |
+| `wrap` | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'` | `false` | Enable wrapping or choose its direction. |
+| `inline` | `boolean` | `false` | Use inline flex layout. |
+
+## Types
+
+```ts
+import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
+```
+
+`FlexGap` is `number | string`. Native `div` attributes, `className`, `style` and DOM refs are supported. Explicit `style` takes precedence over layout props.
+
+## Usage notes
+
+Use Space for simple equal spacing, Flex for main-axis alignment, reversed flow or inline layout, and Grid for columns. Flex preserves the appearance and size of its children.

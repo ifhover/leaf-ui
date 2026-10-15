@@ -4,10 +4,29 @@ export interface TimeParts {
   second: number;
 }
 export const padTime = (value: number) => String(value).padStart(2, '0');
-export function parseTime(value: string | null | undefined): TimeParts | null {
-  const match = value
-    ?.trim()
-    .match(/^(?:(上午|下午)\s*)?(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|上午|下午)?$/i);
+export function parseTime(
+  value: string | null | undefined,
+  periods?: readonly [string, string],
+): TimeParts | null {
+  let text = value?.trim();
+  if (text && periods) {
+    for (const [index, label] of periods.entries()) {
+      if (!label) continue;
+      const normalized = text.toLowerCase();
+      const token = label.toLowerCase();
+      if (normalized.endsWith(token)) {
+        text = `${text.slice(0, -label.length).trim()} ${index === 0 ? 'AM' : 'PM'}`;
+        break;
+      }
+      if (normalized.startsWith(token)) {
+        text = `${text.slice(label.length).trim()} ${index === 0 ? 'AM' : 'PM'}`;
+        break;
+      }
+    }
+  }
+  const match = text?.match(
+    /^(?:(上午|下午)\s*)?(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|上午|下午)?$/i,
+  );
   if (!match) return null;
   if (match[1] && match[5]) return null;
   let hour = Number(match[2]);

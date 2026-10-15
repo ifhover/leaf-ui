@@ -1,0 +1,115 @@
+.leaf-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  width: 100%;
+  min-width: 0;
+  &__input {
+    display: flex;
+    flex: 1;
+    min-width: 24px;
+  }
+  &__tag {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+    height: calc(var(--leaf-current-control-height) - 8px);
+    padding: 0 7px;
+    border-radius: var(--leaf-radius-sm);
+    background: var(--leaf-color-surface-muted);
+    box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
+    font-size: var(--leaf-font-size-sm);
+    line-height: 1.5;
+    white-space: nowrap;
+    &[hidden] {
+      display: none;
+    }
+    > span:not(.leaf-selection__sr) {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    > button {
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      border-radius: 3px;
+      color: var(--leaf-color-text-muted);
+      background: transparent;
+      cursor: pointer;
+      transition:
+        color var(--leaf-motion-fast),
+        background-color var(--leaf-motion-fast);
+      &:hover {
+        color: var(--leaf-color-text);
+        background: var(--leaf-color-border);
+      }
+    }
+    &[data-custom] {
+      padding: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    &[data-custom] > * {
+      max-width: 100%;
+    }
+  }
+  &[data-single-line] {
+    flex-wrap: nowrap;
+    overflow: clip;
+    > .leaf-selection__tag {
+      flex: none;
+    }
+    > .leaf-selection__tag:first-child {
+      max-width: var(--leaf-selection-first-width, 100%);
+    }
+    .leaf-selection__input {
+      flex: 1 0 var(--leaf-selection-input-width, 24px);
+      min-width: 0;
+      > * {
+        min-width: 0;
+      }
+    }
+    &[data-measuring] > .leaf-selection__tag {
+      display: inline-flex;
+      max-width: none;
+      width: max-content;
+    }
+  }
+  &__measure {
+    position: fixed;
+    visibility: hidden;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    white-space: pre;
+    > * {
+      width: max-content;
+      max-width: none;
+    }
+  }
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-selection__tag > button {
+    transition: none;
+  }
+}

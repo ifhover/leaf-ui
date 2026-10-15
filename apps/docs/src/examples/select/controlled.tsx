@@ -1,12 +1,11 @@
-import { Select, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SelectControlled() {
   const [value, setValue] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">项目可见性</span>
+    <Form layout="vertical">
+      <FormField label="项目可见性">
         <Select
           aria-label="项目可见性"
           value={value}
@@ -19,17 +18,16 @@ export function SelectControlled() {
             { label: '私密', value: 'private' },
           ]}
         />
-      </div>
-      <span className="leaf-demo-note">当前值：{value || '尚未选择'}</span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">未设置团队 · 错误</span>
+      </FormField>
+      <Text tone="muted">当前值：{value || '尚未选择'}</Text>
+      <FormField label="未设置团队 · 错误">
         <Select
           aria-label="未设置团队"
           status="error"
           placeholder="请选择所属团队"
           options={[{ label: '设计团队', value: 'design' }]}
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

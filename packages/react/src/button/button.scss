@@ -286,6 +286,67 @@
   min-width: 0;
 }
 
+.leaf-split-button {
+  isolation: isolate;
+  &.leaf-button-group--attached > .leaf-button {
+    z-index: 1;
+  }
+}
+
+.leaf-split-button > .leaf-button--outline {
+  --leaf-split-button-divider-color: var(
+    --leaf-component-button-border-color,
+    var(--leaf-color-border)
+  );
+  &.leaf-button--danger {
+    --leaf-split-button-divider-color: var(
+      --leaf-component-button-border-color,
+      var(--leaf-button-border)
+    );
+  }
+  // The shared edge stays neutral while the outer border responds to each action.
+  &:first-child {
+    border-inline-end-color: var(--leaf-split-button-divider-color);
+  }
+  &:not(:first-child) {
+    border-inline-start-color: var(--leaf-split-button-divider-color);
+  }
+}
+
+.leaf-split-button > .leaf-button + .leaf-button {
+  &:not(.leaf-button--outline) {
+    margin-inline-start: 0;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset-block: 22%;
+    inset-inline-start: 0;
+    width: 1px;
+    background: var(--leaf-component-button-border-color, var(--leaf-color-border));
+    pointer-events: none;
+  }
+  &.leaf-button--solid::before {
+    background: color-mix(in srgb, var(--leaf-button-on-color) 32%, transparent);
+  }
+  &.leaf-button--outline::before {
+    display: none;
+  }
+  &.leaf-button--link {
+    margin-inline-start: 8px;
+    &::before {
+      inset-inline-start: -4px;
+    }
+  }
+  @media (forced-colors: active) {
+    &::before,
+    &.leaf-button--solid::before {
+      background: ButtonText;
+    }
+  }
+}
+
 .leaf-button {
   --leaf-current-control-height: var(--leaf-component-button-height, var(--leaf-control-height));
   --leaf-current-font-size: var(--leaf-component-button-font-size, var(--leaf-font-size));

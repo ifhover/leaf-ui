@@ -1,4 +1,4 @@
-import { Button, Space, Tree, type TreeNode } from '@ifhover/leaf-ui';
+import { Button, Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useCallback, useMemo, useState } from 'react';
 
 export function TreeCacheRefresh({ english = false }: { english?: boolean }) {
@@ -45,11 +45,11 @@ export function TreeCacheRefresh({ english = false }: { english?: boolean }) {
         cacheKey={version}
         defaultExpandedKeys={['root']}
       />
-      <p className="leaf-demo-note">
+      <Text tone="muted">
         {english
           ? 'The root key stays stable. A new cache version discards old children and cancels pending requests.'
           : '根节点 key 保持不变，数据版本变化后会清除旧子节点并取消未完成的请求。'}
-      </p>
+      </Text>
     </Space>
   );
 }

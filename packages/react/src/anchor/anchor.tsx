@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useMotionEnabled } from '../shared/motion';
 import { useControllable } from '../shared/use-controllable';
@@ -17,16 +18,17 @@ export interface AnchorProps extends HTMLAttributes<HTMLElement> {
   onActiveChange?: (key: string) => void;
   smooth?: boolean;
 }
-export function Anchor({
-  items,
-  container,
-  offset = 12,
-  activeKey,
-  onActiveChange,
-  smooth = true,
-  className,
-  ...props
-}: AnchorProps) {
+export function Anchor(rawProps: AnchorProps) {
+  const {
+    items,
+    container,
+    offset = 12,
+    activeKey,
+    onActiveChange,
+    smooth = true,
+    className,
+    ...props
+  } = useComponentProps('Anchor', rawProps);
   const [active, setActive] = useControllable(activeKey, '', onActiveChange);
   const root = useRef<HTMLElement>(null);
   const indicator = useRef<HTMLSpanElement>(null);
@@ -109,16 +111,17 @@ export interface AffixProps extends HTMLAttributes<HTMLDivElement> {
   container?: () => HTMLElement | Window;
   onAffixChange?: (affixed: boolean) => void;
 }
-export function Affix({
-  offsetTop = 0,
-  offsetBottom,
-  container,
-  onAffixChange,
-  className,
-  style,
-  children,
-  ...props
-}: AffixProps) {
+export function Affix(rawProps: AffixProps) {
+  const {
+    offsetTop = 0,
+    offsetBottom,
+    container,
+    onAffixChange,
+    className,
+    style,
+    children,
+    ...props
+  } = useComponentProps('Affix', rawProps);
   const placeholder = useRef<HTMLDivElement>(null),
     content = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<React.CSSProperties>();

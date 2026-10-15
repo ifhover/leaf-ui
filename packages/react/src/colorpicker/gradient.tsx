@@ -1,15 +1,16 @@
 import { TinyColor } from '@ctrl/tinycolor';
 import { Plus, X } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
-import { InputNumber } from '../inputnumber';
+import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import { FloatingPanel, useFloatingDismiss, usePopupState } from '../shared/floating';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import { Slider } from '../slider';
+import { SliderControl as Slider } from '../slider/slider';
 import { type ColorPickerProps, SolidColorPicker } from './colorpicker';
 export interface ColorGradientStop {
   key?: string;
@@ -85,6 +86,7 @@ export function GradientColorPicker({
   const field = useFormField(),
     { messages } = useLeafConfig(),
     t = useText();
+  const formatText = useFormattedText();
   const disabled = disabledProp || field?.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const trigger = useRef<HTMLButtonElement>(null),
@@ -136,12 +138,26 @@ export function GradientColorPicker({
   useFloatingDismiss(open, () => setOpen(false), trigger, panel, root);
   return (
     <>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Pointer events on the outer row forward to the keyboard-accessible trigger button. */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: The enclosed native button owns keyboard interaction; this wrapper only extends its hit area. */}
       <span
         ref={root}
         className={classes('leaf-color-picker', `leaf-color-picker--${size}`, className)}
         style={style}
         data-status={status}
         data-disabled={disabled || undefined}
+        data-readonly={readOnly || undefined}
+        data-open={open || undefined}
+        onMouseDown={(event) => {
+          if (!disabled && event.target === event.currentTarget) event.preventDefault();
+        }}
+        onClick={(event) => {
+          if (disabled || event.defaultPrevented || event.target !== event.currentTarget) return;
+          event.preventDefault();
+          event.stopPropagation();
+          trigger.current?.focus();
+          trigger.current?.click();
+        }}
       >
         <button
           {...props}
@@ -150,7 +166,9 @@ export function GradientColorPicker({
           form={form}
           id={id ?? field?.id}
           disabled={disabled}
-          aria-label={props['aria-label'] ?? (field?.labelId ? undefined : messages.color)}
+          aria-label={
+            props['aria-label'] ?? (field?.labelId ? undefined : messages.colorPicker.label)
+          }
           aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
           aria-describedby={
             [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
@@ -173,8 +191,8 @@ export function GradientColorPicker({
               {typeof showText === 'function'
                 ? showText(current)
                 : current
-                  ? t('渐变', 'Gradient')
-                  : messages.color}
+                  ? t('colorPicker.gradient')
+                  : messages.colorPicker.label}
             </span>
           )}
         </button>
@@ -182,7 +200,7 @@ export function GradientColorPicker({
           <button
             type="button"
             className="leaf-color-picker__clear"
-            aria-label={messages.clearColor}
+            aria-label={messages.colorPicker.clear}
             onClick={() => {
               setCurrent('');
               onChange?.('');
@@ -209,7 +227,7 @@ export function GradientColorPicker({
         width={popupWidth}
         id={panelId}
         role="dialog"
-        aria-label={messages.color}
+        aria-label={messages.colorPicker.label}
         className={['leaf-floating', 'leaf-color-picker__gradient', popupClassName]
           .filter(Boolean)
           .join(' ')}
@@ -225,16 +243,16 @@ export function GradientColorPicker({
               <button
                 key={stop.key}
                 type="button"
-                aria-label={`${t('色标', 'Color stop')} ${index + 1}`}
+                aria-label={formatText('colorPicker.colorStop', { index: index + 1 })}
                 aria-pressed={active === index}
                 style={{ background: stop.color }}
                 onClick={() => setActive(index)}
               />
             ))}
-            <Button
+            <ButtonControl
               size="sm"
               variant="ghost"
-              aria-label={t('增加色标', 'Add color stop')}
+              aria-label={t('colorPicker.addColorStop')}
               startIcon={<Plus size={14} />}
               disabled={model.stops.length >= 10}
               onClick={() => {
@@ -251,10 +269,10 @@ export function GradientColorPicker({
                 setActive(model.stops.length);
               }}
             />
-            <Button
+            <ButtonControl
               size="sm"
               variant="ghost"
-              aria-label={t('删除色标', 'Remove color stop')}
+              aria-label={t('colorPicker.removeColorStop')}
               startIcon={<X size={14} />}
               disabled={model.stops.length <= 2}
               onClick={() => {
@@ -267,7 +285,7 @@ export function GradientColorPicker({
             />
           </div>
           <div className="leaf-color-picker__gradient-field">
-            <span>{t('颜色', 'Color')}</span>
+            <span>{t('colorPicker.color')}</span>
             <SolidColorPicker
               value={selected.color}
               onChange={(color) => changeStop({ color })}
@@ -281,18 +299,18 @@ export function GradientColorPicker({
             />
           </div>
           <div className="leaf-color-picker__gradient-field">
-            <span>{t('位置', 'Position')}</span>
+            <span>{t('colorPicker.position')}</span>
             <Slider
-              aria-label={t('色标位置', 'Color stop position')}
+              aria-label={t('colorPicker.colorStopPosition')}
               value={selected.offset}
               onChange={(offset) => changeStop({ offset })}
               onChangeComplete={() => onChangeComplete?.(current)}
             />
           </div>
           <div className="leaf-color-picker__gradient-field">
-            <span>{t('角度', 'Angle')}</span>
+            <span>{t('colorPicker.angle')}</span>
             <InputNumber
-              aria-label={t('渐变角度', 'Gradient angle')}
+              aria-label={t('colorPicker.gradientAngle')}
               min={0}
               max={360}
               value={model.angle}

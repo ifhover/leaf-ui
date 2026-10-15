@@ -1,4 +1,5 @@
 import { Children, forwardRef, type HTMLAttributes } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import type { GridBreakpoint } from '../grid/grid';
 import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
@@ -7,9 +8,17 @@ export interface MasonryProps extends HTMLAttributes<HTMLDivElement> {
   gap?: number | string;
 }
 export const Masonry = forwardRef<HTMLDivElement, MasonryProps>(function Masonry(
-  { columns = { xs: 1, sm: 2, lg: 3 }, gap = 16, className, children, style, ...props },
+  rawProps: MasonryProps,
   ref,
 ) {
+  const {
+    columns = { xs: 1, sm: 2, lg: 3 },
+    gap = 16,
+    className,
+    children,
+    style,
+    ...props
+  } = useComponentProps('Masonry', rawProps);
   const variables: LeafThemeStyle = {
     '--leaf-masonry-gap': typeof gap === 'number' ? `${gap}px` : gap,
     ...style,

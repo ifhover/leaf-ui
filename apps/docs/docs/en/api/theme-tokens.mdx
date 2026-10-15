@@ -1,0 +1,97 @@
+# Theme tokens
+
+Prefer ConfigProvider's `theme.primaryColor`, `theme.borderRadius` and `theme.controlHeight` for everyday customization. Related styles derive automatically; see [theming](/en/guide/theming).
+
+## LeafThemeTokens
+
+Pass advanced overrides through `theme.tokens` only when a derived value needs to change independently. Every field is optional, and nested providers inherit unspecified fields. Numeric lengths use pixels; numeric durations use milliseconds.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `onPrimaryColor` | `string` | Theme | Text on primary backgrounds |
+| `dangerColor` | `string` | Appearance | Danger background / foreground |
+| `onDangerColor` | `string` | Appearance | Danger background / foreground |
+| `successColor` | `string` | Appearance | Success / warning / information |
+| `warningColor` | `string` | Appearance | Success / warning / information |
+| `infoColor` | `string` | Appearance | Success / warning / information |
+| `textColor` | `string` | Appearance | Main / secondary text |
+| `mutedTextColor` | `string` | Appearance | Main / secondary text |
+| `subtleTextColor` | `string` | — | Subtle supporting text color. |
+| `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `mutedSurfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
+| `borderColor` | `string` | Appearance | Neutral borders |
+| `borderHoverColor` | `string` | — | Neutral border color on hover. |
+| `dividerColor` | `string` | — | Section divider color, derived from border and surface colors by default. |
+| `borderRadiusSm` | `number \| string` | `Base × 0.6` | Small / large radius override |
+| `borderRadiusMd` | `number \| string` | `Base × 1.2` | Medium radius override for content surfaces such as cards and alerts |
+| `borderRadiusLg` | `number \| string` | Base × 1.6 | Large radius override |
+| `controlHeightSm` | `number \| string` | Base height − 6px (minimum 1px) | Small control height override |
+| `controlHeightLg` | `number \| string` | Base height + 6px | Large control height override |
+| `fontSizeSm` | `number \| string` | `Base − 1px` | Small / large font override |
+| `fontSizeLg` | `number \| string` | Base font size + 2px | Large font size override |
+| `fontWeight` | `number` | `500` | Emphasis weight for buttons, labels and component titles |
+| `motionDuration` | `number \| string` | `200` | Base transition duration; numbers are ms and CSS times are accepted. motion=false forces 0. |
+| `motionEasing` | `string` | `'cubic-bezier(0.22, 1, 0.36, 1)'` | Easing for hover, content and ordinary transitions. |
+| `motionSpring` | `string` | `'cubic-bezier(0.22, 1.28, 0.36, 1)'` | A mild spring curve for selection and shape changes. |
+| `popupZIndex` | `number` | `1000` | Popup / modal / message stacking |
+| `modalZIndex` | `number` | `1100` | Popup / modal / message stacking |
+| `messageZIndex` | `number` | `1200` | Popup / modal / message stacking |
+| `buttonBorderRadius` | `number \| string` | Control size | Button-only radius / shared height override |
+| `buttonHeight` | `number \| string` | Control size | Button-only radius / shared height override |
+| `choiceBorderRadius` | `number \| string` | Base × 0.5 | Checkbox radius |
+| `focusColor` | `string` | Semantic color | Focus outlines |
+| `primaryHoverColor` | `string` | Primary color | Hover / pressed primary states |
+| `primaryActiveColor` | `string` | Primary color | Hover / pressed primary states |
+| `primarySoftColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primarySoftHoverColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primarySoftActiveColor` | `string` | Primary color | Soft primary backgrounds and states |
+| `primaryBorderColor` | `string` | Primary color | Primary border |
+| `dangerHoverColor` | `string` | Danger color | Hover / pressed danger states |
+| `dangerActiveColor` | `string` | Danger color | Hover / pressed danger states |
+| `spacingSm` | `number \| string` | — | Configure spacing sm. |
+| `spacingLg` | `number \| string` | — | Configure spacing lg. |
+| `shadowSm` | `string` | — | Configure shadow sm. |
+| `shadowXs` | `string` | — | The lightest surface shadow. |
+| `shadowMd` | `string` | — | Configure shadow md. |
+| `shadowLg` | `string` | — | Configure shadow lg. |
+| `lineHeight` | `number` | — | Body line height. |
+
+## Type import
+
+```tsx
+import type { LeafThemeTokens } from '@ifhover/leaf-ui';
+
+const tokens = {
+  controlHeightSm: 28,
+  borderRadiusLg: 14,
+} satisfies LeafThemeTokens;
+```
+
+Pass this object to `<ConfigProvider theme={{ tokens }}>`.
+
+## LeafComponentTokens
+
+Style fields for `theme.components` overrides by component name. Check each component's documentation for the fields it supports.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `borderRadius` | `string \| number` | Corner radius; numbers are pixels. |
+| `controlHeight` | `string \| number` | Control height; numbers are pixels. |
+| `padding` | `string \| number` | Content padding. |
+| `gap` | `string \| number` | Space between children. |
+| `fontSize` | `string \| number` | Font size; numbers are pixels. |
+| `color` | `string` | Color or semantic color. |
+| `background` | `string` | Component surface background. |
+| `borderColor` | `string` | Outer borders and section dividers. |
+| `headerBackground` | `string` | Header background. |
+| `footerBackground` | `string` | Footer background. |
+| `shadow` | `string` | CSS box-shadow value. |
+
+## LeafThemeStyle
+
+A React style type with `--leaf-*` custom properties. See [Theming](/en/guide/theming#use-the-theme-in-application-css) for consuming variables in application CSS.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | Reusable CSS custom property. |

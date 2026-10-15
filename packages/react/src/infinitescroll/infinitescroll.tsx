@@ -1,6 +1,7 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
-import { Button } from '../button';
-import { Loading } from '../loading';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { LoadingControl as Loading } from '../loading/loading';
 import { classes } from '../shared/classes';
 import { useText } from '../shared/use-text';
 export interface InfiniteScrollProps extends HTMLAttributes<HTMLDivElement> {
@@ -13,19 +14,20 @@ export interface InfiniteScrollProps extends HTMLAttributes<HTMLDivElement> {
   endMessage?: ReactNode;
   onError?: (error: unknown) => void;
 }
-export function InfiniteScroll({
-  dataLength,
-  hasMore,
-  onLoadMore,
-  target,
-  threshold = 200,
-  loader,
-  endMessage,
-  onError,
-  className,
-  children,
-  ...props
-}: InfiniteScrollProps) {
+export function InfiniteScroll(rawProps: InfiniteScrollProps) {
+  const {
+    dataLength,
+    hasMore,
+    onLoadMore,
+    target,
+    threshold = 200,
+    loader,
+    endMessage,
+    onError,
+    className,
+    children,
+    ...props
+  } = useComponentProps('InfiniteScroll', rawProps);
   const t = useText();
   const sentinel = useRef<HTMLDivElement>(null);
   const controller = useRef<AbortController | null>(null);
@@ -122,23 +124,23 @@ export function InfiniteScroll({
           className="leaf-infinite-scroll__feedback"
         >
           {error ? (
-            <Button
+            <ButtonControl
               variant="ghost"
               onClick={() => {
                 setError(false);
                 setRetry((value) => value + 1);
               }}
             >
-              {t('加载失败，重试', 'Loading failed. Retry')}
-            </Button>
+              {t('infiniteScroll.loadingFailedRetry')}
+            </ButtonControl>
           ) : loading ? (
-            (loader ?? <Loading size="sm" tip={t('加载中', 'Loading')} />)
+            (loader ?? <Loading size="sm" tip={t('common.loading')} />)
           ) : !hasMore ? (
-            (endMessage ?? t('已加载全部内容', 'All items loaded'))
+            (endMessage ?? t('infiniteScroll.allItemsLoaded'))
           ) : manual ? (
-            <Button variant="ghost" onClick={() => manualLoad.current()}>
-              {t('加载更多', 'Load more')}
-            </Button>
+            <ButtonControl variant="ghost" onClick={() => manualLoad.current()}>
+              {t('infiniteScroll.loadMore')}
+            </ButtonControl>
           ) : null}
         </span>
       </div>

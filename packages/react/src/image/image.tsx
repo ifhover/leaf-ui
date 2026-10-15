@@ -13,11 +13,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Loading } from '../loading';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { LoadingControl as Loading } from '../loading/loading';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { useClient } from '../shared/use-client';
 import { useControllable } from '../shared/use-controllable';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 
 export interface ImagePreviewItem {
@@ -39,7 +41,7 @@ export interface ImagePreviewProps {
   downloadable?: boolean;
 }
 const Viewer = lazy(() => import('./viewer').then((module) => ({ default: module.ImageViewer })));
-export function ImagePreview(props: ImagePreviewProps) {
+export function ImagePreviewControl(props: ImagePreviewProps) {
   const client = useClient();
   const [visited, setVisited] = useState(props.open);
   useEffect(() => {
@@ -69,18 +71,19 @@ export interface ImagePreviewGroupProps {
   thumbnails?: boolean;
   downloadable?: boolean;
 }
-export function ImagePreviewGroup({
-  children,
-  items,
-  open: controlled,
-  defaultOpen = false,
-  onOpenChange,
-  index: controlledIndex,
-  defaultIndex = 0,
-  onIndexChange,
-  thumbnails = true,
-  downloadable = false,
-}: ImagePreviewGroupProps) {
+export function ImagePreviewGroup(rawProps: ImagePreviewGroupProps) {
+  const {
+    children,
+    items,
+    open: controlled,
+    defaultOpen = false,
+    onOpenChange,
+    index: controlledIndex,
+    defaultIndex = 0,
+    onIndexChange,
+    thumbnails = true,
+    downloadable = false,
+  } = useComponentProps('ImagePreviewGroup', rawProps);
   const [open, setOpen] = useControllable(controlled, defaultOpen, onOpenChange);
   const [index, setIndex] = useControllable(controlledIndex, defaultIndex, onIndexChange);
   const [registered, setRegistered] = useState<{ id: string; item: ImagePreviewItem }[]>([]);
@@ -111,7 +114,7 @@ export function ImagePreviewGroup({
   return (
     <GroupContext.Provider value={context}>
       {children}
-      <ImagePreview
+      <ImagePreviewControl
         items={items ?? registered.map((entry) => entry.item)}
         open={open}
         index={index}
@@ -130,7 +133,10 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 }
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
-  {
+  rawProps: ImageProps,
+  ref,
+) {
+  const {
     src,
     alt = '',
     preview = true,
@@ -144,10 +150,9 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     onLoad,
     onError,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Image', rawProps);
   const t = useText();
+  const format = useFormattedText();
   const group = useContext(GroupContext);
   const id = useId();
   const native = useRef<HTMLImageElement>(null);
@@ -194,7 +199,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
         <button
           type="button"
           className="leaf-image__trigger"
-          aria-label={`${t('预览图片', 'Preview image')}${alt ? `: ${alt}` : ''}`}
+          aria-label={format('image.previewImage', { alt: alt ? `: ${alt}` : '' })}
           onClick={(event) => {
             if (!event.defaultPrevented && state !== 'error') {
               if (group) group.show(id);
@@ -219,13 +224,13 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
         <span
           className="leaf-image__placeholder"
           role="img"
-          aria-label={alt || t('图片加载失败', 'Image unavailable')}
+          aria-label={alt || t('image.imageUnavailable')}
         >
           {fallback ?? <ImageOff size={24} aria-hidden="true" />}
         </span>
       )}
       {!group && (
-        <ImagePreview
+        <ImagePreviewControl
           items={src ? [{ src: previewSrc ?? src, alt }] : []}
           open={open}
           onClose={() => setOpen(false)}
@@ -234,3 +239,8 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     </span>
   );
 });
+
+export function ImagePreview(rawProps: ImagePreviewProps) {
+  const props = useComponentProps('ImagePreview', rawProps);
+  return <ImagePreviewControl {...props} />;
+}

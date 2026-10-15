@@ -1,11 +1,11 @@
-import { Button, Progress, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Progress, Space } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ProgressBasic() {
   const [percent, setPercent] = useState(45);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Progress percent={percent} aria-label="上传进度" />
-      <Space wrap className="leaf-demo-row">
+      <Flex gap="md" align="center" wrap justify="center">
         <Button
           variant="outline"
           disabled={percent === 0}
@@ -16,7 +16,7 @@ export function ProgressBasic() {
         <Button disabled={percent === 100} onClick={() => setPercent(Math.min(100, percent + 10))}>
           增加
         </Button>
-      </Space>
+      </Flex>
     </Space>
   );
 }

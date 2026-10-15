@@ -9,7 +9,7 @@ import { CalendarMonth } from '../../src/examples/calendar/month';
 
 ## 日程日历
 
-<ComponentExample title="日程日历" preview={<CalendarBasic />} fileName="basic.tsx">
+<ComponentExample title="日程日历" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/calendar/basic.tsx"
 ```
@@ -18,7 +18,7 @@ import { CalendarMonth } from '../../src/examples/calendar/month';
 
 ## 紧凑日历与禁用日期
 
-<ComponentExample title="紧凑日历与禁用日期" preview={<CalendarCompact />} fileName="compact.tsx">
+<ComponentExample title="紧凑日历与禁用日期" preview={<CalendarCompact />} fileName="compact.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/calendar/compact.tsx"
 ```
@@ -27,7 +27,7 @@ import { CalendarMonth } from '../../src/examples/calendar/month';
 
 ## 选择月份
 
-<ComponentExample title="选择月份" preview={<CalendarMonth />} fileName="month.tsx">
+<ComponentExample title="选择月份" preview={<CalendarMonth />} fileName="month.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/calendar/month.tsx"
 ```
@@ -63,4 +63,4 @@ import type { CalendarProps } from '@ifhover/leaf-ui';
 
 `fullscreen={false}` 展示紧凑日历。`cellRender` 中使用文字、图标等非交互内容，避免在日期按钮内嵌套按钮。禁用选中项保留清晰的灰色状态，不会再次触发选择。
 
-方向键移动日期，Home / End 跳至一行首尾，PageUp / PageDown 切换月份。SSR 页面应提供一致的初始日期，详见 [SSR 使用](/guide/ssr)。
+方向键移动日期，Home / End 跳至一行首尾，PageUp / PageDown 切换月份。SSR 页面应提供一致的初始日期，详见 [服务端渲染](/guide/ssr)。

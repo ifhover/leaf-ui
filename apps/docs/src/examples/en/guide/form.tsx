@@ -1,36 +1,38 @@
-import { Button, Input, Select } from '@ifhover/leaf-ui';
+import { Button, Form, FormField, Input, Select, Text } from '@ifhover/leaf-ui';
 import { Plus } from 'lucide-react';
-import { useId, useState } from 'react';
-
+import { useState } from 'react';
 export function GettingStartedForm() {
-  const id = useId();
   const [result, setResult] = useState('');
   return (
-    <form
-      style={{ display: 'grid', gap: 12, width: 'min(100%, 360px)' }}
+    <Form
+      layout="vertical"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        setResult(`Created:${data.get('title')}`);
+        setResult(`Created: ${data.get('title')}`);
       }}
     >
-      <label htmlFor={`${id}-title`}>Project name</label>
-      <Input id={`${id}-title`} name="title" required placeholder="For example: Leaf Garden" />
-      <label htmlFor={`${id}-team`}>Team</label>
-      <Select
-        id={`${id}-team`}
-        name="team"
-        required
-        placeholder="Select a team"
-        options={[
-          { label: 'Design team', value: 'design' },
-          { label: 'Product team', value: 'product' },
-        ]}
-      />
+      <FormField label="Project name" required>
+        <Input name="title" placeholder="Leaf Garden" />
+      </FormField>
+      <FormField label="Team" required>
+        <Select
+          name="team"
+          placeholder="Choose a team"
+          options={[
+            { label: 'Design', value: 'design' },
+            { label: 'Engineering', value: 'engineering' },
+          ]}
+        />
+      </FormField>
       <Button type="submit" startIcon={<Plus />}>
         Create project
       </Button>
-      <span aria-live="polite">{result}</span>
-    </form>
+      {result && (
+        <Text role="status" tone="muted">
+          {result}
+        </Text>
+      )}
+    </Form>
   );
 }

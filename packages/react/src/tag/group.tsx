@@ -1,4 +1,5 @@
 import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import { useListMotion } from '../shared/motion';
@@ -11,16 +12,17 @@ export interface CheckableTagProps
   onChange?: (checked: boolean) => void;
   size?: ControlSize;
 }
-export function CheckableTag({
-  checked,
-  defaultChecked = false,
-  onChange,
-  size = 'md',
-  children,
-  className,
-  onClick,
-  ...props
-}: CheckableTagProps) {
+export function CheckableTag(rawProps: CheckableTagProps) {
+  const {
+    checked,
+    defaultChecked = false,
+    onChange,
+    size = 'md',
+    children,
+    className,
+    onClick,
+    ...props
+  } = useComponentProps('CheckableTag', rawProps);
   const [current, change] = useControllable(checked, defaultChecked, onChange);
   return (
     <button
@@ -61,19 +63,20 @@ export interface TagGroupProps
   form?: string;
   required?: boolean;
 }
-export function TagGroup({
-  options,
-  value,
-  defaultValue = [],
-  onChange,
-  disabled,
-  size,
-  name,
-  form,
-  required,
-  className,
-  ...props
-}: TagGroupProps) {
+export function TagGroup(rawProps: TagGroupProps) {
+  const {
+    options,
+    value,
+    defaultValue = [],
+    onChange,
+    disabled,
+    size,
+    name,
+    form,
+    required,
+    className,
+    ...props
+  } = useComponentProps('TagGroup', rawProps);
   const trigger = useRef<HTMLButtonElement>(null);
   const root = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);

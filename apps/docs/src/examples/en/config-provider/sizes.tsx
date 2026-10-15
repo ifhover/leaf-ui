@@ -1,39 +1,32 @@
-import { Button, ConfigProvider, Input, Slider, Space } from '@ifhover/leaf-ui';
+import { Button, ConfigProvider, Form, FormField, Slider, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function ConfigProviderSizes() {
-  const [height, setHeight] = useState(34);
+  const [height, setHeight] = useState(36);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <p>Base height: {height}px</p>
-        <Slider
-          aria-label="Base control height"
-          min={28}
-          max={44}
-          value={height}
-          onChange={setHeight}
-          showValue={false}
-        />
-      </div>
-      <ConfigProvider
-        className="leaf-demo-stack"
-        theme={{ controlHeight: height, borderRadius: 8 }}
-      >
-        {(['sm', 'md', 'lg'] as const).map((size) => (
-          <div key={size} className="leaf-demo-control-row">
-            <span className="leaf-demo-size">{size}</span>
-            <Input size={size} aria-label={`${size} themed input`} placeholder="Project name" />
-            <Button size={size}>Save</Button>
-          </div>
-        ))}
-      </ConfigProvider>
-      <ConfigProvider
-        theme={{ controlHeight: height, tokens: { controlHeightSm: 26, borderRadiusLg: 20 } }}
-      >
-        <Button size="sm" variant="outline">
-          Advanced override: small height stays at 26px
-        </Button>
+    <Space direction="vertical" align="stretch" size="lg">
+      <Form>
+        <FormField label={`Base height: ${height}px`}>
+          <Slider min={28} max={44} value={height} onChange={setHeight} showValue={false} />
+        </FormField>
+      </Form>
+      <ConfigProvider theme={{ controlHeight: height }}>
+        <Space wrap align="end" size="lg">
+          {(
+            [
+              ['sm', 'Small'],
+              ['md', 'Default'],
+              ['lg', 'Large'],
+            ] as const
+          ).map(([size, label]) => (
+            <Space key={size} direction="vertical" size="sm">
+              <Text tone="muted">{label}</Text>
+              <Button size={size} variant="outline">
+                Button
+              </Button>
+            </Space>
+          ))}
+        </Space>
       </ConfigProvider>
     </Space>
   );

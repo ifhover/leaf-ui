@@ -1,4 +1,5 @@
-import { Button, Space, type StepItem, Steps } from '@ifhover/leaf-ui';
+import type { StepItem } from '@ifhover/leaf-ui';
+import { Button, Flex, Space, Steps, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const items: readonly StepItem[] = [
@@ -9,23 +10,23 @@ const items: readonly StepItem[] = [
 export function StepsBasic() {
   const [current, setCurrent] = useState(1);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Interactive steps</span>
+    <Space direction="vertical" align="stretch">
+      <Flex direction="column" gap="sm">
+        <Text>Interactive steps</Text>
         <Steps items={items} current={current} onChange={setCurrent} />
-      </div>
-      <Space wrap className="leaf-demo-row">
+      </Flex>
+      <Flex gap="md" align="center" wrap justify="center">
         <Button variant="outline" disabled={current === 0} onClick={() => setCurrent(current - 1)}>
           Previous
         </Button>
         <Button disabled={current === 2} onClick={() => setCurrent(current + 1)}>
           Next
         </Button>
-      </Space>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Error feedback</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>Error feedback</Text>
         <Steps items={items} current={1} direction="vertical" status="error" size="sm" />
-      </div>
+      </Flex>
     </Space>
   );
 }

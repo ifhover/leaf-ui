@@ -12,7 +12,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 ## 浏览与选择
 
-<ComponentExample title="浏览与选择" preview={<TreeBasic />} fileName="basic.tsx">
+<ComponentExample title="浏览与选择" preview={<TreeBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree/basic.tsx"
 ```
@@ -21,7 +21,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 ## 父子勾选联动
 
-<ComponentExample title="父子勾选联动" preview={<TreeCheckable />} fileName="checkable.tsx">
+<ComponentExample title="父子勾选联动" preview={<TreeCheckable />} fileName="checkable.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree/checkable.tsx"
 ```
@@ -41,7 +41,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 ## 搜索节点
 
-<ComponentExample title="搜索节点" preview={<TreeSearch />} fileName="search.tsx">
+<ComponentExample title="搜索节点" preview={<TreeSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/tree/search.tsx"
 ```
@@ -102,7 +102,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | 加载失败，再次展开可重试 |
 | `virtual` | `boolean` | `false` | 仅渲染可视节点；大量节点时建议启用。 |
 | `height` | `number` | `320` | 高度，数字按像素计算 |
-| `itemHeight` | `number` | `34` | 虚拟列表预估行高 |
+| `itemHeight` | `number` | `42` | 跟随区域控件高度和密度的预估行高，包含行间距；实际行会被测量。 |
 | `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | 允许通过手柄移动节点 |
 | `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | 限制放置位置 |
 | `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | 移动结果，调用方更新 data |

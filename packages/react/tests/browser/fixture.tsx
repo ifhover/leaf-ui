@@ -41,16 +41,27 @@ import { Modal } from '../../src/modal';
 import '../../src/styles/index.scss';
 import css from '../../src/styles/index.scss?inline';
 import './fixture.scss';
-import { AccessibilityWorkbench } from '../../../../apps/docs/src/examples/scenarios/accessibility';
+import { AccessibilityWorkbench } from './accessibility-workbench';
+import { CardTabsFixture } from './card-fixture';
 import { ColorFixture } from './color-fixture';
+import { ComponentDefaultsFixture } from './component-defaults-fixture';
+import { ControlHeightFixture } from './control-height-fixture';
 import { FeedbackFixture } from './feedback-fixture';
+import { FileListFixture } from './file-list-fixture';
+import { FlexFixture } from './flex-fixture';
+import { FormFixture, FormHelpFixture } from './form-fixture';
 import { MotionFixture } from './motion-fixture';
+import { MultiSelectFixture } from './multi-select-fixture';
+import { PaginationFixture } from './pagination-fixture';
 import { RadiusFixture } from './radius-fixture';
 import { RefinementsFixture } from './refinements-fixture';
 import { ScrollbarFixture } from './scrollbar-fixture';
+import { SearchSelectFixture } from './search-select-fixture';
 import { SelectionFixture } from './selection-fixture';
 import { SurfaceFixture } from './surface-fixture';
 import { TableFixture } from './table-fixture';
+import { TabsFixture } from './tabs-fixture';
+import { TranslationsFixture } from './translations-fixture';
 import { WarningFixture } from './warning-fixture';
 
 const params = new URLSearchParams(location.search);
@@ -352,7 +363,27 @@ createRoot(root).render(
     }
   >
     <main>
-      {fixture === 'surfaces' ? (
+      {fixture === 'translations' ? (
+        <TranslationsFixture />
+      ) : fixture === 'component-defaults' ? (
+        <ComponentDefaultsFixture />
+      ) : fixture === 'pagination' ? (
+        <PaginationFixture />
+      ) : fixture === 'control-height' ? (
+        <ControlHeightFixture />
+      ) : fixture === 'card' ? (
+        <CardTabsFixture />
+      ) : fixture === 'flex' ? (
+        <FlexFixture />
+      ) : fixture === 'tabs' ? (
+        <TabsFixture />
+      ) : fixture === 'form-help' ? (
+        <FormHelpFixture />
+      ) : fixture === 'form' ? (
+        <FormFixture />
+      ) : fixture === 'file-list' ? (
+        <FileListFixture />
+      ) : fixture === 'surfaces' ? (
         <SurfaceFixture />
       ) : fixture === 'warning' ? (
         <WarningFixture />
@@ -370,6 +401,10 @@ createRoot(root).render(
         <FeedbackFixture />
       ) : fixture === 'refinements' ? (
         <RefinementsFixture />
+      ) : fixture === 'multi-select' ? (
+        <MultiSelectFixture />
+      ) : fixture === 'search-select' ? (
+        <SearchSelectFixture />
       ) : fixture === 'selection' ? (
         <SelectionFixture />
       ) : fixture === 'motion' ? (

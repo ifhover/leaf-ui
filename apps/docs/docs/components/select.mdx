@@ -1,9 +1,10 @@
+import { SingleLine } from '../../src/examples/select/single-line';
 import { Capabilities } from '../../src/examples/select/capabilities';
 import { ExtensionDemo } from '../../src/examples/select/extensions';
 import { SelectPopup } from '../../src/examples/select/popup';
 import { SelectSearch } from '../../src/examples/select/search';
 import { ComponentExample } from '../../src/components/component-example';
-import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../src/components/form-examples';
+import { SelectBasic, SelectControlled, ControlSizes } from '../../src/components/form-examples';
 
 # Select 选择器
 
@@ -13,7 +14,7 @@ import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../
 
 通过 options 传入选项；placeholder 在空值时提示选择，单个选项可以禁用。
 
-<ComponentExample title="基础选择" preview={<SelectBasic />} fileName="basic.tsx">
+<ComponentExample title="基础选择" preview={<SelectBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/select/basic.tsx"
 ```
@@ -24,20 +25,9 @@ import { SelectBasic, SelectControlled, SelectTheme, ControlSizes } from '../../
 
 value / onChange 管理选择结果，回调直接返回字符串值和选项对象。`allowClear` 显示清除按钮；status="error" 同时提供错误外观与 aria-invalid。
 
-<ComponentExample title="受控与校验" preview={<SelectControlled />} fileName="controlled.tsx">
+<ComponentExample title="受控与校验" preview={<SelectControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/select/controlled.tsx"
-```
-
-</ComponentExample>
-
-## 局部主题
-
-通过 ConfigProvider 设置局部主题，选项浮层也会使用相同的颜色与圆角。
-
-<ComponentExample title="局部主题与清除" preview={<SelectTheme />} fileName="theme.tsx">
-
-```tsx lineNumbers file="../../src/examples/select/theme.tsx"
 ```
 
 </ComponentExample>
@@ -56,7 +46,7 @@ value / onChange 管理选择结果，回调直接返回字符串值和选项对
 
 showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持展开，可移除标签。
 
-<ComponentExample title="搜索与多选" preview={<SelectSearch />} fileName="search.tsx">
+<ComponentExample title="搜索与多选" preview={<SelectSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/select/search.tsx"
 ```
@@ -65,7 +55,7 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 
 ## 浮层宽度与内容
 
-<ComponentExample title="浮层宽度与内容" preview={<SelectPopup />} fileName="popup.tsx">
+<ComponentExample title="浮层宽度与内容" preview={<SelectPopup />} fileName="popup.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/select/popup.tsx"
 ```
@@ -86,6 +76,17 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 <ComponentExample title="选中内容与受控浮层" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/capabilities.tsx"
+```
+
+</ComponentExample>
+
+## 单行多选
+
+设置 `tagWrap={false}` 后，已选项始终展示在一行内。长文字自动省略，放不下的选项合并为 `+N`；空间很窄时只显示数量，打开浮层可查看和修改选择。`maxTagCount` 可进一步限制标签数量，`maxTagCount="responsive"` 也会启用单行自动折叠。
+
+<ComponentExample title="单行多选" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/select/single-line.tsx"
 ```
 
 </ComponentExample>
@@ -119,12 +120,13 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 | `notFoundContent` | `ReactNode` | — | 没有选项时的内容 |
 | `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选项内容 |
 | `maxCount` | `number` | — | 多选数量上限，已选项可继续取消 |
-| `maxTagCount` | `number \| 'responsive'` | — | 展示的标签数量，其余用数量提示 |
+| `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
+| `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
 | `allowCreate` | `boolean` | `false` | 允许创建未匹配的选项 |
 | `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | 新选项创建回调 |
 | `virtual` | `boolean` | 选项超过 100 时启用 | 仅渲染可见项目 |
 | `listHeight` | `number` | `248` | 列表高度 |
-| `optionHeight` | `number` | `36` | 虚拟列表的预估选项高度 |
+| `optionHeight` | `number` | `32` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
 | `multiple` | `false \| true` | `false` | 多选时值为数组，默认 [] |
 | `value` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |
 | `defaultValue` | `string \| readonly string[]` | `''` | 受控值 / 非受控初始值 |

@@ -1,8 +1,8 @@
-import { Space, TimePicker } from '@ifhover/leaf-ui';
+import { Flex, Space, TimePicker } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
+      <Flex direction="column" gap="sm" align="center">
         {english
           ? 'Business hours; disabled choices cannot be submitted'
           : '营业时间；禁用项无法选择或通过输入提交'}
@@ -12,7 +12,7 @@ export function Capabilities({ english = false }) {
           disabledTime={(time) => time.hour < 9 || time.hour >= 18}
           minuteStep={15}
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

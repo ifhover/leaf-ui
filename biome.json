@@ -36,6 +36,16 @@
       "enabled": true
     }
   },
+  "overrides": [
+    {
+      "includes": ["apps/docs/theme/tailwind.css"],
+      "css": {
+        "parser": {
+          "tailwindDirectives": true
+        }
+      }
+    }
+  ],
   "linter": {
     "enabled": true,
     "rules": {

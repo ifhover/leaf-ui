@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
@@ -64,8 +65,8 @@ export function FieldScope({ children }: { children: ReactNode }) {
   return <FieldContext.Provider value={undefined}>{children}</FieldContext.Provider>;
 }
 
-export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
-  {
+export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProps: FormProps, ref) {
+  const {
     layout = 'horizontal',
     labelWidth = 'auto',
     labelAlign = 'right',
@@ -74,9 +75,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
     style,
     children,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Form', rawProps);
   const widths = useRef(new Map<string, number>());
   const invalidFocusTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(invalidFocusTimer.current), []);
@@ -135,18 +134,19 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
 });
 Form.displayName = 'Form';
 
-export function FormField({
-  label,
-  htmlFor,
-  required,
-  help,
-  error,
-  labelWidth,
-  children,
-  className,
-  style,
-  ...props
-}: FormFieldProps) {
+export function FormField(rawProps: FormFieldProps) {
+  const {
+    label,
+    htmlFor,
+    required,
+    help,
+    error,
+    labelWidth,
+    children,
+    className,
+    style,
+    ...props
+  } = useComponentProps('FormField', rawProps);
   const form = useContext(FormContext);
   const { messages } = useLeafConfig();
   const generated = useId();
@@ -217,11 +217,14 @@ export function FormField({
           if (event.defaultPrevented) return;
           event.preventDefault();
           const target = event.target as HTMLInputElement;
-          setValidationError(target.validity?.valueMissing ? messages.required : messages.invalid);
+          setValidationError(
+            target.validity?.valueMissing ? messages.form.required : messages.form.invalid,
+          );
           document.getElementById(inputId)?.focus();
         }}
-        onInputCapture={(event) => {
-          props.onInputCapture?.(event);
+        onInput={(event) => {
+          props.onInput?.(event);
+          // Capture-phase updates can restore a controlled input before its onChange runs.
           setValidationError(undefined);
         }}
       >
@@ -261,14 +264,11 @@ export interface FormGroupProps extends FieldsetHTMLAttributes<HTMLFieldSetEleme
   legend?: ReactNode;
   description?: ReactNode;
 }
-export function FormGroup({
-  legend,
-  description,
-  disabled,
-  children,
-  className,
-  ...props
-}: FormGroupProps) {
+export function FormGroup(rawProps: FormGroupProps) {
+  const { legend, description, disabled, children, className, ...props } = useComponentProps(
+    'FormGroup',
+    rawProps,
+  );
   const inherited = useContext(FormContext);
   const context = useMemo(
     () => ({ ...inherited, disabled: inherited.disabled || Boolean(disabled) }),
@@ -292,21 +292,20 @@ export interface FormErrorSummaryProps extends Omit<HTMLAttributes<HTMLDivElemen
   errors?: readonly FormError[];
   title?: ReactNode;
 }
-export function FormErrorSummary({
-  errors: suppliedErrors,
-  title,
-  className,
-  ...props
-}: FormErrorSummaryProps) {
+export function FormErrorSummary(rawProps: FormErrorSummaryProps) {
+  const {
+    errors: suppliedErrors,
+    title,
+    className,
+    ...props
+  } = useComponentProps('FormErrorSummary', rawProps);
   const context = useContext(FormContext);
-  const { locale } = useLeafConfig();
+  const { messages } = useLeafConfig();
   const errors = suppliedErrors ?? context.errors;
   if (!errors.length) return null;
   return (
     <div {...props} role="alert" className={classes('leaf-form-error-summary', className)}>
-      <strong>
-        {title ?? (locale === 'en-US' ? 'Please check the following fields' : '请检查以下字段')}
-      </strong>
+      <strong>{title ?? messages.form.errorSummary}</strong>
       <ul>
         {errors.map((error) => (
           <li key={error.fieldId}>

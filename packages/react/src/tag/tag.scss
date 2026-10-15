@@ -1,41 +1,35 @@
 .leaf-tag {
   --leaf-tag-ink-color: var(--leaf-tag-color);
   --leaf-tag-color: var(--leaf-color-text-muted);
-  --leaf-tag-color-alpha-22: var(--leaf-color-text-muted-alpha-22);
   --leaf-tag-color-surface-8: var(--leaf-color-text-muted-surface-8);
   --leaf-tag-color-alpha-10: var(--leaf-color-text-muted-alpha-10);
   &[data-color='primary'] {
     --leaf-tag-ink-color: var(--leaf-color-primary-text-80);
     --leaf-tag-color: var(--leaf-color-primary);
-    --leaf-tag-color-alpha-22: var(--leaf-color-primary-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-primary-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-primary-alpha-10);
   }
   &[data-color='success'] {
     --leaf-tag-ink-color: var(--leaf-color-success-text-80);
     --leaf-tag-color: var(--leaf-color-success);
-    --leaf-tag-color-alpha-22: var(--leaf-color-success-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-success-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-success-alpha-10);
   }
   &[data-color='warning'] {
     --leaf-tag-ink-color: var(--leaf-color-warning-text-80);
     --leaf-tag-color: var(--leaf-color-warning);
-    --leaf-tag-color-alpha-22: var(--leaf-color-warning-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-warning-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-warning-alpha-10);
   }
   &[data-color='error'] {
     --leaf-tag-ink-color: var(--leaf-color-danger-text-80);
     --leaf-tag-color: var(--leaf-color-danger);
-    --leaf-tag-color-alpha-22: var(--leaf-color-danger-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-danger-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-danger-alpha-10);
   }
   &[data-color='info'] {
     --leaf-tag-ink-color: var(--leaf-color-info-text-80);
     --leaf-tag-color: var(--leaf-color-info);
-    --leaf-tag-color-alpha-22: var(--leaf-color-info-alpha-22);
     --leaf-tag-color-surface-8: var(--leaf-color-info-surface-8);
     --leaf-tag-color-alpha-10: var(--leaf-color-info-alpha-10);
   }
@@ -44,9 +38,9 @@
   align-items: center;
   gap: 5px;
   max-width: var(--leaf-tag-width, 100%);
-  padding: 2px 9px;
-  border: 1px solid var(--leaf-tag-color-alpha-22);
-  border-radius: var(--leaf-component-tag-radius, 999px);
+  padding: 3px 10px;
+  border: 0;
+  border-radius: var(--leaf-component-tag-radius, calc(var(--leaf-radius-sm) * 5 / 6));
   color: var(--leaf-tag-ink-color);
   background: var(--leaf-tag-color-surface-8);
   font: max(1px, calc(var(--leaf-font-size) - 2px)) / 1.5 var(--leaf-font-family);
@@ -56,15 +50,13 @@
     opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
     max-width var(--leaf-motion-duration) var(--leaf-motion-easing),
     padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing),
-    gap var(--leaf-motion-duration) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    gap var(--leaf-motion-duration) var(--leaf-motion-easing);
   &[data-state='closing'] {
     opacity: 0;
     max-width: 0;
     padding-inline: 0;
     gap: 0;
     overflow: hidden;
-    border-color: transparent;
     pointer-events: none;
   }
   > span:not(.leaf-tag__icon) {
@@ -73,19 +65,15 @@
     text-overflow: ellipsis;
   }
   &--sm {
-    padding: 0 7px;
+    padding: 1px 8px;
   }
   &--lg {
-    padding: 3px 12px;
+    padding: 4px 13px;
     font-size: var(--leaf-font-size-sm);
-  }
-  &--outline {
-    background: transparent;
   }
   &--solid {
     --leaf-tag-close-background: rgba(255, 255, 255, 0.1);
     background: var(--leaf-tag-color);
-    border-color: var(--leaf-tag-color);
     color: white;
   }
   &--solid[data-color='primary'] {
@@ -144,14 +132,10 @@
   transition:
     color var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
     transform var(--leaf-motion-duration) var(--leaf-motion-spring);
   &:hover:not(:disabled):not([aria-pressed='true']) {
-    border-color: var(--leaf-color-border-hover);
-  }
-  &[aria-pressed='true'] {
-    box-shadow: inset 0 0 0 1px var(--leaf-color-primary-alpha-12);
+    color: var(--leaf-color-text);
+    background: var(--leaf-tag-color-alpha-10);
   }
   &:active:not(:disabled) {
     transform: scale(0.96);

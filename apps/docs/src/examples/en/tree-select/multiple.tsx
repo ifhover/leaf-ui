@@ -1,23 +1,20 @@
-import { Space, TreeSelect } from '@ifhover/leaf-ui';
+import { Form, FormField, TreeSelect } from '@ifhover/leaf-ui';
 import { treeOptions } from './options';
 export function TreeSelectMultiple() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Multiple · Select individual items</span>
+    <Form layout="vertical">
+      <FormField label="Multiple · Select individual items">
         <TreeSelect options={treeOptions} multiple defaultValue={['visual']} defaultExpandAll />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Linked checks · Child values</span>
+      </FormField>
+      <FormField label="Linked checks · Child values">
         <TreeSelect
           options={treeOptions}
           treeCheckable
           defaultValue={['visual']}
           defaultExpandAll
         />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Linked checks · Parent values</span>
+      </FormField>
+      <FormField label="Linked checks · Parent values">
         <TreeSelect
           options={treeOptions}
           treeCheckable
@@ -25,7 +22,7 @@ export function TreeSelectMultiple() {
           defaultValue={['design']}
           defaultExpandAll
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

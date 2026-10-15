@@ -13,7 +13,6 @@ Wrap your application in `ConfigProvider`. It manages messages automatically, so
 
 ```tsx
 import { ConfigProvider } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
 
 export function Root() {
   return <ConfigProvider><App /></ConfigProvider>;
@@ -46,7 +45,7 @@ These two buttons belong to different components. Use the same `key` to update o
 
 When a message closes, those below it move up smoothly. Content of different heights collapses using its actual space.
 
-<ComponentExample title="Multiple messages" preview={<MessageStack />} fileName="stack.tsx">
+<ComponentExample title="Multiple messages" preview={<MessageStack />} fileName="stack.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/message/stack.tsx"
 ```

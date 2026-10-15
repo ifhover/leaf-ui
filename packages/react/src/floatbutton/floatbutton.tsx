@@ -1,17 +1,23 @@
 import { Plus } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { Button, type ButtonProps } from '../button';
+import { ButtonControl, type ButtonProps } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
-import { Tooltip } from '../tooltip';
+import { TooltipControl as Tooltip } from '../tooltip/tooltip';
 export interface FloatButtonProps extends ButtonProps {
   tooltip?: ReactNode;
   fixed?: boolean;
 }
-export function FloatButton({ tooltip, fixed = true, className, ...props }: FloatButtonProps) {
+export function FloatButtonControl({
+  tooltip,
+  fixed = true,
+  className,
+  ...props
+}: FloatButtonProps) {
   const button = (
-    <Button
+    <ButtonControl
       {...props}
       className={classes('leaf-float-button', fixed && 'leaf-float-button--fixed', className)}
     />
@@ -27,6 +33,7 @@ export interface FloatButtonAction {
 }
 export interface FloatButtonGroupProps {
   actions: readonly FloatButtonAction[];
+  fixed?: boolean;
   expandable?: boolean;
   icon?: ReactNode;
   open?: boolean;
@@ -34,15 +41,17 @@ export interface FloatButtonGroupProps {
   onOpenChange?: (open: boolean) => void;
   className?: string;
 }
-export function FloatButtonGroup({
-  actions,
-  expandable = true,
-  icon,
-  open: controlled,
-  defaultOpen = false,
-  onOpenChange,
-  className,
-}: FloatButtonGroupProps) {
+export function FloatButtonGroup(rawProps: FloatButtonGroupProps) {
+  const {
+    actions,
+    fixed = true,
+    expandable = true,
+    icon,
+    open: controlled,
+    defaultOpen = false,
+    onOpenChange,
+    className,
+  } = useComponentProps('FloatButtonGroup', rawProps);
   const t = useText();
   const [internal, setInternal] = useState(defaultOpen),
     open = controlled ?? internal;
@@ -68,8 +77,8 @@ export function FloatButtonGroup({
   return (
     <fieldset
       ref={root}
-      aria-label={t('快捷操作', 'Quick actions')}
-      className={classes('leaf-float-group', className)}
+      aria-label={t('floatButton.quickActions')}
+      className={classes('leaf-float-group', fixed && 'leaf-float-group--fixed', className)}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
           event.preventDefault();
@@ -95,7 +104,7 @@ export function FloatButtonGroup({
                     { '--leaf-float-order': actions.length - index - 1 } as React.CSSProperties
                   }
                 >
-                  <FloatButton
+                  <FloatButtonControl
                     fixed={false}
                     tooltip={action.label}
                     aria-label={typeof action.label === 'string' ? action.label : action.key}
@@ -113,9 +122,9 @@ export function FloatButtonGroup({
         </div>
       </div>
       {expandable && (
-        <FloatButton
+        <FloatButtonControl
           fixed={false}
-          aria-label={t('快捷操作', 'Quick actions')}
+          aria-label={t('floatButton.quickActions')}
           aria-expanded={open}
           startIcon={
             <span className="leaf-float-group__trigger-icon" data-open={open || undefined}>
@@ -129,3 +138,8 @@ export function FloatButtonGroup({
   );
 }
 export const FAB = FloatButton;
+
+export function FloatButton(rawProps: FloatButtonProps) {
+  const props = useComponentProps('FloatButton', rawProps);
+  return <FloatButtonControl {...props} />;
+}

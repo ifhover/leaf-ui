@@ -25,17 +25,34 @@ const cases = {
   table: {
     names: ['Table'],
     include: ['table', 'scrollbar', 'loading'],
-    exclude: ['image-cropper', 'date-picker'],
+    exclude: ['color-picker', 'date-picker'],
   },
   date: {
     names: ['DatePicker'],
     include: ['date-picker', 'calendar', 'time-picker'],
-    exclude: ['table', 'image-cropper'],
+    exclude: ['table', 'color-picker'],
+  },
+  card: {
+    names: ['Card'],
+    include: ['card', 'skeleton', 'tabs'],
+    exclude: ['table', 'input', 'color-picker'],
+  },
+  cardSubpath: {
+    names: ['Card'],
+    subpath: '/card',
+    include: ['card', 'skeleton', 'tabs'],
+    exclude: ['table', 'input', 'color-picker'],
   },
   config: {
     names: ['ConfigProvider'],
     include: ['message', 'confirm', 'notification', 'loading-bar'],
-    exclude: ['table', 'image-cropper'],
+    exclude: ['table', 'color-picker'],
+  },
+  message: {
+    names: ['MessageProvider', 'useMessage'],
+    subpath: '/message',
+    include: ['message', 'alert'],
+    exclude: ['table', 'modal', 'notification', 'loading-bar'],
   },
   helper: { names: ['colorContrast'], include: [], exclude: ['button', 'input', 'modal', 'table'] },
   unused: {
@@ -60,7 +77,7 @@ const cases = {
     names: ['Button'],
     base: true,
     include: ['button', 'message', 'confirm', 'notification', 'loading-bar'],
-    exclude: ['table', 'image-cropper'],
+    exclude: ['table', 'color-picker'],
   },
 };
 
@@ -135,6 +152,20 @@ for (const engine of ['rspack', 'vite']) {
       });
     }
     const css = await readOutputs(destination);
+    if (fixture.include.length) {
+      assert.match(
+        css,
+        /--leaf-control-height:\s*36px/,
+        `${engine} ${name} includes theme defaults`,
+      );
+      assert.ok(css.includes('.leaf-floating'), `${engine} ${name} includes shared popup styles`);
+    } else {
+      assert.doesNotMatch(
+        css,
+        /--leaf-control-height/,
+        `${engine} ${name} has no unused theme CSS`,
+      );
+    }
     for (const selector of fixture.include)
       assert.ok(css.includes(`.leaf-${selector}`), `${engine} ${name} includes ${selector}`);
     for (const selector of fixture.exclude)
@@ -149,6 +180,11 @@ for (const engine of ['rspack', 'vite']) {
     styles.get('button').trim(),
     styles.get('subpath').trim(),
     `${engine}: root and subpath Button CSS must match`,
+  );
+  assert.equal(
+    styles.get('base').match(/--leaf-control-height:/g)?.length,
+    styles.get('button').match(/--leaf-control-height:/g)?.length,
+    `${engine}: an explicit legacy stylesheet must not duplicate the shared foundation`,
   );
 }
 await writeFile(path.join(output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);

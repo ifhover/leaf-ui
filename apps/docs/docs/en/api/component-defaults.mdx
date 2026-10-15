@@ -1,0 +1,151 @@
+# Component defaults
+
+Use `components` on ConfigProvider to set shared default props. See [component defaults](/en/components/config-provider#component-defaults) for examples, naming rules and inheritance.
+
+## LeafComponentDefaults
+
+All entries are optional. Each entry accepts the props listed below or `null` to clear inherited defaults. Follow a linked props type for the meaning and built-in default of each prop. Required props, mode-dependent values, generic data and imperative refs remain on instances.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Affix` | `Partial<Omit<`[`AffixProps`](../components/anchor#affix-api)`, 'key' \| 'ref'>> \| null` | Configure affix. |
+| `Alert` | `Partial<Omit<`[`AlertProps`](../components/alert#alert-api)`, 'key' \| 'ref' \| 'title'>> \| null` | Configure alert. |
+| `Anchor` | `Partial<Omit<`[`AnchorProps`](../components/anchor#anchor-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure anchor. |
+| `AppBar` | `Partial<Omit<`[`AppBarProps`](../components/app-bar#appbar-api)`, 'key' \| 'ref'>> \| null` | Configure app bar. |
+| `AutoComplete` | `Partial<Omit<`[`AutoCompleteProps`](../components/auto-complete#autocomplete-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure auto complete. |
+| `Avatar` | `Partial<Omit<`[`AvatarProps`](../components/avatar#avatar-api)`, 'key' \| 'ref'>> \| null` | Configure avatar. |
+| `AvatarGroup` | `Partial<Omit<`[`AvatarGroupProps`](../components/avatar#avatargroupprops-api)`, 'key' \| 'ref'>> \| null` | Configure avatar group. |
+| `BackTop` | `Partial<Omit<`[`BackTopProps`](../components/back-top#backtopprops-api)`, 'key' \| 'ref'>> \| null` | Configure back top. |
+| `Badge` | `Partial<Omit<`[`BadgeProps`](../components/badge#badge-api)`, 'key' \| 'ref'>> \| null` | Configure badge. |
+| `BottomNavigation` | `Partial<Omit<`[`BottomNavigationProps`](../components/app-bar#bottomnavigation-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure bottom navigation. |
+| `Breadcrumb` | `Partial<Omit<`[`BreadcrumbProps`](../components/breadcrumb#breadcrumb-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure breadcrumb. |
+| `Button` | `Partial<Omit<`[`ButtonProps`](../components/button#button-api)`, 'key' \| 'ref'>> \| null` | Default button props. |
+| `ButtonGroup` | `Partial<Omit<`[`ButtonGroupProps`](../components/button#buttongroupprops-api)`, 'key' \| 'ref'>> \| null` | Configure button group. |
+| `Calendar` | `Partial<Omit<`[`CalendarProps`](../components/calendar#calendar-api)`, 'key' \| 'ref'>> \| null` | Configure calendar. |
+| `Card` | `Partial<Omit<`[`CardProps`](../components/card#card-api)`, 'key' \| 'ref'>> \| null` | Configure card. |
+| `Carousel` | `Partial<Omit<`[`CarouselProps`](../components/carousel#carousel-api)`, 'key' \| 'ref'>> \| null` | Configure carousel. |
+| `Cascader` | `Partial< Omit< `[`CascaderProps`](../components/cascader#cascader-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | Configure cascader. |
+| `CheckableTag` | `Partial<Omit<`[`CheckableTagProps`](../components/tag#checkabletagprops-api)`, 'key' \| 'ref'>> \| null` | Configure checkable tag. |
+| `Checkbox` | `Partial<Omit<`[`CheckboxProps`](../components/checkbox#checkbox-api)`, 'key' \| 'ref'>> \| null` | Configure checkbox. |
+| `CheckboxGroup` | `Partial<Omit<`[`CheckboxGroupProps`](../components/checkbox#checkboxgroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure checkbox group. |
+| `Col` | `Partial<Omit<`[`ColProps`](../components/grid#colprops-api)`, 'key' \| 'ref'>> \| null` | Configure col. |
+| `Collapse` | `Partial<Omit<`[`CollapseProps`](../components/collapse#collapse-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure collapse. |
+| `ColorPicker` | `Partial<Omit<`[`ColorPickerProps`](../components/color-picker#colorpicker-api)`, 'key' \| 'ref'>> \| null` | Configure color picker. |
+| `CommandPalette` | `Partial<Omit<`[`CommandPaletteProps`](../components/command-palette#commandpalette-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure command palette. |
+| `Confirm` | `Partial<Omit<`[`ConfirmOptions`](../components/confirm#confirmoptions)`, 'key' \| 'ref'>> \| null` | Configure confirm. |
+| `Countdown` | `Partial<Omit<`[`CountdownProps`](../components/statistic#countdown-api)`, 'key' \| 'ref' \| 'value'>> \| null` | Configure countdown. |
+| `DataTable` | `Partial<Omit<`[`DataTablePresentationProps`](../components/table#datatablepresentation-api)`, 'tableRef'>> \| null` | Configure data table. |
+| `DataTableColumnVisibility` | `Partial<Omit<`[`DataTableColumnVisibilityProps`](../components/table#datatablecolumnvisibility-api)`, 'key' \| 'ref'>> \| null` | Configure data table column visibility. |
+| `DataTableContent` | `Partial<Omit<`[`DataTableContentProps`](../components/table#datatablecontent-api)`, 'key' \| 'ref'>> \| null` | Configure data table content. |
+| `DataTableFooter` | `Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' \| 'ref'>> \| null` | Configure data table footer. |
+| `DataTablePagination` | `Partial<Omit<`[`DataTablePaginationProps`](../components/table#datatablepagination-api)`, 'key' \| 'ref'>> \| null` | Configure data table pagination. |
+| `DataTableSearch` | `Partial<Omit<`[`DataTableSearchProps`](../components/table#datatablesearch-api)`, 'key' \| 'ref'>> \| null` | Configure data table search. |
+| `DataTableToolbar` | `Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' \| 'ref'>> \| null` | Configure data table toolbar. |
+| `DatePicker` | `Partial< Omit<`[`DatePickerProps`](../components/date-picker#datepicker-api)`, 'key' \| 'ref' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | Configure date picker. |
+| `DateRangePicker` | `Partial<Omit<`[`DateRangePickerProps`](../components/date-range-picker#daterangepicker-api)`, 'key' \| 'ref'>> \| null` | Configure date range picker. |
+| `DateTimePicker` | `Partial<Omit<`[`DateTimePickerProps`](../components/date-time-picker#datetimepicker-api)`, 'key' \| 'ref'>> \| null` | Configure date time picker. |
+| `Descriptions` | `Partial<Omit<`[`DescriptionsProps`](../components/descriptions#descriptionsprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure descriptions. |
+| `Divider` | `Partial<Omit<`[`DividerProps`](../components/divider#divider-api)`, 'key' \| 'ref'>> \| null` | Configure divider. |
+| `Drawer` | `Partial<Omit<`[`DrawerProps`](../components/drawer#drawer-api)`, 'key' \| 'ref' \| 'open'>> \| null` | Configure drawer. |
+| `Dropdown` | `Partial<Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'key' \| 'ref' \| 'items' \| 'children'>> \| null` | Configure dropdown. |
+| `Empty` | `Partial<Omit<`[`EmptyProps`](../components/result#empty-api)`, 'key' \| 'ref'>> \| null` | Configure empty. |
+| `ErrorBoundary` | `Partial<Omit<`[`ErrorBoundaryProps`](../components/error-boundary#errorboundaryprops-api)`, 'key' \| 'ref'>> \| null` | Configure error boundary. |
+| `FileList` | `Partial<Omit<`[`FileListProps`](../components/file-list#filelistprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure file list. |
+| `Flex` | `Partial<Omit<`[`FlexProps`](../components/flex#flex-api)`, 'key' \| 'ref'>> \| null` | Configure flex. |
+| `FloatButton` | `Partial<Omit<`[`FloatButtonProps`](../components/float-button#floatbutton-api)`, 'key' \| 'ref'>> \| null` | Configure float button. |
+| `FloatButtonGroup` | `Partial<Omit<`[`FloatButtonGroupProps`](../components/float-button#floatbuttongroup-api)`, 'key' \| 'ref' \| 'actions'>> \| null` | Configure float button group. |
+| `Form` | `Partial<Omit<`[`FormProps`](../components/form#form-api)`, 'key' \| 'ref'>> \| null` | Configure form. |
+| `FormErrorSummary` | `Partial<Omit<`[`FormErrorSummaryProps`](../components/form#formerrorsummaryprops-api)`, 'key' \| 'ref'>> \| null` | Configure form error summary. |
+| `FormField` | `Partial<Omit<`[`FormFieldProps`](../components/form#formfield-api)`, 'key' \| 'ref'>> \| null` | Configure form field. |
+| `FormGroup` | `Partial<Omit<`[`FormGroupProps`](../components/form#formgroupprops-api)`, 'key' \| 'ref'>> \| null` | Configure form group. |
+| `FormList` | `Partial< Omit< `[`FormListProps`](../components/form#formlistprops-api)`<unknown>, 'name' \| 'children' \| 'value' \| 'defaultValue' \| 'onChange' \| 'itemKey' > > \| null` | Configure form list. |
+| `Grid` | `Partial<Omit<`[`GridProps`](../components/grid#gridprops-api)`, 'key' \| 'ref'>> \| null` | Configure grid. |
+| `Image` | `Partial<Omit<`[`ImageProps`](../components/image#imageprops-api)`, 'key' \| 'ref'>> \| null` | Configure image. |
+| `ImagePreview` | `Partial< Omit<`[`ImagePreviewProps`](../components/image#imagepreviewprops-api)`, 'key' \| 'ref' \| 'items' \| 'open' \| 'onClose'> > \| null` | Configure image preview. |
+| `ImagePreviewGroup` | `Partial<Omit<`[`ImagePreviewGroupProps`](../components/image#imagepreviewgroupprops-api)`, 'key' \| 'ref'>> \| null` | Configure image preview group. |
+| `InfiniteScroll` | `Partial< Omit<`[`InfiniteScrollProps`](../components/infinite-scroll#infinitescrollprops-api)`, 'key' \| 'ref' \| 'dataLength' \| 'hasMore' \| 'onLoadMore'> > \| null` | Configure infinite scroll. |
+| `Input` | `Partial<Omit<`[`InputProps`](../components/input#input-api)`, 'key' \| 'ref'>> \| null` | Default input props, also inherited by InputSearch. |
+| `InputGroup` | `Partial<Omit<`[`InputGroupProps`](../components/input#inputgroupprops-api)`, 'key' \| 'ref'>> \| null` | Configure input group. |
+| `InputMask` | `Partial<Omit<`[`InputMaskProps`](../components/input-mask#inputmaskprops-api)`, 'key' \| 'ref' \| 'mask'>> \| null` | Configure input mask. |
+| `InputNumber` | `Partial< Omit< `[`InputNumberProps`](../components/input-number#inputnumber-api)`, 'key' \| 'ref' \| 'stringMode' \| 'value' \| 'defaultValue' \| 'onChange' \| 'min' \| 'max' \| 'step' > > \| null` | Configure input number. |
+| `InputOTP` | `Partial<Omit<`[`InputOTPProps`](../components/input-otp#inputotpprops-api)`, 'key' \| 'ref'>> \| null` | Configure input otp. |
+| `InputSearch` | `Partial<Omit<`[`InputSearchProps`](../components/input#inputsearchprops-api)`, 'key' \| 'ref'>> \| null` | Search input defaults, overriding Input defaults. |
+| `Layout` | `Partial<Omit<`[`LayoutProps`](../components/layout#layoutprops-api)`, 'key' \| 'ref'>> \| null` | Configure layout. |
+| `LayoutContent` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | Configure layout content. |
+| `LayoutFooter` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | Configure layout footer. |
+| `LayoutHeader` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | Configure layout header. |
+| `LayoutSider` | `Partial<Omit<`[`LayoutSiderProps`](../components/layout#layoutsiderprops-api)`, 'key' \| 'ref'>> \| null` | Configure layout sider. |
+| `Link` | `Partial<Omit<`[`LinkProps`](../components/typography#link-api)`, 'key' \| 'ref'>> \| null` | Configure link. |
+| `Loading` | `Partial<Omit<`[`LoadingProps`](../components/loading#loading-api)`, 'key' \| 'ref'>> \| null` | Configure loading. |
+| `LoadingBar` | `Partial<Omit<`[`LoadingBarProps`](../components/loading-bar#loadingbarprops-api)`, 'key' \| 'ref' \| 'active' \| 'progress'>> \| null` | Configure loading bar. |
+| `Masonry` | `Partial<Omit<`[`MasonryProps`](../components/masonry#masonryprops-api)`, 'key' \| 'ref'>> \| null` | Configure masonry. |
+| `Mentions` | `Partial<Omit<`[`MentionsProps`](../components/mentions#mentions-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure mentions. |
+| `Menu` | `Partial<Omit<`[`MenuProps`](../components/menu#menuprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure menu. |
+| `Message` | `Partial<Omit<`[`MessageOptions`](../components/message#messageoptions)`, 'key' \| 'content'>> \| null` | Configure message. |
+| `Modal` | `Partial<Omit<`[`ModalProps`](../components/modal#modal-api)`, 'key' \| 'ref' \| 'open'>> \| null` | Default modal props. |
+| `Notification` | `Partial<Omit<`[`NotificationOptions`](../components/notification#notificationoptions-api)`, 'key' \| 'title'>> \| null` | Configure notification. |
+| `Pagination` | `Partial<Omit<`[`PaginationProps`](../components/pagination#pagination-api)`, 'key' \| 'ref' \| 'total'>> \| null` | Configure pagination. |
+| `Paragraph` | `Partial<Omit<`[`ParagraphProps`](../components/typography#paragraph-api)`, 'key' \| 'ref'>> \| null` | Configure paragraph. |
+| `Popconfirm` | `Partial<Omit<`[`PopconfirmProps`](../components/popconfirm#popconfirmprops-api)`, 'key' \| 'ref' \| 'children' \| 'title'>> \| null` | Configure popconfirm. |
+| `Popover` | `Partial<Omit<`[`PopoverProps`](../components/popover#popover-api)`, 'key' \| 'ref' \| 'children' \| 'content'>> \| null` | Configure popover. |
+| `Progress` | `Partial<Omit<`[`ProgressProps`](../components/progress#progress-api)`, 'key' \| 'ref'>> \| null` | Configure progress. |
+| `QRCode` | `Partial<Omit<`[`QRCodeProps`](../components/qr-code#qrcodeprops-api)`, 'key' \| 'ref' \| 'value'>> \| null` | Configure qrcode. |
+| `Radio` | `Partial<Omit<`[`RadioProps`](../components/radio#radio-api)`, 'key' \| 'ref'>> \| null` | Configure radio. |
+| `RadioGroup` | `Partial<Omit<`[`RadioGroupProps`](../components/radio#radiogroup-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure radio group. |
+| `Rate` | `Partial<Omit<`[`RateProps`](../components/rate#rate-api)`, 'key' \| 'ref'>> \| null` | Configure rate. |
+| `Result` | `Partial<Omit<`[`ResultProps`](../components/result#result-api)`, 'key' \| 'ref'>> \| null` | Configure result. |
+| `Row` | `Partial<Omit<`[`RowProps`](../components/grid#rowprops-api)`, 'key' \| 'ref'>> \| null` | Configure row. |
+| `ScrollArea` | `Partial<Omit<`[`ScrollAreaProps`](../components/scroll-area#scrollareaprops-api)`, 'key' \| 'ref'>> \| null` | Configure scroll area. |
+| `Scrollbar` | `Partial<Omit<`[`ScrollbarProps`](../components/scrollbar#scrollbar-api)`, 'key' \| 'ref'>> \| null` | Configure scrollbar. |
+| `Segmented` | `Partial<Omit<`[`SegmentedProps`](../components/segmented#segmentedprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure segmented. |
+| `Select` | `Partial< Omit< `[`SelectProps`](../components/select#select-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | Select defaults; mode, values and change callbacks stay on the instance. |
+| `Skeleton` | `Partial<Omit<`[`SkeletonProps`](../components/skeleton#skeleton-api)`, 'key' \| 'ref'>> \| null` | Configure skeleton. |
+| `Slider` | `Partial< Omit<`[`SliderProps`](../components/slider#slider-api)`, 'key' \| 'ref' \| 'range' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | Configure slider. |
+| `Space` | `Partial<Omit<`[`SpaceProps`](../components/space#spaceprops-api)`, 'key' \| 'ref'>> \| null` | Configure space. |
+| `SplitButton` | `Partial<Omit<`[`SplitButtonProps`](../components/button#splitbuttonprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure split button. |
+| `Splitter` | `Partial<Omit<`[`SplitterProps`](../components/splitter#splitter-api)`, 'key' \| 'ref' \| 'panels'>> \| null` | Configure splitter. |
+| `Statistic` | `Partial<Omit<`[`StatisticProps`](../components/statistic#statistic-api)`, 'key' \| 'ref' \| 'value'>> \| null` | Configure statistic. |
+| `Steps` | `Partial<Omit<`[`StepsProps`](../components/steps#steps-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure steps. |
+| `Switch` | `Partial<Omit<`[`SwitchProps`](../components/switch#switch-api)`, 'key' \| 'ref'>> \| null` | Configure switch. |
+| `Table` | `Partial<Omit<`[`TableProps`](../components/table#table-api)`, 'key' \| 'ref' \| 'scrollRef'>> \| null` | Configure table. |
+| `TableBody` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | Configure table body. |
+| `TableCaption` | `Partial<Omit<HTMLAttributes<HTMLTableCaptionElement>, 'key' \| 'ref'>> \| null` | Configure table caption. |
+| `TableCell` | `Partial<Omit<`[`TableCellProps`](../components/table#tablecell-api)`, 'key' \| 'ref'>> \| null` | Configure table cell. |
+| `TableColumnHeader` | `Partial<Omit<`[`TableColumnHeaderProps`](../components/table#tablecolumnheader-api)`, 'key' \| 'ref'>> \| null` | Configure table column header. |
+| `TableEmpty` | `Partial<Omit<`[`TableStateProps`](../components/table#tablestate-api)`, 'key' \| 'ref'>> \| null` | Configure table empty. |
+| `TableError` | `Partial<Omit<`[`TableErrorProps`](../components/table#tableerror-api)`, 'key' \| 'ref'>> \| null` | Configure table error. |
+| `TableFooter` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | Configure table footer. |
+| `TableHeader` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | Configure table header. |
+| `TableLoading` | `Partial<Omit<`[`TableStateProps`](../components/table#tablestate-api)`, 'key' \| 'ref'>> \| null` | Configure table loading. |
+| `TableRow` | `Partial<Omit<`[`TableRowProps`](../components/table#tablerow-api)`, 'key' \| 'ref'>> \| null` | Configure table row. |
+| `Tabs` | `Partial<Omit<`[`TabsProps`](../components/tabs#tabs-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure tabs. |
+| `Tag` | `Partial<Omit<`[`TagProps`](../components/tag#tag-api)`, 'key' \| 'ref'>> \| null` | Configure tag. |
+| `TagGroup` | `Partial<Omit<`[`TagGroupProps`](../components/tag#taggroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Configure tag group. |
+| `Text` | `Partial<Omit<`[`TextProps`](../components/typography#text-api)`, 'key' \| 'ref'>> \| null` | Configure text. |
+| `Textarea` | `Partial<Omit<`[`TextareaProps`](../components/textarea#textarea-api)`, 'key' \| 'ref'>> \| null` | Configure textarea. |
+| `Timeline` | `Partial<Omit<`[`TimelineProps`](../components/timeline#timelineprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure timeline. |
+| `TimePicker` | `Partial<Omit<`[`TimePickerProps`](../components/time-picker#timepicker-api)`, 'key' \| 'ref'>> \| null` | Configure time picker. |
+| `TimeRangePicker` | `Partial<Omit<`[`TimeRangePickerProps`](../components/time-range-picker#timerangepickerprops-api)`, 'key' \| 'ref'>> \| null` | Configure time range picker. |
+| `Title` | `Partial<Omit<`[`TitleProps`](../components/typography#title-api)`, 'key' \| 'ref'>> \| null` | Configure title. |
+| `Toolbar` | `Partial<Omit<`[`ToolbarProps`](../components/app-bar#toolbar-api)`, 'key' \| 'ref'>> \| null` | Configure toolbar. |
+| `Tooltip` | `Partial<Omit<`[`TooltipProps`](../components/tooltip#tooltip-api)`, 'key' \| 'ref' \| 'content' \| 'children'>> \| null` | Configure tooltip. |
+| `Tour` | `Partial<Omit<`[`TourProps`](../components/tour#tour-api)`, 'key' \| 'ref' \| 'open' \| 'steps'>> \| null` | Configure tour. |
+| `Transfer` | `Partial<Omit<`[`TransferProps`](../components/transfer#transferprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Configure transfer. |
+| `Tree` | `Partial<Omit<`[`TreeProps`](../components/tree#tree-api)`, 'key' \| 'ref' \| 'data'>> \| null` | Configure tree. |
+| `TreeSelect` | `Partial< Omit< `[`TreeSelectProps`](../components/tree-select#treeselect-api)`, \| 'key' \| 'ref' \| 'options' \| 'multiple' \| 'treeCheckable' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | Configure tree select. |
+| `Typography` | `Partial<Omit<`[`TypographyProps`](../components/typography#typography-api)`, 'key' \| 'ref'>> \| null` | Configure typography. |
+| `Upload` | `Partial<Omit<`[`UploadProps`](../components/upload#uploadprops-api)`, 'key' \| 'ref'>> \| null` | Configure upload. |
+| `VirtualList` | `(Partial< Omit<`[`VirtualListProps`](../components/virtual-list#virtuallistprops-api)`<unknown>, 'items' \| 'itemKey' \| 'renderItem' \| 'estimateSize'> > & { estimateSize?: number }) \| null` | Configure virtual list. |
+
+## Type import
+
+```tsx
+import type { LeafComponentDefaults } from '@ifhover/leaf-ui';
+
+const components = {
+  Button: { variant: 'outline' },
+  Confirm: { confirmText: 'Continue', cancelText: 'Back' },
+} satisfies LeafComponentDefaults;
+```
+
+Pass this object to `<ConfigProvider components={components}>`. Instance props and individual service calls still take precedence.

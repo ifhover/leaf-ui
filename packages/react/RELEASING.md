@@ -58,6 +58,31 @@ pnpm build
 
 `pnpm check:release` 会检查当前版本的中英文记录、日期与实际变更条目，并拒绝在线记录中的未发布区域。它已加入 `pnpm check`、GitHub Pages 检查以及 npm 的 `prepublishOnly`，升版但未更新记录时会阻止正常发布。发布前的检查还会构建并验证 npm 包产物。
 
+### GitHub Actions 自动发布（推荐）
+
+`.github/workflows/publish.yml` 使用 npm Trusted Publishing（OIDC）。npm 的 Trusted Publisher 必须配置为 GitHub 仓库 `ifhover/leaf-ui`、Workflow filename `publish.yml`、Environment name `npm`，并允许 `npm publish`。在 GitHub 仓库的 **Settings → Environments** 创建同名的 `npm` 环境；如设置了部署分支限制，应允许正式版本标签。无需配置 `NPM_TOKEN`，也不需要单独允许 `npm dist-tag`。
+
+普通提交、推送开发分支或合并 `main` 都不会发布 npm。工作流只在推送 `vX.Y.Z` 标签时发布，或通过 **Actions → Publish npm package → Run workflow** 手动运行；手动运行时，在 **Use workflow from** 中选择已经推送的正式版本标签，也可以执行 `gh workflow run publish.yml --ref vX.Y.Z`。不能选择开发分支或 `main`，确保工作流提交、发布源码和 provenance 一致。
+
+1. 更新 `packages/react/package.json` 中的版本与中英文更新记录，检查通过后合并到 `main`。
+2. 拉取最新 `main`，确认工作区干净，在实际合并后的发布提交创建并推送标签。下面以尚未发布的 `0.5.1` 为例，执行前替换为本次实际版本：
+
+   ```bash
+   git switch main
+   git pull --ff-only origin main
+   git tag v0.5.1
+   git push origin v0.5.1
+   ```
+
+3. 工作流确认标签与组件版本一致、提交已包含在 `main`，且新版本高于 npm `latest`；随后安装依赖，执行 `pnpm check`、`pnpm build`，确认构建没有改动源码，再发布公开包与 provenance。
+4. 发布后核对 npm `gitHead`、`latest` 和发布标签。工作流成功后，`Deploy documentation` 自动从 `main` 运行，构建 npm 已发布版本的文档与快照。
+
+此工作流只处理正式版本，拒绝预发布标签。同一版本不能覆盖：如果 npm 已有该版本且提交不同，会要求升版；如果该版本已从同一提交发布并且仍是 `latest`，重跑会跳过上传，继续核对并触发文档部署。npm 已发布而文档失败时，优先重跑 `Deploy documentation`，无需重新发布 npm。
+
+新增 Trusted Publisher 显示 `Pending validation` 时，需要在 npm 页面指定的截止时间前成功发布一次以完成验证；过期后需要在 npm 删除并重新创建该配置。
+
+### 本地手动发布
+
 检查通过后，将版本和更新记录提交到开发分支，通过审查后合并到 `main`。在实际合并后的发布提交重新执行检查与构建，并确认工作区干净，再在 `packages/react` 目录运行：
 
 ```bash
@@ -74,14 +99,14 @@ npm 的 `gitHead` 和 `vX.Y.Z` 标签必须指向同一个实际发布提交。�
 ## 发布完成
 
 1. 通过 `npm view @ifhover/leaf-ui@X.Y.Z version gitHead` 和 `npm view @ifhover/leaf-ui dist-tags --json` 确认新版本已存在、`latest` 指向它、`gitHead` 与发布提交一致。
-2. 为该发布提交创建 `vX.Y.Z` Git 标签并推送到 GitHub。源码、标签和 npm 必须对应同一提交。
-3. `main` 推送会自动构建并部署 GitHub Pages。构建器从 npm 的 `gitHead` 还原发布提交，因此该提交必须已推送到仓库，且 package.json 中版本必须与 npm 一致。若合并触发的构建早于 npm 发布，发布后手动触发 `Deploy documentation` workflow。
+2. 确认 `vX.Y.Z` Git 标签已推送到 GitHub，且与 npm 指向同一发布提交。通过 Actions 发布时，推送标签就是发布入口；本地手动发布时，推送标签触发的工作流会核对已有版本并跳过重复上传。
+3. `main` 推送以及 `Publish npm package` 成功都会自动构建并部署 GitHub Pages。构建器从 npm 的 `gitHead` 还原发布提交，因此该提交必须已推送到仓库，且 package.json 中版本必须与 npm 一致。若未通过发布工作流触发部署，发布后手动触发 `Deploy documentation` workflow。
 4. 确认 `/v/X.Y.Z/`、其 `llm.txt`、`llms.txt`、`api/index.json` 和组件 Markdown 均能访问。顶部版本菜单应包含新版本，中英文更新记录应一致；默认根地址直接展示 npm latest 的已发布文档，不跳转到版本路径。
 5. 分支合并后删除对应临时开发文档及其预览入口，确认该 URL 已不再提供开发内容。默认文档、新版本快照、npm 信息与预览清理全部验收后，才算发布完成。
 6. 若 npm 发布或文档部署失败，按未完成的发布继续处理。版本化部署只展示 npm 中实际发布的版本，开发内容可本地或在独立临时地址预览。
 
-若发布后没有新的 main 推送，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；各版示例与 API 必须始终使用对应的发布提交。文档基础设施更新可以通过构建器的公共 overlay 应用到旧快照，不能混入未发布组件 API。
+若发布后文档工作流未自动运行，或需要重试文档部署，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；各版示例与 API 必须始终使用对应的发布提交。文档基础设施更新可以通过构建器的公共 overlay 应用到旧快照，不能混入未发布组件 API。
 
 AI Skill 与组件包独立发行，维护方式见 [skills/README.md](../../skills/README.md)。新增导出时确保有对应组件或指南页面，让该版 API 索引可按组件和类型查找；无需复制一份完整手册到 Skill。
 
-组件开发约定见 [DEVELOPMENT.md](DEVELOPMENT.md)，文档站维护说明见 [apps/docs/README.md](../../apps/docs/README.md)。
+组件开发约定见 [DEVELOPMENT.md](DEVELOPMENT.md)，文档站维护说明见 [apps/docs/AGENTS.md](../../apps/docs/AGENTS.md)。

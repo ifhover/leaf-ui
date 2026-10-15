@@ -36,8 +36,9 @@
     min-height: var(--leaf-density-option-height);
     font-size: var(--leaf-font-size);
     // Keep shared option fills from covering or doubling the moving highlight.
-    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
-    &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
+    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']),
+    &:focus-visible:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']),
+    &:active:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']) {
       background: transparent;
     }
     &[aria-expanded='true'] {
@@ -45,6 +46,11 @@
     }
     &[aria-checked='true'] {
       color: var(--leaf-color-primary);
+      background: var(--leaf-color-primary-surface-9);
+      &.leaf-dropdown__danger {
+        color: var(--leaf-color-danger);
+        background: var(--leaf-color-danger-surface-8);
+      }
     }
   }
   &__highlight {
@@ -57,9 +63,13 @@
     translate: 0 var(--leaf-menu-highlight-y, 0px);
     border: 1px solid var(--leaf-color-border-alpha-55);
     border-radius: var(--leaf-floating-option-radius);
-    background: var(--leaf-color-text-alpha-9);
+    background: var(--leaf-color-option-hover);
+    &[data-selected] {
+      background: var(--leaf-color-primary-surface-9);
+      border-color: var(--leaf-color-primary-alpha-15);
+    }
     &[data-danger='true'] {
-      background: var(--leaf-color-danger-alpha-8);
+      background: var(--leaf-color-danger-surface-8);
       border-color: var(--leaf-color-danger-alpha-15);
     }
     pointer-events: none;

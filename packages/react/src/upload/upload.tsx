@@ -9,12 +9,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button } from '../button';
-import { type FileItem, FileList } from '../filelist';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
+import type { FileItem } from '../filelist';
+import { FileListControl as FileList } from '../filelist/filelist';
 import { fileName } from '../filelist/model';
 import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue } from '../shared/field';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 import { acceptsFile, type UploadRequest, type UploadResult, uploadRequest } from './request';
 
@@ -70,7 +73,10 @@ export interface UploadHandle {
   focus: () => void;
 }
 export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
-  {
+  rawProps: UploadProps,
+  ref,
+) {
+  const {
     fileList,
     defaultFileList = [],
     onChange,
@@ -108,12 +114,11 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
     onDragOver,
     onDrop,
     ...props
-  }: UploadProps,
-  ref,
-) {
+  } = useComponentProps('Upload', rawProps);
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const t = useText();
+  const format = useFormattedText();
   const id = useId();
   const count = useRef(0);
   const input = useRef<HTMLInputElement>(null);
@@ -264,7 +269,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
             ? await config.action(file.originFile)
             : config.action;
         if (request.signal.aborted) return;
-        if (!address) throw new Error(t('上传地址不能为空', 'Upload URL cannot be empty'));
+        if (!address) throw new Error(t('upload.uploadUrlCannotBeEmpty'));
         result = await uploadRequest({
           file: file.originFile,
           signal: request.signal,
@@ -295,7 +300,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
           file.uid,
           {
             status: 'error',
-            error: reason instanceof Error ? reason.message : t('上传失败', 'Upload failed'),
+            error: reason instanceof Error ? reason.message : t('upload.uploadFailed'),
           },
           'error',
         );
@@ -341,38 +346,36 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
           const reject = (reason: UploadRejection['reason'], message: string) =>
             rejected.push({ file: original, reason, message });
           if (!multiple && accepted.length > 0) {
-            reject('count', t('每次只能选择一个文件', 'Choose one file at a time'));
+            reject('count', t('upload.chooseOneFileAtATime'));
             continue;
           }
           if (!acceptsFile(file, accept)) {
-            reject('type', t('文件格式不支持', 'File type is not accepted'));
+            reject('type', t('upload.fileTypeIsNotAccepted'));
             continue;
           }
           if (maxSize !== undefined && file.size > maxSize) {
-            reject('size', t('文件超过大小限制', 'File exceeds the size limit'));
+            reject('size', t('upload.fileExceedsTheSizeLimit'));
             continue;
           }
           if (
             maxCount !== undefined &&
             latest.current.current.length + accepted.length >= maxCount
           ) {
-            reject('count', t('文件数量达到上限', 'File count limit reached'));
+            reject('count', t('upload.fileCountLimitReached'));
             continue;
           }
           try {
             const result = await beforeUpload?.(file);
             if (!mounted.current || batchGeneration !== generation.current) return;
             if (result === false) {
-              reject('validation', t('文件未通过校验', 'File validation failed'));
+              reject('validation', t('upload.fileValidationFailed'));
               continue;
             }
             if (result instanceof File) file = result;
           } catch (reason) {
             reject(
               'validation',
-              reason instanceof Error
-                ? reason.message
-                : t('文件未通过校验', 'File validation failed'),
+              reason instanceof Error ? reason.message : t('upload.fileValidationFailed'),
             );
             continue;
           }
@@ -485,7 +488,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
         multiple={multiple}
         disabled={disabled}
         tabIndex={-1}
-        aria-label={t('选择文件', 'Choose files')}
+        aria-label={t('upload.chooseFiles')}
         onChange={(event) => {
           addFiles([...(event.target.files ?? [])]);
           event.target.value = '';
@@ -503,16 +506,12 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
           <span className="leaf-upload__symbol">
             <CloudUpload size={28} aria-hidden="true" />
           </span>
-          <span className="leaf-upload__title">
-            {children ?? t('点击或拖拽文件到这里', 'Click or drop files here')}
-          </span>
-          <span className="leaf-upload__hint">
-            {hint ?? t('支持选择和拖拽上传', 'Choose files or drag them into this area')}
-          </span>
+          <span className="leaf-upload__title">{children ?? t('upload.dropHint')}</span>
+          <span className="leaf-upload__hint">{hint ?? t('upload.dropDescription')}</span>
         </button>
       ) : (
         <div className="leaf-upload__trigger">
-          <Button
+          <ButtonControl
             ref={trigger}
             id={idProp ?? field?.id}
             variant="outline"
@@ -521,8 +520,8 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
             startIcon={<UploadIcon size={16} />}
             onClick={() => input.current?.click()}
           >
-            {children ?? t('选择文件', 'Choose files')}
-          </Button>
+            {children ?? t('upload.chooseFiles')}
+          </ButtonControl>
           {hint && <span className="leaf-upload__hint">{hint}</span>}
         </div>
       )}
@@ -553,12 +552,12 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
             renderActions={(file, actions) => (
               <>
                 {file.status === 'uploading' && (
-                  <Button
+                  <ButtonControl
                     variant="ghost"
                     size="sm"
                     disabled={disabled}
                     startIcon={<X size={15} />}
-                    aria-label={`${t('取消上传', 'Cancel upload')} ${fileName(file)}`}
+                    aria-label={format('upload.cancelUpload', { name: fileName(file) })}
                     onClick={() => {
                       if (!file.uid) return;
                       jobs.current.get(file.uid)?.abort();
@@ -570,12 +569,12 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
                 {['error', 'cancelled', 'ready'].includes(file.status ?? '') &&
                   (action || customRequest) &&
                   file.originFile && (
-                    <Button
+                    <ButtonControl
                       variant="ghost"
                       size="sm"
                       disabled={disabled}
                       startIcon={<RotateCw size={15} />}
-                      aria-label={`${t('重新上传', 'Retry upload')} ${fileName(file)}`}
+                      aria-label={format('upload.retryUpload', { name: fileName(file) })}
                       onClick={() => void start(file as UploadFile)}
                     />
                   )}

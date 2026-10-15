@@ -1,21 +1,20 @@
-import { Cascader, Space } from '@ifhover/leaf-ui';
+import { Cascader, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 import { regions } from './options';
 
 export function CascaderControlled() {
   const [value, setValue] = useState<string[]>(['zhejiang', 'hangzhou', 'xihu']);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Delivery region</span>
+    <Form layout="vertical">
+      <FormField label="Delivery region">
         <Cascader
           aria-label="Delivery region"
           options={regions}
           value={value}
           onChange={setValue}
         />
-      </div>
-      <span className="leaf-demo-note">Selected path:{value.join(' → ') || 'Not selected'}</span>
-    </Space>
+      </FormField>
+      <Text tone="muted">Selected path:{value.join(' → ') || 'Not selected'}</Text>
+    </Form>
   );
 }

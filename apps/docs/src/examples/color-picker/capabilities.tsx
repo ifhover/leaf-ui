@@ -1,21 +1,21 @@
-import { ColorPicker, Space } from '@ifhover/leaf-ui';
+import { ColorPicker, Flex, Space, Text } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Solid color' : '纯色'}</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Solid color' : '纯色'}</Text>
         <ColorPicker showText />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>
           {english ? 'Gradient: select, add or remove stops' : '渐变：选择、添加或移除色标'}
-        </p>
+        </Text>
         <ColorPicker
           mode="gradient"
           showText
           defaultValue="linear-gradient(90deg, #20834a 0%, #83cf9e 100%)"
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

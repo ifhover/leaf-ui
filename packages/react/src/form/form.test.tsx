@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { type ChangeEvent, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { Button, ConfigProvider, Input, RadioGroup, Select } from '../index';
+import { Button, ConfigProvider, Input, RadioGroup, Select, Textarea } from '../index';
 import { Form, FormField } from './form';
 
 afterEach(() => vi.restoreAllMocks());
@@ -24,8 +26,81 @@ describe('Form', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Please fill out this field');
     expect(input).toHaveAttribute('aria-invalid', 'true');
     await userEvent.type(input, 'hello@example.com');
+    expect(input).toHaveValue('hello@example.com');
     expect(screen.queryByRole('alert')).toBeNull();
   });
+  it.each([
+    { control: 'Input', controlled: false, formatError: false },
+    { control: 'Input', controlled: true, formatError: false },
+    { control: 'Textarea', controlled: false, formatError: false },
+    { control: 'Textarea', controlled: true, formatError: false },
+    { control: 'Input', controlled: false, formatError: true },
+    { control: 'Input', controlled: true, formatError: true },
+  ])(
+    'preserves the first edit after validation in $control (controlled=$controlled, formatError=$formatError)',
+    async ({ control, controlled, formatError }) => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      const onInputCapture = vi.fn();
+      const onInput = vi.fn();
+      const initialValue = formatError ? 'a' : '';
+      let submitted: FormDataEntryValue | null | undefined;
+      function Example() {
+        const [value, setValue] = useState(initialValue);
+        const controlProps = {
+          name: 'value',
+          value: controlled ? value : undefined,
+          defaultValue: controlled ? undefined : initialValue,
+          // Browsers can flush capture updates before bubbling; user-event batches both in act.
+          onInputCapture: () => flushSync(() => {}),
+          onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            onChange(event.currentTarget.value);
+            setValue(event.currentTarget.value);
+          },
+        };
+        return (
+          <ConfigProvider locale="en-US">
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitted = new FormData(event.currentTarget).get('value');
+              }}
+            >
+              <FormField label="Value" required onInputCapture={onInputCapture} onInput={onInput}>
+                {control === 'Textarea' ? (
+                  <Textarea {...controlProps} />
+                ) : (
+                  <Input {...controlProps} type={formatError ? 'email' : 'text'} />
+                )}
+              </FormField>
+              <Button type="submit">Save</Button>
+            </Form>
+          </ConfigProvider>
+        );
+      }
+      render(<Example />);
+      const input = screen.getByRole('textbox', { name: 'Value' });
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+      await waitFor(() => expect(input).toHaveFocus());
+
+      await user.keyboard(formatError ? '{End}@' : 'a');
+      const firstValue = formatError ? 'a@' : 'a';
+      expect(input).toHaveValue(firstValue);
+      expect(input).toHaveFocus();
+      expect(screen.getByRole('textbox', { name: 'Value' })).toBe(input);
+      expect(screen.queryByRole('alert')).toBeNull();
+      expect(input).not.toHaveAttribute('aria-invalid', 'true');
+      expect(onChange).toHaveBeenCalledExactlyOnceWith(firstValue);
+      expect(onInputCapture).toHaveBeenCalledOnce();
+      expect(onInput).toHaveBeenCalledOnce();
+
+      await user.keyboard(formatError ? 'example.com' : 'lice');
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+      expect(submitted).toBe(formatError ? 'a@example.com' : 'alice');
+    },
+  );
   it('submits native FormData and resets custom fields and errors', async () => {
     let submitted: FormData | undefined;
     const { container } = render(

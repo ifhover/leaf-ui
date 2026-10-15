@@ -4,7 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 export function NeutralAlerts({ english = false }: { english?: boolean }) {
   const t = (zh: string, en: string) => (english ? en : zh);
   return (
-    <Space direction="vertical" align="stretch" style={{ width: '100%' }}>
+    <Space direction="vertical" align="stretch">
       <Alert
         type="success"
         icon={<ShieldCheck size={20} />}

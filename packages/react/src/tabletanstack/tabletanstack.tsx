@@ -1,3 +1,21 @@
+import { useFormattedText } from '../shared/use-formatted-text';
+import type {
+  DataTableColumnVisibilityProps,
+  DataTableContentProps,
+  DataTablePaginationProps,
+  DataTablePresentationProps,
+  DataTableSearchProps,
+} from './defaults';
+
+export type {
+  DataTableColumnVisibilityProps,
+  DataTableContentProps,
+  DataTablePaginationProps,
+  DataTablePresentationProps,
+  DataTableSearchProps,
+  DataTableVirtualOptions,
+} from './defaults';
+
 import {
   type Cell,
   type Column,
@@ -21,7 +39,6 @@ import {
   Fragment,
   type HTMLAttributes,
   type ReactNode,
-  type Ref,
   type RefObject,
   useContext,
   useEffect,
@@ -30,19 +47,24 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button } from '../button';
-import { Checkbox } from '../checkbox';
+import { ButtonControl } from '../button/button';
+import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
+import {
+  mergeComponentProps,
+  useComponentProps,
+  useGenericComponentDefaults,
+} from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { FieldScope } from '../form/form';
-import { Input, type InputProps } from '../input';
-import { Pagination, type PaginationProps } from '../pagination';
-import { Popover } from '../popover';
-import { Radio } from '../radio';
+import { InputControl } from '../input/input';
+import { PaginationControl as Pagination } from '../pagination/pagination';
+import { PopoverControl as Popover } from '../popover/popover';
+import { RadioControl as Radio } from '../radio/radio';
 import { classes } from '../shared/classes';
 import { assignRef } from '../shared/field';
-import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
-import { Table, type TableCellProps, type TableProps, type TableRowProps } from '../table';
+import type { TableCellProps, TableRowProps } from '../table';
+import { TableControl as Table } from '../table/table';
 import {
   ReorderColumnHeader,
   ReorderHandle,
@@ -50,11 +72,6 @@ import {
   ReorderRow,
   ReorderScope,
 } from './reordering';
-
-export interface DataTableVirtualOptions {
-  estimateRowHeight?: number;
-  overscan?: number;
-}
 
 export interface DataTableColumnMeta {
   label?: string;
@@ -71,36 +88,19 @@ export interface DataTableRowReorderInfo<TData> {
   overRow: Row<TData>;
 }
 
-export interface DataTableProps<TData> extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface DataTableProps<TData> extends DataTablePresentationProps {
   table: TanStackTable<TData>;
   data?: never;
   columns?: never;
   rowKey?: never;
   options?: never;
-  children?: ReactNode;
-  caption?: ReactNode;
-  size?: ControlSize;
-  bordered?: boolean;
-  striped?: boolean;
-  stickyHeader?: boolean;
-  maxHeight?: TableProps['maxHeight'];
-  minWidth?: TableProps['minWidth'];
-  loading?: boolean;
-  emptyContent?: ReactNode;
-  error?: ReactNode;
-  onRetry?: () => void;
-  selection?: false | 'single' | 'multiple';
-  selectAllMode?: 'page' | 'all';
+
   getRowLabel?: (row: Row<TData>) => string;
   renderExpandedRow?: (row: Row<TData>) => ReactNode;
   getRowProps?: (row: Row<TData>) => TableRowProps;
   getCellProps?: (cell: Cell<TData, unknown>) => TableCellProps;
-  resizable?: boolean;
-  columnReordering?: boolean;
+
   onRowReorder?: (info: DataTableRowReorderInfo<TData>) => void;
-  virtual?: boolean | DataTableVirtualOptions;
-  pagination?: boolean;
-  tableRef?: Ref<HTMLTableElement>;
 }
 
 export interface DataTableDataProps<TData>
@@ -111,37 +111,6 @@ export interface DataTableDataProps<TData>
   rowKey: keyof TData | ((row: TData, index: number) => string);
   options?: Omit<TableOptions<TData>, 'data' | 'columns' | 'getCoreRowModel' | 'getRowId'>;
 }
-
-export interface DataTableSearchProps
-  extends Omit<
-    InputProps,
-    | 'value'
-    | 'defaultValue'
-    | 'onChange'
-    | 'type'
-    | 'visibilityToggle'
-    | 'visible'
-    | 'defaultVisible'
-    | 'onVisibleChange'
-    | 'visibilityIcon'
-  > {
-  columnId?: string;
-}
-
-export interface DataTableColumnVisibilityProps {
-  children?: ReactNode;
-  label?: string;
-}
-
-export interface DataTablePaginationProps
-  extends Omit<
-    PaginationProps,
-    'total' | 'current' | 'defaultCurrent' | 'pageSize' | 'defaultPageSize' | 'onChange'
-  > {
-  hasNextPage?: boolean;
-}
-
-export interface DataTableContentProps extends HTMLAttributes<HTMLDivElement> {}
 
 type DataTableContextValue = Omit<DataTableProps<unknown>, keyof HTMLAttributes<HTMLDivElement>> & {
   id: string;
@@ -287,11 +256,11 @@ function DataTableRoot<TData>({
           >
             {children ?? (
               <>
-                <DataTableContent />
+                <DataTableContentControl />
                 {pagination && (
-                  <DataTableFooter>
-                    <DataTablePagination />
-                  </DataTableFooter>
+                  <DataTableFooterControl>
+                    <DataTablePaginationControl />
+                  </DataTableFooterControl>
                 )}
               </>
             )}
@@ -302,23 +271,25 @@ function DataTableRoot<TData>({
   );
 }
 
-export function DataTableToolbar({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function DataTableToolbar(rawProps: HTMLAttributes<HTMLDivElement>) {
+  const { className, ...props } = useComponentProps('DataTableToolbar', rawProps);
   return <div {...props} className={classes('leaf-data-table__toolbar', className)} />;
 }
 
-export function DataTableFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function DataTableFooterControl({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div {...props} className={classes('leaf-data-table__footer', className)} />;
 }
 
-export function DataTableSearch({ columnId, className, ...props }: DataTableSearchProps) {
+export function DataTableSearch(rawProps: DataTableSearchProps) {
+  const { columnId, className, ...props } = useComponentProps('DataTableSearch', rawProps);
   const { table, loading, size } = useDataTable();
   const t = useText();
   const column = columnId ? table.getColumn(columnId) : undefined;
   const value = columnId ? column?.getFilterValue() : table.getState().globalFilter;
   return (
-    <Input
-      aria-label={t('搜索表格', 'Search table')}
-      placeholder={t('搜索表格', 'Search table')}
+    <InputControl
+      aria-label={t('dataTable.searchTable')}
+      placeholder={t('dataTable.searchTable')}
       prefix={<Search size={16} />}
       allowClear
       size={size}
@@ -342,10 +313,11 @@ function columnLabel(column: Column<unknown, unknown>) {
   );
 }
 
-export function DataTableColumnVisibility({ children, label }: DataTableColumnVisibilityProps) {
+export function DataTableColumnVisibility(rawProps: DataTableColumnVisibilityProps) {
+  const { children, label } = useComponentProps('DataTableColumnVisibility', rawProps);
   const { table, loading, size } = useDataTable();
   const t = useText();
-  const title = label ?? t('显示列', 'Columns');
+  const title = label ?? t('dataTable.columns');
   return (
     <Popover
       placement="bottom-end"
@@ -367,9 +339,14 @@ export function DataTableColumnVisibility({ children, label }: DataTableColumnVi
         </FieldScope>
       }
     >
-      <Button size={size} variant="outline" startIcon={<Columns3 size={16} />} disabled={loading}>
+      <ButtonControl
+        size={size}
+        variant="outline"
+        startIcon={<Columns3 size={16} />}
+        disabled={loading}
+      >
         {children ?? title}
-      </Button>
+      </ButtonControl>
     </Popover>
   );
 }
@@ -396,14 +373,14 @@ function pinProps(column: Column<unknown, unknown>) {
 function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
   const { table, loading } = useDataTable();
   const { direction } = useLeafConfig();
-  const t = useText();
+  const format = useFormattedText();
   const column = header.column;
   const min = column.columnDef.minSize ?? 20;
   const max = column.columnDef.maxSize ?? Number.MAX_SAFE_INTEGER;
   return (
     <hr
       tabIndex={loading ? -1 : 0}
-      aria-label={`${t('调整列宽', 'Resize column')}: ${columnLabel(column)}`}
+      aria-label={format('dataTable.resizeColumn', { label: columnLabel(column) })}
       aria-orientation="vertical"
       aria-valuemin={min}
       aria-valuemax={max}
@@ -436,18 +413,14 @@ function SelectionHeader() {
   const { table, selection, selectAllMode, loading } = useDataTable();
   const t = useText();
   if (selection !== 'multiple')
-    return <span className="leaf-table__sr-only">{t('选择行', 'Select rows')}</span>;
+    return <span className="leaf-table__sr-only">{t('dataTable.selectRows')}</span>;
   const page = selectAllMode === 'page';
   const selectable = (
     page ? table.getRowModel() : table.getPrePaginationRowModel()
   ).flatRows.filter((row) => row.getCanSelect());
   return (
     <Checkbox
-      aria-label={
-        page
-          ? t('选择本页所有行', 'Select all rows on this page')
-          : t('选择所有行', 'Select all rows')
-      }
+      aria-label={page ? t('dataTable.selectAllRowsOnThisPage') : t('dataTable.selectAllRows')}
       checked={page ? table.getIsAllPageRowsSelected() : table.getIsAllRowsSelected()}
       indeterminate={page ? table.getIsSomePageRowsSelected() : table.getIsSomeRowsSelected()}
       disabled={loading || !selectable.length}
@@ -472,7 +445,7 @@ function DataRow({
   const config = useDataTable();
   const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
     config;
-  const t = useText();
+  const format = useFormattedText();
   const detailsId = `${id}-detail-${encodeURIComponent(row.id)}`;
   const label = getRowLabel?.(row) ?? row.id;
   const expandable = config.expandable;
@@ -516,7 +489,7 @@ function DataRow({
       >
         {config.rowReordering && (
           <Table.Cell className="leaf-data-table__utility">
-            <ReorderHandle label={`${t('移动行', 'Reorder row')}: ${label}`} />
+            <ReorderHandle label={format('dataTable.reorderRow', { label })} />
           </Table.Cell>
         )}
         {selection && (
@@ -525,14 +498,14 @@ function DataRow({
               <Radio
                 name={`${id}-selection`}
                 form={`${id}-detached-selection`}
-                aria-label={`${t('选择行', 'Select row')}: ${label}`}
+                aria-label={format('dataTable.selectRow', { label })}
                 checked={row.getIsSelected()}
                 disabled={loading || !row.getCanSelect()}
                 onChange={() => config.table.setRowSelection({ [row.id]: true })}
               />
             ) : (
               <Checkbox
-                aria-label={`${t('选择行', 'Select row')}: ${label}`}
+                aria-label={format('dataTable.selectRow', { label })}
                 checked={row.getIsSelected()}
                 indeterminate={row.getIsSomeSelected()}
                 disabled={loading || !row.getCanSelect()}
@@ -547,7 +520,10 @@ function DataRow({
               <button
                 type="button"
                 className="leaf-data-table__expand"
-                aria-label={`${row.getIsExpanded() ? t('收起行', 'Collapse row') : t('展开行', 'Expand row')}: ${label}`}
+                aria-label={format(
+                  row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow',
+                  { label },
+                )}
                 aria-expanded={row.getIsExpanded()}
                 aria-controls={renderExpandedRow && !row.subRows.length ? detailsId : undefined}
                 disabled={loading}
@@ -699,7 +675,7 @@ function VirtualRows({
   );
 }
 
-export function DataTableContent({ className, ...props }: DataTableContentProps) {
+export function DataTableContentControl({ className, ...props }: DataTableContentProps) {
   const config = useDataTable();
   const {
     table,
@@ -714,6 +690,7 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
     virtual,
   } = config;
   const t = useText();
+  const format = useFormattedText();
   const viewport = useRef<HTMLDivElement>(null);
   const element = useRef<HTMLTableElement>(null);
   const [focusedRowId, setFocusedRowId] = useState<string>();
@@ -796,7 +773,7 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
               <Table.Row key={group.id} aria-rowindex={virtual ? groupIndex + 1 : undefined}>
                 {groupIndex === 0 && config.rowReordering && (
                   <Table.ColumnHeader rowSpan={headers.length} className="leaf-data-table__utility">
-                    <span className="leaf-table__sr-only">{t('移动行', 'Reorder rows')}</span>
+                    <span className="leaf-table__sr-only">{t('dataTable.reorderRows')}</span>
                   </Table.ColumnHeader>
                 )}
                 {groupIndex === 0 && selection && (
@@ -806,7 +783,7 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
                 )}
                 {groupIndex === 0 && expandable && (
                   <Table.ColumnHeader rowSpan={headers.length} className="leaf-data-table__utility">
-                    <span className="leaf-table__sr-only">{t('展开行', 'Expand rows')}</span>
+                    <span className="leaf-table__sr-only">{t('dataTable.expandRows')}</span>
                   </Table.ColumnHeader>
                 )}
                 {group.headers.map((header) => {
@@ -820,10 +797,10 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
                   const nextSort = column.getNextSortingOrder();
                   const sortLabel =
                     nextSort === 'asc'
-                      ? t('升序排序', 'Sort ascending')
+                      ? t('dataTable.sortAscending')
                       : nextSort === 'desc'
-                        ? t('降序排序', 'Sort descending')
-                        : t('取消排序', 'Clear sorting');
+                        ? t('dataTable.sortDescending')
+                        : t('dataTable.clearSorting');
                   return (
                     <ReorderColumnHeader
                       key={header.id}
@@ -850,7 +827,9 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
                       <div className="leaf-data-table__heading">
                         {config.reorderColumns && !header.isPlaceholder && (
                           <ReorderHandle
-                            label={`${t('移动列', 'Reorder column')}: ${columnLabel(column)}`}
+                            label={format('dataTable.reorderColumn', {
+                              label: columnLabel(column),
+                            })}
                           />
                         )}
                         {header.isPlaceholder ? null : canSort ? (
@@ -939,7 +918,7 @@ export function DataTableContent({ className, ...props }: DataTableContentProps)
   );
 }
 
-export function DataTablePagination({
+export function DataTablePaginationControl({
   className,
   hasNextPage,
   ...props
@@ -951,26 +930,26 @@ export function DataTablePagination({
   if (pages < 0) {
     return (
       <nav
-        aria-label={t('分页', 'Pagination')}
+        aria-label={t('pagination.label')}
         className={classes('leaf-data-table__pagination', className)}
       >
-        <Button
-          size={size}
-          variant="outline"
+        <ButtonControl
+          size={props.size ?? size}
+          variant={props.variant ?? 'outline'}
           disabled={props.disabled || loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
-          {t('上一页', 'Previous page')}
-        </Button>
+          {t('pagination.previousPage')}
+        </ButtonControl>
         <span>{pageIndex + 1}</span>
-        <Button
-          size={size}
-          variant="outline"
+        <ButtonControl
+          size={props.size ?? size}
+          variant={props.variant ?? 'outline'}
           disabled={props.disabled || loading || !(hasNextPage ?? table.getCanNextPage())}
           onClick={() => table.nextPage()}
         >
-          {t('下一页', 'Next page')}
-        </Button>
+          {t('pagination.nextPage')}
+        </ButtonControl>
       </nav>
     );
   }
@@ -1028,7 +1007,11 @@ function ManagedDataTable<TData>({
   return <DataTableRoot {...props} table={table} />;
 }
 
-function DataTableComponent<TData>(props: DataTableProps<TData> | DataTableDataProps<TData>) {
+function DataTableComponent<TData>(rawProps: DataTableProps<TData> | DataTableDataProps<TData>) {
+  const props = mergeComponentProps<DataTableProps<TData> | DataTableDataProps<TData>>(
+    useGenericComponentDefaults('DataTable'),
+    rawProps,
+  );
   return props.table ? (
     <DataTableRoot {...(props as DataTableProps<TData>)} />
   ) : (
@@ -1044,3 +1027,18 @@ export const DataTable = Object.assign(DataTableComponent, {
   Footer: DataTableFooter,
   Pagination: DataTablePagination,
 });
+
+export function DataTableContent(rawProps: DataTableContentProps) {
+  const props = useComponentProps('DataTableContent', rawProps);
+  return <DataTableContentControl {...props} />;
+}
+
+export function DataTablePagination(rawProps: DataTablePaginationProps) {
+  const props = useComponentProps('DataTablePagination', rawProps);
+  return <DataTablePaginationControl {...props} />;
+}
+
+export function DataTableFooter(rawProps: HTMLAttributes<HTMLDivElement>) {
+  const props = useComponentProps('DataTableFooter', rawProps);
+  return <DataTableFooterControl {...props} />;
+}

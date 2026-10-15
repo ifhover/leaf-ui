@@ -43,8 +43,8 @@ test('Cascader expands without transient overflow and keeps equal inline insets'
 });
 
 for (const [suffix, height] of [
-  ['', 36],
-  ['&compact=1', 30],
+  ['', 32],
+  ['&compact=1', 26],
   ['&tokens=1', 40],
 ] as const) {
   test(`popup rows follow the regional control height ${height}px`, async ({ page }, testInfo) => {
@@ -69,12 +69,24 @@ for (const [suffix, height] of [
       'min-height',
       `${height}px`,
     );
+    await expect
+      .poll(
+        async () =>
+          (await page.getByRole('option', { name: 'Bob', exact: true }).boundingBox())?.height,
+      )
+      .toBeCloseTo(height, 0);
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Animated menu' }).click();
     await expect(page.getByRole('menuitem', { name: 'Edit', exact: true })).toHaveCSS(
       'min-height',
       `${height}px`,
     );
+    await expect
+      .poll(
+        async () =>
+          (await page.getByRole('menuitem', { name: 'Edit', exact: true }).boundingBox())?.height,
+      )
+      .toBeCloseTo(height, 0);
   });
 }
 
@@ -162,9 +174,11 @@ for (const appearance of ['light', 'dark']) {
     const second = page.getByRole('menuitem', { name: 'Edit', exact: true });
     const danger = page.getByRole('menuitem', { name: 'Delete', exact: true });
     await expect(first).toBeFocused();
-    const neutral = await marker.evaluate((node) =>
-      getComputedStyle(node).getPropertyValue('--leaf-color-text-alpha-9').trim(),
-    );
+    const neutral = new TinyColor(
+      await marker.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-color-option-hover').trim(),
+      ),
+    ).toRgbString();
     await expect(marker).toHaveCSS('background-color', neutral);
     await second.hover();
     await expect(second).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
@@ -197,7 +211,7 @@ for (const appearance of ['light', 'dark']) {
 }
 
 for (const appearance of ['light', 'dark']) {
-  test(`Select keeps the same highlight color when crossing selected rows in ${appearance}`, async ({
+  test(`Select uses neutral candidates without changing selected rows in ${appearance}`, async ({
     page,
   }) => {
     await page.goto(`/?fixture=refinements&theme=${appearance}`);
@@ -211,19 +225,32 @@ for (const appearance of ['light', 'dark']) {
         getComputedStyle(node).getPropertyValue('--leaf-color-primary-surface-9').trim(),
       ),
     ).toRgbString();
+    const neutral = new TinyColor(
+      await marker.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-color-option-hover').trim(),
+      ),
+    ).toRgbString();
+    expect(neutral).not.toBe(background);
     await expect(selected).toHaveCSS('background-color', background);
     await expect(marker).toBeVisible();
     await expect(marker).toHaveCSS('background-color', background);
     await next.hover();
     await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', background);
+    await expect(marker).toHaveCSS('background-color', neutral);
+    await expect(selected).toHaveCSS('background-color', background);
     await expect(next).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await page.getByRole('option', { name: 'Unavailable', exact: true }).hover();
+    await expect(marker).toHaveCSS('background-color', neutral);
+    await expect(page.getByRole('option', { name: 'Unavailable', exact: true })).toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
     await selected.hover();
     await expect(marker).toBeVisible();
     await expect(marker).toHaveCSS('background-color', background);
     await input.press('ArrowDown');
     await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', background);
+    await expect(marker).toHaveCSS('background-color', neutral);
     await input.press('ArrowUp');
     await expect(marker).toBeVisible();
     await expect(marker).toHaveCSS('background-color', background);

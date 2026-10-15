@@ -1,7 +1,7 @@
 import { Alert, Space } from '@ifhover/leaf-ui';
 export function AlertBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Alert title="项目已保存" type="success" />
       <Alert title="有新的版本可用" description="你可以在方便的时候更新。" closable />
       <Alert title="请检查当前设置" type="warning" />

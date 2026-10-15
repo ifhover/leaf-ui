@@ -1,4 +1,4 @@
-import { Button, Space, useMessage } from '@ifhover/leaf-ui';
+import { Button, Flex, useMessage } from '@ifhover/leaf-ui';
 export function MessageBasic() {
   const { message } = useMessage();
   async function save() {
@@ -7,7 +7,7 @@ export function MessageBasic() {
     message.open({ key, type: 'success', content: '保存成功', duration: 3, closable: true });
   }
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <Button onClick={save}>异步保存</Button>
       <Button variant="outline" onClick={() => message.info('一条消息提示')}>
         提示
@@ -24,6 +24,6 @@ export function MessageBasic() {
       <Button variant="ghost" onClick={() => message.close()}>
         清空消息
       </Button>
-    </Space>
+    </Flex>
   );
 }

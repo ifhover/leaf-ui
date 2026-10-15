@@ -9,7 +9,7 @@ Browse and select dates, and display schedules.
 
 ## Schedule calendar
 
-<ComponentExample title="Schedule calendar" preview={<CalendarBasic />} fileName="basic.tsx">
+<ComponentExample title="Schedule calendar" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/basic.tsx"
 ```
@@ -18,7 +18,7 @@ Browse and select dates, and display schedules.
 
 ## Compact calendar and disabled dates
 
-<ComponentExample title="Compact calendar and disabled dates" preview={<CalendarCompact />} fileName="compact.tsx">
+<ComponentExample title="Compact calendar and disabled dates" preview={<CalendarCompact />} fileName="compact.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/compact.tsx"
 ```
@@ -27,7 +27,7 @@ Browse and select dates, and display schedules.
 
 ## Choose a month
 
-<ComponentExample title="Choose a month" preview={<CalendarMonth />} fileName="month.tsx">
+<ComponentExample title="Choose a month" preview={<CalendarMonth />} fileName="month.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/month.tsx"
 ```
@@ -63,4 +63,4 @@ import type { CalendarProps } from '@ifhover/leaf-ui';
 
 Use `fullscreen={false}` for a compact calendar. Place non-interactive text or icons in `cellRender`; avoid nested buttons. A disabled selection stays readable and cannot be selected again.
 
-Use arrow keys to move dates, Home/End to jump within a row and PageUp/PageDown to switch months. Provide consistent initial dates for SSR; see [SSR usage](/guide/ssr).
+Use arrow keys to move dates, Home/End to jump within a row and PageUp/PageDown to switch months. Provide consistent initial dates for SSR; see [server-side rendering](/en/guide/ssr).

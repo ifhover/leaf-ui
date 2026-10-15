@@ -1,8 +1,9 @@
 import { Download, RefreshCw } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { type HTMLAttributes, useRef } from 'react';
-import { Button } from '../button';
-import { Loading } from '../loading';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { LoadingControl as Loading } from '../loading/loading';
 import { classes } from '../shared/classes';
 import { useText } from '../shared/use-text';
 export interface QRCodeProps extends HTMLAttributes<HTMLDivElement> {
@@ -18,21 +19,22 @@ export interface QRCodeProps extends HTMLAttributes<HTMLDivElement> {
   downloadable?: boolean;
   fileName?: string;
 }
-export function QRCode({
-  value,
-  size = 160,
-  color = 'var(--leaf-color-text)',
-  backgroundColor = 'var(--leaf-color-surface)',
-  level = 'M',
-  logo,
-  logoSize = 32,
-  status = 'active',
-  onRefresh,
-  downloadable = false,
-  fileName = 'qrcode.svg',
-  className,
-  ...props
-}: QRCodeProps) {
+export function QRCode(rawProps: QRCodeProps) {
+  const {
+    value,
+    size = 160,
+    color = 'var(--leaf-color-text)',
+    backgroundColor = 'var(--leaf-color-surface)',
+    level = 'M',
+    logo,
+    logoSize = 32,
+    status = 'active',
+    onRefresh,
+    downloadable = false,
+    fileName = 'qrcode.svg',
+    className,
+    ...props
+  } = useComponentProps('QRCode', rawProps);
   const t = useText();
   const root = useRef<HTMLDivElement>(null);
   const download = () => {
@@ -65,7 +67,7 @@ export function QRCode({
           marginSize={2}
           fgColor={color}
           bgColor={backgroundColor}
-          title={props['aria-label'] ?? t('二维码', 'QR code')}
+          title={props['aria-label'] ?? t('qrCode.qrCode')}
           imageSettings={
             logo ? { src: logo, width: logoSize, height: logoSize, excavate: true } : undefined
           }
@@ -75,17 +77,17 @@ export function QRCode({
             {status === 'loading' ? (
               <Loading />
             ) : (
-              <Button variant="outline" startIcon={<RefreshCw />} onClick={onRefresh}>
-                {t('刷新二维码', 'Refresh code')}
-              </Button>
+              <ButtonControl variant="outline" startIcon={<RefreshCw />} onClick={onRefresh}>
+                {t('qrCode.refreshCode')}
+              </ButtonControl>
             )}
           </div>
         )}
       </div>
       {downloadable && (
-        <Button size="sm" variant="ghost" startIcon={<Download />} onClick={download}>
-          {t('下载', 'Download')}
-        </Button>
+        <ButtonControl size="sm" variant="ghost" startIcon={<Download />} onClick={download}>
+          {t('common.download')}
+        </ButtonControl>
       )}
     </div>
   );

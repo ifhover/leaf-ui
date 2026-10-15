@@ -9,6 +9,22 @@ const options = [
   { value: 'Pine Forest' },
 ];
 describe('AutoComplete', () => {
+  it('shows decorative icons above loading and custom empty content', async () => {
+    const { rerender } = render(<AutoComplete aria-label="项目" options={[]} loading />);
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByText('处理中').parentElement?.querySelector('svg')).toHaveClass(
+      'leaf-floating__loading-icon',
+    );
+    rerender(<AutoComplete aria-label="项目" options={[]} notFoundContent="没有项目" />);
+    expect(screen.getByText('没有项目').parentElement?.querySelector('svg')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(screen.getByText('没有项目').parentElement?.querySelector('svg')).not.toHaveClass(
+      'leaf-floating__loading-icon',
+    );
+  });
   it('filters suggestions, supports free text and selects with arrows and Enter', async () => {
     const onSelect = vi.fn();
     render(<AutoComplete aria-label="项目" options={options} onSelect={onSelect} />);

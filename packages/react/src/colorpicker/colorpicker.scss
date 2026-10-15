@@ -6,25 +6,31 @@
   flex: none;
   align-items: center;
   width: auto;
+  height: var(--leaf-current-control-height);
   vertical-align: middle;
+  cursor: pointer;
+  &[data-readonly]:not([data-disabled]) {
+    cursor: default;
+  }
   &[data-open] {
     border-color: var(--leaf-field-color);
     box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
   }
   &__trigger {
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     min-width: calc(var(--leaf-current-control-height) - 2px);
-    min-height: calc(var(--leaf-current-control-height) - 2px);
-    padding: 5px;
+    height: calc(var(--leaf-current-control-height) - 2px);
+    padding: 0 5px;
     border: 0;
     border-radius: inherit;
     color: inherit;
     background: transparent;
     font: inherit;
-    cursor: pointer;
+    cursor: inherit;
     transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       background: var(--leaf-color-surface-muted);

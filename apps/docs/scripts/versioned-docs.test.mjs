@@ -7,12 +7,74 @@ import test from 'node:test';
 import { parse } from '@babel/parser';
 import { versionTarget } from '../src/components/version-path.ts';
 import { properties, readApiRows } from './api-model.mjs';
+import { rehypeApiTypes } from './api-type-display.mjs';
 import {
   extractExampleMarkdown,
   extractExampleSource,
   localizeExampleSource,
   remarkExampleSource,
 } from './example-source.mjs';
+
+test('API type links keep one code expression without changing links or other cells', () => {
+  const text = (value) => ({ type: 'text', value });
+  const element = (tagName, children, properties = {}) => ({
+    type: 'element',
+    tagName,
+    children,
+    properties,
+  });
+  const code = (value) => element('code', [text(value)]);
+  const reference = (name, href) => element('a', [code(name)], { href });
+  for (const label of ['Type', '类型']) {
+    const type = element('td', [
+      code('Partial<Omit<'),
+      reference('InputProps', '/components/input#input-api'),
+      code(", 'key' | 'ref'>> | "),
+      reference('LeafTheme', '#leaftheme'),
+    ]);
+    const property = element('td', [code('Input')]);
+    const description = element('td', [reference('InputProps', '/components/input#input-api')]);
+    const unrelated = structuredClone(description);
+    const tree = element('table', [
+      element('thead', [
+        element('tr', [
+          element('th', [text('Property')]),
+          element('th', [text(label)]),
+          element('th', [text('Description')]),
+        ]),
+      ]),
+      element('tbody', [element('tr', [property, type, description])]),
+    ]);
+    rehypeApiTypes()(tree);
+    assert.deepEqual(tree.properties.className, ['leaf-api-table']);
+    assert.equal(type.children.length, 1);
+    const expression = type.children[0];
+    assert.equal(expression.tagName, 'code');
+    assert.deepEqual(
+      expression.children
+        .filter((node) => node.tagName === 'a')
+        .map((node) => node.properties.href),
+      ['/components/input#input-api', '#leaftheme'],
+    );
+    assert.equal(
+      expression.children
+        .map((node) => (node.type === 'text' ? node.value : node.children[0].value))
+        .join(''),
+      "Partial<Omit<InputProps, 'key' | 'ref'>> | LeafTheme",
+    );
+    assert.equal(
+      expression.children.some(
+        (node) => node.tagName === 'code' || node.children?.some((part) => part.tagName === 'code'),
+      ),
+      false,
+    );
+    assert.deepEqual(property.children, [code('Input')]);
+    assert.deepEqual(description, unrelated);
+    const once = structuredClone(tree);
+    rehypeApiTypes()(tree);
+    assert.deepEqual(tree, once);
+  }
+});
 
 test('example language props and translation helpers disappear while real locale state remains', () => {
   const source = `import { Button } from '@ifhover/leaf-ui';
@@ -37,7 +99,7 @@ export function LocaleDemo() {
   assert.match(extractExampleSource(nested, 'Demo'), /"乙"/);
 });
 
-import { publicApi, walkFiles } from './export-ai-docs.mjs';
+import { exportAiDocs, publicApi, walkFiles } from './export-ai-docs.mjs';
 
 test('example code keeps only the selected preview and its scoped dependencies', () => {
   const source = `import { Button, Input, type ButtonProps } from '@ifhover/leaf-ui';
@@ -183,6 +245,28 @@ test('AI discovery records the optional adapter import path separately from nati
     '@ifhover/leaf-ui/table/tanstack',
   );
   assert.equal(api.find((item) => item.name === 'DataTableRowReorderInfo')?.kind, 'type');
+});
+
+test('scoped component defaults retain public discovery and built-in API defaults', async () => {
+  const root = path.resolve(import.meta.dirname, '../../..');
+  const entry = path.join(root, 'packages/react/src/index.ts');
+  const api = await publicApi(root);
+  assert.equal(api.find((item) => item.name === 'LeafComponentDefaults')?.kind, 'type');
+  assert.ok(!api.some((item) => item.name === 'LeafMessages'));
+  const config = await properties(entry, 'ConfigProviderProps');
+  assert.equal(config.get('components').type, 'LeafComponentDefaults');
+  assert.ok(!config.has('messages') && !config.has('textMessages'));
+  assert.equal((await properties(entry, 'ButtonProps')).get('size').defaultValue, "'md'");
+  assert.equal((await properties(entry, 'InputProps')).get('size').defaultValue, "'md'");
+  assert.equal((await properties(entry, 'InputProps')).get('allowClear').defaultValue, 'false');
+  assert.equal((await properties(entry, 'InputSearchProps')).get('loading').defaultValue, 'false');
+  assert.equal((await properties(entry, 'SelectProps')).get('size').defaultValue, "'md'");
+  const defaults = await properties(entry, 'LeafComponentDefaults');
+  for (const name of ['Button', 'Input', 'InputSearch', 'Select', 'Modal'])
+    assert.match(defaults.get(name).type, /\| null/u);
+  assert.match(defaults.get('Select').type, /'options'/u);
+  assert.match(defaults.get('Modal').type, /'open'/u);
+  assert.equal((await properties(entry, 'ModalProps')).get('width').defaultValue, '480');
 });
 
 test('version switch preserves the page, language and anchor when available', () => {
@@ -406,6 +490,135 @@ for (const [packageName, version] of [
       await rm(root, { recursive: true, force: true });
     }
   });
+
+test('AI references own configuration types without changing historical snapshot destinations', async () => {
+  for (const separateReferences of [false, true]) {
+    const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-reference-test-'));
+    const output = path.join(root, 'output');
+    try {
+      await mkdir(path.join(root, 'packages/react/src'), { recursive: true });
+      await writeFile(
+        path.join(root, 'packages/react/package.json'),
+        JSON.stringify({ name: '@ifhover/leaf-ui', version: '0.5.0' }),
+      );
+      await writeFile(
+        path.join(root, 'packages/react/src/index.ts'),
+        [
+          "export { Button } from './button';",
+          "export { ConfigProvider } from './config-provider';",
+          "export type { LeafComponentDefaults } from './config-provider';",
+          "export type { LeafThemeTokens } from './theme';",
+          "export type { LeafComponentTokens, LeafThemeStyle } from './theme';",
+          "export type { PopupOptions } from './shared/floating';",
+          ...(separateReferences
+            ? ["export type { LeafTranslation, LeafTranslations } from './locales/types';"]
+            : []),
+          ...(separateReferences
+            ? []
+            : ["export type { LeafMessages } from './config-provider/context';"]),
+        ].join('\n'),
+      );
+      const references = {
+        LeafComponentDefaults: 'api/component-defaults',
+        LeafThemeTokens: 'api/theme-tokens',
+        LeafComponentTokens: 'api/theme-tokens',
+        LeafThemeStyle: 'api/theme-tokens',
+        PopupOptions: 'api/popup-options',
+        ...(separateReferences
+          ? { LeafTranslation: 'api/translations', LeafTranslations: 'api/translations' }
+          : {}),
+        ...(!separateReferences ? { LeafMessages: 'components/config-provider' } : {}),
+      };
+      for (const prefix of ['', 'en/']) {
+        const pages = {
+          'components/button': '# Button\n',
+          'components/config-provider': '# ConfigProvider\n',
+          'guide/theming': '# Theming\n',
+          ...(!separateReferences ? { 'guide/control-contracts': '# Popup contracts\n' } : {}),
+          ...(separateReferences
+            ? Object.fromEntries(
+                Object.entries(references).map(([name, page]) => [page, `# ${name}\n`]),
+              )
+            : {}),
+        };
+        for (const [page, content] of Object.entries(pages)) {
+          const file = path.join(output, `${prefix}${page}.md`);
+          await mkdir(path.dirname(file), { recursive: true });
+          await writeFile(file, content);
+        }
+      }
+      await mkdir(path.join(output, 'api'), { recursive: true });
+      await writeFile(path.join(output, 'api/index.html'), '<h1>API reference</h1>');
+      await writeFile(path.join(output, 'llms.txt'), '# Leaf UI\n');
+      const resources = [
+        'en-US.json',
+        'zh-CN.json',
+        'zh-TW.json',
+        'ja-JP.json',
+        'ko-KR.json',
+        'schema.json',
+      ];
+      if (separateReferences) {
+        await mkdir(path.join(root, 'packages/react/src/locales'), { recursive: true });
+        for (const name of resources)
+          await writeFile(
+            path.join(root, 'packages/react/src/locales', name),
+            JSON.stringify({ snapshot: '0.5.0', file: name }),
+          );
+      }
+      const index = await exportAiDocs({
+        repository: root,
+        output,
+        base: '/leaf-ui/v/0.5.0/',
+        sourceCommit: 'b'.repeat(40),
+      });
+      for (const [name, reference] of Object.entries(references)) {
+        for (const language of ['zh', 'en']) {
+          const owners = index.pages.filter(
+            (page) =>
+              page.language === language && page.symbols.some((symbol) => symbol.name === name),
+          );
+          assert.deepEqual(
+            owners.map((page) => page.id),
+            [
+              separateReferences
+                ? reference
+                : ['LeafThemeTokens', 'LeafComponentTokens', 'LeafThemeStyle'].includes(name)
+                  ? 'guide/theming'
+                  : name === 'PopupOptions'
+                    ? 'guide/control-contracts'
+                    : 'components/config-provider',
+            ],
+          );
+          if (separateReferences) {
+            const markdown = await readFile(path.join(output, owners[0].markdown), 'utf8');
+            assert.ok(markdown.includes('Leaf UI 0.5.0 · Package: @ifhover/leaf-ui'));
+            assert.ok(markdown.includes(`/v/0.5.0/${owners[0].html}`));
+          }
+        }
+      }
+      assert.equal(
+        await readFile(path.join(output, 'api/index.html'), 'utf8'),
+        '<h1>API reference</h1>',
+      );
+      assert.equal(
+        JSON.parse(await readFile(path.join(output, 'api/index.json'), 'utf8')).version,
+        '0.5.0',
+      );
+      for (const name of resources) {
+        const file = path.join(output, 'locales', name);
+        if (separateReferences)
+          assert.deepEqual(JSON.parse(await readFile(file, 'utf8')), {
+            snapshot: '0.5.0',
+            file: name,
+          });
+        else await assert.rejects(readFile(file), { code: 'ENOENT' });
+      }
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+});
 
 const registryFixture = (name, version, commit = 'a'.repeat(40)) => ({
   name,

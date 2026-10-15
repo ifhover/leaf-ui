@@ -1,4 +1,5 @@
 node_modules/
+apps/docs/docs/public/locales/
 dist/
 doc_build/
 site_build/

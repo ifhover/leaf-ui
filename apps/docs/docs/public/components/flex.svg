@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280" fill="none">
+  <title>Flex</title>
+  <rect width="480" height="280" rx="20" fill="#f5f7f6"/>
+  <g fill="#d7ebe0" stroke="#8ebfa3" stroke-width="2">
+    <rect x="44" y="60" width="100" height="48" rx="10"/>
+    <rect x="158" y="60" width="100" height="48" rx="10"/>
+    <rect x="272" y="60" width="164" height="48" rx="10"/>
+    <rect x="44" y="136" width="124" height="48" rx="10"/>
+    <rect x="312" y="136" width="124" height="48" rx="10"/>
+  </g>
+  <path d="M188 160h104m-10-8 10 8-10 8m-84-16-10 8 10 8" stroke="#387b56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,8 +1,10 @@
 import { ChevronRight, Ellipsis } from 'lucide-react';
 import type { AnchorHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Dropdown, type DropdownItem } from '../dropdown';
+import type { DropdownItem } from '../dropdown';
+import { DropdownControl as Dropdown } from '../dropdown/dropdown';
 import { classes } from '../shared/classes';
 
 export interface BreadcrumbItem
@@ -20,17 +22,18 @@ export interface BreadcrumbProps extends HTMLAttributes<HTMLElement> {
   itemsAfterCollapse?: number;
   itemRender?: (item: BreadcrumbItem, index: number) => ReactNode;
 }
-export function Breadcrumb({
-  items,
-  separator = <ChevronRight size={13} />,
-  maxItems = Infinity,
-  itemsBeforeCollapse = 1,
-  itemsAfterCollapse = 1,
-  itemRender,
-  className,
-  'aria-label': label,
-  ...props
-}: BreadcrumbProps) {
+export function Breadcrumb(rawProps: BreadcrumbProps) {
+  const {
+    items,
+    separator = <ChevronRight size={13} />,
+    maxItems = Infinity,
+    itemsBeforeCollapse = 1,
+    itemsAfterCollapse = 1,
+    itemRender,
+    className,
+    'aria-label': label,
+    ...props
+  } = useComponentProps('Breadcrumb', rawProps);
   const { messages } = useLeafConfig();
   const before = Math.max(1, itemsBeforeCollapse),
     after = Math.max(1, itemsAfterCollapse);
@@ -53,10 +56,10 @@ export function Breadcrumb({
                   : undefined,
               }))}
             >
-              <Button
+              <ButtonControl
                 variant="ghost"
                 size="sm"
-                aria-label={messages.expand}
+                aria-label={messages.tree.expand}
                 startIcon={<Ellipsis size={16} />}
               />
             </Dropdown>
@@ -70,7 +73,7 @@ export function Breadcrumb({
     <nav
       {...props}
       className={classes('leaf-breadcrumb', className)}
-      aria-label={label ?? messages.breadcrumb}
+      aria-label={label ?? messages.breadcrumb.label}
     >
       <ol>
         {visible.map(({ key, title, icon, menu, ...item }, index) => (
@@ -87,9 +90,9 @@ export function Breadcrumb({
               )
             ) : menu ? (
               <Dropdown items={menu}>
-                <Button variant="ghost" size="sm">
+                <ButtonControl variant="ghost" size="sm">
                   {title}
-                </Button>
+                </ButtonControl>
               </Dropdown>
             ) : item.href ? (
               <a {...item} aria-current={index === visible.length - 1 ? 'page' : undefined}>

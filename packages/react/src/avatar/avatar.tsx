@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -21,7 +22,7 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
   icon?: ReactNode;
   onError?: () => void;
 }
-export function Avatar({
+export function AvatarControl({
   src,
   srcSet,
   imageProps,
@@ -50,7 +51,9 @@ export function Avatar({
       {...props}
       role="img"
       aria-label={
-        alt ?? props['aria-label'] ?? (typeof children === 'string' ? children : messages.avatar)
+        alt ??
+        props['aria-label'] ??
+        (typeof children === 'string' ? children : messages.avatar.label)
       }
       className={classes(
         'leaf-avatar',
@@ -92,4 +95,9 @@ export function Avatar({
       )}
     </span>
   );
+}
+
+export function Avatar(rawProps: AvatarProps) {
+  const props = useComponentProps('Avatar', rawProps);
+  return <AvatarControl {...props} />;
 }

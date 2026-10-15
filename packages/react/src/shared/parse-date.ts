@@ -2,7 +2,11 @@ import { type CalendarMode, periodKey, startOfPeriod } from './calendar';
 import { parseTime } from './time';
 
 /** Strict local parsing: never silently roll an invalid day into the next month. */
-export function parseDateText(text: string, mode: CalendarMode = 'date') {
+export function parseDateText(
+  text: string,
+  mode: CalendarMode = 'date',
+  periods?: readonly [string, string],
+) {
   if (mode === 'quarter') {
     const match = /^(\d{4})-Q([1-4])$/i.exec(text);
     if (!match) return null;
@@ -35,7 +39,7 @@ export function parseDateText(text: string, mode: CalendarMode = 'date') {
   if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day)
     return null;
   if (mode === 'datetime') {
-    const time = parseTime(match[4]);
+    const time = parseTime(match[4], periods);
     if (!time) return null;
     date.setHours(time.hour, time.minute, time.second, 0);
     if (date.getHours() !== time.hour || date.getMinutes() !== time.minute) return null;

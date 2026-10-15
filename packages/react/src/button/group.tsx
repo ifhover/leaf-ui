@@ -6,17 +6,19 @@ import {
   isValidElement,
   type ReactElement,
 } from 'react';
-import { Dropdown, type DropdownItem, type DropdownProps } from '../dropdown';
+import { useComponentProps } from '../config-provider/component-defaults';
+import type { DropdownItem, DropdownProps } from '../dropdown';
+import { DropdownControl as Dropdown } from '../dropdown/dropdown';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
-import { Button, type ButtonProps } from './button';
+import { ButtonControl, type ButtonProps } from './button';
 export interface ButtonGroupProps extends FieldsetHTMLAttributes<HTMLFieldSetElement> {
   size?: ControlSize;
   disabled?: boolean;
   attached?: boolean;
 }
-export function ButtonGroup({
+export function ButtonGroupControl({
   size,
   disabled,
   attached = true,
@@ -46,27 +48,33 @@ export interface SplitButtonProps extends ButtonProps {
   menuLabel?: string;
   dropdownProps?: Omit<DropdownProps, 'items' | 'children' | 'disabled'>;
 }
-export function SplitButton({
-  items,
-  menuLabel,
-  dropdownProps,
-  children,
-  className,
-  ...props
-}: SplitButtonProps): ReactElement {
+export function SplitButton(incomingProps: SplitButtonProps): ReactElement {
+  const { items, menuLabel, dropdownProps, ...rawProps } = useComponentProps(
+    'SplitButton',
+    incomingProps,
+  );
+  const { children, className, ...props } = useComponentProps('Button', rawProps);
+  const inactive = Boolean(props.disabled || props.loading);
   const t = useText();
   return (
-    <ButtonGroup className={className}>
-      <Button {...props}>{children}</Button>
-      <Dropdown {...dropdownProps} items={items} disabled={props.disabled || props.loading}>
-        <Button
+    <ButtonGroupControl className={classes('leaf-split-button', className)}>
+      <ButtonControl {...props}>{children}</ButtonControl>
+      <Dropdown {...dropdownProps} items={items} disabled={inactive}>
+        <ButtonControl
+          type="button"
+          disabled={inactive}
           variant={props.variant}
           size={props.size}
           danger={props.danger}
           startIcon={<ChevronDown size={16} />}
-          aria-label={menuLabel ?? t('更多操作', 'More actions')}
+          aria-label={menuLabel ?? t('button.moreActions')}
         />
       </Dropdown>
-    </ButtonGroup>
+    </ButtonGroupControl>
   );
+}
+
+export function ButtonGroup(rawProps: ButtonGroupProps) {
+  const props = useComponentProps('ButtonGroup', rawProps);
+  return <ButtonGroupControl {...props} />;
 }

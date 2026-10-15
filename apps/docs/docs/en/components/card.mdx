@@ -1,6 +1,9 @@
-import { CardSections } from '../../../src/examples/card/sections';
+import { CardSections } from '../../../src/examples/en/card/sections';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CardBasic } from '../../../src/examples/en/card/basic';
+import { CardSizes } from '../../../src/examples/en/card/sizes';
+import { CardTabs } from '../../../src/examples/en/card/tabs';
+import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title';
 
 # Card
 
@@ -8,20 +11,55 @@ Group related content and actions in a container.
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx">
+<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx" width={520}>
 
 ```tsx lineNumbers file="../../../src/examples/en/card/basic.tsx"
 ```
 
 </ComponentExample>
 
+## Sizes
+
+`size` offers small, default and large cards, adjusting padding, heading typography and heading height together. Embedded Tabs follow the card size unless overridden with `tabs.size`. Buttons, inputs and other controls inside the card use their own `size`.
+
+These cards share the same content to compare headings, tab bars and content spacing. Each card's tabs switch independently.
+
+<ComponentExample title="Sizes" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
+
+```tsx lineNumbers file="../../../src/examples/en/card/sizes.tsx"
+```
+
+</ComponentExample>
+
 ## Content sections
 
-Group content with spacing by default; divided separates settings from actions.
+Use spacing to group content. Set `divided` to separate the heading, body and footer actions.
 
-<ComponentExample title="Content sections" preview={<CardSections english />} fileName="sections.tsx">
+<ComponentExample title="Content sections" preview={<CardSections />} fileName="sections.tsx" width={560}>
 
-```tsx lineNumbers file="../../../src/examples/card/sections.tsx"
+```tsx lineNumbers file="../../../src/examples/en/card/sections.tsx"
+```
+
+</ComponentExample>
+
+## Tabbed card
+
+Use `tabs.items` to define labels and their content. Without a title, tabs fill the heading height with vertically centered labels, and Card's `extra` appears at their trailing edge.
+
+<ComponentExample title="Tabbed card" preview={<CardTabs />} fileName="tabs.tsx" width={520}>
+
+```tsx lineNumbers file="../../../src/examples/en/card/tabs.tsx"
+```
+
+</ComponentExample>
+
+## Heading with tabs
+
+With a `title` or `description`, tabs sit beneath the heading. There is no divider between the heading and tabs; the divider runs below the tab bar. Control selection with `tabs.activeKey` / `tabs.onChange`. Visited pages retain input state by default, and `divided` continues to control the footer divider and surface.
+
+<ComponentExample title="Heading with tabs" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx" width={520}>
+
+```tsx lineNumbers file="../../../src/examples/en/card/tabs-with-title.tsx"
 ```
 
 </ComponentExample>
@@ -30,29 +68,52 @@ Group content with spacing by default; divided separates settings from actions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | — | Title / header actions |
+| `title` | `ReactNode` | — | Card heading. |
 | `description` | `ReactNode` | — | Additional description. |
-| `extra` | `ReactNode` | — | Title / header actions |
-| `cover` | `ReactNode` | — | Cover / footer |
-| `footer` | `ReactNode` | — | Cover / footer |
+| `extra` | `ReactNode` | — | Heading actions; shown at the trailing edge of tabs without a heading. |
+| `tabs` | [`CardTabsProps`](#cardtabs-api) | — | Embedded tabs; replace the heading without a title or sit beneath it. |
+| `cover` | `ReactNode` | — | Top cover. |
+| `footer` | `ReactNode` | — | Footer content or actions. |
 | `loading` | `boolean` | `false` | Replace the body with a skeleton |
-| `bordered` | `boolean` | `true` | Outer outline / hover emphasis |
+| `bordered` | `boolean` | `true` | Show the outer border |
 | `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
-| `hoverable` | `boolean` | `false` | Outer outline / hover emphasis |
-| `size` | `'sm' \| 'md'` | `'md'` | Content spacing |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size: padding, heading typography and height, and the default size of embedded Tabs. |
 
 ## Types
 
 Import the exported types when defining props or building item lists.
 
 ```ts
-import type { CardProps } from '@ifhover/leaf-ui';
+import type { CardProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
 
-Place buttons or links in extra and footer. hoverable adds visual feedback; use an explicit button or link for actions.
+Place buttons or links in extra and footer. Use an explicit button or link for actions.
+
+`tabs` reuses Tabs configuration and interaction with top-aligned line tabs. `tabs.items[].children` provides each page; Card's `children` may hold shared content below all pages. `loading` replaces the content with skeletons while headings, tabs and actions stay available. Tabs follow the card's `size`; set `tabs.size` to override. An empty item list restores the ordinary card layout.
+
+Use `tabs` to configure disabled tabs, icons, manual keyboard activation, retained or destroyed pages, overflow menus and add, close or reorder callbacks. `tabs.extra` always belongs to the tab bar; with a title, Card's `extra` stays alongside the heading.
 
 ## Surfaces and rich content
 
-`description` adds supporting text beneath the title. Cards have no internal dividers by default; `divided` adds section borders and a muted footer. Customize surfaces and borders through `ConfigProvider` `components.Card`.
+`description` adds supporting text beneath the title. Ordinary cards have no internal dividers by default; tabbed cards always have a divider below navigation. `divided` adds a footer divider and muted surface with the same vertical action spacing as Modal and Drawer. Customize surfaces and borders through `ConfigProvider` `components.Card`.
+
+## CardTabs API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`TabItem`](../components/tabs#tabitem)`[]` | Required | Required. Tab labels and pages; an empty list restores an ordinary card. |
+| `activeKey` | `string` | First enabled item | Controlled active tab. |
+| `defaultActiveKey` | `string` | First enabled item | Initially active tab. |
+| `onChange` | `(key: string) => void` | — | Called when the active tab changes. |
+| `size` | `'sm' \| 'md' \| 'lg'` | Card's `size` | Tab size; may be overridden independently. |
+| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate with arrow keys or with Enter / Space. |
+| `destroyInactive` | `boolean` | `false` | Unmount pages on leaving; visited pages are retained by default. |
+| `extra` | `ReactNode` | — | Trailing tab bar content. |
+| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | Request removal by the application; default switching can be prevented. |
+| `onAdd` | `() => void` | — | Show the add button and request a new tab. |
+| `addLabel` | `string` | Localized prompt | Accessible name of the add button. |
+| `overflow` | `boolean` | `true` | Move overflowing tabs into the more menu. |
+| `sortable` | `boolean` | `false` | Enable sorting alongside `onReorder`. |
+| `onReorder` | `(items: `[`TabItem`](../components/tabs#tabitem)`[]) => void` | — | Return the reordered original items for the application to store. |

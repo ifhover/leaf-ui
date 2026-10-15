@@ -1,4 +1,4 @@
-import { AccessScope } from '../../../src/examples/modal/access-scope';
+import { ModalDescription } from '../../../src/examples/en/modal/description';
 import { Capabilities } from '../../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ComponentExample } from '../../../src/components/component-example';
@@ -10,7 +10,7 @@ Display content or complete an action in a dialog.
 
 ## Edit content
 
-<ComponentExample title="Edit content" preview={<ModalBasic />} fileName="basic.tsx">
+<ComponentExample title="Edit content" preview={<ModalBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/basic.tsx"
 ```
@@ -20,7 +20,7 @@ Display content or complete an action in a dialog.
 
 ## Custom footer
 
-<ComponentExample title="Custom footer" preview={<ModalFooter />} fileName="footer.tsx">
+<ComponentExample title="Custom footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/footer.tsx"
 ```
@@ -29,20 +29,20 @@ Display content or complete an action in a dialog.
 
 ## Destroying state and initial focus
 
-<ComponentExample title="Destroying state and initial focus" preview={<Capabilities english />} fileName="capabilities.tsx">
+<ComponentExample title="Destroying state and initial focus" preview={<Capabilities english />} fileName="capabilities.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/modal/capabilities.tsx"
 ```
 
 </ComponentExample>
 
-## Access settings
+## Icon and description
 
-Combine a descriptive heading, card choices and grouped permissions.
+Use `icon` and `description` to explain the action.
 
-<ComponentExample title="Access settings" preview={<AccessScope english />} fileName="access-scope.tsx">
+<ComponentExample title="Icon and description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/modal/access-scope.tsx"
+```tsx lineNumbers file="../../../src/examples/en/modal/description.tsx"
 ```
 
 </ComponentExample>

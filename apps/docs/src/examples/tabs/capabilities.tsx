@@ -7,14 +7,18 @@ const items = [
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Bottom placement' : '底部标签页'}</p>
-        <Tabs placement="bottom" items={items} />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Right placement' : '右侧标签页'}</p>
-        <Tabs placement="right" items={items} />
-      </div>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>{english ? 'Bottom placement' : '底部标签页'}</span>
+        <Tabs
+          aria-label={english ? 'Bottom tabs' : '底部标签页'}
+          placement="bottom"
+          items={items}
+        />
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>{english ? 'Right placement' : '右侧标签页'}</span>
+        <Tabs aria-label={english ? 'Right tabs' : '右侧标签页'} placement="right" items={items} />
+      </Space>
     </Space>
   );
 }

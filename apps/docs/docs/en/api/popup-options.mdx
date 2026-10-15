@@ -1,0 +1,15 @@
+# PopupOptions
+
+Shared popup settings for Select, date and time pickers, and related components. Component settings override ConfigProvider's `getPopupContainer`. Modal and Drawer call their mounting-container prop `container`.
+
+## PopupOptions
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | Placement relative to the trigger. |
+| `popupClassName` | `string` | Custom popup class. |
+| `popupStyle` | `CSSProperties` | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | Return the popup container, including a ShadowRoot. |
+
+Mount the container before interaction and avoid clipping the popup. Access the DOM inside the callback. For a ShadowRoot, load component styles inside that root too. Each component documents its default placement and additional options.

@@ -1,28 +1,16 @@
-import { Input, Space } from '@ifhover/leaf-ui';
-
+import { Form, FormField, Input } from '@ifhover/leaf-ui';
 export function InputStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled input</span>
-        <Input aria-label="Disabled input" disabled placeholder="Cannot edit right now" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Project name error · Error</span>
-        <Input
-          aria-label="Project name error"
-          status="error"
-          placeholder="Enter a project name"
-          aria-describedby="project-error"
-        />
-      </div>
-      <span id="project-error" className="leaf-demo-error">
-        Project name is required.
-      </span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Name warning</span>
-        <Input aria-label="Name warning" status="warning" defaultValue="A similar name exists" />
-      </div>
-    </Space>
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="Disabled input">
+        <Input disabled placeholder="Currently unavailable" />
+      </FormField>
+      <FormField label="Project name error" error="Project name is required.">
+        <Input placeholder="Enter a project name" />
+      </FormField>
+      <FormField label="Name warning">
+        <Input status="warning" defaultValue="A similar name already exists" />
+      </FormField>
+    </Form>
   );
 }

@@ -1,4 +1,5 @@
-import { ColorPicker, type ColorPreset, Space } from '@ifhover/leaf-ui';
+import type { ColorPreset } from '@ifhover/leaf-ui';
+import { ColorPicker, Flex, Text } from '@ifhover/leaf-ui';
 
 const presets: readonly ColorPreset[] = [
   { label: 'Brand colors', colors: ['#20834a', '#1677ff', '#7654c6', '#f49b23'] },
@@ -6,15 +7,15 @@ const presets: readonly ColorPreset[] = [
 ];
 export function ColorPickerPresets() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Custom presets · Clearable</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Custom presets · Clearable</Text>
         <ColorPicker presets={presets} allowClear showText />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>Disabled</Text>
         <ColorPicker disabled defaultValue="#1677ff" showText />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

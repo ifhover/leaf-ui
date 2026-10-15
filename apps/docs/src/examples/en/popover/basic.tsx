@@ -1,7 +1,7 @@
-import { Button, Popover, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Popover } from '@ifhover/leaf-ui';
 export function PopoverBasic() {
   return (
-    <Space wrap className="leaf-demo-row">
+    <Flex gap="md" align="center" wrap justify="center">
       <Popover title="Project details" content="See project details and recent updates here.">
         <Button variant="outline">Click for details</Button>
       </Popover>
@@ -13,6 +13,6 @@ export function PopoverBasic() {
       >
         <Button variant="outline">Hover for details</Button>
       </Popover>
-    </Space>
+    </Flex>
   );
 }

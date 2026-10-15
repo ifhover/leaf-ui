@@ -1,5 +1,6 @@
 import { forwardRef, type ReactNode, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import {
@@ -67,8 +68,8 @@ const getTime = (date: Date): TimeParts => ({
   second: date.getSeconds(),
 });
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
-  function DateRangePicker(
-    {
+  function DateRangePicker(rawProps: DateRangePickerProps, ref) {
+    const {
       value,
       defaultValue = null,
       picker = 'date',
@@ -93,9 +94,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
       onPanelChange,
       cellRender,
       ...props
-    },
-    ref,
-  ) {
+    } = useComponentProps('DateRangePicker', rawProps);
     const { messages } = useLeafConfig();
     const field = useFormField();
     const trigger = useRef<HTMLInputElement>(null);
@@ -137,12 +136,18 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const canonical = (date: Date) =>
       picker === 'datetime' ? dateTimeKey(date, showSeconds) : periodKey(date, picker);
     const timeLabel = (index: 0 | 1) =>
-      displayTime(times[index], showSeconds, use12Hours, [messages.am, messages.pm]);
+      displayTime(times[index], showSeconds, use12Hours, [
+        messages.timePicker.am,
+        messages.timePicker.pm,
+      ]);
     const defaultLabel = (date: Date) =>
       picker === 'datetime'
         ? periodKey(date, 'date') +
           ' ' +
-          displayTime(getTime(date), showSeconds, use12Hours, [messages.am, messages.pm])
+          displayTime(getTime(date), showSeconds, use12Hours, [
+            messages.timePicker.am,
+            messages.timePicker.pm,
+          ])
         : canonical(date);
     const label = (date: Date | null) => (date ? formatPickerDate(date, format, defaultLabel) : '');
     const inBounds = (date: Date, position: 0 | 1 = endpoint) =>
@@ -187,13 +192,13 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
       const first = parsePickerDate(
         pieces[0]?.trim() ?? '',
         format,
-        (text) => parseDateText(text, picker),
+        (text) => parseDateText(text, picker, [messages.timePicker.am, messages.timePicker.pm]),
         customParse,
       );
       const last = parsePickerDate(
         pieces[1]?.trim() ?? '',
         format,
-        (text) => parseDateText(text, picker),
+        (text) => parseDateText(text, picker, [messages.timePicker.am, messages.timePicker.pm]),
         customParse,
       );
       if (
@@ -253,8 +258,8 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         {...props}
         ref={merged}
         className={['leaf-date-range-picker', props.className].filter(Boolean).join(' ')}
-        placeholder={props.placeholder ?? messages.range}
-        clearLabel={messages.clearRange}
+        placeholder={props.placeholder ?? messages.dateRangePicker.placeholder}
+        clearLabel={messages.dateRangePicker.clear}
         displayValue={selected ? `${label(selected[0])} ~ ${label(selected[1])}` : ''}
         formValue={
           selected
@@ -305,7 +310,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         renderPanel={(close) => (
           <>
             <fieldset
-              aria-label={messages.range}
+              aria-label={messages.dateRangePicker.placeholder}
               className="leaf-range-panel__calendars"
               onMouseLeave={() => setHover(null)}
             >
@@ -324,13 +329,13 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                           <button
                             type="button"
                             className="leaf-picker-time-toggle"
-                            aria-label={messages.selectDate}
+                            aria-label={messages.datePicker.selectDate}
                             onClick={() => {
                               setFocusCalendar(index);
                               setTimeView(null);
                             }}
                           >
-                            {messages.selectDate}
+                            {messages.datePicker.selectDate}
                           </button>
                           <span>{timeLabel(index)}</span>
                         </div>
@@ -350,13 +355,13 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                           secondStep={secondStep}
                           onChange={(time) => updateTime(index, time)}
                         />
-                        <Button
+                        <ButtonControl
                           variant="ghost"
                           size="sm"
                           onClick={() => updateTime(index, getTime(new Date()))}
                         >
-                          {messages.now}
-                        </Button>
+                          {messages.timePicker.now}
+                        </ButtonControl>
                       </div>
                     ) : (
                       <CalendarPanel
@@ -388,9 +393,9 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                               type="button"
                               className="leaf-picker-time-toggle"
                               aria-label={
-                                (index === 0 ? messages.start : messages.end) +
+                                (index === 0 ? messages.common.start : messages.common.end) +
                                 ' ' +
-                                messages.selectTime
+                                messages.timePicker.selectTime
                               }
                               onClick={() => {
                                 setFocusCalendar(null);
@@ -410,7 +415,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             {(presets?.length || allowEmpty) && (
               <div className="leaf-picker-presets">
                 {presets?.map((preset, index) => (
-                  <Button
+                  <ButtonControl
                     // biome-ignore lint/suspicious/noArrayIndexKey: Presets retain their declared order and do not contain local state.
                     key={index}
                     variant="ghost"
@@ -428,12 +433,12 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                     }}
                   >
                     {preset.label}
-                  </Button>
+                  </ButtonControl>
                 ))}
                 {([0, 1] as const).map(
                   (index) =>
                     emptyAllowed[index] && (
-                      <Button
+                      <ButtonControl
                         key={`empty-${index}`}
                         size="sm"
                         variant="ghost"
@@ -447,8 +452,9 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                           close();
                         }}
                       >
-                        {messages.clearSelection} {index === 0 ? messages.start : messages.end}
-                      </Button>
+                        {messages.select.clear}{' '}
+                        {index === 0 ? messages.common.start : messages.common.end}
+                      </ButtonControl>
                     ),
                 )}
               </div>

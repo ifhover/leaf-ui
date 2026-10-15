@@ -27,7 +27,7 @@ Keep quick actions within reach.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost'` | — | Configure variant. |
+| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | — | Configure variant. |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
 | `danger` | `boolean` | — | Configure danger. |
 | `loading` | `boolean` | — | Show a loading state. |
@@ -52,6 +52,7 @@ Keep quick actions within reach.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | — | Required. Actions for the item. |
+| `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
 | `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `open` | `boolean` | — | Control whether the panel is open. |

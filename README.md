@@ -1,184 +1,121 @@
-# Leaf UI
+<div align="center">
+  <a href="https://ifhover.github.io/leaf-ui/">
+    <img src="./apps/docs/docs/public/leaf.svg" alt="Leaf UI" width="112" height="112" />
+  </a>
 
-轻盈、自然、可定制的 React UI 组件库。默认绿色主题，通过 ConfigProvider 调整颜色、圆角、字体和控件高度。支持 React 18 / 19，提供 TypeScript 类型、ESM 和 CommonJS 入口。
+  <h1>Leaf UI</h1>
 
-[在线文档](https://ifhover.github.io/leaf-ui/) · [更新记录](https://ifhover.github.io/leaf-ui/changelog.html) · [npm](https://www.npmjs.com/package/@ifhover/leaf-ui)
+  <p><strong>轻盈 · 自然 · 可定制</strong></p>
+  <p>一个以绿色为起点的 React UI 组件库，让界面保留你的个性。</p>
 
-使用 AI 编写界面时，可在应用目录安装按项目实际版本查询 API 的 Skill：`npx skills add ifhover/leaf-ui --skill leaf-ui`。安装与使用见 [AI 与 Skills](https://ifhover.github.io/leaf-ui/guide/ai.html)，文档顶部可切换已发布版本。
+  <p>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm 版本" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm 月下载量" /></a>
+    <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18%20%7C%2019-149eca?style=flat-square&amp;logo=react&amp;logoColor=white" alt="React 18 和 19" /></a>
+    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=flat-square&amp;logo=typescript&amp;logoColor=white" alt="TypeScript 类型支持" /></a>
+    <a href="https://github.com/ifhover/leaf-ui/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/ifhover/leaf-ui/quality.yml?branch=main&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white&amp;label=CI" alt="组件质量检查状态" /></a>
+  </p>
 
-## 安装与使用
+  <p>
+    <a href="https://ifhover.github.io/leaf-ui/">在线文档</a> ·
+    <a href="https://ifhover.github.io/leaf-ui/components/">组件总览</a> ·
+    <a href="https://ifhover.github.io/leaf-ui/changelog.html">更新记录</a> ·
+    <a href="https://github.com/ifhover/leaf-ui/issues">反馈问题</a>
+  </p>
 
-在你的 React 应用中安装组件包：
+  <p><strong>简体中文</strong> · <a href="./README.en-US.md">English</a></p>
+</div>
+
+## ✨ 特性
+
+- 🍃 **轻盈自然** — 绿色默认主题、清晰的交互状态，覆盖输入、表单、布局、导航与反馈。
+- 🎨 **随心定制** — 通过 ConfigProvider 调整颜色、圆角、字体、控件高度和明暗外观，支持区域主题与 CSS 变量。
+- 🛡️ **类型完备** — 使用 TypeScript 编写，提供类型声明，保留原生 HTML 属性、DOM ref 与表单语义。
+- 🌍 **多语言** — 提供中英文文档，支持内置语言、自定义翻译、嵌套语言配置与 RTL 方向。
+- ⌨️ **细致交互** — 支持键盘操作、焦点管理，以及系统的减少动态效果偏好。
+- 📦 **融入工程** — 兼容 React 18 / 19，提供 ESM、CommonJS 和 SSR 用法，组件样式可随生产构建按需保留。
+
+## 🖥️ 兼容性
+
+支持 React **18 / 19**、现代浏览器与服务端渲染。推荐使用浏览器当前或上一代稳定版。
+
+| <img src="./apps/docs/docs/public/browsers/chrome.svg" alt="" width="28" height="28" /><br />Chrome | <img src="./apps/docs/docs/public/browsers/edge.svg" alt="" width="28" height="28" /><br />Edge | <img src="./apps/docs/docs/public/browsers/firefox.svg" alt="" width="28" height="28" /><br />Firefox | <img src="./apps/docs/docs/public/browsers/safari.svg" alt="" width="28" height="28" /><br />Safari |
+| :-------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
+|                                                ≥ 109                                                |                                              ≥ 109                                              |                                                 ≥ 121                                                 |                                               ≥ 16.4                                                |
+
+以上为最低支持目标；各版本实测范围与功能降级见[浏览器兼容性](https://ifhover.github.io/leaf-ui/guide/compatibility.html)，Next.js 等框架的接入见 [服务端渲染](https://ifhover.github.io/leaf-ui/guide/ssr.html)。
+
+## 📦 安装
 
 ```bash
 pnpm add @ifhover/leaf-ui
 ```
 
-也可以使用 `npm install @ifhover/leaf-ui` 或 `yarn add @ifhover/leaf-ui`。样式只需在应用入口引入一次，使用组件无需安装 Sass。
+<details>
+<summary>使用 npm / Yarn / Bun</summary>
+
+```bash
+npm install @ifhover/leaf-ui
+yarn add @ifhover/leaf-ui
+bun add @ifhover/leaf-ui
+```
+
+</details>
+
+需要在应用中安装 `react` 和 `react-dom`。组件提供编译后的 CSS，无需安装 Sass。
+
+## 🔨 快速使用
 
 ```tsx
-import { Button, DatePicker, Input, Select } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
+import { Button, DatePicker } from '@ifhover/leaf-ui';
 
-export function App() {
+export default function App() {
   return (
-    <form onSubmit={(event) => {
-      event.preventDefault();
-      console.log(Object.fromEntries(new FormData(event.currentTarget)));
-    }}>
-      <Input name="title" aria-label="项目名称" placeholder="项目名称" required />
-      <Select name="team" aria-label="团队" required options={[
-        { value: 'design', label: '设计团队' },
-        { value: 'engineering', label: '工程团队' },
-      ]} />
-      <DatePicker name="deadline" aria-label="截止日期" />
-      <Button type="submit">创建项目</Button>
-    </form>
+    <>
+      <DatePicker aria-label="选择日期" />
+      <Button>开始使用</Button>
+    </>
   );
 }
 ```
 
-单行控件默认高度统一为 **40px**，小 / 大尺寸为 **34 / 46px**。选择类组件使用统一的浮层，支持键盘操作、点击外部收起和局部主题。
+基础样式与所需的组件、服务样式会自动加载，无需手动导入 CSS。Vite、Rsbuild / Rspack 的生产构建支持根入口 ESM 具名导入的样式按需保留。直接使用 esbuild 或 CommonJS 时，可使用 `@ifhover/leaf-ui/button` 等子路径；自行管理 SSR 样式时可使用完整静态入口 `@ifhover/leaf-ui/styles/all.css`。
 
-浏览器组件入口会自动加载样式。`styles.css` 在应用入口引入一次，提供主题变量及 API 服务样式。Vite、Rsbuild / Rspack 的生产构建支持根入口的 ESM 具名导入按需保留组件及其内部依赖的样式，无需使用组件子路径。直接使用 esbuild 或 CommonJS 根入口时不能保证样式裁剪，可使用 `@ifhover/leaf-ui/button` 等子路径。自行管理 SSR 样式时可使用完整静态入口 `@ifhover/leaf-ui/styles/all.css`。
+单行控件默认高度为 **36px**，小 / 大尺寸为 **30 / 42px**。更多示例见[安装与快速开始](https://ifhover.github.io/leaf-ui/guide/getting-started.html)。
 
-## 组件
+## 🎨 主题与语言
 
-| 导入名称 | 用途 |
-| --- | --- |
-| `Button` | 按钮、图标、加载与红色危险状态 |
-| `Input` / `Textarea` | 单行 / 多行文本输入 |
-| `InputNumber` | 数量、金额、范围与小数精度 |
-| `Steps` / `Breadcrumb` / `Pagination` / `Tabs` | 步骤、路径、分页和内容切换 |
-| `Tag` / `Badge` | 分类标签、状态与未读角标 |
-| `Avatar` / `Card` / `Collapse` / `Tree` | 头像、卡片、折叠内容和层级数据 |
-| `Result` | 成功、警告、错误、信息与空数据结果 |
-| `TreeSelect` / `ColorPicker` | 层级选择、颜色与透明度选择 |
-| `Divider` / `Skeleton` / `Popover` | 内容分隔、加载占位和气泡卡片 |
-| `Slider` / `Rate` | 数值区间与评分输入 |
-| `Calendar` | 日历、日期选择与自定义日程 |
-| `Drawer` | 边缘抽屉，支持嵌套与表单操作 |
-| `Loading` / `Progress` / `Tooltip` | 加载、任务进度和文字说明 |
-| `Checkbox` | 多项选择与半选 |
-| `Radio` / `RadioGroup` | 单选与选项分组 |
-| `Switch` | 开关与加载状态 |
-| `Select` | 单选、多选和搜索，支持禁用选项与清除 |
-| `DatePicker` | 日期选择，支持最早 / 最晚日期 |
-| `TimePicker` | 24 / 12 小时制与秒选择 |
-| `AutoComplete` | 自由文本输入与动态建议 |
-| `Cascader` | 按层级选择完整路径 |
-| `Form` / `FormField` | 表单布局、自动标签宽度与校验反馈 |
-| `ConfigProvider` | 区域主题、自动派生尺寸、外观和中英文 |
-| `DateTimePicker` / `DateRangePicker` | 日期时间与多粒度起止区间 |
-| `Dropdown` | 操作菜单与键盘导航 |
-| `Modal` / `Confirm` | 弹窗与异步确认 |
-| `Alert` / `Message` / `useMessage` | 页内提示与短暂消息 |
-| `Layout` / `Grid` / `Row` / `Col` / `Space` / `ScrollArea` / `Masonry` | 页面布局、响应式栅格、间距、滚动与瀑布流 |
-| `Segmented` / `Menu` / `BackTop` | 分段切换、嵌套导航和回到顶部 |
-| `Descriptions` / `Timeline` / `QRCode` | 详情、事件和二维码 |
-| `Image` / `ImagePreviewGroup` / `ImagePreview` | 图片展示、缩放、图片组切换与全屏 |
-| `VirtualList` / `InfiniteScroll` | 大量数据和分页加载 |
-| `Transfer` / `InputOTP` / `InputMask` / `TimeRangePicker` | 穿梭选择、验证码、格式输入和时间范围 |
-| `Notification` / `useNotification` / `Popconfirm` / `ErrorBoundary` / `LoadingBar` / `useLoadingBar` | 通知、就地确认、异常恢复和任务进度 |
-| `Upload` / `FileList` / `ImageCropper` / `SignaturePad` | 文件上传、文件信息、图片裁剪和签名导出 |
-
-`Select` 的 onChange 返回字符串值与选项，多选时返回数组；`DatePicker` 返回 Date 或 null 及当前模式的日期字符串，支持日期、年、季度、月、周；`TimePicker` 返回 `HH:mm` 或 null；`AutoComplete` 返回输入文本；`Cascader` 返回路径数组与选项数组。
-
-设置 name 后，可通过 FormData 读取值。日期模式为 `YYYY-MM-DD`，其他日期粒度使用对应格式，时间为 `HH:mm`，级联路径为 JSON 数组字符串。非受控表单控件支持 form reset；受控组件需同时重置应用状态。为表单控件提供 label 或 aria-label。
-
-现有组件还提供 ButtonGroup / SplitButton、CheckboxGroup、AvatarGroup、CheckableTag / TagGroup、InputSearch / InputGroup、Textarea 自动高度、动态 FormList，以及 Select、Tree、TreeSelect、Tabs 的大数据、异步或排序能力。详细参数见组件文档。
-
-## 区域主题与语言
+使用 ConfigProvider 为应用或某个区域配置主题和语言：
 
 ```tsx
-import { ConfigProvider, DateTimePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import App from './App';
 
-<ConfigProvider locale="en-US" theme={{ primaryColor: '#7654c6', borderRadius: 6 }}>
-  <Form labelWidth="auto">
-    <FormField label="Deadline" required>
-      <DateTimePicker name="deadline" />
-    </FormField>
-  </Form>
-</ConfigProvider>
-```
-
-嵌套配置继承未设置的选项；浮层、确认框与消息沿用调用区域的主题和语言。ConfigProvider 自动托管确认框、消息、通知和顶部加载条，子组件直接调用相应 hook：
-
-```tsx
-import { Button, useMessage } from '@ifhover/leaf-ui';
-
-export function SaveButton() {
-  const { message } = useMessage();
-  return <Button onClick={() => message.success('保存成功')}>保存</Button>;
+export default function Root() {
+  return (
+    <ConfigProvider locale="zh-CN" theme={{ primaryColor: '#20834a', borderRadius: 8 }}>
+      <App />
+    </ConfigProvider>
+  );
 }
 ```
 
-确认框同样直接使用：
+将 `locale` 改为 `en-US` 即可切换为英文；设置 `theme.appearance` 为 `dark` 可启用深色外观。嵌套配置继承未设置的选项，浮层和消息沿用所在区域的主题与语言。
 
-```tsx
-import { Button, useConfirm } from '@ifhover/leaf-ui';
+了解[定制主题](https://ifhover.github.io/leaf-ui/guide/theming.html) · [ConfigProvider 主题与语言](https://ifhover.github.io/leaf-ui/components/config-provider.html)。
 
-export function DeleteButton({ onDelete }: { onDelete: () => void | Promise<void> }) {
-  const { confirm } = useConfirm();
-  return <Button danger onClick={async () => {
-    if (await confirm({ title: '删除项目', children: '是否继续？', type: 'danger' })) {
-      await onDelete();
-    }
-  }}>删除</Button>;
-}
-```
+## 🤖 AI 辅助开发
 
-将这些组件放在应用入口的 ConfigProvider 下即可。单独使用时可在入口选择 ConfirmProvider 或 MessageProvider。详细用法见[在线文档](https://ifhover.github.io/leaf-ui/)。
-
-通知和顶部加载条也由入口托管，子组件或自定义 hook 直接使用：
-
-```tsx
-import { useLoadingBar, useNotification } from '@ifhover/leaf-ui';
-
-export function useProjectSave(saveProject: () => Promise<void>) {
-  const notification = useNotification();
-  const loadingBar = useLoadingBar();
-  return async () => {
-    const finish = loadingBar.start();
-    try {
-      await saveProject();
-      notification.success({ title: '保存成功', description: '项目内容已更新。' });
-    } finally {
-      finish();
-    }
-  };
-}
-```
-
-每个任务的完成函数相互独立，并发任务全部完成后才收起加载条。Upload 支持文件校验、进度、取消和重试；FileList 展示文件信息，预览图片与音视频。
-
-## 主题定制
-
-使用 ConfigProvider 调整主题。只需给出基础圆角、高度和字号，其他尺寸自动生成；特殊需求通过可选的 tokens 覆盖。
-
-```tsx
-<ConfigProvider theme={{
-  primaryColor: '#7654c6',
-  borderRadius: 8,
-  controlHeight: 34,
-  appearance: 'light',
-}}>
-  <Button>品牌按钮</Button>
-</ConfigProvider>
-```
-
-CSS 变量供业务组件读取：自己的按钮也可以使用 `var(--leaf-color-primary)`、`var(--leaf-radius)` 与 `var(--leaf-control-height)`，跟随所在区域的配置。
-
-服务端渲染使用同一份静态 CSS 和初始主题，动态切换无需重新生成样式。Next.js App Router、Pages Router 和其他框架的例子见 [SSR 使用](https://ifhover.github.io/leaf-ui/guide/ssr.html)。
-
-图标采用 [Lucide](https://lucide.dev/)。应用中需要使用图标时安装 `lucide-react`，然后通过具名导入将图标节点传给 Button 的 startIcon / endIcon 或 Input 的 prefix / suffix。
-
-## Git 与反馈
-
-公开仓库：[ifhover/leaf-ui](https://github.com/ifhover/leaf-ui)。问题与建议请提交至 [GitHub Issues](https://github.com/ifhover/leaf-ui/issues)。
+在应用目录安装 Leaf UI Skill，让 AI 按项目实际使用的版本查询组件 API：
 
 ```bash
-git clone https://github.com/ifhover/leaf-ui.git
+npx skills add ifhover/leaf-ui --skill leaf-ui
 ```
 
-源码维护、构建与文档站说明见 [开发文档](DEVELOPMENT.md)。
+安装与使用见 [AI 与 Skills](https://ifhover.github.io/leaf-ui/guide/ai.html)。在线文档顶部也可切换已发布版本。
+
+## 🤝 参与贡献
+
+欢迎通过 [Issues](https://github.com/ifhover/leaf-ui/issues) 反馈问题与建议，或提交 [Pull Request](https://github.com/ifhover/leaf-ui/pulls)。
+
+本地开发、项目结构与构建说明见 [开发文档](./DEVELOPMENT.md)；提交组件或使用文档改动前，请阅读 [开发、版本与文档同步流程](./DEVELOPMENT-WORKFLOW.md)。

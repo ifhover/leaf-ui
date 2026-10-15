@@ -259,6 +259,7 @@ export function FloatingPanel({
         data-side={resolvedPlacement.split('-')[0]}
         data-align={resolvedPlacement.split('-')[1] ?? 'center'}
         dir={props.dir ?? theme.direction ?? config.direction}
+        lang={props.lang ?? config.locale}
         data-state={open ? 'open' : 'closing'}
         data-positioned={isPositioned || !open}
         aria-hidden={!open || undefined}

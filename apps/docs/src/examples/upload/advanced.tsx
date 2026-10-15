@@ -1,4 +1,5 @@
-import { Space, Upload, type UploadRequest } from '@ifhover/leaf-ui';
+import type { UploadRequest } from '@ifhover/leaf-ui';
+import { Space, Text, Upload } from '@ifhover/leaf-ui';
 
 const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   new Promise<void>((resolve, reject) => {
@@ -24,10 +25,10 @@ const demoRequest = ({ signal, onProgress }: UploadRequest) =>
   });
 export function UploadDrag() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <p className="leaf-demo-note">
+    <Space direction="vertical" align="stretch">
+      <Text tone="muted">
         此示例在本地模拟上传进度，使用 action 或 customRequest 接入实际上传服务。
-      </p>
+      </Text>
       <Upload
         drag
         multiple

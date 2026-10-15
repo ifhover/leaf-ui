@@ -1,5 +1,6 @@
 import { forwardRef, type ReactNode, useRef } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { CalendarPanel, periodKey, startOfPeriod, withinPeriod } from '../shared/calendar';
@@ -132,7 +133,7 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
             {presets?.length ? (
               <div className="leaf-picker-presets">
                 {presets.map((preset) => (
-                  <Button
+                  <ButtonControl
                     key={preset.key ?? String(preset.label)}
                     size="sm"
                     variant="ghost"
@@ -146,7 +147,7 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
                     }}
                   >
                     {preset.label}
-                  </Button>
+                  </ButtonControl>
                 ))}
               </div>
             ) : null}
@@ -154,7 +155,7 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
               <div className="leaf-picker-footer">
                 <div className="leaf-picker-footer__extra">
                   {showToday && (
-                    <Button
+                    <ButtonControl
                       variant="ghost"
                       size="sm"
                       disabled={
@@ -166,8 +167,8 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
                         close();
                       }}
                     >
-                      {todayText ?? messages.today}
-                    </Button>
+                      {todayText ?? messages.calendar.today}
+                    </ButtonControl>
                   )}
                   {renderExtraFooter}
                 </div>
@@ -180,13 +181,15 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
   },
 );
 export type DatePickerProps = SingleDatePickerProps | MultipleDatePickerProps;
-export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
-  function DatePicker(props, ref) {
-    return props.multiple ? (
-      <MultipleDatePicker {...props} ref={ref} />
-    ) : (
-      <SingleDatePicker {...props} ref={ref} />
-    );
-  },
-);
+export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
+  rawProps: DatePickerProps,
+  ref,
+) {
+  const props = useComponentProps('DatePicker', rawProps);
+  return props.multiple ? (
+    <MultipleDatePicker {...props} ref={ref} />
+  ) : (
+    <SingleDatePicker {...props} ref={ref} />
+  );
+});
 DatePicker.displayName = 'DatePicker';

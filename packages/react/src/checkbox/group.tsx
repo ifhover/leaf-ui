@@ -1,9 +1,10 @@
 import { type FieldsetHTMLAttributes, type ReactNode, useId, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import type { ControlSize } from '../shared/types';
-import { Checkbox } from './checkbox';
+import { CheckboxControl as Checkbox } from './checkbox';
 export interface CheckboxOption {
   value: string;
   label: ReactNode;
@@ -26,24 +27,25 @@ export interface CheckboxGroupProps
   required?: boolean;
   direction?: 'horizontal' | 'vertical';
 }
-export function CheckboxGroup({
-  options,
-  value,
-  defaultValue = [],
-  onChange,
-  legend,
-  size,
-  variant = 'plain',
-  minCount = 0,
-  maxCount = Infinity,
-  direction = 'horizontal',
-  name,
-  form,
-  required,
-  disabled: disabledProp,
-  className,
-  ...props
-}: CheckboxGroupProps) {
+export function CheckboxGroup(rawProps: CheckboxGroupProps) {
+  const {
+    options,
+    value,
+    defaultValue = [],
+    onChange,
+    legend,
+    size,
+    variant = 'plain',
+    minCount = 0,
+    maxCount = Infinity,
+    direction = 'horizontal',
+    name,
+    form,
+    required,
+    disabled: disabledProp,
+    className,
+    ...props
+  } = useComponentProps('CheckboxGroup', rawProps);
   const field = useFormField();
   const id = useId();
   const disabled = disabledProp || field?.disabled;

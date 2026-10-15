@@ -1,13 +1,11 @@
-import { Space, TimePicker } from '@ifhover/leaf-ui';
+import { Form, FormField, TimePicker } from '@ifhover/leaf-ui';
 export function TimePickerTwelveHours() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">12-hour clock</span>
+    <Form layout="vertical">
+      <FormField label="12-hour clock">
         <TimePicker aria-label="12-hour clock" use12Hours defaultValue="14:30" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Include seconds</span>
+      </FormField>
+      <FormField label="Include seconds">
         <TimePicker
           aria-label="Include seconds"
           use12Hours
@@ -15,7 +13,7 @@ export function TimePickerTwelveHours() {
           secondStep={10}
           defaultValue="00:05:30"
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

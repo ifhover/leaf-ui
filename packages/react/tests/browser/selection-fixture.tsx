@@ -1,9 +1,11 @@
 import {
   BottomNavigation,
   Breadcrumb,
+  Button,
   CheckableTag,
   ColorPicker,
   ConfigProvider,
+  Dropdown,
   Input,
   InputNumber,
   Pagination,
@@ -38,6 +40,16 @@ export function SelectionFixture() {
           ]}
         />
         <TimePicker aria-label="Selected time" defaultValue="09:00" />
+        <Dropdown
+          items={[
+            { key: 'saved', label: 'Saved filter', type: 'checkbox', checked: true },
+            { key: 'available', label: 'Available filter', type: 'checkbox' },
+            { key: 'disabled', label: 'Disabled filter', disabled: true },
+            { key: 'delete', label: 'Delete filter', danger: true },
+          ]}
+        >
+          <Button variant="outline">Checked menu</Button>
+        </Dropdown>
         <Pagination total={50} defaultCurrent={2} />
         <Breadcrumb
           items={[

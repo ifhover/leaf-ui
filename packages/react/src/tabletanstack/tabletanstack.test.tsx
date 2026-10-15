@@ -372,10 +372,14 @@ describe('DataTable TanStack adapter', () => {
     render(
       <Harness manual pageCount={-1}>
         <DataTable.Content />
-        <DataTable.Pagination hasNextPage={false} />
+        <DataTable.Pagination hasNextPage={false} variant="ghost" size="sm" />
       </Harness>,
     );
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass(
+      'leaf-button--ghost',
+      'leaf-button--sm',
+    );
   });
 
   it('does not truncate convenience-mode data when pagination is disabled', () => {

@@ -4,6 +4,7 @@ export type {
   DataTableContentProps,
   DataTableDataProps,
   DataTablePaginationProps,
+  DataTablePresentationProps,
   DataTableProps,
   DataTableRowReorderInfo,
   DataTableSearchProps,

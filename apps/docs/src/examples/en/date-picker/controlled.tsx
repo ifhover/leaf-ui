@@ -1,13 +1,12 @@
-import { DatePicker, Space } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function DatePickerControlled() {
   const [date, setDate] = useState<Date | null>(new Date(2026, 9, 15));
   const [dateString, setDateString] = useState('2026-10-15');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Date in October</span>
+    <Form layout="vertical">
+      <FormField label="Date in October">
         <DatePicker
           aria-label="Date in October"
           value={date}
@@ -18,19 +17,16 @@ export function DatePickerControlled() {
             setDateString(text);
           }}
         />
-      </div>
-      <span className="leaf-demo-note">
-        October 5–25 are available. Current:{dateString || 'Not selected'}
-      </span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Required date · Error</span>
+      </FormField>
+      <Text tone="muted">October 5–25 are available. Current:{dateString || 'Not selected'}</Text>
+      <FormField label="Required date · Error">
         <DatePicker
           aria-label="Required date"
           status="error"
           required
           placeholder="Set a deadline"
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

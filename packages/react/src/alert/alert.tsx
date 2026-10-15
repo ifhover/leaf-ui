@@ -1,5 +1,6 @@
 import { CheckCircle2, CircleX, Info, LoaderCircle, TriangleAlert, X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
@@ -30,17 +31,18 @@ export function FeedbackIcon({ type }: { type: FeedbackType | 'loading' }) {
     />
   );
 }
-export function Alert({
-  title,
-  description,
-  type = 'info',
-  icon,
-  showIcon = true,
-  closable,
-  onClose,
-  className,
-  ...props
-}: AlertProps) {
+export function Alert(rawProps: AlertProps) {
+  const {
+    title,
+    description,
+    type = 'info',
+    icon,
+    showIcon = true,
+    closable,
+    onClose,
+    className,
+    ...props
+  } = useComponentProps('Alert', rawProps);
   const { messages } = useLeafConfig();
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -72,7 +74,7 @@ export function Alert({
         <button
           type="button"
           className="leaf-alert__close"
-          aria-label={messages.close}
+          aria-label={messages.common.close}
           onClick={() => {
             const node = root.current;
             if (node) {

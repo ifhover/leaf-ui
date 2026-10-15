@@ -1,9 +1,9 @@
-import { Progress, Space } from '@ifhover/leaf-ui';
+import { Flex, Progress, Space, Text } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Segmented tasks' : '分段任务'}</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Segmented tasks' : '分段任务'}</Text>
         <Progress
           percent={75}
           segments={[
@@ -11,15 +11,15 @@ export function Capabilities({ english = false }) {
             { key: 'b', percent: 40, color: '#1677ff' },
           ]}
         />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Discrete steps' : '分步进度'}</p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Discrete steps' : '分步进度'}</Text>
         <Progress percent={60} steps={10} />
-      </div>
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Dashboard' : '仪表盘'}</p>
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Dashboard' : '仪表盘'}</Text>
         <Progress type="circle" dashboard percent={65} successPercent={30} />
-      </div>
+      </Flex>
     </Space>
   );
 }

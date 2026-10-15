@@ -4,6 +4,8 @@
 
 开始开发、修改使用文档或准备发布前，必须阅读并遵守 [开发、版本与文档同步流程](DEVELOPMENT-WORKFLOW.md)。该文档是分支开发、正式发布、开发文档预览与清理的统一约定。
 
+新增、修改或重构组件前，必须阅读并遵守 [组件编写与开发规则](packages/react/DEVELOPMENT.md) 和 [样式与交互标准](DESIGN-STANDARDS.md)。组件的公共 API、区域默认参数、内部控件、复合组件、表单语义和验证要求均以这些规则为准。
+
 ## 核心规则
 
 - `main` 是稳定发布分支。组件代码和使用文档的改动必须在新分支完成，合并到 `main` 意味着完成一次新版本发布。
@@ -16,8 +18,8 @@
 ## 相关说明
 
 - 项目结构与本地开发：[DEVELOPMENT.md](DEVELOPMENT.md)
-- 组件实现约定：[packages/react/DEVELOPMENT.md](packages/react/DEVELOPMENT.md)
+- 组件编写与开发规则：[packages/react/DEVELOPMENT.md](packages/react/DEVELOPMENT.md)
 - 样式与交互标准：[DESIGN-STANDARDS.md](DESIGN-STANDARDS.md)
 - 发布操作：[packages/react/RELEASING.md](packages/react/RELEASING.md)
-- 文档构建与快照：[apps/docs/README.md](apps/docs/README.md)
+- 文档构建与快照：[apps/docs/AGENTS.md](apps/docs/AGENTS.md)
 - 质量验收：[packages/react/QUALITY.md](packages/react/QUALITY.md)

@@ -1,8 +1,10 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 export interface SplitterPanel {
   key: string;
@@ -20,18 +22,20 @@ export interface SplitterProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onR
   onResizeEnd?: (sizes: number[]) => void;
   direction?: 'horizontal' | 'vertical';
 }
-export function Splitter({
-  panels,
-  sizes,
-  defaultSizes,
-  onResize,
-  onResizeEnd,
-  direction = 'horizontal',
-  className,
-  style,
-  ...props
-}: SplitterProps) {
+export function Splitter(rawProps: SplitterProps) {
+  const {
+    panels,
+    sizes,
+    defaultSizes,
+    onResize,
+    onResizeEnd,
+    direction = 'horizontal',
+    className,
+    style,
+    ...props
+  } = useComponentProps('Splitter', rawProps);
   const t = useText();
+  const format = useFormattedText();
   const config = useLeafConfig();
   const root = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useControllable<readonly number[]>(
@@ -108,7 +112,7 @@ export function Splitter({
             <div
               role="separator"
               tabIndex={panel.resizable === false ? -1 : 0}
-              aria-label={`${t('调整面板', 'Resize panel')} ${index + 1}`}
+              aria-label={format('splitter.resizePanel', { index: index + 1 })}
               aria-orientation={horizontal ? 'vertical' : 'horizontal'}
               aria-valuenow={Math.round(current[index] ?? 0)}
               aria-valuemin={panel.min ?? 0}
@@ -173,7 +177,7 @@ export function Splitter({
               {panel.collapsible && (
                 <button
                   type="button"
-                  aria-label={t('折叠或展开面板', 'Toggle panel')}
+                  aria-label={t('splitter.togglePanel')}
                   onPointerDown={(event) => event.stopPropagation()}
                   onClick={() => toggle(index)}
                 >

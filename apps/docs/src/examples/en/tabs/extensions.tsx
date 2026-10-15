@@ -1,4 +1,4 @@
-import { type TabItem, Tabs } from '@ifhover/leaf-ui';
+import { Button, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
 export function ExtensionDemo() {
   const count = useRef(7);
@@ -10,19 +10,30 @@ export function ExtensionDemo() {
       closable: true,
     })),
   );
+  const addTab = () => {
+    const id = String(count.current++);
+    setItems((current) => [
+      ...current,
+      { key: id, label: `Item ${id}`, children: 'New item', closable: true },
+    ]);
+  };
   return (
-    <Tabs
-      items={items}
-      sortable
-      onReorder={setItems}
-      onAdd={() => {
-        const id = String(count.current++);
-        setItems((current) => [
-          ...current,
-          { key: id, label: `Item ${id}`, children: 'New item', closable: true },
-        ]);
-      }}
-      onClose={(key) => setItems((current) => current.filter((item) => item.key !== key))}
-    />
+    <Space direction="vertical" align="stretch">
+      <Tabs
+        aria-label="Sortable tabs"
+        items={items}
+        sortable
+        onReorder={setItems}
+        onAdd={addTab}
+        onClose={(key) => setItems((current) => current.filter((item) => item.key !== key))}
+      />
+      {items.length === 0 && (
+        <Space>
+          <Button variant="outline" onClick={addTab}>
+            Add tab
+          </Button>
+        </Space>
+      )}
+    </Space>
   );
 }

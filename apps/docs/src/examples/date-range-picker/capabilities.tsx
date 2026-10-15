@@ -1,12 +1,12 @@
-import { DateRangePicker, Space } from '@ifhover/leaf-ui';
+import { DateRangePicker, Flex, Space, Text } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
-      <div className="leaf-demo-case">
-        <p style={{ margin: '0 0 8px' }}>{english ? 'Quarter range' : '季度区间'}</p>
+      <Flex direction="column" gap="sm" align="center">
+        <Text>{english ? 'Quarter range' : '季度区间'}</Text>
         <DateRangePicker picker="quarter" format="YYYY-[Q]Q" />
-      </div>
-      <div className="leaf-demo-case">
+      </Flex>
+      <Flex direction="column" gap="sm" align="center">
         {english
           ? 'Allow an open end, or use a recent-seven-day preset'
           : '允许结束为空，或选择最近七天'}
@@ -25,7 +25,7 @@ export function Capabilities({ english = false }) {
             },
           ]}
         />
-      </div>
+      </Flex>
     </Space>
   );
 }

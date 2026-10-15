@@ -1,0 +1,158 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { DocsCollapse } from '../../src/components/docs-collapse';
+import { TailwindBasic } from '../../src/examples/tailwindcss/basic';
+import { TailwindTheme } from '../../src/examples/tailwindcss/theme';
+
+# Tailwind CSS
+
+在 Tailwind 中复用 Leaf UI 的颜色、圆角和间距。
+
+## 快速接入
+
+在已安装 Tailwind 的项目中，按版本选择下面的配置。支持 3.x 和 4.x，2.x 及更早版本请先升级。
+
+### Tailwind CSS 4
+
+在 CSS 入口增加一行导入即可：
+
+```css title="app.css"
+@import 'tailwindcss';
+@import '@ifhover/leaf-ui/tailwind.css';
+```
+
+<DocsCollapse title="沿用项目的基础样式">
+
+如果不需要 Tailwind 的 Preflight 重置样式，改用下面的入口：
+
+```css title="app.css"
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import '@ifhover/leaf-ui/tailwind.css';
+```
+
+</DocsCollapse>
+
+### Tailwind CSS 3
+
+在配置中加入 preset，`content` 按项目目录调整：
+
+```js title="tailwind.config.cjs"
+const leafPreset = require('@ifhover/leaf-ui/tailwind').default;
+
+module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  presets: [leafPreset],
+};
+```
+
+CSS 入口保持 Tailwind 3 的写法：
+
+```css title="app.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+已有配置只需追加 preset，保留自己的扫描目录和插件。
+
+<DocsCollapse title="使用 TypeScript 配置（3.3+）">
+
+```ts title="tailwind.config.ts"
+import type { Config } from 'tailwindcss';
+import leafPreset from '@ifhover/leaf-ui/tailwind';
+
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  presets: [leafPreset],
+} satisfies Config;
+```
+
+需要关闭 Preflight 时，在配置中添加 `corePlugins: { preflight: false }`。
+
+</DocsCollapse>
+
+## 使用示例
+
+### 基础用法
+
+引入配置后，在普通工具类中使用 `leaf-` 名称，就能与组件共享样式：
+
+<ComponentExample title="复用设计变量" preview={<TailwindBasic />} fileName="basic.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tailwindcss/basic.tsx"
+
+```
+
+</ComponentExample>
+
+`bg-leaf-surface` 设置背景，`p-leaf-md` 设置内边距，`rounded-leaf` 设置圆角。Tailwind 原有工具类和 `hover:`、`md:` 等变体仍可照常使用。
+
+### 跟随主题
+
+放在 ConfigProvider 内的工具类会跟随区域主题。试着打开深色模式，查看面板和按钮一起变化：
+
+<ComponentExample title="跟随主题" preview={<TailwindTheme />} fileName="theme.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tailwindcss/theme.tsx"
+
+```
+
+</ComponentExample>
+
+背景、文字和边框读取当前区域的变量，无需额外编写 `dark:` 类名。颜色和密度变化也无需重新构建 Tailwind；更多配置见 [定制主题](/guide/theming)。
+
+## 常用设计变量
+
+两种版本使用相同的工具类名称，只扩展主题，保留 Tailwind 的默认值。
+
+<div className="leaf-tailwind-table">
+
+| 设计变量   | 工具类示例                                                                     |
+| ---------- | ------------------------------------------------------------------------------ |
+| 主题色     | `bg-leaf-primary`、`text-leaf-primary`、`text-leaf-on-primary`                 |
+| 状态色     | `text-leaf-success`、`text-leaf-warning`、`text-leaf-danger`、`text-leaf-info` |
+| 文字颜色   | `text-leaf-text`、`text-leaf-muted`、`text-leaf-subtle`                        |
+| 背景颜色   | `bg-leaf-surface`、`bg-leaf-surface-muted`、`bg-leaf-surface-raised`           |
+| 边框与焦点 | `border-leaf-border`、`border-leaf-divider`、`ring-leaf-focus`                 |
+| 圆角       | `rounded-leaf`、`rounded-leaf-sm`、`rounded-leaf-md`、`rounded-leaf-lg`        |
+| 间距       | `p-leaf`、`p-leaf-xs`、`gap-leaf-sm`、`p-leaf-md`、`gap-leaf-lg`、`m-leaf-xl`  |
+| 控件高度   | `h-leaf-control`、`h-leaf-control-sm`、`h-leaf-control-lg`                     |
+| 字体与字号 | `font-leaf`、`text-leaf`、`text-leaf-sm`、`text-leaf-lg`                       |
+| 字重与行高 | `font-leaf-medium`、`font-leaf-heading`、`leading-leaf`                        |
+| 阴影       | `shadow-leaf-xs`、`shadow-leaf-sm`、`shadow-leaf-md`、`shadow-leaf-lg`         |
+
+</div>
+
+颜色名称也可用于 `border-*`、`ring-*`、`fill-*` 等工具类。字号类默认包含主题行高。
+
+<DocsCollapse title="更多设计变量">
+
+<div className="leaf-tailwind-table">
+
+| 设计变量       | 工具类示例                                                                                                                                     |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 主题色交互     | `hover:bg-leaf-primary-hover`、`active:bg-leaf-primary-active`                                                                                 |
+| 危险色交互     | `hover:bg-leaf-danger-hover`、`active:bg-leaf-danger-active`                                                                                   |
+| 状态色上的文字 | `text-leaf-on-warning`、`text-leaf-on-danger`                                                                                                  |
+| 边框与选项悬停 | `hover:border-leaf-border-hover`、`hover:bg-leaf-option-hover`                                                                                 |
+| 选择控件圆角   | `rounded-leaf-choice`                                                                                                                          |
+| 密度相关间距   | `gap-leaf-form-gap`、`gap-leaf-label-gap`、`py-leaf-row-padding`、`min-h-leaf-option-height`、`p-leaf-option-padding`、`px-leaf-field-padding` |
+| 弹窗间距       | `py-leaf-dialog-block`、`px-leaf-dialog-inline`、`gap-leaf-dialog-gap`                                                                         |
+| 过渡时间       | `duration-leaf`、`duration-leaf-fast`、`duration-leaf-slow`                                                                                    |
+| 过渡曲线       | `ease-leaf`、`ease-leaf-spring`                                                                                                                |
+| 浮层层级       | `z-leaf-popup`、`z-leaf-modal`、`z-leaf-message`                                                                                               |
+
+</div>
+
+动效可写为 `transition-colors duration-leaf ease-leaf motion-reduce:transition-none`。`theme.motion: false` 关闭区域过渡；`motion-reduce:` 响应系统的减少动态效果偏好。
+
+</DocsCollapse>
+
+## 使用提示
+
+- **透明度**：Tailwind 4 支持 `bg-leaf-primary/50`；Tailwind 3 不支持这些颜色的 `/50`、`bg-opacity-*` 或 `text-opacity-*`，半透明色需在业务 CSS 中定义。
+- **源码扫描**：写完整类名，如 `bg-leaf-primary`，不要拼接 `bg-leaf-${color}`。
+- **基础样式**：没有导入 Leaf UI 组件的纯 CSS 页面，还需引入 `@ifhover/leaf-ui/styles.css`。
+- **响应式断点**：`sm:`、`md:` 使用项目的 Tailwind 配置，不随 ConfigProvider 的断点变化。Tailwind 4 的浏览器要求以其官方支持范围为准。
+- **区域与浮层**：自定义 Portal 内容也需放在对应主题区域。Leaf UI 自带浮层会自动同步主题；组件专用变量通过 [ConfigProvider](/guide/theming) 调整。

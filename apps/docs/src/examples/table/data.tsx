@@ -82,7 +82,7 @@ export function useMemberColumns(english = false) {
         minSize: 100,
         maxSize: 160,
         cell: ({ getValue }) => (
-          <Tag variant="outline" color={getValue() ? 'success' : 'default'}>
+          <Tag color={getValue() ? 'success' : 'default'}>
             {getValue() ? (english ? 'Active' : '活跃') : english ? 'Invited' : '已邀请'}
           </Tag>
         ),

@@ -33,22 +33,32 @@ function animationRecorder() {
 describe('Navigation motion contracts', () => {
   it('keeps one indicator and uses local geometry under external scale and negative RTL scroll offsets', async () => {
     let secondWidth = 120;
+    let scrollLeft = -40;
+    vi.spyOn(Element.prototype, 'scrollLeft', 'get').mockImplementation(function (this: Element) {
+      return this.classList.contains('leaf-tabs__list') ? scrollLeft : 0;
+    });
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (
       this: HTMLElement,
     ) {
-      return this.classList.contains('leaf-tabs__list') ? 300 : 100;
+      if (this.classList.contains('leaf-tabs__list')) return 150;
+      if (this.classList.contains('leaf-tabs__track')) return secondWidth + 82;
+      return 100;
     });
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(34);
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
       this: HTMLElement,
     ) {
-      if (this.classList.contains('leaf-tabs__list')) {
-        Object.defineProperty(this, 'scrollLeft', { configurable: true, value: -40 });
-        Object.defineProperty(this, 'clientLeft', { configurable: true, value: 1 });
-        return new DOMRect(100, 80, 240, 27.2);
-      }
-      if (this.dataset.tabKey === 'first') return new DOMRect(276, 80, 56, 27.2);
-      if (this.dataset.tabKey === 'second') return new DOMRect(172, 80, secondWidth * 0.8, 27.2);
+      if (this.classList.contains('leaf-tabs__list')) return new DOMRect(100, 80, 120, 28.8);
+      // The list scrolls; the indicator and entries share the inner track's local coordinates.
+      // Model a 150px list with 1px borders, a 70px first tab and a 12px gap at 0.8 scale.
+      const trackWidth = secondWidth + 82;
+      const trackLeft = 100 + (1 + 148 - trackWidth - scrollLeft) * 0.8;
+      if (this.classList.contains('leaf-tabs__track'))
+        return new DOMRect(trackLeft, 80.8, trackWidth * 0.8, 27.2);
+      if (this.dataset.tabKey === 'first')
+        return new DOMRect(trackLeft + (secondWidth + 12) * 0.8, 80.8, 56, 27.2);
+      if (this.dataset.tabKey === 'second')
+        return new DOMRect(trackLeft, 80.8, secondWidth * 0.8, 27.2);
       return new DOMRect(0, 0, 300, 100);
     });
     const { container } = render(
@@ -63,47 +73,38 @@ describe('Navigation motion contracts', () => {
       </ConfigProvider>,
     );
     const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
-    expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('179px');
-    expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('70px');
-    expect(marker?.style.getPropertyValue('--leaf-indicator-height')).toBe('34px');
+    const geometry = (property: 'x' | 'y' | 'width' | 'height') =>
+      Number.parseFloat(marker?.style.getPropertyValue(`--leaf-indicator-${property}`) ?? '');
+    expect(geometry('x')).toBeCloseTo(132);
+    expect(geometry('y')).toBeCloseTo(0);
+    expect(geometry('width')).toBeCloseTo(70);
+    expect(geometry('height')).toBeCloseTo(34);
     await userEvent.type(screen.getByRole('textbox'), 'Saved draft');
     fireEvent.click(screen.getByRole('tab', { name: 'Second' }));
-    expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('49px');
-    expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('120px');
+    expect(geometry('x')).toBeCloseTo(0);
+    expect(geometry('width')).toBeCloseTo(120);
     expect(marker).toHaveAttribute('data-animate', 'true');
     fireEvent.click(screen.getByRole('tab', { name: 'First' }));
     fireEvent.click(screen.getByRole('tab', { name: 'Second' }));
     expect(container.querySelector('.leaf-tabs__indicator')).toBe(marker);
     expect(container.querySelectorAll('.leaf-tabs__indicator')).toHaveLength(1);
+    scrollLeft = -20;
+    const list = screen.getByRole('tablist');
+    fireEvent.scroll(list);
+    expect(list.scrollLeft).toBe(-20);
+    expect(geometry('x')).toBeCloseTo(0);
     secondWidth = 155;
     fireEvent(window, new Event('resize'));
-    await waitFor(() =>
-      expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('155px'),
-    );
+    await waitFor(() => expect(geometry('width')).toBeCloseTo(155));
     expect(marker).toHaveAttribute('data-animate', 'false');
     fireEvent.click(screen.getByRole('tab', { name: 'First' }));
+    expect(geometry('x')).toBeCloseTo(167);
     expect(screen.getByRole('textbox')).toHaveValue('Saved draft');
   });
 
-  it('animates natural tab heights under external scale after earlier animations have finished', () => {
-    const { recorded } = animationRecorder();
-    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      if (this.classList.contains('leaf-tabs__panels'))
-        return this.querySelector(':not([hidden]).leaf-tabs__panel')?.textContent === 'Tall panel'
-          ? 220
-          : 90;
-      return 34;
-    });
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      if (this.classList.contains('leaf-tabs__panels'))
-        return new DOMRect(0, 0, 240, this.offsetHeight * 0.8);
-      return new DOMRect(0, 0, 100, 34);
-    });
-    const { container } = render(
+  it('switches tab content immediately without animating panels or their container', () => {
+    const { animate } = animationRecorder();
+    render(
       <Tabs
         overflow={false}
         items={[
@@ -112,22 +113,11 @@ describe('Navigation motion contracts', () => {
         ]}
       />,
     );
-    expect(recorded).toHaveLength(0);
     fireEvent.click(screen.getByRole('tab', { name: 'Tall' }));
-    const firstResize = recorded.find(
-      (entry) => entry.node === container.querySelector('.leaf-tabs__panels'),
-    );
-    expect(firstResize?.keyframes).toEqual([{ height: '90px' }, { height: '220px' }]);
-    for (const entry of recorded)
-      Object.defineProperty(entry.animation, 'playState', {
-        value: 'finished',
-        configurable: true,
-      });
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Tall panel');
     fireEvent.click(screen.getByRole('tab', { name: 'Short' }));
-    const resizes = recorded.filter(
-      (entry) => entry.node === container.querySelector('.leaf-tabs__panels'),
-    );
-    expect(resizes.at(-1)?.keyframes).toEqual([{ height: '220px' }, { height: '90px' }]);
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('Short panel');
+    expect(animate).not.toHaveBeenCalled();
   });
 
   it('keeps RTL segmented keyboard selection and submitted form value aligned', async () => {

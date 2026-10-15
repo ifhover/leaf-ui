@@ -1,10 +1,9 @@
-import { Button, Form, FormField, Input, Select, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Form, FormField, Input, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function FormBasic() {
   const [result, setResult] = useState('');
   return (
     <Form
-      className="leaf-demo-stack leaf-demo-stack--wide"
       onSubmit={(event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -28,14 +27,18 @@ export function FormBasic() {
         />
       </FormField>
       <FormField>
-        <Space wrap className="leaf-demo-row">
+        <Flex gap="md" align="center" wrap justify="center">
           <Button type="submit">Submit</Button>
           <Button type="reset" variant="outline">
             Reset
           </Button>
-        </Space>
+        </Flex>
       </FormField>
-      {result && <output className="leaf-demo-note">{result}</output>}
+      {result && (
+        <output>
+          <Text tone="muted">{result}</Text>
+        </output>
+      )}
     </Form>
   );
 }

@@ -1,163 +1,77 @@
-# SSR usage
+# Server-side rendering
 
-Leaf UI supports server rendering. Import the compiled stylesheet at your framework's root entry and provide an initial theme with ConfigProvider.
-
-## Static styles and dynamic themes
-
-Layout, states and animations use compiled static CSS. `styles.css` supplies base and API-service styles. Browser component entries load component styles; production builds with CSS pruning can retain styles for root named imports on demand. Direct Node entries do not load CSS; use `@ifhover/leaf-ui/styles/all.css` when managing SSR styles yourself. ConfigProvider renders the region's theme variables into HTML; derived sizes use CSS calculations.
-
-Server rendering and dynamic themes therefore work together: the server renders the initial HTML and theme, the client hydrates using the same settings, and React state handles later switches. No CSS-in-JS registry, server style extraction, Sass configuration or SSR opt-out is required.
+Leaf UI loads its base and component styles automatically. This page covers only framework-specific setup. See [quick start](/en/guide/getting-started) for installation and component usage.
 
 ## Next.js App Router
 
-### Import styles in the root layout
-
-```tsx title="app/layout.tsx"
-import type { ReactNode } from 'react';
-import { cookies } from 'next/headers';
-import type { LeafTheme } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
-import './globals.css';
-import { Providers } from './providers';
-
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const store = await cookies();
-  const initialTheme: LeafTheme = {
-    primaryColor: '#7654c6',
-    borderRadius: 8,
-    controlHeight: 40,
-    appearance: store.get('leaf-appearance')?.value === 'dark' ? 'dark' : 'light',
-  };
-
-  return (
-    <html lang="en">
-      <body>
-        <Providers initialTheme={initialTheme}>{children}</Providers>
-      </body>
-    </html>
-  );
-}
-```
-
-This example uses the current async Next.js cookies API. The appearance cookie is optional; account preferences or a fixed server theme also work.
-
-### Create an interactive provider
+Put application-wide configuration in a Client Component:
 
 ```tsx title="app/providers.tsx"
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import { Button, ConfigProvider, type LeafTheme } from '@ifhover/leaf-ui';
+import { ConfigProvider } from '@ifhover/leaf-ui';
+import type { ReactNode } from 'react';
 
-export function Providers({
-  initialTheme,
-  children,
-}: {
-  initialTheme: LeafTheme;
-  children: ReactNode;
-}) {
-  const [theme, setTheme] = useState(initialTheme);
-
-  function toggleAppearance() {
-    const appearance = theme.appearance === 'dark' ? 'light' : 'dark';
-    setTheme((current) => ({ ...current, appearance }));
-    document.cookie =
-      'leaf-appearance=' + appearance + '; Path=/; Max-Age=31536000; SameSite=Lax';
-  }
-
-  return (
-    <ConfigProvider locale="en-US" theme={theme}>
-      <Button onClick={toggleAppearance}>Switch appearance</Button>
-      {children}
-    </ConfigProvider>
-  );
+export function Providers({ children }: { children: ReactNode }) {
+  return <ConfigProvider>{children}</ConfigProvider>;
 }
 ```
 
-`'use client'` declares a client boundary, which Next.js still prerenders on the server. The package's built entries preserve this directive. Server Components may import and render Leaf UI components; put event handlers, hooks and interactive state in Client Components, and pass serializable settings across the boundary.
+In your existing `app/layout.tsx`, wrap `{children}` inside `<body>` with `Providers`. Keep the layout itself as a Server Component.
 
-Passing server-rendered content through children preserves its Server Component boundary.
-
-### Use form components
-
-```tsx title="app/project-form.tsx"
-'use client';
-
-import { Button, Form, FormField, Input } from '@ifhover/leaf-ui';
-
-export function ProjectForm() {
-  return (
-    <Form onSubmit={(event) => {
-      event.preventDefault();
-      const data = new FormData(event.currentTarget);
-      console.log(data.get('name'));
-    }}>
-      <FormField label="Project name" required>
-        <Input name="name" />
-      </FormField>
-      <Button type="submit">Save</Button>
-    </Form>
-  );
-}
-```
-
-Import ProjectForm into your page. It inherits the outer theme without `dynamic(..., { ssr: false })`.
+Business components with event handlers, hooks or interactive state also need `'use client'`. Client Components still participate in server prerendering; there is no need to set `ssr: false`.
 
 ## Next.js Pages Router
 
-Import styles and wrap the page in `pages/_app.tsx`:
+Place application-wide configuration in `pages/_app.tsx`. No `'use client'` directive is needed.
 
-```tsx title="pages/_app.tsx"
-import type { AppProps } from 'next/app';
+For Webpack builds, add this option to your existing Next.js configuration:
+
+```js title="next.config.mjs"
+export default {
+  transpilePackages: ['@ifhover/leaf-ui'],
+};
+```
+
+Append the package if you already have `transpilePackages`, then restart the development server. This lets Next.js process CSS inside the library and avoids the global CSS import error from `node_modules`. The option requires Next.js 13 or later.
+
+The default Turbopack build in Next.js 16.4.1 needs no extra configuration. Neither build requires manual Leaf UI stylesheet imports.
+
+## TanStack Start
+
+Use the default Vite setup. For application-wide configuration, wrap `Outlet` in your existing root route, `src/routes/__root.tsx`:
+
+```tsx title="src/routes/__root.tsx"
 import { ConfigProvider } from '@ifhover/leaf-ui';
-import '@ifhover/leaf-ui/styles.css';
+import { Outlet } from '@tanstack/react-router';
 
-export default function App({ Component, pageProps }: AppProps) {
+function RootComponent() {
   return (
-    <ConfigProvider theme={pageProps.initialTheme ?? { borderRadius: 8 }}>
-      <Component {...pageProps} />
-    </ConfigProvider>
+    <RootDocument>
+      <ConfigProvider>
+        <Outlet />
+      </ConfigProvider>
+    </RootDocument>
   );
 }
 ```
 
-For a personalized first frame, read preferences in getServerSideProps and return initialTheme. The client's first render uses the same pageProps. Later switches can use React state as in Providers above.
+Keep your project's existing `RootDocument` and the other root route options. `HeadContent` in `<head>` renders the initial stylesheet links; `Scripts` in `<body>` loads the client scripts. Start discovers component styles in the build output, so Leaf UI needs no explicit `?url` stylesheet link or `'use client'` directive.
 
-## Other React SSR frameworks
-
-Remix, React Router framework mode and custom React SSR servers follow the same steps:
-
-1. Import `styles.css` through the framework's root entry or route, so it loads with the first frame.
-2. Read theme and language on the server and wrap the rendered tree in ConfigProvider.
-3. Pass the same initial settings to the browser through the framework's data mechanism.
-4. Initialize client state with those settings, then handle later switches.
-
-The static stylesheet is cacheable. Dynamic settings stay on each region's HTML container, with no DOM or window access during theme calculation.
+See TanStack Start's [root route](https://tanstack.com/start/latest/docs/framework/react/guide/routing) and [CSS styling](https://tanstack.com/start/latest/docs/framework/react/guide/css-styling) guides.
 
 ## Keep the first render consistent
 
-Prefer cookies, account settings or fixed defaults that the server can read. A preference stored only in localStorage is unavailable on the server: hydrate with a consistent default, then load it in an effect. This causes a visible theme switch. Persist preferences where the server can read them when the first frame should already match.
+Use the same theme, language and initial values on the server and during client hydration. For dark mode on the first frame, read configuration from a Cookie or other server-readable data. Read preferences stored only in `localStorage` after mounting. See [theming](/en/guide/theming) and [switch languages](/en/guide/internationalization) for configuration.
 
-Date pickers display local dates and times. Different server and browser time zones can produce different labels. Use a shared time-zone policy for SSR date defaults, or set the user's local dates after hydration. Avoid independently generating different initial values with `new Date()`.
+Pass consistent initial values to dates, times and countdowns too; avoid separate `new Date()` calls for each side's initial render. Popups such as Modal and Message appear after mounting on the client.
 
-Modal, Confirm, Message and floating panels create their portals after client mounting. Form controls themselves can render on the server; initially open overlays appear after hydration.
+## Custom SSR
 
-The entry `ConfigProvider` manages confirmations, messages, notifications and task loading bars automatically. Client descendants call `useConfirm`, `useMessage`, `useNotification` and `useLoadingBar`. These containers do not render on the server. State belongs to individual application roots and is not shared between SSR requests.
+When rendering directly with Node without framework-managed stylesheet discovery, import the full static stylesheet in the entry that builds your browser assets:
 
-## Images and file interactions
+```ts
+import '@ifhover/leaf-ui/styles/all.css';
+```
 
-Image renders its image on the server. The enlarged viewer, ImageCropper engine and SignaturePad engine load on demand in the browser. Stable containers and placeholders keep the server output consistent. Use these components in a Client Component without disabling SSR for the page.
-
-FileList renders URL-based metadata on the server. Upload keeps browser-selected File objects and temporary preview URLs in client state; no upload request is started during SSR.
-
-Interactive behavior requires client JavaScript. See [theming](/en/guide/theming) for style reuse and advanced settings.
-
-See [getting started](/en/guide/getting-started) for styles on demand. Default Node entries remain free of CSS imports, so ESM and CommonJS can render directly on the server. Framework browser builds use automatic style entries and retain the Next.js client boundary. For custom SSR or a build without the `browser` export condition, import `@ifhover/leaf-ui/styles/all.css` in the entry that produces page styles and include its emitted stylesheet in the initial HTML.
-
-## Date, number and popup hydration
-
-Pickers use local Date calendar fields and time. Date inputs and FormData represent local calendar values. `date.toISOString()` represents a UTC instant, so truncating it is not a reliable local date conversion. Convert business time zones at your application boundary and use the same convention on both server and client. Non-Gregorian calendars and dedicated timezone date types need an application adapter.
-
-Use consistent `locale`, values and timezone settings on server and client to keep Intl output identical. Pass a fixed deadline and `initialRemaining` to Countdown to avoid rendering differences caused by request latency. System appearance and breakpoint hooks accept initial values and read browser preferences after mounting.
-
-Portals mount on the client. Use function-valued `container` / `getPopupContainer` to defer DOM access; do not access `document` at module scope or during server rendering. See [Control and popup contracts](/en/guide/control-contracts).
+Include the emitted CSS link in the initial HTML. The Node component entry does not import CSS and can be used directly for server rendering.

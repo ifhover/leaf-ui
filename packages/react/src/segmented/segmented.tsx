@@ -1,4 +1,5 @@
 import { forwardRef, type HTMLAttributes, type ReactNode, useId, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -23,7 +24,10 @@ export interface SegmentedProps extends Omit<HTMLAttributes<HTMLDivElement>, 'on
   form?: string;
 }
 export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Segmented(
-  {
+  rawProps: SegmentedProps,
+  ref,
+) {
+  const {
     options,
     value,
     defaultValue,
@@ -35,9 +39,7 @@ export const Segmented = forwardRef<HTMLDivElement, SegmentedProps>(function Seg
     form,
     className,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Segmented', rawProps);
   const field = useFormField();
   const { direction } = useLeafConfig();
   const root = useRef<HTMLDivElement>(null);

@@ -53,7 +53,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-height: calc(
+    height: calc(
       var(--leaf-current-control-height) - var(--leaf-surface-padding-top) - var(
           --leaf-surface-padding-bottom
         ) -

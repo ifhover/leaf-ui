@@ -1,14 +1,20 @@
+// Shared compact spacing for action footers, with explicit component padding taking precedence.
+@mixin action-footer-padding($component) {
+  padding-block: var(--leaf-component-#{$component}-padding-top, calc(var(--leaf-spacing) * 1.5))
+    var(--leaf-component-#{$component}-padding-bottom, calc(var(--leaf-spacing) * 1.5));
+}
+
 @mixin control-size {
   --leaf-current-font-size: var(--leaf-font-size);
-  --leaf-current-control-height: var(--leaf-control-height, 40px);
+  --leaf-current-control-height: var(--leaf-control-height, 36px);
 
   &--sm {
-    --leaf-current-control-height: var(--leaf-control-height-sm, 34px);
+    --leaf-current-control-height: var(--leaf-control-height-sm, 30px);
     --leaf-current-font-size: var(--leaf-font-size-sm, 12px);
   }
 
   &--lg {
-    --leaf-current-control-height: var(--leaf-control-height-lg, 46px);
+    --leaf-current-control-height: var(--leaf-control-height-lg, 42px);
     --leaf-current-font-size: var(--leaf-font-size-lg, 16px);
   }
 }

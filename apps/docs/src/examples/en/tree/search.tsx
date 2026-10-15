@@ -5,7 +5,7 @@ import { treeData } from './data';
 export function TreeSearch() {
   const [query, setQuery] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="stretch">
       <Input
         aria-label="Search nodes"
         placeholder="Search nodes"

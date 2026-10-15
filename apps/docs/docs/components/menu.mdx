@@ -29,7 +29,7 @@ import { MenuRouting } from '../../src/examples/menu/capabilities';
 
 `selectedKey` 跟随当前路由。`linkRender` 可替换默认链接，例如 React Router 或 Next.js 的 Link；保留传入链接的事件、类名和 ARIA 属性。
 
-<ComponentExample title="受控导航与路由" preview={<MenuRouting />} fileName="capabilities.tsx">
+<ComponentExample title="受控导航与路由" preview={<MenuRouting />} fileName="capabilities.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/menu/capabilities.tsx"
 ```
@@ -41,6 +41,8 @@ import { MenuRouting } from '../../src/examples/menu/capabilities';
 纵向菜单默认 240px，折叠时 60px，可通过 style.width 调整。items 支持嵌套、分组、分隔线与链接。selectedKey 管理当前选中项，openKeys 管理展开项；横向模式与折叠模式使用浮层展示子菜单。
 
 子菜单展开、收起以及侧栏宽度变化均带有过渡。收起的子项不会参与键盘导航；系统开启减少动态效果时，过渡会自动关闭。
+
+菜单项、悬停背景和选中高亮与按钮共用基础圆角。通过 `ConfigProvider` 的 `theme.borderRadius` 统一调整，也可用 `theme.components.Menu.borderRadius` 单独设置菜单圆角。
 
 ## 类型
 

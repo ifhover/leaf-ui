@@ -21,7 +21,7 @@
     "format": "biome check --write . && prettier --write \"**/*.scss\"",
     "test": "pnpm --filter @ifhover/leaf-ui test && pnpm test:release && pnpm test:docs && pnpm test:skills",
     "test:release": "node --test packages/react/scripts/check-release-notes.test.mjs",
-    "test:docs": "node --test apps/docs/scripts/versioned-docs.test.mjs",
+    "test:docs": "node --test apps/docs/scripts/versioned-docs.test.mjs apps/docs/scripts/tailwind.test.mjs",
     "test:skills": "node --test skills/tests/docs.test.mjs",
     "test:watch": "pnpm --filter @ifhover/leaf-ui test:watch",
     "check": "pnpm check:release && pnpm lint && pnpm typecheck && pnpm test",

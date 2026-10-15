@@ -1,18 +1,19 @@
-import { type DateRange, DateRangePicker, Space } from '@ifhover/leaf-ui';
+import { type DateRange, DateRangePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function DateRangePickerBasic() {
   const [range, setRange] = useState<DateRange | null>(null);
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Date range</span>
+    <Form layout="vertical">
+      <FormField label="Date range">
         <DateRangePicker aria-label="Date range" value={range} onChange={setRange} />
-      </div>
+      </FormField>
       {range && (
-        <output className="leaf-demo-note">
-          {range[0].toLocaleDateString()} – {range[1].toLocaleDateString()}
+        <output>
+          <Text tone="muted">
+            {range[0].toLocaleDateString()} – {range[1].toLocaleDateString()}
+          </Text>
         </output>
       )}
-    </Space>
+    </Form>
   );
 }

@@ -33,29 +33,10 @@
   }
 }
 .leaf-autocomplete__panel .leaf-floating__option {
-  position: relative;
-  padding-inline-start: 14px;
-  &::before {
-    content: '';
-    position: absolute;
-    inset-inline-start: 5px;
-    inset-block: 8px;
-    width: 2px;
-    border-radius: 2px;
-    background: var(--leaf-color-primary);
-    opacity: 0;
-    transform: scaleY(0.4);
-    transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
-  }
-  &[aria-selected='true']::before {
-    opacity: 1;
-    transform: scaleY(1);
-  }
+  justify-content: space-between;
 }
-@media (prefers-reduced-motion: reduce) {
-  .leaf-autocomplete__panel .leaf-floating__option::before {
-    transition: none;
+.leaf-autocomplete__panel[data-hover-motion] {
+  .leaf-floating__highlight {
+    border-color: transparent;
   }
 }

@@ -1,5 +1,6 @@
 import {
   Button,
+  Flex,
   Form,
   FormErrorSummary,
   FormField,
@@ -18,13 +19,13 @@ export function ExtensionDemo() {
             <>
               {fields.map((field) => (
                 <FormField key={field.key} label={`联系人 ${field.index + 1}`} required>
-                  <Space size="sm">
+                  <Flex gap="sm" align="start">
                     <Input
+                      style={{ flex: 1, minWidth: 0 }}
                       name={`${field.name}.email`}
                       type="email"
                       value={field.value}
                       onChange={(e) => ops.update(field.index, e.target.value)}
-                      style={{ flex: 1, minWidth: 0 }}
                     />
                     <Button variant="ghost" onClick={() => ops.remove(field.index)}>
                       移除
@@ -37,7 +38,7 @@ export function ExtensionDemo() {
                         上移
                       </Button>
                     )}
-                  </Space>
+                  </Flex>
                 </FormField>
               ))}
               <Button variant="outline" onClick={() => ops.add('')}>

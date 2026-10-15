@@ -18,6 +18,7 @@ import {
   version,
 } from 'react';
 import { tabbable } from 'tabbable';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
@@ -64,7 +65,7 @@ const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
       : [item],
   );
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
-export function Dropdown({
+export function DropdownControl({
   items,
   children,
   disabled,
@@ -409,6 +410,7 @@ function MenuPanel({
     event.stopPropagation();
   };
   const child = rows.find((item) => item.key === submenu);
+  const activeItem = rows.find((item) => item.key === current);
   return (
     <>
       <FloatingPanel
@@ -434,7 +436,12 @@ function MenuPanel({
           className="leaf-dropdown__highlight"
           aria-hidden="true"
           data-ready={Boolean(highlight)}
-          data-danger={rows.find((item) => item.key === current)?.danger || undefined}
+          data-danger={activeItem?.danger || undefined}
+          data-selected={
+            ((activeItem?.type === 'checkbox' || activeItem?.type === 'radio') &&
+              (activeItem.checked ?? Boolean(checks[activeItem.key]))) ||
+            undefined
+          }
           style={highlight}
         />
         {rows.map((item) =>
@@ -564,4 +571,9 @@ function MenuAction({
       {children}
     </button>
   );
+}
+
+export function Dropdown(rawProps: DropdownProps) {
+  const props = useComponentProps('Dropdown', rawProps);
+  return <DropdownControl {...props} />;
 }

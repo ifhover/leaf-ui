@@ -1,33 +1,101 @@
+import { ComponentExample } from '../../src/components/component-example';
+import {
+  IntroductionBrowsers,
+  IntroductionFeature,
+  IntroductionFeatures,
+  IntroductionHero,
+} from '../../src/components/introduction';
+import { PackageInstall } from '../../src/components/package-install';
+import { GettingStartedExample } from '../../src/examples/guide/getting-started';
+
 # 认识 Leaf UI
 
-Leaf UI 是一个轻盈、自然、可定制的 React 组件库。以绿色为起点，让组件融入你的产品，也保留你的个性。
+<IntroductionHero>
 
-## 轻盈自然
+一套为 React 应用准备的 UI 组件。以绿色为起点，让界面清晰自然，也保留你的品牌个性。
 
-克制的色彩、舒适的圆角和清晰的交互状态，让内容成为主角。你可以直接使用默认的绿色主题，也可以调整主题色，让组件与品牌保持一致。
+</IntroductionHero>
 
-## 可定制
+## 为什么选择 Leaf UI
 
-通过 ConfigProvider 调整颜色、基础圆角、控件高度、字体与动效。大小尺寸自动生成，同一页面可以使用不同区域主题；业务组件也能读取主题变量复用样式。
+<IntroductionFeatures>
+  <IntroductionFeature icon="leaf" title="轻盈自然">
 
-## 熟悉的使用方式
+克制的色彩、舒适的圆角与清晰的交互状态，让内容成为主角。开箱即用，也为你的设计留出空间。
 
-组件支持 React 18 / 19，提供 TypeScript 类型，保留原生 HTML 属性与 DOM ref。你可以沿用 React 中处理事件、表单与状态的方式。
+  </IntroductionFeature>
+  <IntroductionFeature icon="palette" title="你的主题，你的风格">
 
-## 一致的基础组件
+颜色、圆角、控件高度、字体和明暗外观，都可以通过 ConfigProvider 调整。支持嵌套区域主题，浮层与消息沿用所在区域的配置。
 
-提供常用输入、选择、日期时间、表单、菜单、弹窗和反馈组件。可在[组件总览](/components/)中浏览所有组件。
+  </IntroductionFeature>
+  <IntroductionFeature icon="types" title="熟悉的 React 用法">
 
-图标使用 `lucide-react`，你也可以将自己的 React 图标节点传给组件。
+提供 TypeScript 类型，保留原生 HTML 属性与 DOM ref。支持受控与非受控用法，表单仍可使用原生提交和 FormData。
 
-## 照顾每一次交互
+  </IntroductionFeature>
+  <IntroductionFeature icon="components" title="日常所需，保持一致">
 
-组件包含键盘焦点、禁用与加载状态，并响应减少动态效果的系统偏好。只有图标的按钮需要设置 `aria-label`，为辅助技术提供清晰的名称。
+从按钮、输入框到日期选择、表格、导航和反馈，使用一致的尺寸与交互规则。图标采用 Lucide，也支持传入自己的图标节点。
 
-选择菜单、日历、时间和级联面板都沿用相同的主题，可以使用键盘选择、清除或收起。面板在页面边缘自动避让，并继承局部容器的主题变量。
+  </IntroductionFeature>
+  <IntroductionFeature icon="languages" title="面向不同语言">
 
-## 从这里开始
+内置多种语言资源，支持自定义翻译、语言回退与 RTL 方向。组件文案由配置管理，业务标题和字段标签由应用自行翻译。
 
-先阅读[安装&快速开始](/guide/getting-started)，再前往[组件总览](/components/)找到需要的组件。
+  </IntroductionFeature>
+  <IntroductionFeature icon="keyboard" title="照顾每一次交互">
 
-如果希望调整颜色和圆角，可以直接使用[主题编辑器](/guide/theming)。
+键盘操作、可见焦点、禁用与加载状态贯穿组件，并响应减少动态效果的系统偏好。为仅含图标的按钮提供 aria-label，即可补充可访问名称。
+
+  </IntroductionFeature>
+</IntroductionFeatures>
+
+## 环境支持
+
+支持 **React 18 / 19**，提供 **ESM / CommonJS** 入口与服务端渲染用法。推荐使用现代浏览器当前或上一代稳定版。
+
+<IntroductionBrowsers />
+
+以上为最低支持目标，实际验证范围与降级策略见[浏览器兼容性](/guide/compatibility)。Next.js、TanStack Start 等框架的接入见[服务端渲染](/guide/ssr)。
+
+## 从一个组件开始
+
+在已有 React 项目中安装：
+
+<PackageInstall>
+
+```bash
+npm install @ifhover/leaf-ui
+```
+
+```bash
+yarn add @ifhover/leaf-ui
+```
+
+```bash
+pnpm add @ifhover/leaf-ui
+```
+
+```bash
+bun add @ifhover/leaf-ui
+```
+
+</PackageInstall>
+
+直接导入组件即可使用，浏览器构建会自动加载所需样式，无需安装 Sass。试着点击下面的按钮：
+
+<ComponentExample title="第一个按钮" preview={<GettingStartedExample />} width="fit-content" fileName="getting-started.tsx">
+
+```tsx lineNumbers file="../../src/examples/guide/getting-started.tsx"
+
+```
+
+</ComponentExample>
+
+## 接下来
+
+- [安装与快速开始](/guide/getting-started)：了解安装方式与项目接入。
+- [组件总览](/components/)：找到界面需要的组件。
+- [定制主题](/guide/theming)：设置品牌色、圆角和深色模式。
+- [切换语言](/guide/internationalization)：为应用配置组件语言。

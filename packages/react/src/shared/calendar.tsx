@@ -295,10 +295,10 @@ export function CalendarPanel({
           className="leaf-date-picker__nav"
           aria-label={
             view === 'date'
-              ? messages.previousMonth
+              ? messages.calendar.previousMonth
               : view === 'month'
-                ? messages.previousYear
-                : messages.previousYears
+                ? messages.calendar.previousYear
+                : messages.calendar.previousYears
           }
           onClick={() => navigate(-1)}
         >
@@ -309,7 +309,7 @@ export function CalendarPanel({
             <button
               type="button"
               className="leaf-calendar__heading"
-              aria-label={messages.month}
+              aria-label={messages.calendar.month}
               onClick={() => setView('month')}
             >
               {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
@@ -318,7 +318,7 @@ export function CalendarPanel({
           <button
             type="button"
             className="leaf-calendar__heading"
-            aria-label={view === 'year' ? undefined : messages.year}
+            aria-label={view === 'year' ? undefined : messages.calendar.year}
             disabled={view === 'year'}
             onClick={() => setView('year')}
           >
@@ -330,10 +330,10 @@ export function CalendarPanel({
           className="leaf-date-picker__nav"
           aria-label={
             view === 'date'
-              ? messages.nextMonth
+              ? messages.calendar.nextMonth
               : view === 'month'
-                ? messages.nextYear
-                : messages.nextYears
+                ? messages.calendar.nextYear
+                : messages.calendar.nextYears
           }
           onClick={() => navigate(1)}
         >
@@ -349,7 +349,7 @@ export function CalendarPanel({
               setActive(today);
             }}
           >
-            {messages.today}
+            {messages.calendar.today}
           </button>
         )}
         {headerExtra != null && <span className="leaf-calendar__extra">{headerExtra}</span>}
@@ -358,7 +358,8 @@ export function CalendarPanel({
         <div className="leaf-calendar__weekdays">
           {Array.from(
             { length: 7 },
-            (_, index) => messages.weekdays[(index + weekStartsOn + 6) % 7] ?? String(index),
+            (_, index) =>
+              messages.calendar.weekdays[(index + weekStartsOn + 6) % 7] ?? String(index),
           ).map((day) => (
             <span key={day}>{day}</span>
           ))}

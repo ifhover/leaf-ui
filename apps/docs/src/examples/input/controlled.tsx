@@ -1,13 +1,12 @@
-import { Input, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Input, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function InputControlled() {
   const [value, setValue] = useState('');
   const [submitted, setSubmitted] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">输入并回车</span>
+    <Form layout="vertical">
+      <FormField label="输入并回车">
         <Input
           aria-label="输入并回车"
           value={value}
@@ -15,10 +14,10 @@ export function InputControlled() {
           onChange={(event) => setValue(event.target.value)}
           onPressEnter={() => setSubmitted(value)}
         />
-      </div>
-      <span className="leaf-demo-note" aria-live="polite">
+      </FormField>
+      <Text tone="muted" aria-live="polite">
         已提交：{submitted || '等待输入'}
-      </span>
-    </Space>
+      </Text>
+    </Form>
   );
 }

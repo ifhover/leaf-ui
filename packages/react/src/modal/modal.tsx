@@ -1,8 +1,9 @@
 import { X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
-import { Button, type ButtonProps } from '../button';
+import { ButtonControl, type ButtonProps } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Scrollbar } from '../scrollbar';
+import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
@@ -122,7 +123,8 @@ function ModalSurface({
   };
   const actions: ModalFooterActions = {
     cancelButton: (
-      <Button
+      <ButtonControl
+        type="button"
         variant="outline"
         {...cancelButtonProps}
         disabled={busy || cancelButtonProps?.disabled}
@@ -131,11 +133,12 @@ function ModalSurface({
           if (!event.defaultPrevented) cancel();
         }}
       >
-        {cancelText ?? messages.cancel}
-      </Button>
+        {cancelText ?? messages.common.cancel}
+      </ButtonControl>
     ),
     confirmButton: (
-      <Button
+      <ButtonControl
+        type="button"
         {...confirmButtonProps}
         loading={busy || confirmButtonProps?.loading}
         onClick={(event) => {
@@ -143,8 +146,8 @@ function ModalSurface({
           if (!event.defaultPrevented) void accept();
         }}
       >
-        {confirmText ?? messages.confirm}
-      </Button>
+        {confirmText ?? messages.common.confirm}
+      </ButtonControl>
     ),
   };
   const renderedFooter =
@@ -196,7 +199,7 @@ function ModalSurface({
         type="button"
         className="leaf-modal-backdrop"
         tabIndex={-1}
-        aria-label={messages.close}
+        aria-label={messages.common.close}
         onClick={() => {
           if (maskClosable) close.current?.();
         }}
@@ -249,7 +252,7 @@ function ModalSurface({
                 <button
                   type="button"
                   className="leaf-modal__close"
-                  aria-label={messages.close}
+                  aria-label={messages.common.close}
                   onClick={() => close.current?.()}
                 >
                   <X size={18} aria-hidden="true" />
@@ -263,7 +266,9 @@ function ModalSurface({
               viewportClassName="leaf-modal__viewport"
               orientation="vertical"
               aria-labelledby={title != null ? titleId : undefined}
-              aria-label={title == null ? (props['aria-label'] ?? messages.confirm) : undefined}
+              aria-label={
+                title == null ? (props['aria-label'] ?? messages.common.confirm) : undefined
+              }
             >
               <div ref={content} className="leaf-modal__content">
                 {children}
@@ -281,10 +286,15 @@ function ModalSurface({
     </div>
   );
 }
-export function Modal(props: ModalProps) {
+// Other components reuse the dialog mechanics without inheriting public Modal defaults.
+export function ModalBase(props: ModalProps) {
   return (
     <ScopedPortal container={props.container}>
       <ModalSurface {...props} />
     </ScopedPortal>
   );
+}
+export function Modal(rawProps: ModalProps) {
+  const props = useComponentProps('Modal', rawProps);
+  return <ModalBase {...props} />;
 }

@@ -1,10 +1,12 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { InputNumber } from '../inputnumber';
-import { Select } from '../select';
+import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
+import { SelectControl } from '../select/select';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useMovingIndicator } from '../tabs/use-moving-indicator';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
@@ -17,15 +19,16 @@ export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onCh
   showSizeChanger?: boolean;
   pageSizeOptions?: readonly number[];
   showQuickJumper?: boolean;
-  showTotal?: (total: number, range: readonly [number, number]) => ReactNode;
+  showTotal?: boolean | ((total: number, range: readonly [number, number]) => ReactNode);
   simple?: boolean;
   disabled?: boolean;
   hideOnSinglePage?: boolean;
   size?: ControlSize;
+  variant?: 'outline' | 'ghost';
 }
 const positiveInteger = (value: number) =>
   Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
-export function Pagination({
+export function PaginationControl({
   total,
   current,
   defaultCurrent = 1,
@@ -35,22 +38,27 @@ export function Pagination({
   showSizeChanger = false,
   pageSizeOptions = [10, 20, 50, 100],
   showQuickJumper = false,
-  showTotal,
+  showTotal = false,
   simple = false,
   disabled = false,
   hideOnSinglePage = false,
   size = 'md',
+  variant = 'outline',
   className,
+  dir,
   'aria-label': label,
   ...props
 }: PaginationProps) {
   const { messages, direction } = useLeafConfig();
+  const format = useFormattedText();
   const root = useRef<HTMLElement>(null);
   const indicator = useRef<HTMLSpanElement>(null);
   const jumpId = `${useId()}-jump`;
   const [internalPage, setPage] = useState(defaultCurrent);
   const [internalSize, setSize] = useState(defaultPageSize);
   const [jump, setJump] = useState<number | null>(null);
+  const committedJump = useRef<number | null>(null);
+  const pointerAction = useRef(false);
   const count = Math.max(0, Number.isFinite(total) ? Math.floor(total) : 0);
   const perPage = positiveInteger(pageSize ?? internalSize);
   const pages = Math.max(1, Math.ceil(count / perPage));
@@ -59,7 +67,7 @@ export function Pagination({
     root,
     indicator,
     '[aria-current="page"]',
-    `${page}-${pages}-${simple}-${direction}`,
+    `${page}-${pages}-${simple}-${variant}-${dir ?? direction}`,
     !hideOnSinglePage || pages !== 1,
   );
   const choose = (next: number, nextSize = perPage) => {
@@ -74,6 +82,14 @@ export function Pagination({
     if (normalizedPage !== page || normalizedSize !== perPage)
       onChange?.(normalizedPage, normalizedSize);
   };
+  const commitJump = (text: string) => {
+    if (disabled || !text.trim() || !Number.isFinite(Number(text))) return;
+    const next = Math.min(pages, positiveInteger(Number(text)));
+    if (committedJump.current === next) return;
+    committedJump.current = next;
+    choose(next);
+    setJump(next);
+  };
   const candidates =
     pages <= 7
       ? Array.from({ length: pages }, (_, i) => i + 1)
@@ -86,30 +102,49 @@ export function Pagination({
             ...(page >= pages - 2 ? [pages - 3, pages - 2, pages - 1] : []),
           ]),
         ].sort((a, b) => a - b);
-  const options = [...new Set([...pageSizeOptions.map(positiveInteger), perPage])].sort(
-    (a, b) => a - b,
-  );
+  const options = [
+    ...new Set([
+      ...pageSizeOptions.filter((value) => Number.isFinite(value) && value >= 1).map(Math.floor),
+      perPage,
+    ]),
+  ].sort((a, b) => a - b);
   if (hideOnSinglePage && pages === 1) return null;
   return (
     <nav
       {...props}
       ref={root}
-      aria-label={label ?? messages.pagination}
-      className={classes('leaf-pagination', `leaf-pagination--${size}`, className)}
+      dir={dir ?? direction}
+      aria-label={label ?? messages.pagination.label}
+      data-disabled={disabled ? '' : undefined}
+      className={classes(
+        'leaf-pagination',
+        `leaf-pagination--${size}`,
+        `leaf-pagination--${variant}`,
+        className,
+      )}
+      onPointerDownCapture={(event) => {
+        // Safari may blur an input without focusing the button clicked next.
+        pointerAction.current =
+          event.target instanceof Element &&
+          event.target.closest('button, [role="combobox"]') !== null;
+        props.onPointerDownCapture?.(event);
+      }}
     >
       <span ref={indicator} className="leaf-pagination__indicator" aria-hidden="true" />
       {showTotal && (
         <span className="leaf-pagination__total">
-          {showTotal(count, [
-            count === 0 ? 0 : (page - 1) * perPage + 1,
-            Math.min(count, page * perPage),
-          ])}
+          {typeof showTotal === 'function'
+            ? showTotal(count, [
+                count === 0 ? 0 : (page - 1) * perPage + 1,
+                Math.min(count, page * perPage),
+              ])
+            : format('pagination.total', { total: count })}
         </span>
       )}
       <button
         type="button"
         disabled={disabled || page === 1}
-        aria-label={messages.previousPage}
+        aria-label={messages.pagination.previousPage}
         onClick={() => choose(page - 1)}
       >
         <ChevronLeft size={16} aria-hidden="true" />
@@ -127,7 +162,7 @@ export function Pagination({
                 <button
                   type="button"
                   disabled={disabled}
-                  aria-label={`${messages.page} ${number - 1}`}
+                  aria-label={format('pagination.pageLabel', { page: number - 1 })}
                   onClick={() => choose(number - 1)}
                 >
                   {number - 1}
@@ -137,7 +172,9 @@ export function Pagination({
                   type="button"
                   className="leaf-pagination__jump"
                   disabled={disabled}
-                  aria-label={number > page ? messages.pageForward : messages.pageBack}
+                  aria-label={
+                    number > page ? messages.pagination.pageForward : messages.pagination.pageBack
+                  }
                   onClick={() => choose(page + (number > page ? 5 : -5))}
                 >
                   <span aria-hidden="true">…</span>
@@ -150,7 +187,7 @@ export function Pagination({
               ))}
             <button
               type="button"
-              aria-label={`${messages.page} ${number}`}
+              aria-label={format('pagination.pageLabel', { page: number })}
               aria-current={number === page ? 'page' : undefined}
               data-leaf-indicator-item=""
               disabled={disabled}
@@ -164,23 +201,23 @@ export function Pagination({
       <button
         type="button"
         disabled={disabled || page === pages}
-        aria-label={messages.nextPage}
+        aria-label={messages.pagination.nextPage}
         onClick={() => choose(page + 1)}
       >
         <ChevronRight size={16} aria-hidden="true" />
       </button>
       {showSizeChanger && (
-        <Select
+        <SelectControl
           size={size}
           className="leaf-pagination__size"
-          aria-label={messages.pageSize}
+          aria-label={messages.pagination.pageSize}
           disabled={disabled}
           value={String(perPage)}
           popupWidth="auto"
           popupMaxWidth={240}
           options={options.map((number) => ({
             value: String(number),
-            label: `${number} ${messages.itemsPerPage}`,
+            label: format('pagination.pageSizeOption', { count: number }),
           }))}
           onChange={(next) =>
             choose(Math.floor(((page - 1) * perPage) / Number(next)) + 1, Number(next))
@@ -189,10 +226,10 @@ export function Pagination({
       )}
       {showQuickJumper && (
         <label className="leaf-pagination__jumper" htmlFor={jumpId}>
-          {messages.jumpTo}
+          {messages.pagination.jumpTo}
           <InputNumber
             id={jumpId}
-            aria-label={messages.jumpTo}
+            aria-label={messages.pagination.jumpTo}
             size={size}
             min={1}
             max={pages}
@@ -201,16 +238,30 @@ export function Pagination({
             disabled={disabled}
             value={jump}
             onChange={setJump}
+            onFocus={() => {
+              committedJump.current = null;
+              pointerAction.current = false;
+            }}
+            onInput={(event) => {
+              if (event.currentTarget.value !== String(committedJump.current))
+                committedJump.current = null;
+            }}
+            onBlur={(event) => {
+              // A clicked page or size control takes precedence over an uncommitted draft.
+              const action = pointerAction.current;
+              pointerAction.current = false;
+              if (action || (event.relatedTarget && root.current?.contains(event.relatedTarget)))
+                return;
+              commitJump(event.currentTarget.value);
+            }}
             onKeyDown={(event) => {
               if (
                 event.key === 'Enter' &&
                 !event.nativeEvent.isComposing &&
-                event.currentTarget.value.trim() &&
-                Number.isFinite(Number(event.currentTarget.value))
+                event.currentTarget.value.trim()
               ) {
                 event.preventDefault();
-                choose(Number(event.currentTarget.value));
-                setJump(Math.min(pages, positiveInteger(Number(event.currentTarget.value))));
+                commitJump(event.currentTarget.value);
               }
             }}
           />
@@ -218,4 +269,9 @@ export function Pagination({
       )}
     </nav>
   );
+}
+
+export function Pagination(rawProps: PaginationProps) {
+  const props = useComponentProps('Pagination', rawProps);
+  return <PaginationControl {...props} />;
 }

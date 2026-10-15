@@ -1,5 +1,12 @@
-import { type RefObject, useEffect, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
-import { useLeafConfig } from '../config-provider/context';
+import {
+  type RefObject,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
+import { ConfigContext } from '../config-provider/config-context';
 
 const reducedQuery = '(prefers-reduced-motion: reduce)';
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -16,9 +23,9 @@ function subscribeMotion(listener: () => void) {
 
 /** Live preference with a deterministic server snapshot; CSS handles the first frame. */
 export function useMotionEnabled() {
-  const { theme } = useLeafConfig();
+  const config = useContext(ConfigContext);
   const reduced = useSyncExternalStore(subscribeMotion, reducedMotion, () => false);
-  return theme.motion !== false && !reduced;
+  return config?.theme.motion !== false && !reduced;
 }
 
 /** Read the actual region, including variables transferred to a portal. */

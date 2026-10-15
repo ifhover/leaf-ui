@@ -1,5 +1,18 @@
 export const additions = [
   [
+    'Flex',
+    '弹性布局',
+    'flex',
+    '布局',
+    'Layout',
+    '控制内容方向、对齐、间距与换行。',
+    'Control direction, alignment, spacing and wrapping.',
+    'FlexBasic',
+    'FlexAlignment',
+    '方向与对齐',
+    'Direction and alignment',
+  ],
+  [
     'Typography',
     '排版',
     'typography',
@@ -176,16 +189,30 @@ export const updatedPages = new Set([
   'menu',
   'tabs',
   'breadcrumb',
+  'pagination',
   'steps',
   'slider',
   'color-picker',
   'progress',
   'config-provider',
   'guide/theming',
-  'guide/control-contracts',
+  'api/popup-options',
+  'api/component-defaults',
+  'api/theme-tokens',
 ]);
 
-export function documentationPage(entry) {
+export function documentationPage(entry, availablePages) {
+  const reference = {
+    LeafComponentDefaults: 'api/component-defaults',
+    LeafThemeTokens: 'api/theme-tokens',
+    LeafComponentTokens: 'api/theme-tokens',
+    LeafThemeStyle: 'api/theme-tokens',
+    PopupOptions: 'api/popup-options',
+    LeafTranslation: 'api/translations',
+    LeafTranslations: 'api/translations',
+  }[entry.name];
+  // Historical snapshots keep their original pages when separate references do not exist.
+  if (reference && (!availablePages || availablePages.has(reference))) return reference;
   if (entry.module === './theme' || entry.module === './shared/types') return 'guide/theming';
   if (entry.module === './shared/floating') return 'guide/control-contracts';
   if (entry.module === './shared/dialog') return 'components/modal';
@@ -206,11 +233,9 @@ export function documentationPage(entry) {
     inputnumber: 'input-number',
     inputotp: 'input-otp',
     inputmask: 'input-mask',
-    imagecropper: 'image-cropper',
     infinitescroll: 'infinite-scroll',
     loadingbar: 'loading-bar',
     scrollarea: 'scroll-area',
-    signaturepad: 'signature-pad',
     timepicker: 'time-picker',
     timerangepicker: 'time-range-picker',
     treeselect: 'tree-select',

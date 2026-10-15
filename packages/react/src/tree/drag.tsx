@@ -16,8 +16,9 @@ import {
 } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { createContext, type ReactNode, useContext, useId, useRef, useState } from 'react';
-import { Button } from '../button';
-import { useText } from '../shared/use-text';
+import { ButtonControl } from '../button/button';
+import { useDragAnnouncements } from '../shared/use-drag-announcements';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { moveTreeNode } from './move';
 import type { TreeDropInfo, TreeNode } from './tree';
 
@@ -41,7 +42,10 @@ export function TreeDragScope({
   children: ReactNode;
 }) {
   const id = useId();
-  const t = useText();
+  const accessibility = useDragAnnouncements((key) => {
+    const node = nodes.get(String(key))?.node;
+    return node?.searchLabel ?? (typeof node?.title === 'string' ? node.title : String(key));
+  }, true);
   const [state, setState] = useState<DragState>({});
   const blocked = useRef(new Set<string>());
   const keyboardTarget = useRef<{ key: string; position: TreeDropInfo['position'] } | undefined>(
@@ -146,14 +150,7 @@ export function TreeDragScope({
       id={id}
       sensors={sensors}
       collisionDetection={collisionDetection}
-      accessibility={{
-        screenReaderInstructions: {
-          draggable: t(
-            '按空格开始拖动，上下选择目标，左放在目标前方，右放在目标后方，空格放置，Escape 取消。',
-            'Press Space to pick up, Up/Down to choose a target, Left/Right to place before/after it, Space to drop, and Escape to cancel.',
-          ),
-        },
-      }}
+      accessibility={accessibility}
       onDragStart={({ active }) => {
         const key = String(active.id);
         keyboardTarget.current = undefined;
@@ -201,7 +198,7 @@ export function TreeDragRow({
   draggable: boolean;
   children: ReactNode;
 }) {
-  const t = useText();
+  const format = useFormattedText();
   const state = useContext(Context);
   const {
     attributes,
@@ -222,7 +219,7 @@ export function TreeDragRow({
       data-drop={state.over === node.key && state.active !== node.key ? state.position : undefined}
     >
       {draggable && (
-        <Button
+        <ButtonControl
           {...attributes}
           {...listeners}
           ref={setActivatorNodeRef}
@@ -231,7 +228,9 @@ export function TreeDragRow({
           disabled={node.disabled}
           className="leaf-tree__drag-handle"
           startIcon={<GripVertical size={14} />}
-          aria-label={`${t('移动节点', 'Move node')} ${node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key)}`}
+          aria-label={format('tree.moveNode', {
+            label: node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key),
+          })}
         />
       )}
       {children}

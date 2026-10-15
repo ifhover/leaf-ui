@@ -1,13 +1,12 @@
-import { DatePicker, Space } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function DatePickerControlled() {
   const [date, setDate] = useState<Date | null>(new Date(2026, 9, 15));
   const [dateString, setDateString] = useState('2026-10-15');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">十月的日期</span>
+    <Form layout="vertical">
+      <FormField label="十月的日期">
         <DatePicker
           aria-label="十月的日期"
           value={date}
@@ -18,12 +17,11 @@ export function DatePickerControlled() {
             setDateString(text);
           }}
         />
-      </div>
-      <span className="leaf-demo-note">可选 10 月 5–25 日，当前值：{dateString || '未选择'}</span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">必填日期 · 错误</span>
+      </FormField>
+      <Text tone="muted">可选 10 月 5–25 日，当前值：{dateString || '未选择'}</Text>
+      <FormField label="必填日期 · 错误">
         <DatePicker aria-label="必填日期" status="error" required placeholder="请设置截止日期" />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

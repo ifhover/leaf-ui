@@ -1,6 +1,7 @@
 import { Clock3 } from 'lucide-react';
 import { forwardRef, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
@@ -21,7 +22,10 @@ export interface TimePickerProps extends PickerFieldProps {
   disabledTime?: (parts: TimeParts) => boolean;
 }
 export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function TimePicker(
-  {
+  rawProps: TimePickerProps,
+  ref,
+) {
+  const {
     value,
     defaultValue = null,
     minuteStep = 5,
@@ -34,9 +38,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
     open: controlledOpen,
     defaultOpen,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('TimePicker', rawProps);
   const { messages } = useLeafConfig();
   const field = useFormField();
   const trigger = useRef<HTMLInputElement>(null);
@@ -60,17 +62,17 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
     onChange?.(next);
   };
   const formatted = (parts: TimeParts) =>
-    displayTime(parts, showSeconds, use12Hours, [messages.am, messages.pm]);
+    displayTime(parts, showSeconds, use12Hours, [messages.timePicker.am, messages.timePicker.pm]);
   const parsed = parseTime(selected);
   return (
     <DateInput
       {...props}
       ref={merged}
       className={['leaf-time-picker', props.className].filter(Boolean).join(' ')}
-      placeholder={props.placeholder ?? messages.time}
+      placeholder={props.placeholder ?? messages.timePicker.placeholder}
       icon={<Clock3 size={16} aria-hidden="true" />}
-      panelLabel={messages.chooseTime}
-      clearLabel={messages.clearTime}
+      panelLabel={messages.timePicker.label}
+      clearLabel={messages.timePicker.clear}
       commitOnBlur={false}
       displayValue={parsed ? formatted(parsed) : ''}
       formValue={parsed ? timeString(parsed, showSeconds) : ''}
@@ -82,7 +84,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
       }}
       onClear={() => change(null)}
       onTextChange={(text) => {
-        const next = parseTime(text.trim());
+        const next = parseTime(text.trim(), [messages.timePicker.am, messages.timePicker.pm]);
         setValidText(Boolean(next));
         if (next) setDraft(next);
       }}
@@ -91,7 +93,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
           change(null);
           return true;
         }
-        const next = parseTime(text);
+        const next = parseTime(text, [messages.timePicker.am, messages.timePicker.pm]);
         if (!next || disabledTime?.(next)) return false;
         change(next);
         return true;
@@ -112,7 +114,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
             use12Hours={use12Hours}
           />
           <div className="leaf-picker-footer">
-            <Button
+            <ButtonControl
               variant="ghost"
               size="sm"
               onClick={() => {
@@ -125,9 +127,9 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
                 setValidText(true);
               }}
             >
-              {messages.now}
-            </Button>
-            <Button
+              {messages.timePicker.now}
+            </ButtonControl>
+            <ButtonControl
               size="sm"
               disabled={!validText || disabledTime?.(draft)}
               onClick={() => {
@@ -135,8 +137,8 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
                 close();
               }}
             >
-              {messages.confirm}
-            </Button>
+              {messages.common.confirm}
+            </ButtonControl>
           </div>
         </>
       )}

@@ -19,15 +19,31 @@ export function ScopedPortal({
     const node = anchor.current;
     if (!node) return;
     const sync = () => {
-      const computed = getComputedStyle(node);
+      // Read the owning element; hidden markers can omit inherited custom
+      // properties from computed-style enumeration in Firefox.
+      const computed = getComputedStyle(composedParent(node) ?? node);
       const next: LeafThemeStyle = {
         colorScheme: computed.colorScheme,
         direction: computed.direction as LeafThemeStyle['direction'],
       };
+      const keys = new Set<string>();
       for (let i = 0; i < computed.length; i++) {
         const key = computed.item(i);
-        if (key.startsWith('--leaf-'))
-          next[key as `--leaf-${string}`] = computed.getPropertyValue(key);
+        if (key.startsWith('--leaf-')) keys.add(key);
+      }
+      // Some engines do not enumerate every inherited custom property. Include
+      // inline scope keys, then read their effective values at the source.
+      let owner = composedParent(node);
+      while (owner) {
+        for (let i = 0; i < owner.style.length; i++) {
+          const key = owner.style.item(i);
+          if (key.startsWith('--leaf-')) keys.add(key);
+        }
+        owner = composedParent(owner);
+      }
+      for (const key of keys) {
+        const value = computed.getPropertyValue(key);
+        if (value.trim()) next[key as `--leaf-${string}`] = value;
       }
       setStyle(next);
     };
@@ -58,6 +74,8 @@ export function ScopedPortal({
         createPortal(
           <div
             className="leaf-portal-scope"
+            lang={config.locale}
+            dir={config.direction}
             data-leaf-density={config.density}
             data-leaf-motion={
               config.theme.motion === undefined ? undefined : config.theme.motion ? 'on' : 'off'

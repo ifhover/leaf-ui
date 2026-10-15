@@ -36,16 +36,16 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
   await page.getByRole('switch', { name: 'Mask blur', exact: true }).uncheck();
   const scope = page.getByTestId('acceptance-workbench');
   await expect(scope).toHaveAttribute('data-leaf-density', 'compact');
-  await expect(scope.locator('.leaf-input').first()).toHaveCSS('height', '34px');
+  await expect(scope.locator('.leaf-input').first()).toHaveCSS('height', '30px');
   await page.getByRole('button', { name: 'Open dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Edit details' });
-  await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '34px');
+  await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '30px');
   await expect(dialog).toHaveCSS('color', 'rgb(237, 237, 240)');
   await expect(dialog.locator('..')).toHaveAttribute('data-blur', 'off');
   await dialog.getByRole('combobox', { name: 'Dialog owner' }).click();
   await expect(page.getByRole('option', { name: 'Alex', exact: true })).toHaveCSS(
     'min-height',
-    '30px',
+    '26px',
   );
 });
 

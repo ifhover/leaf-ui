@@ -1,20 +1,17 @@
-import { DatePicker, Space } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
 
 export function DatePickerBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Choose a date</span>
+    <Form layout="vertical">
+      <FormField label="Choose a date">
         <DatePicker aria-label="Choose a date" placeholder="Pick a good day" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Default date</span>
+      </FormField>
+      <FormField label="Default date">
         <DatePicker aria-label="Default date" defaultValue={new Date(2026, 9, 15)} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Disabled date</span>
+      </FormField>
+      <FormField label="Disabled date">
         <DatePicker aria-label="Disabled date" defaultValue={new Date(2026, 9, 15)} disabled />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

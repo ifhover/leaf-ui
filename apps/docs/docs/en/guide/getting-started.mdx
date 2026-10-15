@@ -1,31 +1,40 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { GettingStartedExample } from '../../../src/examples/en/guide/getting-started';
+import { PackageInstall } from '../../../src/components/package-install';
 
 # Installation & quick start
 
-Leaf UI supports React 18 and React 19. Install the package and import its styles to start using components in your application.
+Leaf UI supports React 18 and React 19. Install the package to start using components; base and component styles load automatically.
 
 ## Install the package
 
+Run this in your React project directory:
+
+<PackageInstall>
+
 ```bash
-pnpm add @ifhover/leaf-ui
-# or
 npm install @ifhover/leaf-ui
-# or
+```
+
+```bash
 yarn add @ifhover/leaf-ui
 ```
 
-React 18 or 19 and the matching React DOM version must be installed in your application. If needed, run `pnpm add react react-dom`. See the current release on [npm](https://www.npmjs.com/package/@ifhover/leaf-ui).
-
-## Styles
-
-Import the base stylesheet once in the application entry. It includes theme variables, shared popup styles and API services such as Confirm and Message:
-
-```tsx
-import '@ifhover/leaf-ui/styles.css';
+```bash
+pnpm add @ifhover/leaf-ui
 ```
 
-Browser component entries load their styles automatically. No separate component CSS imports or Sass installation are needed. See [SSR usage](/en/guide/ssr) for Next.js and other frameworks.
+```bash
+bun add @ifhover/leaf-ui
+```
+
+</PackageInstall>
+
+React 18 or 19 and the matching React DOM version must be installed in your application. If needed, run `pnpm add react react-dom`. See the current release on [npm](https://www.npmjs.com/package/@ifhover/leaf-ui).
+
+Browser component entries load theme variables, shared styles and the required component and service styles automatically. No manual CSS imports or Sass installation are needed. See [server-side rendering](/en/guide/ssr) for framework-specific setup in Next.js, TanStack Start and other frameworks.
+
+Examples use Flex, Space, Grid and FormField for layout. Tailwind CSS is not required.
 
 ## Use a component
 
@@ -44,7 +53,7 @@ The root entry is the recommended default. Vite and Rsbuild / Rspack production 
 
 - [Components](/en/components/): explore available components.
 - [Button](/en/components/button): styles, sizes, loading states and API.
-- [Icons](/en/guide/icons): use Lucide icons for actions.
+- [Icons](/en/components/icons): use Lucide icons for actions.
 - [Theming](/en/guide/theming): customize colors, shapes and appearance.
-- [SSR usage](/en/guide/ssr): use components in Next.js and other frameworks.
+- [Server-side rendering](/en/guide/ssr): framework-specific setup in Next.js, TanStack Start and other frameworks.
 - [Browser compatibility](./compatibility): supported browsers and fallbacks.

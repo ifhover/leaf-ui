@@ -1,0 +1,151 @@
+# 组件默认参数
+
+通过 ConfigProvider 的 `components` 设置区域内的组件默认参数。常用示例、命名规则和继承方式见[组件默认值](/components/config-provider#组件默认值)。
+
+## LeafComponentDefaults
+
+所有配置项均可选。每项接受下表列出的参数，或用 `null` 清除继承；点击类型可查看参数含义及组件内置默认值。必填项、模式关联值、泛型数据和命令式引用仍由实例提供。
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `Affix` | `Partial<Omit<`[`AffixProps`](../components/anchor#affix-api)`, 'key' \| 'ref'>> \| null` | 设置 Affix。 |
+| `Alert` | `Partial<Omit<`[`AlertProps`](../components/alert#alert-api)`, 'key' \| 'ref' \| 'title'>> \| null` | 设置 Alert。 |
+| `Anchor` | `Partial<Omit<`[`AnchorProps`](../components/anchor#anchor-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Anchor。 |
+| `AppBar` | `Partial<Omit<`[`AppBarProps`](../components/app-bar#appbar-api)`, 'key' \| 'ref'>> \| null` | 设置 AppBar。 |
+| `AutoComplete` | `Partial<Omit<`[`AutoCompleteProps`](../components/auto-complete#autocomplete-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 AutoComplete。 |
+| `Avatar` | `Partial<Omit<`[`AvatarProps`](../components/avatar#avatar-api)`, 'key' \| 'ref'>> \| null` | 设置 Avatar。 |
+| `AvatarGroup` | `Partial<Omit<`[`AvatarGroupProps`](../components/avatar#avatargroupprops-api)`, 'key' \| 'ref'>> \| null` | 设置 AvatarGroup。 |
+| `BackTop` | `Partial<Omit<`[`BackTopProps`](../components/back-top#backtopprops-api)`, 'key' \| 'ref'>> \| null` | 设置 BackTop。 |
+| `Badge` | `Partial<Omit<`[`BadgeProps`](../components/badge#badge-api)`, 'key' \| 'ref'>> \| null` | 设置 Badge。 |
+| `BottomNavigation` | `Partial<Omit<`[`BottomNavigationProps`](../components/app-bar#bottomnavigation-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 BottomNavigation。 |
+| `Breadcrumb` | `Partial<Omit<`[`BreadcrumbProps`](../components/breadcrumb#breadcrumb-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Breadcrumb。 |
+| `Button` | `Partial<Omit<`[`ButtonProps`](../components/button#button-api)`, 'key' \| 'ref'>> \| null` | 按钮的默认参数。 |
+| `ButtonGroup` | `Partial<Omit<`[`ButtonGroupProps`](../components/button#buttongroupprops-api)`, 'key' \| 'ref'>> \| null` | 设置 ButtonGroup。 |
+| `Calendar` | `Partial<Omit<`[`CalendarProps`](../components/calendar#calendar-api)`, 'key' \| 'ref'>> \| null` | 设置 Calendar。 |
+| `Card` | `Partial<Omit<`[`CardProps`](../components/card#card-api)`, 'key' \| 'ref'>> \| null` | 设置 Card。 |
+| `Carousel` | `Partial<Omit<`[`CarouselProps`](../components/carousel#carousel-api)`, 'key' \| 'ref'>> \| null` | 设置 Carousel。 |
+| `Cascader` | `Partial< Omit< `[`CascaderProps`](../components/cascader#cascader-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | 设置 Cascader。 |
+| `CheckableTag` | `Partial<Omit<`[`CheckableTagProps`](../components/tag#checkabletagprops-api)`, 'key' \| 'ref'>> \| null` | 设置 CheckableTag。 |
+| `Checkbox` | `Partial<Omit<`[`CheckboxProps`](../components/checkbox#checkbox-api)`, 'key' \| 'ref'>> \| null` | 设置 Checkbox。 |
+| `CheckboxGroup` | `Partial<Omit<`[`CheckboxGroupProps`](../components/checkbox#checkboxgroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 CheckboxGroup。 |
+| `Col` | `Partial<Omit<`[`ColProps`](../components/grid#colprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Col。 |
+| `Collapse` | `Partial<Omit<`[`CollapseProps`](../components/collapse#collapse-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Collapse。 |
+| `ColorPicker` | `Partial<Omit<`[`ColorPickerProps`](../components/color-picker#colorpicker-api)`, 'key' \| 'ref'>> \| null` | 设置 ColorPicker。 |
+| `CommandPalette` | `Partial<Omit<`[`CommandPaletteProps`](../components/command-palette#commandpalette-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 CommandPalette。 |
+| `Confirm` | `Partial<Omit<`[`ConfirmOptions`](../components/confirm#confirmoptions)`, 'key' \| 'ref'>> \| null` | 设置 Confirm。 |
+| `Countdown` | `Partial<Omit<`[`CountdownProps`](../components/statistic#countdown-api)`, 'key' \| 'ref' \| 'value'>> \| null` | 设置 Countdown。 |
+| `DataTable` | `Partial<Omit<`[`DataTablePresentationProps`](../components/table#datatablepresentation-api)`, 'tableRef'>> \| null` | 设置 DataTable。 |
+| `DataTableColumnVisibility` | `Partial<Omit<`[`DataTableColumnVisibilityProps`](../components/table#datatablecolumnvisibility-api)`, 'key' \| 'ref'>> \| null` | 设置 DataTableColumnVisibility。 |
+| `DataTableContent` | `Partial<Omit<`[`DataTableContentProps`](../components/table#datatablecontent-api)`, 'key' \| 'ref'>> \| null` | 设置 DataTableContent。 |
+| `DataTableFooter` | `Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' \| 'ref'>> \| null` | 设置 DataTableFooter。 |
+| `DataTablePagination` | `Partial<Omit<`[`DataTablePaginationProps`](../components/table#datatablepagination-api)`, 'key' \| 'ref'>> \| null` | 设置 DataTablePagination。 |
+| `DataTableSearch` | `Partial<Omit<`[`DataTableSearchProps`](../components/table#datatablesearch-api)`, 'key' \| 'ref'>> \| null` | 设置 DataTableSearch。 |
+| `DataTableToolbar` | `Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' \| 'ref'>> \| null` | 设置 DataTableToolbar。 |
+| `DatePicker` | `Partial< Omit<`[`DatePickerProps`](../components/date-picker#datepicker-api)`, 'key' \| 'ref' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | 设置 DatePicker。 |
+| `DateRangePicker` | `Partial<Omit<`[`DateRangePickerProps`](../components/date-range-picker#daterangepicker-api)`, 'key' \| 'ref'>> \| null` | 设置 DateRangePicker。 |
+| `DateTimePicker` | `Partial<Omit<`[`DateTimePickerProps`](../components/date-time-picker#datetimepicker-api)`, 'key' \| 'ref'>> \| null` | 设置 DateTimePicker。 |
+| `Descriptions` | `Partial<Omit<`[`DescriptionsProps`](../components/descriptions#descriptionsprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Descriptions。 |
+| `Divider` | `Partial<Omit<`[`DividerProps`](../components/divider#divider-api)`, 'key' \| 'ref'>> \| null` | 设置 Divider。 |
+| `Drawer` | `Partial<Omit<`[`DrawerProps`](../components/drawer#drawer-api)`, 'key' \| 'ref' \| 'open'>> \| null` | 设置 Drawer。 |
+| `Dropdown` | `Partial<Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'key' \| 'ref' \| 'items' \| 'children'>> \| null` | 设置 Dropdown。 |
+| `Empty` | `Partial<Omit<`[`EmptyProps`](../components/result#empty-api)`, 'key' \| 'ref'>> \| null` | 设置 Empty。 |
+| `ErrorBoundary` | `Partial<Omit<`[`ErrorBoundaryProps`](../components/error-boundary#errorboundaryprops-api)`, 'key' \| 'ref'>> \| null` | 设置 ErrorBoundary。 |
+| `FileList` | `Partial<Omit<`[`FileListProps`](../components/file-list#filelistprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 FileList。 |
+| `Flex` | `Partial<Omit<`[`FlexProps`](../components/flex#flex-api)`, 'key' \| 'ref'>> \| null` | 设置 Flex。 |
+| `FloatButton` | `Partial<Omit<`[`FloatButtonProps`](../components/float-button#floatbutton-api)`, 'key' \| 'ref'>> \| null` | 设置 FloatButton。 |
+| `FloatButtonGroup` | `Partial<Omit<`[`FloatButtonGroupProps`](../components/float-button#floatbuttongroup-api)`, 'key' \| 'ref' \| 'actions'>> \| null` | 设置 FloatButtonGroup。 |
+| `Form` | `Partial<Omit<`[`FormProps`](../components/form#form-api)`, 'key' \| 'ref'>> \| null` | 设置 Form。 |
+| `FormErrorSummary` | `Partial<Omit<`[`FormErrorSummaryProps`](../components/form#formerrorsummaryprops-api)`, 'key' \| 'ref'>> \| null` | 设置 FormErrorSummary。 |
+| `FormField` | `Partial<Omit<`[`FormFieldProps`](../components/form#formfield-api)`, 'key' \| 'ref'>> \| null` | 设置 FormField。 |
+| `FormGroup` | `Partial<Omit<`[`FormGroupProps`](../components/form#formgroupprops-api)`, 'key' \| 'ref'>> \| null` | 设置 FormGroup。 |
+| `FormList` | `Partial< Omit< `[`FormListProps`](../components/form#formlistprops-api)`<unknown>, 'name' \| 'children' \| 'value' \| 'defaultValue' \| 'onChange' \| 'itemKey' > > \| null` | 设置 FormList。 |
+| `Grid` | `Partial<Omit<`[`GridProps`](../components/grid#gridprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Grid。 |
+| `Image` | `Partial<Omit<`[`ImageProps`](../components/image#imageprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Image。 |
+| `ImagePreview` | `Partial< Omit<`[`ImagePreviewProps`](../components/image#imagepreviewprops-api)`, 'key' \| 'ref' \| 'items' \| 'open' \| 'onClose'> > \| null` | 设置 ImagePreview。 |
+| `ImagePreviewGroup` | `Partial<Omit<`[`ImagePreviewGroupProps`](../components/image#imagepreviewgroupprops-api)`, 'key' \| 'ref'>> \| null` | 设置 ImagePreviewGroup。 |
+| `InfiniteScroll` | `Partial< Omit<`[`InfiniteScrollProps`](../components/infinite-scroll#infinitescrollprops-api)`, 'key' \| 'ref' \| 'dataLength' \| 'hasMore' \| 'onLoadMore'> > \| null` | 设置 InfiniteScroll。 |
+| `Input` | `Partial<Omit<`[`InputProps`](../components/input#input-api)`, 'key' \| 'ref'>> \| null` | 输入框的默认参数，InputSearch 也继承这些输入参数。 |
+| `InputGroup` | `Partial<Omit<`[`InputGroupProps`](../components/input#inputgroupprops-api)`, 'key' \| 'ref'>> \| null` | 设置 InputGroup。 |
+| `InputMask` | `Partial<Omit<`[`InputMaskProps`](../components/input-mask#inputmaskprops-api)`, 'key' \| 'ref' \| 'mask'>> \| null` | 设置 InputMask。 |
+| `InputNumber` | `Partial< Omit< `[`InputNumberProps`](../components/input-number#inputnumber-api)`, 'key' \| 'ref' \| 'stringMode' \| 'value' \| 'defaultValue' \| 'onChange' \| 'min' \| 'max' \| 'step' > > \| null` | 设置 InputNumber。 |
+| `InputOTP` | `Partial<Omit<`[`InputOTPProps`](../components/input-otp#inputotpprops-api)`, 'key' \| 'ref'>> \| null` | 设置 InputOTP。 |
+| `InputSearch` | `Partial<Omit<`[`InputSearchProps`](../components/input#inputsearchprops-api)`, 'key' \| 'ref'>> \| null` | 搜索框默认参数，优先于 Input 配置。 |
+| `Layout` | `Partial<Omit<`[`LayoutProps`](../components/layout#layoutprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Layout。 |
+| `LayoutContent` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | 设置 LayoutContent。 |
+| `LayoutFooter` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | 设置 LayoutFooter。 |
+| `LayoutHeader` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | 设置 LayoutHeader。 |
+| `LayoutSider` | `Partial<Omit<`[`LayoutSiderProps`](../components/layout#layoutsiderprops-api)`, 'key' \| 'ref'>> \| null` | 设置 LayoutSider。 |
+| `Link` | `Partial<Omit<`[`LinkProps`](../components/typography#link-api)`, 'key' \| 'ref'>> \| null` | 设置 Link。 |
+| `Loading` | `Partial<Omit<`[`LoadingProps`](../components/loading#loading-api)`, 'key' \| 'ref'>> \| null` | 设置 Loading。 |
+| `LoadingBar` | `Partial<Omit<`[`LoadingBarProps`](../components/loading-bar#loadingbarprops-api)`, 'key' \| 'ref' \| 'active' \| 'progress'>> \| null` | 设置 LoadingBar。 |
+| `Masonry` | `Partial<Omit<`[`MasonryProps`](../components/masonry#masonryprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Masonry。 |
+| `Mentions` | `Partial<Omit<`[`MentionsProps`](../components/mentions#mentions-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 Mentions。 |
+| `Menu` | `Partial<Omit<`[`MenuProps`](../components/menu#menuprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Menu。 |
+| `Message` | `Partial<Omit<`[`MessageOptions`](../components/message#messageoptions)`, 'key' \| 'content'>> \| null` | 设置 Message。 |
+| `Modal` | `Partial<Omit<`[`ModalProps`](../components/modal#modal-api)`, 'key' \| 'ref' \| 'open'>> \| null` | 弹窗默认参数。 |
+| `Notification` | `Partial<Omit<`[`NotificationOptions`](../components/notification#notificationoptions-api)`, 'key' \| 'title'>> \| null` | 设置 Notification。 |
+| `Pagination` | `Partial<Omit<`[`PaginationProps`](../components/pagination#pagination-api)`, 'key' \| 'ref' \| 'total'>> \| null` | 设置 Pagination。 |
+| `Paragraph` | `Partial<Omit<`[`ParagraphProps`](../components/typography#paragraph-api)`, 'key' \| 'ref'>> \| null` | 设置 Paragraph。 |
+| `Popconfirm` | `Partial<Omit<`[`PopconfirmProps`](../components/popconfirm#popconfirmprops-api)`, 'key' \| 'ref' \| 'children' \| 'title'>> \| null` | 设置 Popconfirm。 |
+| `Popover` | `Partial<Omit<`[`PopoverProps`](../components/popover#popover-api)`, 'key' \| 'ref' \| 'children' \| 'content'>> \| null` | 设置 Popover。 |
+| `Progress` | `Partial<Omit<`[`ProgressProps`](../components/progress#progress-api)`, 'key' \| 'ref'>> \| null` | 设置 Progress。 |
+| `QRCode` | `Partial<Omit<`[`QRCodeProps`](../components/qr-code#qrcodeprops-api)`, 'key' \| 'ref' \| 'value'>> \| null` | 设置 QRCode。 |
+| `Radio` | `Partial<Omit<`[`RadioProps`](../components/radio#radio-api)`, 'key' \| 'ref'>> \| null` | 设置 Radio。 |
+| `RadioGroup` | `Partial<Omit<`[`RadioGroupProps`](../components/radio#radiogroup-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 RadioGroup。 |
+| `Rate` | `Partial<Omit<`[`RateProps`](../components/rate#rate-api)`, 'key' \| 'ref'>> \| null` | 设置 Rate。 |
+| `Result` | `Partial<Omit<`[`ResultProps`](../components/result#result-api)`, 'key' \| 'ref'>> \| null` | 设置 Result。 |
+| `Row` | `Partial<Omit<`[`RowProps`](../components/grid#rowprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Row。 |
+| `ScrollArea` | `Partial<Omit<`[`ScrollAreaProps`](../components/scroll-area#scrollareaprops-api)`, 'key' \| 'ref'>> \| null` | 设置 ScrollArea。 |
+| `Scrollbar` | `Partial<Omit<`[`ScrollbarProps`](../components/scrollbar#scrollbar-api)`, 'key' \| 'ref'>> \| null` | 设置 Scrollbar。 |
+| `Segmented` | `Partial<Omit<`[`SegmentedProps`](../components/segmented#segmentedprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 Segmented。 |
+| `Select` | `Partial< Omit< `[`SelectProps`](../components/select#select-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | 选择器默认参数；模式、值与变更回调仍由实例设置。 |
+| `Skeleton` | `Partial<Omit<`[`SkeletonProps`](../components/skeleton#skeleton-api)`, 'key' \| 'ref'>> \| null` | 设置 Skeleton。 |
+| `Slider` | `Partial< Omit<`[`SliderProps`](../components/slider#slider-api)`, 'key' \| 'ref' \| 'range' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | 设置 Slider。 |
+| `Space` | `Partial<Omit<`[`SpaceProps`](../components/space#spaceprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Space。 |
+| `SplitButton` | `Partial<Omit<`[`SplitButtonProps`](../components/button#splitbuttonprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 SplitButton。 |
+| `Splitter` | `Partial<Omit<`[`SplitterProps`](../components/splitter#splitter-api)`, 'key' \| 'ref' \| 'panels'>> \| null` | 设置 Splitter。 |
+| `Statistic` | `Partial<Omit<`[`StatisticProps`](../components/statistic#statistic-api)`, 'key' \| 'ref' \| 'value'>> \| null` | 设置 Statistic。 |
+| `Steps` | `Partial<Omit<`[`StepsProps`](../components/steps#steps-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Steps。 |
+| `Switch` | `Partial<Omit<`[`SwitchProps`](../components/switch#switch-api)`, 'key' \| 'ref'>> \| null` | 设置 Switch。 |
+| `Table` | `Partial<Omit<`[`TableProps`](../components/table#table-api)`, 'key' \| 'ref' \| 'scrollRef'>> \| null` | 设置 Table。 |
+| `TableBody` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | 设置 TableBody。 |
+| `TableCaption` | `Partial<Omit<HTMLAttributes<HTMLTableCaptionElement>, 'key' \| 'ref'>> \| null` | 设置 TableCaption。 |
+| `TableCell` | `Partial<Omit<`[`TableCellProps`](../components/table#tablecell-api)`, 'key' \| 'ref'>> \| null` | 设置 TableCell。 |
+| `TableColumnHeader` | `Partial<Omit<`[`TableColumnHeaderProps`](../components/table#tablecolumnheader-api)`, 'key' \| 'ref'>> \| null` | 设置 TableColumnHeader。 |
+| `TableEmpty` | `Partial<Omit<`[`TableStateProps`](../components/table#tablestate-api)`, 'key' \| 'ref'>> \| null` | 设置 TableEmpty。 |
+| `TableError` | `Partial<Omit<`[`TableErrorProps`](../components/table#tableerror-api)`, 'key' \| 'ref'>> \| null` | 设置 TableError。 |
+| `TableFooter` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | 设置 TableFooter。 |
+| `TableHeader` | `Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' \| 'ref'>> \| null` | 设置 TableHeader。 |
+| `TableLoading` | `Partial<Omit<`[`TableStateProps`](../components/table#tablestate-api)`, 'key' \| 'ref'>> \| null` | 设置 TableLoading。 |
+| `TableRow` | `Partial<Omit<`[`TableRowProps`](../components/table#tablerow-api)`, 'key' \| 'ref'>> \| null` | 设置 TableRow。 |
+| `Tabs` | `Partial<Omit<`[`TabsProps`](../components/tabs#tabs-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Tabs。 |
+| `Tag` | `Partial<Omit<`[`TagProps`](../components/tag#tag-api)`, 'key' \| 'ref'>> \| null` | 设置 Tag。 |
+| `TagGroup` | `Partial<Omit<`[`TagGroupProps`](../components/tag#taggroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | 设置 TagGroup。 |
+| `Text` | `Partial<Omit<`[`TextProps`](../components/typography#text-api)`, 'key' \| 'ref'>> \| null` | 设置 Text。 |
+| `Textarea` | `Partial<Omit<`[`TextareaProps`](../components/textarea#textarea-api)`, 'key' \| 'ref'>> \| null` | 设置 Textarea。 |
+| `Timeline` | `Partial<Omit<`[`TimelineProps`](../components/timeline#timelineprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Timeline。 |
+| `TimePicker` | `Partial<Omit<`[`TimePickerProps`](../components/time-picker#timepicker-api)`, 'key' \| 'ref'>> \| null` | 设置 TimePicker。 |
+| `TimeRangePicker` | `Partial<Omit<`[`TimeRangePickerProps`](../components/time-range-picker#timerangepickerprops-api)`, 'key' \| 'ref'>> \| null` | 设置 TimeRangePicker。 |
+| `Title` | `Partial<Omit<`[`TitleProps`](../components/typography#title-api)`, 'key' \| 'ref'>> \| null` | 设置 Title。 |
+| `Toolbar` | `Partial<Omit<`[`ToolbarProps`](../components/app-bar#toolbar-api)`, 'key' \| 'ref'>> \| null` | 设置 Toolbar。 |
+| `Tooltip` | `Partial<Omit<`[`TooltipProps`](../components/tooltip#tooltip-api)`, 'key' \| 'ref' \| 'content' \| 'children'>> \| null` | 设置 Tooltip。 |
+| `Tour` | `Partial<Omit<`[`TourProps`](../components/tour#tour-api)`, 'key' \| 'ref' \| 'open' \| 'steps'>> \| null` | 设置 Tour。 |
+| `Transfer` | `Partial<Omit<`[`TransferProps`](../components/transfer#transferprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | 设置 Transfer。 |
+| `Tree` | `Partial<Omit<`[`TreeProps`](../components/tree#tree-api)`, 'key' \| 'ref' \| 'data'>> \| null` | 设置 Tree。 |
+| `TreeSelect` | `Partial< Omit< `[`TreeSelectProps`](../components/tree-select#treeselect-api)`, \| 'key' \| 'ref' \| 'options' \| 'multiple' \| 'treeCheckable' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | 设置 TreeSelect。 |
+| `Typography` | `Partial<Omit<`[`TypographyProps`](../components/typography#typography-api)`, 'key' \| 'ref'>> \| null` | 设置 Typography。 |
+| `Upload` | `Partial<Omit<`[`UploadProps`](../components/upload#uploadprops-api)`, 'key' \| 'ref'>> \| null` | 设置 Upload。 |
+| `VirtualList` | `(Partial< Omit<`[`VirtualListProps`](../components/virtual-list#virtuallistprops-api)`<unknown>, 'items' \| 'itemKey' \| 'renderItem' \| 'estimateSize'> > & { estimateSize?: number }) \| null` | 设置 VirtualList。 |
+
+## 类型导入
+
+```tsx
+import type { LeafComponentDefaults } from '@ifhover/leaf-ui';
+
+const components = {
+  Button: { variant: 'outline' },
+  Confirm: { confirmText: '继续', cancelText: '返回' },
+} satisfies LeafComponentDefaults;
+```
+
+将该对象传给 `<ConfigProvider components={components}>`。实例参数和服务的单次调用参数仍优先于区域默认值。

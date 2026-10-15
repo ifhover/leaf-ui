@@ -1,4 +1,5 @@
-import { Input, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
+import type { TabItem } from '@ifhover/leaf-ui';
+import { Input, Space, Tabs } from '@ifhover/leaf-ui';
 import { ChartNoAxesColumn, Settings } from 'lucide-react';
 
 const items: readonly TabItem[] = [
@@ -6,39 +7,31 @@ const items: readonly TabItem[] = [
     key: 'overview',
     label: 'Overview',
     icon: <ChartNoAxesColumn />,
-    children: <p>View project activity, members and recent updates.</p>,
+    children: 'View project activity, members and recent updates.',
   },
   {
     key: 'settings',
     label: 'Settings',
     icon: <Settings />,
-    children: (
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Project name</span>
-        <Input
-          aria-label="Project name"
-          placeholder="Type, switch tabs, and your draft is preserved"
-        />
-      </div>
-    ),
+    children: <Input aria-label="Project name" placeholder="Type and switch; your draft is kept" />,
   },
   { key: 'history', label: 'History', disabled: true, children: null },
 ];
 export function TabsBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Line tabs</span>
+    <Space direction="vertical" align="stretch">
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>Line tabs</span>
         <Tabs aria-label="Project information" items={items} />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Card tabs</span>
-        <Tabs items={items} type="card" size="sm" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Vertical tabs</span>
-        <Tabs items={items} placement="left" />
-      </div>
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>Card tabs</span>
+        <Tabs aria-label="Card tabs" items={items} type="card" />
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <span>Vertical tabs</span>
+        <Tabs aria-label="Vertical tabs" items={items} placement="left" />
+      </Space>
     </Space>
   );
 }

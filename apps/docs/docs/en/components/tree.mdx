@@ -12,7 +12,7 @@ Browse, select and check hierarchical content.
 
 ## Browse and select
 
-<ComponentExample title="Browse and select" preview={<TreeBasic />} fileName="basic.tsx">
+<ComponentExample title="Browse and select" preview={<TreeBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree/basic.tsx"
 ```
@@ -21,7 +21,7 @@ Browse, select and check hierarchical content.
 
 ## Linked checks
 
-<ComponentExample title="Linked checks" preview={<TreeCheckable />} fileName="checkable.tsx">
+<ComponentExample title="Linked checks" preview={<TreeCheckable />} fileName="checkable.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree/checkable.tsx"
 ```
@@ -41,7 +41,7 @@ Parents and children are checked independently.
 
 ## Search nodes
 
-<ComponentExample title="Search nodes" preview={<TreeSearch />} fileName="search.tsx">
+<ComponentExample title="Search nodes" preview={<TreeSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/tree/search.tsx"
 ```
@@ -102,7 +102,7 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 | `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | Loading failed; expand again to retry |
 | `virtual` | `boolean` | `false` | Render visible nodes only; enable for large trees. |
 | `height` | `number` | `320` | Height, numbers are in pixels |
-| `itemHeight` | `number` | `34` | Estimated virtual row height |
+| `itemHeight` | `number` | `42` | Estimated virtual row height including spacing; follows the regional height and density. Actual rows are measured. |
 | `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | Enable node drag handles |
 | `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | Restrict drop positions |
 | `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | Drop result; update data in the caller |

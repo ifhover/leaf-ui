@@ -1,4 +1,5 @@
-import { Collapse, type CollapseItem, Input, Space } from '@ifhover/leaf-ui';
+import type { CollapseItem } from '@ifhover/leaf-ui';
+import { Collapse, Flex, Input, Space, Text } from '@ifhover/leaf-ui';
 
 const items: CollapseItem[] = [
   { key: 'about', label: '项目介绍', children: <p>Leaf Garden 的项目信息。</p> },
@@ -11,15 +12,15 @@ const items: CollapseItem[] = [
 ];
 export function CollapseBasic() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">自由展开</span>
+    <Space direction="vertical" align="stretch">
+      <Flex direction="column" gap="sm">
+        <Text>自由展开</Text>
         <Collapse items={items} defaultActiveKey="about" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">手风琴 · 紧凑尺寸</span>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text>手风琴 · 紧凑尺寸</Text>
         <Collapse items={items} accordion size="sm" />
-      </div>
+      </Flex>
     </Space>
   );
 }

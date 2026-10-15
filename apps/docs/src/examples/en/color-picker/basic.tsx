@@ -1,13 +1,11 @@
-import { ColorPicker, Space } from '@ifhover/leaf-ui';
+import { ColorPicker, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function ColorPickerBasic() {
   const [color, setColor] = useState('#20834a');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
+    <Space direction="vertical" align="start">
       <ColorPicker value={color} onChange={setColor} showText aria-label="Brand color" />
-      <div className="leaf-demo-surface" style={{ borderColor: color, color }}>
-        Your brand, your color.
-      </div>
+      <Text tone="muted">Current color：{color}</Text>
     </Space>
   );
 }

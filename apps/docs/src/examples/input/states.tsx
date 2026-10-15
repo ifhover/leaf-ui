@@ -1,28 +1,16 @@
-import { Input, Space } from '@ifhover/leaf-ui';
-
+import { Form, FormField, Input } from '@ifhover/leaf-ui';
 export function InputStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">禁用输入</span>
-        <Input aria-label="禁用输入" disabled placeholder="暂时不可编辑" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">项目名称错误</span>
-        <Input
-          aria-label="项目名称错误"
-          status="error"
-          placeholder="请输入项目名称"
-          aria-describedby="project-error"
-        />
-      </div>
-      <span id="project-error" className="leaf-demo-error">
-        项目名称不能为空。
-      </span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">名称警告</span>
-        <Input aria-label="名称警告" status="warning" defaultValue="已经存在相似名称" />
-      </div>
-    </Space>
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="禁用输入">
+        <Input disabled placeholder="暂时不可编辑" />
+      </FormField>
+      <FormField label="项目名称错误" error="项目名称不能为空。">
+        <Input placeholder="请输入项目名称" />
+      </FormField>
+      <FormField label="名称警告">
+        <Input status="warning" defaultValue="已经存在相似名称" />
+      </FormField>
+    </Form>
   );
 }

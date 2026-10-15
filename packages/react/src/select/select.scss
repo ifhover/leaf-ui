@@ -1,5 +1,6 @@
 @use '../styles/mixins' as mixins;
 @use '../shared/picker';
+@use '../shared/selection';
 .leaf-select {
   @include mixins.field('select');
   display: inline-flex;
@@ -20,14 +21,6 @@
   }
   &[data-clearable] {
     padding-inline-end: 54px;
-  }
-  &__content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-    gap: 3px;
   }
   &__input-wrap {
     position: relative;
@@ -99,18 +92,9 @@
     }
   }
   &__panel[data-hover-motion] {
-    // One opaque fill keeps the moving layer and persistent selection identical.
-    .leaf-floating__highlight,
-    .leaf-floating__option[aria-selected='true'] {
-      background: var(--leaf-color-primary-surface-9);
-    }
     .leaf-floating__highlight {
       border-color: transparent;
     }
-  }
-  &__option-label {
-    min-width: 0;
-    overflow-wrap: anywhere;
   }
   &__check {
     opacity: 0;
@@ -139,44 +123,7 @@
   }
   &--multiple &__input {
     height: calc(var(--leaf-current-control-height) - 8px);
-    min-width: 28px;
-  }
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    max-width: 100%;
-    padding: 1px 6px;
-    border-radius: var(--leaf-radius-sm);
-    background: var(--leaf-color-surface-muted);
-    box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
-    font-size: var(--leaf-font-size-sm);
-    > span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    > button {
-      display: inline-flex;
-      align-items: center;
-      padding: 1px;
-      border: 0;
-      border-radius: 2px;
-      color: var(--leaf-color-text-muted);
-      background: transparent;
-      cursor: pointer;
-      transition:
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-      &:hover {
-        color: var(--leaf-color-text);
-        background: var(--leaf-color-border);
-      }
-      &:active {
-        transform: scale(0.85);
-      }
-    }
+    min-width: 0;
   }
 }
 @keyframes leaf-select-spin {

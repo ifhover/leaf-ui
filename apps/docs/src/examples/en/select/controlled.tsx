@@ -1,12 +1,11 @@
-import { Select, Space } from '@ifhover/leaf-ui';
+import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function SelectControlled() {
   const [value, setValue] = useState('');
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Project visibility</span>
+    <Form layout="vertical">
+      <FormField label="Project visibility">
         <Select
           aria-label="Project visibility"
           value={value}
@@ -19,17 +18,16 @@ export function SelectControlled() {
             { label: 'Private', value: 'private' },
           ]}
         />
-      </div>
-      <span className="leaf-demo-note">Current:{value || 'Not selected'}</span>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">Team required · Error</span>
+      </FormField>
+      <Text tone="muted">Current:{value || 'Not selected'}</Text>
+      <FormField label="Team required · Error">
         <Select
           aria-label="Team required"
           status="error"
           placeholder="Select a team"
           options={[{ label: 'Design team', value: 'design' }]}
         />
-      </div>
-    </Space>
+      </FormField>
+    </Form>
   );
 }

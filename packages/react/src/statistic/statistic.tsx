@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
@@ -21,7 +22,7 @@ export interface StatisticProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ti
   formatter?: (value: number | string) => ReactNode;
   loading?: boolean;
 }
-export function Statistic({
+export function StatisticControl({
   title,
   value,
   precision,
@@ -81,7 +82,7 @@ export function Statistic({
         {prefix}
         <span ref={number} className="leaf-statistic__number" data-loading={loading || undefined}>
           {loading
-            ? messages.loading
+            ? messages.common.loading
             : formatter
               ? formatter(value)
               : typeof value === 'number'
@@ -105,14 +106,15 @@ export interface CountdownProps
   onChange?: (remaining: number) => void;
   initialRemaining?: number;
 }
-export function Countdown({
-  value,
-  format = 'HH:mm:ss',
-  onFinish,
-  onChange,
-  initialRemaining,
-  ...props
-}: CountdownProps) {
+export function Countdown(rawProps: CountdownProps) {
+  const {
+    value,
+    format = 'HH:mm:ss',
+    onFinish,
+    onChange,
+    initialRemaining,
+    ...props
+  } = useComponentProps('Countdown', rawProps);
   const rawDeadline = value instanceof Date ? value.getTime() : value;
   const deadline = Number.isFinite(rawDeadline) ? rawDeadline : 0;
   const [now, setNow] = useState(() =>
@@ -160,5 +162,10 @@ export function Countdown({
               : remaining % 1000,
     ).padStart(token === 'SSS' ? 3 : 2, '0'),
   );
-  return <Statistic {...props} value={label} />;
+  return <StatisticControl {...props} value={label} />;
+}
+
+export function Statistic(rawProps: StatisticProps) {
+  const props = useComponentProps('Statistic', rawProps);
+  return <StatisticControl {...props} />;
 }

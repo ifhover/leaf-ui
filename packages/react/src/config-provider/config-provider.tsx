@@ -1,30 +1,33 @@
-import { type HTMLAttributes, useMemo, useRef } from 'react';
+import { type HTMLAttributes, useContext, useMemo, useRef } from 'react';
 import { ConfirmScope } from '../confirm/provider';
 import { type LeafDensity, leafDensityVariables } from '../density';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
+import { localeChain, mergeTranslations, resolveTranslations } from '../locales/resolve';
+import type { LeafTranslations } from '../locales/types';
 import { MessageScope } from '../message/provider';
 import { NotificationScope } from '../notification/notification';
 import { type LeafTheme, leafThemeVariables, mergeLeafTheme } from '../theme';
 import {
-  ConfigContext,
-  type LeafDirection,
-  type LeafLocale,
-  type LeafMessages,
-  localeMessages,
-  useLeafConfig,
-} from './context';
+  ComponentDefaultsContext,
+  type LeafComponentDefaults,
+  mergeComponentDefaults,
+} from './component-defaults';
+import { ConfigContext, type LeafDirection, type LeafLocale, useLeafConfig } from './context';
 import { useColorVariables } from './use-color-variables';
 
 export type { LeafDensity } from '../density';
+export type { LeafTranslation, LeafTranslations } from '../locales/types';
 export type { LeafTheme, LeafThemeTokens } from '../theme';
-export type { LeafDirection, LeafLocale, LeafMessages } from './context';
+export type { LeafComponentDefaults } from './component-defaults';
+export type { LeafDirection, LeafLocale } from './context';
 export { useLeafConfig } from './context';
 
 export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
-  locale?: LeafLocale;
+  /** Current language followed by per-entry fallbacks. The first tag controls Intl and lang. */
+  locale?: LeafLocale | readonly LeafLocale[];
+  /** JSON translation resources; inner providers merge languages and individual entries. */
+  translations?: LeafTranslations;
   theme?: LeafTheme;
-  messages?: Partial<LeafMessages>;
-  textMessages?: Record<string, string>;
   direction?: LeafDirection;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   getPopupContainer?: () => Element | DocumentFragment;
@@ -32,34 +35,60 @@ export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   maskBlur?: boolean;
   /** Inherited spacing preset; explicit theme and component sizes take precedence. */
   density?: LeafDensity;
+  /** Scoped defaults; instance props take precedence and null entries clear inherited defaults. */
+  components?: LeafComponentDefaults;
 }
 
 /** Nested scopes inherit unspecified theme and language settings. */
 export function ConfigProvider({
   locale,
+  translations,
   theme,
-  messages,
-  textMessages,
   direction,
   weekStartsOn,
   getPopupContainer,
   maskBlur,
   density,
+  components,
   style,
   children,
   ...props
 }: ConfigProviderProps) {
   const parent = useLeafConfig();
+  const parentComponents = useContext(ComponentDefaultsContext);
+  const mergedComponents = useMemo(
+    () => mergeComponentDefaults(parentComponents, components),
+    [parentComponents, components],
+  );
+  const languages = useMemo(
+    () => (locale === undefined ? parent.localeChain : localeChain(locale)),
+    [locale, parent.localeChain],
+  );
+  const resources = useMemo(
+    () => mergeTranslations(parent.translations, translations),
+    [parent.translations, translations],
+  );
+  const text = useMemo(
+    () =>
+      languages === parent.localeChain && resources === parent.translations
+        ? { messages: parent.messages, messageLocales: parent.messageLocales }
+        : resolveTranslations(languages, resources),
+    [
+      languages,
+      resources,
+      parent.localeChain,
+      parent.translations,
+      parent.messages,
+      parent.messageLocales,
+    ],
+  );
   const merged = useMemo(() => {
-    const language = locale ?? parent.locale;
     return {
-      locale: language,
+      locale: languages[0] as LeafLocale,
+      localeChain: languages,
+      translations: resources,
+      ...text,
       theme: mergeLeafTheme(parent.theme, theme),
-      messages: {
-        ...(locale ? (localeMessages[language] ?? localeMessages['en-US']) : parent.messages),
-        ...messages,
-      } as LeafMessages,
-      textMessages: { ...parent.textMessages, ...textMessages },
       direction: direction ?? parent.direction,
       weekStartsOn: weekStartsOn ?? parent.weekStartsOn,
       getPopupContainer: getPopupContainer ?? parent.getPopupContainer,
@@ -68,10 +97,10 @@ export function ConfigProvider({
     };
   }, [
     parent,
-    locale,
+    languages,
+    resources,
+    text,
     theme,
-    messages,
-    textMessages,
     direction,
     weekStartsOn,
     getPopupContainer,
@@ -96,13 +125,15 @@ export function ConfigProvider({
         data-leaf-theme={merged.theme.appearance}
         style={{ ...leafDensityVariables(merged.density), ...variables, ...resolved, ...style }}
       >
-        <MessageScope>
-          <ConfirmScope>
-            <NotificationScope>
-              <LoadingBarScope>{children}</LoadingBarScope>
-            </NotificationScope>
-          </ConfirmScope>
-        </MessageScope>
+        <ComponentDefaultsContext.Provider value={mergedComponents}>
+          <MessageScope>
+            <ConfirmScope>
+              <NotificationScope>
+                <LoadingBarScope>{children}</LoadingBarScope>
+              </NotificationScope>
+            </ConfirmScope>
+          </MessageScope>
+        </ComponentDefaultsContext.Provider>
       </div>
     </ConfigContext.Provider>
   );

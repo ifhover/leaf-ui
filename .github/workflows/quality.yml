@@ -31,6 +31,7 @@ jobs:
         with:
           name: production-bundles
           path: packages/react/.quality
+          include-hidden-files: true
 
   react-compatibility:
     runs-on: ubuntu-latest
@@ -71,6 +72,7 @@ jobs:
         if: always()
         with:
           name: browser-${{ matrix.browser }}
+          include-hidden-files: true
           path: |
             packages/react/playwright-report
             packages/react/test-results

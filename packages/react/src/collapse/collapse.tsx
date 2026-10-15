@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
@@ -25,19 +26,20 @@ export interface CollapseProps
   destroyInactive?: boolean;
 }
 const keys = (value: string | readonly string[]) => (typeof value === 'string' ? [value] : value);
-export function Collapse({
-  items,
-  activeKey,
-  defaultActiveKey = [],
-  onChange,
-  accordion = false,
-  bordered = true,
-  size = 'md',
-  destroyInactive = false,
-  className,
-  'aria-label': label,
-  ...props
-}: CollapseProps) {
+export function Collapse(rawProps: CollapseProps) {
+  const {
+    items,
+    activeKey,
+    defaultActiveKey = [],
+    onChange,
+    accordion = false,
+    bordered = true,
+    size = 'md',
+    destroyInactive = false,
+    className,
+    'aria-label': label,
+    ...props
+  } = useComponentProps('Collapse', rawProps);
   const { messages } = useLeafConfig();
   const [internal, setInternal] = useState(() => keys(defaultActiveKey));
   const requested = keys(activeKey ?? internal);
@@ -61,7 +63,7 @@ export function Collapse({
     <section
       {...props}
       ref={root}
-      aria-label={label ?? messages.collapse}
+      aria-label={label ?? messages.collapse.label}
       className={classes(
         'leaf-collapse',
         `leaf-collapse--${size}`,

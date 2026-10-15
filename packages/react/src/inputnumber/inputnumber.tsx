@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -158,10 +159,10 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
       const number = parseInput(draft);
       input.current?.setCustomValidity(
         draft.trim() && (number === null || number < min || number > max)
-          ? messages.invalidNumber
+          ? messages.inputNumber.invalid
           : '',
       );
-    }, [draft, min, max, messages.invalidNumber, parseInput]);
+    }, [draft, min, max, messages.inputNumber.invalid, parseInput]);
     const emit = (next: number | null) => {
       setCurrent(next);
       if (next !== current) onChange?.(next);
@@ -263,7 +264,7 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
             <button
               type="button"
               tabIndex={-1}
-              aria-label={messages.increase}
+              aria-label={messages.inputNumber.increase}
               disabled={disabled || readOnly || (number !== null && number >= max)}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => changeBy(1)}
@@ -273,7 +274,7 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
             <button
               type="button"
               tabIndex={-1}
-              aria-label={messages.decrease}
+              aria-label={messages.inputNumber.decrease}
               disabled={disabled || readOnly || (number !== null && number <= min)}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => changeBy(-1)}
@@ -287,8 +288,8 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
   },
 );
 export type InputNumberProps = NumericInputNumberProps | StringInputNumberProps;
-export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
-  function InputNumber(props, ref) {
+export const InputNumberControl = forwardRef<HTMLInputElement, InputNumberProps>(
+  function InputNumberControl(props: InputNumberProps, ref) {
     return props.stringMode ? (
       <ExactInputNumber {...props} ref={ref} />
     ) : (
@@ -296,3 +297,12 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
     );
   },
 );
+
+export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(function InputNumber(
+  rawProps: InputNumberProps,
+  ref,
+) {
+  const props = useComponentProps('InputNumber', rawProps);
+  return <InputNumberControl {...props} ref={ref} />;
+});
+InputNumber.displayName = 'InputNumber';

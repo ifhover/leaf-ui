@@ -1,6 +1,21 @@
+import { withBase } from '@rspress/core/runtime';
+
 # 浏览器兼容性
 
-建议使用当前与上一代稳定版 Chrome、Edge、Firefox 或 Safari。工程基线为 Chrome/Edge 109、Firefox 121、Safari 16.4；这些最低版本是支持目标，不能等同于已逐个实测的版本。IE 和旧版 WebView 不在支持范围内。
+建议使用 Chrome、Edge、Firefox 或 Safari 的当前或上一代稳定版。
+
+## 最低版本
+
+| 浏览器 | 最低版本要求 |
+| --- | --- |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/chrome.svg')} width={20} height={20} alt="" /> Google Chrome</span> | 109 及以上 |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/edge.svg')} width={20} height={20} alt="" /> Microsoft Edge</span> | 109 及以上 |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/firefox.svg')} width={20} height={20} alt="" /> Mozilla Firefox</span> | 121 及以上 |
+| <span className="leaf-browser-name"><img src={withBase('/browsers/safari.svg')} width={20} height={20} alt="" /> Safari</span> | 16.4 及以上 |
+
+表中版本是 Leaf UI 的最低支持目标，不代表已逐个版本完成实测。IE、旧版 Edge（EdgeHTML）和旧版 WebView 不在支持范围内。
+
+## 功能与降级
 
 | 能力 | 实现与降级 |
 | --- | --- |
@@ -20,5 +35,7 @@
 ```
 
 颜色支持具体 hex、rgb、hsl 和命名色，推荐通过 `theme` / `tokens` 配置。JS 无法在服务端解析 CSS 变量；使用 `var(...)` 时，浏览器在挂载后解析并生成派生值，祖先的 class/style 变化会重新同步。需要严格一致的 SSR 首屏时应传入具体颜色。不要只改 CSS 中的基础色而期望所有派生色自动重新计算。
+
+## 验证范围
 
 CI 已配置 Chromium、Firefox、WebKit 行为测试，以及 React 18/19、SSR 和包导出检查。WebKit 的通过不代表已经在真实 Safari 或 iOS 设备验收。当前本机 Firefox 启动存在环境问题（`spawn UNKNOWN`），不能将其列为通过；具体已执行记录见仓库 `packages/react/ACCESSIBILITY.md`。

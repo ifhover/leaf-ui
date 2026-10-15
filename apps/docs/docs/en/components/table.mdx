@@ -32,7 +32,7 @@ Component subpaths load their styles automatically. Import the base stylesheet o
 
 ## Basic usage
 
-<ComponentExample title="Team members" preview={<TableBasic english />} fileName="basic.tsx">
+<ComponentExample title="Team members" preview={<TableBasic english />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/basic.tsx"
 ```
@@ -43,7 +43,7 @@ Component subpaths load their styles automatically. Import the base stylesheet o
 
 ## Quick data table
 
-<ComponentExample title="Provide data and columns" preview={<TableSimple english />} fileName="basic.tsx">
+<ComponentExample title="Provide data and columns" preview={<TableSimple english />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/basic.tsx"
 ```
@@ -56,7 +56,7 @@ These modes are mutually exclusive: when supplying `table`, do not also pass `da
 
 ## Sorting, filtering, selection and pagination
 
-<ComponentExample title="Manage team members" preview={<TableData english />} fileName="data.tsx">
+<ComponentExample title="Manage team members" preview={<TableData english />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/data.tsx"
 ```
@@ -81,7 +81,7 @@ DataTable.Search updates the global filter unless columnId is specified. ColumnV
 
 ## Sticky headers, pinned columns and resizing
 
-<ComponentExample title="Compact table and column sizing" preview={<TableColumns english />} fileName="data.tsx">
+<ComponentExample title="Compact table and column sizing" preview={<TableColumns english />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/data.tsx"
 ```
@@ -96,7 +96,7 @@ Drag a resize handle or focus it and press Left/Right. Shift increases the step;
 
 ## Grouping and aggregation
 
-<ComponentExample title="Totals by team" preview={<TableGrouped english />} fileName="advanced.tsx">
+<ComponentExample title="Totals by team" preview={<TableGrouped english />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/advanced.tsx"
 ```
@@ -105,7 +105,7 @@ Drag a resize handle or focus it and press Left/Right. Shift increases the step;
 
 ## Editable cells
 
-<ComponentExample title="Edit member names" preview={<TableEditable english />} fileName="advanced.tsx">
+<ComponentExample title="Edit member names" preview={<TableEditable english />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/advanced.tsx"
 ```
@@ -116,7 +116,7 @@ Render Input, Select or other controls through `cell`. Keep data, submission and
 
 ## Row and column reordering
 
-<ComponentExample title="Arrange team priorities" preview={<TableReordering english />} fileName="reordering.tsx">
+<ComponentExample title="Arrange team priorities" preview={<TableReordering english />} fileName="reordering.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/reordering.tsx"
 ```
@@ -129,7 +129,7 @@ Row handles are only shown for flat, nonvirtual tables without active sorting, f
 
 ## Large data
 
-<ComponentExample title="10000 members" preview={<TableVirtual english />} fileName="advanced.tsx">
+<ComponentExample title="10000 members" preview={<TableVirtual english />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/advanced.tsx"
 ```
@@ -142,7 +142,7 @@ This is not a spreadsheet DataGrid: it does not add arrow-key cell navigation, c
 
 ## Server data
 
-<ComponentExample title="Remote pagination and retry" preview={<TableServer english />} fileName="advanced.tsx">
+<ComponentExample title="Remote pagination and retry" preview={<TableServer english />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/advanced.tsx"
 ```
@@ -155,7 +155,7 @@ Refreshing keeps existing rows, adds a loading overlay and prevents duplicate in
 
 ## Empty, loading and error
 
-<ComponentExample title="Data states" preview={<TableStates english />} fileName="basic.tsx">
+<ComponentExample title="Data states" preview={<TableStates english />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/basic.tsx"
 ```
@@ -227,7 +227,6 @@ This table describes the instance mode. For the data and columns mode, see [Data
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `table` | `TanStackTable<TData>` | — | Required. Instance created by useReactTable; the sole data and state owner. |
 | `children` | `ReactNode` | — | Replace the default Content/Pagination layout. |
 | `caption` | `ReactNode` | — | Table caption. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
@@ -242,16 +241,17 @@ This table describes the instance mode. For the data and columns mode, see [Data
 | `onRetry` | `() => void` | — | Retry action. |
 | `selection` | `false \| 'single' \| 'multiple'` | `false` | None, single or multiple row selection. |
 | `selectAllMode` | `'page' \| 'all'` | `'page'` | Select the page or all loaded selectable rows. |
+| `resizable` | `boolean` | `false` | Show resize handles for eligible columns. |
+| `columnReordering` | `boolean` | `false` | Show drag handles for single-level headers. |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | Explicit row virtualization. |
+| `pagination` | `boolean` | `true` | Pagination in the default layout. |
+| `tableRef` | `Ref<HTMLTableElement>` | — | Native table DOM ref. |
+| `table` | `TanStackTable<TData>` | — | Required. Instance created by useReactTable; the sole data and state owner. |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | Accessible row-action name; defaults to row.id. |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | Leaf-row details; configure getRowCanExpand. |
 | `getRowProps` | `(row: Row<TData>) => `[`TableRowProps`](#tablerow-api) | — | Custom row attributes/events. |
 | `getCellProps` | `(cell: Cell<TData, unknown>) => `[`TableCellProps`](#tablecell-api) | — | Cell attributes, styles or spans; a zero colSpan / rowSpan omits the cell. |
-| `resizable` | `boolean` | `false` | Show resize handles for eligible columns. |
-| `columnReordering` | `boolean` | `false` | Show drag handles for single-level headers. |
 | `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | Show row handles and return reordered current-page rows; the application updates the data. |
-| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | Explicit row virtualization. |
-| `pagination` | `boolean` | `true` | Pagination in the default layout. |
-| `tableRef` | `Ref<HTMLTableElement>` | — | Native table DOM ref. |
 
 Size, borders, stripes, sticky headers, scrolling and loading match Table. aria-label/aria-labelledby name the native table; other div attributes apply to the wrapper.
 
@@ -284,18 +284,24 @@ Other Input attributes are supported; value and onChange belong to the instance.
 | --- | --- | --- | --- |
 | `showSizeChanger` | `boolean` | `true` | Show the page-size selector. |
 | `pageSizeOptions` | `readonly number[]` | — | Available page sizes. |
-| `showQuickJumper` | `boolean` | — | Show a page-number input. |
-| `showTotal` | `(total: number, range: readonly [number, number]) => ReactNode` | — | Customize the total and current range. |
+| `showQuickJumper` | `boolean` | `false` | Commit a quick jump on Enter or when leaving the pagination region. |
+| `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true shows a localized total; pass a function to customize the total and visible range. |
 | `simple` | `boolean` | — | Use compact pagination. |
 | `disabled` | `boolean` | — | Disable interaction. |
 | `hideOnSinglePage` | `boolean` | — | Hide when only one page exists. |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Inherit DataTable size by default. |
+| `variant` | `'outline' \| 'ghost'` | `'outline'` | Pagination button appearance: outlined or borderless. |
 | `hasNextPage` | `boolean` | — | Control next-page availability when the total is unknown. |
 
 
 Supports Pagination display options. Total, current, pageSize and onChange belong to the instance; showSizeChanger defaults to true. Unknown totals use Previous/Next only.
 
 ## DataTableContent API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | — | Custom class for the content region. |
+| `style` | `CSSProperties` | — | Inline styles for the content region. |
 
 `DataTable.Content` accepts native `div` attributes, including `className`, `style` and events. Configure table layout, selection, expansion and loading on [DataTable](#datatable-api); use `tableRef` for the table DOM ref. The exported type is `DataTableContentProps`.
 
@@ -347,3 +353,29 @@ Additional convenience-mode properties are listed below. Presentation, selection
 | `toIndex` | `number` | — | Required. Destination zero-based current-page index. |
 | `activeRow` | `Row<TData>` | — | Required. The moved row, including its stable row.id. |
 | `overRow` | `Row<TData>` | — | Required. The target row, including its stable row.id. |
+
+## DataTablePresentation API
+
+ConfigProvider's `components.DataTable` uses these row-independent props. Import `DataTablePresentationProps` from `@ifhover/leaf-ui` to type reusable defaults. Configuring defaults alone does not require TanStack Table; using DataTable still requires it.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
+| `caption` | `ReactNode` | — | Configure caption. |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
+| `bordered` | `boolean` | — | Configure bordered. |
+| `striped` | `boolean` | — | Configure striped. |
+| `stickyHeader` | `boolean` | — | Configure sticky header. |
+| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | Configure max height. |
+| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | Configure min width. |
+| `loading` | `boolean` | — | Show a loading state. |
+| `emptyContent` | `ReactNode` | — | Content for an empty collection. |
+| `error` | `ReactNode` | — | Configure error. |
+| `onRetry` | `() => void` | — | Configure on retry. |
+| `selection` | `false \| 'single' \| 'multiple'` | — | Configure selection. |
+| `selectAllMode` | `'page' \| 'all'` | — | Configure select all mode. |
+| `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
+| `columnReordering` | `boolean` | — | Configure column reordering. |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | Enable virtual scrolling; enabled by default for large option sets. |
+| `pagination` | `boolean` | — | Configure pagination. |
+| `tableRef` | `Ref<HTMLTableElement>` | — | Configure table ref. |

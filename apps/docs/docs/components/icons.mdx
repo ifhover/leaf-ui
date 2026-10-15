@@ -1,0 +1,42 @@
+import { ComponentExample } from '../../src/components/component-example';
+import { ButtonIcons } from '../../src/examples/button/icons';
+
+# 使用图标
+
+Leaf UI 内部及本文示例使用 **Lucide**，但 `lucide-react` 并不是唯一选择。按钮的 `startIcon` / `endIcon`、输入框的 `prefix` / `suffix` 接受 `ReactNode`，可以传入其他图标库的 React 组件。
+
+## 在线挑选图标
+
+打开 [Lucide 图标目录](https://lucide.dev/icons/)，按名称或关键词搜索、预览并挑选图标。项目源码见 [Lucide GitHub 仓库](https://github.com/lucide-icons/lucide)。
+
+也可以根据项目风格和已有依赖，选用以下图标库：
+
+| 图标库 | 在线目录 | GitHub |
+| --- | --- | --- |
+| React Icons（`react-icons`） | [挑选图标](https://react-icons.github.io/react-icons/) | [react-icons/react-icons](https://github.com/react-icons/react-icons) |
+| Heroicons | [挑选图标](https://heroicons.com/) | [tailwindlabs/heroicons](https://github.com/tailwindlabs/heroicons) |
+| Tabler Icons | [挑选图标](https://tabler.io/icons) | [tabler/tabler-icons](https://github.com/tabler/tabler-icons) |
+| Phosphor | [挑选图标](https://phosphoricons.com/) | [phosphor-icons/react](https://github.com/phosphor-icons/react) |
+
+## 安装和导入
+
+以下示例使用 `lucide-react`，直接引用时将它声明为应用依赖。如果使用其他图标库，安装对应依赖并替换图标导入即可。
+
+```bash
+pnpm add lucide-react
+```
+
+按名称导入需要的图标即可。尺寸默认跟随组件的图标容器，颜色继承组件的当前文字色。
+
+<ComponentExample title="图标使用" preview={<ButtonIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## 为图标操作提供名称
+
+带文字的按钮使用文字作为名称，前后图标按装饰性内容处理。仅图标按钮必须提供 `aria-label`，例如“添加项目”或“删除项目”。图标不应作为操作含义的唯一提示。
+
+Button 的危险状态会让图标和文字一起使用危险色，无需在图标中固定颜色。

@@ -51,7 +51,7 @@ Present operation results, empty content and other states.
 Import these types to define props or prepare data.
 
 ```ts
-import type { ResultProps } from '@ifhover/leaf-ui';
+import type { EmptyProps, ResultProps } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
@@ -59,3 +59,14 @@ import type { ResultProps } from '@ifhover/leaf-ui';
 Use `status="empty"` for empty content. Success, warning, error and information have matching icons and colors. Customize `icon`, `title`, `description` and `extra` as needed.
 
 The original `Empty` remains as a compatibility entry. Migrate to `Result`: rename `image` to `icon`, `description` to `title`, and move action buttons to `extra`.
+
+## Empty API
+
+Compatibility component; prefer `Result` for new code. `EmptyProps` also accepts native `div` attributes.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `image` | `ReactNode` | Empty state icon | Custom icon; `null` hides it. |
+| `description` | `ReactNode` | Localized title | Empty state description; `null` hides it. |
+| `size` | `'sm' \| 'md'` | `'md'` | Content spacing and icon size. |
+| `children` | `ReactNode` | — | Actions below the description. |

@@ -1,19 +1,19 @@
-import { ColorPicker, Space } from '@ifhover/leaf-ui';
+import { ColorPicker, Flex, Text } from '@ifhover/leaf-ui';
 export function ColorPickerFormats() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">HEX</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>HEX</Text>
         <ColorPicker defaultValue="#1677ff" showText />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">RGB · Transparent</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>RGB · Transparent</Text>
         <ColorPicker defaultValue="rgba(118, 84, 198, 0.6)" defaultFormat="rgb" showText />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">HSL · Opaque</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>HSL · Opaque</Text>
         <ColorPicker defaultValue="hsl(35, 91%, 55%)" defaultFormat="hsl" disableAlpha showText />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

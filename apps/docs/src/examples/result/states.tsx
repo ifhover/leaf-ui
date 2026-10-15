@@ -1,7 +1,7 @@
 import { Button, Result, Space } from '@ifhover/leaf-ui';
 export function ResultStates() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Space direction="vertical" align="stretch">
       <Result
         status="empty"
         size="sm"

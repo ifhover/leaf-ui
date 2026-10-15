@@ -1,19 +1,19 @@
-import { Loading, Space } from '@ifhover/leaf-ui';
+import { Flex, Loading, Text } from '@ifhover/leaf-ui';
 export function LoadingSizes() {
   return (
-    <Space wrap className="leaf-demo-row">
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">小尺寸</span>
+    <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
+        <Text>小尺寸</Text>
         <Loading size="sm" />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">默认尺寸</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>默认尺寸</Text>
         <Loading />
-      </div>
-      <div className="leaf-demo-case">
-        <span className="leaf-demo-label">大尺寸</span>
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text>大尺寸</Text>
         <Loading size="lg" />
-      </div>
-    </Space>
+      </Flex>
+    </Flex>
   );
 }

@@ -1,11 +1,9 @@
 import {
   Avatar,
   AvatarGroup,
-  Badge,
   Button,
   Card,
   Checkbox,
-  Collapse,
   ConfigProvider,
   DatePicker,
   Dropdown,
@@ -16,10 +14,8 @@ import {
   Progress,
   Segmented,
   Select,
-  Slider,
   Statistic,
   Switch,
-  Tabs,
   Tag,
   Tooltip,
   useMessage,
@@ -37,10 +33,11 @@ import {
   RotateCcw,
   Sparkles,
 } from 'lucide-react';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useRef, useState } from 'react';
+import { useDocsTheme } from './docs-theme';
 import { ComponentShowcase } from './home-components';
 import { useDocsLocale } from './i18n';
-import { defaultThemeColor, themeColorPresets } from './theme-colors';
+import { themeColorPresets } from './theme-colors';
 import './home-showcase.scss';
 
 interface Task {
@@ -85,7 +82,7 @@ const initialTasks: Task[] = [
 export function HomeShowcase() {
   const { t } = useDocsLocale();
   const [scene, setScene] = useState('components');
-  const [accent, setAccent] = useState<string>(defaultThemeColor);
+  const { color: accent, setColor: setAccent } = useDocsTheme();
   return (
     <section
       className="leaf-showroom rp-not-doc"
@@ -530,140 +527,5 @@ function ProjectShowcase() {
         )}
       </Modal>
     </section>
-  );
-}
-
-export function MotionGallery() {
-  const { t } = useDocsLocale();
-  const { message } = useMessage();
-  const [tab, setTab] = useState('overview');
-  const [value, setValue] = useState(64);
-  const [saving, setSaving] = useState(false);
-  const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  useEffect(() => () => clearTimeout(timeout.current), []);
-  return (
-    <div className="leaf-motion-gallery rp-not-doc">
-      <article>
-        <span className="leaf-eyebrow">01 / {t('选择', 'SELECTION')}</span>
-        <h3>{t('视线跟着选择走。', 'Follow the selection.')}</h3>
-        <Tabs
-          activeKey={tab}
-          onChange={setTab}
-          size="sm"
-          items={[
-            {
-              key: 'overview',
-              label: t('概览', 'Overview'),
-              children: (
-                <div className="leaf-motion-gallery__metric">
-                  <Statistic
-                    title={t('每一点进步都看得见', 'Every bit of progress')}
-                    value={24}
-                    suffix={t('项', 'tasks')}
-                  />
-                  <Badge status="success" text={t('节奏刚好', 'At your pace')} />
-                </div>
-              ),
-            },
-            {
-              key: 'activity',
-              label: t('动态', 'Activity'),
-              children: (
-                <div className="leaf-motion-gallery__activity">
-                  <Avatar size={28}>J</Avatar>
-                  <p>
-                    {t('Jamie 完成了一项任务', 'Jamie completed a task')}
-                    <small>{t('刚刚 · 每一步都算数', 'Just now · Every step counts')}</small>
-                  </p>
-                  <Check size={16} />
-                </div>
-              ),
-            },
-            {
-              key: 'members',
-              label: t('成员', 'Members'),
-              children: (
-                <div className="leaf-motion-gallery__members">
-                  <AvatarGroup size={34}>
-                    <Avatar alt="Alex">A</Avatar>
-                    <Avatar alt="Jamie">J</Avatar>
-                    <Avatar alt="Sam">S</Avatar>
-                  </AvatarGroup>
-                  <span>{t('好想法，一起完成。', 'Good ideas, made together.')}</span>
-                </div>
-              ),
-            },
-          ]}
-        />
-      </article>
-      <article>
-        <span className="leaf-eyebrow">02 / {t('展开', 'DISCLOSURE')}</span>
-        <h3>{t('细节，适时出现。', 'Details, when you need them.')}</h3>
-        <Collapse
-          size="sm"
-          bordered={false}
-          accordion
-          defaultActiveKey="details"
-          items={[
-            {
-              key: 'details',
-              label: t('给想法留一点空间', 'Make room for an idea'),
-              children: (
-                <p>
-                  {t(
-                    '展开后的内容自然接上，收起时也能跟上变化。',
-                    'Content flows into place, and folds away just as naturally.',
-                  )}
-                </p>
-              ),
-            },
-            {
-              key: 'preferences',
-              label: t('调整你的节奏', 'Find your own pace'),
-              children: (
-                <div className="leaf-motion-gallery__slider">
-                  <Slider
-                    aria-label={t('工作节奏', 'Working pace')}
-                    value={value}
-                    onChange={setValue}
-                    showValue={false}
-                  />
-                  <Progress
-                    percent={value}
-                    showInfo={false}
-                    aria-label={t('当前节奏', 'Current pace')}
-                  />
-                </div>
-              ),
-            },
-          ]}
-        />
-      </article>
-      <article>
-        <span className="leaf-eyebrow">03 / {t('反馈', 'FEEDBACK')}</span>
-        <h3>{t('每个动作，都有回应。', 'A response to every action.')}</h3>
-        <div className="leaf-motion-gallery__feedback">
-          <span className="leaf-motion-gallery__feedback-icon">
-            <Check size={24} />
-          </span>
-          <p>{t('按下、等待、完成，一气呵成。', 'Press, wait, and finish in one flow.')}</p>
-          <Button
-            loading={saving}
-            startIcon={<Check size={16} />}
-            onClick={() => {
-              setSaving(true);
-              timeout.current = setTimeout(() => {
-                setSaving(false);
-                message.success(
-                  t('已保存，可以继续向前了。', 'Saved. You are ready for the next step.'),
-                );
-              }, 900);
-            }}
-          >
-            {t('保存这次进展', 'Save this progress')}
-          </Button>
-        </div>
-      </article>
-    </div>
   );
 }

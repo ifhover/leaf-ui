@@ -1,24 +1,24 @@
-import { Button, type ControlSize, Input, Select, Space } from '@ifhover/leaf-ui';
-
+import type { ControlSize } from '@ifhover/leaf-ui';
+import { Button, Flex, Input, Select, Text } from '@ifhover/leaf-ui';
 export function ControlSizes() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Flex direction="column" gap="md">
       {(['sm', 'md', 'lg'] as const).map((size: ControlSize) => (
-        <div key={size} className="leaf-demo-control-row">
-          <span className="leaf-demo-size">{size}</span>
-          <Input size={size} aria-label={`${size} Search`} placeholder="Search projects" />
+        <Flex key={size} align="center" gap="sm" wrap>
+          <Text tone="muted">{size}</Text>
+          <Input size={size} aria-label={`${size} search`} placeholder="Search projects" />
           <Select
             size={size}
-            aria-label={`${size} Status`}
+            aria-label={`${size} status`}
             defaultValue="all"
             options={[
               { label: 'All statuses', value: 'all' },
-              { label: 'In progress', value: 'active' },
+              { label: 'Active', value: 'active' },
             ]}
           />
           <Button size={size}>Search</Button>
-        </div>
+        </Flex>
       ))}
-    </Space>
+    </Flex>
   );
 }

@@ -8,7 +8,9 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
+import { estimateControlHeight } from '../density';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
@@ -20,8 +22,10 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { FloatingFeedback } from '../shared/floating-feedback';
 import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { useFormattedText } from '../shared/use-formatted-text';
 
 export interface AutoCompleteOption {
   value: string;
@@ -67,7 +71,10 @@ export interface AutoCompleteProps
 }
 
 export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(function AutoComplete(
-  {
+  rawProps: AutoCompleteProps,
+  forwardedRef,
+) {
+  const {
     options: entries,
     value,
     defaultValue = '',
@@ -92,7 +99,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     allowClear,
     virtual: virtualProp,
     listHeight = 248,
-    optionHeight = 36,
+    optionHeight: optionHeightProp,
     popupPlacement,
     popupClassName,
     popupStyle,
@@ -104,13 +111,13 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     'aria-label': ariaLabel,
     'aria-invalid': ariaInvalid,
     ...props
-  },
-  forwardedRef,
-) {
+  } = useComponentProps('AutoComplete', rawProps);
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
-  const { locale, messages } = useLeafConfig();
+  const { messages, theme, density } = useLeafConfig();
+  const format = useFormattedText();
+  const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4);
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const ref = useMergedRef(inputRef, forwardedRef);
@@ -149,6 +156,15 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     if (open && virtual && active >= 0) virtualizer.scrollToIndex(active, { align: 'auto' });
   }, [open, virtual, active, virtualizer]);
   const expanded = open && !disabled && !readOnly;
+  const hasSuggestions = visibleOptions.length > 0 && !errorContent;
+  const listboxProps = {
+    id: listId,
+    role: 'listbox' as const,
+    'aria-busy': loading || undefined,
+    'aria-label': ariaLabel
+      ? format('autoComplete.suggestions', { label: ariaLabel })
+      : messages.autoComplete.empty,
+  };
   useFloatingDismiss(expanded, () => setOpen(false), inputRef, panelRef);
   useActiveOption(expanded, visibleOptions[active] ? `${listId}-${active}` : undefined, panelRef);
   const highlight = useFloatingHighlight(
@@ -245,7 +261,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
       />
       {allowClear && text && !disabled && !readOnly && (
         <ClearButton
-          label={messages.clearInput}
+          label={messages.input.clear}
           onClear={() => {
             setText('');
             onChange?.('');
@@ -259,30 +275,26 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         triggerRef={inputRef}
         panelRef={panelRef}
         matchWidth
-        id={listId}
+        {...(hasSuggestions ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
         data-hover-motion=""
+        data-selection="candidate"
         placement={popupPlacement}
         style={{ maxHeight: listHeight, ...popupStyle }}
         container={getPopupContainer}
         render={popupRender}
-        role="listbox"
-        aria-busy={loading || undefined}
-        aria-label={
-          ariaLabel
-            ? `${ariaLabel} ${locale === 'en-US' ? 'suggestions' : '建议'}`
-            : messages.noMatches
-        }
       >
-        <FloatingHighlight style={highlight} selected />
+        {!hasSuggestions && <div {...listboxProps} />}
+        <FloatingHighlight style={highlight} />
         {loading && !visibleOptions.length ? (
-          <div className="leaf-floating__empty">{messages.loading}</div>
+          <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>
         ) : errorContent ? (
           <div className="leaf-floating__empty" role="alert">
             {errorContent}
           </div>
         ) : visibleOptions.length ? (
           <div
+            className={virtual ? undefined : 'leaf-floating__options'}
             style={
               virtual ? { height: virtualizer.getTotalSize(), position: 'relative' } : undefined
             }
@@ -333,14 +345,16 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
                       onMouseEnter={() => !option.disabled && setActive(index)}
                       onClick={() => select(option)}
                     >
-                      {optionRender?.(option) ?? option.label ?? option.value}
+                      <span className="leaf-floating__option-label">
+                        {optionRender?.(option) ?? option.label ?? option.value}
+                      </span>
                     </button>
                   </div>
                 ),
             )}
           </div>
         ) : (
-          <div className="leaf-floating__empty">{notFoundContent ?? messages.noMatches}</div>
+          <FloatingFeedback>{notFoundContent ?? messages.autoComplete.empty}</FloatingFeedback>
         )}
       </FloatingPanel>
     </div>

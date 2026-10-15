@@ -1,11 +1,11 @@
-import { Button, type ControlSize, Input, Select, Space } from '@ifhover/leaf-ui';
-
+import type { ControlSize } from '@ifhover/leaf-ui';
+import { Button, Flex, Input, Select, Text } from '@ifhover/leaf-ui';
 export function ControlSizes() {
   return (
-    <Space direction="vertical" align="stretch" className="leaf-demo-stack leaf-demo-stack--wide">
+    <Flex direction="column" gap="md">
       {(['sm', 'md', 'lg'] as const).map((size: ControlSize) => (
-        <div key={size} className="leaf-demo-control-row">
-          <span className="leaf-demo-size">{size}</span>
+        <Flex key={size} align="center" gap="sm" wrap>
+          <Text tone="muted">{size}</Text>
           <Input size={size} aria-label={`${size} 搜索`} placeholder="搜索项目" />
           <Select
             size={size}
@@ -17,8 +17,8 @@ export function ControlSizes() {
             ]}
           />
           <Button size={size}>查询</Button>
-        </div>
+        </Flex>
       ))}
-    </Space>
+    </Flex>
   );
 }

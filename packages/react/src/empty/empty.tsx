@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import { Result } from '../result';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { ResultControl as Result } from '../result/result';
 
 /** @deprecated Use Result with status="empty" instead. */
 export interface EmptyProps extends HTMLAttributes<HTMLDivElement> {
@@ -8,7 +9,11 @@ export interface EmptyProps extends HTMLAttributes<HTMLDivElement> {
   size?: 'sm' | 'md';
 }
 /** @deprecated Use Result with status="empty" instead. */
-export function Empty({ image, description, children, className, ...props }: EmptyProps) {
+export function Empty(rawProps: EmptyProps) {
+  const { image, description, children, className, ...props } = useComponentProps(
+    'Empty',
+    rawProps,
+  );
   return (
     <Result
       {...props}
