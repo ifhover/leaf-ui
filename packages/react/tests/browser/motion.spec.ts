@@ -227,6 +227,15 @@ test('a second row reorder starts from the running visual position and settles t
   page,
 }) => {
   await page.goto('/?fixture=motion');
+  // Exercise a non-default natural opacity independently of FileList status styling.
+  await page.addStyleTag({
+    content: '[data-testid="animated-files"] li[data-status="cancelled"] { opacity: 0.65; }',
+  });
+  const alphaFile = page
+    .getByTestId('animated-files')
+    .getByRole('listitem')
+    .filter({ has: page.getByTitle('Alpha.txt', { exact: true }) });
+  await expect(alphaFile).toHaveCSS('opacity', '0.65');
   const row = page
     .getByRole('list', { name: 'Animated rows' })
     .locator('li')
@@ -303,6 +312,7 @@ test('a second row reorder starts from the running visual position and settles t
     )
     .toBeLessThan(1);
   await expect(row).toHaveCSS('translate', 'none');
+  await expect(alphaFile).toHaveCSS('opacity', '0.65');
   await expect(page.getByRole('list', { name: 'Animated rows' }).locator('li')).toHaveText([
     'Beta',
     'Alpha',

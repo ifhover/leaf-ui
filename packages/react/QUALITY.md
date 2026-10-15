@@ -18,6 +18,14 @@
 
 独立组件 CSS 现在自动包含共享 foundation，Button / 原生 Table 的 CSS 与 0.5.0 的独立组件测量口径不同；Button 保留原有 4.25 KiB 组件预算，并单独计入共享 foundation。构建诊断及原始失败保存在根目录 `.quality/release-0.6.0/`，逐模块报告位于 `packages/react/.quality/release-0.6.0/`；这些忽略目录不进入发布包。
 
+### 发布候选验证
+
+`pnpm check` 完整通过：62 个组件测试文件 / 418 项测试、13 项发布规则、23 项文档 / Tailwind 和 9 项 Skill 检查，以及全仓格式和类型检查。`pnpm build` 通过 ESM / CommonJS、SSR、84 个公共 JS 子路径与全部 CSS 入口、自动样式、双语文档和 200 个 AI Markdown 页面验证；实际 `measure:bundle` 在上述预算下通过。actionlint、工作流格式和差异检查通过。并行构建时两项翻译脚本曾触发 5 秒超时，构建结束后的完整重跑通过，原始日志保留。
+
+本地 Chromium / WebKit 的联系人校验布局与中断重排四项定向复验通过。修复联系人示例的换行布局；文件重排回归改为按文件名定位，并在夹具中显式配置非默认透明度，避免依赖已调整的内部键值和状态外观，同时保留重排中断连续性、自然布局及透明度断言。Windows 全量浏览器运行在 Linux 完整 CI 启动后停止，不能将其记作一次全量通过。
+
+实际生产文档在 Chromium 中完成中英文、1440px / 375px、深浅外观的八组验收，覆盖联系人校验 / 添加 / 移动 / 对齐、源码一致性 / 展开 / 复制 / 收起、0.6.0 更新记录与区域 Tailwind 主题；无页面、预览横向溢出或脚本错误。已查看中文桌面、英文窄屏深色表单和深色 Tailwind 截图。首次构建发现 MDX 缓存保留旧的文件引用源码，使用新生产缓存重建后预览、展示、复制与源文件一致。日志、JSON 和截图位于根目录 `.quality/release-0.6.0/`。本段是发布前验证，npm 与正式文档状态以最终发布核对为准。
+
 ## Tailwind CSS 配置与主题变量复用（2026-10-16）
 
 新增 `@ifhover/leaf-ui/tailwind`（Tailwind 3 preset，ESM / CommonJS 与声明）和 `@ifhover/leaf-ui/tailwind.css`（Tailwind 4 的 `@theme inline`）。两个入口从同一份语义变量映射生成，覆盖颜色、圆角、间距、密度、控件高度、字体、阴影、动效和层级，不依赖 Tailwind 运行时。preset 只扩展主题，保留应用默认配置；官方 Tailwind 3 `Config` 类型可直接接受。指南在中英文“个性化”导航中提供版本配置、工具类、Preflight、透明度、扫描、Portal 和静态断点边界；Tailwind 3 使用完整颜色变量，不支持颜色透明度修饰符，Tailwind 4 沿用原生修饰符。
