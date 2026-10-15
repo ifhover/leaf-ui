@@ -49,8 +49,8 @@ npm 新作用域为 `@ifhover/leaf-ui`；迁移前的稳定版仍属于 `@sudden
 正式发布的操作命令见 [packages/react/RELEASING.md](packages/react/RELEASING.md)。发布顺序为：
 
 1. 将准备好的发布分支合并到 `main`，确认版本、更新记录和源码已提交。此后不叠加新的待发布功能，先完成这一版本的发布。
-2. 在实际合并后的发布提交重新检查与构建，确保工作区干净。使用该提交发布 npm 和创建 `vX.Y.Z` 标签；采用 squash 或 rebase 合并时，以合并后的提交为准。
-3. 确认 npm 的版本、`latest` 和 `gitHead`，推送标签，并部署默认在线文档与 `/v/X.Y.Z/` 快照。若合并触发的 Pages 构建早于 npm 发布，发布后重新触发 `Deploy documentation` 工作流。
+2. 在实际合并后的发布提交重新检查与构建，确保工作区干净。创建并推送 `vX.Y.Z` 标签，触发 `Publish npm package` 通过 OIDC 发布 npm；普通提交与 `main` 推送不会发布 npm。也可手动运行发布工作流，并在 **Use workflow from** 中选择已推送的正式版本标签。采用 squash 或 rebase 合并时，以合并后的提交为准。
+3. 发布工作流确认 npm 的版本、`latest` 和 `gitHead` 后，自动触发 `Deploy documentation`，部署默认在线文档与 `/v/X.Y.Z/` 快照；文档部署失败时重跑文档工作流。源码、标签和 npm 必须对应同一提交，本地手动发布操作见发布说明。
 4. 分支合并到 `main` 后必须删除对应临时在线文档、资源、预览入口与活动预览清单中的条目，并停止继续更新该预览的任务。放弃开发、关闭未合并 PR 或删除开发分支时，也执行相同清理；清理结果保留在 PR 或发布记录中。
 5. 验证正式站点与 npm 一致，开发预览 URL 已不再提供开发内容，正式历史快照仍可访问，再报告发布完成。
 

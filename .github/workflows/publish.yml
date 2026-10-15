@@ -1,0 +1,137 @@
+name: Publish npm package
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'ifhover/leaf-ui'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Validate release tag, source commit and npm version
+        id: release
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { execFileSync } from 'node:child_process';
+          import { appendFileSync, readFileSync } from 'node:fs';
+
+          const { RELEASE_TAG: tag, GITHUB_REF: ref, GITHUB_SHA: runCommit } = process.env;
+          assert.match(tag, /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/, 'Use a vX.Y.Z stable release tag, including when running the workflow manually.');
+          assert.equal(ref, `refs/tags/${tag}`, 'Select the release tag under Run workflow, not a branch.');
+          const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+          const commit = git('rev-parse', 'HEAD');
+          assert.equal(commit, runCommit, 'The checkout must match the workflow run commit for provenance.');
+          assert.equal(git('rev-parse', `refs/tags/${tag}^{commit}`), commit, 'The checkout must match the release tag.');
+          git('merge-base', '--is-ancestor', commit, 'origin/main');
+          const pkg = JSON.parse(readFileSync('packages/react/package.json', 'utf8'));
+          assert.equal(pkg.name, '@ifhover/leaf-ui');
+          assert.equal(tag, `v${pkg.version}`, 'The tag must match packages/react/package.json.');
+          assert.equal(pkg.repository.url, 'git+https://github.com/ifhover/leaf-ui.git');
+
+          const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg.name)}`, {
+            signal: AbortSignal.timeout(30_000),
+          });
+          assert.ok(response.ok || response.status === 404, `npm registry returned ${response.status}.`);
+          const registry = response.status === 404 ? {} : await response.json();
+          const published = registry.versions?.[pkg.version];
+          const latest = registry['dist-tags']?.latest;
+          if (published) {
+            assert.equal(published.gitHead, commit, 'This version was already published from a different commit. Bump the version.');
+            assert.equal(latest, pkg.version, 'This version is no longer latest; refusing to republish an older release.');
+            console.log(`${pkg.name}@${pkg.version} is already published from this commit; skipping the upload.`);
+          } else if (latest) {
+            assert.match(latest, /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/, 'npm latest must be a stable version.');
+            const currentParts = pkg.version.split('.').map(BigInt);
+            const latestParts = latest.split('.').map(BigInt);
+            const differing = currentParts.findIndex((part, index) => part !== latestParts[index]);
+            assert.ok(differing >= 0 && currentParts[differing] > latestParts[differing], 'The release version must be newer than npm latest.');
+          }
+          appendFileSync(process.env.GITHUB_OUTPUT, `version=${pkg.version}\ncommit=${commit}\nalready_published=${Boolean(published)}\n`);
+          NODE
+      - uses: pnpm/action-setup@v4
+        if: steps.release.outputs.already_published != 'true'
+      - name: Install dependencies
+        if: steps.release.outputs.already_published != 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Check source, tests and release notes
+        if: steps.release.outputs.already_published != 'true'
+        run: pnpm check
+      - name: Build and verify library and documentation
+        if: steps.release.outputs.already_published != 'true'
+        run: pnpm build
+      - name: Ensure the build did not change release sources
+        if: steps.release.outputs.already_published != 'true'
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            echo 'Commit generated source changes before publishing.' >&2
+            exit 1
+          fi
+      - name: Install npm with trusted publishing support
+        if: steps.release.outputs.already_published != 'true'
+        run: npm install --global npm@11
+      - name: Publish to npm using OIDC
+        if: steps.release.outputs.already_published != 'true'
+        working-directory: packages/react
+        run: npm publish --access public --tag latest --provenance --registry https://registry.npmjs.org/
+      - name: Verify published commit and latest tag
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_COMMIT: ${{ steps.release.outputs.commit }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { appendFileSync } from 'node:fs';
+          import { setTimeout } from 'node:timers/promises';
+
+          const { RELEASE_VERSION: version, RELEASE_COMMIT: commit } = process.env;
+          for (let attempt = 1; attempt <= 12; attempt++) {
+            try {
+              const response = await fetch('https://registry.npmjs.org/@ifhover%2Fleaf-ui', {
+                cache: 'no-store',
+                signal: AbortSignal.timeout(30_000),
+              });
+              assert.ok(response.ok, `npm registry returned ${response.status}.`);
+              const registry = await response.json();
+              assert.equal(registry.versions?.[version]?.gitHead, commit, 'npm gitHead does not match the release commit.');
+              assert.equal(registry['dist-tags']?.latest, version, 'npm latest does not match the release version.');
+              appendFileSync(process.env.GITHUB_STEP_SUMMARY, [
+                `Verified npm package: [@ifhover/leaf-ui@${version}](https://www.npmjs.com/package/@ifhover/leaf-ui/v/${version})`,
+                `Release tag: v${version}; commit: ${commit}`,
+                'The Deploy documentation workflow runs after this workflow succeeds. Check its result before considering the release complete.',
+                '',
+              ].join('\n\n'));
+              break;
+            } catch (error) {
+              if (attempt === 12) throw error;
+              console.log(`Waiting for npm registry metadata (${attempt}/12): ${error.message}`);
+              await setTimeout(10_000);
+            }
+          }
+          NODE
