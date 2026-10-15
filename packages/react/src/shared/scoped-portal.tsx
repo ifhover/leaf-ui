@@ -19,7 +19,9 @@ export function ScopedPortal({
     const node = anchor.current;
     if (!node) return;
     const sync = () => {
-      const computed = getComputedStyle(node);
+      // Read the owning element; hidden markers can omit inherited custom
+      // properties from computed-style enumeration in Firefox.
+      const computed = getComputedStyle(composedParent(node) ?? node);
       const next: LeafThemeStyle = {
         colorScheme: computed.colorScheme,
         direction: computed.direction as LeafThemeStyle['direction'],
