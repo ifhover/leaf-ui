@@ -26,10 +26,24 @@ export function ScopedPortal({
         colorScheme: computed.colorScheme,
         direction: computed.direction as LeafThemeStyle['direction'],
       };
+      const keys = new Set<string>();
       for (let i = 0; i < computed.length; i++) {
         const key = computed.item(i);
-        if (key.startsWith('--leaf-'))
-          next[key as `--leaf-${string}`] = computed.getPropertyValue(key);
+        if (key.startsWith('--leaf-')) keys.add(key);
+      }
+      // Some engines do not enumerate every inherited custom property. Include
+      // inline scope keys, then read their effective values at the source.
+      let owner = composedParent(node);
+      while (owner) {
+        for (let i = 0; i < owner.style.length; i++) {
+          const key = owner.style.item(i);
+          if (key.startsWith('--leaf-')) keys.add(key);
+        }
+        owner = composedParent(owner);
+      }
+      for (const key of keys) {
+        const value = computed.getPropertyValue(key);
+        if (value.trim()) next[key as `--leaf-${string}`] = value;
       }
       setStyle(next);
     };
