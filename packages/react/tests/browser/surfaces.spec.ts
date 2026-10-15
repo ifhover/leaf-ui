@@ -179,10 +179,19 @@ test('theme settings reach portalled section surfaces and dense choices', async 
           portalHeight: portal
             ? getComputedStyle(portal).getPropertyValue('--leaf-control-height').trim()
             : '',
+          scopeHeights: [...document.querySelectorAll('.surface-fixture [data-leaf-scope]')].map(
+            (scope) => getComputedStyle(scope).getPropertyValue('--leaf-control-height').trim(),
+          ),
         };
       }),
     )
-    .toMatchObject({ minHeight: '30px', controlHeight: '30px', currentHeight: '30px' });
+    .toMatchObject({
+      minHeight: '30px',
+      controlHeight: '30px',
+      currentHeight: '30px',
+      portalHeight: '30px',
+      scopeHeights: ['30px'],
+    });
 });
 
 test('long modal content scrolls through Scrollbar without moving the heading or actions', async ({
