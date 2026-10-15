@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react';
 import { type HTMLAttributes, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -24,27 +25,28 @@ export interface RateProps
   form?: string;
   required?: boolean;
 }
-export function Rate({
-  value,
-  defaultValue = 0,
-  onChange,
-  count = 5,
-  allowHalf = false,
-  allowClear = true,
-  disabled: disabledProp,
-  readOnly = false,
-  size = 'md',
-  color,
-  colorByValue = false,
-  colors = ['#ef5350', '#f49b23', '#ffc53d'],
-  name,
-  form,
-  required: requiredProp,
-  className,
-  style,
-  'aria-label': label,
-  ...props
-}: RateProps) {
+export function Rate(rawProps: RateProps) {
+  const {
+    value,
+    defaultValue = 0,
+    onChange,
+    count = 5,
+    allowHalf = false,
+    allowClear = true,
+    disabled: disabledProp,
+    readOnly = false,
+    size = 'md',
+    color,
+    colorByValue = false,
+    colors = ['#ef5350', '#f49b23', '#ffc53d'],
+    name,
+    form,
+    required: requiredProp,
+    className,
+    style,
+    'aria-label': label,
+    ...props
+  } = useComponentProps('Rate', rawProps);
   const { messages } = useLeafConfig();
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
@@ -79,7 +81,7 @@ export function Rate({
       id={props.id ?? field?.id}
       ref={root}
       role="radiogroup"
-      aria-label={label ?? (field?.labelId ? undefined : messages.rating)}
+      aria-label={label ?? (field?.labelId ? undefined : messages.rate.label)}
       aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
       aria-disabled={disabled || undefined}
       aria-readonly={readOnly || undefined}

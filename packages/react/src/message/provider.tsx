@@ -1,4 +1,5 @@
 import { type ReactNode, useContext, useState, useSyncExternalStore } from 'react';
+import { ComponentDefaultsContext } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { MessageItem } from './item';
@@ -39,12 +40,13 @@ export function MessageHost({ store }: { store: MessageStore }) {
     <ScopedPortal>
       <div className="leaf-message-region" style={{ zIndex }}>
         {entries.map((entry) => (
-          <MessageItem
-            key={entry.key}
-            entry={entry}
-            close={() => store.close(entry.key)}
-            remove={() => store.remove(entry.key)}
-          />
+          <ComponentDefaultsContext.Provider key={entry.key} value={entry.components ?? {}}>
+            <MessageItem
+              entry={entry}
+              close={() => store.close(entry.key)}
+              remove={() => store.remove(entry.key)}
+            />
+          </ComponentDefaultsContext.Provider>
         ))}
       </div>
     </ScopedPortal>

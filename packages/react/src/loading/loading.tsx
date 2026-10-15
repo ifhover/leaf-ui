@@ -1,5 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
@@ -12,7 +13,7 @@ export interface LoadingProps extends HTMLAttributes<HTMLDivElement> {
   tip?: ReactNode;
   delay?: number;
 }
-export function Loading({
+export function LoadingControl({
   spinning = true,
   size = 'md',
   tip,
@@ -43,7 +44,7 @@ export function Loading({
     <div
       className="leaf-loading__indicator"
       role="status"
-      aria-label={typeof tip === 'string' ? tip : messages.loading}
+      aria-label={typeof tip === 'string' ? tip : messages.common.loading}
     >
       <LoaderCircle className="leaf-loading__spinner" aria-hidden="true" />
       {tip && <span>{tip}</span>}
@@ -92,4 +93,9 @@ export function Loading({
       ) : null}
     </div>
   );
+}
+
+export function Loading(rawProps: LoadingProps) {
+  const props = useComponentProps('Loading', rawProps);
+  return <LoadingControl {...props} />;
 }

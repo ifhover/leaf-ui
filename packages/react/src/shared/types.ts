@@ -1,3 +1,3 @@
-/** Shared single-line control sizes: 34px / 40px / 46px by default. */
+/** Shared single-line control sizes: 30px / 36px / 42px by default. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 export type ControlStatus = 'error' | 'warning';

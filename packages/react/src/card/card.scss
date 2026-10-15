@@ -1,6 +1,9 @@
+@use '../styles/mixins';
+
 .leaf-card {
   --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
-  --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 1.5));
+  --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
+  --leaf-card-title-font-size: calc(var(--leaf-font-size) + 1px);
   box-sizing: border-box;
   min-width: 0;
   border: 1px solid transparent;
@@ -10,31 +13,28 @@
   font: var(--leaf-component-card-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
   transition:
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   &--bordered {
     border-color: var(--leaf-component-card-border-color, var(--leaf-color-divider));
     box-shadow: var(--leaf-component-card-shadow, none);
   }
-  &--hoverable:hover,
-  &--hoverable:focus-within {
-    border-color: var(--leaf-color-border-hover);
-    box-shadow: var(--leaf-shadow-md);
-    transform: translateY(-2px);
-  }
   &--sm {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2));
-    --leaf-card-heading-gap: var(--leaf-component-card-gap, var(--leaf-spacing));
+    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 1.5));
+    --leaf-card-title-font-size: var(--leaf-font-size);
   }
-  &--sm &__title {
-    font-size: var(--leaf-font-size);
+  &--lg {
+    --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 3));
+    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2.5));
+    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
   }
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: var(--leaf-card-padding) var(--leaf-card-padding) 0;
+    padding: var(--leaf-card-padding);
+    padding-block: var(--leaf-card-heading-gap);
     background: var(--leaf-component-card-header-background, transparent);
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
@@ -51,7 +51,8 @@
   &__title {
     min-width: 0;
     margin: 0;
-    font: var(--leaf-font-weight) calc(var(--leaf-font-size) + 1px) / 1.5 var(--leaf-font-family);
+    font: var(--leaf-font-weight, 500) var(--leaf-card-title-font-size) / 1.5
+      var(--leaf-font-family);
     overflow-wrap: anywhere;
   }
   &__extra {
@@ -71,10 +72,11 @@
     }
   }
   &__header + &__body {
-    padding-block-start: var(--leaf-card-heading-gap);
+    padding-block-start: 0;
   }
   &__footer {
-    padding: 0 var(--leaf-card-padding) var(--leaf-card-padding);
+    padding: var(--leaf-card-padding);
+    padding-block-start: 0;
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
     background: var(--leaf-component-card-footer-background, transparent);
@@ -86,15 +88,13 @@
     }
   }
   &--divided > &__header {
-    padding-block-end: var(--leaf-card-padding);
     border-block-end: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
   }
   &--divided > &__header + &__body {
     padding-block-start: var(--leaf-card-padding);
   }
   &--divided > &__footer {
-    padding-block-start: calc(var(--leaf-card-padding) * 0.75);
-    padding-block-end: calc(var(--leaf-card-padding) * 0.75);
+    @include mixins.action-footer-padding(card);
     border-block-start: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
     background: var(--leaf-component-card-footer-background, var(--leaf-color-surface-muted));
   }
@@ -107,6 +107,83 @@
       width: 100%;
       object-fit: cover;
     }
+  }
+  &--tabbed > &__header {
+    padding-block-end: calc(var(--leaf-card-heading-gap) / 2);
+    border-block-end: 0;
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+  &__tabs {
+    // The navigation belongs to the heading; panes use the card's content insets.
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    > .leaf-tabs__header {
+      padding: var(--leaf-card-padding);
+      padding-block: 0;
+      border-block-end: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
+      background: var(--leaf-component-card-header-background, transparent);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+      > .leaf-tabs__list {
+        box-shadow: none;
+        > .leaf-tabs__track {
+          gap: var(--leaf-spacing-md);
+        }
+      }
+      .leaf-tabs__tab {
+        padding-inline: 0;
+      }
+    }
+    > .leaf-tabs__panels > .leaf-tabs__panel {
+      padding: var(--leaf-card-padding);
+      > :first-child {
+        margin-block-start: 0;
+      }
+      > :last-child {
+        margin-block-end: 0;
+      }
+    }
+  }
+  & > &__tabs:first-child > .leaf-tabs__header,
+  & > &__cover + &__tabs > .leaf-tabs__header {
+    // A replacement heading fills the whole row; the underline stays on its bottom edge.
+    --leaf-card-tab-heading-height: max(
+      var(--leaf-current-control-height),
+      calc(var(--leaf-card-title-font-size) * 1.5 + var(--leaf-card-heading-gap) * 2)
+    );
+    align-items: stretch;
+    > .leaf-tabs__list {
+      display: flex;
+      > .leaf-tabs__track {
+        flex-shrink: 0;
+        > .leaf-tabs__entry {
+          align-items: stretch;
+          > .leaf-tabs__tab {
+            min-height: var(--leaf-card-tab-heading-height);
+          }
+          > .leaf-tabs__close,
+          > .leaf-tabs__drag {
+            align-self: center;
+          }
+        }
+      }
+    }
+    > .leaf-tabs__extra {
+      align-self: center;
+    }
+  }
+  &__header + &__tabs > .leaf-tabs__header {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+  &__tabs + &__body {
+    padding-block-start: 0;
+  }
+  &__tab-extra {
+    display: flex;
+    align-items: center;
+    gap: var(--leaf-spacing-sm);
   }
 }
 @media (prefers-reduced-motion: reduce) {

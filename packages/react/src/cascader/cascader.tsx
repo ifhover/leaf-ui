@@ -9,10 +9,11 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
-import { Input } from '../input';
-import { Scrollbar } from '../scrollbar';
+import { InputControl } from '../input/input';
+import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
@@ -22,7 +23,9 @@ import {
   useFloatingDismiss,
   usePopupState,
 } from '../shared/floating';
+import { SelectionContent } from '../shared/selection-content';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { useFormattedText } from '../shared/use-formatted-text';
 
 export interface CascaderOption {
   value: string;
@@ -57,6 +60,8 @@ interface CascaderBaseProps
   loadData?: (option: CascaderOption, signal: AbortSignal) => Promise<readonly CascaderOption[]>;
   onLoadError?: (error: unknown, option: CascaderOption) => void;
   cacheKey?: string | number;
+  tagWrap?: boolean;
+  maxTagCount?: number | 'responsive';
 }
 export type CascaderProps = CascaderBaseProps &
   (
@@ -88,7 +93,10 @@ function resolvePath(options: readonly CascaderOption[], values: readonly string
 }
 
 export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Cascader(
-  {
+  rawProps: CascaderProps,
+  forwardedRef,
+) {
+  const {
     options: suppliedOptions,
     value,
     defaultValue = emptyPath,
@@ -115,6 +123,8 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     loadData,
     onLoadError,
     cacheKey,
+    tagWrap = true,
+    maxTagCount,
     popupPlacement,
     popupClassName,
     popupStyle,
@@ -127,10 +137,9 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     'aria-describedby': ariaDescribedByProp,
     'aria-invalid': ariaInvalid,
     ...props
-  },
-  forwardedRef,
-) {
-  const { locale, messages, direction } = useLeafConfig();
+  } = useComponentProps('Cascader', rawProps);
+  const { messages, direction } = useLeafConfig();
+  const format = useFormattedText();
   const [loaded, setLoaded] = useState(new Map<string, readonly CascaderOption[]>());
   const [loading, setLoading] = useState(new Set<string>());
   const requests = useRef(new Map<string, AbortController>());
@@ -306,7 +315,12 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
 
   return (
     <div
-      className={classes('leaf-cascader', `leaf-cascader--${size}`, className)}
+      className={classes(
+        'leaf-cascader',
+        `leaf-cascader--${size}`,
+        multiple && 'leaf-cascader--multiple',
+        className,
+      )}
       style={style}
       data-status={status}
       data-disabled={disabled ? '' : undefined}
@@ -350,26 +364,46 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
           }
         }}
       >
-        <span
-          className={classes(
-            'leaf-cascader__value',
-            !selectedPaths.length && 'leaf-cascader__placeholder',
-          )}
-        >
-          {selectedPaths.length
-            ? selectedPaths.map((path, index) => (
-                <span key={paths[index]?.join('/')}>
-                  {index > 0 ? '、' : ''}
-                  {caption(path)}
-                </span>
-              ))
-            : placeholder || messages.select}
-        </span>
+        {multiple && selectedPaths.length ? (
+          <SelectionContent
+            className="leaf-cascader__value"
+            tagClassName="leaf-cascader__tag"
+            tagWrap={tagWrap}
+            maxTagCount={maxTagCount}
+            items={selectedPaths.map((path, index) => ({
+              key: JSON.stringify(paths[index]),
+              label: caption(path),
+              text: path
+                .map(
+                  (option) =>
+                    option.searchLabel ??
+                    (typeof option.label === 'string' ? option.label : option.value),
+                )
+                .join(' / '),
+            }))}
+          />
+        ) : (
+          <span
+            className={classes(
+              'leaf-cascader__value',
+              !selectedPaths.length && 'leaf-cascader__placeholder',
+            )}
+          >
+            {selectedPaths.length
+              ? selectedPaths.map((path, index) => (
+                  <span key={paths[index]?.join('/')}>
+                    {index > 0 ? '、' : ''}
+                    {caption(path)}
+                  </span>
+                ))
+              : placeholder || messages.cascader.placeholder}
+          </span>
+        )}
         <ChevronDown size={16} aria-hidden="true" />
       </button>
       {allowClear && selectedValue.length > 0 && !disabled && !readOnly && (
         <ClearButton
-          label={messages.clearCascader}
+          label={messages.cascader.clear}
           beforeArrow
           onClear={() => {
             setSelectedValue([]);
@@ -399,22 +433,24 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         id={panelId}
         className={classes('leaf-floating leaf-cascader__panel', popupClassName)}
         role="dialog"
-        aria-label={ariaLabel || messages.select}
+        aria-label={ariaLabel || messages.cascader.placeholder}
       >
         {showSearch && (
           <FieldScope>
-            <Input
-              allowClear
-              aria-label={messages.search}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+            <div className="leaf-cascader__search">
+              <InputControl
+                allowClear
+                aria-label={messages.common.search}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
           </FieldScope>
         )}
         {query ? (
           <Scrollbar
             role="listbox"
-            aria-label={messages.search}
+            aria-label={messages.common.search}
             className="leaf-cascader__column"
             orientation="vertical"
             maxHeight={256}
@@ -437,7 +473,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                 </button>
               ))
             ) : (
-              <div className="leaf-floating__empty">{messages.empty}</div>
+              <div className="leaf-floating__empty">{messages.cascader.empty}</div>
             )}
           </Scrollbar>
         ) : (
@@ -450,7 +486,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                 maxHeight={256}
                 data-level={depth}
                 role="listbox"
-                aria-label={locale === 'en-US' ? `Level ${depth + 1}` : `第 ${depth + 1} 级`}
+                aria-label={format('cascader.level', { level: depth + 1 })}
               >
                 {level.length ? (
                   level.map((option) => (
@@ -524,7 +560,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                     </button>
                   ))
                 ) : (
-                  <div className="leaf-floating__empty">{messages.empty}</div>
+                  <div className="leaf-floating__empty">{messages.cascader.empty}</div>
                 )}
               </Scrollbar>
             ))}

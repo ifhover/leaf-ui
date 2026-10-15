@@ -85,7 +85,7 @@ export function MessageItem({
             </span>
             <span>{entry.content}</span>
             {entry.closable && (
-              <button type="button" aria-label={messages.close} onClick={close}>
+              <button type="button" aria-label={messages.common.close} onClick={close}>
                 <X size={15} aria-hidden="true" />
               </button>
             )}

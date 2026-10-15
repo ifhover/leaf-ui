@@ -8,9 +8,10 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Input } from '../input';
-import { Modal } from '../modal';
+import { InputControl } from '../input/input';
+import { ModalBase } from '../modal/modal';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface CommandItem {
@@ -37,19 +38,20 @@ export interface CommandPaletteProps {
   onError?: (error: unknown, item: CommandItem) => void;
 }
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
-export function CommandPalette({
-  items,
-  open: controlled,
-  defaultOpen = false,
-  onOpenChange,
-  onSelect,
-  shortcut = 'k',
-  placeholder,
-  loading,
-  emptyContent,
-  onSearch,
-  onError,
-}: CommandPaletteProps) {
+export function CommandPalette(rawProps: CommandPaletteProps) {
+  const {
+    items,
+    open: controlled,
+    defaultOpen = false,
+    onOpenChange,
+    onSelect,
+    shortcut = 'k',
+    placeholder,
+    loading,
+    emptyContent,
+    onSearch,
+    onError,
+  } = useComponentProps('CommandPalette', rawProps);
   const t = useText(),
     { messages } = useLeafConfig(),
     id = useId();
@@ -145,20 +147,20 @@ export function CommandPalette({
     }
   };
   return (
-    <Modal
+    <ModalBase
       open={open}
-      title={t('命令搜索', 'Command search')}
+      title={t('commandPalette.commandSearch')}
       footer={null}
       onClose={() => setOpen(false)}
       width={560}
       className="leaf-command-palette"
     >
-      <Input
+      <InputControl
         ref={input}
         prefix={<Search size={17} />}
         value={query}
-        placeholder={placeholder ?? t('搜索命令…', 'Search commands…')}
-        aria-label={t('搜索命令', 'Search commands')}
+        placeholder={placeholder ?? t('commandPalette.placeholder')}
+        aria-label={t('commandPalette.searchCommands')}
         role="combobox"
         aria-expanded={true}
         aria-controls={id}
@@ -195,7 +197,7 @@ export function CommandPalette({
         ref={listRef}
         id={id}
         role="listbox"
-        aria-label={t('命令', 'Commands')}
+        aria-label={t('commandPalette.commands')}
         aria-busy={loading || !!busy}
         className="leaf-command-palette__list"
       >
@@ -218,7 +220,7 @@ export function CommandPalette({
               disabled={item.disabled || !!busy}
               tabIndex={-1}
               className="leaf-floating__option"
-              onMouseEnter={() => setActive(index)}
+              onMouseEnter={() => !item.disabled && !busy && setActive(index)}
               onClick={() => void select(item)}
             >
               {item.icon}
@@ -229,22 +231,22 @@ export function CommandPalette({
         ))}
         {!list.length && (
           <div className="leaf-floating__empty">
-            {loading ? messages.loading : (emptyContent ?? messages.noData)}
+            {loading ? messages.common.loading : (emptyContent ?? messages.common.noData)}
           </div>
         )}
       </div>
       <div className="leaf-command-palette__hint" aria-hidden="true">
         <span>
           <kbd>↑</kbd>
-          <kbd>↓</kbd> {t('选择', 'Navigate')}
+          <kbd>↓</kbd> {t('commandPalette.navigate')}
         </span>
         <span>
-          <kbd>↵</kbd> {t('执行', 'Run')}
+          <kbd>↵</kbd> {t('commandPalette.run')}
         </span>
         <span>
-          <kbd>Esc</kbd> {messages.close}
+          <kbd>Esc</kbd> {messages.common.close}
         </span>
       </div>
-    </Modal>
+    </ModalBase>
   );
 }

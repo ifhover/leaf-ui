@@ -8,7 +8,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useText } from '../shared/use-text';
 
@@ -16,9 +17,10 @@ export interface TypographyProps extends HTMLAttributes<HTMLDivElement> {
   compact?: boolean;
 }
 export const Typography = forwardRef<HTMLDivElement, TypographyProps>(function Typography(
-  { compact, className, ...props },
+  rawProps: TypographyProps,
   ref,
 ) {
+  const { compact, className, ...props } = useComponentProps('Typography', rawProps);
   return (
     <div
       {...props}
@@ -75,7 +77,7 @@ function TextContent({
         ref={input}
         className="leaf-text__editor"
         type="text"
-        aria-label={t('编辑文本', 'Edit text')}
+        aria-label={t('typography.editText')}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onBlur={finish}
@@ -114,15 +116,15 @@ function TextContent({
           aria-expanded={expanded}
           onClick={() => setExpanded(!expanded)}
         >
-          {expanded ? t('收起', 'Collapse') : t('展开', 'Expand')}
+          {expanded ? t('typography.collapse') : t('typography.expand')}
         </button>
       )}
       {copyable && (
-        <Button
+        <ButtonControl
           variant="ghost"
           size="sm"
           startIcon={copied ? <Check size={14} /> : <Copy size={14} />}
-          aria-label={t('复制文本', 'Copy text')}
+          aria-label={t('typography.copyText')}
           onClick={async () => {
             const value = typeof copyable === 'object' ? (copyable.text ?? text) : text;
             try {
@@ -136,11 +138,11 @@ function TextContent({
         />
       )}
       {editable && (
-        <Button
+        <ButtonControl
           variant="ghost"
           size="sm"
           startIcon={<Pencil size={14} />}
-          aria-label={t('编辑文本', 'Edit text')}
+          aria-label={t('typography.editText')}
           onClick={() => {
             setDraft(editable.text ?? text);
             session.current = true;
@@ -151,8 +153,8 @@ function TextContent({
     </>
   );
 }
-export const Text = forwardRef<HTMLSpanElement, TextProps>(function Text(
-  {
+export const Text = forwardRef<HTMLSpanElement, TextProps>(function Text(rawProps: TextProps, ref) {
+  const {
     tone = 'default',
     strong,
     italic,
@@ -165,9 +167,7 @@ export const Text = forwardRef<HTMLSpanElement, TextProps>(function Text(
     className,
     children,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Text', rawProps);
   return (
     <span
       {...props}
@@ -189,7 +189,10 @@ export const Text = forwardRef<HTMLSpanElement, TextProps>(function Text(
 });
 export interface ParagraphProps extends TextProps {}
 export const Paragraph = forwardRef<HTMLParagraphElement, ParagraphProps>(function Paragraph(
-  {
+  rawProps: ParagraphProps,
+  ref,
+) {
+  const {
     tone = 'default',
     strong,
     italic,
@@ -202,9 +205,7 @@ export const Paragraph = forwardRef<HTMLParagraphElement, ParagraphProps>(functi
     className,
     children,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Paragraph', rawProps);
   return (
     <p
       {...props}
@@ -229,9 +230,10 @@ export interface TitleProps extends HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 export const Title = forwardRef<HTMLHeadingElement, TitleProps>(function Title(
-  { level = 2, className, ...props },
+  rawProps: TitleProps,
   ref,
 ) {
+  const { level = 2, className, ...props } = useComponentProps('Title', rawProps);
   const Heading = `h${level}` as 'h2';
   return (
     <Heading
@@ -248,9 +250,18 @@ export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   icon?: ReactNode;
 }
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
-  { disabled, underline = true, external, icon, className, children, ...props },
+  rawProps: LinkProps,
   ref,
 ) {
+  const {
+    disabled,
+    underline = true,
+    external,
+    icon,
+    className,
+    children,
+    ...props
+  } = useComponentProps('Link', rawProps);
   return (
     <a
       {...props}

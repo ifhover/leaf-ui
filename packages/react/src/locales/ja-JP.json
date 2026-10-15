@@ -1,0 +1,335 @@
+{
+  "select": {
+    "placeholder": "選択してください",
+    "empty": "選択肢がありません",
+    "clear": "選択をクリア",
+    "create": "「{label}」を作成"
+  },
+  "autoComplete": {
+    "empty": "候補がありません",
+    "suggestions": "{label}の候補"
+  },
+  "datePicker": {
+    "placeholder": "日付を選択",
+    "clear": "日付をクリア",
+    "label": "日付を選択",
+    "selectDate": "日付を選択"
+  },
+  "timePicker": {
+    "placeholder": "時刻を選択",
+    "clear": "時刻をクリア",
+    "label": "時刻を選択",
+    "hours": "時",
+    "minutes": "分",
+    "seconds": "秒",
+    "period": "午前・午後",
+    "am": "午前",
+    "pm": "午後",
+    "now": "現在時刻",
+    "selectTime": "時刻を選択"
+  },
+  "dateTimePicker": {
+    "placeholder": "日時を選択"
+  },
+  "dateRangePicker": {
+    "placeholder": "日付の範囲を選択",
+    "clear": "範囲をクリア"
+  },
+  "cascader": {
+    "clear": "選択をクリア",
+    "level": "階層 {level}",
+    "placeholder": "選択してください",
+    "empty": "選択肢がありません"
+  },
+  "calendar": {
+    "previousMonth": "前の月",
+    "nextMonth": "次の月",
+    "previousYear": "前の年",
+    "nextYear": "次の年",
+    "previousYears": "前の年の範囲",
+    "nextYears": "次の年の範囲",
+    "weekdays": ["月", "火", "水", "木", "金", "土", "日"],
+    "year": "年",
+    "month": "月",
+    "week": "週",
+    "today": "今日",
+    "label": "カレンダー"
+  },
+  "common": {
+    "confirm": "確認",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "start": "開始",
+    "end": "終了",
+    "remove": "削除",
+    "search": "選択肢を検索",
+    "noData": "データがありません",
+    "retry": "再試行",
+    "preview": "プレビュー",
+    "download": "ダウンロード",
+    "loading": "読み込み中",
+    "searchAction": "検索"
+  },
+  "form": {
+    "required": "この項目を入力してください",
+    "invalid": "この項目を確認してください",
+    "errorSummary": "次の項目を確認してください"
+  },
+  "breadcrumb": {
+    "label": "パンくずリスト"
+  },
+  "pagination": {
+    "label": "ページ切り替え",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "page": "ページ",
+    "pageSize": "表示件数",
+    "jumpTo": "移動先",
+    "pageBack": "5ページ前に移動",
+    "pageForward": "5ページ先に移動",
+    "pageLabel": "ページ {page}",
+    "pageSizeOption": "{count}件 / ページ",
+    "total": "全 {total} 件"
+  },
+  "input": {
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを隠す",
+    "clear": "入力をクリア"
+  },
+  "inputNumber": {
+    "increase": "値を増やす",
+    "decrease": "値を減らす",
+    "invalid": "指定された範囲内の数値を入力してください"
+  },
+  "progress": {
+    "label": "進行状況"
+  },
+  "avatar": {
+    "label": "アバター",
+    "moreMembers": "その他のメンバー",
+    "showMore": "他{count}人のメンバーを表示"
+  },
+  "rate": {
+    "label": "評価"
+  },
+  "result": {
+    "success": "成功",
+    "warning": "確認が必要です",
+    "error": "エラーが発生しました",
+    "info": "お知らせ"
+  },
+  "colorPicker": {
+    "label": "色を選択",
+    "clear": "色をクリア",
+    "saturation": "彩度",
+    "brightness": "明度",
+    "hue": "色相",
+    "alpha": "不透明度",
+    "value": "色の値",
+    "invalid": "有効な色を入力してください",
+    "presets": "プリセットカラー",
+    "gradient": "グラデーション",
+    "colorStop": "カラーストップ {index}",
+    "addColorStop": "カラーストップを追加",
+    "removeColorStop": "カラーストップを削除",
+    "color": "色",
+    "position": "位置",
+    "colorStopPosition": "カラーストップの位置",
+    "angle": "角度",
+    "gradientAngle": "グラデーションの角度"
+  },
+  "tree": {
+    "label": "ツリー",
+    "expand": "展開",
+    "reorderInstructions": "Space キーで項目を選び、上下キーで移動先を選択します。左右キーで前後を指定し、Space キーで移動、Escape キーでキャンセルします。",
+    "moveNode": "{label}を移動",
+    "expandNode": "{label}を展開",
+    "collapseNode": "{label}を折りたたむ"
+  },
+  "collapse": {
+    "label": "折りたたみパネル"
+  },
+  "slider": {
+    "label": "スライダー"
+  },
+  "tabs": {
+    "moreTabs": "その他のタブ",
+    "addTab": "タブを追加",
+    "reorder": "タブ「{label}」を並べ替え",
+    "closeLabel": "タブ「{label}」を閉じる"
+  },
+  "backTop": {
+    "backToTop": "ページの先頭へ"
+  },
+  "button": {
+    "moreActions": "その他の操作"
+  },
+  "carousel": {
+    "carousel": "カルーセル",
+    "previousSlide": "前のスライド",
+    "nextSlide": "次のスライド",
+    "goTo": "{index}枚目に移動",
+    "slide": "スライド",
+    "role": "カルーセル"
+  },
+  "commandPalette": {
+    "commandSearch": "コマンド検索",
+    "placeholder": "コマンドを検索…",
+    "searchCommands": "コマンドを検索",
+    "commands": "コマンド",
+    "navigate": "移動",
+    "run": "実行"
+  },
+  "errorBoundary": {
+    "title": "このコンテンツを表示できませんでした",
+    "description": "再試行するか、しばらくしてからもう一度お試しください。"
+  },
+  "fileList": {
+    "fileType": "ファイル",
+    "uploading": "アップロード中",
+    "uploadFailed": "アップロードに失敗しました",
+    "cancelled": "キャンセル済み",
+    "uploadComplete": "アップロード完了",
+    "ready": "準備完了",
+    "uploadProgress": "{name}のアップロード状況",
+    "noFiles": "ファイルがありません",
+    "preview": "{name}をプレビュー",
+    "download": "{name}をダウンロード",
+    "remove": "{name}を削除"
+  },
+  "floatButton": {
+    "quickActions": "クイック操作"
+  },
+  "image": {
+    "previewImage": "画像をプレビュー{alt}",
+    "imageUnavailable": "画像を表示できません",
+    "imagePreview": "画像プレビュー",
+    "downloadImage": "画像をダウンロード",
+    "exitFullscreen": "全画面表示を終了",
+    "enterFullscreen": "全画面表示",
+    "closePreview": "プレビューを閉じる",
+    "previousImage": "前の画像",
+    "nextImage": "次の画像",
+    "downloadFailedOpenTheOriginalImageToSaveIt": "ダウンロードに失敗しました。元の画像を開いて保存してください。",
+    "openOriginal": "元の画像を開く",
+    "zoomOut": "縮小",
+    "resetZoom": "拡大率をリセット",
+    "zoomIn": "拡大",
+    "showThumbnails": "サムネイルを表示",
+    "scrollThumbnailsBackward": "サムネイルを前へスクロール",
+    "imageList": "画像一覧",
+    "scrollThumbnailsForward": "サムネイルを次へスクロール",
+    "image": "画像",
+    "position": "{total}枚中{index}枚目",
+    "viewImage": "画像{index}を表示{alt}"
+  },
+  "infiniteScroll": {
+    "loadingFailedRetry": "読み込みに失敗しました。再試行",
+    "allItemsLoaded": "すべて読み込みました",
+    "loadMore": "さらに読み込む"
+  },
+  "inputOTP": {
+    "verificationCode": "認証コード"
+  },
+  "layout": {
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ"
+  },
+  "loadingBar": {
+    "pageLoadingProgress": "ページの読み込み状況"
+  },
+  "menu": {
+    "navigationMenu": "ナビゲーションメニュー"
+  },
+  "popconfirm": {
+    "actionFailedPleaseRetry": "操作に失敗しました。もう一度お試しください。"
+  },
+  "qrCode": {
+    "qrCode": "QRコード",
+    "refreshCode": "コードを更新"
+  },
+  "scrollbar": {
+    "verticalScrollbar": "縦スクロールバー",
+    "horizontalScrollbar": "横スクロールバー"
+  },
+  "splitter": {
+    "resizePanel": "パネル{index}のサイズを変更",
+    "togglePanel": "パネルを開閉"
+  },
+  "table": {
+    "table": "表",
+    "scrollArea": "スクロール領域",
+    "loadError": "データを読み込めませんでした。もう一度お試しください。"
+  },
+  "dataTable": {
+    "searchTable": "表を検索",
+    "columns": "列",
+    "resizeColumn": "列「{label}」の幅を変更",
+    "selectRows": "行を選択",
+    "selectAllRowsOnThisPage": "このページのすべての行を選択",
+    "selectAllRows": "すべての行を選択",
+    "reorderRow": "行「{label}」を並べ替え",
+    "selectRow": "行「{label}」を選択",
+    "collapseRow": "行「{label}」を折りたたむ",
+    "expandRow": "行「{label}」を展開",
+    "reorderRows": "行を並べ替え",
+    "expandRows": "行を展開",
+    "sortAscending": "昇順に並べ替え",
+    "sortDescending": "降順に並べ替え",
+    "clearSorting": "並べ替えを解除",
+    "reorderColumn": "列「{label}」を並べ替え"
+  },
+  "timeRangePicker": {
+    "placeholder": "開始時刻 ～ 終了時刻",
+    "label": "時刻の範囲を選択",
+    "clear": "時刻の範囲をクリア"
+  },
+  "tour": {
+    "previous": "前へ",
+    "finish": "完了",
+    "next": "次へ"
+  },
+  "transfer": {
+    "selectAllVisibleItems": "表示中の項目をすべて選択",
+    "available": "選択可能",
+    "selected": "選択済み",
+    "searchAvailableItems": "選択可能な項目を検索",
+    "searchSelectedItems": "選択済みの項目を検索",
+    "noItems": "項目がありません",
+    "moveToSelected": "選択済みに移動",
+    "moveToAvailable": "選択可能に戻す"
+  },
+  "typography": {
+    "editText": "テキストを編集",
+    "collapse": "折りたたむ",
+    "expand": "展開",
+    "copyText": "テキストをコピー"
+  },
+  "upload": {
+    "uploadUrlCannotBeEmpty": "アップロード先のURLを指定してください",
+    "uploadFailed": "アップロードに失敗しました",
+    "chooseOneFileAtATime": "ファイルを1つずつ選択してください",
+    "fileTypeIsNotAccepted": "対応していないファイル形式です",
+    "fileExceedsTheSizeLimit": "ファイルサイズの上限を超えています",
+    "fileCountLimitReached": "ファイル数の上限に達しました",
+    "fileValidationFailed": "ファイルの検証に失敗しました",
+    "chooseFiles": "ファイルを選択",
+    "dropHint": "クリックするか、ここにファイルをドロップ",
+    "dropDescription": "ファイルを選択するか、この領域にドラッグしてください",
+    "cancelUpload": "{name}のアップロードをキャンセル",
+    "retryUpload": "{name}のアップロードを再試行"
+  },
+  "treeSelect": {
+    "placeholder": "選択してください",
+    "clear": "選択をクリア",
+    "empty": "選択肢がありません"
+  },
+  "drag": {
+    "instructions": "Space キーで開始し、矢印キーで移動します。Space キーで確定、Escape キーでキャンセルします。",
+    "pickedUp": "{label}を選びました",
+    "moved": "{label}に移動",
+    "dropped": "{label}を配置しました",
+    "cancelled": "並べ替えをキャンセルしました",
+    "outside": "移動先がありません"
+  }
+}

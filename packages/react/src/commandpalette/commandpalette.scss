@@ -24,9 +24,10 @@
       position: relative;
       z-index: 1;
       gap: 10px;
-      min-height: 36px;
+      min-height: var(--leaf-density-option-height);
       &[aria-selected='true'],
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled),
+      &:active:not(:disabled) {
         color: var(--leaf-color-text);
         background: transparent;
       }
@@ -53,11 +54,11 @@
     position: absolute;
     top: 0;
     inset-inline: 4px;
-    height: var(--leaf-command-selection-height, 36px);
+    height: var(--leaf-command-selection-height, var(--leaf-density-option-height));
     translate: 0 var(--leaf-command-selection-y, 0px);
     border: 1px solid var(--leaf-color-border-alpha-60);
     border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-option-hover);
     pointer-events: none;
     transition:
       translate var(--leaf-motion-duration) var(--leaf-motion-spring),

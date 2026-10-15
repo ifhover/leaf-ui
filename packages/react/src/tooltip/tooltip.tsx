@@ -10,6 +10,7 @@ import {
   useState,
   version,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
@@ -40,7 +41,7 @@ export interface TooltipProps extends PopupOptions {
   leaveDelay?: number;
   className?: string;
 }
-export function Tooltip({
+export function TooltipControl({
   content,
   children,
   placement = 'top',
@@ -147,4 +148,9 @@ export function Tooltip({
       </FloatingPanel>
     </>
   );
+}
+
+export function Tooltip(rawProps: TooltipProps) {
+  const props = useComponentProps('Tooltip', rawProps);
+  return <TooltipControl {...props} />;
 }

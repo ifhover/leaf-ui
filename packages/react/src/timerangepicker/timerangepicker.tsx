@@ -1,6 +1,7 @@
 import { Clock3 } from 'lucide-react';
 import { forwardRef, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { DateInput, type PickerFieldProps } from '../shared/date-input';
@@ -25,8 +26,8 @@ export interface TimeRangePickerProps extends PickerFieldProps {
 const startTime: TimeParts = { hour: 9, minute: 0, second: 0 };
 const endTime: TimeParts = { hour: 18, minute: 0, second: 0 };
 export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
-  function TimeRangePicker(
-    {
+  function TimeRangePicker(rawProps: TimeRangePickerProps, ref) {
+    const {
       value,
       defaultValue = null,
       onChange,
@@ -40,9 +41,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
       allowOvernight = false,
       disabledTime,
       ...props
-    },
-    ref,
-  ) {
+    } = useComponentProps('TimeRangePicker', rawProps);
     const t = useText();
     const field = useFormField();
     const { messages } = useLeafConfig();
@@ -63,7 +62,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
       !disabledTime?.(range[0], 'start') &&
       !disabledTime?.(range[1], 'end');
     const format = (parts: TimeParts) =>
-      displayTime(parts, showSeconds, use12Hours, [messages.am, messages.pm]);
+      displayTime(parts, showSeconds, use12Hours, [messages.timePicker.am, messages.timePicker.pm]);
     const change = (parts: readonly [TimeParts, TimeParts] | null) => {
       if (props.disabled || field?.disabled || props.readOnly || (parts && !valid(parts))) return;
       const next = parts
@@ -75,8 +74,9 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
     const parseRange = (text: string): readonly [TimeParts, TimeParts] | null => {
       const pair = text.split(/\s*[~～–—]\s*/);
       if (pair.length !== 2) return null;
-      const first = parseTime(pair[0]);
-      const second = parseTime(pair[1]);
+      const periods = [messages.timePicker.am, messages.timePicker.pm] as const;
+      const first = parseTime(pair[0], periods);
+      const second = parseTime(pair[1], periods);
       return first && second ? [first, second] : null;
     };
     const first = parseTime(selected?.[0]);
@@ -85,10 +85,10 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
       <DateInput
         {...props}
         ref={merged}
-        placeholder={props.placeholder ?? t('开始时间 ～ 结束时间', 'Start time ~ End time')}
+        placeholder={props.placeholder ?? t('timeRangePicker.placeholder')}
         icon={<Clock3 size={16} aria-hidden="true" />}
-        panelLabel={t('选择时间范围', 'Choose time range')}
-        clearLabel={t('清除时间范围', 'Clear time range')}
+        panelLabel={t('timeRangePicker.label')}
+        clearLabel={t('timeRangePicker.clear')}
         displayValue={first && second ? `${format(first)} ~ ${format(second)}` : ''}
         formValue={selected ? selected.join('/') : ''}
         open={open}
@@ -121,7 +121,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
             <div className="leaf-time-range-picker__panels">
               {([0, 1] as const).map((index) => (
                 <fieldset key={index} onFocusCapture={() => setActive(index)}>
-                  <legend>{index === 0 ? messages.start : messages.end}</legend>
+                  <legend>{index === 0 ? messages.common.start : messages.common.end}</legend>
                   <TimePanel
                     disabledTime={(parts) => !!disabledTime?.(parts, index === 0 ? 'start' : 'end')}
                     value={draft[index]}
@@ -141,7 +141,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
               ))}
             </div>
             <div className="leaf-picker-footer">
-              <Button
+              <ButtonControl
                 variant="ghost"
                 size="sm"
                 onClick={() => {
@@ -157,9 +157,9 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
                   setValidText(true);
                 }}
               >
-                {messages.now}
-              </Button>
-              <Button
+                {messages.timePicker.now}
+              </ButtonControl>
+              <ButtonControl
                 size="sm"
                 disabled={!validText || !valid(draft)}
                 onClick={() => {
@@ -167,8 +167,8 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
                   close();
                 }}
               >
-                {messages.confirm}
-              </Button>
+                {messages.common.confirm}
+              </ButtonControl>
             </div>
           </>
         )}

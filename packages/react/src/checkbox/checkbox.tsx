@@ -8,6 +8,7 @@ import {
   useImperativeHandle,
   useRef,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -23,7 +24,7 @@ export interface CheckboxProps
   /** Displays mixed selection; it does not change the submitted value. */
   indeterminate?: boolean;
 }
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
+export const CheckboxControl = forwardRef<HTMLInputElement, CheckboxProps>(function CheckboxControl(
   {
     size = 'md',
     variant = 'plain',
@@ -36,7 +37,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
     disabled: disabledProp,
     children,
     ...props
-  },
+  }: CheckboxProps,
   ref,
 ) {
   const field = useFormField();
@@ -113,5 +114,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       )}
     </label>
   );
+});
+CheckboxControl.displayName = 'CheckboxControl';
+
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
+  rawProps: CheckboxProps,
+  ref,
+) {
+  const props = useComponentProps('Checkbox', rawProps);
+  return <CheckboxControl {...props} ref={ref} />;
 });
 Checkbox.displayName = 'Checkbox';

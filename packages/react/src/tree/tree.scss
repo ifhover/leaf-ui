@@ -36,8 +36,12 @@
   &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
     outline: 2px solid var(--leaf-color-primary);
     outline-offset: -2px;
+    &:not([data-disabled]):not([data-selected]) {
+      background: var(--leaf-color-option-hover);
+    }
   }
   &__row {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 7px;
@@ -51,12 +55,12 @@
       color var(--leaf-motion-duration),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not([data-disabled]) {
-      background: var(--leaf-color-surface-muted);
+      background: var(--leaf-color-option-hover);
     }
     &[data-selected],
     &[data-selected]:hover {
       color: var(--leaf-color-primary);
-      background: var(--leaf-color-primary-surface-8);
+      background: var(--leaf-color-primary-surface-9);
     }
     &[data-disabled] {
       color: var(--leaf-color-text-muted);

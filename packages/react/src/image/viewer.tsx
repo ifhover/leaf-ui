@@ -21,9 +21,10 @@ import Lightbox, {
 } from 'yet-another-react-lightbox';
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-import { Loading } from '../loading';
+import { LoadingControl as Loading } from '../loading/loading';
 import { motionDuration, useMotionEnabled } from '../shared/motion';
 import { ScopedPortal } from '../shared/scoped-portal';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 import type { ImagePreviewItem, ImagePreviewProps } from './image';
 
@@ -77,6 +78,7 @@ function ViewerChrome({
   fullscreenControl: FullscreenRef | null;
 }) {
   const t = useText();
+  const format = useFormattedText();
   const motion = useMotionEnabled();
   const { currentIndex } = useLightboxState();
   const { prev, next, close } = useController();
@@ -134,7 +136,7 @@ function ViewerChrome({
     >
       <header className="leaf-image-viewer__header">
         <div className="leaf-image-viewer__title">
-          <span>{item?.alt || t('图片预览', 'Image preview')}</span>
+          <span>{item?.alt || t('image.imagePreview')}</span>
           <span className="leaf-image-viewer__count" aria-live="polite">
             {currentIndex + 1} / {items.length}
           </span>
@@ -142,7 +144,7 @@ function ViewerChrome({
         <div className="leaf-image-viewer__header-actions">
           {downloadable && item?.download !== false && (
             <Control
-              label={t('下载图片', 'Download image')}
+              label={t('image.downloadImage')}
               onClick={() => void download()}
               disabled={downloading}
             >
@@ -150,15 +152,13 @@ function ViewerChrome({
             </Control>
           )}
           <Control
-            label={
-              fullscreen ? t('退出全屏', 'Exit fullscreen') : t('进入全屏', 'Enter fullscreen')
-            }
+            label={fullscreen ? t('image.exitFullscreen') : t('image.enterFullscreen')}
             disabled={!fullscreenControl || fullscreenControl.disabled}
             onClick={() => (fullscreen ? fullscreenControl?.exit() : fullscreenControl?.enter())}
           >
             {fullscreen ? <Minimize2 size={19} /> : <Maximize2 size={19} />}
           </Control>
-          <Control label={t('关闭预览', 'Close preview')} onClick={close}>
+          <Control label={t('image.closePreview')} onClick={close}>
             <X size={22} />
           </Control>
         </div>
@@ -167,7 +167,7 @@ function ViewerChrome({
         <>
           <Control
             className="leaf-image-viewer__previous"
-            label={t('上一张', 'Previous image')}
+            label={t('image.previousImage')}
             disabled={prevDisabled}
             onClick={() => prev()}
           >
@@ -175,7 +175,7 @@ function ViewerChrome({
           </Control>
           <Control
             className="leaf-image-viewer__next"
-            label={t('下一张', 'Next image')}
+            label={t('image.nextImage')}
             disabled={nextDisabled}
             onClick={() => next()}
           >
@@ -186,18 +186,15 @@ function ViewerChrome({
       <footer className="leaf-image-viewer__footer">
         {failedDownload && (
           <p role="alert" className="leaf-image-viewer__error">
-            {t(
-              '下载失败，可在新窗口打开原图保存',
-              'Download failed. Open the original image to save it.',
-            )}{' '}
+            {t('image.downloadFailedOpenTheOriginalImageToSaveIt')}{' '}
             <a href={downloadUrl} target="_blank" rel="noopener noreferrer">
-              {t('打开原图', 'Open original')}
+              {t('image.openOriginal')}
             </a>
           </p>
         )}
         <div className="leaf-image-viewer__tools">
           <Control
-            label={t('缩小', 'Zoom out')}
+            label={t('image.zoomOut')}
             disabled={!zoomControl || zoomControl.disabled || zoom <= 1}
             onClick={() => zoomControl?.zoomOut()}
           >
@@ -207,19 +204,19 @@ function ViewerChrome({
             type="button"
             className="leaf-image-viewer__zoom-level"
             onClick={() => zoomControl?.changeZoom(1)}
-            title={t('重置缩放', 'Reset zoom')}
+            title={t('image.resetZoom')}
           >
             {Math.round(zoom * 100)}%
           </button>
           <Control
-            label={t('放大', 'Zoom in')}
+            label={t('image.zoomIn')}
             disabled={!zoomControl || zoomControl.disabled || zoom >= zoomControl.maxZoom}
             onClick={() => zoomControl?.zoomIn()}
           >
             <ZoomIn size={18} />
           </Control>
           <Control
-            label={t('重置缩放', 'Reset zoom')}
+            label={t('image.resetZoom')}
             disabled={zoom <= 1}
             onClick={() => zoomControl?.changeZoom(1)}
           >
@@ -229,7 +226,7 @@ function ViewerChrome({
             <>
               <span className="leaf-image-viewer__tool-separator" />
               <Control
-                label={t('显示缩略图', 'Show thumbnails')}
+                label={t('image.showThumbnails')}
                 active={showThumbs}
                 onClick={() => setShowThumbs((value) => !value)}
               >
@@ -241,7 +238,7 @@ function ViewerChrome({
         {hasThumbs && showThumbs && (
           <div className="leaf-image-viewer__gallery">
             <Control
-              label={t('向前滚动缩略图', 'Scroll thumbnails backward')}
+              label={t('image.scrollThumbnailsBackward')}
               onClick={() =>
                 strip.current?.scrollBy({
                   left: -(strip.current.clientWidth * 0.7),
@@ -254,7 +251,7 @@ function ViewerChrome({
             <fieldset
               className="leaf-image-viewer__thumbnails"
               ref={strip}
-              aria-label={t('图片列表', 'Image list')}
+              aria-label={t('image.imageList')}
             >
               {items.map((image, target) => (
                 <button
@@ -264,7 +261,10 @@ function ViewerChrome({
                   className="leaf-image-viewer__thumbnail"
                   data-index={target}
                   aria-current={currentIndex === target || undefined}
-                  aria-label={`${t('查看第', 'View image')} ${target + 1}${t('张图片', '')}${image.alt ? `: ${image.alt}` : ''}`}
+                  aria-label={format('image.viewImage', {
+                    index: target + 1,
+                    alt: image.alt ? `: ${image.alt}` : '',
+                  })}
                   title={image.alt || String(target + 1)}
                   tabIndex={currentIndex === target ? 0 : -1}
                   onClick={() => choose(target)}
@@ -301,7 +301,7 @@ function ViewerChrome({
               ))}
             </fieldset>
             <Control
-              label={t('向后滚动缩略图', 'Scroll thumbnails forward')}
+              label={t('image.scrollThumbnailsForward')}
               onClick={() =>
                 strip.current?.scrollBy({
                   left: strip.current.clientWidth * 0.7,
@@ -350,6 +350,7 @@ function Viewer({
     setSlides(items.map((item) => ({ ...item })));
   }
   const t = useText();
+  const format = useFormattedText();
   const motion = useMotionEnabled();
   const duration = root && motion ? motionDuration(root) : 0;
   return (
@@ -393,11 +394,14 @@ function Viewer({
             ),
           }}
           labels={{
-            Lightbox: t('图片预览', 'Image preview'),
-            'Photo gallery': t('图片列表', 'Image list'),
-            Slide: t('图片', 'Image'),
-            '{index} of {total}': t('第 {index} 张，共 {total} 张', '{index} of {total}'),
-            Close: t('关闭预览', 'Close preview'),
+            Lightbox: t('image.imagePreview'),
+            'Photo gallery': t('image.imageList'),
+            Slide: t('image.image'),
+            '{index} of {total}': format('image.position', {
+              index: index + 1,
+              total: items.length,
+            }),
+            Close: t('image.closePreview'),
           }}
           on={{
             view: ({ index: next }) => {

@@ -10,7 +10,9 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
+import { estimateControlHeight } from '../density';
 import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
@@ -21,9 +23,11 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { useListMotion } from '../shared/motion';
+import { SelectionContent } from '../shared/selection-content';
 import type { ControlSize, ControlStatus } from '../shared/types';
-import { Tree, type TreeNode } from '../tree';
+import type { TreeNode } from '../tree';
 import { treeModel } from '../tree/model';
+import { TreeControl as Tree } from '../tree/tree';
 
 export interface TreeSelectOption {
   value: string;
@@ -73,7 +77,8 @@ interface InternalTreeSelectProps
   inputReadOnly?: boolean;
   open?: boolean;
   defaultOpen?: boolean;
-  maxTagCount?: number;
+  maxTagCount?: number | 'responsive';
+  tagWrap?: boolean;
   maxCount?: number;
   treeExpandedKeys?: readonly string[];
   onExpand?: (keys: string[]) => void;
@@ -110,11 +115,12 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
       onLoadError,
       virtual = false,
       listHeight = 256,
-      itemHeight = 34,
+      itemHeight: itemHeightProp,
       inputReadOnly,
       open: controlledOpen,
       defaultOpen,
-      maxTagCount = Infinity,
+      maxTagCount,
+      tagWrap = true,
       maxCount = Infinity,
       treeExpandedKeys,
       onExpand,
@@ -136,7 +142,9 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
     },
     forwardedRef,
   ) {
-    const { messages } = useLeafConfig();
+    const { messages, theme, density } = useLeafConfig();
+    const itemHeight =
+      itemHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4) + 6;
     const field = useFormField();
     const disabled = disabledProp || field?.disabled;
     const required = requiredProp ?? field?.required;
@@ -149,13 +157,9 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
     const pendingFocus = useRef(false);
     const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
     const selected = typeof current === 'string' ? [current] : (current ?? emptyKeys);
-    useListMotion(
-      root,
-      JSON.stringify(selected.slice(0, maxTagCount)),
-      '.leaf-tree-select__tag[data-motion-key]',
-    );
     useListMotion(root, selected[0], multi ? '' : '.leaf-tree-select__input-wrap[data-motion-key]');
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState<string | null>(null);
+    const searchQuery = query ?? '';
     const [open, setOpen] = usePopupState(
       disabled || props.readOnly,
       onOpenChange,
@@ -220,13 +224,16 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
       return convert(allOptions);
     }, [allOptions]);
     const records = useMemo(() => treeModel(data), [data]);
+    const [expandedKeys, setExpandedKeys] = useState<readonly string[]>(() =>
+      defaultExpandAll ? [...records.keys()] : treeDefaultExpandedKeys,
+    );
     const close = () => {
       setOpen(false);
-      setQuery('');
+      setQuery(null);
     };
     useFloatingDismiss(open, close, trigger, panel, root);
     useEffect(() => {
-      if (!open) setQuery('');
+      if (!open) setQuery(null);
       else if (pendingFocus.current) {
         panel.current?.querySelector<HTMLElement>('[role="treeitem"][tabindex="0"]')?.focus();
         pendingFocus.current = false;
@@ -237,7 +244,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
       const next: TreeSelectValue = multi ? [...keys] : (keys[0] ?? null);
       setCurrent(next);
       onChange?.(next);
-      setQuery('');
+      setQuery(null);
       if (!multi) {
         setOpen(false);
         trigger.current?.focus();
@@ -257,14 +264,19 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
       selectedCaption !== undefined &&
       typeof selectedCaption !== 'string' &&
       typeof selectedCaption !== 'number';
-    const showCaption =
-      !multi && !query && selected[0] !== undefined && ((showSearch && open) || hasRichCaption);
-    const inputValue =
-      multi || (showSearch && open)
-        ? query
+    const showCaption = !multi && hasRichCaption && (!showSearch || !open || query === null);
+    const inputValue = multi
+      ? searchQuery
+      : showSearch && open
+        ? (query ?? (selected[0] === undefined ? '' : a11yCaption(selected[0])))
         : selected[0] === undefined
           ? ''
           : a11yCaption(selected[0]);
+    const beginSearch = () => {
+      if (!showSearch || disabled || props.readOnly || inputReadOnly) return;
+      if (!multi && query === null) trigger.current?.select();
+      setOpen(true);
+    };
     return (
       <>
         {/* biome-ignore lint/a11y/noStaticElementInteractions: The wrapper extends the input's clickable area, as in Select. */}
@@ -282,32 +294,51 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
           data-status={status}
           data-open={open || undefined}
           data-clearable={clearable || undefined}
+          data-searchable={showSearch || undefined}
+          onMouseDown={(event) => {
+            if (
+              !disabled &&
+              event.target instanceof Element &&
+              !event.target.closest('input, button, a')
+            )
+              event.preventDefault();
+          }}
           onClick={(event) => {
-            if (!disabled && !(event.target as HTMLElement).closest('button')) {
+            if (
+              !disabled &&
+              event.target instanceof Element &&
+              !event.target.closest('input, button, a')
+            ) {
               trigger.current?.focus();
-              setOpen(true);
+              trigger.current?.click();
             }
           }}
         >
-          <div className="leaf-tree-select__content">
-            {multi &&
-              selected.slice(0, Math.max(0, maxTagCount)).map((key) => (
-                <span className="leaf-tree-select__tag" key={key} data-motion-key={key}>
-                  <span>{caption(key)}</span>
-                  {canRemove(key) && !disabled && !props.readOnly && (
-                    <button
-                      type="button"
-                      aria-label={`${messages.remove} ${a11yCaption(key)}`}
-                      onClick={() => commit(selected.filter((item) => item !== key))}
-                    >
-                      <X size={12} aria-hidden="true" />
-                    </button>
-                  )}
-                </span>
-              ))}
-            {multi && selected.length > maxTagCount && (
-              <span className="leaf-tree-select__tag">+{selected.length - maxTagCount}</span>
-            )}
+          <SelectionContent
+            className="leaf-tree-select__content"
+            tagClassName="leaf-tree-select__tag"
+            tagWrap={tagWrap}
+            maxTagCount={maxTagCount}
+            searchable={showSearch && !props.readOnly && !inputReadOnly}
+            query={searchQuery}
+            removeLabel={messages.common.remove}
+            items={
+              multi
+                ? selected.map((key) => ({
+                    key,
+                    label: caption(key),
+                    text: a11yCaption(key),
+                    remove:
+                      canRemove(key) && !disabled && !props.readOnly
+                        ? () => {
+                            commit(selected.filter((item) => item !== key));
+                            trigger.current?.focus();
+                          }
+                        : undefined,
+                  }))
+                : undefined
+            }
+          >
             <span className="leaf-tree-select__input-wrap" data-motion-key={selected[0] ?? ''}>
               {showCaption && (
                 <span className="leaf-tree-select__value" aria-hidden="true">
@@ -323,7 +354,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
                 aria-expanded={open}
                 aria-controls={open ? id : undefined}
                 aria-autocomplete={showSearch ? 'list' : undefined}
-                aria-label={label ?? (field?.labelId ? undefined : messages.select)}
+                aria-label={label ?? (field?.labelId ? undefined : messages.treeSelect.placeholder)}
                 aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
                 aria-describedby={
                   [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') ||
@@ -339,7 +370,27 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
                 value={inputValue}
                 readOnly={!showSearch || props.readOnly || inputReadOnly}
                 disabled={disabled}
-                placeholder={selected.length ? undefined : (placeholder ?? messages.select)}
+                placeholder={
+                  selected.length ? undefined : (placeholder ?? messages.treeSelect.placeholder)
+                }
+                onClick={(event) => {
+                  props.onClick?.(event);
+                  if (event.defaultPrevented) return;
+                  if (open && !showSearch) close();
+                  else setOpen(true);
+                }}
+                onBeforeInput={(event) => {
+                  props.onBeforeInput?.(event);
+                  if (!event.defaultPrevented) beginSearch();
+                }}
+                onPaste={(event) => {
+                  props.onPaste?.(event);
+                  if (!event.defaultPrevented) beginSearch();
+                }}
+                onCompositionStart={(event) => {
+                  props.onCompositionStart?.(event);
+                  if (!event.defaultPrevented) beginSearch();
+                }}
                 onChange={(event) => {
                   setQuery(event.target.value);
                   onSearch?.(event.target.value);
@@ -347,7 +398,14 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
                 }}
                 onKeyDown={(event) => {
                   props.onKeyDown?.(event);
-                  if (event.defaultPrevented || disabled) return;
+                  if (event.defaultPrevented || disabled || event.nativeEvent.isComposing) return;
+                  if (
+                    !event.ctrlKey &&
+                    !event.metaKey &&
+                    !event.altKey &&
+                    (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete')
+                  )
+                    beginSearch();
                   if (event.key === 'ArrowDown') {
                     event.preventDefault();
                     if (!open) {
@@ -360,19 +418,23 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
                   } else if (event.key === 'Enter' && !open) {
                     event.preventDefault();
                     setOpen(true);
-                  } else if (event.key === 'Backspace' && !query && multi) {
+                  } else if (event.key === 'Backspace' && !searchQuery && multi) {
                     const last = [...selected].reverse().find(canRemove);
-                    if (last) commit(selected.filter((key) => key !== last));
+                    if (last) {
+                      event.preventDefault();
+                      commit(selected.filter((key) => key !== last));
+                    }
                   }
                 }}
               />
             </span>
-          </div>
+          </SelectionContent>
           {clearable && (
             <button
               type="button"
               className="leaf-tree-select__clear"
-              aria-label={messages.clearSelection}
+              aria-label={messages.treeSelect.clear}
+              onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 commit(selected.filter((key) => !canRemove(key)));
                 trigger.current?.focus();
@@ -386,7 +448,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
             className="leaf-tree-select__arrow"
             tabIndex={-1}
             disabled={disabled}
-            aria-label={messages.select}
+            aria-label={messages.treeSelect.placeholder}
             onClick={() => {
               trigger.current?.focus();
               if (open) close();
@@ -436,8 +498,13 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
               loadData={loadData ? lazyLoad : undefined}
               cacheKey={cacheKey}
               disabled={disabled || props.readOnly}
-              expandedKeys={treeExpandedKeys}
-              onExpand={(keys) => onExpand?.(keys)}
+              expandedKeys={treeExpandedKeys ?? expandedKeys}
+              onExpand={(keys) => {
+                if (treeExpandedKeys === undefined) setExpandedKeys(keys);
+                onExpand?.(keys);
+              }}
+              checkOnClick={treeCheckable}
+              expandOnClick
               filterTreeNode={
                 filterTreeNode
                   ? (node, query) => {
@@ -460,17 +527,15 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
               }}
               id={id}
               data={data}
-              aria-label={label ?? messages.select}
+              aria-label={label ?? messages.treeSelect.placeholder}
               multiple={multi}
               selectable={!treeCheckable}
               checkable={treeCheckable}
               checkStrictly={checkStrictly}
               selectedKeys={treeCheckable ? emptyKeys : selected}
               checkedKeys={selected}
-              searchValue={query}
-              defaultExpandAll={defaultExpandAll}
-              defaultExpandedKeys={treeDefaultExpandedKeys}
-              notFoundContent={notFoundContent}
+              searchValue={searchQuery}
+              notFoundContent={notFoundContent ?? messages.treeSelect.empty}
               onSelect={(keys) => commit(keys)}
               onCheck={(keys) => {
                 const checked = new Set(keys);
@@ -523,6 +588,13 @@ export type TreeSelectProps = Omit<
         onChange?: (value: readonly string[]) => void;
       }
   );
-export const TreeSelect = InternalTreeSelect as React.ForwardRefExoticComponent<
+export const TreeSelectControl = InternalTreeSelect as React.ForwardRefExoticComponent<
   TreeSelectProps & React.RefAttributes<HTMLInputElement>
 >;
+export const TreeSelect = forwardRef<HTMLInputElement, TreeSelectProps>(
+  function TreeSelect(rawProps, ref) {
+    const props = useComponentProps('TreeSelect', rawProps);
+    return <TreeSelectControl {...props} ref={ref} />;
+  },
+);
+TreeSelect.displayName = 'TreeSelect';

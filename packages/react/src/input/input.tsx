@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -31,7 +32,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   onPressEnter?: KeyboardEventHandler<HTMLInputElement>;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+// Composites resolve their defaults before owning value, reset and callbacks.
+export const InputControl = forwardRef<HTMLInputElement, InputProps>(function InputControl(
   {
     size = 'md',
     status: statusProp,
@@ -56,7 +58,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     onPressEnter,
     'aria-invalid': ariaInvalid,
     ...props
-  },
+  }: InputProps,
   ref,
 ) {
   const field = useFormField();
@@ -119,7 +121,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <button
           type="button"
           className="leaf-input__clear"
-          aria-label={messages.clearInput}
+          aria-label={messages.input.clear}
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
             const node = input.current;
@@ -153,7 +155,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           type="button"
           className="leaf-input__visibility"
           disabled={disabled}
-          aria-label={visible ? messages.hidePassword : messages.showPassword}
+          aria-label={visible ? messages.input.hidePassword : messages.input.showPassword}
           aria-pressed={visible}
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
@@ -172,5 +174,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       )}
     </div>
   );
+});
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(rawProps, ref) {
+  const props = useComponentProps('Input', rawProps);
+  return <InputControl {...props} ref={ref} />;
 });
 Input.displayName = 'Input';

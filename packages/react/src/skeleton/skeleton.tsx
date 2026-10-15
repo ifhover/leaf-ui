@@ -1,4 +1,5 @@
 import { type HTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
@@ -15,7 +16,7 @@ export interface SkeletonProps extends Omit<HTMLAttributes<HTMLDivElement>, 'tit
   rowWidths?: readonly (number | string)[];
   round?: boolean;
 }
-export function Skeleton({
+export function SkeletonControl({
   loading = true,
   active = true,
   avatar = false,
@@ -78,7 +79,7 @@ export function Skeleton({
       {...props}
       ref={root}
       role="status"
-      aria-label={props['aria-label'] ?? messages.loading}
+      aria-label={props['aria-label'] ?? messages.common.loading}
       className={classes(
         'leaf-skeleton',
         active && 'leaf-skeleton--active',
@@ -100,4 +101,9 @@ export function Skeleton({
       </div>
     </div>
   );
+}
+
+export function Skeleton(rawProps: SkeletonProps) {
+  const props = useComponentProps('Skeleton', rawProps);
+  return <SkeletonControl {...props} />;
 }

@@ -1,4 +1,5 @@
 import { Children, Fragment, forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 
 export interface SpaceProps extends HTMLAttributes<HTMLDivElement> {
@@ -9,7 +10,10 @@ export interface SpaceProps extends HTMLAttributes<HTMLDivElement> {
   split?: ReactNode;
 }
 export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
-  {
+  rawProps: SpaceProps,
+  ref,
+) {
+  const {
     direction = 'horizontal',
     size = 'md',
     align = 'center',
@@ -19,9 +23,7 @@ export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
     children,
     style,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Space', rawProps);
   const sizes = {
     sm: 'var(--leaf-spacing-sm, 8px)',
     md: 'var(--leaf-spacing-md, 16px)',

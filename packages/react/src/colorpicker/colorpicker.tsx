@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -195,13 +196,26 @@ export function SolidColorPicker({
   const clearable = allowClear && Boolean(current) && !disabled && !readOnly;
   return (
     <>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Pointer events on the outer row forward to the keyboard-accessible trigger button. */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: The enclosed native button owns keyboard interaction; this wrapper only extends its hit area. */}
       <span
         ref={root}
         className={classes('leaf-color-picker', `leaf-color-picker--${size}`, className)}
         style={style}
         data-status={status}
         data-disabled={disabled || undefined}
+        data-readonly={readOnly || undefined}
         data-open={open || undefined}
+        onMouseDown={(event) => {
+          if (!disabled && event.target === event.currentTarget) event.preventDefault();
+        }}
+        onClick={(event) => {
+          if (disabled || event.defaultPrevented || event.target !== event.currentTarget) return;
+          event.preventDefault();
+          event.stopPropagation();
+          trigger.current?.focus();
+          trigger.current?.click();
+        }}
       >
         <button
           {...props}
@@ -211,7 +225,7 @@ export function SolidColorPicker({
           id={props.id ?? field?.id}
           className="leaf-color-picker__trigger"
           disabled={disabled}
-          aria-label={label ?? (field?.labelId ? undefined : messages.color)}
+          aria-label={label ?? (field?.labelId ? undefined : messages.colorPicker.label)}
           aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
           aria-describedby={
             [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
@@ -230,7 +244,9 @@ export function SolidColorPicker({
           </span>
           {showText && (
             <span className="leaf-color-picker__text">
-              {typeof showText === 'function' ? showText(display) : display || messages.color}
+              {typeof showText === 'function'
+                ? showText(display)
+                : display || messages.colorPicker.label}
             </span>
           )}
         </button>
@@ -238,7 +254,7 @@ export function SolidColorPicker({
           <button
             type="button"
             className="leaf-color-picker__clear"
-            aria-label={messages.clearColor}
+            aria-label={messages.colorPicker.clear}
             onClick={() => {
               setCurrent('');
               onChange?.('');
@@ -265,7 +281,7 @@ export function SolidColorPicker({
         className={classes('leaf-floating', 'leaf-color-picker__panel', popupClassName)}
         id={id}
         role="dialog"
-        aria-label={messages.color}
+        aria-label={messages.colorPicker.label}
         width={popupWidth}
         style={popupStyle}
         render={popupRender}
@@ -275,11 +291,11 @@ export function SolidColorPicker({
         <div
           role="slider"
           tabIndex={0}
-          aria-label={`${messages.saturation} / ${messages.brightness}`}
+          aria-label={`${messages.colorPicker.saturation} / ${messages.colorPicker.brightness}`}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(activeHsv.s * 100)}
-          aria-valuetext={`${messages.saturation} ${Math.round(activeHsv.s * 100)}%, ${messages.brightness} ${Math.round(activeHsv.v * 100)}%`}
+          aria-valuetext={`${messages.colorPicker.saturation} ${Math.round(activeHsv.s * 100)}%, ${messages.colorPicker.brightness} ${Math.round(activeHsv.v * 100)}%`}
           className="leaf-color-picker__area"
           style={{
             backgroundImage: gradient
@@ -328,7 +344,7 @@ export function SolidColorPicker({
               min={0}
               max={359}
               value={Math.round(activeHsv.h)}
-              aria-label={messages.hue}
+              aria-label={messages.colorPicker.hue}
               onChange={(event) => change({ ...activeHsv, h: Number(event.target.value) })}
               onPointerUp={() => onChangeComplete?.(latest.current)}
               onKeyUp={() => onChangeComplete?.(latest.current)}
@@ -340,7 +356,7 @@ export function SolidColorPicker({
                 min={0}
                 max={100}
                 value={Math.round(activeHsv.a * 100)}
-                aria-label={messages.alpha}
+                aria-label={messages.colorPicker.alpha}
                 style={{ '--leaf-alpha-color': opaqueColor } as CSSProperties}
                 onChange={(event) => change({ ...activeHsv, a: Number(event.target.value) / 100 })}
                 onPointerUp={() => onChangeComplete?.(latest.current)}
@@ -349,7 +365,7 @@ export function SolidColorPicker({
             )}
           </div>
         </div>
-        <fieldset className="leaf-color-picker__formats" aria-label={messages.colorValue}>
+        <fieldset className="leaf-color-picker__formats" aria-label={messages.colorPicker.value}>
           {(['hex', 'rgb', 'hsl'] as const).map((next) => (
             <button
               type="button"
@@ -366,7 +382,7 @@ export function SolidColorPicker({
         </fieldset>
         <input
           className="leaf-color-picker__input"
-          aria-label={messages.colorValue}
+          aria-label={messages.colorPicker.value}
           aria-invalid={invalid || undefined}
           aria-describedby={invalid ? `${id}-error` : undefined}
           value={input}
@@ -384,13 +400,13 @@ export function SolidColorPicker({
         />
         {invalid && (
           <span className="leaf-color-picker__error" id={`${id}-error`}>
-            {messages.invalidColor}
+            {messages.colorPicker.invalid}
           </span>
         )}
         {(
           presets ?? [
             {
-              label: messages.presets,
+              label: messages.colorPicker.presets,
               colors: [
                 '#20834a',
                 '#13a8a8',
@@ -437,7 +453,8 @@ export function SolidColorPicker({
   );
 }
 
-export function ColorPicker(props: ColorPickerProps) {
+export function ColorPicker(rawProps: ColorPickerProps) {
+  const props = useComponentProps('ColorPicker', rawProps);
   return props.mode === 'gradient' || props.gradient ? (
     <GradientColorPicker {...props} />
   ) : (

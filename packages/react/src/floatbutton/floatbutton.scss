@@ -22,10 +22,6 @@
   }
 }
 .leaf-float-group {
-  position: fixed;
-  inset-inline-end: 24px;
-  bottom: 24px;
-  z-index: 50;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -33,6 +29,12 @@
   padding: 0;
   margin: 0;
   min-width: 0;
+  &--fixed {
+    position: fixed;
+    inset-inline-end: 24px;
+    bottom: 24px;
+    z-index: 50;
+  }
   &__actions {
     display: grid;
     grid-template-rows: 0fr;

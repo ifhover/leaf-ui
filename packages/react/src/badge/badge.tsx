@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useContentTransition } from '../shared/presence';
 
@@ -11,19 +12,20 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   text?: ReactNode;
   color?: string;
 }
-export function Badge({
-  count,
-  max = 99,
-  showZero = false,
-  dot = false,
-  status,
-  text,
-  color,
-  children,
-  className,
-  style,
-  ...props
-}: BadgeProps) {
+export function Badge(rawProps: BadgeProps) {
+  const {
+    count,
+    max = 99,
+    showZero = false,
+    dot = false,
+    status,
+    text,
+    color,
+    children,
+    className,
+    style,
+    ...props
+  } = useComponentProps('Badge', rawProps);
   const number = useRef<HTMLSpanElement>(null);
   const hasCount = count !== undefined && count !== '' && (count !== 0 || showZero);
   const visible = dot || status || hasCount;

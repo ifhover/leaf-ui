@@ -1,5 +1,6 @@
 import { type ReactNode, useContext, useEffect, useId, useMemo, useRef } from 'react';
 import type { FeedbackType } from '../alert/alert';
+import { ComponentDefaultsContext, useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { MessageItem } from './item';
@@ -26,7 +27,8 @@ export interface MessageProps extends Omit<MessageOptions, 'key'> {
   open: boolean;
   afterClose?: () => void;
 }
-export function Message({ open, afterClose, onClose, ...options }: MessageProps) {
+export function Message(rawProps: MessageProps) {
+  const { open, afterClose, onClose, ...options } = useComponentProps('Message', rawProps);
   return (
     <ScopedPortal>
       <div className="leaf-message-region">
@@ -43,13 +45,24 @@ export function Message({ open, afterClose, onClose, ...options }: MessageProps)
 export function useMessage(): { message: MessageApi } {
   const store = useContext(MessageContext);
   const config = useLeafConfig();
+  const components = useContext(ComponentDefaultsContext);
+  const currentComponents = useRef(components);
+  currentComponents.current = components;
   const currentConfig = useRef(config);
   currentConfig.current = config;
   const scope = useId();
-  const message = useMemo(() => store?.api(scope, () => currentConfig.current), [store, scope]);
+  const message = useMemo(
+    () =>
+      store?.api(
+        scope,
+        () => currentConfig.current,
+        () => currentComponents.current,
+      ),
+    [store, scope],
+  );
   useEffect(() => {
-    store?.updateScope(scope, config);
-  }, [store, scope, config]);
+    store?.updateScope(scope, config, components);
+  }, [store, scope, config, components]);
   const result = useMemo(() => (message ? { message } : undefined), [message]);
   if (!result) throw new Error('useMessage requires ConfigProvider or MessageProvider.');
   return result;

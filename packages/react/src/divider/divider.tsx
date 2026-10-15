@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 
 export interface DividerProps extends HTMLAttributes<HTMLDivElement> {
@@ -6,14 +7,15 @@ export interface DividerProps extends HTMLAttributes<HTMLDivElement> {
   align?: 'start' | 'center' | 'end';
   dashed?: boolean;
 }
-export function Divider({
-  type = 'horizontal',
-  align = 'center',
-  dashed = false,
-  children,
-  className,
-  ...props
-}: DividerProps) {
+export function Divider(rawProps: DividerProps) {
+  const {
+    type = 'horizontal',
+    align = 'center',
+    dashed = false,
+    children,
+    className,
+    ...props
+  } = useComponentProps('Divider', rawProps);
   return (
     // biome-ignore lint/a11y/useSemanticElements: A labelled divider needs text children, which hr cannot contain.
     <div

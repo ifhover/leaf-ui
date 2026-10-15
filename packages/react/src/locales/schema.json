@@ -1,0 +1,1250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Leaf UI translation resources",
+  "description": "Partial resources are supported. Missing entries follow ConfigProvider.locale.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "select": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Please select"
+        },
+        "empty": {
+          "type": "string",
+          "description": "English: No options"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear selection"
+        },
+        "create": {
+          "type": "string",
+          "description": "English: Create “{label}”"
+        }
+      }
+    },
+    "autoComplete": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "empty": {
+          "type": "string",
+          "description": "English: No suggestions"
+        },
+        "suggestions": {
+          "type": "string",
+          "description": "English: {label} suggestions"
+        }
+      }
+    },
+    "datePicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Select a date"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear date"
+        },
+        "label": {
+          "type": "string",
+          "description": "English: Choose a date"
+        },
+        "selectDate": {
+          "type": "string",
+          "description": "English: Choose date"
+        }
+      }
+    },
+    "timePicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Select a time"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear time"
+        },
+        "label": {
+          "type": "string",
+          "description": "English: Choose a time"
+        },
+        "hours": {
+          "type": "string",
+          "description": "English: Hours"
+        },
+        "minutes": {
+          "type": "string",
+          "description": "English: Minutes"
+        },
+        "seconds": {
+          "type": "string",
+          "description": "English: Seconds"
+        },
+        "period": {
+          "type": "string",
+          "description": "English: Period"
+        },
+        "am": {
+          "type": "string",
+          "description": "English: AM"
+        },
+        "pm": {
+          "type": "string",
+          "description": "English: PM"
+        },
+        "now": {
+          "type": "string",
+          "description": "English: Now"
+        },
+        "selectTime": {
+          "type": "string",
+          "description": "English: Choose time"
+        }
+      }
+    },
+    "dateTimePicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Select date and time"
+        }
+      }
+    },
+    "dateRangePicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Select a date range"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear range"
+        }
+      }
+    },
+    "cascader": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clear": {
+          "type": "string",
+          "description": "English: Clear selection"
+        },
+        "level": {
+          "type": "string",
+          "description": "English: Level {level}"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "English: Please select"
+        },
+        "empty": {
+          "type": "string",
+          "description": "English: No options"
+        }
+      }
+    },
+    "calendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "previousMonth": {
+          "type": "string",
+          "description": "English: Previous month"
+        },
+        "nextMonth": {
+          "type": "string",
+          "description": "English: Next month"
+        },
+        "previousYear": {
+          "type": "string",
+          "description": "English: Previous year"
+        },
+        "nextYear": {
+          "type": "string",
+          "description": "English: Next year"
+        },
+        "previousYears": {
+          "type": "string",
+          "description": "English: Previous years"
+        },
+        "nextYears": {
+          "type": "string",
+          "description": "English: Next years"
+        },
+        "weekdays": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 7,
+          "maxItems": 7
+        },
+        "year": {
+          "type": "string",
+          "description": "English: Year"
+        },
+        "month": {
+          "type": "string",
+          "description": "English: Month"
+        },
+        "week": {
+          "type": "string",
+          "description": "English: Week"
+        },
+        "today": {
+          "type": "string",
+          "description": "English: Today"
+        },
+        "label": {
+          "type": "string",
+          "description": "English: Calendar"
+        }
+      }
+    },
+    "common": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "confirm": {
+          "type": "string",
+          "description": "English: OK"
+        },
+        "cancel": {
+          "type": "string",
+          "description": "English: Cancel"
+        },
+        "close": {
+          "type": "string",
+          "description": "English: Close"
+        },
+        "start": {
+          "type": "string",
+          "description": "English: Start"
+        },
+        "end": {
+          "type": "string",
+          "description": "English: End"
+        },
+        "remove": {
+          "type": "string",
+          "description": "English: Remove"
+        },
+        "search": {
+          "type": "string",
+          "description": "English: Search options"
+        },
+        "noData": {
+          "type": "string",
+          "description": "English: No data"
+        },
+        "retry": {
+          "type": "string",
+          "description": "English: Retry"
+        },
+        "preview": {
+          "type": "string",
+          "description": "English: Preview"
+        },
+        "download": {
+          "type": "string",
+          "description": "English: Download"
+        },
+        "loading": {
+          "type": "string",
+          "description": "English: Loading"
+        },
+        "searchAction": {
+          "type": "string",
+          "description": "English: Search"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "type": "string",
+          "description": "English: Please fill out this field"
+        },
+        "invalid": {
+          "type": "string",
+          "description": "English: Please check this field"
+        },
+        "errorSummary": {
+          "type": "string",
+          "description": "English: Please check the following fields"
+        }
+      }
+    },
+    "breadcrumb": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Breadcrumb"
+        }
+      }
+    },
+    "pagination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Pagination"
+        },
+        "previousPage": {
+          "type": "string",
+          "description": "English: Previous page"
+        },
+        "nextPage": {
+          "type": "string",
+          "description": "English: Next page"
+        },
+        "page": {
+          "type": "string",
+          "description": "English: Page"
+        },
+        "pageSize": {
+          "type": "string",
+          "description": "English: Page size"
+        },
+        "jumpTo": {
+          "type": "string",
+          "description": "English: Go to"
+        },
+        "pageBack": {
+          "type": "string",
+          "description": "English: Jump back 5 pages"
+        },
+        "pageForward": {
+          "type": "string",
+          "description": "English: Jump forward 5 pages"
+        },
+        "pageLabel": {
+          "type": "string",
+          "description": "English: Page {page}"
+        },
+        "pageSizeOption": {
+          "type": "string",
+          "description": "English: {count} / page"
+        },
+        "total": {
+          "type": "string",
+          "description": "English: Total {total} items"
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "showPassword": {
+          "type": "string",
+          "description": "English: Show password"
+        },
+        "hidePassword": {
+          "type": "string",
+          "description": "English: Hide password"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear input"
+        }
+      }
+    },
+    "inputNumber": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "increase": {
+          "type": "string",
+          "description": "English: Increase value"
+        },
+        "decrease": {
+          "type": "string",
+          "description": "English: Decrease value"
+        },
+        "invalid": {
+          "type": "string",
+          "description": "English: Enter a valid number within the allowed range"
+        }
+      }
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Progress"
+        }
+      }
+    },
+    "avatar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Avatar"
+        },
+        "moreMembers": {
+          "type": "string",
+          "description": "English: More members"
+        },
+        "showMore": {
+          "type": "string",
+          "description": "English: Show {count, plural, one {# more member} other {# more members}}"
+        }
+      }
+    },
+    "rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Rating"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "success": {
+          "type": "string",
+          "description": "English: Success"
+        },
+        "warning": {
+          "type": "string",
+          "description": "English: Attention needed"
+        },
+        "error": {
+          "type": "string",
+          "description": "English: Something went wrong"
+        },
+        "info": {
+          "type": "string",
+          "description": "English: Information"
+        }
+      }
+    },
+    "colorPicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Choose a color"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear color"
+        },
+        "saturation": {
+          "type": "string",
+          "description": "English: Saturation"
+        },
+        "brightness": {
+          "type": "string",
+          "description": "English: Brightness"
+        },
+        "hue": {
+          "type": "string",
+          "description": "English: Hue"
+        },
+        "alpha": {
+          "type": "string",
+          "description": "English: Opacity"
+        },
+        "value": {
+          "type": "string",
+          "description": "English: Color value"
+        },
+        "invalid": {
+          "type": "string",
+          "description": "English: Enter a valid color"
+        },
+        "presets": {
+          "type": "string",
+          "description": "English: Preset colors"
+        },
+        "gradient": {
+          "type": "string",
+          "description": "English: Gradient"
+        },
+        "colorStop": {
+          "type": "string",
+          "description": "English: Color stop {index}"
+        },
+        "addColorStop": {
+          "type": "string",
+          "description": "English: Add color stop"
+        },
+        "removeColorStop": {
+          "type": "string",
+          "description": "English: Remove color stop"
+        },
+        "color": {
+          "type": "string",
+          "description": "English: Color"
+        },
+        "position": {
+          "type": "string",
+          "description": "English: Position"
+        },
+        "colorStopPosition": {
+          "type": "string",
+          "description": "English: Color stop position"
+        },
+        "angle": {
+          "type": "string",
+          "description": "English: Angle"
+        },
+        "gradientAngle": {
+          "type": "string",
+          "description": "English: Gradient angle"
+        }
+      }
+    },
+    "tree": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Tree"
+        },
+        "expand": {
+          "type": "string",
+          "description": "English: Expand"
+        },
+        "reorderInstructions": {
+          "type": "string",
+          "description": "English: Press Space to pick up, Up/Down to choose a target, Left/Right to place before/after it, Space to drop, and Escape to cancel."
+        },
+        "moveNode": {
+          "type": "string",
+          "description": "English: Move node {label}"
+        },
+        "expandNode": {
+          "type": "string",
+          "description": "English: Expand {label}"
+        },
+        "collapseNode": {
+          "type": "string",
+          "description": "English: Collapse {label}"
+        }
+      }
+    },
+    "collapse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Collapsible panels"
+        }
+      }
+    },
+    "slider": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "English: Slider"
+        }
+      }
+    },
+    "tabs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "moreTabs": {
+          "type": "string",
+          "description": "English: More tabs"
+        },
+        "addTab": {
+          "type": "string",
+          "description": "English: Add tab"
+        },
+        "reorder": {
+          "type": "string",
+          "description": "English: Reorder tab {label}"
+        },
+        "closeLabel": {
+          "type": "string",
+          "description": "English: Close tab {label}"
+        }
+      }
+    },
+    "backTop": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backToTop": {
+          "type": "string",
+          "description": "English: Back to top"
+        }
+      }
+    },
+    "button": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "moreActions": {
+          "type": "string",
+          "description": "English: More actions"
+        }
+      }
+    },
+    "carousel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "carousel": {
+          "type": "string",
+          "description": "English: Carousel"
+        },
+        "previousSlide": {
+          "type": "string",
+          "description": "English: Previous slide"
+        },
+        "nextSlide": {
+          "type": "string",
+          "description": "English: Next slide"
+        },
+        "goTo": {
+          "type": "string",
+          "description": "English: Go to {index}"
+        },
+        "slide": {
+          "type": "string",
+          "description": "English: slide"
+        },
+        "role": {
+          "type": "string",
+          "description": "English: carousel"
+        }
+      }
+    },
+    "commandPalette": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commandSearch": {
+          "type": "string",
+          "description": "English: Command search"
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "English: Search commands…"
+        },
+        "searchCommands": {
+          "type": "string",
+          "description": "English: Search commands"
+        },
+        "commands": {
+          "type": "string",
+          "description": "English: Commands"
+        },
+        "navigate": {
+          "type": "string",
+          "description": "English: Navigate"
+        },
+        "run": {
+          "type": "string",
+          "description": "English: Run"
+        }
+      }
+    },
+    "errorBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "English: This content could not be displayed"
+        },
+        "description": {
+          "type": "string",
+          "description": "English: Please retry or come back later."
+        }
+      }
+    },
+    "fileList": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fileType": {
+          "type": "string",
+          "description": "English: FILE"
+        },
+        "uploading": {
+          "type": "string",
+          "description": "English: Uploading"
+        },
+        "uploadFailed": {
+          "type": "string",
+          "description": "English: Upload failed"
+        },
+        "cancelled": {
+          "type": "string",
+          "description": "English: Cancelled"
+        },
+        "uploadComplete": {
+          "type": "string",
+          "description": "English: Upload complete"
+        },
+        "ready": {
+          "type": "string",
+          "description": "English: Ready"
+        },
+        "uploadProgress": {
+          "type": "string",
+          "description": "English: Upload progress {name}"
+        },
+        "noFiles": {
+          "type": "string",
+          "description": "English: No files"
+        },
+        "preview": {
+          "type": "string",
+          "description": "English: Preview {name}"
+        },
+        "download": {
+          "type": "string",
+          "description": "English: Download {name}"
+        },
+        "remove": {
+          "type": "string",
+          "description": "English: Remove {name}"
+        }
+      }
+    },
+    "floatButton": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "quickActions": {
+          "type": "string",
+          "description": "English: Quick actions"
+        }
+      }
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "previewImage": {
+          "type": "string",
+          "description": "English: Preview image{alt}"
+        },
+        "imageUnavailable": {
+          "type": "string",
+          "description": "English: Image unavailable"
+        },
+        "imagePreview": {
+          "type": "string",
+          "description": "English: Image preview"
+        },
+        "downloadImage": {
+          "type": "string",
+          "description": "English: Download image"
+        },
+        "exitFullscreen": {
+          "type": "string",
+          "description": "English: Exit fullscreen"
+        },
+        "enterFullscreen": {
+          "type": "string",
+          "description": "English: Enter fullscreen"
+        },
+        "closePreview": {
+          "type": "string",
+          "description": "English: Close preview"
+        },
+        "previousImage": {
+          "type": "string",
+          "description": "English: Previous image"
+        },
+        "nextImage": {
+          "type": "string",
+          "description": "English: Next image"
+        },
+        "downloadFailedOpenTheOriginalImageToSaveIt": {
+          "type": "string",
+          "description": "English: Download failed. Open the original image to save it."
+        },
+        "openOriginal": {
+          "type": "string",
+          "description": "English: Open original"
+        },
+        "zoomOut": {
+          "type": "string",
+          "description": "English: Zoom out"
+        },
+        "resetZoom": {
+          "type": "string",
+          "description": "English: Reset zoom"
+        },
+        "zoomIn": {
+          "type": "string",
+          "description": "English: Zoom in"
+        },
+        "showThumbnails": {
+          "type": "string",
+          "description": "English: Show thumbnails"
+        },
+        "scrollThumbnailsBackward": {
+          "type": "string",
+          "description": "English: Scroll thumbnails backward"
+        },
+        "imageList": {
+          "type": "string",
+          "description": "English: Image list"
+        },
+        "scrollThumbnailsForward": {
+          "type": "string",
+          "description": "English: Scroll thumbnails forward"
+        },
+        "image": {
+          "type": "string",
+          "description": "English: Image"
+        },
+        "position": {
+          "type": "string",
+          "description": "English: {index} of {total}"
+        },
+        "viewImage": {
+          "type": "string",
+          "description": "English: View image {index}{alt}"
+        }
+      }
+    },
+    "infiniteScroll": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "loadingFailedRetry": {
+          "type": "string",
+          "description": "English: Loading failed. Retry"
+        },
+        "allItemsLoaded": {
+          "type": "string",
+          "description": "English: All items loaded"
+        },
+        "loadMore": {
+          "type": "string",
+          "description": "English: Load more"
+        }
+      }
+    },
+    "inputOTP": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verificationCode": {
+          "type": "string",
+          "description": "English: Verification code"
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expandSidebar": {
+          "type": "string",
+          "description": "English: Expand sidebar"
+        },
+        "collapseSidebar": {
+          "type": "string",
+          "description": "English: Collapse sidebar"
+        }
+      }
+    },
+    "loadingBar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pageLoadingProgress": {
+          "type": "string",
+          "description": "English: Page loading progress"
+        }
+      }
+    },
+    "menu": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "navigationMenu": {
+          "type": "string",
+          "description": "English: Navigation menu"
+        }
+      }
+    },
+    "popconfirm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actionFailedPleaseRetry": {
+          "type": "string",
+          "description": "English: Action failed. Please retry."
+        }
+      }
+    },
+    "qrCode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "qrCode": {
+          "type": "string",
+          "description": "English: QR code"
+        },
+        "refreshCode": {
+          "type": "string",
+          "description": "English: Refresh code"
+        }
+      }
+    },
+    "scrollbar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verticalScrollbar": {
+          "type": "string",
+          "description": "English: Vertical scrollbar"
+        },
+        "horizontalScrollbar": {
+          "type": "string",
+          "description": "English: Horizontal scrollbar"
+        }
+      }
+    },
+    "splitter": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resizePanel": {
+          "type": "string",
+          "description": "English: Resize panel {index}"
+        },
+        "togglePanel": {
+          "type": "string",
+          "description": "English: Toggle panel"
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "table": {
+          "type": "string",
+          "description": "English: Table"
+        },
+        "scrollArea": {
+          "type": "string",
+          "description": "English: Scroll area"
+        },
+        "loadError": {
+          "type": "string",
+          "description": "English: Unable to load data. Please try again."
+        }
+      }
+    },
+    "dataTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "searchTable": {
+          "type": "string",
+          "description": "English: Search table"
+        },
+        "columns": {
+          "type": "string",
+          "description": "English: Columns"
+        },
+        "resizeColumn": {
+          "type": "string",
+          "description": "English: Resize column: {label}"
+        },
+        "selectRows": {
+          "type": "string",
+          "description": "English: Select rows"
+        },
+        "selectAllRowsOnThisPage": {
+          "type": "string",
+          "description": "English: Select all rows on this page"
+        },
+        "selectAllRows": {
+          "type": "string",
+          "description": "English: Select all rows"
+        },
+        "reorderRow": {
+          "type": "string",
+          "description": "English: Reorder row: {label}"
+        },
+        "selectRow": {
+          "type": "string",
+          "description": "English: Select row: {label}"
+        },
+        "collapseRow": {
+          "type": "string",
+          "description": "English: Collapse row: {label}"
+        },
+        "expandRow": {
+          "type": "string",
+          "description": "English: Expand row: {label}"
+        },
+        "reorderRows": {
+          "type": "string",
+          "description": "English: Reorder rows"
+        },
+        "expandRows": {
+          "type": "string",
+          "description": "English: Expand rows"
+        },
+        "sortAscending": {
+          "type": "string",
+          "description": "English: Sort ascending"
+        },
+        "sortDescending": {
+          "type": "string",
+          "description": "English: Sort descending"
+        },
+        "clearSorting": {
+          "type": "string",
+          "description": "English: Clear sorting"
+        },
+        "reorderColumn": {
+          "type": "string",
+          "description": "English: Reorder column: {label}"
+        }
+      }
+    },
+    "timeRangePicker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Start time ~ End time"
+        },
+        "label": {
+          "type": "string",
+          "description": "English: Choose time range"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear time range"
+        }
+      }
+    },
+    "tour": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "previous": {
+          "type": "string",
+          "description": "English: Previous"
+        },
+        "finish": {
+          "type": "string",
+          "description": "English: Finish"
+        },
+        "next": {
+          "type": "string",
+          "description": "English: Next"
+        }
+      }
+    },
+    "transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "selectAllVisibleItems": {
+          "type": "string",
+          "description": "English: Select all visible items"
+        },
+        "available": {
+          "type": "string",
+          "description": "English: Available"
+        },
+        "selected": {
+          "type": "string",
+          "description": "English: Selected"
+        },
+        "searchAvailableItems": {
+          "type": "string",
+          "description": "English: Search available items"
+        },
+        "searchSelectedItems": {
+          "type": "string",
+          "description": "English: Search selected items"
+        },
+        "noItems": {
+          "type": "string",
+          "description": "English: No items"
+        },
+        "moveToSelected": {
+          "type": "string",
+          "description": "English: Move to selected"
+        },
+        "moveToAvailable": {
+          "type": "string",
+          "description": "English: Move to available"
+        }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "editText": {
+          "type": "string",
+          "description": "English: Edit text"
+        },
+        "collapse": {
+          "type": "string",
+          "description": "English: Collapse"
+        },
+        "expand": {
+          "type": "string",
+          "description": "English: Expand"
+        },
+        "copyText": {
+          "type": "string",
+          "description": "English: Copy text"
+        }
+      }
+    },
+    "upload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uploadUrlCannotBeEmpty": {
+          "type": "string",
+          "description": "English: Upload URL cannot be empty"
+        },
+        "uploadFailed": {
+          "type": "string",
+          "description": "English: Upload failed"
+        },
+        "chooseOneFileAtATime": {
+          "type": "string",
+          "description": "English: Choose one file at a time"
+        },
+        "fileTypeIsNotAccepted": {
+          "type": "string",
+          "description": "English: File type is not accepted"
+        },
+        "fileExceedsTheSizeLimit": {
+          "type": "string",
+          "description": "English: File exceeds the size limit"
+        },
+        "fileCountLimitReached": {
+          "type": "string",
+          "description": "English: File count limit reached"
+        },
+        "fileValidationFailed": {
+          "type": "string",
+          "description": "English: File validation failed"
+        },
+        "chooseFiles": {
+          "type": "string",
+          "description": "English: Choose files"
+        },
+        "dropHint": {
+          "type": "string",
+          "description": "English: Click or drop files here"
+        },
+        "dropDescription": {
+          "type": "string",
+          "description": "English: Choose files or drag them into this area"
+        },
+        "cancelUpload": {
+          "type": "string",
+          "description": "English: Cancel upload {name}"
+        },
+        "retryUpload": {
+          "type": "string",
+          "description": "English: Retry upload {name}"
+        }
+      }
+    },
+    "treeSelect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "placeholder": {
+          "type": "string",
+          "description": "English: Please select"
+        },
+        "clear": {
+          "type": "string",
+          "description": "English: Clear selection"
+        },
+        "empty": {
+          "type": "string",
+          "description": "English: No options"
+        }
+      }
+    },
+    "drag": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "instructions": {
+          "type": "string",
+          "description": "English: Press Space to start, arrow keys to move, Space to drop, and Escape to cancel."
+        },
+        "pickedUp": {
+          "type": "string",
+          "description": "English: Picked up {label}"
+        },
+        "moved": {
+          "type": "string",
+          "description": "English: Move to {label}"
+        },
+        "dropped": {
+          "type": "string",
+          "description": "English: Dropped {label}"
+        },
+        "cancelled": {
+          "type": "string",
+          "description": "English: Reordering cancelled"
+        },
+        "outside": {
+          "type": "string",
+          "description": "English: No drop target"
+        }
+      }
+    }
+  }
+}

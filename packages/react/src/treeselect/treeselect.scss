@@ -1,5 +1,6 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/geometry' as geometry;
+@use '../shared/selection';
 .leaf-tree-select {
   @include mixins.field('tree-select');
   position: relative;
@@ -8,6 +9,9 @@
   min-height: var(--leaf-current-control-height);
   padding: var(--leaf-component-tree-select-padding, 0 30px 0 10px);
   cursor: pointer;
+  &[data-searchable] {
+    cursor: text;
+  }
   &[data-clearable] {
     padding-inline-end: 54px;
   }
@@ -15,20 +19,13 @@
     border-color: var(--leaf-field-color);
     box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
   }
-  &__content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-  }
   &__input-wrap {
     position: relative;
     flex: 1;
     min-width: 24px;
   }
   &__input {
+    display: block;
     box-sizing: border-box;
     width: 100%;
     height: calc(var(--leaf-current-control-height) - 2px);
@@ -108,44 +105,6 @@
   &--multiple &__input {
     height: calc(var(--leaf-current-control-height) - 8px);
   }
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    min-width: 0;
-    max-width: 100%;
-    padding: 1px 5px;
-    border-radius: var(--leaf-radius-sm);
-    background: var(--leaf-color-surface-muted);
-    box-shadow: inset 0 0 0 1px var(--leaf-color-border);
-    font-size: 12px;
-    > span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    > button {
-      display: grid;
-      place-items: center;
-      padding: 1px;
-      border: 0;
-      border-radius: 2px;
-      color: var(--leaf-color-text-muted);
-      background: transparent;
-      cursor: pointer;
-      transition:
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-      &:hover {
-        color: var(--leaf-color-text);
-        background: var(--leaf-color-border);
-      }
-      &:active {
-        transform: scale(0.85);
-      }
-    }
-  }
   &__panel {
     --leaf-tree-select-row-margin: 3px;
     @include geometry.inset-corners(
@@ -157,8 +116,17 @@
       var(--leaf-surface-padding-left),
       var(--leaf-surface-border)
     );
+    .leaf-tree__toggle {
+      flex-basis: 24px;
+      width: 24px;
+      height: min(28px, calc(var(--leaf-density-option-height) - 6px));
+    }
+    .leaf-tree__title {
+      flex: 1;
+    }
     .leaf-tree__row {
       min-height: var(--leaf-density-option-height);
+      padding-block: min(3px, max(0px, calc((var(--leaf-density-option-height) - 24px) / 2)));
       margin-block: var(--leaf-tree-select-row-margin);
       border-radius: var(--leaf-tree-select-option-radius);
       white-space: nowrap;

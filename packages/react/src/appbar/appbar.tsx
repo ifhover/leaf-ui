@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useRef,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
@@ -17,9 +18,16 @@ export interface AppBarProps extends HTMLAttributes<HTMLElement> {
   elevation?: boolean;
 }
 export const AppBar = forwardRef<HTMLElement, AppBarProps>(function AppBar(
-  { position = 'static', elevation, className, style, ...props },
+  rawProps: AppBarProps,
   ref,
 ) {
+  const {
+    position = 'static',
+    elevation,
+    className,
+    style,
+    ...props
+  } = useComponentProps('AppBar', rawProps);
   return (
     <header
       {...props}
@@ -33,9 +41,10 @@ export interface ToolbarProps extends HTMLAttributes<HTMLDivElement> {
   dense?: boolean;
 }
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(function Toolbar(
-  { dense, className, onKeyDown, ...props },
+  rawProps: ToolbarProps,
   ref,
 ) {
+  const { dense, className, onKeyDown, ...props } = useComponentProps('Toolbar', rawProps);
   const root = useRef<HTMLDivElement>(null);
   const merged = useMergedRef(root, ref);
   const { direction } = useLeafConfig();
@@ -93,16 +102,17 @@ export interface BottomNavigationProps extends Omit<HTMLAttributes<HTMLElement>,
     props: AnchorHTMLAttributes<HTMLAnchorElement>,
   ) => ReactNode;
 }
-export function BottomNavigation({
-  items,
-  value,
-  defaultValue = '',
-  onChange,
-  showLabels = true,
-  linkRender,
-  className,
-  ...props
-}: BottomNavigationProps) {
+export function BottomNavigation(rawProps: BottomNavigationProps) {
+  const {
+    items,
+    value,
+    defaultValue = '',
+    onChange,
+    showLabels = true,
+    linkRender,
+    className,
+    ...props
+  } = useComponentProps('BottomNavigation', rawProps);
   const { direction } = useLeafConfig(),
     root = useRef<HTMLElement>(null);
   const [current, setCurrent] = useControllable(

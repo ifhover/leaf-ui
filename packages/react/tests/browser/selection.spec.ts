@@ -1,3 +1,4 @@
+import { TinyColor } from '@ctrl/tinycolor';
 import { expect, type Locator, test } from '@playwright/test';
 
 async function paint(locator: Locator) {
@@ -11,6 +12,15 @@ async function paint(locator: Locator) {
       outline: style.outline,
     };
   });
+}
+
+async function tokenColor(locator: Locator, token: string) {
+  return new TinyColor(
+    await locator.evaluate(
+      (element, name) => getComputedStyle(element).getPropertyValue(name),
+      token,
+    ),
+  ).toRgbString();
 }
 
 for (const appearance of ['light', 'dark']) {
@@ -113,6 +123,141 @@ for (const appearance of ['light', 'dark']) {
         'background-color',
         'rgb(255, 255, 255)',
       );
+    });
+
+    test('checked menu values stay primary while candidates share neutral hover and press', async ({
+      page,
+    }) => {
+      await page.getByRole('button', { name: 'Checked menu' }).click();
+      const panel = page.locator('.leaf-dropdown');
+      const marker = panel.locator('.leaf-dropdown__highlight');
+      const selected = panel.getByRole('menuitemcheckbox', { name: 'Saved filter' });
+      const candidate = panel.getByRole('menuitemcheckbox', { name: 'Available filter' });
+      const primary = await tokenColor(panel, '--leaf-color-primary-surface-9');
+      const neutral = await tokenColor(panel, '--leaf-color-option-hover');
+      await expect(selected).toBeFocused();
+      await expect(selected).toHaveCSS('background-color', primary);
+      await expect(marker).toHaveCSS('background-color', primary);
+      await candidate.hover();
+      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(selected).toHaveCSS('background-color', primary);
+      await panel.getByRole('menuitem', { name: 'Disabled filter' }).hover();
+      await expect(marker).toHaveCSS('background-color', neutral);
+      await page.keyboard.press('Home');
+      await page.keyboard.press('ArrowDown');
+      await expect(candidate).toBeFocused();
+      await expect(marker).toHaveCSS('background-color', neutral);
+      await candidate.hover();
+      await page.mouse.down();
+      try {
+        await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      } finally {
+        await page.mouse.up();
+      }
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Checked menu' }).click();
+      await panel.getByRole('menuitem', { name: 'Delete filter' }).hover();
+      await expect(marker).toHaveCSS(
+        'background-color',
+        await tokenColor(panel, '--leaf-color-danger-surface-8'),
+      );
+      await expect(selected).toHaveAttribute('aria-checked', 'true');
+    });
+
+    test('suggestions, cascader, tree, time and navigation share neutral candidates', async ({
+      page,
+    }) => {
+      await page.goto(`/?fixture=radius&theme=${appearance}`);
+      const select = page.getByRole('combobox', { name: 'Radius select', exact: true });
+      await select.click();
+      const selectPanel = page.locator('.leaf-select__panel');
+      const neutral = await tokenColor(selectPanel, '--leaf-color-option-hover');
+      const primary = await tokenColor(selectPanel, '--leaf-color-primary-surface-9');
+      await selectPanel.getByRole('option', { name: 'Bob', exact: true }).hover();
+      await expect(selectPanel.locator('.leaf-floating__highlight')).toHaveCSS(
+        'background-color',
+        neutral,
+      );
+      await select.press('Escape');
+
+      const autocomplete = page.getByRole('combobox', { name: 'Radius autocomplete' });
+      await autocomplete.fill('');
+      await autocomplete.press('ArrowDown');
+      const suggestions = page.locator('.leaf-autocomplete__panel');
+      const suggestion = suggestions.getByRole('option', { name: 'Bob', exact: true });
+      await suggestion.hover();
+      await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCSS(
+        'background-color',
+        neutral,
+      );
+      await expect(suggestion).toHaveCSS(
+        'color',
+        await tokenColor(suggestions, '--leaf-color-text'),
+      );
+      await autocomplete.press('ArrowUp');
+      await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCSS(
+        'background-color',
+        neutral,
+      );
+      await autocomplete.press('Escape');
+
+      const mentions = page.getByRole('combobox', { name: 'Radius mentions' });
+      await mentions.fill('@');
+      const mentionsPanel = page.locator('.leaf-mentions__panel');
+      const mention = mentionsPanel.getByRole('option', { name: 'Bob', exact: true });
+      await mention.hover();
+      await expect(mention).toHaveCSS('background-color', neutral);
+      await mentions.press('ArrowUp');
+      await expect(mentionsPanel.locator('[aria-selected="true"]')).toHaveCSS(
+        'background-color',
+        neutral,
+      );
+      await mentions.press('Escape');
+
+      await page.getByRole('combobox', { name: 'Radius cascader' }).click();
+      const cascader = page.locator('.leaf-cascader__panel');
+      const engineering = cascader.getByRole('option', { name: 'Engineering', exact: true });
+      await engineering.hover();
+      await expect(engineering).toHaveCSS('background-color', neutral);
+      await expect(cascader.getByRole('option', { name: 'Design', exact: true })).toHaveCSS(
+        'background-color',
+        primary,
+      );
+      await engineering.press('Home');
+      await page.keyboard.press('ArrowDown');
+      await expect(engineering).toBeFocused();
+      await expect(engineering).toHaveCSS('background-color', neutral);
+      await page.keyboard.press('Escape');
+
+      await page.getByRole('combobox', { name: 'Radius tree', exact: true }).click();
+      const tree = page.locator('.leaf-tree-select__panel');
+      const bob = tree.getByRole('treeitem', { name: 'Bob', exact: true });
+      await bob.locator('.leaf-tree__title').hover();
+      await expect(bob.locator('.leaf-tree__row')).toHaveCSS('background-color', neutral);
+      await expect(
+        tree.getByRole('treeitem', { name: 'Alice', exact: true }).locator('.leaf-tree__row'),
+      ).toHaveCSS('background-color', primary);
+      await page.keyboard.press('Escape');
+
+      await page.getByRole('combobox', { name: 'Radius time', exact: true }).click();
+      const hours = page.locator('.leaf-time-picker__column').first();
+      const nextHour = hours.getByRole('option', { name: '10', exact: true });
+      await nextHour.hover();
+      await expect(nextHour).toHaveCSS('background-color', neutral);
+      await expect(hours.locator('.leaf-time-picker__selection')).toHaveCSS(
+        'background-color',
+        primary,
+      );
+      await page.keyboard.press('Escape');
+
+      const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
+      const team = menu.getByRole('menuitem', { name: 'Team', exact: true });
+      await team.hover();
+      await expect(team).toHaveCSS('background-color', neutral);
+      await team.focus();
+      await expect(team).toHaveCSS('background-color', neutral);
+      await expect(menu.locator('.leaf-menu__indicator')).toHaveCSS('background-color', primary);
     });
   });
 }

@@ -1,5 +1,6 @@
 import { Check, Inbox, Info, TriangleAlert, X } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { useContentTransition } from '../shared/presence';
@@ -19,7 +20,7 @@ const icons = {
   error: X,
   info: Info,
 };
-export function Result({
+export function ResultControl({
   status = 'empty',
   title,
   description,
@@ -38,15 +39,15 @@ export function Result({
     title !== undefined
       ? title
       : status === 'empty'
-        ? messages.noData
-        : messages[
+        ? messages.common.noData
+        : messages.result[
             status === 'success'
-              ? 'resultSuccess'
+              ? 'success'
               : status === 'warning'
-                ? 'resultWarning'
+                ? 'warning'
                 : status === 'error'
-                  ? 'resultError'
-                  : 'resultInfo'
+                  ? 'error'
+                  : 'info'
           ];
   return (
     <div
@@ -70,4 +71,9 @@ export function Result({
       {extra != null && <div className="leaf-result__extra">{extra}</div>}
     </div>
   );
+}
+
+export function Result(rawProps: ResultProps) {
+  const props = useComponentProps('Result', rawProps);
+  return <ResultControl {...props} />;
 }

@@ -41,6 +41,7 @@
   gap: 8px;
 }
 .leaf-input-otp__slot {
+  box-sizing: border-box;
   width: var(--leaf-otp-size);
   height: var(--leaf-otp-size);
   display: grid;

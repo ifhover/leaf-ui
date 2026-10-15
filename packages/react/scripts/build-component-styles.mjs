@@ -29,7 +29,6 @@ const dependencies = {
   notification: ['alert'],
   filelist: ['image', 'modal'],
   upload: ['filelist'],
-  imagecropper: ['input', 'image'],
   transfer: ['checkbox', 'input', 'pagination'],
   pagination: ['select', 'inputnumber'],
   table: ['button', 'loading', 'scrollbar'],
@@ -52,6 +51,7 @@ const dependencies = {
   popover: [],
   popconfirm: ['popover', 'alert'],
   tabs: ['dropdown'],
+  card: ['skeleton', 'tabs'],
 };
 const resolveStyles = (name, visited = new Set()) => {
   if (visited.has(name)) return visited;

@@ -12,9 +12,10 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button } from '../button';
-import { Loading } from '../loading';
-import { Scrollbar } from '../scrollbar';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { LoadingControl as Loading } from '../loading/loading';
+import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
@@ -62,7 +63,7 @@ export interface TableErrorProps extends TableStateProps {
   onRetry?: () => void;
 }
 
-const TableRoot = forwardRef<HTMLTableElement, TableProps>(function TableRoot(
+const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function TableRootControl(
   {
     size = 'md',
     bordered = false,
@@ -132,7 +133,7 @@ const TableRoot = forwardRef<HTMLTableElement, TableProps>(function TableRoot(
         verticalOffset={headerHeight}
         orientation="both"
         role="region"
-        aria-label={`${props['aria-label'] ?? t('表格', 'Table')} · ${t('滚动区域', 'Scroll area')}`}
+        aria-label={`${props['aria-label'] ?? t('table.table')} · ${t('table.scrollArea')}`}
         {...inertProps(loading)}
       >
         <table
@@ -147,47 +148,52 @@ const TableRoot = forwardRef<HTMLTableElement, TableProps>(function TableRoot(
       </Scrollbar>
       {loading && (
         <div className="leaf-table__overlay">
-          <Loading size={size} tip={t('加载中', 'Loading')} />
+          <Loading size={size} tip={t('common.loading')} />
         </div>
       )}
     </div>
   );
 });
 
-export const TableHeader = forwardRef<
+export const TableHeaderControl = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
->(function TableHeader({ className, ...props }, ref) {
+>(function TableHeaderControl(
+  { className, ...props }: HTMLAttributes<HTMLTableSectionElement>,
+  ref,
+) {
   return <thead {...props} ref={ref} className={classes('leaf-table__header', className)} />;
 });
 
-export const TableBody = forwardRef<
+export const TableBodyControl = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
->(function TableBody({ className, ...props }, ref) {
+>(function TableBodyControl({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>, ref) {
   return <tbody {...props} ref={ref} className={classes('leaf-table__body', className)} />;
 });
 
-export const TableFooter = forwardRef<
+export const TableFooterControl = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
->(function TableFooter({ className, ...props }, ref) {
+>(function TableFooterControl(
+  { className, ...props }: HTMLAttributes<HTMLTableSectionElement>,
+  ref,
+) {
   return <tfoot {...props} ref={ref} className={classes('leaf-table__footer', className)} />;
 });
 
-export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
-  { selected, className, ...props },
-  ref,
-) {
-  return (
-    <tr
-      {...props}
-      ref={ref}
-      className={classes('leaf-table__row', className)}
-      data-selected={selected || undefined}
-    />
-  );
-});
+export const TableRowControl = forwardRef<HTMLTableRowElement, TableRowProps>(
+  function TableRowControl({ selected, className, ...props }: TableRowProps, ref) {
+    return (
+      <tr
+        {...props}
+        ref={ref}
+        className={classes('leaf-table__row', className)}
+        data-selected={selected || undefined}
+      />
+    );
+  },
+);
 
 function cellStyle(
   style: CSSProperties | undefined,
@@ -203,25 +209,36 @@ function cellStyle(
   };
 }
 
-export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(function TableCell(
-  { align, pinned, pinOffset = 0, pinEdge, className, style, ...props },
-  ref,
-) {
-  return (
-    <td
-      {...props}
-      ref={ref}
-      className={classes('leaf-table__cell', className)}
-      data-pinned={pinned}
-      data-pin-edge={pinEdge || undefined}
-      style={cellStyle(style, align, pinned, pinOffset)}
-    />
-  );
-});
+export const TableCellControl = forwardRef<HTMLTableCellElement, TableCellProps>(
+  function TableCellControl(
+    { align, pinned, pinOffset = 0, pinEdge, className, style, ...props }: TableCellProps,
+    ref,
+  ) {
+    return (
+      <td
+        {...props}
+        ref={ref}
+        className={classes('leaf-table__cell', className)}
+        data-pinned={pinned}
+        data-pin-edge={pinEdge || undefined}
+        style={cellStyle(style, align, pinned, pinOffset)}
+      />
+    );
+  },
+);
 
-export const TableColumnHeader = forwardRef<HTMLTableCellElement, TableColumnHeaderProps>(
-  function TableColumnHeader(
-    { align, pinned, pinOffset = 0, pinEdge, className, style, scope = 'col', ...props },
+export const TableColumnHeaderControl = forwardRef<HTMLTableCellElement, TableColumnHeaderProps>(
+  function TableColumnHeaderControl(
+    {
+      align,
+      pinned,
+      pinOffset = 0,
+      pinEdge,
+      className,
+      style,
+      scope = 'col',
+      ...props
+    }: TableColumnHeaderProps,
     ref,
   ) {
     return (
@@ -238,57 +255,131 @@ export const TableColumnHeader = forwardRef<HTMLTableCellElement, TableColumnHea
   },
 );
 
-export const TableCaption = forwardRef<
+export const TableCaptionControl = forwardRef<
   HTMLTableCaptionElement,
   HTMLAttributes<HTMLTableCaptionElement>
->(function TableCaption({ className, ...props }, ref) {
+>(function TableCaptionControl(
+  { className, ...props }: HTMLAttributes<HTMLTableCaptionElement>,
+  ref,
+) {
   return <caption {...props} ref={ref} className={classes('leaf-table__caption', className)} />;
 });
 
-export function TableEmpty({ colSpan = 1, children }: TableStateProps) {
+export function TableEmptyControl({ colSpan = 1, children }: TableStateProps) {
   const t = useText();
   return (
-    <TableRow className="leaf-table__state-row">
-      <TableCell colSpan={colSpan}>
+    <TableRowControl className="leaf-table__state-row">
+      <TableCellControl colSpan={colSpan}>
         <div className="leaf-table__state" role="status">
           <Inbox size={28} aria-hidden="true" />
-          {children ?? t('暂无数据', 'No data')}
+          {children ?? t('common.noData')}
         </div>
-      </TableCell>
-    </TableRow>
+      </TableCellControl>
+    </TableRowControl>
   );
 }
 
-export function TableLoading({ colSpan = 1, children }: TableStateProps) {
+export function TableLoadingControl({ colSpan = 1, children }: TableStateProps) {
   const t = useText();
   return (
-    <TableRow className="leaf-table__state-row">
-      <TableCell colSpan={colSpan}>
+    <TableRowControl className="leaf-table__state-row">
+      <TableCellControl colSpan={colSpan}>
         <div className="leaf-table__state">
-          <Loading tip={children ?? t('加载中', 'Loading')} />
+          <Loading tip={children ?? t('common.loading')} />
         </div>
-      </TableCell>
-    </TableRow>
+      </TableCellControl>
+    </TableRowControl>
   );
 }
 
-export function TableError({ colSpan = 1, children, onRetry }: TableErrorProps) {
+export function TableErrorControl({ colSpan = 1, children, onRetry }: TableErrorProps) {
   const t = useText();
   return (
-    <TableRow className="leaf-table__state-row">
-      <TableCell colSpan={colSpan}>
+    <TableRowControl className="leaf-table__state-row">
+      <TableCellControl colSpan={colSpan}>
         <div className="leaf-table__state leaf-table__state--error" role="alert">
           <CircleAlert size={28} aria-hidden="true" />
-          {children ?? t('加载失败，请重试', 'Unable to load data. Please try again.')}
+          {children ?? t('table.loadError')}
           {onRetry && (
-            <Button size="sm" variant="outline" onClick={onRetry}>
-              {t('重试', 'Retry')}
-            </Button>
+            <ButtonControl size="sm" variant="outline" onClick={onRetry}>
+              {t('common.retry')}
+            </ButtonControl>
           )}
         </div>
-      </TableCell>
-    </TableRow>
+      </TableCellControl>
+    </TableRowControl>
   );
+}
+
+const TableRoot = forwardRef<HTMLTableElement, TableProps>(function TableRoot(rawProps, ref) {
+  const props = useComponentProps('Table', rawProps);
+  return <TableRootControl {...props} ref={ref} />;
+});
+
+export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
+  rawProps: TableRowProps,
+  ref,
+) {
+  const props = useComponentProps('TableRow', rawProps);
+  return <TableRowControl {...props} ref={ref} />;
+});
+TableRow.displayName = 'TableRow';
+
+export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(function TableCell(
+  rawProps: TableCellProps,
+  ref,
+) {
+  const props = useComponentProps('TableCell', rawProps);
+  return <TableCellControl {...props} ref={ref} />;
+});
+TableCell.displayName = 'TableCell';
+
+export const TableHeader = forwardRef<
+  HTMLTableSectionElement,
+  HTMLAttributes<HTMLTableSectionElement>
+>(function TableHeader(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
+  return <TableHeaderControl {...useComponentProps('TableHeader', rawProps)} ref={ref} />;
+});
+
+export const TableBody = forwardRef<
+  HTMLTableSectionElement,
+  HTMLAttributes<HTMLTableSectionElement>
+>(function TableBody(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
+  return <TableBodyControl {...useComponentProps('TableBody', rawProps)} ref={ref} />;
+});
+
+export const TableFooter = forwardRef<
+  HTMLTableSectionElement,
+  HTMLAttributes<HTMLTableSectionElement>
+>(function TableFooter(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
+  return <TableFooterControl {...useComponentProps('TableFooter', rawProps)} ref={ref} />;
+});
+
+export const TableColumnHeader = forwardRef<HTMLTableCellElement, TableColumnHeaderProps>(
+  function TableColumnHeader(rawProps: TableColumnHeaderProps, ref) {
+    return (
+      <TableColumnHeaderControl {...useComponentProps('TableColumnHeader', rawProps)} ref={ref} />
+    );
+  },
+);
+
+export const TableCaption = forwardRef<
+  HTMLTableCaptionElement,
+  HTMLAttributes<HTMLTableCaptionElement>
+>(function TableCaption(rawProps: HTMLAttributes<HTMLTableCaptionElement>, ref) {
+  return <TableCaptionControl {...useComponentProps('TableCaption', rawProps)} ref={ref} />;
+});
+
+export function TableEmpty(rawProps: TableStateProps) {
+  return <TableEmptyControl {...useComponentProps('TableEmpty', rawProps)} />;
+}
+
+export function TableError(rawProps: TableErrorProps) {
+  return <TableErrorControl {...useComponentProps('TableError', rawProps)} />;
+}
+
+export function TableLoading(rawProps: TableStateProps) {
+  return <TableLoadingControl {...useComponentProps('TableLoading', rawProps)} />;
 }
 
 export const Table = Object.assign(TableRoot, {
@@ -303,4 +394,18 @@ export const Table = Object.assign(TableRoot, {
   Empty: TableEmpty,
   Loading: TableLoading,
   Error: TableError,
+});
+
+export const TableControl = Object.assign(TableRootControl, {
+  Root: TableRootControl,
+  Header: TableHeaderControl,
+  Body: TableBodyControl,
+  Footer: TableFooterControl,
+  Row: TableRowControl,
+  ColumnHeader: TableColumnHeaderControl,
+  Cell: TableCellControl,
+  Caption: TableCaptionControl,
+  Empty: TableEmptyControl,
+  Loading: TableLoadingControl,
+  Error: TableErrorControl,
 });

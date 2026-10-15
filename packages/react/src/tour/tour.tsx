@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { type ReactNode, type RefObject, useEffect, useId, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useDialog } from '../shared/dialog';
 import { FloatingPanel, type PopupOptions } from '../shared/floating';
@@ -47,19 +48,20 @@ function TourFocus({
   useDialog(open, panel, owner, close, true, {}, true, modal);
   return children;
 }
-export function Tour({
-  open,
-  steps,
-  current,
-  defaultCurrent = 0,
-  onChange,
-  onClose,
-  onFinish,
-  missingTarget = 'center',
-  mask = true,
-  padding = 8,
-  getPopupContainer,
-}: TourProps) {
+export function Tour(rawProps: TourProps) {
+  const {
+    open,
+    steps,
+    current,
+    defaultCurrent = 0,
+    onChange,
+    onClose,
+    onFinish,
+    missingTarget = 'center',
+    mask = true,
+    padding = 8,
+    getPopupContainer,
+  } = useComponentProps('Tour', rawProps);
   const t = useText();
   const { messages } = useLeafConfig();
   const [index, setIndex] = useControllable(current, defaultCurrent, onChange);
@@ -114,11 +116,11 @@ export function Tour({
       <div ref={contentView} className="leaf-tour__content">
         <div className="leaf-tour__header">
           <h3 id={`${id}-title`}>{step.title}</h3>
-          <Button
+          <ButtonControl
             size="sm"
             variant="ghost"
             startIcon={<X size={16} />}
-            aria-label={messages.close}
+            aria-label={messages.common.close}
             onClick={onClose}
           />
         </div>
@@ -128,11 +130,11 @@ export function Tour({
             {index + 1} / {steps.length}
           </span>
           {index > 0 && (
-            <Button size="sm" variant="outline" onClick={() => setIndex(index - 1)}>
-              {t('上一步', 'Previous')}
-            </Button>
+            <ButtonControl size="sm" variant="outline" onClick={() => setIndex(index - 1)}>
+              {t('tour.previous')}
+            </ButtonControl>
           )}
-          <Button
+          <ButtonControl
             size="sm"
             onClick={() => {
               if (index < steps.length - 1) setIndex(index + 1);
@@ -142,8 +144,8 @@ export function Tour({
               }
             }}
           >
-            {index === steps.length - 1 ? t('完成', 'Finish') : t('下一步', 'Next')}
-          </Button>
+            {index === steps.length - 1 ? t('tour.finish') : t('tour.next')}
+          </ButtonControl>
         </div>
       </div>
     </TourFocus>

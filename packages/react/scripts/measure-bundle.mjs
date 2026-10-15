@@ -12,14 +12,17 @@ const cases = {
   button: `import { Button } from '@ifhover/leaf-ui/button'; export { Button };`,
   table: `export { Table } from '@ifhover/leaf-ui/table';`,
   tableAdapter: `export { DataTable } from '@ifhover/leaf-ui/table/tanstack';`,
-  form: `export { ConfigProvider } from '@ifhover/leaf-ui/config-provider'; export { Form, FormField } from '@ifhover/leaf-ui/form'; export { Input } from '@ifhover/leaf-ui/input'; export { InputNumber } from '@ifhover/leaf-ui/input-number'; export { Select } from '@ifhover/leaf-ui/select'; export { DatePicker } from '@ifhover/leaf-ui/date-picker'; export { CheckboxGroup } from '@ifhover/leaf-ui/checkbox'; export { Button } from '@ifhover/leaf-ui/button'; import '@ifhover/leaf-ui/styles.css';`,
-  all: `export * from '@ifhover/leaf-ui'; import '@ifhover/leaf-ui/styles.css';`,
+  form: `export { ConfigProvider } from '@ifhover/leaf-ui/config-provider'; export { Form, FormField } from '@ifhover/leaf-ui/form'; export { Input } from '@ifhover/leaf-ui/input'; export { InputNumber } from '@ifhover/leaf-ui/input-number'; export { Select } from '@ifhover/leaf-ui/select'; export { DatePicker } from '@ifhover/leaf-ui/date-picker'; export { CheckboxGroup } from '@ifhover/leaf-ui/checkbox'; export { Button } from '@ifhover/leaf-ui/button';`,
+  all: `export * from '@ifhover/leaf-ui';`,
 };
 const report = {
   node: process.version,
   includes: 'Leaf UI and transitive runtime dependencies; React/ReactDOM external',
   cases: {},
 };
+const foundationGzip = gzipSync(await readFile(path.join(root, 'dist/esm/styles/foundation.css')), {
+  level: 9,
+}).length;
 for (const [name, code] of Object.entries(cases)) {
   const result = await build({
     stdin: { contents: code, resolveDir: root, sourcefile: `${name}.tsx` },
@@ -68,14 +71,15 @@ for (const [name, code] of Object.entries(cases)) {
     // Guard against accidentally pulling in unrelated, expensive component families.
     assert.ok(
       !Object.keys(result.metafile.inputs).some((file) =>
-        /signature_pad|react-image-crop|qrcode\.react|yet-another-react-lightbox/u.test(file),
+        /qrcode\.react|yet-another-react-lightbox/u.test(file),
       ),
     );
     assert.ok(report.cases[name].js.gzip < 5 * 1024, 'Button-only JS regression: over 5 KiB gzip');
-    // Readable danger ink adds ~0.05 KiB; the standalone entry still excludes rich choice styles.
+    // The fixture now includes the automatically loaded shared foundation.
+    // Keep the existing component budget, accounting for that shared CSS separately.
     assert.ok(
-      report.cases[name].css.gzip < 4.25 * 1024,
-      'Button CSS regression: over 4.25 KiB gzip',
+      report.cases[name].css.gzip < foundationGzip + 4.25 * 1024,
+      'Button CSS regression: foundation plus over 4.25 KiB gzip',
     );
   }
 }

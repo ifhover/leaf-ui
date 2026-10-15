@@ -11,6 +11,12 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { FeedbackIcon, type FeedbackType } from '../alert/alert';
+import {
+  ComponentDefaultsContext,
+  type LeafComponentDefaults,
+  mergeComponentProps,
+  useComponentProps,
+} from '../config-provider/component-defaults';
 import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
 import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
@@ -46,6 +52,7 @@ interface Entry extends NotificationOptions {
   revision: number;
   scope?: string;
   config?: LeafConfig;
+  components?: LeafComponentDefaults;
 }
 const empty: readonly Entry[] = [];
 function createStore(maxCount: number) {
@@ -73,12 +80,28 @@ function createStore(maxCount: number) {
     },
     close,
     remove: (key: string) => publish(entries.filter((item) => item.key !== key || item.open)),
-    update: (scope: string, config: LeafConfig) => {
-      if (entries.some((item) => item.scope === scope && item.config !== config))
-        publish(entries.map((item) => (item.scope === scope ? { ...item, config } : item)));
+    update: (scope: string, config: LeafConfig, components?: LeafComponentDefaults) => {
+      if (
+        entries.some(
+          (item) =>
+            item.scope === scope && (item.config !== config || item.components !== components),
+        )
+      )
+        publish(
+          entries.map((item) => (item.scope === scope ? { ...item, config, components } : item)),
+        );
     },
-    api: (scope: string, getConfig: () => LeafConfig): NotificationApi => {
-      const open = (options: NotificationOptions) => {
+    api: (
+      scope: string,
+      getConfig: () => LeafConfig,
+      getComponents: () => LeafComponentDefaults,
+    ): NotificationApi => {
+      const open = (rawOptions: NotificationOptions) => {
+        const components = getComponents();
+        const options = mergeComponentProps<NotificationOptions>(
+          components.Notification,
+          rawOptions,
+        );
         const key = options.key ?? `leaf-notification-${++sequence}`;
         const existing = entries.find((item) => item.key === key);
         const entry: Entry = {
@@ -86,6 +109,7 @@ function createStore(maxCount: number) {
           key,
           scope,
           config: getConfig(),
+          components,
           open: true,
           revision: (existing?.revision ?? 0) + 1,
         };
@@ -129,11 +153,22 @@ export function NotificationScope({ children }: { children?: ReactNode }) {
 export function useNotification(): NotificationApi {
   const store = useContext(Context);
   const config = useLeafConfig();
+  const components = useContext(ComponentDefaultsContext);
+  const latestComponents = useRef(components);
+  latestComponents.current = components;
   const latest = useRef(config);
   latest.current = config;
   const scope = useId();
-  useEffect(() => store?.update(scope, config), [store, scope, config]);
-  const api = useMemo(() => store?.api(scope, () => latest.current), [store, scope]);
+  useEffect(() => store?.update(scope, config, components), [store, scope, config, components]);
+  const api = useMemo(
+    () =>
+      store?.api(
+        scope,
+        () => latest.current,
+        () => latestComponents.current,
+      ),
+    [store, scope],
+  );
   if (!api) throw new Error('useNotification requires ConfigProvider or NotificationProvider.');
   return api;
 }
@@ -150,19 +185,21 @@ function NotificationHost({ store }: { store: ReturnType<typeof createStore> }) 
           {entries
             .filter((entry) => (entry.placement ?? 'top-right') === placement)
             .map((entry) => (
-              <NotificationItem
-                key={entry.key}
-                entry={entry}
-                close={() => store.close(entry.key)}
-                remove={() => store.remove(entry.key)}
-              />
+              <ComponentDefaultsContext.Provider key={entry.key} value={entry.components ?? {}}>
+                <NotificationItem
+                  entry={entry}
+                  close={() => store.close(entry.key)}
+                  remove={() => store.remove(entry.key)}
+                />
+              </ComponentDefaultsContext.Provider>
             ))}
         </div>
       ))}
     </ScopedPortal>
   );
 }
-export function Notification({ open, afterClose, onClose, ...options }: NotificationProps) {
+export function Notification(rawProps: NotificationProps) {
+  const { open, afterClose, onClose, ...options } = useComponentProps('Notification', rawProps);
   return (
     <ScopedPortal>
       <div
@@ -252,7 +289,7 @@ function NotificationItem({
                   <button
                     type="button"
                     className="leaf-notification__close"
-                    aria-label={config.messages.close}
+                    aria-label={config.messages.common.close}
                     onClick={close}
                   >
                     <X size={16} aria-hidden="true" />

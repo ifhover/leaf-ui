@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
@@ -134,7 +135,7 @@ function DrawerSurface({
         type="button"
         tabIndex={-1}
         className="leaf-drawer-backdrop"
-        aria-label={messages.close}
+        aria-label={messages.common.close}
         onClick={() => {
           if (maskClosable) onClose?.();
         }}
@@ -165,7 +166,7 @@ function DrawerSurface({
           <div
             role="separator"
             tabIndex={0}
-            aria-label={messages.expand}
+            aria-label={messages.tree.expand}
             aria-orientation={horizontal ? 'vertical' : 'horizontal'}
             aria-valuemin={minSize}
             aria-valuemax={maxSize}
@@ -258,7 +259,7 @@ function DrawerSurface({
                 <button
                   type="button"
                   className="leaf-modal__close"
-                  aria-label={messages.close}
+                  aria-label={messages.common.close}
                   onClick={onClose}
                 >
                   <X size={18} aria-hidden="true" />
@@ -277,7 +278,8 @@ function DrawerSurface({
     </div>
   );
 }
-export function Drawer(props: DrawerProps) {
+export function Drawer(rawProps: DrawerProps) {
+  const props = useComponentProps('Drawer', rawProps);
   return (
     <ScopedPortal container={props.container}>
       <DrawerSurface {...props} />

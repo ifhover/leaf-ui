@@ -142,8 +142,8 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     setInvalid(false);
   }, [displayValue]);
   useEffect(() => {
-    input.current?.setCustomValidity(invalid ? messages.invalid : '');
-  }, [invalid, messages.invalid]);
+    input.current?.setCustomValidity(invalid ? messages.form.invalid : '');
+  }, [invalid, messages.form.invalid]);
   useEffect(() => {
     if (open && focusPanel) {
       (
@@ -199,7 +199,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         disabled={disabled}
         readOnly={props.readOnly || inputReadOnly}
         value={dirty ? text : displayValue}
-        placeholder={placeholder ?? messages.date}
+        placeholder={placeholder ?? messages.datePicker.placeholder}
         role="combobox"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -258,7 +258,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
       />
       {allowClear && (formValue || text) && !disabled && !props.readOnly && (
         <ClearButton
-          label={clearLabel ?? messages.clearDate}
+          label={clearLabel ?? messages.datePicker.clear}
           onClear={() => {
             onClear();
             setText('');
@@ -273,7 +273,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         className="leaf-date-picker__icon"
         tabIndex={-1}
         disabled={disabled}
-        aria-label={panelLabel ?? messages.chooseDate}
+        aria-label={panelLabel ?? messages.datePicker.label}
         onMouseDown={(event) => event.preventDefault()}
         onClick={() => {
           if (open) close();
@@ -304,7 +304,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         render={popupRender}
         container={getPopupContainer}
         role="dialog"
-        aria-label={panelLabel ?? messages.chooseDate}
+        aria-label={panelLabel ?? messages.datePicker.label}
       >
         {renderPanel(finish)}
       </FloatingPanel>

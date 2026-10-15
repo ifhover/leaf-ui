@@ -12,15 +12,21 @@
     gap: 12px;
   }
   &__list {
-    position: relative;
-    isolation: isolate;
-    display: flex;
     flex: 1;
-    gap: 12px;
     overflow: auto;
     min-width: 0;
     scrollbar-width: thin;
     box-shadow: inset 0 -1px 0 var(--leaf-color-divider);
+  }
+  &__track {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+    gap: 12px;
+    // The moving background must never enlarge the tablist's scrollable area.
+    overflow: clip;
   }
   &__indicator {
     position: absolute;
@@ -66,18 +72,16 @@
     background: transparent;
     font: inherit;
     cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-selected='true'] {
       color: var(--leaf-color-primary);
       font-weight: var(--leaf-font-weight);
     }
     &:hover:not(:disabled):not([aria-selected='true']) {
-      color: var(--leaf-color-text);
+      color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
     }
-    &:active:not(:disabled) {
-      opacity: 0.8;
+    &:active:not(:disabled):not([aria-selected='true']) {
+      color: var(--leaf-color-primary-active, var(--leaf-color-primary));
     }
     &:disabled {
       opacity: 0.45;
@@ -120,14 +124,10 @@
     cursor: pointer;
     transition:
       color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       color: var(--leaf-color-text);
       background: var(--leaf-color-surface-muted);
-    }
-    &:active:not(:disabled) {
-      transform: scale(0.9);
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -154,11 +154,14 @@
     margin-inline-start: auto;
     flex-shrink: 0;
   }
+  & &__action {
+    align-self: stretch;
+    flex-shrink: 0;
+    width: auto;
+    aspect-ratio: 1;
+  }
   &__panels {
     min-width: 0;
-    &[data-transitioning] {
-      overflow: clip;
-    }
   }
   &__panel {
     padding-block: 18px;
@@ -175,12 +178,34 @@
     @include geometry.nested-surface(
       tabs,
       var(--leaf-component-tabs-radius, var(--leaf-radius)),
-      var(--leaf-component-tabs-padding, 3px)
+      var(--leaf-component-tabs-padding, var(--leaf-tabs-card-padding, 4px))
     );
-    gap: 3px;
+    flex: 0 1 auto;
+    box-sizing: border-box;
+    --leaf-tabs-card-tab-height: max(
+      1px,
+      calc(
+        var(--leaf-current-control-height) - var(--leaf-surface-padding-top) - var(
+            --leaf-surface-padding-bottom
+          ) -
+          2px
+      )
+    );
+    min-height: var(--leaf-current-control-height);
     border: 1px solid var(--leaf-color-border);
     background: var(--leaf-color-surface-muted);
     box-shadow: none;
+  }
+  &--card &__track {
+    gap: 2px;
+    // Include the list's inset in the clip box so the raised selection can cast its shadow.
+    // Negative margins keep the existing tab geometry and scroll range unchanged.
+    box-sizing: border-box;
+    min-width: calc(100% + var(--leaf-surface-padding-left) + var(--leaf-surface-padding-right));
+    padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
+      var(--leaf-surface-padding-bottom) var(--leaf-surface-padding-left);
+    margin: calc(-1 * var(--leaf-surface-padding-top)) calc(-1 * var(--leaf-surface-padding-right))
+      calc(-1 * var(--leaf-surface-padding-bottom)) calc(-1 * var(--leaf-surface-padding-left));
   }
   &--card &__indicator {
     border-radius: var(--leaf-surface-inner-radius);
@@ -190,11 +215,8 @@
       display: none;
     }
   }
-  &--card &__tab {
-    border-radius: var(--leaf-surface-inner-radius);
-    padding-inline: 14px;
-  }
   &--card &__entry {
+    height: var(--leaf-tabs-card-tab-height);
     border-radius: var(--leaf-surface-inner-radius);
   }
   &--bottom {
@@ -214,9 +236,12 @@
       align-items: stretch;
     }
     .leaf-tabs__list {
-      flex-direction: column;
-      gap: 4px;
       box-shadow: none;
+    }
+    .leaf-tabs__track {
+      flex-direction: column;
+      width: auto;
+      gap: 4px;
     }
     .leaf-tabs__tab {
       justify-content: flex-start;
@@ -238,6 +263,10 @@
     .leaf-tabs__extra {
       margin: auto 12px 8px;
     }
+    .leaf-tabs__action {
+      align-self: center;
+      width: var(--leaf-current-control-height);
+    }
   }
   &--right {
     .leaf-tabs__header {
@@ -247,6 +276,15 @@
       inset-inline-start: 0;
       inset-inline-end: auto;
     }
+  }
+  &--card &__tab {
+    height: var(--leaf-tabs-card-tab-height);
+    min-height: var(--leaf-tabs-card-tab-height);
+    border-radius: var(--leaf-surface-inner-radius);
+    padding: 0 12px;
+    // Intrinsic bars must not resize when selection changes a label's weight.
+    font-weight: var(--leaf-font-weight);
+    line-height: 1.5;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -261,6 +299,7 @@
   --leaf-current-font-size: var(--leaf-component-tabs-font-size, var(--leaf-font-size));
 }
 .leaf-tabs--sm {
+  --leaf-tabs-card-padding: 2px;
   --leaf-current-control-height: var(
     --leaf-component-tabs-height-sm,
     var(--leaf-control-height-sm)
@@ -268,6 +307,7 @@
   --leaf-current-font-size: var(--leaf-font-size-sm);
 }
 .leaf-tabs--lg {
+  --leaf-tabs-card-padding: 5px;
   --leaf-current-control-height: var(
     --leaf-component-tabs-height-lg,
     var(--leaf-control-height-lg)

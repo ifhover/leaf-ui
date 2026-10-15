@@ -1,5 +1,6 @@
 import { LoaderCircle } from 'lucide-react';
 import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 import { useButtonWave } from './wave';
@@ -10,7 +11,7 @@ export type ButtonSize = ControlSize;
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual style. @default 'solid' */
   variant?: ButtonVariant;
-  /** Shared control size. @default 'md' (40px) */
+  /** Shared control size. @default 'md' (36px) */
   size?: ButtonSize;
   /** Uses the semantic danger color in every variant. */
   danger?: boolean;
@@ -24,8 +25,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   endIcon?: ReactNode;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
+/** Internal rendering primitive; its owner resolves defaults and interaction constraints. */
+export const ButtonControl = forwardRef<HTMLButtonElement, ButtonProps>(function ButtonControl(
+  rawProps: ButtonProps,
+  ref,
+) {
+  const {
     variant = 'solid',
     size = 'md',
     danger = false,
@@ -40,9 +45,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     onClick,
     'aria-busy': ariaBusy,
     ...props
-  },
-  ref,
-) {
+  } = rawProps;
   const hasLabel =
     children !== undefined && children !== null && children !== false && children !== '';
   const iconOnly = !hasLabel && Boolean(startIcon || endIcon || loading);
@@ -90,5 +93,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       </span>
     </button>
   );
+});
+ButtonControl.displayName = 'ButtonControl';
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(rawProps, ref) {
+  const props = useComponentProps('Button', rawProps);
+  return <ButtonControl {...props} ref={ref} />;
 });
 Button.displayName = 'Button';

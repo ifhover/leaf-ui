@@ -139,14 +139,34 @@ async function changeModalStep(dialog: Locator) {
   };
 }
 
-test('selection moves continuously, settles under rapid changes and retains panel state', async ({
-  page,
-}) => {
+test('selection animates while panels switch immediately and retain state', async ({ page }) => {
   await page.goto('/?fixture=motion&rtl=1');
   await page.getByRole('textbox', { name: 'Retained name', exact: true }).fill('kept value');
   const indicator = page.locator('.leaf-tabs__indicator');
   const longer = page.getByRole('tab', { name: 'Longer content', exact: true });
   await longer.evaluate((button) => {
+    button.addEventListener(
+      'click',
+      () => {
+        requestAnimationFrame(() => {
+          const host = button.closest('.leaf-tabs')?.querySelector('.leaf-tabs__panels');
+          const panel = host?.querySelector('.leaf-tabs__panel:not([hidden])');
+          if (!host || !panel) return;
+          button.setAttribute(
+            'data-panel-switch',
+            JSON.stringify({
+              animations: host.getAnimations({ subtree: true }).length,
+              heightDifference: Math.abs(
+                host.getBoundingClientRect().height - panel.getBoundingClientRect().height,
+              ),
+              opacity: getComputedStyle(panel).opacity,
+              transform: getComputedStyle(panel).transform,
+            }),
+          );
+        });
+      },
+      { once: true },
+    );
     const marker = button.closest('.leaf-tabs')?.querySelector('.leaf-tabs__indicator');
     if (!(marker instanceof HTMLElement)) return;
     const before = marker.style.getPropertyValue('--leaf-indicator-x');
@@ -177,6 +197,11 @@ test('selection moves continuously, settles under rapid changes and retains pane
   expect(
     JSON.parse((await longer.getAttribute('data-motion-selection')) ?? '{}').duration,
   ).toBeGreaterThan(0);
+  await expect(longer).toHaveAttribute('data-panel-switch', /"animations":0/);
+  const panelSwitch = JSON.parse((await longer.getAttribute('data-panel-switch')) ?? '{}');
+  expect(panelSwitch.heightDifference).toBeLessThan(1);
+  expect(panelSwitch.opacity).toBe('1');
+  expect(panelSwitch.transform).toBe('none');
   await page.getByRole('tab', { name: 'Final', exact: true }).click();
   await expect
     .poll(

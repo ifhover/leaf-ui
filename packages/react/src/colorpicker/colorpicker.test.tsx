@@ -4,6 +4,80 @@ import { describe, expect, it, vi } from 'vitest';
 import { ColorPicker, ConfigProvider } from '../index';
 
 describe('ColorPicker', () => {
+  it.each(['solid', 'gradient'] as const)(
+    'opens %s from the outer row and keeps native clicks and keyboard activation single',
+    async (mode) => {
+      const click = vi.fn();
+      const bubble = vi.fn();
+      const open = vi.fn();
+      const { container } = render(
+        <ConfigProvider locale="en-US">
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: This test observes bubbled child clicks rather than providing an interactive control. */}
+          {/* biome-ignore lint/a11y/useKeyWithClickEvents: The ColorPicker button provides the keyboard interaction being tested. */}
+          <div onClick={bubble}>
+            <ColorPicker mode={mode} showText onClick={click} onOpenChange={open} />
+          </div>
+        </ConfigProvider>,
+      );
+      const row = container.querySelector('.leaf-color-picker') as HTMLElement;
+      const trigger = screen.getByRole('button', { name: 'Choose a color' });
+      await userEvent.click(row);
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(bubble).toHaveBeenCalledTimes(1);
+      expect(open).toHaveBeenLastCalledWith(true);
+
+      await userEvent.click(row.querySelector('.leaf-color-picker__text') as HTMLElement);
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(click).toHaveBeenCalledTimes(2);
+      expect(bubble).toHaveBeenCalledTimes(2);
+      expect(open).toHaveBeenCalledTimes(2);
+      expect(open).toHaveBeenLastCalledWith(false);
+
+      await userEvent.keyboard('{Enter}');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      await userEvent.keyboard('{Escape}');
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      expect(trigger).toHaveFocus();
+      await userEvent.keyboard(' ');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    },
+  );
+
+  it.each(['solid', 'gradient'] as const)(
+    'keeps %s clearing independent and honors cancellation, read-only and disabled rows',
+    async (mode) => {
+      const change = vi.fn();
+      const open = vi.fn();
+      const blocked = vi.fn((event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault());
+      const { container, rerender } = render(
+        <ConfigProvider locale="en-US">
+          <ColorPicker mode={mode} allowClear onChange={change} onOpenChange={open} />
+        </ConfigProvider>,
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Clear color' }));
+      expect(change).toHaveBeenCalledExactlyOnceWith('');
+      expect(open).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'Choose a color' })).toHaveFocus();
+
+      rerender(<ColorPicker mode={mode} onClick={blocked} onOpenChange={open} />);
+      await userEvent.click(container.querySelector('.leaf-color-picker') as HTMLElement);
+      expect(blocked).toHaveBeenCalledTimes(1);
+      expect(open).not.toHaveBeenCalled();
+
+      for (const state of [{ readOnly: true }, { disabled: true }]) {
+        rerender(<ColorPicker mode={mode} {...state} onOpenChange={open} />);
+        await userEvent.click(container.querySelector('.leaf-color-picker') as HTMLElement);
+        expect(screen.getByRole('button', { name: '选择颜色' })).toHaveAttribute(
+          'aria-expanded',
+          'false',
+        );
+        expect(open).not.toHaveBeenCalled();
+      }
+    },
+  );
+
   it('accepts CSS colors with alpha, switches formats and rejects invalid text', async () => {
     const change = vi.fn();
     render(

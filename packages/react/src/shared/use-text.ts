@@ -1,10 +1,9 @@
 import { useLeafConfig } from '../config-provider/context';
-import { traditionalTextMessages } from '../locales/zh-tw';
+import { getMessage } from '../locales/resolve';
+import type { TranslationKey } from '../locales/types';
 
-/** Small component-local labels follow the nearest language scope. */
+/** Static labels do not import the ICU parser or allocate formatters. */
 export function useText() {
-  const { locale, textMessages } = useLeafConfig();
-  return (zh: string, en: string) =>
-    textMessages[en] ??
-    (locale === 'zh-TW' ? (traditionalTextMessages[en] ?? zh) : locale.startsWith('zh') ? zh : en);
+  const { messages } = useLeafConfig();
+  return (key: TranslationKey) => getMessage(messages, key);
 }

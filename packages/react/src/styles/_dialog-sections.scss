@@ -1,3 +1,5 @@
+@use './mixins';
+
 @mixin sections($component) {
   --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
   --leaf-dialog-icon-size: calc(var(--leaf-control-height) + 6px);
@@ -92,6 +94,7 @@
       --leaf-component-#{$component}-padding,
       var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
     );
+    @include mixins.action-footer-padding($component);
     padding-block-start: 0;
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
@@ -102,8 +105,7 @@
     border-block-end: 1px solid var(--leaf-dialog-divider);
   }
   &--divided > &__footer {
-    padding-block-start: var(--leaf-dialog-padding-block);
-    padding-block-end: var(--leaf-dialog-padding-block);
+    @include mixins.action-footer-padding($component);
     border-block-start: 1px solid var(--leaf-dialog-divider);
     background: var(
       --leaf-component-#{$component}-footer-background,

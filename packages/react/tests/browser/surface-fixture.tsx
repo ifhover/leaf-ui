@@ -13,9 +13,9 @@ import {
 import { HardDrive, Mail, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { NeutralAlerts } from '../../../../apps/docs/src/examples/alert/neutral';
-import { CardSections } from '../../../../apps/docs/src/examples/card/sections';
 import { DrawerSections } from '../../../../apps/docs/src/examples/drawer/sections';
-import { AccessScope } from '../../../../apps/docs/src/examples/modal/access-scope';
+import { CardSections } from '../../../../apps/docs/src/examples/en/card/sections';
+import { AccessScope } from './access-scope-fixture';
 
 function ConfirmationActions() {
   const { confirm } = useConfirm();
@@ -168,7 +168,7 @@ export function SurfaceFixture() {
           title="Neutral surface"
           description="Status icons carry meaning on the same neutral surface."
         />
-        <CardSections english />
+        <CardSections />
       </ConfigProvider>
     </div>
   );

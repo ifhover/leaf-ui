@@ -1,9 +1,9 @@
 import { CircleAlert } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { FeedbackIcon } from '../alert/alert';
-import { Button, type ButtonProps } from '../button';
+import { ButtonControl, type ButtonProps } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
-import { Modal } from '../modal';
+import { ModalBase } from '../modal/modal';
 import type { DialogFocusOptions } from '../shared/dialog';
 
 export interface ConfirmOptions extends DialogFocusOptions {
@@ -106,7 +106,7 @@ export function ConfirmDialog({
       icon
     );
   return (
-    <Modal
+    <ModalBase
       {...props}
       open={open}
       title={title}
@@ -114,7 +114,7 @@ export function ConfirmDialog({
       divided={false}
       confirmLoading={pending || confirmLoading}
       role="alertdialog"
-      aria-label={title == null ? messages.confirm : undefined}
+      aria-label={title == null ? messages.common.confirm : undefined}
       aria-describedby={children != null ? contentId : undefined}
       className={[
         'leaf-confirm',
@@ -132,7 +132,8 @@ export function ConfirmDialog({
       footer={
         <>
           {(showCancel ?? type !== 'success') && (
-            <Button
+            <ButtonControl
+              type="button"
               variant="outline"
               {...cancelButtonProps}
               disabled={pending || confirmLoading || cancelButtonProps?.disabled}
@@ -141,10 +142,11 @@ export function ConfirmDialog({
                 if (!event.defaultPrevented) cancel();
               }}
             >
-              {cancelText ?? messages.cancel}
-            </Button>
+              {cancelText ?? messages.common.cancel}
+            </ButtonControl>
           )}
-          <Button
+          <ButtonControl
+            type="button"
             {...confirmButtonProps}
             danger={type === 'danger'}
             loading={pending || confirmLoading || confirmButtonProps?.loading}
@@ -153,8 +155,8 @@ export function ConfirmDialog({
               if (!event.defaultPrevented) void accept();
             }}
           >
-            {confirmText ?? messages.confirm}
-          </Button>
+            {confirmText ?? messages.common.confirm}
+          </ButtonControl>
         </>
       }
     >
@@ -179,6 +181,6 @@ export function ConfirmDialog({
           </div>
         </div>
       )}
-    </Modal>
+    </ModalBase>
   );
 }

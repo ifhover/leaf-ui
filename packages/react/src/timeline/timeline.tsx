@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useListMotion } from '../shared/motion';
 import type { LeafThemeStyle } from '../theme';
@@ -15,14 +16,15 @@ export interface TimelineProps extends Omit<HTMLAttributes<HTMLOListElement>, 'o
   reverse?: boolean;
   pending?: ReactNode;
 }
-export function Timeline({
-  items,
-  mode = 'left',
-  reverse = false,
-  pending,
-  className,
-  ...props
-}: TimelineProps) {
+export function Timeline(rawProps: TimelineProps) {
+  const {
+    items,
+    mode = 'left',
+    reverse = false,
+    pending,
+    className,
+    ...props
+  } = useComponentProps('Timeline', rawProps);
   const root = useRef<HTMLOListElement>(null);
   const entries = [...items];
   if (reverse) entries.reverse();

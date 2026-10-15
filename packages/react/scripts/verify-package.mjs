@@ -1,24 +1,47 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rmdir,
+  stat,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { renderTailwindTheme } from './build-tailwind.mjs';
 
 const require = createRequire(import.meta.url);
 const packageRoot = new URL('../', import.meta.url);
 const manifest = JSON.parse(await readFile(new URL('package.json', packageRoot), 'utf8'));
 const entry = manifest.exports['.'];
+function assertPublicExports(api, label) {
+  for (const name of Object.keys(api))
+    assert.ok(!/Control$|^ModalBase$/u.test(name), `${label}: ${name} must remain internal`);
+}
 let subpathCount = 0;
 for (const [subpath, targets] of Object.entries(manifest.exports)) {
   if (subpath === '.' || subpath === './package.json') continue;
   if (typeof targets === 'string') {
     const file = new URL(targets, packageRoot);
     assert.ok((await stat(file)).isFile(), `${subpath} target exists`);
-    if (subpath.endsWith('.css')) {
+    if (subpath === './tailwind.css') {
+      const { leafTailwindTokens } = await import('../dist/esm/tailwind-tokens.js');
+      assert.equal(await readFile(file, 'utf8'), renderTailwindTheme(leafTailwindTokens));
+    } else if (subpath.endsWith('.css')) {
       const styles = await readFile(file, 'utf8');
-      assert.ok(styles.includes('--leaf-control-height'), `${subpath} includes shared tokens`);
+      const shared =
+        subpath === './styles.css'
+          ? await readFile(new URL('dist/esm/styles/foundation.css', packageRoot), 'utf8')
+          : styles;
+      assert.ok(shared.includes('--leaf-control-height'), `${subpath} includes shared tokens`);
       assert.ok(!styles.includes('@use'), `${subpath} is compiled CSS`);
     }
     continue;
@@ -30,6 +53,8 @@ for (const [subpath, targets] of Object.entries(manifest.exports)) {
   const specifier = `@ifhover/leaf-ui${subpath.slice(1)}`;
   const imports = await import(specifier),
     requires = require(specifier);
+  assertPublicExports(imports, `${subpath} ESM`);
+  assertPublicExports(requires, `${subpath} CommonJS`);
   assert.deepEqual(
     Object.keys(imports).sort(),
     Object.keys(requires)
@@ -54,6 +79,49 @@ for (const relativePath of [
 }
 const esm = await import('@ifhover/leaf-ui');
 const cjs = require('@ifhover/leaf-ui');
+const tailwindPreset = (await import('@ifhover/leaf-ui/tailwind')).default;
+assert.equal(tailwindPreset.theme.extend.spacing['leaf-control'], 'var(--leaf-control-height)');
+assert.equal(
+  tailwindPreset.theme.extend.colors['leaf-primary'],
+  require('@ifhover/leaf-ui/tailwind').default.theme.extend.colors['leaf-primary'],
+  'Tailwind preset agrees in ESM and CommonJS',
+);
+for (const tag of ['en-US', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR']) {
+  const resource = require(`@ifhover/leaf-ui/locales/${tag}.json`);
+  const source = JSON.parse(
+    await readFile(new URL(`src/locales/${tag}.json`, packageRoot), 'utf8'),
+  );
+  assert.deepEqual(resource, source, `${tag}: published JSON matches runtime source`);
+}
+for (const [format, api] of [
+  ['ESM', esm],
+  ['CommonJS', cjs],
+]) {
+  for (const [locale, placeholder, total] of [
+    ['ja-JP', '日付を選択', '全 24 件'],
+    ['ko-KR', '날짜 선택', '총 24개'],
+  ]) {
+    const html = renderToStaticMarkup(
+      createElement(api.ConfigProvider, { locale }, [
+        createElement(api.DatePicker, { key: 'date' }),
+        createElement(api.Pagination, { key: 'pages', total: 24, showTotal: true }),
+      ]),
+    );
+    assert.ok(html.includes(placeholder), `${format}: ${locale} built-in date text`);
+    assert.ok(html.includes(total), `${format}: ${locale} formatted total`);
+  }
+}
+const localeCheck = execFileSync(
+  process.execPath,
+  [
+    fileURLToPath(new URL(manifest.bin['leaf-ui-check-translations'], packageRoot)),
+    fileURLToPath(new URL(manifest.exports['./locales/en-US.json'], packageRoot)),
+  ],
+  { encoding: 'utf8' },
+);
+assert.match(localeCheck, /Translation valid/);
+assertPublicExports(esm, 'Root ESM');
+assertPublicExports(cjs, 'Root CommonJS');
 const components = [
   [
     'Table',
@@ -85,7 +153,7 @@ const components = [
     null,
     /role="separator"/,
   ],
-  ['Carousel', {}, ['A', 'B'], /aria-roledescription="carousel"/],
+  ['Carousel', {}, ['A', 'B'], /aria-roledescription="轮播"/],
   ['FloatButton', { label: 'Help' }, null, /<button/],
   ['FloatButtonGroup', {}, 'Actions', /<fieldset/],
   ['Mentions', { options: [{ value: 'alice' }] }, null, /<textarea/],
@@ -94,6 +162,15 @@ const components = [
   ['BottomNavigation', { items: [{ key: 'home', label: 'Home' }] }, null, /<nav/],
   ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
   ['Card', { title: 'Project' }, 'Details', /leaf-card/],
+  [
+    'Card',
+    {
+      title: 'Project',
+      tabs: { items: [{ key: 'overview', label: 'Overview', children: 'Summary' }] },
+    },
+    null,
+    /role="tabpanel"/,
+  ],
   [
     'Collapse',
     { items: [{ key: 'first', label: 'First', children: 'Content' }] },
@@ -188,6 +265,7 @@ const components = [
   ['Row', {}, 'Row content', /leaf-row/],
   ['Col', { md: 12 }, 'Column', /leaf-col/],
   ['Space', {}, 'Actions', /leaf-space/],
+  ['Flex', { gap: 'sm', wrap: true }, 'Actions', /leaf-flex/],
   ['ScrollArea', { height: 100 }, 'Content', /leaf-scroll-area/],
   ['Scrollbar', { height: 100 }, 'Content', /leaf-scrollbar/],
   ['Masonry', {}, 'Cards', /leaf-masonry/],
@@ -236,8 +314,6 @@ const components = [
   ],
   ['FileList', { items: [{ url: '/report.pdf' }] }, null, /leaf-file-list/],
   ['Upload', {}, null, /leaf-upload/],
-  ['ImageCropper', { src: '/image.png' }, null, /leaf-image-cropper/],
-  ['SignaturePad', {}, null, /<canvas/],
   ['ButtonGroup', {}, createElement('button', { type: 'button' }, 'Save'), /<fieldset/],
   ['SplitButton', { items: [{ key: 'copy', label: 'Copy' }] }, 'Save', /leaf-button-group/],
   ['CheckboxGroup', { options: ['A', 'B'] }, null, /leaf-checkbox-group/],
@@ -345,19 +421,138 @@ for (const [format, api] of [
   assert.match(themed, /--leaf-radius:8px/);
   assert.match(themed, /--leaf-control-height:38px/);
   assert.match(themed, /--leaf-control-height-lg:48px/);
+  const buttonEntry =
+    format === 'ESM' ? await import('@ifhover/leaf-ui/button') : require('@ifhover/leaf-ui/button');
+  const defaults = renderToStaticMarkup(
+    createElement(
+      api.ConfigProvider,
+      {
+        components: {
+          Button: { size: 'lg', variant: 'outline' },
+          Input: { size: 'sm', defaultValue: 'Leaf defaults' },
+        },
+      },
+      createElement(buttonEntry.Button, null, 'Subpath defaults'),
+      createElement(api.InputSearch, { 'aria-label': 'Search defaults', enterButton: 'Find' }),
+    ),
+  );
+  assert.match(defaults, /leaf-button--outline leaf-button--lg/);
+  assert.match(defaults, /leaf-button--solid leaf-button--sm/);
+  assert.match(defaults, /value="Leaf defaults"/);
+  const resetDefaults = renderToStaticMarkup(
+    createElement(
+      api.ConfigProvider,
+      { components: { Button: { variant: 'outline', disabled: true } } },
+      createElement(
+        api.ConfigProvider,
+        { components: { Button: null } },
+        createElement(buttonEntry.Button, null, 'Reset defaults'),
+      ),
+    ),
+  );
+  assert.match(resetDefaults, /leaf-button--solid leaf-button--md/);
+  assert.doesNotMatch(resetDefaults, /disabled=""/);
+  for (const name of ['ButtonControl', 'InputControl', 'SelectControl', 'ModalBase'])
+    assert.ok(!(name in api), `${name} must remain internal`);
+  const inputEntry =
+    format === 'ESM' ? await import('@ifhover/leaf-ui/input') : require('@ifhover/leaf-ui/input');
+  const selectEntry =
+    format === 'ESM' ? await import('@ifhover/leaf-ui/select') : require('@ifhover/leaf-ui/select');
+  assert.ok(
+    !('ButtonControl' in buttonEntry),
+    'Button subpath must not expose its internal control',
+  );
+  assert.ok(!('InputControl' in inputEntry), 'Input subpath must not expose its internal control');
+  assert.ok(
+    !('SelectControl' in selectEntry),
+    'Select subpath must not expose its internal control',
+  );
 }
+const defaultPropsModule = await readFile(
+  new URL('dist/esm/config-provider/component-defaults.js', packageRoot),
+  'utf8',
+);
+assert.ok(
+  !/from\s+["'][.]/u.test(defaultPropsModule),
+  'Default props types must not load component implementations at runtime',
+);
 const esmTypes = await readFile(new URL(entry.import.types, packageRoot), 'utf8');
 assert.ok(
   !esmTypes.includes('.css') && !esmTypes.includes('.scss'),
   'Declarations must not reference extracted styles',
 );
+// Ordinary consumers must not need the optional table engine just to configure UI defaults.
+const qualityDirectory = fileURLToPath(new URL('.quality/', packageRoot));
+await mkdir(qualityDirectory, { recursive: true });
+const consumerDirectory = await mkdtemp(path.join(qualityDirectory, 'defaults-consumer-'));
+const consumerPath = path.join(consumerDirectory, 'consumer.tsx');
+const consumerConfigPath = path.join(consumerDirectory, 'tsconfig.json');
+const consumerSource = `
+import { Button, ConfigProvider, type LeafComponentDefaults, type DataTablePresentationProps, type LeafTranslation, type LeafTranslations } from '@ifhover/leaf-ui';
+import leafPreset from '@ifhover/leaf-ui/tailwind';
+const spacing: string = leafPreset.theme.extend.spacing.leaf;
+const pack: LeafTranslation = { select: { placeholder: 'Choose' } };
+const translations: LeafTranslations = { 'ja-JP': pack };
+const languages = ['ja-JP', 'en-US'] as const;
+const presentation: DataTablePresentationProps = { size: 'sm', selection: 'multiple' };
+const components: LeafComponentDefaults = {
+  Button: { variant: 'outline' }, DataTable: presentation,
+  DataTablePagination: { showSizeChanger: true }, VirtualList: { estimateSize: 36 },
+};
+export const example = <ConfigProvider components={components} locale={languages} translations={translations}><Button>Leaf</Button></ConfigProvider>;
+`;
+try {
+  await writeFile(consumerPath, consumerSource);
+  await writeFile(
+    consumerConfigPath,
+    JSON.stringify({
+      compilerOptions: {
+        target: 'ES2022',
+        module: 'ESNext',
+        moduleResolution: 'Bundler',
+        jsx: 'react-jsx',
+        strict: true,
+        skipLibCheck: false,
+        noEmit: true,
+        resolveJsonModule: false,
+        types: ['react', 'react-dom'],
+        traceResolution: true,
+        paths: {
+          '@tanstack/react-table': ['./missing-table-peer.d.ts'],
+          '@tanstack/table-core': ['./missing-table-peer.d.ts'],
+        },
+      },
+      files: ['./consumer.tsx'],
+    }),
+  );
+  const compiler = path.join(path.dirname(require.resolve('typescript/package.json')), 'bin/tsc');
+  const resolution = execFileSync(process.execPath, [compiler, '--project', consumerConfigPath], {
+    cwd: fileURLToPath(packageRoot),
+    encoding: 'utf8',
+    maxBuffer: 20 * 1024 * 1024,
+  });
+  assert.doesNotMatch(
+    resolution,
+    /Resolving module ['"]@tanstack\/(?:react-table|table-core)/u,
+    'Root declarations must not load the optional table peer',
+  );
+} finally {
+  await unlink(consumerPath).catch(() => {});
+  await unlink(consumerConfigPath).catch(() => {});
+  await rmdir(consumerDirectory);
+}
 const baseCss = await readFile(new URL(manifest.exports['./styles.css'], packageRoot), 'utf8');
-assert.match(baseCss, /--leaf-control-height:\s*40px/);
+const foundationCss = await readFile(
+  new URL('dist/esm/styles/foundation.css', packageRoot),
+  'utf8',
+);
+assert.match(foundationCss, /--leaf-control-height:\s*36px/);
+assert.match(baseCss, /@import ['"]\.\/foundation\.css['"]/);
 assert.match(baseCss, /components\/message\.css/);
 assert.match(baseCss, /components\/modal\.css/);
 assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary component styles');
 const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
-assert.match(css, /--leaf-control-height:\s*40px/);
+assert.match(css, /--leaf-control-height:\s*36px/);
 assert.match(css, /--leaf-color-danger/);
 assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]/);
 for (const name of ['List', 'ListItem', 'OrgChart'])
@@ -409,6 +604,7 @@ for (const name of [
   'layout',
   'grid',
   'space',
+  'flex',
   'scroll-area',
   'scrollbar',
   'masonry',
@@ -430,8 +626,6 @@ for (const name of [
   'infinite-scroll',
   'file-list',
   'upload',
-  'image-cropper',
-  'signature-pad',
 ]) {
   assert.ok(css.includes(`.leaf-${name}`), `Styles must include ${name}`);
 }
@@ -495,15 +689,34 @@ const adapterCss = await readFile(
 );
 for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination', 'popover'])
   assert.ok(adapterCss.includes(`.leaf-${name}`), `Adapter CSS includes ${name}`);
-assert.ok(!adapterCss.includes('.leaf-image-cropper'), 'Adapter styles must remain scoped');
+assert.ok(!adapterCss.includes('.leaf-color-picker'), 'Adapter styles must remain scoped');
 console.log('Package root:', fileURLToPath(packageRoot));
 console.log(`Verified ${subpathCount} public JS subpaths and every CSS export.`);
 
+for (const [format, extension] of [
+  ['esm', 'js'],
+  ['cjs', 'cjs'],
+]) {
+  const implementation = `dist/${format}/button/button.${extension}`;
+  const browserImplementation = `dist/${format}/browser/modules/button/button.${extension}`;
+  const originalMap = JSON.parse(
+    await readFile(new URL(`${implementation}.map`, packageRoot), 'utf8'),
+  );
+  const browserMap = JSON.parse(
+    await readFile(new URL(`${browserImplementation}.map`, packageRoot), 'utf8'),
+  );
+  assert.equal(
+    browserMap.mappings.split(';').length,
+    originalMap.mappings.split(';').length + 2,
+    `${format}: source maps account for both automatic CSS imports`,
+  );
+}
+
 for (const [specifier, expected, excluded] of [
   ['button', ['button', 'dropdown'], ['table', 'modal', 'input']],
-  ['table', ['table', 'scrollbar', 'loading'], ['image-cropper']],
-  ['table/tanstack', ['table', 'checkbox', 'pagination'], ['image-cropper']],
-  ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['image-cropper']],
+  ['table', ['table', 'scrollbar', 'loading'], ['color-picker']],
+  ['table/tanstack', ['table', 'checkbox', 'pagination'], ['color-picker']],
+  ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['color-picker']],
   ['config-provider', ['message', 'confirm', 'notification', 'loading-bar'], ['table']],
 ]) {
   const result = await build({
@@ -519,6 +732,11 @@ for (const [specifier, expected, excluded] of [
     external: ['react', 'react-dom', 'react/*', 'react-dom/*'],
   });
   const styles = result.outputFiles.find((file) => file.path.endsWith('.css'))?.text ?? '';
+  assert.match(
+    styles,
+    /--leaf-control-height:\s*36px/,
+    `${specifier} automatically loads theme defaults`,
+  );
   for (const name of expected)
     assert.ok(styles.includes(`.leaf-${name}`), `${specifier} automatically loads ${name}`);
   for (const name of excluded)
@@ -538,7 +756,10 @@ const commonJsBrowser = await build({
 });
 assert.ok(
   commonJsBrowser.outputFiles.some(
-    (file) => file.path.endsWith('.css') && file.text.includes('.leaf-button'),
+    (file) =>
+      file.path.endsWith('.css') &&
+      file.text.includes('.leaf-button') &&
+      /--leaf-control-height:\s*36px/.test(file.text),
   ),
 );
 console.log(

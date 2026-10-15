@@ -33,7 +33,7 @@ export type {
 export { Button, ButtonGroup, SplitButton } from './button';
 export type { CalendarProps } from './calendar';
 export { Calendar } from './calendar';
-export type { CardProps } from './card';
+export type { CardProps, CardTabsProps } from './card';
 export { Card } from './card';
 export type { CarouselHandle, CarouselProps } from './carousel';
 export { Carousel } from './carousel';
@@ -54,13 +54,16 @@ export type { CommandItem, CommandPaletteProps } from './commandpalette';
 export { CommandPalette } from './commandpalette';
 export type {
   ConfigProviderProps,
+  LeafComponentDefaults,
   LeafDensity,
   LeafLocale,
   LeafTheme,
   LeafThemeTokens,
+  LeafTranslation,
+  LeafTranslations,
 } from './config-provider';
 export { ConfigProvider } from './config-provider';
-export type { LeafDirection, LeafMessages } from './config-provider/context';
+export type { LeafDirection } from './config-provider/context';
 export { colorContrast, useBreakpoint, useSystemAppearance } from './config-provider/helpers';
 export type { ConfirmApi, ConfirmOptions, ConfirmProviderProps } from './confirm';
 export { ConfirmProvider, useConfirm } from './confirm';
@@ -85,6 +88,8 @@ export type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from './errorboun
 export { ErrorBoundary } from './errorboundary';
 export type { FileItem, FileListProps } from './filelist';
 export { FileList } from './filelist';
+export type { FlexGap, FlexProps } from './flex';
+export { Flex } from './flex';
 export type { FloatButtonAction, FloatButtonGroupProps, FloatButtonProps } from './floatbutton';
 export { FAB, FloatButton, FloatButtonGroup } from './floatbutton';
 export type {
@@ -109,13 +114,6 @@ export type {
   ImageProps,
 } from './image';
 export { Image, ImagePreview, ImagePreviewGroup } from './image';
-export type {
-  CropArea,
-  ImageCropperHandle,
-  ImageCropperProps,
-  ImageCropResult,
-} from './imagecropper';
-export { ImageCropper } from './imagecropper';
 export type { InfiniteScrollProps } from './infinitescroll';
 export { InfiniteScroll } from './infinitescroll';
 export type { InputGroupProps, InputProps, InputSearchProps } from './input';
@@ -182,13 +180,6 @@ export type { DialogFocusOptions, FocusTarget } from './shared/dialog';
 export type { PopupOptions } from './shared/floating';
 export type { TimeParts } from './shared/time';
 export type { ControlSize, ControlStatus } from './shared/types';
-export type {
-  SignaturePadHandle,
-  SignaturePadProps,
-  SignaturePoint,
-  SignatureStroke,
-} from './signaturepad';
-export { SignaturePad } from './signaturepad';
 export type { SkeletonProps } from './skeleton';
 export { Skeleton } from './skeleton';
 export type { SliderMark, SliderProps } from './slider';
@@ -224,6 +215,7 @@ export {
   TableLoading,
   TableRow,
 } from './table';
+export type { DataTablePresentationProps } from './tabletanstack/defaults';
 export type { TabItem, TabsProps } from './tabs';
 export { Tabs } from './tabs';
 export type { CheckableTagProps, TagGroupProps, TagOption, TagProps } from './tag';

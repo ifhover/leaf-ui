@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -65,8 +65,15 @@ describe('Select custom popup', () => {
     await userEvent.click(screen.getByRole('combobox'));
     expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true');
     expect(screen.getByText('处理中')).toBeInTheDocument();
+    expect(screen.getByText('处理中').parentElement?.querySelector('svg')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
     rerender(<Select options={[]} notFoundContent="没有团队" />);
     expect(screen.getByText('没有团队')).toBeInTheDocument();
+    expect(screen.getByText('没有团队').parentElement?.querySelector('svg')).not.toHaveClass(
+      'leaf-floating__loading-icon',
+    );
     rerender(
       <Select options={options} optionRender={(option) => <span>{option.label}团队</span>} />,
     );
@@ -88,6 +95,84 @@ describe('Select custom popup', () => {
     await userEvent.keyboard('{Enter}{Escape}');
     expect(change).toHaveBeenCalledOnce();
     expect(input).toHaveValue('产品');
+  });
+  it('keeps the selected label in the same input on reopen and replaces it on search', async () => {
+    const user = userEvent.setup();
+    const onSearch = vi.fn();
+    const change = vi.fn();
+    render(
+      <Select
+        options={options}
+        showSearch
+        defaultValue="design"
+        onSearch={onSearch}
+        onChange={change}
+      />,
+    );
+    const input = screen.getByRole('combobox') as HTMLInputElement;
+    await user.click(input);
+    expect(input).toHaveValue('设计');
+    expect(screen.getAllByRole('option')).toHaveLength(3);
+    expect(onSearch).not.toHaveBeenCalled();
+    await user.keyboard('产品');
+    expect(input).toHaveValue('产品');
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    await user.keyboard('{Enter}');
+    expect(input).toHaveValue('产品');
+    expect(change).toHaveBeenLastCalledWith('product', options[2]);
+    // A new search may start directly from the focused, closed control.
+    await user.keyboard('设计');
+    expect(input).toHaveValue('设计');
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    await user.keyboard('{Escape}');
+    expect(screen.getByRole('combobox')).toBe(input);
+    expect(input).toHaveValue('产品');
+  });
+  it('keeps an explicitly cleared search empty until dismissal without changing the selection', async () => {
+    const user = userEvent.setup();
+    render(
+      <form aria-label="Search form">
+        <Select options={options} showSearch name="team" defaultValue="design" />
+      </form>,
+    );
+    const input = screen.getByRole('combobox');
+    await user.click(input);
+    await user.keyboard('{Backspace}');
+    expect(input).toHaveValue('');
+    expect(screen.getAllByRole('option')).toHaveLength(3);
+    expect(new FormData(screen.getByRole('form') as HTMLFormElement).get('team')).toBe('design');
+    await user.keyboard('{Escape}');
+    expect(input).toHaveValue('设计');
+  });
+  it('starts a fresh search on paste and preserves composition and consumer event handlers', async () => {
+    const user = userEvent.setup();
+    const onPaste = vi.fn();
+    const onCompositionStart = vi.fn();
+    const change = vi.fn();
+    render(
+      <Select
+        options={options}
+        showSearch
+        defaultValue="design"
+        onPaste={onPaste}
+        onCompositionStart={onCompositionStart}
+        onChange={change}
+      />,
+    );
+    const input = screen.getByRole('combobox');
+    await user.click(input);
+    await user.paste('产品');
+    expect(input).toHaveValue('产品');
+    expect(onPaste).toHaveBeenCalledOnce();
+    await user.keyboard('{Escape}');
+    fireEvent.compositionStart(input);
+    expect(onCompositionStart).toHaveBeenCalledOnce();
+    fireEvent.change(input, { target: { value: '产品' } });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    expect(change).not.toHaveBeenCalled();
+    fireEvent.compositionEnd(input);
+    await user.keyboard('{Enter}');
+    expect(change).toHaveBeenLastCalledWith('product', options[2]);
   });
   it('submits repeated values for multiple selection, removes tags and resets defaults', async () => {
     render(

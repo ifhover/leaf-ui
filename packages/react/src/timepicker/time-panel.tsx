@@ -176,7 +176,7 @@ export function TimePanel({
   return (
     <div ref={ref} className="leaf-time-picker__columns">
       {column(
-        messages.hours,
+        messages.timePicker.hours,
         hours,
         use12Hours ? value.hour % 12 || 12 : value.hour,
         (hour) =>
@@ -192,7 +192,7 @@ export function TimePanel({
           }),
       )}
       {column(
-        messages.minutes,
+        messages.timePicker.minutes,
         options(minuteStep, value.minute),
         value.minute,
         (minute) => onChange({ ...value, minute }),
@@ -201,7 +201,7 @@ export function TimePanel({
       )}
       {showSeconds &&
         column(
-          messages.seconds,
+          messages.timePicker.seconds,
           options(secondStep, value.second),
           value.second,
           (second) => onChange({ ...value, second }),
@@ -210,11 +210,11 @@ export function TimePanel({
         )}
       {use12Hours &&
         column(
-          messages.period,
+          messages.timePicker.period,
           [0, 1],
           value.hour < 12 ? 0 : 1,
           (period) => onChange({ ...value, hour: (value.hour % 12) + period * 12 }),
-          [messages.am, messages.pm],
+          [messages.timePicker.am, messages.timePicker.pm],
           (period) => !!disabledTime?.({ ...value, hour: (value.hour % 12) + period * 12 }),
         )}
     </div>

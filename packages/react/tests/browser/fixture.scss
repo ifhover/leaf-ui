@@ -1,5 +1,9 @@
 @use '../../src/styles/mixins';
 
+.browser-multi-select [hidden] {
+  display: none !important;
+}
+
 .leaf-demo-section-title {
   @include mixins.section-label;
 }
@@ -27,7 +31,7 @@ main {
   height: 150px;
   background: var(--leaf-color-primary-soft);
 }
-.leaf-tabs,
+.leaf-tabs:not(.leaf-card__tabs),
 .leaf-calendar-view,
 .leaf-slider,
 .leaf-menu {
@@ -49,6 +53,9 @@ form {
 .surface-fixture [data-leaf-theme] {
   min-height: 0;
 }
+.component-defaults-fixture [data-leaf-theme] {
+  min-height: 0;
+}
 .surface-fixture form {
   max-width: none;
 }
@@ -63,4 +70,22 @@ form {
   position: relative;
   inset: auto;
   width: max-content;
+}
+
+.file-list-fixture {
+  display: grid;
+  gap: 28px;
+  h1,
+  h2 {
+    margin: 0;
+    font-weight: 500;
+  }
+  h2 {
+    font-size: 16px;
+  }
+  section {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+  }
 }

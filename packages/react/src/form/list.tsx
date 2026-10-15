@@ -1,4 +1,8 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import {
+  mergeComponentProps,
+  useGenericComponentDefaults,
+} from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useListMotion } from '../shared/motion';
 export interface FormListField<T> {
@@ -22,16 +26,17 @@ export interface FormListProps<T>
   itemKey?: (value: T) => string;
   children: (fields: readonly FormListField<T>[], operations: FormListOperations<T>) => ReactNode;
 }
-export function FormList<T>({
-  name,
-  value,
-  defaultValue = [],
-  onChange,
-  itemKey,
-  children,
-  className,
-  ...props
-}: FormListProps<T>) {
+export function FormList<T>(rawProps: FormListProps<T>) {
+  const {
+    name,
+    value,
+    defaultValue = [],
+    onChange,
+    itemKey,
+    children,
+    className,
+    ...props
+  } = mergeComponentProps<FormListProps<T>>(useGenericComponentDefaults('FormList'), rawProps);
   const id = useId();
   const sequence = useRef(0);
   const [internal, setInternal] = useState<readonly T[]>(defaultValue);

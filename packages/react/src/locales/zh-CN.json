@@ -1,0 +1,335 @@
+{
+  "select": {
+    "placeholder": "请选择",
+    "empty": "暂无选项",
+    "clear": "清除选择",
+    "create": "创建 “{label}”"
+  },
+  "autoComplete": {
+    "empty": "没有匹配建议，可继续输入",
+    "suggestions": "{label} 建议"
+  },
+  "datePicker": {
+    "placeholder": "请选择日期",
+    "clear": "清除日期",
+    "label": "选择日期",
+    "selectDate": "选择日期"
+  },
+  "timePicker": {
+    "placeholder": "请选择时间",
+    "clear": "清除时间",
+    "label": "选择时间",
+    "hours": "小时",
+    "minutes": "分钟",
+    "seconds": "秒",
+    "period": "时段",
+    "am": "上午",
+    "pm": "下午",
+    "now": "当前时间",
+    "selectTime": "选择时间"
+  },
+  "dateTimePicker": {
+    "placeholder": "请选择日期和时间"
+  },
+  "dateRangePicker": {
+    "placeholder": "请选择日期区间",
+    "clear": "清除区间"
+  },
+  "cascader": {
+    "clear": "清除级联选择",
+    "level": "第 {level} 级",
+    "placeholder": "请选择",
+    "empty": "暂无选项"
+  },
+  "calendar": {
+    "previousMonth": "上个月",
+    "nextMonth": "下个月",
+    "previousYear": "上一年",
+    "nextYear": "下一年",
+    "previousYears": "上一组年份",
+    "nextYears": "下一组年份",
+    "weekdays": ["一", "二", "三", "四", "五", "六", "日"],
+    "year": "年",
+    "month": "月",
+    "week": "周",
+    "today": "今天",
+    "label": "日历"
+  },
+  "common": {
+    "confirm": "确定",
+    "cancel": "取消",
+    "close": "关闭",
+    "start": "开始",
+    "end": "结束",
+    "remove": "移除",
+    "search": "搜索选项",
+    "noData": "暂无数据",
+    "retry": "重试",
+    "preview": "预览",
+    "download": "下载",
+    "loading": "处理中",
+    "searchAction": "搜索"
+  },
+  "form": {
+    "required": "请填写此项",
+    "invalid": "请检查此项内容",
+    "errorSummary": "请检查以下字段"
+  },
+  "breadcrumb": {
+    "label": "面包屑"
+  },
+  "pagination": {
+    "label": "分页",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "page": "页",
+    "pageSize": "每页条数",
+    "jumpTo": "跳至",
+    "pageBack": "向前跳 5 页",
+    "pageForward": "向后跳 5 页",
+    "pageLabel": "页 {page}",
+    "pageSizeOption": "{count} 条/页",
+    "total": "共 {total} 条"
+  },
+  "input": {
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "clear": "清除输入"
+  },
+  "inputNumber": {
+    "increase": "增加数值",
+    "decrease": "减少数值",
+    "invalid": "请输入范围内的有效数字"
+  },
+  "progress": {
+    "label": "进度"
+  },
+  "avatar": {
+    "label": "头像",
+    "moreMembers": "更多成员",
+    "showMore": "查看其余 {count} 位成员"
+  },
+  "rate": {
+    "label": "评分"
+  },
+  "result": {
+    "success": "操作成功",
+    "warning": "请留意",
+    "error": "操作失败",
+    "info": "提示信息"
+  },
+  "colorPicker": {
+    "label": "选择颜色",
+    "clear": "清除颜色",
+    "saturation": "饱和度",
+    "brightness": "亮度",
+    "hue": "色相",
+    "alpha": "透明度",
+    "value": "颜色值",
+    "invalid": "请输入有效的颜色",
+    "presets": "预设颜色",
+    "gradient": "渐变",
+    "colorStop": "色标 {index}",
+    "addColorStop": "增加色标",
+    "removeColorStop": "删除色标",
+    "color": "颜色",
+    "position": "位置",
+    "colorStopPosition": "色标位置",
+    "angle": "角度",
+    "gradientAngle": "渐变角度"
+  },
+  "tree": {
+    "label": "树",
+    "expand": "展开",
+    "reorderInstructions": "按空格开始拖动，上下选择目标，左放在目标前方，右放在目标后方，空格放置，Escape 取消。",
+    "moveNode": "移动节点 {label}",
+    "expandNode": "展开 {label}",
+    "collapseNode": "收起 {label}"
+  },
+  "collapse": {
+    "label": "折叠面板"
+  },
+  "slider": {
+    "label": "滑动输入"
+  },
+  "tabs": {
+    "moreTabs": "更多标签页",
+    "addTab": "添加标签页",
+    "reorder": "移动标签页 {label}",
+    "closeLabel": "关闭标签页 {label}"
+  },
+  "backTop": {
+    "backToTop": "回到顶部"
+  },
+  "button": {
+    "moreActions": "更多操作"
+  },
+  "carousel": {
+    "carousel": "轮播",
+    "previousSlide": "上一张",
+    "nextSlide": "下一张",
+    "goTo": "转到 {index}",
+    "slide": "幻灯片",
+    "role": "轮播"
+  },
+  "commandPalette": {
+    "commandSearch": "命令搜索",
+    "placeholder": "搜索命令…",
+    "searchCommands": "搜索命令",
+    "commands": "命令",
+    "navigate": "选择",
+    "run": "执行"
+  },
+  "errorBoundary": {
+    "title": "内容暂时无法显示",
+    "description": "请重试，或稍后返回。"
+  },
+  "fileList": {
+    "fileType": "文件",
+    "uploading": "上传中",
+    "uploadFailed": "上传失败",
+    "cancelled": "已取消",
+    "uploadComplete": "上传完成",
+    "ready": "待上传",
+    "uploadProgress": "上传进度 {name}",
+    "noFiles": "暂无文件",
+    "preview": "预览 {name}",
+    "download": "下载 {name}",
+    "remove": "移除 {name}"
+  },
+  "floatButton": {
+    "quickActions": "快捷操作"
+  },
+  "image": {
+    "previewImage": "预览图片{alt}",
+    "imageUnavailable": "图片加载失败",
+    "imagePreview": "图片预览",
+    "downloadImage": "下载图片",
+    "exitFullscreen": "退出全屏",
+    "enterFullscreen": "进入全屏",
+    "closePreview": "关闭预览",
+    "previousImage": "上一张",
+    "nextImage": "下一张",
+    "downloadFailedOpenTheOriginalImageToSaveIt": "下载失败，可在新窗口打开原图保存",
+    "openOriginal": "打开原图",
+    "zoomOut": "缩小",
+    "resetZoom": "重置缩放",
+    "zoomIn": "放大",
+    "showThumbnails": "显示缩略图",
+    "scrollThumbnailsBackward": "向前滚动缩略图",
+    "imageList": "图片列表",
+    "scrollThumbnailsForward": "向后滚动缩略图",
+    "image": "图片",
+    "position": "第 {index} 张，共 {total} 张",
+    "viewImage": "查看第 {index} 张图片{alt}"
+  },
+  "infiniteScroll": {
+    "loadingFailedRetry": "加载失败，重试",
+    "allItemsLoaded": "已加载全部内容",
+    "loadMore": "加载更多"
+  },
+  "inputOTP": {
+    "verificationCode": "验证码"
+  },
+  "layout": {
+    "expandSidebar": "展开侧栏",
+    "collapseSidebar": "收起侧栏"
+  },
+  "loadingBar": {
+    "pageLoadingProgress": "页面加载进度"
+  },
+  "menu": {
+    "navigationMenu": "导航菜单"
+  },
+  "popconfirm": {
+    "actionFailedPleaseRetry": "操作失败，请重试"
+  },
+  "qrCode": {
+    "qrCode": "二维码",
+    "refreshCode": "刷新二维码"
+  },
+  "scrollbar": {
+    "verticalScrollbar": "纵向滚动条",
+    "horizontalScrollbar": "横向滚动条"
+  },
+  "splitter": {
+    "resizePanel": "调整面板 {index}",
+    "togglePanel": "折叠或展开面板"
+  },
+  "table": {
+    "table": "表格",
+    "scrollArea": "滚动区域",
+    "loadError": "加载失败，请重试"
+  },
+  "dataTable": {
+    "searchTable": "搜索表格",
+    "columns": "显示列",
+    "resizeColumn": "调整列宽: {label}",
+    "selectRows": "选择行",
+    "selectAllRowsOnThisPage": "选择本页所有行",
+    "selectAllRows": "选择所有行",
+    "reorderRow": "移动行: {label}",
+    "selectRow": "选择行: {label}",
+    "collapseRow": "收起行: {label}",
+    "expandRow": "展开行: {label}",
+    "reorderRows": "移动行",
+    "expandRows": "展开行",
+    "sortAscending": "升序排序",
+    "sortDescending": "降序排序",
+    "clearSorting": "取消排序",
+    "reorderColumn": "移动列: {label}"
+  },
+  "timeRangePicker": {
+    "placeholder": "开始时间 ～ 结束时间",
+    "label": "选择时间范围",
+    "clear": "清除时间范围"
+  },
+  "tour": {
+    "previous": "上一步",
+    "finish": "完成",
+    "next": "下一步"
+  },
+  "transfer": {
+    "selectAllVisibleItems": "选择本页全部",
+    "available": "可选项目",
+    "selected": "已选项目",
+    "searchAvailableItems": "搜索可选项目",
+    "searchSelectedItems": "搜索已选项目",
+    "noItems": "暂无项目",
+    "moveToSelected": "移至已选",
+    "moveToAvailable": "移回可选"
+  },
+  "typography": {
+    "editText": "编辑文本",
+    "collapse": "收起",
+    "expand": "展开",
+    "copyText": "复制文本"
+  },
+  "upload": {
+    "uploadUrlCannotBeEmpty": "上传地址不能为空",
+    "uploadFailed": "上传失败",
+    "chooseOneFileAtATime": "每次只能选择一个文件",
+    "fileTypeIsNotAccepted": "文件格式不支持",
+    "fileExceedsTheSizeLimit": "文件超过大小限制",
+    "fileCountLimitReached": "文件数量达到上限",
+    "fileValidationFailed": "文件未通过校验",
+    "chooseFiles": "选择文件",
+    "dropHint": "点击或拖拽文件到这里",
+    "dropDescription": "支持选择和拖拽上传",
+    "cancelUpload": "取消上传 {name}",
+    "retryUpload": "重新上传 {name}"
+  },
+  "treeSelect": {
+    "placeholder": "请选择",
+    "clear": "清除选择",
+    "empty": "暂无选项"
+  },
+  "drag": {
+    "instructions": "按空格开始排序，方向键移动，再按空格确认，Escape 取消。",
+    "pickedUp": "开始移动 {label}",
+    "moved": "移至 {label}",
+    "dropped": "已放置 {label}",
+    "cancelled": "已取消排序",
+    "outside": "没有可放置的目标"
+  }
+}

@@ -1,4 +1,8 @@
 import { createContext } from 'react';
+import {
+  type LeafComponentDefaults,
+  mergeComponentProps,
+} from '../config-provider/component-defaults';
 import type { LeafConfig } from '../config-provider/context';
 import type { MessageApi, MessageOptions } from './message';
 
@@ -8,6 +12,7 @@ export interface MessageEntry extends MessageOptions {
   revision: number;
   scope?: string;
   config?: LeafConfig;
+  components?: LeafComponentDefaults;
 }
 export const emptyMessages: readonly MessageEntry[] = [];
 
@@ -21,7 +26,12 @@ export function createMessageStore() {
     entries = next;
     for (const listener of listeners) listener();
   };
-  const open = (options: MessageOptions, scope?: string, config?: LeafConfig) => {
+  const open = (
+    options: MessageOptions,
+    scope?: string,
+    config?: LeafConfig,
+    components?: LeafComponentDefaults,
+  ) => {
     const key = options.key ?? `leaf-message-${++sequence}`;
     if (!available) return key;
     const existing = entries.find((entry) => entry.key === key);
@@ -30,6 +40,7 @@ export function createMessageStore() {
       key,
       scope,
       config,
+      components,
       open: true,
       revision: (existing?.revision ?? 0) + 1,
     };
@@ -63,12 +74,32 @@ export function createMessageStore() {
     remove: (key: string) => {
       publish(entries.filter((entry) => entry.key !== key || entry.open));
     },
-    updateScope: (scope: string, config: LeafConfig) => {
-      if (!entries.some((entry) => entry.scope === scope && entry.config !== config)) return;
-      publish(entries.map((entry) => (entry.scope === scope ? { ...entry, config } : entry)));
+    updateScope: (scope: string, config: LeafConfig, components?: LeafComponentDefaults) => {
+      if (
+        !entries.some(
+          (entry) =>
+            entry.scope === scope && (entry.config !== config || entry.components !== components),
+        )
+      )
+        return;
+      publish(
+        entries.map((entry) => (entry.scope === scope ? { ...entry, config, components } : entry)),
+      );
     },
-    api: (scope?: string, getConfig?: () => LeafConfig): MessageApi => {
-      const show = (options: MessageOptions) => open(options, scope, getConfig?.());
+    api: (
+      scope?: string,
+      getConfig?: () => LeafConfig,
+      getComponents?: () => LeafComponentDefaults,
+    ): MessageApi => {
+      const show = (options: MessageOptions) => {
+        const components = getComponents?.();
+        return open(
+          mergeComponentProps<MessageOptions>(components?.Message, options),
+          scope,
+          getConfig?.(),
+          components,
+        );
+      };
       return {
         open: show,
         close,

@@ -167,7 +167,7 @@ test('theme settings reach portalled section surfaces and dense choices', async 
   expect(color).not.toBe('rgb(246, 246, 247)');
   await expect(dialog.getByRole('button', { name: 'Save access', exact: true })).toHaveCSS(
     'min-height',
-    '34px',
+    '30px',
   );
 });
 

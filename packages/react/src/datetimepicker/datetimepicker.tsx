@@ -1,5 +1,6 @@
 import { forwardRef, type ReactNode, useRef, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { CalendarPanel, dateTimeKey } from '../shared/calendar';
@@ -42,8 +43,8 @@ export interface DateTimePickerProps extends PickerFieldProps {
   cellRender?: (date: Date) => ReactNode;
 }
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
-  function DateTimePicker(
-    {
+  function DateTimePicker(rawProps: DateTimePickerProps, ref) {
+    const {
       value,
       defaultValue = null,
       minDate,
@@ -68,9 +69,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       onPanelChange,
       cellRender,
       ...props
-    },
-    ref,
-  ) {
+    } = useComponentProps('DateTimePicker', rawProps);
     const { messages } = useLeafConfig();
     const field = useFormField();
     const trigger = useRef<HTMLInputElement>(null);
@@ -117,7 +116,10 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       second: date.getSeconds(),
     });
     const timeLabel = (date: Date) =>
-      displayTime(parts(date), showSeconds, use12Hours, [messages.am, messages.pm]);
+      displayTime(parts(date), showSeconds, use12Hours, [
+        messages.timePicker.am,
+        messages.timePicker.pm,
+      ]);
     const label = (date: Date) =>
       formatPickerDate(date, format, (date) => `${dateKey(date)} ${timeLabel(date)}`);
     const today = new Date();
@@ -132,7 +134,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       <DateInput
         {...props}
         ref={merged}
-        placeholder={props.placeholder ?? messages.dateTime}
+        placeholder={props.placeholder ?? messages.dateTimePicker.placeholder}
         commitOnBlur={false}
         displayValue={selected ? label(selected) : ''}
         formValue={selected ? dateTimeKey(selected, showSeconds) : ''}
@@ -152,7 +154,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
           const next = parsePickerDate(
             text.trim(),
             format,
-            (text) => parseDateText(text, 'datetime'),
+            (text) =>
+              parseDateText(text, 'datetime', [messages.timePicker.am, messages.timePicker.pm]),
             parse,
           );
           setValidText(Boolean(next && inBounds(normalize(next))));
@@ -166,7 +169,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
           const next = parsePickerDate(
             text,
             format,
-            (text) => parseDateText(text, 'datetime'),
+            (text) =>
+              parseDateText(text, 'datetime', [messages.timePicker.am, messages.timePicker.pm]),
             parse,
           );
           if (!next || !inBounds(normalize(next))) return false;
@@ -192,7 +196,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                     <button
                       type="button"
                       className="leaf-picker-time-toggle"
-                      aria-label={messages.selectTime}
+                      aria-label={messages.timePicker.selectTime}
                       onClick={() => {
                         setFocusCalendar(false);
                         setView('time');
@@ -215,7 +219,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                     <button
                       type="button"
                       className="leaf-picker-time-toggle"
-                      aria-label={messages.selectDate}
+                      aria-label={messages.datePicker.selectDate}
                       onClick={() => {
                         setFocusCalendar(true);
                         setView('date');
@@ -241,7 +245,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             {presets?.length ? (
               <div className="leaf-picker-presets">
                 {presets.map((preset) => (
-                  <Button
+                  <ButtonControl
                     key={preset.key ?? String(preset.label)}
                     size="sm"
                     variant="ghost"
@@ -255,14 +259,14 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                     }}
                   >
                     {preset.label}
-                  </Button>
+                  </ButtonControl>
                 ))}
               </div>
             ) : null}
             <div className="leaf-picker-footer">
               <div className="leaf-picker-footer__extra">
                 {showToday && (
-                  <Button
+                  <ButtonControl
                     variant="ghost"
                     size="sm"
                     disabled={!inBounds(today)}
@@ -272,11 +276,11 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                       setView('date');
                     }}
                   >
-                    {todayText ?? messages.today}
-                  </Button>
+                    {todayText ?? messages.calendar.today}
+                  </ButtonControl>
                 )}
                 {view === 'time' && (
-                  <Button
+                  <ButtonControl
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -284,12 +288,12 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                       setValidText(true);
                     }}
                   >
-                    {messages.now}
-                  </Button>
+                    {messages.timePicker.now}
+                  </ButtonControl>
                 )}
                 {renderExtraFooter}
               </div>
-              <Button
+              <ButtonControl
                 size="sm"
                 disabled={!validText || !inBounds(draft)}
                 onClick={() => {
@@ -297,8 +301,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                   close();
                 }}
               >
-                {messages.confirm}
-              </Button>
+                {messages.common.confirm}
+              </ButtonControl>
             </div>
           </>
         )}

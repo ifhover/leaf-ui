@@ -109,9 +109,11 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
     );
     useEffect(() => {
       input.current?.setCustomValidity(
-        draft.trim() && (parsed === null || !within(parsed)) ? config.messages.invalidNumber : '',
+        draft.trim() && (parsed === null || !within(parsed))
+          ? config.messages.inputNumber.invalid
+          : '',
       );
-    }, [draft, parsed, within, config.messages.invalidNumber]);
+    }, [draft, parsed, within, config.messages.inputNumber.invalid]);
     const emit = (next: string | null) => {
       if (disabled || readOnly) return;
       setCurrent(next);
@@ -201,7 +203,11 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
                 key={direction}
                 type="button"
                 tabIndex={-1}
-                aria-label={direction === 1 ? config.messages.increase : config.messages.decrease}
+                aria-label={
+                  direction === 1
+                    ? config.messages.inputNumber.increase
+                    : config.messages.inputNumber.decrease
+                }
                 disabled={
                   disabled ||
                   readOnly ||

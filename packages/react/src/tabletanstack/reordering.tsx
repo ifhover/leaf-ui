@@ -20,8 +20,10 @@ import { GripVertical } from 'lucide-react';
 import { createContext, forwardRef, type ReactNode, useContext, useRef } from 'react';
 import { assignRef } from '../shared/field';
 import { useMotionEnabled } from '../shared/motion';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import { Table, type TableColumnHeaderProps, type TableRowProps } from '../table';
+import type { TableColumnHeaderProps, TableRowProps } from '../table';
+import { TableControl as Table } from '../table/table';
 
 type ReorderKind = 'row' | 'column';
 const key = (kind: ReorderKind, id: string) => `${kind}:${id}`;
@@ -84,6 +86,7 @@ export function ReorderScope({ enabled, ...props }: ReorderScopeProps & { enable
 
 function ActiveReorderScope({ id, disabled, onReorder, children }: ReorderScopeProps) {
   const t = useText();
+  const format = useFormattedText();
   const scrollable = useRef<Element | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -134,19 +137,18 @@ function ActiveReorderScope({ id, disabled, onReorder, children }: ReorderScopeP
       }}
       accessibility={{
         screenReaderInstructions: {
-          draggable: t(
-            '按空格开始排序，方向键移动，再按空格确认，Escape 取消。',
-            'Press Space to start, arrow keys to move, Space to drop, and Escape to cancel.',
-          ),
+          draggable: t('drag.instructions'),
         },
         announcements: {
           onDragStart: ({ active }) =>
-            `${t('开始移动', 'Picked up')} ${active.data.current?.label ?? active.id}`,
+            format('drag.pickedUp', { label: String(active.data.current?.label ?? active.id) }),
           onDragOver: ({ over }) =>
-            over ? `${t('移至', 'Move to')} ${over.data.current?.label ?? over.id}` : undefined,
+            over
+              ? format('drag.moved', { label: String(over.data.current?.label ?? over.id) })
+              : t('drag.outside'),
           onDragEnd: ({ active }) =>
-            `${t('已放置', 'Dropped')} ${active.data.current?.label ?? active.id}`,
-          onDragCancel: () => t('已取消排序', 'Reordering cancelled'),
+            format('drag.dropped', { label: String(active.data.current?.label ?? active.id) }),
+          onDragCancel: () => t('drag.cancelled'),
         },
       }}
     >

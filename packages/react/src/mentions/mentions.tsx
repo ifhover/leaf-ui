@@ -1,10 +1,12 @@
 import { forwardRef, type ReactNode, useId, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
-import { Textarea, type TextareaProps } from '../textarea';
+import type { TextareaProps } from '../textarea';
+import { TextareaControl as Textarea } from '../textarea/textarea';
 export interface MentionOption {
   value: string;
   label?: ReactNode;
@@ -27,7 +29,10 @@ export interface MentionsProps
 }
 const defaultPrefixes = ['@'];
 export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions(
-  {
+  rawProps: MentionsProps,
+  ref,
+) {
+  const {
     value,
     defaultValue = '',
     onChange,
@@ -44,9 +49,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     popupRender,
     getPopupContainer,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Mentions', rawProps);
   const input = useRef<HTMLTextAreaElement>(null),
     panel = useRef<HTMLDivElement>(null),
     merged = useMergedRef(input, ref),
@@ -162,9 +165,10 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         render={popupRender}
         container={getPopupContainer}
         className={classes('leaf-floating', 'leaf-mentions__panel', popupClassName)}
+        data-selection="candidate"
         role="listbox"
         id={id}
-        aria-label={messages.search}
+        aria-label={messages.common.search}
       >
         {list.length ? (
           list.map((option, index) => (
@@ -178,7 +182,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
               tabIndex={-1}
               className="leaf-floating__option"
               onMouseDown={(event) => event.preventDefault()}
-              onMouseEnter={() => setActive(index)}
+              onMouseEnter={() => !option.disabled && setActive(index)}
               onClick={() => select(option)}
             >
               <span className="leaf-mentions__prefix" aria-hidden="true">
@@ -189,7 +193,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
           ))
         ) : (
           <div className="leaf-floating__empty">
-            {loading ? messages.loading : (notFoundContent ?? messages.empty)}
+            {loading ? messages.common.loading : (notFoundContent ?? messages.select.empty)}
           </div>
         )}
       </FloatingPanel>

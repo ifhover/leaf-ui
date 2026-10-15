@@ -1,8 +1,10 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { FeedbackIcon, type FeedbackType } from '../alert/alert';
-import { Button, type ButtonProps } from '../button';
+import { ButtonControl, type ButtonProps } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Popover, type PopoverProps } from '../popover';
+import type { PopoverProps } from '../popover';
+import { PopoverControl as Popover } from '../popover/popover';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface PopconfirmProps
@@ -20,25 +22,26 @@ export interface PopconfirmProps
   onCancel?: () => void;
   onError?: (error: unknown) => void;
 }
-export function Popconfirm({
-  title,
-  description,
-  type = 'warning',
-  icon,
-  confirmText,
-  cancelText,
-  confirmButtonProps,
-  cancelButtonProps,
-  showCancel = true,
-  onConfirm,
-  onCancel,
-  onError,
-  open: controlled,
-  defaultOpen = false,
-  onOpenChange,
-  children,
-  ...props
-}: PopconfirmProps) {
+export function Popconfirm(rawProps: PopconfirmProps) {
+  const {
+    title,
+    description,
+    type = 'warning',
+    icon,
+    confirmText,
+    cancelText,
+    confirmButtonProps,
+    cancelButtonProps,
+    showCancel = true,
+    onConfirm,
+    onCancel,
+    onError,
+    open: controlled,
+    defaultOpen = false,
+    onOpenChange,
+    children,
+    ...props
+  } = useComponentProps('Popconfirm', rawProps);
   const { messages } = useLeafConfig();
   const t = useText();
   const [open, setOpen] = useControllable(controlled, defaultOpen, onOpenChange);
@@ -67,7 +70,9 @@ export function Popconfirm({
         }
       }}
       autoFocus={false}
-      aria-label={props['aria-label'] ?? (typeof title === 'string' ? title : messages.confirm)}
+      aria-label={
+        props['aria-label'] ?? (typeof title === 'string' ? title : messages.common.confirm)
+      }
       className={['leaf-popconfirm', props.className].filter(Boolean).join(' ')}
       content={
         <div className="leaf-popconfirm__content">
@@ -79,12 +84,12 @@ export function Popconfirm({
             {description && <div className="leaf-popconfirm__description">{description}</div>}
             {error && (
               <p role="alert" className="leaf-popconfirm__error">
-                {t('操作失败，请重试', 'Action failed. Please retry.')}
+                {t('popconfirm.actionFailedPleaseRetry')}
               </p>
             )}
             <div className="leaf-popconfirm__actions">
               {showCancel && (
-                <Button
+                <ButtonControl
                   {...cancelButtonProps}
                   size={cancelButtonProps?.size ?? 'sm'}
                   variant={cancelButtonProps?.variant ?? 'outline'}
@@ -97,10 +102,10 @@ export function Popconfirm({
                     }
                   }}
                 >
-                  {cancelText ?? messages.cancel}
-                </Button>
+                  {cancelText ?? messages.common.cancel}
+                </ButtonControl>
               )}
-              <Button
+              <ButtonControl
                 {...confirmButtonProps}
                 size={confirmButtonProps?.size ?? 'sm'}
                 danger={confirmButtonProps?.danger ?? type === 'error'}
@@ -128,8 +133,8 @@ export function Popconfirm({
                   }
                 }}
               >
-                {confirmText ?? messages.confirm}
-              </Button>
+                {confirmText ?? messages.common.confirm}
+              </ButtonControl>
             </div>
           </div>
         </div>

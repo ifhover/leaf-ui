@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { CalendarPanel } from '../shared/calendar';
 import { classes } from '../shared/classes';
@@ -19,24 +20,25 @@ export interface CalendarProps
   headerExtra?: ReactNode;
   showToday?: boolean;
 }
-export function Calendar({
-  value,
-  defaultValue,
-  onChange,
-  visibleDate,
-  onVisibleChange,
-  mode = 'date',
-  fullscreen = true,
-  minDate,
-  maxDate,
-  disabledDate,
-  cellRender,
-  headerExtra,
-  showToday = true,
-  className,
-  'aria-label': label,
-  ...props
-}: CalendarProps) {
+export function Calendar(rawProps: CalendarProps) {
+  const {
+    value,
+    defaultValue,
+    onChange,
+    visibleDate,
+    onVisibleChange,
+    mode = 'date',
+    fullscreen = true,
+    minDate,
+    maxDate,
+    disabledDate,
+    cellRender,
+    headerExtra,
+    showToday = true,
+    className,
+    'aria-label': label,
+    ...props
+  } = useComponentProps('Calendar', rawProps);
   const { messages } = useLeafConfig();
   const [internal, setInternal] = useState(defaultValue);
   const selected = value ?? internal;
@@ -54,7 +56,7 @@ export function Calendar({
   return (
     <section
       {...props}
-      aria-label={label ?? messages.calendar}
+      aria-label={label ?? messages.calendar.label}
       className={classes('leaf-calendar-view', fullscreen && 'leaf-calendar-view--full', className)}
     >
       <CalendarPanel

@@ -22,20 +22,20 @@ import {
   type ReactNode,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Dropdown } from '../dropdown';
+import { DropdownControl as Dropdown } from '../dropdown/dropdown';
 import { classes } from '../shared/classes';
-import { animateMotion, useMotionEnabled } from '../shared/motion';
+import { useMotionEnabled } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
+import { useDragAnnouncements } from '../shared/use-drag-announcements';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 import { useMovingIndicator } from './use-moving-indicator';
-
-const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface TabItem {
   key: string;
@@ -63,7 +63,7 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   sortable?: boolean;
   onReorder?: (items: TabItem[]) => void;
 }
-export function Tabs({
+export function TabsControl({
   items,
   activeKey,
   defaultActiveKey,
@@ -84,8 +84,9 @@ export function Tabs({
   'aria-label': label,
   ...props
 }: TabsProps) {
-  const { messages, direction } = useLeafConfig();
+  const { direction } = useLeafConfig();
   const t = useText();
+  const format = useFormattedText();
   const enabled = items.filter((item) => !item.disabled);
   const [internal, setInternal] = useState(defaultActiveKey ?? enabled[0]?.key);
   const requested = activeKey ?? internal;
@@ -96,22 +97,14 @@ export function Tabs({
   if (selected && !visited.includes(selected)) setVisited([...visited, selected]);
   const id = useId();
   const list = useRef<HTMLDivElement>(null);
+  const track = useRef<HTMLDivElement>(null);
   const indicator = useRef<HTMLSpanElement>(null);
-  const panels = useRef<HTMLDivElement>(null);
-  const motion = useMotionEnabled();
   useMovingIndicator(
-    list,
+    track,
     indicator,
     '[data-leaf-indicator-item][data-active="true"]',
     `${selected}-${placement}-${type}-${direction}`,
-  );
-  useTabPanelMotion(
-    panels,
-    selected,
-    items.findIndex((item) => item.key === selected),
-    placement,
-    direction,
-    motion,
+    items.length > 0,
   );
   const header = useRef<HTMLDivElement>(null);
   const [overflowKeys, setOverflowKeys] = useState<string[]>([]);
@@ -130,7 +123,11 @@ export function Tabs({
       const more = container.querySelector<HTMLElement>('[data-tabs-more]');
       const fullSize =
         (horizontal ? node.clientWidth : node.clientHeight) +
-        (more ? (horizontal ? more.offsetWidth : more.offsetHeight) + 16 : 0);
+        (more
+          ? (horizontal ? more.offsetWidth : more.offsetHeight) +
+            (Number.parseFloat(getComputedStyle(container)[horizontal ? 'columnGap' : 'rowGap']) ||
+              0)
+          : 0);
       const total = horizontal ? node.scrollWidth : node.scrollHeight;
       const rect = node.getBoundingClientRect();
       const keys =
@@ -168,6 +165,7 @@ export function Tabs({
     if (activeKey === undefined) setInternal(key);
     if (key !== selected) onChange?.(key);
   };
+  if (items.length === 0) return null;
   return (
     <div
       {...props}
@@ -193,99 +191,103 @@ export function Tabs({
             }
             className="leaf-tabs__list"
           >
-            <span ref={indicator} className="leaf-tabs__indicator" aria-hidden="true" />
-            <SortableContext
-              items={items.map((item) => item.key)}
-              strategy={
-                placement === 'top' || placement === 'bottom'
-                  ? horizontalListSortingStrategy
-                  : verticalListSortingStrategy
-              }
-            >
-              {items.map((item, index) => (
-                <TabEntry
-                  item={item}
-                  sortable={sorting}
-                  className="leaf-tabs__entry"
-                  key={item.key}
-                  data-active={item.key === selected || undefined}
-                  data-leaf-indicator-item=""
-                >
-                  <button
-                    id={`${id}-tab-${index}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={item.key === selected}
-                    aria-controls={`${id}-panel-${index}`}
-                    disabled={item.disabled}
-                    tabIndex={item.key === focusKey ? 0 : -1}
-                    className="leaf-tabs__tab"
-                    onFocus={() => setFocused(item.key)}
-                    onClick={() => choose(item.key)}
-                    onKeyDown={(event) => {
-                      let next: string | undefined;
-                      const position = enabled.findIndex((entry) => entry.key === item.key);
-                      const forward =
-                        placement === 'left' || placement === 'right'
-                          ? 'ArrowDown'
-                          : direction === 'rtl'
-                            ? 'ArrowLeft'
-                            : 'ArrowRight';
-                      const backward =
-                        placement === 'left' || placement === 'right'
-                          ? 'ArrowUp'
-                          : direction === 'rtl'
-                            ? 'ArrowRight'
-                            : 'ArrowLeft';
-                      if (event.key === forward)
-                        next = enabled[(position + 1) % enabled.length]?.key;
-                      else if (event.key === backward)
-                        next = enabled[(position - 1 + enabled.length) % enabled.length]?.key;
-                      else if (event.key === 'Home') next = enabled[0]?.key;
-                      else if (event.key === 'End') next = enabled.at(-1)?.key;
-                      if (next !== undefined) {
-                        event.preventDefault();
-                        setFocused(next);
-                        const nextIndex = items.findIndex((entry) => entry.key === next);
-                        list.current
-                          ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
-                          ?.focus();
-                        if (activationMode === 'automatic') choose(next);
-                      }
-                    }}
+            <div ref={track} className="leaf-tabs__track">
+              <span ref={indicator} className="leaf-tabs__indicator" aria-hidden="true" />
+              <SortableContext
+                items={items.map((item) => item.key)}
+                strategy={
+                  placement === 'top' || placement === 'bottom'
+                    ? horizontalListSortingStrategy
+                    : verticalListSortingStrategy
+                }
+              >
+                {items.map((item, index) => (
+                  <TabEntry
+                    item={item}
+                    sortable={sorting}
+                    className="leaf-tabs__entry"
+                    key={item.key}
+                    data-active={item.key === selected || undefined}
+                    data-leaf-indicator-item=""
                   >
-                    {item.icon && <span aria-hidden="true">{item.icon}</span>}
-                    {item.label}
-                  </button>
-                  {item.closable && (
                     <button
+                      id={`${id}-tab-${index}`}
                       type="button"
-                      className="leaf-tabs__close"
-                      disabled={item.disabled || !onClose}
-                      aria-label={`${messages.closeTab} ${typeof item.label === 'string' ? item.label : item.key}`}
-                      onClick={(event) => {
-                        onClose?.(item.key, event);
-                        if (event.defaultPrevented) return;
+                      role="tab"
+                      aria-selected={item.key === selected}
+                      aria-controls={`${id}-panel-${index}`}
+                      disabled={item.disabled}
+                      tabIndex={item.key === focusKey ? 0 : -1}
+                      className="leaf-tabs__tab"
+                      onFocus={() => setFocused(item.key)}
+                      onClick={() => choose(item.key)}
+                      onKeyDown={(event) => {
+                        let next: string | undefined;
                         const position = enabled.findIndex((entry) => entry.key === item.key);
-                        const next =
-                          item.key === selected
-                            ? (enabled[position + 1] ?? enabled[position - 1])
-                            : enabled.find((entry) => entry.key === selected);
-                        if (next) {
-                          if (item.key === selected) choose(next.key);
-                          const nextIndex = items.findIndex((entry) => entry.key === next.key);
+                        const forward =
+                          placement === 'left' || placement === 'right'
+                            ? 'ArrowDown'
+                            : direction === 'rtl'
+                              ? 'ArrowLeft'
+                              : 'ArrowRight';
+                        const backward =
+                          placement === 'left' || placement === 'right'
+                            ? 'ArrowUp'
+                            : direction === 'rtl'
+                              ? 'ArrowRight'
+                              : 'ArrowLeft';
+                        if (event.key === forward)
+                          next = enabled[(position + 1) % enabled.length]?.key;
+                        else if (event.key === backward)
+                          next = enabled[(position - 1 + enabled.length) % enabled.length]?.key;
+                        else if (event.key === 'Home') next = enabled[0]?.key;
+                        else if (event.key === 'End') next = enabled.at(-1)?.key;
+                        if (next !== undefined) {
+                          event.preventDefault();
+                          setFocused(next);
+                          const nextIndex = items.findIndex((entry) => entry.key === next);
                           list.current
                             ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
                             ?.focus();
+                          if (activationMode === 'automatic') choose(next);
                         }
                       }}
                     >
-                      <X size={13} aria-hidden="true" />
+                      {item.icon && <span aria-hidden="true">{item.icon}</span>}
+                      {item.label}
                     </button>
-                  )}
-                </TabEntry>
-              ))}
-            </SortableContext>
+                    {item.closable && (
+                      <button
+                        type="button"
+                        className="leaf-tabs__close"
+                        disabled={item.disabled || !onClose}
+                        aria-label={format('tabs.closeLabel', {
+                          label: typeof item.label === 'string' ? item.label : item.key,
+                        })}
+                        onClick={(event) => {
+                          onClose?.(item.key, event);
+                          if (event.defaultPrevented) return;
+                          const position = enabled.findIndex((entry) => entry.key === item.key);
+                          const next =
+                            item.key === selected
+                              ? (enabled[position + 1] ?? enabled[position - 1])
+                              : enabled.find((entry) => entry.key === selected);
+                          if (next) {
+                            if (item.key === selected) choose(next.key);
+                            const nextIndex = items.findIndex((entry) => entry.key === next.key);
+                            list.current
+                              ?.querySelector<HTMLButtonElement>(`[id='${id}-tab-${nextIndex}']`)
+                              ?.focus();
+                          }
+                        }}
+                      >
+                        <X size={13} aria-hidden="true" />
+                      </button>
+                    )}
+                  </TabEntry>
+                ))}
+              </SortableContext>
+            </div>
           </div>
           {overflowKeys.length > 0 && (
             <Dropdown
@@ -305,28 +307,30 @@ export function Tabs({
                   },
                 }))}
             >
-              <Button
+              <ButtonControl
+                className="leaf-tabs__action"
                 data-tabs-more=""
                 variant="ghost"
                 size={size}
                 startIcon={<Ellipsis size={16} />}
-                aria-label={t('更多标签页', 'More tabs')}
+                aria-label={t('tabs.moreTabs')}
               />
             </Dropdown>
           )}
           {onAdd && (
-            <Button
+            <ButtonControl
+              className="leaf-tabs__action"
               variant="ghost"
               size={size}
               startIcon={<Plus size={16} />}
-              aria-label={addLabel ?? t('添加标签页', 'Add tab')}
+              aria-label={addLabel ?? t('tabs.addTab')}
               onClick={onAdd}
             />
           )}
           {extra && <div className="leaf-tabs__extra">{extra}</div>}
         </div>
       </TabDragScope>
-      <div ref={panels} className="leaf-tabs__panels">
+      <div className="leaf-tabs__panels">
         {items.map((item, index) => (
           <div
             key={item.key}
@@ -347,81 +351,6 @@ export function Tabs({
   );
 }
 
-function useTabPanelMotion(
-  panels: React.RefObject<HTMLDivElement | null>,
-  selected: string | undefined,
-  index: number,
-  placement: TabsProps['placement'],
-  direction: 'ltr' | 'rtl',
-  enabled: boolean,
-) {
-  const previous = useRef({ key: selected, index, height: 0 });
-  const animations = useRef<Animation[]>([]);
-  const heightAnimation = useRef<Animation | undefined>(undefined);
-  useBrowserLayoutEffect(() => {
-    const host = panels.current;
-    if (!host) return;
-    const active = host.querySelector<HTMLElement>('.leaf-tabs__panel:not([hidden])');
-    const interruptedHeight =
-      heightAnimation.current?.playState === 'running'
-        ? host.offsetHeight
-        : previous.current.height;
-    for (const animation of animations.current) animation.cancel();
-    animations.current = [];
-    heightAnimation.current = undefined;
-    host.removeAttribute('data-transitioning');
-    const height = host.offsetHeight;
-    if (enabled && active && previous.current.key !== selected) {
-      const vertical = placement === 'left' || placement === 'right';
-      const delta =
-        (index >= previous.current.index ? 1 : -1) * (vertical || direction !== 'rtl' ? 1 : -1);
-      const enter = animateMotion(
-        active,
-        [
-          {
-            opacity: 0,
-            transform: vertical ? `translateY(${delta * 8}px)` : `translateX(${delta * 12}px)`,
-          },
-          { opacity: 1, transform: 'translate(0, 0)' },
-        ],
-        { durationMultiplier: 1.25 },
-      );
-      if (enter) animations.current.push(enter);
-      if (interruptedHeight > 0 && Math.abs(height - interruptedHeight) > 1) {
-        const resize = animateMotion(
-          host,
-          [{ height: `${interruptedHeight}px` }, { height: `${height}px` }],
-          { durationMultiplier: 1.5 },
-        );
-        if (resize) {
-          host.dataset.transitioning = 'true';
-          animations.current.push(resize);
-          heightAnimation.current = resize;
-          resize.addEventListener('finish', () => host.removeAttribute('data-transitioning'), {
-            once: true,
-          });
-        }
-      }
-    }
-    previous.current = { key: selected, index, height };
-    const observer =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(() => {
-            if (!animations.current.some((animation) => animation.playState === 'running'))
-              previous.current.height = host.offsetHeight;
-          });
-    if (active) observer?.observe(active);
-    return () => observer?.disconnect();
-  }, [panels, selected, index, placement, direction, enabled]);
-  useEffect(
-    () => () => {
-      for (const animation of animations.current) animation.cancel();
-    },
-    [],
-  );
-}
-
 function TabEntry({
   item,
   sortable,
@@ -438,7 +367,7 @@ function SortableTab({
   children,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { item: TabItem }) {
-  const { locale } = useLeafConfig();
+  const format = useFormattedText();
   const motion = useMotionEnabled();
   const {
     attributes,
@@ -471,7 +400,9 @@ function SortableTab({
         ref={setActivatorNodeRef}
         disabled={item.disabled}
         className="leaf-tabs__drag"
-        aria-label={`${locale === 'en-US' ? 'Reorder tab' : '移动标签页'} ${typeof item.label === 'string' ? item.label : item.key}`}
+        aria-label={format('tabs.reorder', {
+          label: typeof item.label === 'string' ? item.label : item.key,
+        })}
       >
         <GripVertical size={13} aria-hidden="true" />
       </button>
@@ -509,6 +440,10 @@ function TabSortScope({
   children: ReactNode;
 }) {
   const id = useId();
+  const accessibility = useDragAnnouncements((key) => {
+    const item = items.find((entry) => entry.key === key);
+    return typeof item?.label === 'string' ? item.label : String(key);
+  });
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -518,6 +453,7 @@ function TabSortScope({
       id={id}
       sensors={sensors}
       collisionDetection={closestCenter}
+      accessibility={accessibility}
       onDragEnd={({ active, over }) => {
         if (!over || active.id === over.id) return;
         const from = items.findIndex((item) => item.key === active.id);
@@ -529,4 +465,9 @@ function TabSortScope({
       {children}
     </DndContext>
   );
+}
+
+export function Tabs(rawProps: TabsProps) {
+  const props = useComponentProps('Tabs', rawProps);
+  return <TabsControl {...props} />;
 }

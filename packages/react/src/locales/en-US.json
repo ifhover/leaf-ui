@@ -1,0 +1,335 @@
+{
+  "select": {
+    "placeholder": "Please select",
+    "empty": "No options",
+    "clear": "Clear selection",
+    "create": "Create “{label}”"
+  },
+  "autoComplete": {
+    "empty": "No suggestions",
+    "suggestions": "{label} suggestions"
+  },
+  "datePicker": {
+    "placeholder": "Select a date",
+    "clear": "Clear date",
+    "label": "Choose a date",
+    "selectDate": "Choose date"
+  },
+  "timePicker": {
+    "placeholder": "Select a time",
+    "clear": "Clear time",
+    "label": "Choose a time",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "period": "Period",
+    "am": "AM",
+    "pm": "PM",
+    "now": "Now",
+    "selectTime": "Choose time"
+  },
+  "dateTimePicker": {
+    "placeholder": "Select date and time"
+  },
+  "dateRangePicker": {
+    "placeholder": "Select a date range",
+    "clear": "Clear range"
+  },
+  "cascader": {
+    "clear": "Clear selection",
+    "level": "Level {level}",
+    "placeholder": "Please select",
+    "empty": "No options"
+  },
+  "calendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
+    "previousYears": "Previous years",
+    "nextYears": "Next years",
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "year": "Year",
+    "month": "Month",
+    "week": "Week",
+    "today": "Today",
+    "label": "Calendar"
+  },
+  "common": {
+    "confirm": "OK",
+    "cancel": "Cancel",
+    "close": "Close",
+    "start": "Start",
+    "end": "End",
+    "remove": "Remove",
+    "search": "Search options",
+    "noData": "No data",
+    "retry": "Retry",
+    "preview": "Preview",
+    "download": "Download",
+    "loading": "Loading",
+    "searchAction": "Search"
+  },
+  "form": {
+    "required": "Please fill out this field",
+    "invalid": "Please check this field",
+    "errorSummary": "Please check the following fields"
+  },
+  "breadcrumb": {
+    "label": "Breadcrumb"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "page": "Page",
+    "pageSize": "Page size",
+    "jumpTo": "Go to",
+    "pageBack": "Jump back 5 pages",
+    "pageForward": "Jump forward 5 pages",
+    "pageLabel": "Page {page}",
+    "pageSizeOption": "{count} / page",
+    "total": "Total {total} items"
+  },
+  "input": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "clear": "Clear input"
+  },
+  "inputNumber": {
+    "increase": "Increase value",
+    "decrease": "Decrease value",
+    "invalid": "Enter a valid number within the allowed range"
+  },
+  "progress": {
+    "label": "Progress"
+  },
+  "avatar": {
+    "label": "Avatar",
+    "moreMembers": "More members",
+    "showMore": "Show {count, plural, one {# more member} other {# more members}}"
+  },
+  "rate": {
+    "label": "Rating"
+  },
+  "result": {
+    "success": "Success",
+    "warning": "Attention needed",
+    "error": "Something went wrong",
+    "info": "Information"
+  },
+  "colorPicker": {
+    "label": "Choose a color",
+    "clear": "Clear color",
+    "saturation": "Saturation",
+    "brightness": "Brightness",
+    "hue": "Hue",
+    "alpha": "Opacity",
+    "value": "Color value",
+    "invalid": "Enter a valid color",
+    "presets": "Preset colors",
+    "gradient": "Gradient",
+    "colorStop": "Color stop {index}",
+    "addColorStop": "Add color stop",
+    "removeColorStop": "Remove color stop",
+    "color": "Color",
+    "position": "Position",
+    "colorStopPosition": "Color stop position",
+    "angle": "Angle",
+    "gradientAngle": "Gradient angle"
+  },
+  "tree": {
+    "label": "Tree",
+    "expand": "Expand",
+    "reorderInstructions": "Press Space to pick up, Up/Down to choose a target, Left/Right to place before/after it, Space to drop, and Escape to cancel.",
+    "moveNode": "Move node {label}",
+    "expandNode": "Expand {label}",
+    "collapseNode": "Collapse {label}"
+  },
+  "collapse": {
+    "label": "Collapsible panels"
+  },
+  "slider": {
+    "label": "Slider"
+  },
+  "tabs": {
+    "moreTabs": "More tabs",
+    "addTab": "Add tab",
+    "reorder": "Reorder tab {label}",
+    "closeLabel": "Close tab {label}"
+  },
+  "backTop": {
+    "backToTop": "Back to top"
+  },
+  "button": {
+    "moreActions": "More actions"
+  },
+  "carousel": {
+    "carousel": "Carousel",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "goTo": "Go to {index}",
+    "slide": "slide",
+    "role": "carousel"
+  },
+  "commandPalette": {
+    "commandSearch": "Command search",
+    "placeholder": "Search commands…",
+    "searchCommands": "Search commands",
+    "commands": "Commands",
+    "navigate": "Navigate",
+    "run": "Run"
+  },
+  "errorBoundary": {
+    "title": "This content could not be displayed",
+    "description": "Please retry or come back later."
+  },
+  "fileList": {
+    "fileType": "FILE",
+    "uploading": "Uploading",
+    "uploadFailed": "Upload failed",
+    "cancelled": "Cancelled",
+    "uploadComplete": "Upload complete",
+    "ready": "Ready",
+    "uploadProgress": "Upload progress {name}",
+    "noFiles": "No files",
+    "preview": "Preview {name}",
+    "download": "Download {name}",
+    "remove": "Remove {name}"
+  },
+  "floatButton": {
+    "quickActions": "Quick actions"
+  },
+  "image": {
+    "previewImage": "Preview image{alt}",
+    "imageUnavailable": "Image unavailable",
+    "imagePreview": "Image preview",
+    "downloadImage": "Download image",
+    "exitFullscreen": "Exit fullscreen",
+    "enterFullscreen": "Enter fullscreen",
+    "closePreview": "Close preview",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "downloadFailedOpenTheOriginalImageToSaveIt": "Download failed. Open the original image to save it.",
+    "openOriginal": "Open original",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "zoomIn": "Zoom in",
+    "showThumbnails": "Show thumbnails",
+    "scrollThumbnailsBackward": "Scroll thumbnails backward",
+    "imageList": "Image list",
+    "scrollThumbnailsForward": "Scroll thumbnails forward",
+    "image": "Image",
+    "position": "{index} of {total}",
+    "viewImage": "View image {index}{alt}"
+  },
+  "infiniteScroll": {
+    "loadingFailedRetry": "Loading failed. Retry",
+    "allItemsLoaded": "All items loaded",
+    "loadMore": "Load more"
+  },
+  "inputOTP": {
+    "verificationCode": "Verification code"
+  },
+  "layout": {
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar"
+  },
+  "loadingBar": {
+    "pageLoadingProgress": "Page loading progress"
+  },
+  "menu": {
+    "navigationMenu": "Navigation menu"
+  },
+  "popconfirm": {
+    "actionFailedPleaseRetry": "Action failed. Please retry."
+  },
+  "qrCode": {
+    "qrCode": "QR code",
+    "refreshCode": "Refresh code"
+  },
+  "scrollbar": {
+    "verticalScrollbar": "Vertical scrollbar",
+    "horizontalScrollbar": "Horizontal scrollbar"
+  },
+  "splitter": {
+    "resizePanel": "Resize panel {index}",
+    "togglePanel": "Toggle panel"
+  },
+  "table": {
+    "table": "Table",
+    "scrollArea": "Scroll area",
+    "loadError": "Unable to load data. Please try again."
+  },
+  "dataTable": {
+    "searchTable": "Search table",
+    "columns": "Columns",
+    "resizeColumn": "Resize column: {label}",
+    "selectRows": "Select rows",
+    "selectAllRowsOnThisPage": "Select all rows on this page",
+    "selectAllRows": "Select all rows",
+    "reorderRow": "Reorder row: {label}",
+    "selectRow": "Select row: {label}",
+    "collapseRow": "Collapse row: {label}",
+    "expandRow": "Expand row: {label}",
+    "reorderRows": "Reorder rows",
+    "expandRows": "Expand rows",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending",
+    "clearSorting": "Clear sorting",
+    "reorderColumn": "Reorder column: {label}"
+  },
+  "timeRangePicker": {
+    "placeholder": "Start time ~ End time",
+    "label": "Choose time range",
+    "clear": "Clear time range"
+  },
+  "tour": {
+    "previous": "Previous",
+    "finish": "Finish",
+    "next": "Next"
+  },
+  "transfer": {
+    "selectAllVisibleItems": "Select all visible items",
+    "available": "Available",
+    "selected": "Selected",
+    "searchAvailableItems": "Search available items",
+    "searchSelectedItems": "Search selected items",
+    "noItems": "No items",
+    "moveToSelected": "Move to selected",
+    "moveToAvailable": "Move to available"
+  },
+  "typography": {
+    "editText": "Edit text",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "copyText": "Copy text"
+  },
+  "upload": {
+    "uploadUrlCannotBeEmpty": "Upload URL cannot be empty",
+    "uploadFailed": "Upload failed",
+    "chooseOneFileAtATime": "Choose one file at a time",
+    "fileTypeIsNotAccepted": "File type is not accepted",
+    "fileExceedsTheSizeLimit": "File exceeds the size limit",
+    "fileCountLimitReached": "File count limit reached",
+    "fileValidationFailed": "File validation failed",
+    "chooseFiles": "Choose files",
+    "dropHint": "Click or drop files here",
+    "dropDescription": "Choose files or drag them into this area",
+    "cancelUpload": "Cancel upload {name}",
+    "retryUpload": "Retry upload {name}"
+  },
+  "treeSelect": {
+    "placeholder": "Please select",
+    "clear": "Clear selection",
+    "empty": "No options"
+  },
+  "drag": {
+    "instructions": "Press Space to start, arrow keys to move, Space to drop, and Escape to cancel.",
+    "pickedUp": "Picked up {label}",
+    "moved": "Move to {label}",
+    "dropped": "Dropped {label}",
+    "cancelled": "Reordering cancelled",
+    "outside": "No drop target"
+  }
+}

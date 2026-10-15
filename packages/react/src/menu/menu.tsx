@@ -1,7 +1,9 @@
 import { ChevronDown } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { Dropdown, type DropdownItem } from '../dropdown';
+import type { DropdownItem } from '../dropdown';
+import { DropdownControl as Dropdown } from '../dropdown/dropdown';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
@@ -60,22 +62,23 @@ function MenuSubmenu({
     </div>
   );
 }
-export function Menu({
-  items,
-  mode = 'vertical',
-  selectedKey,
-  defaultSelectedKey = '',
-  onSelect,
-  openKeys,
-  defaultOpenKeys = [],
-  onOpenChange,
-  collapsed = false,
-  itemRender,
-  linkRender,
-  itemClassName,
-  className,
-  ...props
-}: MenuProps) {
+export function Menu(rawProps: MenuProps) {
+  const {
+    items,
+    mode = 'vertical',
+    selectedKey,
+    defaultSelectedKey = '',
+    onSelect,
+    openKeys,
+    defaultOpenKeys = [],
+    onOpenChange,
+    collapsed = false,
+    itemRender,
+    linkRender,
+    itemClassName,
+    className,
+    ...props
+  } = useComponentProps('Menu', rawProps);
   const t = useText();
   const { direction } = useLeafConfig();
   const id = useId();
@@ -243,7 +246,7 @@ export function Menu({
         collapsed && 'leaf-menu--collapsed',
         className,
       )}
-      aria-label={props['aria-label'] ?? t('导航菜单', 'Navigation menu')}
+      aria-label={props['aria-label'] ?? t('menu.navigationMenu')}
     >
       <span ref={indicator} className="leaf-menu__indicator" aria-hidden="true" />
       {/* biome-ignore lint/a11y/noStaticElementInteractions: This container delegates arrow navigation for the menu or menubar role. */}

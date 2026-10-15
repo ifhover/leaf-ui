@@ -6,6 +6,7 @@ import {
   type ReactNode,
   useId,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
@@ -16,7 +17,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   icon?: ReactNode;
   extra?: ReactNode;
 }
-export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
+export const RadioControl = forwardRef<HTMLInputElement, RadioProps>(function RadioControl(
   {
     size = 'md',
     variant = 'plain',
@@ -28,7 +29,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
     disabled: disabledProp,
     children,
     ...props
-  },
+  }: RadioProps,
   ref,
 ) {
   const field = useFormField();
@@ -100,7 +101,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
     </label>
   );
 });
-Radio.displayName = 'Radio';
+RadioControl.displayName = 'RadioControl';
 export interface RadioOption {
   label: ReactNode;
   description?: ReactNode;
@@ -126,7 +127,10 @@ export interface RadioGroupProps
   onChange?: ChangeEventHandler<HTMLInputElement>;
 }
 export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(function RadioGroup(
-  {
+  rawProps: RadioGroupProps,
+  ref,
+) {
+  const {
     options,
     value,
     defaultValue,
@@ -140,9 +144,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
     disabled: disabledProp,
     className,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('RadioGroup', rawProps);
   const id = useId();
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
@@ -168,7 +170,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
       {label && <legend className="leaf-radio-group__legend">{label}</legend>}
       <div className="leaf-radio-group__options">
         {options.map((option) => (
-          <Radio
+          <RadioControl
             key={option.value}
             id={`${props.id ?? field?.id ?? id}-${option.value}`}
             size={size}
@@ -185,10 +187,19 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(funct
             onChange={onChange}
           >
             {option.label}
-          </Radio>
+          </RadioControl>
         ))}
       </div>
     </fieldset>
   );
 });
 RadioGroup.displayName = 'RadioGroup';
+
+export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
+  rawProps: RadioProps,
+  ref,
+) {
+  const props = useComponentProps('Radio', rawProps);
+  return <RadioControl {...props} ref={ref} />;
+});
+Radio.displayName = 'Radio';

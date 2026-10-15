@@ -58,6 +58,8 @@ export function ScopedPortal({
         createPortal(
           <div
             className="leaf-portal-scope"
+            lang={config.locale}
+            dir={config.direction}
             data-leaf-density={config.density}
             data-leaf-motion={
               config.theme.motion === undefined ? undefined : config.theme.motion ? 'on' : 'off'

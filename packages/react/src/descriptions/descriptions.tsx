@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import type { GridBreakpoint } from '../grid/grid';
 import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
@@ -17,18 +18,19 @@ export interface DescriptionsProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   bordered?: boolean;
   size?: 'sm' | 'md' | 'lg';
 }
-export function Descriptions({
-  items,
-  title,
-  extra,
-  columns = { xs: 1, md: 2, lg: 3 },
-  layout = 'horizontal',
-  bordered = false,
-  size = 'md',
-  className,
-  style,
-  ...props
-}: DescriptionsProps) {
+export function Descriptions(rawProps: DescriptionsProps) {
+  const {
+    items,
+    title,
+    extra,
+    columns = { xs: 1, md: 2, lg: 3 },
+    layout = 'horizontal',
+    bordered = false,
+    size = 'md',
+    className,
+    style,
+    ...props
+  } = useComponentProps('Descriptions', rawProps);
   const variables: LeafThemeStyle = { ...style };
   if (typeof columns === 'number') variables['--leaf-descriptions-columns'] = Math.max(1, columns);
   else {

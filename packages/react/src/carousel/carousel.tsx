@@ -12,11 +12,13 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
 import { useControllable } from '../shared/use-controllable';
+import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -36,7 +38,10 @@ export interface CarouselProps extends Omit<HTMLAttributes<HTMLElement>, 'onChan
   pauseOnHover?: boolean;
 }
 export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carousel(
-  {
+  rawProps: CarouselProps,
+  ref,
+) {
+  const {
     activeIndex,
     defaultActiveIndex = 0,
     onChange,
@@ -49,9 +54,8 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
     className,
     onKeyDown,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('Carousel', rawProps);
+  const format = useFormattedText();
   const t = useText(),
     config = useLeafConfig(),
     id = useId();
@@ -92,8 +96,8 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
   return (
     <section
       {...props}
-      aria-roledescription="carousel"
-      aria-label={props['aria-label'] ?? t('轮播', 'Carousel')}
+      aria-roledescription={t('carousel.role')}
+      aria-label={props['aria-label'] ?? t('carousel.carousel')}
       className={classes('leaf-carousel', className)}
       onPointerEnter={() => {
         if (pauseOnHover) setPaused(true);
@@ -142,7 +146,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
             <fieldset
               key={isValidElement(slide) ? slide.key : `slide-${position}`}
               id={`${id}-${position}`}
-              aria-roledescription="slide"
+              aria-roledescription={t('carousel.slide')}
               aria-label={`${position + 1} / ${count}`}
               aria-hidden={position !== index || undefined}
               {...inertProps(position !== index)}
@@ -166,9 +170,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
               direction === -1 ? 'leaf-carousel__arrow--previous' : 'leaf-carousel__arrow--next',
             )}
             disabled={!infinite && (direction === -1 ? index === 0 : index === count - 1)}
-            aria-label={
-              direction === -1 ? t('上一张', 'Previous slide') : t('下一张', 'Next slide')
-            }
+            aria-label={direction === -1 ? t('carousel.previousSlide') : t('carousel.nextSlide')}
             onClick={() => go(index + direction)}
           >
             {direction === -1 ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
@@ -180,7 +182,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
             <button
               key={isValidElement(slide) ? slide.key : String(slide)}
               type="button"
-              aria-label={`${t('转到', 'Go to')} ${position + 1}`}
+              aria-label={format('carousel.goTo', { index: position + 1 })}
               aria-current={position === index ? 'true' : undefined}
               aria-controls={`${id}-${position}`}
               onClick={() => go(position)}

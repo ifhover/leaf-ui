@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
@@ -28,7 +29,10 @@ export interface InputOTPProps
   status?: ControlStatus;
 }
 export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function InputOTP(
-  {
+  rawProps: InputOTPProps,
+  ref,
+) {
+  const {
     length = 6,
     value,
     defaultValue = '',
@@ -47,9 +51,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
     onBlur,
     onClick,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('InputOTP', rawProps);
   const t = useText();
   const field = useFormField();
   const input = useRef<HTMLInputElement>(null);
@@ -91,7 +93,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
         type="text"
         className="leaf-input-otp__input"
         id={props.id ?? field?.id}
-        aria-label={props['aria-label'] ?? t('验证码', 'Verification code')}
+        aria-label={props['aria-label'] ?? t('inputOTP.verificationCode')}
         aria-describedby={
           [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
         }

@@ -1,6 +1,7 @@
 import { ArrowUp } from 'lucide-react';
 import { type ButtonHTMLAttributes, useEffect, useState } from 'react';
-import { Button } from '../button';
+import { ButtonControl } from '../button/button';
+import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useMotionEnabled } from '../shared/motion';
 import { useText } from '../shared/use-text';
@@ -9,15 +10,16 @@ export interface BackTopProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   visibilityHeight?: number;
   behavior?: ScrollBehavior;
 }
-export function BackTop({
-  target,
-  visibilityHeight = 400,
-  behavior = 'smooth',
-  className,
-  children,
-  onClick,
-  ...props
-}: BackTopProps) {
+export function BackTop(rawProps: BackTopProps) {
+  const {
+    target,
+    visibilityHeight = 400,
+    behavior = 'smooth',
+    className,
+    children,
+    onClick,
+    ...props
+  } = useComponentProps('BackTop', rawProps);
   const t = useText();
   const motion = useMotionEnabled();
   const [visible, setVisible] = useState(false);
@@ -32,10 +34,10 @@ export function BackTop({
     return () => element.removeEventListener('scroll', update);
   }, [target, visibilityHeight]);
   return (
-    <Button
+    <ButtonControl
       {...props}
       className={classes('leaf-back-top', className)}
-      aria-label={props['aria-label'] ?? t('回到顶部', 'Back to top')}
+      aria-label={props['aria-label'] ?? t('backTop.backToTop')}
       data-visible={visible || undefined}
       tabIndex={visible ? props.tabIndex : -1}
       aria-hidden={!visible}
@@ -47,6 +49,6 @@ export function BackTop({
       }}
     >
       {children}
-    </Button>
+    </ButtonControl>
   );
 }

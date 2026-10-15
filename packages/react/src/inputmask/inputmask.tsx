@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useIMask } from 'react-imask';
-import { Input, type InputProps } from '../input';
+import { useComponentProps } from '../config-provider/component-defaults';
+import { InputControl, type InputProps } from '../input/input';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 export interface InputMaskProps
@@ -26,7 +27,10 @@ export interface InputMaskProps
   onComplete?: (value: string) => void;
 }
 export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function InputMask(
-  {
+  rawProps: InputMaskProps,
+  ref,
+) {
+  const {
     mask,
     definitions,
     lazy = true,
@@ -38,9 +42,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
     onClear,
     className,
     ...props
-  },
-  ref,
-) {
+  } = useComponentProps('InputMask', rawProps);
   const native = useRef<HTMLInputElement>(null);
   const merged = useMergedRef(native, ref);
   const [current, setCurrent] = useFieldValue(value, defaultValue, native, props.form);
@@ -77,7 +79,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
     syncing.current = false;
   }, [current, formatted, unmask, maskRef, mask, definitions, lazy]);
   return (
-    <Input
+    <InputControl
       {...props}
       className={classes('leaf-input-mask', className)}
       ref={merged}

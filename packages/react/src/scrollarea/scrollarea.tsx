@@ -1,11 +1,18 @@
 import { forwardRef } from 'react';
-import { Scrollbar, type ScrollbarProps } from '../scrollbar';
+import { useComponentProps } from '../config-provider/component-defaults';
+import type { ScrollbarProps } from '../scrollbar';
+import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 export interface ScrollAreaProps extends ScrollbarProps {}
 export const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(function ScrollArea(
-  { orientation = 'vertical', className, ...props },
+  rawProps: ScrollAreaProps,
   ref,
 ) {
+  const {
+    orientation = 'vertical',
+    className,
+    ...props
+  } = useComponentProps('ScrollArea', rawProps);
   return (
     <Scrollbar
       {...props}

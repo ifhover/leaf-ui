@@ -10,7 +10,11 @@ import {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Result } from '../result';
+import {
+  mergeComponentProps,
+  useGenericComponentDefaults,
+} from '../config-provider/component-defaults';
+import { ResultControl as Result } from '../result/result';
 import { classes } from '../shared/classes';
 export interface VirtualListHandle {
   element: HTMLDivElement | null;
@@ -27,8 +31,8 @@ export interface VirtualListProps<T> extends Omit<HTMLAttributes<HTMLDivElement>
   emptyContent?: ReactNode;
   horizontal?: boolean;
 }
-function VirtualListRoot<T>(
-  {
+function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListHandle>) {
+  const {
     items,
     itemKey,
     renderItem,
@@ -40,9 +44,7 @@ function VirtualListRoot<T>(
     className,
     style,
     ...props
-  }: VirtualListProps<T>,
-  ref: Ref<VirtualListHandle>,
-) {
+  } = rawProps;
   const root = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLLIElement>({
     count: items.length,
@@ -108,6 +110,17 @@ function VirtualListRoot<T>(
     </div>
   );
 }
-export const VirtualList = forwardRef(VirtualListRoot) as <T>(
+export const VirtualListControl = forwardRef(VirtualListRoot) as <T>(
+  props: VirtualListProps<T> & RefAttributes<VirtualListHandle>,
+) => ReactElement;
+
+function VirtualListEntry<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListHandle>) {
+  const props = mergeComponentProps<VirtualListProps<T>>(
+    useGenericComponentDefaults('VirtualList'),
+    rawProps,
+  );
+  return <VirtualListControl {...props} ref={ref} />;
+}
+export const VirtualList = forwardRef(VirtualListEntry) as <T>(
   props: VirtualListProps<T> & RefAttributes<VirtualListHandle>,
 ) => ReactElement;

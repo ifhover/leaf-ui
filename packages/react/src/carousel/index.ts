@@ -1,1 +1,2 @@
-export * from './carousel';
+export type { CarouselHandle, CarouselProps } from './carousel';
+export { Carousel } from './carousel';

@@ -8,10 +8,19 @@ import {
   useRef,
   useState,
 } from 'react';
+import {
+  ComponentDefaultsContext,
+  type LeafComponentDefaults,
+  mergeComponentProps,
+  useComponentProps,
+} from '../config-provider/component-defaults';
+import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
+import { leafDensityVariables } from '../density';
 import { classes } from '../shared/classes';
 import { motionDuration, useMotionEnabled } from '../shared/motion';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useText } from '../shared/use-text';
+import { leafThemeVariables } from '../theme';
 export interface LoadingBarProps {
   active?: boolean;
   progress?: number;
@@ -21,7 +30,7 @@ export interface LoadingBarProps {
   className?: string;
   style?: CSSProperties;
 }
-export function LoadingBar({
+export function LoadingBarControl({
   active = false,
   progress,
   color,
@@ -73,7 +82,7 @@ export function LoadingBar({
         ref={bar}
         className={classes('leaf-loading-bar', `leaf-loading-bar--${position}`, className)}
         role="progressbar"
-        aria-label={t('页面加载进度', 'Page loading progress')}
+        aria-label={t('loadingBar.pageLoadingProgress')}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progress === undefined && active ? undefined : amount}
@@ -91,22 +100,33 @@ export interface LoadingBarApi {
   set: (progress: number) => void;
   reset: () => void;
 }
-const Context = createContext<LoadingBarApi | null>(null);
+interface LoadingBarController extends Omit<LoadingBarApi, 'start'> {
+  start: (components?: LeafComponentDefaults, config?: LeafConfig) => () => void;
+}
+const Context = createContext<LoadingBarController | null>(null);
 export interface LoadingBarProviderProps extends Omit<LoadingBarProps, 'active' | 'progress'> {
   children?: ReactNode;
 }
 export function LoadingBarProvider({ children, ...props }: LoadingBarProviderProps) {
+  const inheritedConfig = useLeafConfig();
   const pending = useRef(new Set<symbol>());
   const [active, setActive] = useState(false);
   const [progress, setProgress] = useState<number | undefined>();
-  const api = useMemo<LoadingBarApi>(() => {
+  const [taskComponents, setTaskComponents] = useState<LeafComponentDefaults>();
+  const [taskConfig, setTaskConfig] = useState<LeafConfig>();
+  const api = useMemo<LoadingBarController>(() => {
     const finish = (key?: symbol) => {
       const first = key ?? pending.current.values().next().value;
       if (first) pending.current.delete(first);
       if (!pending.current.size) setActive(false);
     };
     return {
-      start: () => {
+      start: (components, config) => {
+        // The first active task owns the shared bar's presentation until the batch completes.
+        if (!pending.current.size) {
+          setTaskComponents(components);
+          setTaskConfig(config);
+        }
         const key = Symbol();
         pending.current.add(key);
         setProgress(undefined);
@@ -122,9 +142,25 @@ export function LoadingBarProvider({ children, ...props }: LoadingBarProviderPro
       },
     };
   }, []);
+  const config = taskConfig ?? inheritedConfig;
+  const presentation = mergeComponentProps<LoadingBarProviderProps>(
+    taskComponents?.LoadingBar,
+    props,
+  );
   return (
     <Context.Provider value={api}>
-      <LoadingBar {...props} active={active} progress={progress} />
+      <ConfigContext.Provider value={config}>
+        <div
+          style={{
+            display: 'contents',
+            ...leafDensityVariables(config.density),
+            ...leafThemeVariables(config.theme),
+          }}
+          dir={config.direction}
+        >
+          <LoadingBarControl {...presentation} active={active} progress={progress} />
+        </div>
+      </ConfigContext.Provider>
       {children}
     </Context.Provider>
   );
@@ -134,6 +170,21 @@ export function LoadingBarScope({ children }: { children?: ReactNode }) {
 }
 export function useLoadingBar() {
   const api = useContext(Context);
-  if (!api) throw new Error('useLoadingBar requires ConfigProvider or LoadingBarProvider.');
-  return api;
+  const components = useContext(ComponentDefaultsContext);
+  const config = useLeafConfig();
+  const latest = useRef(components);
+  latest.current = components;
+  const latestConfig = useRef(config);
+  latestConfig.current = config;
+  const result = useMemo<LoadingBarApi | null>(
+    () => (api ? { ...api, start: () => api.start(latest.current, latestConfig.current) } : null),
+    [api],
+  );
+  if (!result) throw new Error('useLoadingBar requires ConfigProvider or LoadingBarProvider.');
+  return result;
+}
+
+export function LoadingBar(rawProps: LoadingBarProps) {
+  const props = useComponentProps('LoadingBar', rawProps);
+  return <LoadingBarControl {...props} />;
 }
