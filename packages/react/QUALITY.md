@@ -2,6 +2,22 @@
 
 面向源码维护者。新增能力必须验证用户行为、公开产物和相应文档，不能仅以组件数量或测试数量判断成熟度。审计对应清单见 [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md)。
 
+## 0.6.0 发布前包体积验收（2026-10-16）
+
+使用 Node 26.8.1、esbuild 生产压缩与 gzip level 9，React / ReactDOM 外置。0.5.0 的发布报告与 0.6.0 构建产物对比如下（KiB gzip）：
+
+| 场景 | 0.5.0 JS / CSS | 0.6.0 JS / CSS | 0.6.0 预算 JS / CSS |
+| --- | --- | --- | --- |
+| Button | 4.21 / 2.19 | 3.04 / 6.23 | 5 / foundation + 4.25 |
+| 原生 Table | 10.67 / 3.59 | 10.60 / 7.05 | 14 / 无独立上限 |
+| DataTable 适配器 | 77.98 / 8.97 | 91.05 / 12.94 | 96 / 无独立上限 |
+| ConfigProvider 与常见表单 | 61.16 / 13.51 | 83.77 / 14.08 | 88 / 14.5 |
+| 整库 | 207.02 / 40.48 | 218.06 / 40.78 | 250 / 41 |
+
+适配器和表单原有 80 / 64 KiB JS 预算无法容纳新增 ICU 与完整语言资源。生产 metafile 显示，两者分别包含约 33,596 字节的 FormatJS 压缩代码；语言 JSON 分别约为 17,332 / 54,997 字节，表单未混入可选表格引擎。这些是 gzip 前的压缩产物归因参考，不能与上表的 gzip 数值直接相加。结合新增能力，将两项 JS 上限调整为 96 / 88 KiB，保留约 5% 余量；表单 CSS 因选择器、分页与服务布局调整，从 14 KiB 调整到 14.5 KiB。Button、原生 Table 和整库 JS / CSS 上限保持原值，继续检查普通入口不包含可选 TanStack Table 引擎。
+
+独立组件 CSS 现在自动包含共享 foundation，Button / 原生 Table 的 CSS 与 0.5.0 的独立组件测量口径不同；Button 保留原有 4.25 KiB 组件预算，并单独计入共享 foundation。构建诊断及原始失败保存在根目录 `.quality/release-0.6.0/`，逐模块报告位于 `packages/react/.quality/release-0.6.0/`；这些忽略目录不进入发布包。
+
 ## Tailwind CSS 配置与主题变量复用（2026-10-16）
 
 新增 `@ifhover/leaf-ui/tailwind`（Tailwind 3 preset，ESM / CommonJS 与声明）和 `@ifhover/leaf-ui/tailwind.css`（Tailwind 4 的 `@theme inline`）。两个入口从同一份语义变量映射生成，覆盖颜色、圆角、间距、密度、控件高度、字体、阴影、动效和层级，不依赖 Tailwind 运行时。preset 只扩展主题，保留应用默认配置；官方 Tailwind 3 `Config` 类型可直接接受。指南在中英文“个性化”导航中提供版本配置、工具类、Preflight、透明度、扫描、Portal 和静态断点边界；Tailwind 3 使用完整颜色变量，不支持颜色透明度修饰符，Tailwind 4 沿用原生修饰符。

@@ -63,7 +63,7 @@ for (const [name, code] of Object.entries(cases)) {
   if (name === 'table')
     assert.ok(report.cases[name].js.gzip < 14 * 1024, 'Native Table JS exceeds 14 KiB gzip');
   if (name === 'tableAdapter')
-    assert.ok(report.cases[name].js.gzip < 80 * 1024, 'Table adapter JS exceeds 80 KiB gzip');
+    assert.ok(report.cases[name].js.gzip < 96 * 1024, 'Table adapter JS exceeds 96 KiB gzip');
   if (name === 'button') {
     const css = await readFile(path.join(output, `${name}.css`), 'utf8');
     assert.match(css, /\.leaf-button/);
@@ -83,12 +83,14 @@ for (const [name, code] of Object.entries(cases)) {
     );
   }
 }
-assert.ok(report.cases.form.js.gzip < 64 * 1024, 'Form JS regression: over 64 KiB gzip');
+// 0.6 includes ICU messages and five built-in languages; see QUALITY.md for
+// measured 0.5/0.6 comparisons and the retained optional-engine boundaries.
+assert.ok(report.cases.form.js.gzip < 88 * 1024, 'Form JS regression: over 88 KiB gzip');
 // This fixture now includes the shared base and all API feedback services;
 // the previous standalone-import fixture omitted their CSS.
 assert.ok(
-  report.cases.form.css.gzip < 14 * 1024,
-  'Form + services CSS regression: over 14 KiB gzip',
+  report.cases.form.css.gzip < 14.5 * 1024,
+  'Form + services CSS regression: over 14.5 KiB gzip',
 );
 assert.ok(report.cases.all.js.gzip < 250 * 1024, 'Library JS regression: over 250 KiB gzip');
 // Static light/dark derived palettes and inherited density add ~2.6 KiB to the full CSS.
