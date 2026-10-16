@@ -14,3 +14,4 @@ audit-lint.json
 playwright-report/
 test-results/
 .quality/
+.idea/
