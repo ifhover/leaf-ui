@@ -139,8 +139,6 @@ export function Menu(rawProps: MenuProps) {
   );
   const toggle = (key: string) =>
     setOpened(opened.includes(key) ? opened.filter((value) => value !== key) : [...opened, key]);
-  const hasSelected = (item: MenuItem): boolean =>
-    item.key === selected || Boolean(item.children?.some(hasSelected));
   const visibleItems: MenuItem[] = [];
   const collect = (entries: readonly MenuItem[]) => {
     for (const item of entries) {
@@ -197,15 +195,12 @@ export function Menu(rawProps: MenuProps) {
       const content = itemRender?.(item, originalContent) ?? originalContent;
       const common = {
         role: 'menuitem',
-        'aria-current': selected === item.key ? ('page' as const) : undefined,
+        'aria-current': !hasChildren && selected === item.key ? ('page' as const) : undefined,
         'aria-disabled': item.disabled || undefined,
         'aria-expanded': hasChildren ? expanded : undefined,
         'aria-controls': hasChildren ? `${id}-${item.key}` : undefined,
-        'data-selected':
-          selected === item.key ||
-          ((mode === 'horizontal' || collapsed) && hasChildren && hasSelected(item)) ||
-          undefined,
-        'data-active-parent': (hasChildren && hasSelected(item)) || undefined,
+        'data-selected': (!hasChildren && selected === item.key) || undefined,
+        'data-selectable': !hasChildren || undefined,
         'data-danger': item.danger || undefined,
         className: classes(
           'leaf-menu__item',
@@ -217,7 +212,7 @@ export function Menu(rawProps: MenuProps) {
         'aria-label': collapsed && typeof item.label === 'string' ? item.label : undefined,
         onFocus: () => setActive(item.key),
         title: collapsed && typeof item.label === 'string' ? item.label : undefined,
-        style: { paddingInlineStart: 12 + depth * 16 },
+        style: { paddingInlineStart: 12 + depth * 30 },
       };
       const activate = () => {
         if (item.disabled) return;

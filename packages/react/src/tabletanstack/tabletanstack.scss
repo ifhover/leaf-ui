@@ -140,8 +140,15 @@
       rotate: 90deg;
     }
   }
-  &__detail > td {
-    background: var(--leaf-color-surface-muted);
+  &__detail {
+    --leaf-table-row-base: var(--leaf-color-surface-muted);
+  }
+  &__row-content {
+    display: flow-root;
+    min-width: 0;
+  }
+  tr[data-last-visible] > td {
+    border-block-end: 0;
   }
   &__resize {
     display: block;

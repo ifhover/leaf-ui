@@ -1,5 +1,5 @@
 import { Avatar, Space, Tag } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
+import { DataTable } from '@ifhover/leaf-ui/table';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 

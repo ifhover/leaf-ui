@@ -5,6 +5,7 @@
     "types": ["node", "react", "react-dom"],
     "paths": {
       "@ifhover/leaf-ui": ["../../packages/react/src/index.ts"],
+      "@ifhover/leaf-ui/table": ["../../packages/react/src/table/index.ts"],
       "@ifhover/leaf-ui/table/tanstack": ["../../packages/react/src/tabletanstack/index.ts"]
     }
   },

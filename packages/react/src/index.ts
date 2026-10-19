@@ -33,8 +33,8 @@ export type {
 export { Button, ButtonGroup, SplitButton } from './button';
 export type { CalendarProps } from './calendar';
 export { Calendar } from './calendar';
-export type { CardProps, CardTabsProps } from './card';
-export { Card } from './card';
+export type { CardProps, CardTabsProps, CardTitleProps } from './card';
+export { Card, CardTitle } from './card';
 export type { CarouselHandle, CarouselProps } from './carousel';
 export { Carousel } from './carousel';
 export type { CascaderFieldNames, CascaderOption, CascaderProps } from './cascader';
@@ -192,27 +192,6 @@ export type { StepItem, StepsProps } from './steps';
 export { Steps } from './steps';
 export type { SwitchProps } from './switch';
 export { Switch } from './switch';
-export type {
-  TableCellProps,
-  TableColumnHeaderProps,
-  TableErrorProps,
-  TableProps,
-  TableRowProps,
-  TableStateProps,
-} from './table';
-export {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableColumnHeader,
-  TableEmpty,
-  TableError,
-  TableFooter,
-  TableHeader,
-  TableLoading,
-  TableRow,
-} from './table';
 export type { DataTablePresentationProps } from './tabletanstack/defaults';
 export type { TabItem, TabsProps } from './tabs';
 export { Tabs } from './tabs';

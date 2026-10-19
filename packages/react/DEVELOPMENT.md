@@ -118,7 +118,7 @@ Confirm 只公开 `useConfirm().confirm(options)`，不再导出受控 `Confirm`
 
 数组词条整体替换；只有缺失和 `undefined` 回退，空字符串保留。Provider 纯函数合并且不修改传入对象，不使用跨请求的可变注册表；主题变化不重新解析未变的资源。FloatingPanel 与 ScopedPortal 同步当前 `lang`。测试需覆盖部分翻译、内置覆盖、嵌套链替换、运行时切换、实例优先、Portal、服务组件与 SSR / hydration。包导出五种内置 JSON、Schema 和 `leaf-ui-check-translations` 检查命令；文档构建将同版本资源复制到版本根目录的 `locales/`。
 
-ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的公开部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：Table.Root 使用 Table，其他命名空间部件使用 TableCell、LayoutHeader、DataTableSearch 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。ConfigProvider 及 Confirm / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
+ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的公开部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable.Root 使用 DataTable，其他命名空间部件使用 LayoutHeader、DataTableSearch 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
 
 ### 公开入口与合并语义
 

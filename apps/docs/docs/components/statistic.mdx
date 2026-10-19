@@ -1,9 +1,10 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { StatisticBasic, StatisticCountdown } from '../../src/examples/statistic/basic';
+import { StatisticAnimation } from '../../src/examples/statistic/animation';
 
 # Statistic 统计数值
 
-展示指标数值和倒计时。
+展示指标数值和倒计时。数字首次显示时默认从 0 递增或递减到目标值，后续变化从当前显示值平滑过渡到新目标。
 
 ## 基础用法
 
@@ -13,6 +14,19 @@ import { StatisticBasic, StatisticCountdown } from '../../src/examples/statistic
 ```
 
 </ComponentExample>
+
+## 数值动画
+
+使用 `initialValue` 设置首次动画的起点，默认动画时长为 1000 毫秒，可通过 `duration` 调整。连续点击增加或减少时，动画从当前显示值继续；点击重播会重新挂载示例，从 1,000 开始。
+
+<ComponentExample title="数值动画" preview={<StatisticAnimation />} fileName="animation.tsx">
+
+```tsx lineNumbers file="../../src/examples/statistic/animation.tsx"
+```
+
+</ComponentExample>
+
+设置 `animation={false}` 或 `duration={0}` 可立即显示目标值。动画遵循区域动效速度、`ConfigProvider` 的 `theme.motion` 和系统减少动态效果偏好。`loading` 结束后才开始动画；仅有限的 `number` 值参与动画，字符串和非有限数值直接展示，`formatter` 会接收动画中的数值。服务端先输出目标值，客户端挂载后开始动画。倒计时保持即时更新。
 
 ## 倒计时
 
@@ -35,6 +49,9 @@ import { StatisticBasic, StatisticCountdown } from '../../src/examples/statistic
 | `suffix` | `ReactNode` | — | 后置内容。 |
 | `formatter` | `(value: number \| string) => ReactNode` | — | 自定义指标数值的展示。 |
 | `loading` | `boolean` | — | 展示加载状态。 |
+| `animation` | `boolean` | `true` | 启用数值变化动画。 |
+| `initialValue` | `number` | `0` | 首次动画的起始值，后续变化从当前显示值开始。 |
+| `duration` | `number` | `1000` | 默认动效速度下的动画时长（毫秒），随区域动效时长缩放；0 表示立即更新。 |
 
 ## Countdown API
 

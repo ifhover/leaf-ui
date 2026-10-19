@@ -123,16 +123,6 @@ assert.match(localeCheck, /Translation valid/);
 assertPublicExports(esm, 'Root ESM');
 assertPublicExports(cjs, 'Root CommonJS');
 const components = [
-  [
-    'Table',
-    { 'aria-label': 'Records' },
-    createElement(
-      esm.Table.Body,
-      null,
-      createElement(esm.Table.Row, null, createElement(esm.Table.Cell, null, 'Alice')),
-    ),
-    /<table/,
-  ],
   ['Typography', {}, 'Text', /leaf-typography/],
   ['Text', {}, 'Text', /leaf-text/],
   ['Title', { level: 2 }, 'Heading', /<h2/],
@@ -162,6 +152,7 @@ const components = [
   ['BottomNavigation', { items: [{ key: 'home', label: 'Home' }] }, null, /<nav/],
   ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
   ['Card', { title: 'Project' }, 'Details', /leaf-card/],
+  ['CardTitle', { level: 2, size: 'lg' }, 'Section title', /<h2 class="leaf-card-title/],
   [
     'Card',
     {
@@ -705,20 +696,50 @@ assert.equal(
   undefined,
   'The optional TanStack adapter must not enter the root barrel',
 );
-const adapter = await import('@ifhover/leaf-ui/table/tanstack');
+for (const api of [esm, cjs])
+  for (const name of [
+    'Table',
+    'TableHeader',
+    'TableBody',
+    'TableFooter',
+    'TableRow',
+    'TableCell',
+    'TableColumnHeader',
+    'TableCaption',
+  ])
+    assert.ok(!(name in api), `${name} must not remain in the root API`);
+const adapter = await import('@ifhover/leaf-ui/table');
+const commonJsAdapter = require('@ifhover/leaf-ui/table');
+const legacyAdapter = await import('@ifhover/leaf-ui/table/tanstack');
+assert.equal(
+  adapter.DataTable,
+  legacyAdapter.DataTable,
+  'Legacy table path retains the same DataTable',
+);
+assertPublicExports(adapter, 'DataTable ESM');
+assert.ok(!('Table' in adapter), 'The table entry must expose only the DataTable API');
+assert.equal(
+  commonJsAdapter.DataTable,
+  require('@ifhover/leaf-ui/table/tanstack').DataTable,
+  'CommonJS legacy table path retains the same DataTable',
+);
 const headless = await import('@tanstack/react-table');
-function AdapterFixture() {
+function AdapterFixture({ component }) {
   const table = headless.useReactTable({
     data: [{ id: 'alice', name: 'Alice' }],
     columns: [{ accessorKey: 'name', header: 'Name' }],
     getRowId: (row) => row.id,
     getCoreRowModel: headless.getCoreRowModel(),
   });
-  return createElement(adapter.DataTable, { table, pagination: false, 'aria-label': 'Records' });
+  return createElement(component, { table, pagination: false, 'aria-label': 'Records' });
 }
-assert.match(renderToStaticMarkup(createElement(AdapterFixture)), /Alice/);
+for (const api of [adapter, commonJsAdapter])
+  assert.match(
+    renderToStaticMarkup(createElement(AdapterFixture, { component: api.DataTable })),
+    /Alice/,
+  );
 const adapterCss = await readFile(
-  new URL(manifest.exports['./table/tanstack/style.css'], packageRoot),
+  new URL(manifest.exports['./table/style.css'], packageRoot),
   'utf8',
 );
 for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination', 'popover'])
@@ -748,7 +769,7 @@ for (const [format, extension] of [
 
 for (const [specifier, expected, excluded] of [
   ['button', ['button', 'dropdown'], ['table', 'modal', 'input']],
-  ['table', ['table', 'scrollbar', 'loading'], ['color-picker']],
+  ['table', ['table', 'scrollbar', 'loading', 'checkbox', 'pagination'], ['color-picker']],
   ['table/tanstack', ['table', 'checkbox', 'pagination'], ['color-picker']],
   ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['color-picker']],
   ['config-provider', ['message', 'confirm', 'notification', 'loading-bar'], ['table']],

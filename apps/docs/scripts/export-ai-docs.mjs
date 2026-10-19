@@ -39,7 +39,21 @@ export async function publicApi(repository) {
   );
   if (!['@ifhover/leaf-ui', '@sudden3/leaf-ui'].includes(name))
     throw new Error('The snapshot must identify a supported Leaf UI package.');
-  const files = ['packages/react/src/index.ts', 'packages/react/src/tabletanstack/index.ts'];
+  // Choose the table entry from the snapshot itself so historical versions keep
+  // their original adapter imports and native Table API.
+  const tableEntry = 'packages/react/src/table/index.ts';
+  let canonicalTable = false;
+  try {
+    canonicalTable = publicExports(await readFile(path.join(repository, tableEntry), 'utf8')).some(
+      (item) => item.name === 'DataTable',
+    );
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  const files = [
+    'packages/react/src/index.ts',
+    canonicalTable ? tableEntry : 'packages/react/src/tabletanstack/index.ts',
+  ];
   const entries = [];
   for (const relative of files) {
     const entry = path.join(repository, relative);
@@ -54,7 +68,8 @@ export async function publicApi(repository) {
       ...publicExports(source).map((item) => ({
         ...item,
         entry,
-        importPath: relative === files[0] ? name : `${name}/table/tanstack`,
+        importPath:
+          relative === files[0] ? name : `${name}/table${canonicalTable ? '' : '/tanstack'}`,
       })),
     );
   }

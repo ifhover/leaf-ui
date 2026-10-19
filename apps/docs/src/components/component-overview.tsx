@@ -12,7 +12,7 @@ export function ComponentOverview() {
   const { color } = useDocsTheme();
   const [query, setQuery] = useState('');
   const components = componentCatalog
-    .filter(([name, label, slug]) => matchesComponentQuery(query, `${name} ${label} ${slug}`))
+    .filter((component) => matchesComponentQuery(query, component.join(' ')))
     .map(([name, label, slug, zhCategory, enCategory, zhDesc, enDesc]) => ({
       name,
       label,

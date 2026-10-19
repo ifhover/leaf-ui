@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
+import { TagWeight } from '../../../src/examples/en/tag/weight';
 
 # Tag
 
@@ -14,14 +15,26 @@ Label content categories or statuses.
 
 </ComponentExample>
 
+## Font weight
+
+Tags are bold by default. Set `bold={false}` for regular text. `CheckableTag` and `TagGroup` support the same prop.
+
+<ComponentExample title="Font weight" preview={<TagWeight />} fileName="weight.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/weight.tsx"
+```
+
+</ComponentExample>
+
 ## Tag API
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Tag content |
 | `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| string` | `'default'` | Semantic or custom color |
-| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, both borderless with small rounded corners |
+| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, both borderless with rounded corners |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
+| `bold` | `boolean` | `true` | Use bold text; set to false for regular text |
 | `icon` | `ReactNode` | — | Leading icon |
 | `closable` | `boolean` | `false` | Show a close button |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
@@ -36,7 +49,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 
 ## Usage notes
 
-Tags use borderless fills and small rounded corners, with tinted and solid appearances. The radius follows the regional theme; set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override.
+Tags use borderless fills and rounded corners, with tinted and solid appearances. The radius follows the regional theme's base radius (10px by default); set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override. Bold text follows the theme's `headingWeight` (600 by default), while regular text uses 400. Set regional defaults separately with `ConfigProvider`'s `components.Tag.bold`, `components.CheckableTag.bold`, and `components.TagGroup.bold`; instance props take precedence.
 
 Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
 
@@ -48,6 +61,7 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `defaultChecked` | `boolean` | `false` | Initial checked state |
 | `onChange` | `(checked: boolean) => void` | — | Value change callback |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `bold` | `boolean` | `true` | Use bold text; set to false for regular text |
 
 ## TagGroupProps API
 
@@ -59,6 +73,7 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `onChange` | `(values: string[]) => void` | — | Value change callback |
 | `disabled` | `boolean` | — | Disable interactions |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `bold` | `boolean` | `true` | Use bold text for tags in the group; set to false for regular text |
 | `name` | `string` | — | Form field name |
 | `form` | `string` | — | Associated form ID |
 | `required` | `boolean` | — | Required form validation |

@@ -4,7 +4,7 @@ import { createRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
-import { Table } from './table';
+import { TableControl as Table } from './table';
 
 describe('Table', () => {
   it('preserves native table semantics, header scopes, spans, caption and refs', () => {

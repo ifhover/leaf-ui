@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TagBasic } from '../../src/examples/tag/basic';
+import { TagWeight } from '../../src/examples/tag/weight';
 
 # Tag 标签
 
@@ -14,14 +15,26 @@ import { TagBasic } from '../../src/examples/tag/basic';
 
 </ComponentExample>
 
+## 字重
+
+标签默认加粗。设置 `bold={false}` 使用常规字重；`CheckableTag` 和 `TagGroup` 也支持此参数。
+
+<ComponentExample title="字重" preview={<TagWeight />} fileName="weight.tsx">
+
+```tsx lineNumbers file="../../src/examples/tag/weight.tsx"
+```
+
+</ComponentExample>
+
 ## Tag API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | 标签内容 |
 | `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| string` | `'default'` | 语义颜色或自定义颜色 |
-| `variant` | `'soft' \| 'solid'` | `'soft'` | 浅底或实色形态，均为无边框小圆角 |
+| `variant` | `'soft' \| 'solid'` | `'soft'` | 浅底或实色形态，均为无边框圆角 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸 |
+| `bold` | `boolean` | `true` | 使用加粗字重；设为 false 使用常规字重 |
 | `icon` | `ReactNode` | — | 前置图标 |
 | `closable` | `boolean` | `false` | 展示关闭按钮 |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | 关闭时触发 |
@@ -36,7 +49,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 
 ## 使用说明
 
-标签使用无边框的小圆角，仅提供浅底与实色形态。圆角跟随区域主题，也可通过 `ConfigProvider` 的 `theme.components.Tag.borderRadius` 单独设置。
+标签使用无边框的圆角，仅提供浅底与实色形态。圆角跟随区域主题的基础圆角（默认 10px），也可通过 `ConfigProvider` 的 `theme.components.Tag.borderRadius` 单独设置。加粗字重跟随主题的 `headingWeight`（默认 600），常规字重为 400。可通过 `ConfigProvider` 的 `components.Tag.bold`、`components.CheckableTag.bold` 和 `components.TagGroup.bold` 分别设置区域默认值，实例参数优先。
 
 调用 event.preventDefault() 可阻止默认移除。在动态列表中，也可以通过 onClose 更新应用状态并移除对应项。
 
@@ -48,6 +61,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 | `defaultChecked` | `boolean` | `false` | 初始勾选状态 |
 | `onChange` | `(checked: boolean) => void` | — | 值变化回调 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `bold` | `boolean` | `true` | 使用加粗字重；设为 false 使用常规字重 |
 
 ## TagGroupProps API
 
@@ -59,6 +73,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 | `onChange` | `(values: string[]) => void` | — | 值变化回调 |
 | `disabled` | `boolean` | — | 禁止交互 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `bold` | `boolean` | `true` | 组内标签使用加粗字重；设为 false 使用常规字重 |
 | `name` | `string` | — | 表单字段名称 |
 | `form` | `string` | — | 关联表单 ID |
 | `required` | `boolean` | — | 表单必填验证 |

@@ -172,7 +172,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 使用 `LeafComponentDefaults` 获得类型提示，可配参数见[完整参考](/api/component-defaults#leafcomponentdefaults)。
 
-- 键名与组件名一致，如 `Input`、`Modal`。组合组件 `Table.Cell` 写作 `TableCell`，`Table.Root` 写作 `Table`；别名 `FAB`、`ResizablePanels` 使用 `FloatButton`、`Splitter`。
+- 键名与组件名一致，如 `Input`、`Modal`。组合组件 `DataTable.Search` 写作 `DataTableSearch`，`DataTable.Root` 写作 `DataTable`；别名 `FAB`、`ResizablePanels` 使用 `FloatButton`、`Splitter`。
 - 只有 `undefined` 会回退到默认值；`false`、`0`、空字符串和类型允许的 `null` 均保留。对象、数组、类名和回调整体替换。
 - 组件配置为 `null` 时清除继承，空对象和 `undefined` 继续继承；其他组件与主题不受影响。
 - 每个实例的数据和事件仍写在组件上，如 `Select.options`、`Modal.open`、`onChange`。

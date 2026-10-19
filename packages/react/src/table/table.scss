@@ -5,18 +5,15 @@
   --leaf-table-padding-block: var(--leaf-density-row-padding, 12px);
   --leaf-table-padding-inline: var(--leaf-spacing-md, 16px);
   --leaf-table-surface: var(--leaf-component-table-background, var(--leaf-color-surface));
+  --leaf-table-header-background: var(--leaf-table-surface);
   position: relative;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   contain: inline-size;
-  border: var(--leaf-component-table-border-width, var(--leaf-border-width, 1px)) solid
-    var(
-      --leaf-component-table-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-  border-radius: var(--leaf-component-table-radius, var(--leaf-radius));
+  border: 0;
+  border-radius: 0;
   background: var(--leaf-table-surface);
   color: var(--leaf-component-table-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
@@ -32,6 +29,16 @@
   &--lg {
     --leaf-table-padding-block: 16px;
     --leaf-table-padding-inline: 20px;
+  }
+
+  &--bordered {
+    --leaf-table-header-background: var(--leaf-color-surface-muted);
+    border: var(--leaf-component-table-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-table-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    border-radius: var(--leaf-component-table-radius, var(--leaf-radius));
   }
 
   &__scroll-area {
@@ -72,8 +79,8 @@
   }
 
   &__header {
-    background: var(--leaf-color-surface-muted);
-    color: var(--leaf-color-text-muted);
+    background: var(--leaf-table-header-background);
+    color: var(--leaf-component-table-color, var(--leaf-color-text));
   }
 
   &--sticky &__header {
@@ -92,7 +99,10 @@
     vertical-align: middle;
     overflow-wrap: anywhere;
     border-block-end: 1px solid var(--leaf-color-divider);
-    background: var(--leaf-table-row-background, var(--leaf-table-surface));
+    background: var(
+      --leaf-table-row-background,
+      var(--leaf-table-row-base, var(--leaf-table-surface))
+    );
     transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[data-pinned] {
       position: sticky;
@@ -119,9 +129,13 @@
     position: relative;
     font-size: var(--leaf-font-size-sm);
     font-weight: var(--leaf-font-weight);
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-table-header-background);
     border-block-end: 1px solid var(--leaf-color-divider);
     white-space: nowrap;
+  }
+
+  &:not(.leaf-table--bordered) &__column-header {
+    border-block-end-width: 2px;
   }
 
   &__body > &__row:last-child > &__cell,
@@ -130,11 +144,24 @@
   }
 
   &--striped &__body > &__row:nth-child(even):not(.leaf-table__state-row) {
-    --leaf-table-row-background: var(--leaf-color-surface-muted);
+    --leaf-table-row-base: color-mix(
+      in srgb,
+      var(--leaf-color-surface-muted) 50%,
+      var(--leaf-table-surface)
+    );
+  }
+
+  &--striped &__body > &__row > &__cell,
+  &--striped &__footer > &__row > &__cell {
+    border-block-end: 0;
   }
 
   &__body > &__row:not(.leaf-table__state-row):hover {
-    --leaf-table-row-background: var(--leaf-color-primary-surface-6);
+    --leaf-table-row-background: color-mix(
+      in srgb,
+      var(--leaf-color-primary) 3%,
+      var(--leaf-table-row-base, var(--leaf-table-surface))
+    );
   }
 
   &__body > &__row[data-selected],

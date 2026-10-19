@@ -18,7 +18,7 @@ export const componentCatalog = [
     'Browse long or wide content within a region.',
   ],
   [
-    'Table',
+    'DataTable',
     '表格',
     'table',
     '数据展示',
@@ -329,8 +329,8 @@ export const componentCatalog = [
     'card',
     '数据展示',
     'Data display',
-    '在独立容器中展示相关内容和操作。',
-    'Group related content and actions in a container.',
+    '在独立容器中展示相关内容和操作，使用 CardTitle 单独复用标题。',
+    'Group related content and actions in a container; reuse headings independently with CardTitle.',
   ],
   [
     'Divider',

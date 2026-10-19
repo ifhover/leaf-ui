@@ -15,16 +15,11 @@ import {
   Space,
   Steps,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumnHeader,
-  TableHeader,
-  TableRow,
   Tabs,
   Tag,
   useMessage,
 } from '@ifhover/leaf-ui';
+import { DataTable } from '@ifhover/leaf-ui/table';
 import { type CSSProperties, useState } from 'react';
 import { type TestThemeName, testThemes } from '../fixtures/theme-data';
 
@@ -98,18 +93,14 @@ export function ThemePresetsFixture() {
             Toggle palette
           </Button>
           <Button onClick={() => setDark(!dark)}>Toggle mode</Button>
-          <Table aria-label="Global theme table">
-            <TableHeader>
-              <TableRow>
-                <TableColumnHeader>Theme</TableColumnHeader>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell>Shared frame</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <DataTable
+            aria-label="Global theme table"
+            bordered
+            data={[{ id: 'theme', name: 'Shared frame' }]}
+            columns={[{ accessorKey: 'name', header: 'Theme' }]}
+            rowKey="id"
+            pagination={false}
+          />
           <AvatarGroup aria-label="Theme collaborators">
             <Avatar>AL</Avatar>
             <Avatar>BO</Avatar>

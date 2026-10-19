@@ -1,5 +1,51 @@
-import { Button, Card, ConfigProvider, Input, type TabItem } from '@ifhover/leaf-ui';
+import { Button, Card, CardTitle, ConfigProvider, Input, type TabItem } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
+function CardTitlesFixture() {
+  const dark = new URLSearchParams(location.search).get('theme') === 'dark';
+  const longTitle = `Long project title ${'UnbrokenProjectIdentifier'.repeat(12)}`;
+  return (
+    <section data-testid="card-titles" style={{ display: 'grid', gap: 16, maxWidth: 320 }}>
+      <h1>Reusable card titles</h1>
+      {(['sm', 'md', 'lg'] as const).map((size) => (
+        <div key={size} data-testid={`title-pair-${size}`}>
+          <CardTitle data-testid="standalone-title" size={size}>
+            Standalone {size}
+          </CardTitle>
+          <Card title={`Card ${size}`} size={size} />
+        </div>
+      ))}
+      <CardTitle data-testid="semantic-title" level={2} size="sm" title="Native heading hint">
+        Small section heading
+      </CardTitle>
+      <ConfigProvider components={{ CardTitle: { size: 'lg', level: 4 } }} style={{ minHeight: 0 }}>
+        <CardTitle data-testid="regional-title">Regional standalone title</CardTitle>
+        <Card data-testid="regional-card" title="Isolated card title" size="sm" />
+      </ConfigProvider>
+      <ConfigProvider
+        data-testid="custom-title-theme"
+        style={{ minHeight: 0 }}
+        theme={{
+          fontSize: 18,
+          fontFamily: 'monospace',
+          headingWeight: 700,
+          tokens: { textColor: dark ? '#d7e7ff' : '#123456' },
+        }}
+      >
+        <CardTitle data-testid="custom-title">Custom standalone title</CardTitle>
+        <Card data-testid="custom-card" title="Custom card title" />
+        <ConfigProvider theme={{ headingWeight: 400 }} style={{ minHeight: 0 }}>
+          <CardTitle data-testid="local-title">Local standalone title</CardTitle>
+          <Card data-testid="local-card" title="Local card title" />
+        </ConfigProvider>
+      </ConfigProvider>
+      <div data-testid="long-title-container">
+        <CardTitle data-testid="long-standalone-title">{longTitle}</CardTitle>
+        <Card data-testid="long-title-card" title={longTitle} extra="Action" />
+      </div>
+    </section>
+  );
+}
 
 export function CardTabsFixture() {
   const params = new URLSearchParams(location.search);
@@ -19,6 +65,7 @@ export function CardTabsFixture() {
       closable: true,
     })),
   );
+  if (params.has('titles')) return <CardTitlesFixture />;
   return (
     <ConfigProvider
       theme={

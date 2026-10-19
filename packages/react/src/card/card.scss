@@ -1,5 +1,20 @@
 @use '../styles/mixins';
 
+.leaf-card-title {
+  min-width: 0;
+  margin: 0;
+  color: var(--leaf-color-text);
+  font: var(--leaf-heading-weight, 600) calc(var(--leaf-font-size) + 1px) / 1.5
+    var(--leaf-font-family);
+  overflow-wrap: anywhere;
+  &--sm {
+    font-size: var(--leaf-font-size);
+  }
+  &--lg {
+    font-size: calc(var(--leaf-font-size) + 2px);
+  }
+}
+
 .leaf-card {
   --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
   --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
@@ -53,11 +68,7 @@
     overflow-wrap: anywhere;
   }
   &__title {
-    min-width: 0;
-    margin: 0;
-    font: var(--leaf-font-weight, 500) var(--leaf-card-title-font-size) / 1.5
-      var(--leaf-font-family);
-    overflow-wrap: anywhere;
+    color: inherit;
   }
   &__extra {
     flex: 0 0 auto;

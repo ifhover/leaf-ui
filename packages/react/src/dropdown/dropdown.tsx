@@ -422,8 +422,6 @@ function MenuPanel({
   };
   const child = rows.find((item) => item.key === submenu);
   const activeItem = rows.find((item) => item.key === current);
-  const containsSelected = (item: DropdownItem): boolean =>
-    item.key === navigation?.selectedKey || Boolean(item.children?.some(containsSelected));
   return (
     <>
       <FloatingPanel
@@ -459,6 +457,7 @@ function MenuPanel({
           aria-hidden="true"
           data-ready={Boolean(highlight)}
           data-danger={activeItem?.danger || undefined}
+          data-selectable={(navigation && !activeItem?.children?.length) || undefined}
           data-selected={
             (navigation && activeItem?.key === navigation.selectedKey) ||
             ((activeItem?.type === 'checkbox' || activeItem?.type === 'radio') &&
@@ -492,9 +491,10 @@ function MenuPanel({
                   : undefined
               }
               aria-haspopup={item.children?.length ? 'menu' : undefined}
-              aria-current={navigation && item.key === navigation.selectedKey ? 'page' : undefined}
-              data-active-parent={
-                navigation && item.children?.length && containsSelected(item) ? true : undefined
+              aria-current={
+                navigation && !item.children?.length && item.key === navigation.selectedKey
+                  ? 'page'
+                  : undefined
               }
               aria-expanded={item.children?.length ? submenu === item.key : undefined}
               disabled={item.disabled}

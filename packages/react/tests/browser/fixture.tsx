@@ -63,6 +63,7 @@ import { ScrollbarFixture } from './scrollbar-fixture';
 import { SearchSelectFixture } from './search-select-fixture';
 import { SelectWidthFixture } from './select-width-fixture';
 import { SelectionFixture } from './selection-fixture';
+import { StatisticFixture } from './statistic-fixture';
 import { SurfaceFixture } from './surface-fixture';
 import { TableFixture } from './table-fixture';
 import { TabsFixture } from './tabs-fixture';
@@ -425,6 +426,8 @@ createRoot(root).render(
         <InputPopupWidthFixture />
       ) : fixture === 'selection' ? (
         <SelectionFixture />
+      ) : fixture === 'statistic' ? (
+        <StatisticFixture />
       ) : fixture === 'motion' ? (
         <MotionFixture />
       ) : fixture === 'large' ? (

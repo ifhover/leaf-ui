@@ -20,6 +20,7 @@ export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   color?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | (string & {});
   variant?: 'soft' | 'solid';
   size?: ControlSize;
+  bold?: boolean;
   icon?: ReactNode;
   closable?: boolean;
   onClose?: (event: MouseEvent<HTMLButtonElement>) => void;
@@ -30,6 +31,7 @@ export function Tag(rawProps: TagProps) {
     color = 'default',
     variant = 'soft',
     size = 'md',
+    bold = true,
     icon,
     closable = false,
     onClose,
@@ -92,7 +94,13 @@ export function Tag(rawProps: TagProps) {
       ref={root}
       data-state={closed ? 'closing' : undefined}
       aria-hidden={closed || props['aria-hidden']}
-      className={classes('leaf-tag', `leaf-tag--${variant}`, `leaf-tag--${size}`, className)}
+      className={classes(
+        'leaf-tag',
+        `leaf-tag--${variant}`,
+        `leaf-tag--${size}`,
+        bold && 'leaf-tag--bold',
+        className,
+      )}
       data-color={presets.includes(color) ? color : undefined}
       style={{ ...customVariables, ...style }}
     >

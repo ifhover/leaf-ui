@@ -102,7 +102,6 @@ for (const appearance of ['light', 'dark']) {
         page.getByRole('button', { name: 'Page 2', exact: true }),
         page.getByRole('link', { name: 'Current page', exact: true }),
         page.getByRole('button', { name: 'Design', exact: true }),
-        page.getByRole('navigation', { name: 'Sections' }).getByRole('button', { name: 'Home' }),
         page.locator('.leaf-transfer__item[data-selected]'),
       ];
       for (const target of targets) {
@@ -253,10 +252,20 @@ for (const appearance of ['light', 'dark']) {
 
       const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
       const team = menu.getByRole('menuitem', { name: 'Team', exact: true });
+      const menuInk = await menu.evaluate((element) => {
+        const probe = document.createElement('span');
+        probe.style.color = 'var(--leaf-color-primary-ink-active)';
+        element.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      });
       await team.hover();
-      await expect(team).toHaveCSS('background-color', neutral);
+      await expect(team).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(team).toHaveCSS('color', menuInk);
       await team.focus();
-      await expect(team).toHaveCSS('background-color', neutral);
+      await expect(team).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(team).toHaveCSS('color', menuInk);
       await expect(menu.locator('.leaf-menu__indicator')).toHaveCSS('background-color', primary);
     });
   });

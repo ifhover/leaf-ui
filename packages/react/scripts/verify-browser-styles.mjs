@@ -29,8 +29,9 @@ const cases = {
     exclude: ['input', 'table', 'modal'],
   },
   table: {
-    names: ['Table'],
-    include: ['table', 'scrollbar', 'loading'],
+    names: ['DataTable'],
+    subpath: '/table',
+    include: ['table', 'scrollbar', 'loading', 'checkbox', 'pagination'],
     exclude: ['color-picker', 'date-picker'],
   },
   date: {
@@ -48,6 +49,17 @@ const cases = {
     subpath: '/card',
     include: ['card', 'skeleton', 'tabs', 'scrollbar'],
     exclude: ['table', 'input', 'color-picker'],
+  },
+  cardTitle: {
+    names: ['CardTitle'],
+    include: ['card-title'],
+    exclude: ['skeleton', 'tabs', 'table', 'input', 'color-picker'],
+  },
+  cardTitleSubpath: {
+    names: ['CardTitle'],
+    subpath: '/card',
+    include: ['card-title'],
+    exclude: ['skeleton', 'tabs', 'table', 'input', 'color-picker'],
   },
   config: {
     names: ['ConfigProvider'],

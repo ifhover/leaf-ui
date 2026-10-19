@@ -5,12 +5,95 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/?fixture=table');
 });
 
-test('native and data tables fill centered containers without collapsing or overflowing', async ({
-  page,
-}) => {
+for (const theme of ['light', 'dark']) {
+  for (const compact of [false, true]) {
+    test(`borderless defaults and striped row dividers: ${theme}, ${compact ? 'compact' : 'comfortable'}`, async ({
+      page,
+    }, testInfo) => {
+      await page.goto(`/?fixture=table&theme=${theme}${compact ? '&compact=1' : ''}`);
+      // Check the public data-and-columns entry without explicit appearance props.
+      for (const name of ['Team members']) {
+        const table = page.getByRole('table', { name, exact: true });
+        const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--md")][1]');
+        await expect(root).toHaveCSS('border-top-width', '0px');
+        await expect(root).toHaveCSS('border-radius', '0px');
+        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '2px');
+        await expect(table.locator('thead th').first()).toHaveCSS(
+          'background-color',
+          await root.evaluate((node) => getComputedStyle(node).backgroundColor),
+        );
+        await expect(table.locator('tbody tr').first().locator('td').first()).toHaveCSS(
+          'border-right-width',
+          '0px',
+        );
+        const cells = table.locator('tbody tr > td:first-child');
+        await expect(cells.first()).toHaveCSS('border-bottom-width', '0px');
+        const backgrounds = await cells.evaluateAll((nodes) =>
+          nodes.map((node) => getComputedStyle(node).backgroundColor),
+        );
+        expect(backgrounds[0]).not.toBe(backgrounds[1]);
+        expect(backgrounds[0]).toBe(backgrounds[2]);
+      }
+
+      const demo = page.getByRole('region', { name: 'Table appearance demo', exact: true });
+      const table = demo.getByRole('table');
+      const root = demo.locator('.leaf-table');
+      for (const bordered of [false, true]) {
+        await demo.getByRole('checkbox', { name: 'Borders', exact: true }).setChecked(bordered);
+        for (const striped of [false, true]) {
+          await demo.getByRole('checkbox', { name: 'Striped rows' }).setChecked(striped);
+          await page.mouse.move(0, 0);
+          await expect(root).toHaveCSS('border-top-width', bordered ? '1px' : '0px');
+          await expect(root).toHaveCSS('border-radius', bordered ? '10px' : '0px');
+          await expect(table.locator('thead th').first()).toHaveCSS(
+            'border-bottom-width',
+            bordered ? '1px' : '2px',
+          );
+          const cells = table.locator('tbody tr > td:first-child');
+          await expect(table.locator('thead th').first()).toHaveCSS(
+            'color',
+            await cells.first().evaluate((node) => getComputedStyle(node).color),
+          );
+          await expect(cells.first()).toHaveCSS('border-right-width', bordered ? '1px' : '0px');
+          await expect(cells.first()).toHaveCSS('border-bottom-width', striped ? '0px' : '1px');
+          await expect(cells.last()).toHaveCSS('border-bottom-width', '0px');
+          await expect
+            .poll(async () => {
+              const colors = await cells.evaluateAll((nodes) =>
+                nodes.map((node) => getComputedStyle(node).backgroundColor),
+              );
+              return colors[0] === colors[1];
+            })
+            .toBe(!striped);
+          // Both ordinary and striped rows must visibly respond to hover.
+          for (const cell of [cells.nth(0), cells.nth(1)]) {
+            await cell.evaluate((node) =>
+              Promise.all(
+                node.getAnimations().map((animation) => animation.finished.catch(() => {})),
+              ),
+            );
+            const rest = await cell.evaluate((node) => getComputedStyle(node).backgroundColor);
+            await cell.hover();
+            await expect
+              .poll(() => cell.evaluate((node) => getComputedStyle(node).backgroundColor))
+              .not.toBe(rest);
+            await page.mouse.move(0, 0);
+            await expect(cell).toHaveCSS('background-color', rest);
+          }
+        }
+      }
+      await demo.getByRole('checkbox', { name: 'Borders', exact: true }).uncheck();
+      await demo.screenshot({
+        path: testInfo.outputPath(`table-${theme}-${compact ? 'compact' : 'comfortable'}.png`),
+      });
+    });
+  }
+}
+
+test('data tables fill centered containers without collapsing or overflowing', async ({ page }) => {
   for (const width of [1100, 375]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const label of ['Team members', 'Simple data table']) {
+    for (const label of ['Team members']) {
       const table = page.getByRole('table', { name: label });
       const geometry = await table.evaluate((node) => {
         const viewport = node.closest('.leaf-table__viewport');
@@ -23,13 +106,12 @@ test('native and data tables fill centered containers without collapsing or over
           client: viewport?.clientWidth ?? 0,
           table: node.getBoundingClientRect().width,
           radius: root ? getComputedStyle(root).borderRadius : '',
-          baseRadius: root ? getComputedStyle(root).getPropertyValue('--leaf-radius').trim() : '',
         };
       });
       expect(geometry.width).toBeGreaterThan(200);
       expect(Math.abs(geometry.width - geometry.available)).toBeLessThan(2);
       expect(geometry.table).toBeGreaterThanOrEqual(geometry.client - 1);
-      expect(geometry.radius).toBe(geometry.baseRadius);
+      expect(geometry.radius).toBe('0px');
       if (width === 375) expect(geometry.scroll).toBeGreaterThan(geometry.client);
     }
   }
@@ -239,6 +321,10 @@ test('mobile width scrolls inside table and component theme tokens are consumed'
   const themed = page.getByRole('table', { name: 'Custom theme' });
   await expect(themed.getByRole('cell')).toHaveCSS('padding', '8px 12px');
   await expect(themed).toHaveCSS('font-size', '13px');
+  for (const theme of ['light', 'dark']) {
+    await page.goto(`/?fixture=table&theme=${theme}`);
+    await expect(themed.getByRole('columnheader')).toHaveCSS('color', 'rgb(51, 51, 51)');
+  }
 });
 
 test('default sticky headers and body-only overlay tracks preserve page wheel scrolling', async ({
@@ -281,7 +367,7 @@ test('container-driven horizontal overflow uses an overlay scrollbar and updates
   for (const rtl of [false, true]) {
     await page.goto(`/?fixture=table${rtl ? '&rtl=1' : ''}`);
     await page.setViewportSize({ width: 375, height: 900 });
-    for (const name of ['Team members', 'Simple data table']) {
+    for (const name of ['Team members']) {
       const table = page.getByRole('table', { name });
       const root = table.locator(
         'xpath=ancestor::*[contains(@class, "leaf-table__scroll-area")][1]',
@@ -312,9 +398,7 @@ test('container-driven horizontal overflow uses an overlay scrollbar and updates
   }
 });
 
-test('native and interactive tables pass axe in both themes and reduced motion', async ({
-  page,
-}) => {
+test('data tables pass axe in both themes and reduced motion', async ({ page }) => {
   for (const theme of ['light', 'dark']) {
     await page.goto(`/?fixture=table&theme=${theme}`);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -334,4 +418,122 @@ test('native and interactive tables pass axe in both themes and reduced motion',
     );
     expect(violations).toEqual([]);
   }
+});
+
+test('group collapse animates without moving columns, changing stripes or replacing retained rows', async ({
+  page,
+}) => {
+  const table = page.getByRole('table', { name: 'Members grouped by team', exact: true });
+  await table.scrollIntoViewIfNeeded();
+  const result = await table.evaluate(async (node) => {
+    const table = node as HTMLTableElement;
+    table.style.setProperty('--leaf-motion-duration', '1000ms');
+    const trigger = table.querySelector<HTMLButtonElement>('button[aria-expanded]');
+    if (!trigger) throw new Error('Missing group trigger');
+    const child = trigger.closest('tr')?.nextElementSibling as HTMLTableRowElement;
+    const identity = child.firstElementChild?.firstElementChild;
+    const columns = () =>
+      Array.from(
+        table.tHead?.querySelectorAll('th') ?? [],
+        (cell) => cell.getBoundingClientRect().width,
+      );
+    const colors = () =>
+      Array.from(
+        table.querySelectorAll<HTMLButtonElement>('button[aria-expanded]'),
+        (button) => getComputedStyle(button.closest('td') as HTMLTableCellElement).backgroundColor,
+      );
+    const before = {
+      height: table.getBoundingClientRect().height,
+      y: table.getBoundingClientRect().y,
+      scroll: window.scrollY,
+      columns: columns(),
+      colors: colors(),
+    };
+    trigger.click();
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    const middle = table.getBoundingClientRect().height;
+    const inaccessibleWhileClosing =
+      child.getAttribute('aria-hidden') === 'true' && child.hasAttribute('inert');
+    const finish = async () => {
+      for (const animation of table.getAnimations({ subtree: true })) animation.finish();
+      await new Promise(requestAnimationFrame);
+    };
+    trigger.click();
+    await new Promise(requestAnimationFrame);
+    const reverse = table.getBoundingClientRect().height;
+    await finish();
+    const restored = table.getBoundingClientRect().height;
+    trigger.click();
+    await new Promise(requestAnimationFrame);
+    await finish();
+    const after = {
+      height: table.getBoundingClientRect().height,
+      y: table.getBoundingClientRect().y,
+      scroll: window.scrollY,
+      columns: columns(),
+      colors: colors(),
+    };
+    const retained = child.isConnected && child.firstElementChild?.firstElementChild === identity;
+    const hidden = child.hidden;
+    // Native row separators must also end at the last visible row after collapsing the final group.
+    table.closest('.leaf-table')?.classList.remove('leaf-table--striped');
+    for (const button of table.querySelectorAll<HTMLButtonElement>('button[aria-expanded="true"]'))
+      button.click();
+    await new Promise(requestAnimationFrame);
+    await finish();
+    const lastVisible = Array.from(table.tBodies[0]?.rows ?? [])
+      .filter((row) => !row.hidden)
+      .at(-1);
+    const finalDivider = getComputedStyle(
+      lastVisible?.cells[0] as HTMLTableCellElement,
+    ).borderBottomWidth;
+    return {
+      before,
+      middle,
+      reverse,
+      restored,
+      after,
+      retained,
+      hidden,
+      inaccessibleWhileClosing,
+      finalDivider,
+    };
+  });
+  expect(result.middle).toBeLessThan(result.before.height);
+  expect(result.middle).toBeGreaterThan(result.after.height);
+  expect(result.reverse).toBeLessThan(result.before.height);
+  expect(Math.abs(result.restored - result.before.height)).toBeLessThan(1);
+  expect(result.after.columns).toEqual(result.before.columns);
+  expect(result.after.colors).toEqual(result.before.colors);
+  expect(Math.abs(result.after.y - result.before.y)).toBeLessThan(1);
+  expect(result.after.scroll).toBe(result.before.scroll);
+  expect(result.retained).toBe(true);
+  expect(result.hidden).toBe(true);
+  expect(result.inaccessibleWhileClosing).toBe(true);
+  expect(result.finalDivider).toBe('0px');
+});
+
+test('group collapse respects reduced motion while retaining child content', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const table = page.getByRole('table', { name: 'Members grouped by team', exact: true });
+  const result = await table.evaluate(async (node) => {
+    const trigger = node.querySelector<HTMLButtonElement>('button[aria-expanded]');
+    if (!trigger) throw new Error('Missing group trigger');
+    const child = trigger.closest('tr')?.nextElementSibling as HTMLTableRowElement;
+    const content = child.firstElementChild?.firstElementChild;
+    trigger.click();
+    await new Promise(requestAnimationFrame);
+    const immediate = child.hidden;
+    const animations = node.getAnimations({ subtree: true }).length;
+    trigger.click();
+    await new Promise(requestAnimationFrame);
+    return {
+      immediate,
+      animations,
+      retained: child.firstElementChild?.firstElementChild === content,
+      restored: !child.hidden,
+    };
+  });
+  expect(result).toEqual({ immediate: true, animations: 0, retained: true, restored: true });
 });

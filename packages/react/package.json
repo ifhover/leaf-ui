@@ -1,6 +1,6 @@
 {
   "name": "@ifhover/leaf-ui",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -1414,24 +1414,24 @@
     "./table": {
       "browser": {
         "import": {
-          "types": "./dist/esm/table/index.d.ts",
-          "default": "./dist/esm/browser/table.js"
+          "types": "./dist/esm/tabletanstack/index.d.ts",
+          "default": "./dist/esm/browser/tabletanstack.js"
         },
         "require": {
-          "types": "./dist/cjs/table/index.d.cts",
-          "default": "./dist/cjs/browser/table.cjs"
+          "types": "./dist/cjs/tabletanstack/index.d.cts",
+          "default": "./dist/cjs/browser/tabletanstack.cjs"
         }
       },
       "import": {
-        "types": "./dist/esm/table/index.d.ts",
-        "default": "./dist/esm/table/index.js"
+        "types": "./dist/esm/tabletanstack/index.d.ts",
+        "default": "./dist/esm/tabletanstack/index.js"
       },
       "require": {
-        "types": "./dist/cjs/table/index.d.cts",
-        "default": "./dist/cjs/table/index.cjs"
+        "types": "./dist/cjs/tabletanstack/index.d.cts",
+        "default": "./dist/cjs/tabletanstack/index.cjs"
       }
     },
-    "./table/style.css": "./dist/esm/styles/table.css",
+    "./table/style.css": "./dist/esm/styles/tabletanstack.css",
     "./table/tanstack": {
       "browser": {
         "import": {

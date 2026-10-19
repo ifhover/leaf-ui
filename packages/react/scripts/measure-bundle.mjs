@@ -10,7 +10,7 @@ await mkdir(output, { recursive: true });
 const cases = {
   base: `import '@ifhover/leaf-ui/styles.css'; export const baseStyles = true;`,
   button: `import { Button } from '@ifhover/leaf-ui/button'; export { Button };`,
-  table: `export { Table } from '@ifhover/leaf-ui/table';`,
+  table: `export { DataTable } from '@ifhover/leaf-ui/table';`,
   tableAdapter: `export { DataTable } from '@ifhover/leaf-ui/table/tanstack';`,
   form: `export { ConfigProvider } from '@ifhover/leaf-ui/config-provider'; export { Form, FormField } from '@ifhover/leaf-ui/form'; export { Input } from '@ifhover/leaf-ui/input'; export { InputNumber } from '@ifhover/leaf-ui/input-number'; export { Select } from '@ifhover/leaf-ui/select'; export { DatePicker } from '@ifhover/leaf-ui/date-picker'; export { CheckboxGroup } from '@ifhover/leaf-ui/checkbox'; export { Button } from '@ifhover/leaf-ui/button';`,
   all: `export * from '@ifhover/leaf-ui';`,
@@ -53,17 +53,15 @@ for (const [name, code] of Object.entries(cases)) {
     files.map((file) => [file.type, { bytes: file.bytes, gzip: file.gzip }]),
   );
   report.cases[name].modules = Object.keys(result.metafile.inputs).length;
-  if (name !== 'tableAdapter')
+  if (!['table', 'tableAdapter'].includes(name))
     assert.ok(
       !Object.keys(result.metafile.inputs).some((file) =>
         /@tanstack[\\/]react-table|@tanstack[\\/]table-core|[\\/]tabletanstack[\\/]/u.test(file),
       ),
       `${name} must not load the optional table engine`,
     );
-  if (name === 'table')
-    assert.ok(report.cases[name].js.gzip < 14 * 1024, 'Native Table JS exceeds 14 KiB gzip');
-  if (name === 'tableAdapter')
-    assert.ok(report.cases[name].js.gzip < 96 * 1024, 'Table adapter JS exceeds 96 KiB gzip');
+  if (['table', 'tableAdapter'].includes(name))
+    assert.ok(report.cases[name].js.gzip < 96 * 1024, 'DataTable JS exceeds 96 KiB gzip');
   if (name === 'button') {
     const css = await readFile(path.join(output, `${name}.css`), 'utf8');
     assert.match(css, /\.leaf-button/);

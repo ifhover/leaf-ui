@@ -16,7 +16,11 @@ const components = [
   ),
 ];
 const styled = new Set();
-for (const name of components) {
+// Private visual controls still own styles even when their folder no longer has
+// a public package entry (for example the table frame used by DataTable).
+for (const directory of await readdir(source, { withFileTypes: true })) {
+  if (!directory.isDirectory()) continue;
+  const name = directory.name;
   try {
     if ((await stat(path.join(source, name, `${name}.scss`))).isFile()) styled.add(name);
   } catch (error) {

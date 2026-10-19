@@ -22,7 +22,7 @@ import { assignRef } from '../shared/field';
 import { useMotionEnabled } from '../shared/motion';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import type { TableColumnHeaderProps, TableRowProps } from '../table';
+import type { TableColumnHeaderProps, TableRowProps } from '../table/table';
 import { TableControl as Table } from '../table/table';
 
 type ReorderKind = 'row' | 'column';

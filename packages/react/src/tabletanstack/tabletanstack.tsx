@@ -1,17 +1,21 @@
 import { useFormattedText } from '../shared/use-formatted-text';
 import type {
+  DataTableCellProps,
   DataTableColumnVisibilityProps,
   DataTableContentProps,
   DataTablePaginationProps,
   DataTablePresentationProps,
+  DataTableRowProps,
   DataTableSearchProps,
 } from './defaults';
 
 export type {
+  DataTableCellProps,
   DataTableColumnVisibilityProps,
   DataTableContentProps,
   DataTablePaginationProps,
   DataTablePresentationProps,
+  DataTableRowProps,
   DataTableSearchProps,
   DataTableVirtualOptions,
 } from './defaults';
@@ -62,8 +66,8 @@ import { PopoverControl as Popover } from '../popover/popover';
 import { RadioControl as Radio } from '../radio/radio';
 import { classes } from '../shared/classes';
 import { assignRef } from '../shared/field';
+import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
-import type { TableCellProps, TableRowProps } from '../table';
 import { TableControl as Table } from '../table/table';
 import {
   ReorderColumnHeader,
@@ -72,6 +76,7 @@ import {
   ReorderRow,
   ReorderScope,
 } from './reordering';
+import { useRowMotion } from './row-motion';
 
 export interface DataTableColumnMeta {
   label?: string;
@@ -97,8 +102,8 @@ export interface DataTableProps<TData> extends DataTablePresentationProps {
 
   getRowLabel?: (row: Row<TData>) => string;
   renderExpandedRow?: (row: Row<TData>) => ReactNode;
-  getRowProps?: (row: Row<TData>) => TableRowProps;
-  getCellProps?: (cell: Cell<TData, unknown>) => TableCellProps;
+  getRowProps?: (row: Row<TData>) => DataTableRowProps;
+  getCellProps?: (cell: Cell<TData, unknown>) => DataTableCellProps;
 
   onRowReorder?: (info: DataTableRowReorderInfo<TData>) => void;
 }
@@ -134,7 +139,7 @@ function DataTableRoot<TData>({
   caption,
   size = 'md',
   bordered = false,
-  striped = false,
+  striped = true,
   stickyHeader = true,
   maxHeight,
   minWidth,
@@ -431,16 +436,30 @@ function SelectionHeader() {
   );
 }
 
+function MotionCell({ children, ...props }: DataTableCellProps) {
+  return (
+    <Table.Cell {...props}>
+      <div className="leaf-data-table__row-content">{children}</div>
+    </Table.Cell>
+  );
+}
+
 function DataRow({
   row,
   rowIndex,
   ariaRowIndex,
   measureRef,
+  collapsed = false,
+  animate = false,
+  lastVisible = false,
 }: {
   row: Row<unknown>;
   rowIndex: number;
   ariaRowIndex?: number;
   measureRef?: (node: HTMLTableRowElement | null) => void;
+  collapsed?: boolean;
+  animate?: boolean;
+  lastVisible?: boolean;
 }) {
   const config = useDataTable();
   const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
@@ -449,7 +468,9 @@ function DataRow({
   const detailsId = `${id}-detail-${encodeURIComponent(row.id)}`;
   const label = getRowLabel?.(row) ?? row.id;
   const expandable = config.expandable;
-  const detail = Boolean(renderExpandedRow && row.getIsExpanded() && !row.subRows.length);
+  const detail = Boolean(
+    !collapsed && renderExpandedRow && row.getIsExpanded() && !row.subRows.length,
+  );
   const [visited, setVisited] = useState(detail);
   useEffect(() => {
     if (detail) setVisited(true);
@@ -459,6 +480,8 @@ function DataRow({
     Number(Boolean(selection)) + Number(expandable) + Number(config.rowReordering);
   const custom = getRowProps?.(row);
   const element = useRef<HTMLTableRowElement>(null);
+  const hidden = useRowMotion(element, collapsed, animate);
+  const Cell = animate ? MotionCell : Table.Cell;
   useEffect(() => {
     const node = element.current;
     const next = node?.nextElementSibling;
@@ -484,16 +507,20 @@ function DataRow({
         }}
         data-index={rowIndex}
         data-row-id={row.id}
+        data-last-visible={lastVisible || undefined}
+        hidden={hidden || undefined}
+        aria-hidden={collapsed || undefined}
+        {...inertProps(collapsed)}
         aria-rowindex={ariaRowIndex}
         selected={selection ? row.getIsSelected() : custom?.selected}
       >
         {config.rowReordering && (
-          <Table.Cell className="leaf-data-table__utility">
+          <Cell className="leaf-data-table__utility">
             <ReorderHandle label={format('dataTable.reorderRow', { label })} />
-          </Table.Cell>
+          </Cell>
         )}
         {selection && (
-          <Table.Cell className="leaf-data-table__utility">
+          <Cell className="leaf-data-table__utility">
             {selection === 'single' ? (
               <Radio
                 name={`${id}-selection`}
@@ -512,10 +539,10 @@ function DataRow({
                 onChange={row.getToggleSelectedHandler()}
               />
             )}
-          </Table.Cell>
+          </Cell>
         )}
         {expandable && (
-          <Table.Cell className="leaf-data-table__utility">
+          <Cell className="leaf-data-table__utility">
             {row.getCanExpand() && (
               <button
                 type="button"
@@ -533,14 +560,14 @@ function DataRow({
                 <ChevronRight size={16} aria-hidden="true" />
               </button>
             )}
-          </Table.Cell>
+          </Cell>
         )}
         {cells.map((cell) => {
           const meta = cell.column.columnDef.meta as DataTableColumnMeta | undefined;
           const props = getCellProps?.(cell);
           if (props?.colSpan === 0 || props?.rowSpan === 0) return null;
           return (
-            <Table.Cell
+            <Cell
               key={cell.id}
               align={meta?.align}
               {...pinProps(cell.column)}
@@ -558,7 +585,7 @@ function DataRow({
               {cell.getIsGrouped() && (
                 <span className="leaf-data-table__group-count"> ({row.subRows.length})</span>
               )}
-            </Table.Cell>
+            </Cell>
           );
         })}
       </ReorderRow>
@@ -675,6 +702,31 @@ function VirtualRows({
   );
 }
 
+// Retain only collapsed descendants of groups on the current page. Keeping their
+// keyed rows also keeps following stripes stable when an odd number of rows closes.
+function ordinaryRows(rows: Row<unknown>[]) {
+  const immediate = () =>
+    rows.map((row, rowIndex) => ({ row, rowIndex, collapsed: false, animate: false }));
+  if (rows.length > 200 || !rows.some((row) => row.getIsGrouped())) return immediate();
+  const visible = new Set(rows.map((row) => row.id));
+  const result: { row: Row<unknown>; rowIndex: number; collapsed: boolean; animate: boolean }[] =
+    [];
+  function retain(row: Row<unknown>, rowIndex: number, collapsed: boolean): boolean {
+    if (result.length >= 200) return false;
+    result.push({ row, rowIndex, collapsed, animate: row.depth > 0 });
+    if (collapsed || !row.getIsExpanded()) {
+      for (const child of row.subRows) {
+        if (!visible.has(child.id) && !retain(child, rowIndex, true)) return false;
+      }
+    }
+    return true;
+  }
+  for (const [rowIndex, row] of rows.entries()) {
+    if (!retain(row, rowIndex, false)) return immediate();
+  }
+  return result;
+}
+
 export function DataTableContentControl({ className, ...props }: DataTableContentProps) {
   const config = useDataTable();
   const {
@@ -716,6 +768,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
           : 'empty'
         : null;
   const expanded = table.getState().expanded;
+  const renderedRows = useMemo(() => (virtual ? [] : ordinaryRows(rows)), [virtual, rows]);
   const virtualRows = useMemo(() => {
     if (!virtual) return { indexes: [], count: 0 };
     let count = headers.length;
@@ -907,8 +960,15 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
               kind="row"
               ids={config.onRowReorder ? rows.map((row) => row.id) : []}
             >
-              {rows.map((row, index) => (
-                <DataRow key={row.id} row={row} rowIndex={index} />
+              {renderedRows.map(({ row, rowIndex, collapsed, animate }) => (
+                <DataRow
+                  key={row.id}
+                  row={row}
+                  rowIndex={rowIndex}
+                  collapsed={collapsed}
+                  animate={animate}
+                  lastVisible={!collapsed && row.id === rows.at(-1)?.id}
+                />
               ))}
             </ReorderItems>
           )}

@@ -6,14 +6,12 @@ import {
   type ReactNode,
   type Ref,
   type TableHTMLAttributes,
-  type TdHTMLAttributes,
   type ThHTMLAttributes,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { ButtonControl } from '../button/button';
-import { useComponentProps } from '../config-provider/component-defaults';
 import { LoadingControl as Loading } from '../loading/loading';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
@@ -21,6 +19,7 @@ import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
+import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/defaults';
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
@@ -35,16 +34,8 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   loading?: boolean;
 }
 
-export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
-  selected?: boolean;
-}
-
-export interface TableCellProps extends Omit<TdHTMLAttributes<HTMLTableCellElement>, 'align'> {
-  align?: 'start' | 'center' | 'end';
-  pinned?: 'start' | 'end';
-  pinOffset?: number;
-  pinEdge?: boolean;
-}
+export type TableRowProps = DataTableRowProps;
+export type TableCellProps = DataTableCellProps;
 
 export interface TableColumnHeaderProps
   extends Omit<ThHTMLAttributes<HTMLTableCellElement>, 'align'> {
@@ -67,7 +58,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
   {
     size = 'md',
     bordered = false,
-    striped = false,
+    striped = true,
     stickyHeader = true,
     maxHeight,
     minWidth,
@@ -310,91 +301,6 @@ export function TableErrorControl({ colSpan = 1, children, onRetry }: TableError
     </TableRowControl>
   );
 }
-
-const TableRoot = forwardRef<HTMLTableElement, TableProps>(function TableRoot(rawProps, ref) {
-  const props = useComponentProps('Table', rawProps);
-  return <TableRootControl {...props} ref={ref} />;
-});
-
-export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
-  rawProps: TableRowProps,
-  ref,
-) {
-  const props = useComponentProps('TableRow', rawProps);
-  return <TableRowControl {...props} ref={ref} />;
-});
-TableRow.displayName = 'TableRow';
-
-export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(function TableCell(
-  rawProps: TableCellProps,
-  ref,
-) {
-  const props = useComponentProps('TableCell', rawProps);
-  return <TableCellControl {...props} ref={ref} />;
-});
-TableCell.displayName = 'TableCell';
-
-export const TableHeader = forwardRef<
-  HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
->(function TableHeader(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
-  return <TableHeaderControl {...useComponentProps('TableHeader', rawProps)} ref={ref} />;
-});
-
-export const TableBody = forwardRef<
-  HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
->(function TableBody(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
-  return <TableBodyControl {...useComponentProps('TableBody', rawProps)} ref={ref} />;
-});
-
-export const TableFooter = forwardRef<
-  HTMLTableSectionElement,
-  HTMLAttributes<HTMLTableSectionElement>
->(function TableFooter(rawProps: HTMLAttributes<HTMLTableSectionElement>, ref) {
-  return <TableFooterControl {...useComponentProps('TableFooter', rawProps)} ref={ref} />;
-});
-
-export const TableColumnHeader = forwardRef<HTMLTableCellElement, TableColumnHeaderProps>(
-  function TableColumnHeader(rawProps: TableColumnHeaderProps, ref) {
-    return (
-      <TableColumnHeaderControl {...useComponentProps('TableColumnHeader', rawProps)} ref={ref} />
-    );
-  },
-);
-
-export const TableCaption = forwardRef<
-  HTMLTableCaptionElement,
-  HTMLAttributes<HTMLTableCaptionElement>
->(function TableCaption(rawProps: HTMLAttributes<HTMLTableCaptionElement>, ref) {
-  return <TableCaptionControl {...useComponentProps('TableCaption', rawProps)} ref={ref} />;
-});
-
-export function TableEmpty(rawProps: TableStateProps) {
-  return <TableEmptyControl {...useComponentProps('TableEmpty', rawProps)} />;
-}
-
-export function TableError(rawProps: TableErrorProps) {
-  return <TableErrorControl {...useComponentProps('TableError', rawProps)} />;
-}
-
-export function TableLoading(rawProps: TableStateProps) {
-  return <TableLoadingControl {...useComponentProps('TableLoading', rawProps)} />;
-}
-
-export const Table = Object.assign(TableRoot, {
-  Root: TableRoot,
-  Header: TableHeader,
-  Body: TableBody,
-  Footer: TableFooter,
-  Row: TableRow,
-  ColumnHeader: TableColumnHeader,
-  Cell: TableCell,
-  Caption: TableCaption,
-  Empty: TableEmpty,
-  Loading: TableLoading,
-  Error: TableError,
-});
 
 export const TableControl = Object.assign(TableRootControl, {
   Root: TableRootControl,

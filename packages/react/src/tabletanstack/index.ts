@@ -1,4 +1,5 @@
 export type {
+  DataTableCellProps,
   DataTableColumnMeta,
   DataTableColumnVisibilityProps,
   DataTableContentProps,
@@ -6,6 +7,7 @@ export type {
   DataTablePaginationProps,
   DataTablePresentationProps,
   DataTableProps,
+  DataTableRowProps,
   DataTableRowReorderInfo,
   DataTableSearchProps,
   DataTableVirtualOptions,

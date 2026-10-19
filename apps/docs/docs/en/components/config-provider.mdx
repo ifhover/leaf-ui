@@ -172,7 +172,7 @@ Set a component entry to `null` to restore its built-in defaults locally, for ex
 
 Use `LeafComponentDefaults` for type completion. See [the complete reference](/en/api/component-defaults#leafcomponentdefaults) for configurable props.
 
-- Keys match component names, such as `Input` and `Modal`. `Table.Cell` uses `TableCell`, and `Table.Root` uses `Table`. The aliases `FAB` and `ResizablePanels` use `FloatButton` and `Splitter`.
+- Keys match component names, such as `Input` and `Modal`. `DataTable.Search` uses `DataTableSearch`, and `DataTable.Root` uses `DataTable`. The aliases `FAB` and `ResizablePanels` use `FloatButton` and `Splitter`.
 - Only `undefined` falls back to a default; `false`, `0`, empty strings and allowed `null` values are preserved. Objects, arrays, class names and callbacks are replaced as a whole.
 - A `null` component entry clears inherited defaults; an empty object and `undefined` continue to inherit. Other components and the theme are unaffected.
 - Keep instance data and events on the component, such as `Select.options`, `Modal.open` and `onChange`.

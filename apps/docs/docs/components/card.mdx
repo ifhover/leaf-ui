@@ -2,12 +2,15 @@ import { CardSections } from '../../src/examples/card/sections';
 import { ComponentExample } from '../../src/components/component-example';
 import { CardBasic } from '../../src/examples/card/basic';
 import { CardSizes } from '../../src/examples/card/sizes';
+import { CardStandaloneTitle } from '../../src/examples/card/standalone-title';
 import { CardTabs } from '../../src/examples/card/tabs';
 import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 # Card 卡片
 
 在独立容器中展示相关内容和操作。
+
+标题默认使用 600 字重加粗，可通过 ConfigProvider 的 `theme.headingWeight` 调整。
 
 ## 基础用法
 
@@ -27,6 +30,19 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 <ComponentExample title="尺寸" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
 
 ```tsx lineNumbers file="../../src/examples/card/sizes.tsx"
+```
+
+</ComponentExample>
+
+## 独立标题
+
+`CardTitle` 可在卡片外复用相同的标题样式，无需包裹 `Card`。`size` 控制视觉尺寸：默认基础字号为 14px 时，`sm`、`md`、`lg` 分别为 14px、15px、16px。`level` 单独决定语义标题层级，默认为 `3`，不影响字号。
+
+下面的三个内容区都使用二级标题，分别展示小、默认和大尺寸。可从 `@ifhover/leaf-ui` 或 `@ifhover/leaf-ui/card` 导入 `CardTitle`。
+
+<ComponentExample title="独立标题" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
+
+```tsx lineNumbers file="../../src/examples/card/standalone-title.tsx"
 ```
 
 </ComponentExample>
@@ -79,12 +95,23 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 | `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 卡片尺寸，影响内边距、标题字号、标题栏高度及内嵌 Tabs 的默认尺寸。 |
 
+## CardTitle API
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标题的视觉尺寸，与 Card 对应尺寸的标题一致。 |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | 渲染为对应的 h1–h6 元素，不改变视觉尺寸。 |
+| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
+| `ref` | `Ref<HTMLHeadingElement>` | — | 标题元素引用。 |
+
+支持原生标题元素的属性，包括 `id`、`className`、`style`、`aria-*` 和事件。默认参数可通过 `ConfigProvider` 的 `components.CardTitle` 设置，仅影响直接使用的 `CardTitle`；Card 内部标题继续跟随 Card 的尺寸。
+
 ## 类型
 
 定义组件属性或组装列表时可导入相关类型。
 
 ```ts
-import type { CardProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
+import type { CardProps, CardTitleProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
 ```
 
 ## 使用说明
@@ -103,11 +130,12 @@ extra 和 footer 可以放置按钮或链接。需要点击操作时请使用明
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](../components/tabs#tabitem)`[]` | 必填 | 必需。标签与页面列表；为空时恢复普通卡片。 |
+| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | 必填 | 必需。标签与页面列表；为空时恢复普通卡片。 |
 | `activeKey` | `string` | 首个可用项 | 受控的激活项。 |
 | `defaultActiveKey` | `string` | 首个可用项 | 初始激活项。 |
 | `onChange` | `(key: string) => void` | — | 激活项变化时调用。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | Card 的 `size` | 标签尺寸，可单独覆盖。 |
+| `block` | `boolean` | — | 设置 block。 |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活，或回车 / 空格激活。 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容；默认保留已访问页面。 |
 | `extra` | `ReactNode` | — | 标签栏右侧的附加内容。 |
@@ -116,4 +144,4 @@ extra 和 footer 可以放置按钮或链接。需要点击操作时请使用明
 | `addLabel` | `string` | 当前语言的提示 | 添加按钮的可访问名称。 |
 | `overflow` | `boolean` | `true` | 溢出页签收进更多菜单。 |
 | `sortable` | `boolean` | `false` | 启用排序，配合 `onReorder` 使用。 |
-| `onReorder` | `(items: `[`TabItem`](../components/tabs#tabitem)`[]) => void` | — | 返回排序后的原始页签，由应用更新列表。 |
+| `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | 返回排序后的原始页签，由应用更新列表。 |

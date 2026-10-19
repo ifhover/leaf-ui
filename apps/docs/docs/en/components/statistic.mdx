@@ -1,9 +1,10 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { StatisticBasic, StatisticCountdown } from '../../../src/examples/statistic/basic';
+import { StatisticAnimation } from '../../../src/examples/statistic/animation';
 
 # Statistic
 
-Display metrics and countdowns.
+Display metrics and countdowns. Numbers initially count up or down from 0 to the target. Later changes animate from the currently displayed value to the new target.
 
 ## Basic usage
 
@@ -13,6 +14,19 @@ Display metrics and countdowns.
 ```
 
 </ComponentExample>
+
+## Value animation
+
+Set `initialValue` to choose the starting number for the first animation. The default duration is 1000 milliseconds; use `duration` to adjust it. Repeated increases or decreases continue from the currently displayed value. Replay remounts the example to start again from 1,000.
+
+<ComponentExample title="Value animation" preview={<StatisticAnimation english />} fileName="animation.tsx">
+
+```tsx lineNumbers file="../../../src/examples/statistic/animation.tsx"
+```
+
+</ComponentExample>
+
+Set `animation={false}` or `duration={0}` to display the target immediately. Animation follows the regional motion speed, `ConfigProvider`'s `theme.motion`, and the system reduced-motion preference. Counting starts after `loading` ends. Only finite `number` values animate; strings and nonfinite numbers display immediately. `formatter` receives the intermediate numbers. Server rendering outputs the target, and animation starts after the client mounts. Countdown updates remain immediate.
 
 ## Countdown
 
@@ -35,6 +49,9 @@ Display metrics and countdowns.
 | `suffix` | `ReactNode` | — | Trailing content. |
 | `formatter` | `(value: number \| string) => ReactNode` | — | Customize the displayed metric value. |
 | `loading` | `boolean` | — | Show a loading state. |
+| `animation` | `boolean` | `true` | Animate numeric value changes. |
+| `initialValue` | `number` | `0` | Starting value for the first animation; later changes start from the current displayed value. |
+| `duration` | `number` | `1000` | Animation duration in milliseconds at the default motion speed, scaled by the regional motion duration; 0 updates immediately. |
 
 ## Countdown API
 

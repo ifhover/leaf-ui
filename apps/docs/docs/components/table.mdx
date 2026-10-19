@@ -1,34 +1,28 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { TableBasic, TableSimple, TableStates } from '../../src/examples/table/basic';
+import { TableBasic, TableStates } from '../../src/examples/table/basic';
 import { TableData, TableColumns } from '../../src/examples/table/data';
 import { TableVirtual, TableServer, TableGrouped, TableEditable } from '../../src/examples/table/advanced';
 import { TableReordering } from '../../src/examples/table/reordering';
+import { TableAppearance } from '../../src/examples/table/appearance';
 
-# Table 表格
+# DataTable 表格
 
 浏览、筛选和管理结构化数据。
 
-## 选择用法
+## 安装与导入
 
-- **Table**：用表头、行和单元格组合静态表格，或自行控制内容。无需安装表格引擎。
-- **DataTable**：传入数据与列即可使用排序和分页；复杂场景传入自己的 TanStack Table 实例，获得筛选、选择、展开和列管理的统一界面。
-
-```tsx
-import { Table } from '@ifhover/leaf-ui/table';
-```
-
-使用 DataTable 时安装可选依赖：
+DataTable 传入数据与列即可使用排序和分页；复杂场景传入自己的 TanStack Table 实例，获得筛选、选择、展开和列管理的统一界面。使用前安装依赖：
 
 ```bash
 npm install @tanstack/react-table@^8.21.3
 ```
 
 ```tsx
-import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
-import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table/tanstack';
+import { DataTable } from '@ifhover/leaf-ui/table';
+import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table';
 ```
 
-组件子路径自动加载所需样式，在应用入口按[快速开始](/guide/getting-started)导入一次基础样式即可。DataTable 及其类型只从适配器子路径导入，不从组件库根入口导出。
+表格子路径自动加载所需样式。DataTable 及其数据类型从 `@ifhover/leaf-ui/table` 导入，DataTable 不从组件库根入口导出。
 
 ## 基础用法
 
@@ -39,20 +33,20 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 </ComponentExample>
 
-`Table` 与 `Table.Root` 等价。支持原生属性、DOM ref、`colSpan`、`rowSpan`、自定义表头和单元格；可用 `Table.Caption` 或 `aria-label` 为表格命名。
-
-## 快捷数据表格
-
-<ComponentExample title="传入数据和列" preview={<TableSimple />} fileName="basic.tsx" width="100%">
-
-```tsx lineNumbers file="../../src/examples/table/basic.tsx"
-```
-
-</ComponentExample>
-
 `data + columns + rowKey` 模式内部创建一个 TanStack 实例，复用与高级模式相同的界面。`rowKey` 必须是稳定且唯一的字符串或数字字段，或返回字符串的函数。默认启用本地排序、筛选、分页和展开；使用 `options` 定制初始状态、受控回调或服务端配置。`pagination={false}` 时展示全部行，不在内部截断数据。
 
 两种模式互斥：提供 `table` 后不要再传 `data`、`columns`、`rowKey` 或 `options`。高级分组、请求缓存等业务状态建议直接使用自己的 `useReactTable` 实例。
+
+## 边框与斑马纹
+
+DataTable 默认无外框、无列分隔线，并开启 `striped` 斑马纹。无边框模式下没有圆角和表头灰底，表头底部保留 2px 分割线；设置 `bordered` 可展示带圆角的外框、表头浅底和列分隔线。两种模式的表头文字均使用正文色。斑马纹使用淡色背景，开启时不显示行间分割线，设置 `striped={false}` 后显示行间细线。普通行与条纹行悬停时均显示轻微的主色反馈。
+
+<ComponentExample title="切换表格外观" preview={<TableAppearance />} fileName="appearance.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/appearance.tsx"
+```
+
+</ComponentExample>
 
 ## 排序、筛选、选择与分页
 
@@ -102,6 +96,8 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 ```
 
 </ComponentExample>
+
+普通分组表格展开收起时使用高度过渡，保留子行内容和条纹位置。关闭区域动效或启用系统减少动态效果时直接切换；大型或虚拟表格也直接切换。
 
 ## 编辑单元格
 
@@ -162,65 +158,6 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 </ComponentExample>
 
-## Table API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 行的展示尺寸。 |
-| `bordered` | `boolean` | `false` | 展示列之间的分隔线。 |
-| `striped` | `boolean` | `false` | 展示交替行背景。 |
-| `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
-| `maxHeight` | `CSSProperties['maxHeight']` | — | 滚动区域的最大高度。 |
-| `minWidth` | `CSSProperties['minWidth']` | — | 表格最小宽度。 |
-| `tableLayout` | `CSSProperties['tableLayout']` | — | 原生表格布局方式。 |
-| `tableStyle` | `CSSProperties` | — | 原生 table 的样式；style 与 className 用于外层。 |
-| `scrollRef` | `Ref<HTMLDivElement>` | — | 滚动区域的 DOM ref；组件 ref 指向 table。 |
-| `loading` | `boolean` | `false` | 保留内容并展示加载遮罩。 |
-
-## TableRow API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `selected` | `boolean` | — | 展示行的选中背景；交互状态由选择控件表达。 |
-
-## TableCell API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 单元格内容对齐。 |
-| `pinned` | `'start' \| 'end'` | — | 固定在逻辑起始或结束侧。 |
-| `pinOffset` | `number` | `0` | 距离该侧的像素数。 |
-| `pinEdge` | `boolean` | — | 展示固定列边缘的淡阴影。 |
-
-## TableColumnHeader API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头内容对齐。 |
-| `pinned` | `'start' \| 'end'` | — | 固定在逻辑起始或结束侧。 |
-| `pinOffset` | `number` | `0` | 距离该侧的像素数。 |
-| `pinEdge` | `boolean` | — | 展示固定列边缘的淡阴影。 |
-
-
-继承原生 `th` 属性，固定和对齐参数与 TableCell 相同。`scope` 默认是 `'col'`；分组表头可设置 `'colgroup'`。
-
-## TableState API
-
-用于 `Table.Empty` 和 `Table.Loading`；放在 Table.Body 中。
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `colSpan` | `number` | `1` | 状态行跨越的列数。 |
-| `children` | `ReactNode` | — | 自定义状态内容。 |
-
-## TableError API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `colSpan` | `number` | `1` | 状态行跨越的列数。 |
-| `children` | `ReactNode` | — | 自定义失败提示。 |
-| `onRetry` | `() => void` | — | 传入后展示重试按钮。 |
-
 ## DataTable API
 
 此表用于传入 `table` 实例的模式；直接传入数据时使用 [DataTableData API](#datatabledata-api)。
@@ -230,11 +167,11 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 | `children` | `ReactNode` | — | 自定义布局；传入后不再渲染默认 Content 和 Pagination。 |
 | `caption` | `ReactNode` | — | 表格说明。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `bordered` | `boolean` | `false` | 展示列之间的分隔线。 |
-| `striped` | `boolean` | `false` | 展示交替行背景。 |
+| `bordered` | `boolean` | `false` | 展示外框和列分隔线；无边框时表头底部为 2px 分割线。 |
+| `striped` | `boolean` | `true` | 展示交替行背景并隐藏行间分割线；关闭时显示行间细线。 |
 | `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
-| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | 滚动区域最大高度；虚拟模式未指定时使用 400。 |
-| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | 表格最小宽度；默认根据可见列宽计算。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 滚动区域最大高度；虚拟模式未指定时使用 400。 |
+| `minWidth` | `CSSProperties['minWidth']` | — | 表格最小宽度；默认根据可见列宽计算。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 空数据内容。 |
 | `error` | `ReactNode` | — | 请求失败提示；null、undefined 或 false 不展示。 |
@@ -249,11 +186,30 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 | `table` | `TanStackTable<TData>` | — | 必需。由 useReactTable 创建的实例，唯一的数据与状态来源。 |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | 行操作的可访问名称；默认使用稳定 row.id。 |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | 渲染叶子行详情，同时配置 getRowCanExpand。 |
-| `getRowProps` | `(row: Row<TData>) => `[`TableRowProps`](#tablerow-api) | — | 自定义行属性与事件。 |
-| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`TableCellProps`](#tablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
+| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | 自定义行属性与事件。 |
+| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
 | `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | 展示行拖拽手柄，并返回重排后的当前页行；应用负责更新数据。 |
 
-尺寸、边框、交替行、固定表头、滚动区域和 loading 与 Table 相同。`aria-label` / `aria-labelledby` 应用于原生表格，其他原生 div 属性用于外层。
+`aria-label` / `aria-labelledby` 应用于原生表格，其他原生 div 属性用于外层。
+
+## DataTableRow API
+
+`DataTableRowProps` 通过 `getRowProps` 配置原生 `tr` 属性与事件。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `selected` | `boolean` | — | 设置行的选中样式。 |
+
+## DataTableCell API
+
+`DataTableCellProps` 通过 `getCellProps` 配置原生 `td` 属性、合并与事件。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 单元格内容对齐。 |
+| `pinned` | `'start' \| 'end'` | — | 固定在逻辑起始或结束侧。 |
+| `pinOffset` | `number` | `0` | 距离该侧的像素数。 |
+| `pinEdge` | `boolean` | — | 展示固定列边缘的淡阴影。 |
 
 ## DataTableSearch API
 
@@ -326,12 +282,11 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 ## 类型与组合
 
 ```ts
-import type { TableProps, TableRowProps, TableCellProps, TableColumnHeaderProps, TableStateProps, TableErrorProps } from '@ifhover/leaf-ui/table';
-import type { DataTableProps, DataTableDataProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table/tanstack';
+import type { DataTableProps, DataTableDataProps, DataTableRowProps, DataTableCellProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table';
 import type { ColumnDef, Table as TanStackTable, Row, Cell } from '@tanstack/react-table';
 ```
 
-Header / Body / Footer、Caption、Row 和 Cell 支持对应元素的原生属性与 DOM ref。DataTable.Toolbar / Footer / Content 支持原生 div 属性。TanStack 的 [列定义](https://tanstack.com/table/v8/docs/guide/column-defs)、[受控状态](https://tanstack.com/table/v8/docs/framework/react/guide/table-state)、[行选择](https://tanstack.com/table/v8/docs/guide/row-selection) 和 [列固定](https://tanstack.com/table/v8/docs/guide/column-pinning) 使用其原生类型与 API，不另造一套完整列配置。
+DataTable.Toolbar / Footer / Content 支持原生 div 属性。TanStack 的 [列定义](https://tanstack.com/table/v8/docs/guide/column-defs)、[受控状态](https://tanstack.com/table/v8/docs/framework/react/guide/table-state)、[行选择](https://tanstack.com/table/v8/docs/guide/row-selection) 和 [列固定](https://tanstack.com/table/v8/docs/guide/column-pinning) 使用其原生类型与 API，不另造一套完整列配置。
 
 ## DataTableData API
 
@@ -366,8 +321,8 @@ ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参�
 | `bordered` | `boolean` | — | 设置 bordered。 |
 | `striped` | `boolean` | — | 设置 striped。 |
 | `stickyHeader` | `boolean` | — | 设置 stickyHeader。 |
-| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | 设置 maxHeight。 |
-| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | 设置 minWidth。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 设置 maxHeight。 |
+| `minWidth` | `CSSProperties['minWidth']` | — | 设置 minWidth。 |
 | `loading` | `boolean` | — | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 没有内容时的展示。 |
 | `error` | `ReactNode` | — | 设置 error。 |
@@ -376,6 +331,6 @@ ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参�
 | `selectAllMode` | `'page' \| 'all'` | — | 设置 selectAllMode。 |
 | `resizable` | `boolean` | — | 允许拖动和使用方向键调整大小。 |
 | `columnReordering` | `boolean` | — | 设置 columnReordering。 |
-| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | 启用虚拟滚动；大量选项默认启用。 |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | 启用行虚拟化，默认关闭。 |
 | `pagination` | `boolean` | — | 设置 pagination。 |
 | `tableRef` | `Ref<HTMLTableElement>` | — | 设置 tableRef。 |

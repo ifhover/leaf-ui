@@ -11,6 +11,8 @@ import { MenuCustomGroup } from '../../src/examples/menu/custom-group';
 
 ## 基本用法
 
+通过 `itemRender` 在菜单文字后追加状态标签和数字标签。一级菜单保留图标，二级菜单仅展示文字，并与一级菜单文字对齐。子菜单采用更紧凑的行高与较淡的文字；可选条目悬停和按下时仅改变文字颜色，选中项保留底色，祖先菜单保持普通样式。
+
 <ComponentExample title="基本用法" preview={<MenuBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/menu/basic.tsx"
@@ -68,11 +70,13 @@ import { MenuCustomGroup } from '../../src/examples/menu/custom-group';
 
 纵向菜单默认 240px，折叠时 60px，可通过 style.width 调整。items 支持嵌套、分组、分隔线与链接。selectedKey 管理当前选中项，openKeys 管理展开项；横向模式与折叠模式使用浮层展示子菜单。
 
-横向导航的子菜单在触发项下方展开；折叠侧栏的子菜单向侧边展开，并显示父级标题。浮层统一图标、文字、分组与选中背景，当前页面和所属父项保持高亮。RTL 布局自动反转侧向展开方向，靠近屏幕边缘时浮层会调整位置。
+横向导航的子菜单在触发项下方展开；折叠侧栏的子菜单向侧边展开，并显示父级标题。浮层统一图标、文字、分组与选中背景，仅当前页面高亮，所属父项保持普通样式。RTL 布局自动反转侧向展开方向，靠近屏幕边缘时浮层会调整位置。
 
 子菜单展开、收起以及侧栏宽度变化均带有过渡。收起的子项不会参与键盘导航；系统开启减少动态效果时，过渡会自动关闭。
 
 菜单项、悬停背景和选中高亮与按钮共用基础圆角。通过 `ConfigProvider` 的 `theme.borderRadius` 统一调整，也可用 `theme.components.Menu.borderRadius` 单独设置菜单圆角。
+
+可选条目悬停、键盘聚焦和按下时只改变文字与图标颜色，背景保持不变，选中项保留主题色底色；危险项使用危险色反馈。带子菜单的展开项继续使用浅色悬停背景和较深的按下背景。子菜单浮层沿用相同规则，子菜单默认行高为 32px，紧凑密度为 26px，并跟随区域控件高度调整。
 
 ## 类型
 

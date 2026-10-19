@@ -5,6 +5,7 @@ import { useContentTransition } from '../shared/presence';
 import { SkeletonControl as Skeleton } from '../skeleton/skeleton';
 import type { TabsProps } from '../tabs';
 import { TabsControl as Tabs } from '../tabs/tabs';
+import { CardTitleControl } from './title';
 
 /** Horizontal line tabs integrated with the card heading and content spacing. */
 export interface CardTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
@@ -71,7 +72,11 @@ export function Card(rawProps: CardProps) {
         <div className="leaf-card__header">
           {(title != null || description != null) && (
             <div className="leaf-card__heading">
-              {title != null && <h3 className="leaf-card__title">{title}</h3>}
+              {title != null && (
+                <CardTitleControl size={size} className="leaf-card__title">
+                  {title}
+                </CardTitleControl>
+              )}
               {description != null && <div className="leaf-card__description">{description}</div>}
             </div>
           )}

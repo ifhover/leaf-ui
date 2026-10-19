@@ -11,6 +11,8 @@ Organize hierarchical navigation.
 
 ## Basic usage
 
+Use `itemRender` to append status and numeric tags after the menu label. Top-level items keep their icons, while second-level items use text only, aligned with the top-level labels. Submenus use shorter rows and muted text. Hovering and pressing selectable items only changes their text color; the selected item keeps its background, while ancestor menus retain their normal appearance.
+
 <ComponentExample title="Basic usage" preview={<MenuBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/menu/basic.tsx"
@@ -68,11 +70,13 @@ Keep `selectedKey` in sync with the current route. Use `linkRender` to replace t
 
 The vertical menu defaults to 240px (60px when collapsed); use style.width to customize it. items supports nesting, groups, dividers and links. selectedKey controls the current item and openKeys controls expanded items. Horizontal and collapsed modes display submenus in floating panels.
 
-Horizontal submenus open below their trigger. Collapsed sidebar submenus open to the side with a parent title. Popups share aligned icons, labels, group headings and selected backgrounds; the current page and its parent remain highlighted. RTL reverses the side placement, and popups adjust near viewport edges.
+Horizontal submenus open below their trigger. Collapsed sidebar submenus open to the side with a parent title. Popups share aligned icons, labels, group headings and selected backgrounds; only the current page is highlighted, while its ancestors retain their normal appearance. RTL reverses the side placement, and popups adjust near viewport edges.
 
 Submenus animate in both directions, and the sidebar width transitions when collapsed. Closed items are excluded from keyboard navigation. Transitions are disabled when the system requests reduced motion.
 
 Menu items, hover backgrounds and selection highlights share the base radius with buttons. Set `ConfigProvider`'s `theme.borderRadius` to adjust them together, or use `theme.components.Menu.borderRadius` to customize the menu radius.
+
+Hovering, focusing and pressing selectable items changes only their text and icon colors, preserving the background and the selected item's primary fill. Danger items use danger colors for feedback. Submenu triggers retain a subtle hover background that deepens on press. Submenu popups follow the same rules. Submenu rows default to 32px (26px in compact density) and follow the regional control height.
 
 ## Types
 

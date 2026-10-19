@@ -1,5 +1,5 @@
 import { Button, Input, Tag } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
+import { DataTable } from '@ifhover/leaf-ui/table';
 import {
   type ColumnDef,
   getCoreRowModel,

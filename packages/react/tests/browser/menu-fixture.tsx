@@ -1,10 +1,14 @@
 import { Button, Input, Menu, MenuGroup, Space, Text } from '@ifhover/leaf-ui';
 import { BookOpen, Folder, House, Palette } from 'lucide-react';
 import { useState } from 'react';
+import { MenuBasic as MenuBasicEn } from '../../../../apps/docs/src/examples/en/menu/basic';
+import { MenuBasic } from '../../../../apps/docs/src/examples/menu/basic';
 
 export function MenuFixture() {
   const [collapsed, setCollapsed] = useState(false);
   const [created, setCreated] = useState(false);
+  if (new URLSearchParams(location.search).has('basic'))
+    return new URLSearchParams(location.search).has('english') ? <MenuBasicEn /> : <MenuBasic />;
   if (new URLSearchParams(location.search).has('popup')) return <MenuPopupFixture />;
   return (
     <Space direction="vertical" align="start">

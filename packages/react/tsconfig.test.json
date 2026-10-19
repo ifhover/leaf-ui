@@ -4,6 +4,7 @@
     "noEmit": true,
     "paths": {
       "@ifhover/leaf-ui": ["./src/index.ts"],
+      "@ifhover/leaf-ui/table": ["./src/table/index.ts"],
       "@ifhover/leaf-ui/table/tanstack": ["./src/tabletanstack/index.ts"]
     },
     "types": ["node", "vitest/globals", "@testing-library/jest-dom"]

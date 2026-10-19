@@ -11,6 +11,7 @@ export interface CheckableTagProps
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
   size?: ControlSize;
+  bold?: boolean;
 }
 export function CheckableTag(rawProps: CheckableTagProps) {
   const {
@@ -18,6 +19,7 @@ export function CheckableTag(rawProps: CheckableTagProps) {
     defaultChecked = false,
     onChange,
     size = 'md',
+    bold = true,
     children,
     className,
     onClick,
@@ -32,6 +34,7 @@ export function CheckableTag(rawProps: CheckableTagProps) {
         'leaf-tag',
         'leaf-tag--soft',
         `leaf-tag--${size}`,
+        bold && 'leaf-tag--bold',
         'leaf-checkable-tag',
         className,
       )}
@@ -59,6 +62,7 @@ export interface TagGroupProps
   onChange?: (values: string[]) => void;
   disabled?: boolean;
   size?: ControlSize;
+  bold?: boolean;
   name?: string;
   form?: string;
   required?: boolean;
@@ -71,6 +75,7 @@ export function TagGroup(rawProps: TagGroupProps) {
     onChange,
     disabled,
     size,
+    bold = true,
     name,
     form,
     required,
@@ -96,6 +101,7 @@ export function TagGroup(rawProps: TagGroupProps) {
             'leaf-tag',
             'leaf-tag--soft',
             `leaf-tag--${size ?? 'md'}`,
+            bold && 'leaf-tag--bold',
             'leaf-checkable-tag',
           )}
           data-color={current.includes(option.value) ? 'primary' : 'default'}

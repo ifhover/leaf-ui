@@ -2,6 +2,98 @@
 
 面向源码维护者。新增能力必须验证用户行为、公开产物和相应文档，不能仅以组件数量或测试数量判断成熟度。审计对应清单见 [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md)。
 
+## 表格统一使用 DataTable（2026-10-20，0.7.1 开发分支）
+
+DataTable 成为唯一公开表格组件，标准入口为 `@ifhover/leaf-ui/table`；原生 Table 及组合部件、相关公开类型和区域默认参数移除。基础、状态、外观及高级示例全部使用 DataTable，中英文说明、导航、组件总览、API 生成与 AI 索引同步。旧 `/table/tanstack` 入口仅作为同一 DataTable 的兼容别名；组件库根入口继续独立于可选的 TanStack 引擎。内部 TableControl 保留原生表格语义，`theme.components.Table` 视觉令牌继续有效；区域默认参数使用 `components.DataTable`。该兼容性变化需在正式发布时纳入迁移说明。
+
+验证：
+
+- `pnpm check` 通过：454 项组件、13 项发布规则、24 项文档与 9 项 Skill 测试，包含两种 DataTable 输入模式及移除导出的类型契约、当前与历史 AI 文档入口；保留已有 4 条非空断言 lint 警告。
+- `pnpm build` 通过：库、声明、83 个公开 JS 子路径、独立与自动样式、ESM / CommonJS SSR、双语文档和 AI 索引。新旧表格入口导出同一个组件，私有原生控件样式正确随 DataTable 加载。
+- 修正表头颜色后，Chromium / WebKit 共 54 项表格与主题浏览器回归全部通过，包含无边框条纹、普通与条纹行 hover、分组展开收起与快速反转、自定义配色、移动端滚动、虚拟行及浅深色 axe 检查。
+- 打包体积预算通过，DataTable 新旧入口均为 JS / CSS gzip 92.35 / 15.46 KiB；普通组件与根入口不包含 TanStack 引擎。表头颜色修正后再次构建、格式和全仓类型检查通过。
+- 中英文、1440px / 375px、浅深色共 8 种文档组合通过外观切换、页面宽度、源码展开收起与剪贴板检查；已查看桌面浅色及英文手机深色截图。
+
+首次浏览器检查暴露自定义浅色表格背景在深色区域内的表头对比度问题：表头未读取组件颜色覆盖。修正为与正文使用相同颜色令牌，并增加浅深色回归断言。
+
+验证日志及截图保存在忽略跟踪的 `.quality/datatable-api-*`、`.quality/table-docs-*` 和 `test-results`。Firefox 仍受本机启动限制，本轮未重复执行。未发布 npm 或部署线上文档。
+
+## Table 表头、行反馈与分组展开过渡（2026-10-20，0.7.1 开发分支）
+
+无边框表格改为直角、表头与正文同底色；有边框表格保留基础圆角与表头浅底。表头统一使用正文色，跟随区域深浅主题。条纹将 muted surface 与表格背景各混合一半，悬停在行基础背景上混合 3% 主色；基础条纹与交互背景拆开，修复原条纹选择器优先级导致偶数行无法响应 hover 的问题。
+
+分组示例的列宽和顶部位置原本稳定，跳闪来自子行立即移除导致高度骤变、后续条纹奇偶性翻转。普通分组表格保留折叠子行与内容实例，以共享动效过渡内容高度、透明度、单元格留白及分割线；关闭期间立即 aria-hidden / inert，结束后 hidden。快速反转沿用当前几何，完成与卸载取消动画；区域关闭动效、系统减少动态效果、虚拟或超过 200 行时即时切换。隐藏子行不会留下末行分割线。
+
+验证：
+
+- `pnpm check` 通过：454 项组件测试及类型、格式、发布规则、文档与 Skill 测试通过；保留既有 4 条非空断言 lint 警告。Table 范围共 31 项单元测试通过，新增 2 项覆盖反转、内容实例保留、关闭动效和卸载清理。
+- Chromium / WebKit 共 34 项表格浏览器测试通过；新增分组回归覆盖列宽、顶部与滚动位置、条纹稳定、快速反转、ARIA / inert、隐藏行、末行分隔线和系统减少动态效果。浅深色及两种密度均验证普通 / 条纹行悬停反馈。
+- `pnpm build` 通过，含组件声明、包产物、自动与独立样式、SSR 和双语文档。源码文档示例通过中英文、1440px / 375px、浅深色共 8 种组合的外观、溢出、源码与剪贴板检查。
+- 已查看无边框表头与浅条纹截图，以及构建后分组示例的浅深色展开 / 收起截图；实际折叠高度 572.30 → 433.13px，表格顶部位移为 0，动画中间高度由浏览器回归验证。截图在忽略跟踪的 `.quality/table-group-*` 与 `test-results`。
+
+Firefox 沿用前轮环境限制（进程启动 `spawn UNKNOWN`），本轮未重复执行。未发布 npm 或部署线上文档。
+
+## Table 默认无边框与斑马纹（2026-10-20，0.7.1 开发分支）
+
+Table 与 DataTable 默认 `bordered=false`、`striped=true`。无边框时移除外框与列线，表头底线为 2px；斑马纹隐藏正文和表尾行的横向分隔线，关闭时恢复行间细线。显式 `bordered` 恢复外框与列线，外框继续消费区域主题 token。同步中英文说明、API 生成元数据、外观切换示例与静态缩略图。
+
+验证：
+
+- `pnpm check` 与 `pnpm build` 通过，包含 452 项组件测试、类型检查、文档与 Skill 测试、包产物、独立样式及双语文档构建；首次并行执行时语言资源测试超时，独立重跑全量检查通过。保留仓库已有的 4 条非空断言 lint 警告。
+- Chromium / WebKit 共 24 项表格浏览器测试通过，覆盖两种主题与密度、边框 / 斑马纹切换、原生 Table 与 DataTable 默认值、滚动、固定列、虚拟行、排序及 axe；已检查生成的浅深色、两种密度截图。
+- 新文档示例在中文 / 英文、1440px / 375px、浅色 / 深色共 8 种组合下通过外观切换、页面无横向溢出、源码展开收起与剪贴板内容验证，并检查了窄屏中文和桌面英文截图。
+- Firefox 的 12 项用例均在浏览器启动时报告 `browserType.launch: spawn UNKNOWN`，未进入页面，不能计为通过。
+
+截图及诊断位于忽略跟踪的 `test-results` 和 `.quality`。本次未发布 npm 或部署线上文档。
+
+## 菜单示例文字对齐（2026-10-19，0.7.1 开发分支）
+
+中英文基本用法、排列方式和路由示例移除子菜单图标，基本用法同时移除工作台后的 Beta，保留状态和数字标签。纵向菜单每级缩进从 16px 调整为 30px，与一级图标宽度 20px 加文字间距 10px 一致，使无图标的二级文字与有图标的一级文字起点对齐；RTL 使用相同逻辑方向缩进。
+
+Menu 的 10 项单元测试、全仓类型检查、完整 pnpm build（库、声明、包产物与双语文档）、相关 Biome 和 git diff --check 通过。Chromium 的中英文、浅深色、两种密度与 RTL 共 10 项检查通过；WebKit 首轮 9/10 通过，一项在 hover 颜色过渡中间值取样失败，随后复验遇到 Windows WebKit 协议操作超时，保留原断言并为该项提供 120 秒操作总预算后，最终单独复测通过（实际 31.3 秒），20 项最终全部通过。生产文档 16 组检查通过，包含中英文、1280 / 375px、浅深主题的菜单与标签回归，验证二级文字对齐、无子菜单图标和 Beta、选择交互、无溢出、源码展开收起和复制；已查看中文桌面最终截图，并刷新当前本地预览。
+
+证据位于 `.quality/menu-label-alignment-{browser,browser-recheck,browser-recheck-final,typecheck,build,docs}.log`、`menu-label-alignment-docs-results.json` 与相关文档截图。尚未发布。
+
+## 菜单层级反馈与标签字重（2026-10-19，0.7.1 开发分支）
+
+Menu 的可选条目在悬停、键盘聚焦与按下时只改变文字和图标颜色，保留原背景与选中底色；展开项继续使用浅色悬停和较深按下背景。移除内嵌、横向、折叠侧栏及多级浮层的祖先选中高亮，仅当前页面带 aria-current 与选中样式。内嵌和浮层子菜单统一使用较淡文字与共享选项行高（默认 32px、紧凑 26px），垂直内边距随行高和字号计算。中英文基本示例通过 itemRender 展示红色 Beta 文字、状态标签和数字标签。
+
+Tag、CheckableTag、TagGroup 新增 bold 参数，默认使用 headingWeight（600），false 使用 400；支持独立区域默认值、实例覆盖与 null 清除，TagGroup 内部按钮隔离独立 CheckableTag 默认值。Tag 默认圆角从 5px 增为基础圆角 10px，保留组件级覆盖。双语 API、字重示例、总览缩略图、设计标准与类型契约同步。
+
+完整 pnpm check 通过 452 项组件测试、13 项发布规则、23 项文档与 9 项 Skill 测试，类型和格式检查通过；pnpm build 通过库、声明、ESM / CommonJS SSR、83 个公共子路径、自动样式与双语文档及 AI 索引构建。Chromium / WebKit 的 42 项菜单检查与 20 项选择状态回归通过，包含两种密度、浅深主题、RTL、多级浮层、键盘、axe、行高、文字反馈与按下几何稳定性；新增基本示例覆盖中英文及窄屏。首轮新增用例误将 Text 内层内容节点当作语义颜色节点，改为实际计算颜色断言后全部通过。
+
+标签另完成 Chromium / WebKit × 浅深色 × 两种密度的 8 组区域配置、主题覆盖、选择和焦点保留、FormData / reset 检查，以及 8 组开发文档检查。生产文档完成 Menu / Tag × 中英文 × 1280 / 375px × 浅深色共 16 组检查，验证主题切换、示例选择、圆角字重、源码展开收起与复制一致性，无横向溢出或页面异常；已查看中文桌面浅色菜单、深色标签及英文窄屏深色菜单截图。
+
+证据位于根目录 `.quality/menu-tag-{check,build,browser,browser-final,docs}.log`、`menu-tag-docs-results.json`、`tag-browser-validation.json` 与相关截图。未执行 Firefox、真实读屏或真机触控；改动保留在开发分支，尚未发布。
+
+## Statistic 数字动画（2026-10-19，0.7.1 开发分支）
+
+Statistic 从首次初始值（默认 0）补间到目标数值，后续更新与中途改目标从当前显示值继续；新增 animation、initialValue 和 duration，保留本地化分组、小数精度与自定义 formatter。加载时暂停，字符串与非有限值即时展示，Countdown 不开放数字动画参数。关闭动画、系统减少动态效果和卸载时取消待执行帧；SSR 输出目标值并验证水合，动画期间向辅助技术保留目标值。中英文 API 和增加 / 减少 / 重播示例同步。
+
+pnpm check 通过 452 项组件测试、13 项发布规则、23 项文档与 9 项 Skill 测试，包含 8 项数字动画回归；pnpm build 通过库、双语文档、类型声明、ESM / CommonJS SSR、子路径及自动样式验收。Chromium / WebKit 的浅深主题共 4 项浏览器用例通过，使用可控浏览器时钟验证逐帧数字、反向与中途更新及关闭动画；早期真实时间取样在 Windows WebKit 遇到协议延迟与点击超时，保留初轮结果，未放宽数字范围断言。
+
+生产文档完成中英文 × 1280 / 375px × 浅深主题的 8 组 Chromium 检查：增加、减少、重播、源码展开 / 收起、复制源码与换行归一化比较通过，无页面脚本错误或横向溢出；已查看中文桌面浅色和英文手机深色截图。验证时显式指定对应浏览器语言，避免默认语言导航回中文。证据在根目录 .quality/statistic-{check,build,browser}.log、statistic-browser-{initial,final}.json、statistic-browser-webkit-wallclock.json、statistic-docs.json 和文档截图。未执行 Firefox 或真实读屏，尚未发布。
+
+## Menu 悬停与按下反馈（2026-10-19，开发分支）
+
+Menu 的普通悬停与键盘聚焦背景从 9% 文字混合减为 6%，危险项从 danger surface 8 减为 6；按下使用较深的中性、选中或危险背景。移除主菜单按下时的整项透明度变化，文字与图标保持原有颜色和透明度。子菜单和三级菜单同步处理，按下背景保持不透明，覆盖移动高亮时不叠加染色；禁用项不新增交互反馈。共享 Dropdown 与其他选择控件的默认颜色保持原有规则，中英文组件说明和设计标准同步。
+
+完整 pnpm build、23 项文档测试、相关 SCSS / Biome 与差异检查通过。Chromium / WebKit 的 Menu 与 selection 回归首轮通过 42/46；4 项失败来自测试颜色工具不能解析 color-mix。仅将 Menu 的新颜色期望交给浏览器解析，保留悬停与聚焦断言后，这 4 项定向复验全部通过。
+
+额外在实际 Menu 组件上完成 Chromium / WebKit × 浅深色 × 默认 / 紧凑密度共 8 组检查，紧凑组同时覆盖 375px 与 RTL。每组验证主菜单普通 / 选中 / 危险项、浮层普通 / 选中 / 危险项及三级危险项的鼠标按住反馈，逐项比较文字与 SVG 的颜色、描边和透明度；另验主菜单 / 浮层空格键按住、两处禁用项、无脚本错误和横向溢出。首轮 7 组通过，最后一组 WebKit 在加载阶段超时，保持原验证逻辑单独复验通过。已查看桌面浅色悬停 / 按下及窄屏深色按下截图。
+
+证据位于根目录 `.quality/menu-feedback-{build,browser,browser-recheck,docs-tests,pressed,pressed-recheck}.log`、`menu-feedback-browser-{initial,recheck}.json`、`menu-feedback-pressed{,-recheck}-results.json` 和对应截图。未执行 Firefox、真机触控或真实读屏；改动保留在 `0.7.1` 开发分支，尚未发布。
+
+## CardTitle 独立标题（2026-10-19，开发分支）
+
+Card 的标题复用私有 CardTitleControl，新增公开 CardTitle / CardTitleProps，可从根入口或 `/card` 子路径导入并在卡片外使用。三种视觉尺寸与 Card 一致，默认使用 headingWeight（600），语义标题层级由 level 独立设置，保留原生标题属性和 HTMLHeadingElement ref。独立组件支持区域默认参数；Card 内部标题隔离这些默认值，内容插槽中的公开 CardTitle 仍正常继承配置。中英文示例、API、默认配置参考、组件目录和静态缩略图同步。
+
+全量 pnpm check 通过 445 项组件测试、13 项发布规则、23 项文档与 9 项 Skill 测试；包含根入口 / 子路径类型、ref 和无效参数反例。pnpm build 通过模块、声明、ESM / CommonJS SSR、公共子路径、双语文档及 AI 索引；Vite / Rspack 均验证 CardTitle 的根入口和子路径自动加载样式，且不引入 Tabs、Skeleton 等组件样式。
+
+Chromium / WebKit 的 Card 定向用例首轮 25/26 通过；WebKit 的既有标签页溢出用例在等待更多按钮时超时，单独复测通过。新增 8 个实例覆盖浅深色、两种密度、三种尺寸、语义层级、默认参数隔离、主题字体与局部字重、375px 长标题换行。生产文档另完成中英文 × 1280 / 375px × 浅深色的 8 组 Chromium 检查，确认独立示例、主题、源码展开 / 收起和复制、无横向溢出及页面脚本错误；组件总览可通过 CardTitle 搜索到 Card。已查看中文桌面浅色与英文手机深色截图。
+
+证据位于根目录 `.quality/card-title-component-{check-final,build,browser,browser-recheck}.log`、`card-title-component-browser-initial.json`、`card-title-component-docs.json` 和相应文档截图。未执行 Firefox 或真实读屏；改动尚未发布。
+
 ## 0.7.0 发布整合（2026-10-19）
 
 将共享工作区中的表单设置布局、菜单分组与导航浮层、主题描边 / 阴影 / 状态覆盖、统一内部滚动条、按钮与 Tabs 迁移及双语文档整合到 `0.7.0` 版本分支。原有五个主题分支均指向 0.6.0 发布提交，没有遗漏的独有提交。开发流程改为默认创建或复用版本号分支，不再为每个需求新建分支；本地 `.omo` 状态保留但不进入 Git 与格式检查。

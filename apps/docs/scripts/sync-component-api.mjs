@@ -456,6 +456,7 @@ const choicePopupMaxWidth = [
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
 const specific = {
+  'CardTitleProps.children': ['标题内容。', 'Heading content.'],
   ...Object.fromEntries(
     [
       'SelectProps',
@@ -528,8 +529,14 @@ const specific = {
     '由 useReactTable 创建的实例，唯一的数据与状态来源。',
     'Instance created by useReactTable; the sole data and state owner.',
   ],
-  'DataTableProps.bordered': ['展示列之间的分隔线。', 'Show vertical column separators.'],
-  'DataTableProps.striped': ['展示交替行背景。', 'Alternate row backgrounds.'],
+  'DataTableProps.bordered': [
+    '展示外框和列分隔线；无边框时表头底部为 2px 分割线。',
+    'Show the outer frame and column dividers. Borderless headers have a 2px bottom divider.',
+  ],
+  'DataTableProps.striped': [
+    '展示交替行背景并隐藏行间分割线；关闭时显示行间细线。',
+    'Alternate row backgrounds and hide row dividers. Disable to show fine dividers between rows.',
+  ],
   'DataTableProps.stickyHeader': [
     '表头保持在滚动区域顶部。',
     'Keep headers at the top of the scroll region.',
@@ -628,13 +635,11 @@ const specific = {
     '放置目标行，包含稳定 row.id。',
     'The target row, including its stable row.id.',
   ],
-  'TableColumnHeaderProps.align': ['表头内容对齐。', 'Header content alignment.'],
-  'TableColumnHeaderProps.pinned': ['固定在逻辑起始或结束侧。', 'Pin to the logical start or end.'],
-  'TableColumnHeaderProps.pinOffset': ['距离该侧的像素数。', 'Pixel offset from that side.'],
-  'TableColumnHeaderProps.pinEdge': [
-    '展示固定列边缘的淡阴影。',
-    'Show a subtle pinned-edge shadow.',
-  ],
+  'DataTableRowProps.selected': ['设置行的选中样式。', 'Apply the selected row appearance.'],
+  'DataTableCellProps.align': ['单元格内容对齐。', 'Cell content alignment.'],
+  'DataTableCellProps.pinned': ['固定在逻辑起始或结束侧。', 'Pin to the logical start or end.'],
+  'DataTableCellProps.pinOffset': ['距离该侧的像素数。', 'Pixel offset from that side.'],
+  'DataTableCellProps.pinEdge': ['展示固定列边缘的淡阴影。', 'Show a subtle pinned-edge shadow.'],
   'LeafTheme.motion': [
     '启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。',
     'Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it.',
@@ -739,6 +744,15 @@ const specific = {
   ],
   'ColorPickerProps.presets': ['预设的颜色分组。', 'Groups of preset colors.'],
   'StatisticProps.formatter': ['自定义指标数值的展示。', 'Customize the displayed metric value.'],
+  'StatisticProps.animation': ['启用数值变化动画。', 'Animate numeric value changes.'],
+  'StatisticProps.initialValue': [
+    '首次动画的起始值，后续变化从当前显示值开始。',
+    'Starting value for the first animation; later changes start from the current displayed value.',
+  ],
+  'StatisticProps.duration': [
+    '默认动效速度下的动画时长（毫秒），随区域动效时长缩放；0 表示立即更新。',
+    'Animation duration in milliseconds at the default motion speed, scaled by the regional motion duration; 0 updates immediately.',
+  ],
   'SplitterPanel.min': ['面板最小百分比。', 'Minimum panel percentage.'],
   'SplitterPanel.max': ['面板最大百分比。', 'Maximum panel percentage.'],
   'CountdownProps.value': [

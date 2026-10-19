@@ -1,6 +1,6 @@
 import type { MenuItem } from '@ifhover/leaf-ui';
 import { Button, Flex, Menu, Tabs } from '@ifhover/leaf-ui';
-import { BookOpen, Folder, House, Palette, Settings } from 'lucide-react';
+import { Folder, House, Settings } from 'lucide-react';
 import { useState } from 'react';
 
 const items: MenuItem[] = [
@@ -10,8 +10,8 @@ const items: MenuItem[] = [
     label: '资源',
     icon: <Folder />,
     children: [
-      { key: 'components', label: '组件', icon: <BookOpen /> },
-      { key: 'themes', label: '主题', icon: <Palette /> },
+      { key: 'components', label: '组件' },
+      { key: 'themes', label: '主题' },
     ],
   },
   { key: 'settings', label: '设置', icon: <Settings /> },

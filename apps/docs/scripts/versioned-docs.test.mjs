@@ -188,8 +188,9 @@ test('every component preview has a valid, independently extracted code sample',
   const basic = await readFile(path.resolve(directory, '../src/examples/table/basic.tsx'), 'utf8');
   assert.doesNotMatch(
     extractExampleSource(basic, 'TableBasic'),
-    /TableStates|TableSimple|useState|DataTable/,
+    /TableStates|TableSimple|useState|<Table[\s.>]/,
   );
+  assert.match(extractExampleSource(basic, 'TableBasic'), /<DataTable/);
 });
 
 test('component defaults stay scoped to their own function rather than sibling components', async () => {
@@ -227,24 +228,60 @@ test('API tables retain data-type descriptions and split grouped defaults correc
 
 test('API defaults use the declared parameter type for composed table roots', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
-  const entry = path.join(root, 'packages/react/src/index.ts');
   const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
-  assert.equal((await properties(entry, 'TableProps')).get('size').defaultValue, "'md'");
+  assert.equal((await properties(adapter, 'DataTableProps')).get('size').defaultValue, "'md'");
   assert.equal(
     (await properties(adapter, 'DataTableProps')).get('pagination').defaultValue,
     'true',
   );
 });
 
-test('AI discovery records the optional adapter import path separately from native Table', async () => {
+test('AI discovery publishes DataTable as the only table component at the canonical subpath', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   const api = await publicApi(root);
-  assert.equal(api.find((item) => item.name === 'Table')?.importPath, '@ifhover/leaf-ui');
-  assert.equal(
-    api.find((item) => item.name === 'DataTable')?.importPath,
-    '@ifhover/leaf-ui/table/tanstack',
+  assert.ok(
+    !api.some((item) =>
+      /^Table(?:Props|Row|Cell|Body|Header|Footer|Caption|ColumnHeader|State|Empty|Loading|Error)?(?:Props)?$/.test(
+        item.name,
+      ),
+    ),
   );
+  assert.equal(api.find((item) => item.name === 'DataTable')?.importPath, '@ifhover/leaf-ui/table');
   assert.equal(api.find((item) => item.name === 'DataTableRowReorderInfo')?.kind, 'type');
+  assert.equal(api.find((item) => item.name === 'DataTableRowProps')?.kind, 'type');
+  assert.equal(api.find((item) => item.name === 'DataTableCellProps')?.kind, 'type');
+});
+
+test('AI discovery preserves native Table and adapter imports in historical snapshots', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-table-api-test-'));
+  try {
+    await mkdir(path.join(root, 'packages/react/src/table'), { recursive: true });
+    await mkdir(path.join(root, 'packages/react/src/tabletanstack'), { recursive: true });
+    await writeFile(
+      path.join(root, 'packages/react/package.json'),
+      JSON.stringify({ name: '@sudden3/leaf-ui', version: '0.6.0' }),
+    );
+    await writeFile(
+      path.join(root, 'packages/react/src/index.ts'),
+      "export { Table } from './table';",
+    );
+    await writeFile(
+      path.join(root, 'packages/react/src/table/index.ts'),
+      "export { Table } from './table';",
+    );
+    await writeFile(
+      path.join(root, 'packages/react/src/tabletanstack/index.ts'),
+      "export { DataTable } from './tabletanstack';",
+    );
+    const api = await publicApi(root);
+    assert.equal(api.find((item) => item.name === 'Table')?.importPath, '@sudden3/leaf-ui');
+    assert.equal(
+      api.find((item) => item.name === 'DataTable')?.importPath,
+      '@sudden3/leaf-ui/table/tanstack',
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test('scoped component defaults retain public discovery and built-in API defaults', async () => {

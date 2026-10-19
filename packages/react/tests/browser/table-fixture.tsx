@@ -1,13 +1,10 @@
-import { Button, ConfigProvider, Input, Table } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
+import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
+import { DataTable } from '@ifhover/leaf-ui/table';
 import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useState } from 'react';
 import { TableGrouped, TableServer } from '../../../../apps/docs/src/examples/table/advanced';
-import {
-  TableBasic,
-  TableSimple,
-  TableStates,
-} from '../../../../apps/docs/src/examples/table/basic';
+import { TableAppearance } from '../../../../apps/docs/src/examples/table/appearance';
+import { TableBasic, TableStates } from '../../../../apps/docs/src/examples/table/basic';
 import { TableColumns, TableData } from '../../../../apps/docs/src/examples/table/data';
 import { TableReordering } from '../../../../apps/docs/src/examples/table/reordering';
 
@@ -69,11 +66,14 @@ export function TableFixture() {
     <div style={{ display: 'grid', gap: 32, maxWidth: 1000, minWidth: 0 }}>
       <h1>Table acceptance</h1>
       <section aria-label="Basic table demo">
-        <h2>Native table</h2>
+        <h2>Data table</h2>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <TableBasic english />
-          <TableSimple english />
         </div>
+      </section>
+      <section aria-label="Table appearance demo">
+        <h2>Borders and stripes</h2>
+        <TableAppearance english />
       </section>
       <section aria-label="Data table demo">
         <h2>Manage members</h2>
@@ -110,13 +110,13 @@ export function TableFixture() {
         }}
         density="compact"
       >
-        <Table aria-label="Custom theme">
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>Custom tokens</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
+        <DataTable
+          aria-label="Custom theme"
+          data={[{ id: 'custom', name: 'Custom tokens' }]}
+          columns={[{ accessorKey: 'name', header: 'Theme' }]}
+          rowKey="id"
+          pagination={false}
+        />
       </ConfigProvider>
     </div>
   );

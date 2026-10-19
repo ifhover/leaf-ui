@@ -250,7 +250,8 @@ describe('Menu popup navigation', () => {
         'aria-current',
         'page',
       );
-      expect(trigger).toHaveAttribute('data-selected', 'true');
+      expect(trigger).not.toHaveAttribute('data-selected');
+      expect(trigger).not.toHaveAttribute('data-active-parent');
       await userEvent.keyboard('{ArrowDown}{ArrowRight}');
       expect(screen.getByRole('menuitem', { name: 'Templates' })).toHaveFocus();
       await userEvent.keyboard('{Enter}');
@@ -259,6 +260,7 @@ describe('Menu popup navigation', () => {
         expect.objectContaining({ key: 'templates' }),
       );
       expect(trigger).toHaveFocus();
+      expect(trigger).not.toHaveAttribute('data-selected');
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
       await userEvent.click(trigger);
       await userEvent.keyboard('{Escape}');

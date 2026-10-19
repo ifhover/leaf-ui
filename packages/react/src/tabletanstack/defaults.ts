@@ -1,8 +1,18 @@
-import type { HTMLAttributes, ReactNode, Ref } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode, Ref, TdHTMLAttributes } from 'react';
 import type { InputProps } from '../input/input';
 import type { PaginationProps } from '../pagination/pagination';
 import type { ControlSize } from '../shared/types';
-import type { TableProps } from '../table/table';
+
+export interface DataTableRowProps extends HTMLAttributes<HTMLTableRowElement> {
+  selected?: boolean;
+}
+
+export interface DataTableCellProps extends Omit<TdHTMLAttributes<HTMLTableCellElement>, 'align'> {
+  align?: 'start' | 'center' | 'end';
+  pinned?: 'start' | 'end';
+  pinOffset?: number;
+  pinEdge?: boolean;
+}
 
 export interface DataTableVirtualOptions {
   estimateRowHeight?: number;
@@ -18,8 +28,8 @@ export interface DataTablePresentationProps
   bordered?: boolean;
   striped?: boolean;
   stickyHeader?: boolean;
-  maxHeight?: TableProps['maxHeight'];
-  minWidth?: TableProps['minWidth'];
+  maxHeight?: CSSProperties['maxHeight'];
+  minWidth?: CSSProperties['minWidth'];
   loading?: boolean;
   emptyContent?: ReactNode;
   error?: ReactNode;

@@ -1,6 +1,6 @@
 import type { MenuItem } from '@ifhover/leaf-ui';
 import { Menu, Space, Text } from '@ifhover/leaf-ui';
-import { BookOpen, House, Settings } from 'lucide-react';
+import { BookOpen, House } from 'lucide-react';
 import {
   type AnchorHTMLAttributes,
   cloneElement,
@@ -23,7 +23,6 @@ export function MenuRouting({ english = false }: { english?: boolean }) {
           key: 'settings',
           label: english ? 'Settings' : '设置',
           href: '#settings',
-          icon: <Settings />,
         },
       ],
     },

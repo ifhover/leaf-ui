@@ -255,3 +255,94 @@ test('reordering loaded pages keeps original content when loading ends', async (
   await expect(card.getByRole('tabpanel')).toHaveText('Original second content');
   await expect(card.getByRole('status', { name: 'Loading' })).toHaveCount(0);
 });
+
+for (const appearance of ['light', 'dark']) {
+  for (const density of ['comfortable', 'compact']) {
+    test(`standalone card titles match card typography in ${appearance} ${density}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 375, height: 900 });
+      await page.goto(
+        `/?fixture=card&titles&theme=${appearance}${density === 'compact' ? '&compact=1' : ''}`,
+      );
+      const fixture = page.getByTestId('card-titles');
+      await expect(fixture).toBeVisible();
+      const typography = await fixture.evaluate((node) => {
+        const properties = (heading: Element) => {
+          const style = getComputedStyle(heading);
+          return {
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            fontFamily: style.fontFamily,
+            lineHeight: style.lineHeight,
+            color: style.color,
+            margin: style.margin,
+            overflowWrap: style.overflowWrap,
+          };
+        };
+        return ['sm', 'md', 'lg'].map((size) => {
+          const pair = node.querySelector(`[data-testid="title-pair-${size}"]`);
+          const standalone = pair?.querySelector('[data-testid="standalone-title"]');
+          const embedded = pair?.querySelector('.leaf-card__title');
+          if (!standalone || !embedded) throw new Error(`Missing ${size} title pair`);
+          return {
+            standalone: properties(standalone),
+            embedded: properties(embedded),
+            standaloneTag: standalone.tagName,
+            embeddedTag: embedded.tagName,
+            outsideCard: standalone.closest('.leaf-card') === null,
+          };
+        });
+      });
+      for (const [index, pair] of typography.entries()) {
+        expect(pair.standalone).toEqual(pair.embedded);
+        expect(pair.standalone.fontSize).toBe(`${14 + index}px`);
+        expect(pair.standalone.fontWeight).toBe('600');
+        expect(pair.standalone.margin).toBe('0px');
+        expect(pair.standalone.overflowWrap).toBe('anywhere');
+        expect(pair.standaloneTag).toBe('H3');
+        expect(pair.embeddedTag).toBe('H3');
+        expect(pair.outsideCard).toBe(true);
+      }
+      const semantic = fixture.getByRole('heading', { level: 2, name: 'Small section heading' });
+      await expect(semantic).toHaveCSS('font-size', '14px');
+      await expect(semantic).toHaveAttribute('title', 'Native heading hint');
+      await expect(fixture.getByTestId('regional-title')).toHaveJSProperty('tagName', 'H4');
+      await expect(fixture.getByTestId('regional-title')).toHaveCSS('font-size', '16px');
+      const isolated = fixture.getByTestId('regional-card').getByRole('heading');
+      await expect(isolated).toHaveJSProperty('tagName', 'H3');
+      await expect(isolated).toHaveCSS('font-size', '14px');
+
+      for (const [standaloneId, cardId, weight] of [
+        ['custom-title', 'custom-card', '700'],
+        ['local-title', 'local-card', '400'],
+      ] as const) {
+        const standalone = fixture.getByTestId(standaloneId);
+        const embedded = fixture.getByTestId(cardId).getByRole('heading');
+        for (const heading of [standalone, embedded]) {
+          await expect(heading).toHaveCSS('font-size', '19px');
+          await expect(heading).toHaveCSS('font-family', 'monospace');
+          await expect(heading).toHaveCSS('font-weight', weight);
+          await expect(heading).toHaveCSS(
+            'color',
+            appearance === 'dark' ? 'rgb(215, 231, 255)' : 'rgb(18, 52, 86)',
+          );
+        }
+      }
+      const longTitles = await fixture.getByTestId('long-title-container').evaluate((node) =>
+        Array.from(node.querySelectorAll<HTMLElement>('.leaf-card-title')).map((title) => ({
+          overflow: title.scrollWidth - title.clientWidth,
+          lines: title.clientHeight / Number.parseFloat(getComputedStyle(title).lineHeight),
+        })),
+      );
+      expect(longTitles).toHaveLength(2);
+      for (const title of longTitles) {
+        expect(title.overflow).toBeLessThanOrEqual(1);
+        expect(title.lines).toBeGreaterThan(1);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+    });
+  }
+}

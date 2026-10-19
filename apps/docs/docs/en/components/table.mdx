@@ -1,34 +1,28 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TableBasic, TableSimple, TableStates } from '../../../src/examples/table/basic';
+import { TableBasic, TableStates } from '../../../src/examples/table/basic';
 import { TableData, TableColumns } from '../../../src/examples/table/data';
 import { TableVirtual, TableServer, TableGrouped, TableEditable } from '../../../src/examples/table/advanced';
 import { TableReordering } from '../../../src/examples/table/reordering';
+import { TableAppearance } from '../../../src/examples/table/appearance';
 
-# Table
+# DataTable
 
 Browse, filter and manage structured data.
 
-## Choose an API
+## Installation
 
-- **Table** composes native headers, rows and cells. Use it for static or fully custom tables without installing a table engine.
-- **DataTable** accepts data and columns for quick sorting and pagination, or your own TanStack Table instance for filtering, selection, expansion and column controls.
-
-```tsx
-import { Table } from '@ifhover/leaf-ui/table';
-```
-
-For DataTable, install the optional peer dependency:
+DataTable accepts data and columns for sorting and pagination, or your own TanStack Table instance for filtering, selection, expansion and column controls. Install the peer dependency before using it:
 
 ```bash
 npm install @tanstack/react-table@^8.21.3
 ```
 
 ```tsx
-import { DataTable } from '@ifhover/leaf-ui/table/tanstack';
-import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table/tanstack';
+import { DataTable } from '@ifhover/leaf-ui/table';
+import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table';
 ```
 
-Component subpaths load their styles automatically. Import the base stylesheet once as shown in [getting started](/en/guide/getting-started). DataTable and its types are available only from the adapter subpath, not the library root.
+The table subpath loads its styles automatically. Import DataTable and its data types from `@ifhover/leaf-ui/table`; DataTable is not exported from the library root.
 
 ## Basic usage
 
@@ -39,20 +33,20 @@ Component subpaths load their styles automatically. Import the base stylesheet o
 
 </ComponentExample>
 
-`Table` and `Table.Root` are equivalent. Native attributes, DOM refs, `colSpan`, `rowSpan` and custom cell content are supported. Name the table with Table.Caption, aria-label or aria-labelledby.
-
-## Quick data table
-
-<ComponentExample title="Provide data and columns" preview={<TableSimple english />} fileName="basic.tsx" width="100%">
-
-```tsx lineNumbers file="../../../src/examples/table/basic.tsx"
-```
-
-</ComponentExample>
-
 The `data + columns + rowKey` mode creates one TanStack instance and uses the same renderer as the advanced mode. `rowKey` must identify a stable, unique string/number field or return a string. Local sorting, filtering, pagination and expansion are configured by default. Use `options` for initial state, controlled callbacks or server configuration. `pagination={false}` displays all rows without internally truncating the data.
 
 These modes are mutually exclusive: when supplying `table`, do not also pass `data`, `columns`, `rowKey` or `options`. Prefer your own `useReactTable` instance for advanced grouping or query state.
+
+## Borders and striped rows
+
+DataTable defaults to no outer frame or column dividers, with `striped` rows enabled. Borderless tables have square corners and no tinted header background, with a 2px divider below the header. Enable `bordered` for a rounded frame, muted header background and column dividers. Headers use the body text color in both modes. Stripes use a faint background and hide row dividers; set `striped={false}` to show fine dividers between rows. Both ordinary and striped rows show subtle primary-color feedback on hover.
+
+<ComponentExample title="Switch table appearance" preview={<TableAppearance english />} fileName="appearance.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/table/appearance.tsx"
+```
+
+</ComponentExample>
 
 ## Sorting, filtering, selection and pagination
 
@@ -102,6 +96,8 @@ Drag a resize handle or focus it and press Left/Right. Shift increases the step;
 ```
 
 </ComponentExample>
+
+Ordinary grouped tables transition row height when expanding or collapsing, preserving child content and stripe positions. Regional motion settings and system reduced motion disable the transition; large or virtual tables also update immediately.
 
 ## Editable cells
 
@@ -162,65 +158,6 @@ Refreshing keeps existing rows, adds a loading overlay and prevents duplicate in
 
 </ComponentExample>
 
-## Table API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Row size. |
-| `bordered` | `boolean` | `false` | Show column dividers. |
-| `striped` | `boolean` | `false` | Alternate row backgrounds. |
-| `stickyHeader` | `boolean` | `true` | Keep the header at the top of the scroll area. |
-| `maxHeight` | `CSSProperties['maxHeight']` | — | Scroll-area height limit. |
-| `minWidth` | `CSSProperties['minWidth']` | — | Minimum table width. |
-| `tableLayout` | `CSSProperties['tableLayout']` | — | Native layout mode. |
-| `tableStyle` | `CSSProperties` | — | Styles on table; style and className apply to the wrapper. |
-| `scrollRef` | `Ref<HTMLDivElement>` | — | Scroll-area ref; the component ref points to table. |
-| `loading` | `boolean` | `false` | Keep content and show a loading overlay. |
-
-## TableRow API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `selected` | `boolean` | — | Selected background; selection controls convey interaction state. |
-
-## TableCell API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end'` | `'start'` | Content alignment. |
-| `pinned` | `'start' \| 'end'` | — | Pin to the logical start or end side. |
-| `pinOffset` | `number` | `0` | Pixel offset from that side. |
-| `pinEdge` | `boolean` | — | Show a subtle pinned-edge shadow. |
-
-## TableColumnHeader API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end'` | `'start'` | Header content alignment. |
-| `pinned` | `'start' \| 'end'` | — | Pin to the logical start or end. |
-| `pinOffset` | `number` | `0` | Pixel offset from that side. |
-| `pinEdge` | `boolean` | — | Show a subtle pinned-edge shadow. |
-
-
-Supports native th attributes and the same alignment/pinning options as TableCell. Scope defaults to col; use colgroup for grouped headers.
-
-## TableState API
-
-For Table.Empty and Table.Loading inside Table.Body.
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `colSpan` | `number` | `1` | Number of columns covered. |
-| `children` | `ReactNode` | — | Custom state content. |
-
-## TableError API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `colSpan` | `number` | `1` | Number of columns covered. |
-| `children` | `ReactNode` | — | Custom error content. |
-| `onRetry` | `() => void` | — | Show a retry action when supplied. |
-
 ## DataTable API
 
 This table describes the instance mode. For the data and columns mode, see [DataTableData API](#datatabledata-api).
@@ -230,11 +167,11 @@ This table describes the instance mode. For the data and columns mode, see [Data
 | `children` | `ReactNode` | — | Replace the default Content/Pagination layout. |
 | `caption` | `ReactNode` | — | Table caption. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `bordered` | `boolean` | `false` | Show vertical column separators. |
-| `striped` | `boolean` | `false` | Alternate row backgrounds. |
+| `bordered` | `boolean` | `false` | Show the outer frame and column dividers. Borderless headers have a 2px bottom divider. |
+| `striped` | `boolean` | `true` | Alternate row backgrounds and hide row dividers. Disable to show fine dividers between rows. |
 | `stickyHeader` | `boolean` | `true` | Keep headers at the top of the scroll region. |
-| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | Maximum scroll height; virtual mode defaults to 400 when omitted. |
-| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | Minimum table width; defaults to visible column sizes. |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum scroll height; virtual mode defaults to 400 when omitted. |
+| `minWidth` | `CSSProperties['minWidth']` | — | Minimum table width; defaults to visible column sizes. |
 | `loading` | `boolean` | `false` | Show a loading state. |
 | `emptyContent` | `ReactNode` | — | Empty content. |
 | `error` | `ReactNode` | — | Error content; null, undefined and false do not show an error. |
@@ -249,11 +186,30 @@ This table describes the instance mode. For the data and columns mode, see [Data
 | `table` | `TanStackTable<TData>` | — | Required. Instance created by useReactTable; the sole data and state owner. |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | Accessible row-action name; defaults to row.id. |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | Leaf-row details; configure getRowCanExpand. |
-| `getRowProps` | `(row: Row<TData>) => `[`TableRowProps`](#tablerow-api) | — | Custom row attributes/events. |
-| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`TableCellProps`](#tablecell-api) | — | Cell attributes, styles or spans; a zero colSpan / rowSpan omits the cell. |
+| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | Custom row attributes/events. |
+| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | Cell attributes, styles or spans; a zero colSpan / rowSpan omits the cell. |
 | `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | Show row handles and return reordered current-page rows; the application updates the data. |
 
-Size, borders, stripes, sticky headers, scrolling and loading match Table. aria-label/aria-labelledby name the native table; other div attributes apply to the wrapper.
+aria-label/aria-labelledby name the native table; other div attributes apply to the wrapper.
+
+## DataTableRow API
+
+`DataTableRowProps` configures native `tr` attributes and events through `getRowProps`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `selected` | `boolean` | — | Apply the selected row appearance. |
+
+## DataTableCell API
+
+`DataTableCellProps` configures native `td` attributes, spans and events through `getCellProps`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | Cell content alignment. |
+| `pinned` | `'start' \| 'end'` | — | Pin to the logical start or end. |
+| `pinOffset` | `number` | `0` | Pixel offset from that side. |
+| `pinEdge` | `boolean` | — | Show a subtle pinned-edge shadow. |
 
 ## DataTableSearch API
 
@@ -326,12 +282,11 @@ Use this exported type to assemble the following optional properties on TanStack
 ## Types and composition
 
 ```ts
-import type { TableProps, TableRowProps, TableCellProps, TableColumnHeaderProps, TableStateProps, TableErrorProps } from '@ifhover/leaf-ui/table';
-import type { DataTableProps, DataTableDataProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table/tanstack';
+import type { DataTableProps, DataTableDataProps, DataTableRowProps, DataTableCellProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table';
 import type { ColumnDef, Table as TanStackTable, Row, Cell } from '@tanstack/react-table';
 ```
 
-Header/Body/Footer, Caption, Row and Cell forward their native attributes and DOM refs. DataTable.Toolbar/Footer/Content accept div attributes. Use TanStack's own [column definitions](https://tanstack.com/table/v8/docs/guide/column-defs), [controlled state](https://tanstack.com/table/v8/docs/framework/react/guide/table-state), [row selection](https://tanstack.com/table/v8/docs/guide/row-selection) and [pinning](https://tanstack.com/table/v8/docs/guide/column-pinning) rather than a second Leaf column model.
+DataTable.Toolbar/Footer/Content accept div attributes. Use TanStack's own [column definitions](https://tanstack.com/table/v8/docs/guide/column-defs), [controlled state](https://tanstack.com/table/v8/docs/framework/react/guide/table-state), [row selection](https://tanstack.com/table/v8/docs/guide/row-selection) and [pinning](https://tanstack.com/table/v8/docs/guide/column-pinning) rather than a second Leaf column model.
 
 ## DataTableData API
 
@@ -366,8 +321,8 @@ ConfigProvider's `components.DataTable` uses these row-independent props. Import
 | `bordered` | `boolean` | — | Configure bordered. |
 | `striped` | `boolean` | — | Configure striped. |
 | `stickyHeader` | `boolean` | — | Configure sticky header. |
-| `maxHeight` | [`TableProps`](#table-api)`['maxHeight']` | — | Configure max height. |
-| `minWidth` | [`TableProps`](#table-api)`['minWidth']` | — | Configure min width. |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | Configure max height. |
+| `minWidth` | `CSSProperties['minWidth']` | — | Configure min width. |
 | `loading` | `boolean` | — | Show a loading state. |
 | `emptyContent` | `ReactNode` | — | Content for an empty collection. |
 | `error` | `ReactNode` | — | Configure error. |
@@ -376,6 +331,6 @@ ConfigProvider's `components.DataTable` uses these row-independent props. Import
 | `selectAllMode` | `'page' \| 'all'` | — | Configure select all mode. |
 | `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
 | `columnReordering` | `boolean` | — | Configure column reordering. |
-| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | Enable virtual scrolling; enabled by default for large option sets. |
+| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | Enable row virtualization; disabled by default. |
 | `pagination` | `boolean` | — | Configure pagination. |
 | `tableRef` | `Ref<HTMLTableElement>` | — | Configure table ref. |

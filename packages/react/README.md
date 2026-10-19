@@ -55,6 +55,7 @@ Browser component entries automatically load theme variables, shared popup style
 - Descriptions / Timeline / QRCode: details, event histories, QR codes.
 - Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
+- DataTable: sorting, filtering, selection, grouping, pagination and virtualization through a TanStack Table instance. Import it from `@ifhover/leaf-ui/table`.
 - Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
 - Upload / FileList: upload progress and cancellation, file metadata, downloads and browser media previews.
@@ -62,6 +63,32 @@ Browser component entries automatically load theme variables, shared popup style
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
 Single-line controls share sm / md / lg sizes of **30 / 36 / 42px**. The default **36px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
+
+## Data tables
+
+Use `DataTable` for tables. Install its optional peer with `npm install @tanstack/react-table`, create a table instance and pass it to the component:
+
+```tsx
+import { DataTable } from '@ifhover/leaf-ui/table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+
+const data = [{ id: 'leaf', name: 'Leaf UI' }];
+const columns = [{ accessorKey: 'name', header: 'Name' }];
+
+export function ProjectTable() {
+  const table = useReactTable({
+    data,
+    columns,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+  });
+  return <DataTable table={table} aria-label="Projects" pagination={false} />;
+}
+```
+
+Tables are borderless and striped by default. Set `bordered` for an outer frame and column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
+
+Migration: replace native `Table`, `Table.Header`, `Table.Body`, `Table.Row`, `Table.Cell` and related named exports with a `DataTable` instance and column definitions. Native Table regional defaults are removed; use `components.DataTable` for presentation defaults. The `theme.components.Table` visual tokens remain available. The former `@ifhover/leaf-ui/table/tanstack` path remains a compatibility alias for `DataTable`.
 
 ## Theming
 

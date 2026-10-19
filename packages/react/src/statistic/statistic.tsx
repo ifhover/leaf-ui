@@ -3,13 +3,14 @@ import {
   type ReactNode,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
-import { animateMotion, useMotionEnabled } from '../shared/motion';
+import { motionDuration, useMotionEnabled } from '../shared/motion';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 export interface StatisticProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'prefix'> {
@@ -21,6 +22,9 @@ export interface StatisticProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ti
   suffix?: ReactNode;
   formatter?: (value: number | string) => ReactNode;
   loading?: boolean;
+  animation?: boolean;
+  initialValue?: number;
+  duration?: number;
 }
 export function StatisticControl({
   title,
@@ -31,46 +35,81 @@ export function StatisticControl({
   suffix,
   formatter,
   loading,
+  animation = true,
+  initialValue = 0,
+  duration = 1000,
   className,
   ...props
 }: StatisticProps) {
   const { locale, messages } = useLeafConfig();
   const number = useRef<HTMLSpanElement>(null);
-  const previous = useRef(value);
-  const animation = useRef<Animation | undefined>(undefined);
+  // Render the target on the server and on hydration; start counting before paint.
+  const [displayed, setDisplayed] = useState(value);
+  const current = useRef(Number.isFinite(initialValue) ? initialValue : 0);
+  const initialized = useRef(false);
   const motion = useMotionEnabled();
+  const numeric = typeof value === 'number' && Number.isFinite(value);
   useBrowserLayoutEffect(() => {
     const node = number.current;
-    const changed = previous.current !== value;
-    const interrupted =
-      animation.current?.playState === 'running' && node ? getComputedStyle(node) : null;
-    const opacity = interrupted?.opacity ?? 0.65;
-    const transform =
-      interrupted?.transform ??
-      `translateY(${typeof value === 'number' && typeof previous.current === 'number' && value < previous.current ? -4 : 4}px)`;
-    animation.current?.cancel();
-    if (
-      motion &&
-      changed &&
-      node &&
-      !loading &&
-      !formatter &&
-      typeof value === 'number' &&
-      Number.isFinite(value)
-    ) {
-      animation.current = animateMotion(
-        node,
-        [
-          { opacity, transform },
-          { opacity: 1, transform: 'translateY(0)' },
-        ],
-        { durationMultiplier: 1.6 },
-      );
+    if (loading) return;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      initialized.current = false;
+      setDisplayed(value);
+      return;
     }
-    previous.current = value;
-  }, [value, loading, formatter, motion]);
-  useEffect(() => () => animation.current?.cancel(), []);
+    if (!initialized.current) {
+      current.current = Number.isFinite(initialValue) ? initialValue : 0;
+      initialized.current = true;
+    }
+    const milliseconds =
+      node && animation && motion
+        ? motionDuration(node, (Number.isFinite(duration) ? Math.max(0, duration) : 1000) / 200)
+        : 0;
+    const from = current.current;
+    if (!milliseconds || from === value || typeof requestAnimationFrame === 'undefined') {
+      current.current = value;
+      setDisplayed(value);
+      return;
+    }
+    setDisplayed(from);
+    const start = performance.now();
+    let frame: number;
+    const tick = (now: number) => {
+      const progress = Math.min(1, Math.max(0, (now - start) / milliseconds));
+      const eased = 1 - (1 - progress) ** 3;
+      // Weighted interpolation also handles opposite signs near Number.MAX_VALUE.
+      current.current = progress === 1 ? value : from * (1 - eased) + value * eased;
+      setDisplayed(current.current);
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value, loading, animation, initialValue, duration, motion]);
   const digits = precision === undefined ? undefined : Math.max(0, Math.min(20, precision));
+  const numberFormat = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits ?? 6,
+        useGrouping: grouping,
+      }),
+    [locale, digits, grouping],
+  );
+  const format = (input: number | string) =>
+    formatter ? formatter(input) : typeof input === 'number' ? numberFormat.format(input) : input;
+  const counting = numeric && animation && motion && displayed !== value && !loading;
+  const countDigits = useMemo(
+    () =>
+      digits ??
+      numberFormat.formatToParts(Number(value)).find((part) => part.type === 'fraction')?.value
+        .length ??
+      0,
+    [digits, numberFormat, value],
+  );
+  const visible =
+    counting && typeof displayed === 'number' && !formatter
+      ? Number(displayed.toFixed(countDigits))
+      : displayed;
   return (
     <div
       {...props}
@@ -80,26 +119,32 @@ export function StatisticControl({
       {title && <div className="leaf-statistic__title">{title}</div>}
       <div className="leaf-statistic__value">
         {prefix}
-        <span ref={number} className="leaf-statistic__number" data-loading={loading || undefined}>
-          {loading
-            ? messages.common.loading
-            : formatter
-              ? formatter(value)
-              : typeof value === 'number'
-                ? new Intl.NumberFormat(locale, {
-                    minimumFractionDigits: digits,
-                    maximumFractionDigits: digits ?? 6,
-                    useGrouping: grouping,
-                  }).format(value)
-                : value}
+        <span
+          ref={number}
+          className="leaf-statistic__number"
+          data-loading={loading || undefined}
+          aria-hidden={counting || undefined}
+        >
+          {loading ? messages.common.loading : format(counting ? visible : value)}
         </span>
+        {counting && <span className="leaf-statistic__accessible">{format(value)}</span>}
         {suffix && <span className="leaf-statistic__suffix">{suffix}</span>}
       </div>
     </div>
   );
 }
 export interface CountdownProps
-  extends Omit<StatisticProps, 'value' | 'precision' | 'grouping' | 'formatter' | 'onChange'> {
+  extends Omit<
+    StatisticProps,
+    | 'value'
+    | 'precision'
+    | 'grouping'
+    | 'formatter'
+    | 'onChange'
+    | 'animation'
+    | 'initialValue'
+    | 'duration'
+  > {
   value: number | Date;
   format?: string;
   onFinish?: () => void;

@@ -14,7 +14,7 @@ import {
 import type { LeafComponentDefaults as SubpathDefaults } from '../src/config-provider';
 import { useComponentProps } from '../src/config-provider/component-defaults';
 
-type PublicExports = typeof import('../src') & typeof import('../src/tabletanstack');
+type PublicExports = typeof import('../src') & typeof import('../src/table');
 type PublicComponentName = {
   [Name in keyof PublicExports]: Name extends Capitalize<Name> ? Name : never;
 }[keyof PublicExports];
@@ -167,8 +167,10 @@ export function expandedComponentDefaultsContracts() {
     // @ts-expect-error Row callbacks remain typed by the DataTable instance.
     DataTable: { getRowLabel: (row: { name: string }) => row.name },
   };
-  // @ts-expect-error An imperative scroll ref belongs to one Table instance.
-  const scrollRef: LeafComponentDefaults = { Table: { scrollRef: { current: null } } };
+  // @ts-expect-error An imperative scroll ref belongs to one DataTable instance.
+  const scrollRef: LeafComponentDefaults = { DataTable: { scrollRef: { current: null } } };
+  // @ts-expect-error Native Table composition has been removed from the public API.
+  const removedTable: LeafComponentDefaults = { Table: { size: 'sm' } };
   // @ts-expect-error A table element ref cannot be shared through regional defaults.
   const tableRef: LeafComponentDefaults = { DataTable: { tableRef: { current: null } } };
   // @ts-expect-error Task state is owned by the loading bar instance or service.
@@ -211,6 +213,7 @@ export function expandedComponentDefaultsContracts() {
     form,
     table,
     scrollRef,
+    removedTable,
     tableRef,
     loading,
     notification,

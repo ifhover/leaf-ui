@@ -13,6 +13,7 @@ import type { ButtonProps } from '../button/button';
 import type { ButtonGroupProps, SplitButtonProps } from '../button/group';
 import type { CalendarProps } from '../calendar/calendar';
 import type { CardProps } from '../card/card';
+import type { CardTitleProps } from '../card/title';
 import type { CarouselProps } from '../carousel/carousel';
 import type { CascaderProps } from '../cascader/cascader';
 import type { CheckboxProps } from '../checkbox/checkbox';
@@ -76,14 +77,6 @@ import type { CountdownProps, StatisticProps } from '../statistic/statistic';
 import type { StepsProps } from '../steps/steps';
 import type { SwitchProps } from '../switch/switch';
 import type {
-  TableCellProps,
-  TableColumnHeaderProps,
-  TableErrorProps,
-  TableProps,
-  TableRowProps,
-  TableStateProps,
-} from '../table/table';
-import type {
   DataTableColumnVisibilityProps,
   DataTableContentProps,
   DataTablePaginationProps,
@@ -132,6 +125,7 @@ interface ComponentPropsMap {
   ButtonGroup: ButtonGroupProps;
   Calendar: CalendarProps;
   Card: CardProps;
+  CardTitle: CardTitleProps;
   Carousel: CarouselProps;
   Cascader: CascaderProps;
   CheckableTag: CheckableTagProps;
@@ -214,17 +208,6 @@ interface ComponentPropsMap {
   Statistic: StatisticProps;
   Steps: StepsProps;
   Switch: SwitchProps;
-  Table: TableProps;
-  TableBody: HTMLAttributes<HTMLTableSectionElement>;
-  TableCaption: HTMLAttributes<HTMLTableCaptionElement>;
-  TableCell: TableCellProps;
-  TableColumnHeader: TableColumnHeaderProps;
-  TableEmpty: TableStateProps;
-  TableError: TableErrorProps;
-  TableFooter: HTMLAttributes<HTMLTableSectionElement>;
-  TableHeader: HTMLAttributes<HTMLTableSectionElement>;
-  TableLoading: TableStateProps;
-  TableRow: TableRowProps;
   Tabs: TabsProps;
   Tag: TagProps;
   TagGroup: TagGroupProps;
@@ -261,6 +244,7 @@ export interface LeafComponentDefaults {
   ButtonGroup?: Partial<Omit<ButtonGroupProps, 'key' | 'ref'>> | null;
   Calendar?: Partial<Omit<CalendarProps, 'key' | 'ref'>> | null;
   Card?: Partial<Omit<CardProps, 'key' | 'ref'>> | null;
+  CardTitle?: Partial<Omit<CardTitleProps, 'key' | 'ref'>> | null;
   Carousel?: Partial<Omit<CarouselProps, 'key' | 'ref'>> | null;
   Cascader?: Partial<
     Omit<
@@ -374,17 +358,6 @@ export interface LeafComponentDefaults {
   Statistic?: Partial<Omit<StatisticProps, 'key' | 'ref' | 'value'>> | null;
   Steps?: Partial<Omit<StepsProps, 'key' | 'ref' | 'items'>> | null;
   Switch?: Partial<Omit<SwitchProps, 'key' | 'ref'>> | null;
-  Table?: Partial<Omit<TableProps, 'key' | 'ref' | 'scrollRef'>> | null;
-  TableBody?: Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' | 'ref'>> | null;
-  TableCaption?: Partial<Omit<HTMLAttributes<HTMLTableCaptionElement>, 'key' | 'ref'>> | null;
-  TableCell?: Partial<Omit<TableCellProps, 'key' | 'ref'>> | null;
-  TableColumnHeader?: Partial<Omit<TableColumnHeaderProps, 'key' | 'ref'>> | null;
-  TableEmpty?: Partial<Omit<TableStateProps, 'key' | 'ref'>> | null;
-  TableError?: Partial<Omit<TableErrorProps, 'key' | 'ref'>> | null;
-  TableFooter?: Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' | 'ref'>> | null;
-  TableHeader?: Partial<Omit<HTMLAttributes<HTMLTableSectionElement>, 'key' | 'ref'>> | null;
-  TableLoading?: Partial<Omit<TableStateProps, 'key' | 'ref'>> | null;
-  TableRow?: Partial<Omit<TableRowProps, 'key' | 'ref'>> | null;
   Tabs?: Partial<Omit<TabsProps, 'key' | 'ref' | 'items'>> | null;
   Tag?: Partial<Omit<TagProps, 'key' | 'ref'>> | null;
   TagGroup?: Partial<Omit<TagGroupProps, 'key' | 'ref' | 'options'>> | null;

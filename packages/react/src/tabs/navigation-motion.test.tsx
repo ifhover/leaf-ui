@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Carousel } from '../carousel';
@@ -249,19 +249,5 @@ describe('Navigation motion contracts', () => {
     fireEvent.click(screen.getByRole('button', { name: '展开 Root' }));
     expect(screen.getByRole('textbox')).toBe(draft);
     expect(draft).toHaveValue('Saved');
-  });
-
-  it('updates the authoritative statistic text immediately and does not repeat unchanged animations', () => {
-    const { animate } = animationRecorder();
-    const { rerender, container } = render(<Statistic value={10} aria-live="polite" />);
-    expect(animate).not.toHaveBeenCalled();
-    rerender(<Statistic value={20} aria-live="polite" />);
-    expect(container.querySelector('.leaf-statistic__number')?.textContent).toBe('20');
-    expect(animate).toHaveBeenCalledTimes(1);
-    rerender(<Statistic value={20} aria-live="polite" />);
-    expect(animate).toHaveBeenCalledTimes(1);
-    act(() => {
-      fireEvent(window, new Event('resize'));
-    });
   });
 });

@@ -2,12 +2,15 @@ import { CardSections } from '../../../src/examples/en/card/sections';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CardBasic } from '../../../src/examples/en/card/basic';
 import { CardSizes } from '../../../src/examples/en/card/sizes';
+import { CardStandaloneTitle } from '../../../src/examples/en/card/standalone-title';
 import { CardTabs } from '../../../src/examples/en/card/tabs';
 import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title';
 
 # Card
 
 Group related content and actions in a container.
+
+Titles use a semibold weight of 600 by default. Customize it through ConfigProvider's `theme.headingWeight`.
 
 ## Basic usage
 
@@ -27,6 +30,19 @@ These cards share the same content to compare headings, tab bars and content spa
 <ComponentExample title="Sizes" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
 
 ```tsx lineNumbers file="../../../src/examples/en/card/sizes.tsx"
+```
+
+</ComponentExample>
+
+## Standalone title
+
+Use `CardTitle` outside a card to reuse its heading style without a `Card` wrapper. `size` controls visual size: with the default 14px base font, `sm`, `md` and `lg` are 14px, 15px and 16px. `level` independently sets the semantic heading level, defaults to `3` and does not affect font size.
+
+These three content sections all use level-two headings, showing small, default and large sizes. Import `CardTitle` from `@ifhover/leaf-ui` or `@ifhover/leaf-ui/card`.
+
+<ComponentExample title="Standalone title" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/card/standalone-title.tsx"
 ```
 
 </ComponentExample>
@@ -79,12 +95,23 @@ With a `title` or `description`, tabs sit beneath the heading. There is no divid
 | `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size: padding, heading typography and height, and the default size of embedded Tabs. |
 
+## CardTitle API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Visual size, matching the heading in the corresponding Card size. |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | Render the corresponding h1–h6 element without changing visual size. |
+| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
+| `ref` | `Ref<HTMLHeadingElement>` | — | Reference to the heading element. |
+
+Supports native heading attributes, including `id`, `className`, `style`, `aria-*` and events. Set defaults through `ConfigProvider` `components.CardTitle` for directly rendered `CardTitle` instances. Internal Card headings continue to follow the Card size.
+
 ## Types
 
 Import the exported types when defining props or building item lists.
 
 ```ts
-import type { CardProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
+import type { CardProps, CardTitleProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
 ```
 
 ## Usage notes
@@ -103,11 +130,12 @@ Use `tabs` to configure disabled tabs, icons, manual keyboard activation, retain
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](../components/tabs#tabitem)`[]` | Required | Required. Tab labels and pages; an empty list restores an ordinary card. |
+| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | Required | Required. Tab labels and pages; an empty list restores an ordinary card. |
 | `activeKey` | `string` | First enabled item | Controlled active tab. |
 | `defaultActiveKey` | `string` | First enabled item | Initially active tab. |
 | `onChange` | `(key: string) => void` | — | Called when the active tab changes. |
 | `size` | `'sm' \| 'md' \| 'lg'` | Card's `size` | Tab size; may be overridden independently. |
+| `block` | `boolean` | — | Configure block. |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate with arrow keys or with Enter / Space. |
 | `destroyInactive` | `boolean` | `false` | Unmount pages on leaving; visited pages are retained by default. |
 | `extra` | `ReactNode` | — | Trailing tab bar content. |
@@ -116,4 +144,4 @@ Use `tabs` to configure disabled tabs, icons, manual keyboard activation, retain
 | `addLabel` | `string` | Localized prompt | Accessible name of the add button. |
 | `overflow` | `boolean` | `true` | Move overflowing tabs into the more menu. |
 | `sortable` | `boolean` | `false` | Enable sorting alongside `onReorder`. |
-| `onReorder` | `(items: `[`TabItem`](../components/tabs#tabitem)`[]) => void` | — | Return the reordered original items for the application to store. |
+| `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | Return the reordered original items for the application to store. |
