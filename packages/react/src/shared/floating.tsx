@@ -212,6 +212,10 @@ export function FloatingPanel({
     },
     [refs.setFloating, popupId],
   );
+  const setViewportRef = useCallback(
+    (node: HTMLDivElement | null) => assignRef(panelRef, node),
+    [panelRef],
+  );
 
   useBrowserLayoutEffect(() => {
     const trigger = referenceElement ?? triggerRef.current;
@@ -283,7 +287,7 @@ export function FloatingPanel({
     <PopupParent.Provider value={popupId}>
       <ScrollbarControl
         {...rootProps}
-        ref={panelRef}
+        ref={setViewportRef}
         rootRef={setPanelRef}
         viewportProps={viewportProps}
         viewportClassName="leaf-floating__viewport"
