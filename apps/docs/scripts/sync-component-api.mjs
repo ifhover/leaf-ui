@@ -530,8 +530,8 @@ const specific = {
     'Instance created by useReactTable; the sole data and state owner.',
   ],
   'DataTableProps.bordered': [
-    '展示外框和列分隔线；无边框时表头底部为 2px 分割线。',
-    'Show the outer frame and column dividers. Borderless headers have a 2px bottom divider.',
+    '展示外框和列分隔线；无边框时表头底部为 1px 分割线。',
+    'Show the outer frame and column dividers. Borderless headers have a 1px bottom divider.',
   ],
   'DataTableProps.striped': [
     '展示交替行背景并隐藏行间分割线；关闭时显示行间细线。',

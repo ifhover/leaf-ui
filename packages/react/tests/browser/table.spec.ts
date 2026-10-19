@@ -17,7 +17,7 @@ for (const theme of ['light', 'dark']) {
         const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--md")][1]');
         await expect(root).toHaveCSS('border-top-width', '0px');
         await expect(root).toHaveCSS('border-radius', '0px');
-        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '2px');
+        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
         await expect(table.locator('thead th').first()).toHaveCSS(
           'background-color',
           await root.evaluate((node) => getComputedStyle(node).backgroundColor),
@@ -45,13 +45,15 @@ for (const theme of ['light', 'dark']) {
           await page.mouse.move(0, 0);
           await expect(root).toHaveCSS('border-top-width', bordered ? '1px' : '0px');
           await expect(root).toHaveCSS('border-radius', bordered ? '10px' : '0px');
-          await expect(table.locator('thead th').first()).toHaveCSS(
-            'border-bottom-width',
-            bordered ? '1px' : '2px',
-          );
+          await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
           const cells = table.locator('tbody tr > td:first-child');
-          await expect(table.locator('thead th').first()).toHaveCSS(
-            'color',
+          const header = table.locator('thead th').first();
+          await expect(header).toHaveCSS('font-weight', '600');
+          await expect(header).toHaveCSS(
+            'background-color',
+            await root.evaluate((node) => getComputedStyle(node).backgroundColor),
+          );
+          expect(await header.evaluate((node) => getComputedStyle(node).color)).not.toBe(
             await cells.first().evaluate((node) => getComputedStyle(node).color),
           );
           await expect(cells.first()).toHaveCSS('border-right-width', bordered ? '1px' : '0px');
@@ -65,6 +67,13 @@ for (const theme of ['light', 'dark']) {
               return colors[0] === colors[1];
             })
             .toBe(!striped);
+          const surface = await root.evaluate((node) => getComputedStyle(node).backgroundColor);
+          await expect(cells.nth(1)).toHaveCSS('background-color', surface);
+          if (striped) {
+            expect(
+              await cells.first().evaluate((node) => getComputedStyle(node).backgroundColor),
+            ).not.toBe(surface);
+          }
           // Both ordinary and striped rows must visibly respond to hover.
           for (const cell of [cells.nth(0), cells.nth(1)]) {
             await cell.evaluate((node) =>
@@ -122,6 +131,15 @@ test('keyboard sorting, page selection, filtering, expansion and column visibili
 }) => {
   const demo = page.getByRole('region', { name: 'Data table demo', exact: true });
   const table = demo.getByRole('table');
+  const gap = await table
+    .locator('.leaf-data-table__sort')
+    .first()
+    .evaluate((node) => {
+      const label = node.querySelector('span')?.getBoundingClientRect();
+      const icon = node.querySelector('svg')?.getBoundingClientRect();
+      return label && icon ? icon.left - label.right : -1;
+    });
+  expect(gap).toBeCloseTo(4, 0);
   await table.getByRole('button', { name: 'Projects: Sort descending' }).focus();
   await page.keyboard.press('Enter');
   await expect(table.locator('th[aria-sort]')).toHaveAttribute('aria-sort', 'descending');
@@ -321,10 +339,14 @@ test('mobile width scrolls inside table and component theme tokens are consumed'
   const themed = page.getByRole('table', { name: 'Custom theme' });
   await expect(themed.getByRole('cell')).toHaveCSS('padding', '8px 12px');
   await expect(themed).toHaveCSS('font-size', '13px');
+  const headerColors: string[] = [];
   for (const theme of ['light', 'dark']) {
     await page.goto(`/?fixture=table&theme=${theme}`);
-    await expect(themed.getByRole('columnheader')).toHaveCSS('color', 'rgb(51, 51, 51)');
+    headerColors.push(
+      await themed.getByRole('columnheader').evaluate((node) => getComputedStyle(node).color),
+    );
   }
+  expect(headerColors[0]).toBe(headerColors[1]);
 });
 
 test('default sticky headers and body-only overlay tracks preserve page wheel scrolling', async ({

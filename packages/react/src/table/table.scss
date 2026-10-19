@@ -32,7 +32,6 @@
   }
 
   &--bordered {
-    --leaf-table-header-background: var(--leaf-color-surface-muted);
     border: var(--leaf-component-table-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-table-border-color,
@@ -80,7 +79,11 @@
 
   &__header {
     background: var(--leaf-table-header-background);
-    color: var(--leaf-component-table-color, var(--leaf-color-text));
+    color: color-mix(
+      in srgb,
+      var(--leaf-component-table-color, var(--leaf-color-text)) 80%,
+      var(--leaf-table-surface)
+    );
   }
 
   &--sticky &__header {
@@ -128,14 +131,10 @@
   &__column-header {
     position: relative;
     font-size: var(--leaf-font-size-sm);
-    font-weight: var(--leaf-font-weight);
+    font-weight: var(--leaf-heading-weight);
     background: var(--leaf-table-header-background);
     border-block-end: 1px solid var(--leaf-color-divider);
     white-space: nowrap;
-  }
-
-  &:not(.leaf-table--bordered) &__column-header {
-    border-block-end-width: 2px;
   }
 
   &__body > &__row:last-child > &__cell,
@@ -143,10 +142,10 @@
     border-block-end: 0;
   }
 
-  &--striped &__body > &__row:nth-child(even):not(.leaf-table__state-row) {
+  &--striped &__body > &__row:nth-child(odd):not(.leaf-table__state-row) {
     --leaf-table-row-base: color-mix(
       in srgb,
-      var(--leaf-color-surface-muted) 50%,
+      var(--leaf-component-table-color, var(--leaf-color-text)) 2%,
       var(--leaf-table-surface)
     );
   }

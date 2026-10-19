@@ -39,7 +39,7 @@ These modes are mutually exclusive: when supplying `table`, do not also pass `da
 
 ## Borders and striped rows
 
-DataTable defaults to no outer frame or column dividers, with `striped` rows enabled. Borderless tables have square corners and no tinted header background, with a 2px divider below the header. Enable `bordered` for a rounded frame, muted header background and column dividers. Headers use the body text color in both modes. Stripes use a faint background and hide row dividers; set `striped={false}` to show fine dividers between rows. Both ordinary and striped rows show subtle primary-color feedback on hover.
+DataTable defaults to no outer frame or column dividers, with `striped` rows enabled. Borderless tables have square corners and no tinted header background, with a 1px divider below the header. Enable `bordered` for a rounded frame, white header background and column dividers (following the dark surface in dark mode). Headers are bold and slightly lighter than body text in both modes, with sorting icons immediately after the label. Stripes start on the first body row with a faint background and hide row dividers; set `striped={false}` to show fine dividers between rows. Both ordinary and striped rows show subtle primary-color feedback on hover.
 
 <ComponentExample title="Switch table appearance" preview={<TableAppearance english />} fileName="appearance.tsx" width="100%">
 
@@ -167,7 +167,7 @@ This table describes the instance mode. For the data and columns mode, see [Data
 | `children` | `ReactNode` | — | Replace the default Content/Pagination layout. |
 | `caption` | `ReactNode` | — | Table caption. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `bordered` | `boolean` | `false` | Show the outer frame and column dividers. Borderless headers have a 2px bottom divider. |
+| `bordered` | `boolean` | `false` | Show the outer frame and column dividers. Borderless headers have a 1px bottom divider. |
 | `striped` | `boolean` | `true` | Alternate row backgrounds and hide row dividers. Disable to show fine dividers between rows. |
 | `stickyHeader` | `boolean` | `true` | Keep headers at the top of the scroll region. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum scroll height; virtual mode defaults to 400 when omitted. |

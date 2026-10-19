@@ -7,6 +7,13 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.8.1 - 2026-10-20
+
+### Improvements
+
+- Table headers are bold with slightly muted text. Bordered headers use a white surface (the dark surface in dark mode), and all header bottom dividers are 1px.
+- Stripes start on the first body row, and sorting icons sit immediately after header labels.
+
 ## 0.8.0 - 2026-10-20
 
 ### Added

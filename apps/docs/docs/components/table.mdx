@@ -39,7 +39,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 边框与斑马纹
 
-DataTable 默认无外框、无列分隔线，并开启 `striped` 斑马纹。无边框模式下没有圆角和表头灰底，表头底部保留 2px 分割线；设置 `bordered` 可展示带圆角的外框、表头浅底和列分隔线。两种模式的表头文字均使用正文色。斑马纹使用淡色背景，开启时不显示行间分割线，设置 `striped={false}` 后显示行间细线。普通行与条纹行悬停时均显示轻微的主色反馈。
+DataTable 默认无外框、无列分隔线，并开启 `striped` 斑马纹。无边框模式下没有圆角和表头灰底，表头底部保留 1px 分割线；设置 `bordered` 可展示带圆角的外框、白色表头和列分隔线（深色主题跟随深色表面）。两种模式的表头文字均加粗并略淡于正文，排序图标紧跟文字。斑马纹从第一行开始使用淡色背景，开启时不显示行间分割线，设置 `striped={false}` 后显示行间细线。普通行与条纹行悬停时均显示轻微的主色反馈。
 
 <ComponentExample title="切换表格外观" preview={<TableAppearance />} fileName="appearance.tsx" width="100%">
 
@@ -167,7 +167,7 @@ DataTable 默认无外框、无列分隔线，并开启 `striped` 斑马纹。�
 | `children` | `ReactNode` | — | 自定义布局；传入后不再渲染默认 Content 和 Pagination。 |
 | `caption` | `ReactNode` | — | 表格说明。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `bordered` | `boolean` | `false` | 展示外框和列分隔线；无边框时表头底部为 2px 分割线。 |
+| `bordered` | `boolean` | `false` | 展示外框和列分隔线；无边框时表头底部为 1px 分割线。 |
 | `striped` | `boolean` | `true` | 展示交替行背景并隐藏行间分割线；关闭时显示行间细线。 |
 | `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | 滚动区域最大高度；虚拟模式未指定时使用 400。 |
