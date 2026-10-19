@@ -229,9 +229,18 @@ const appearance = (button: Locator) =>
     const style = getComputedStyle(node);
     const danger = node.classList.contains('leaf-button--danger');
     const semantic = danger ? 'danger' : 'primary';
+    // Canvas resolves CSS Color 4 values, including color-mix(), to sRGB for contrast checks.
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Missing canvas color conversion');
+    context.fillStyle = style.backgroundColor;
+    context.fillRect(0, 0, 1, 1);
+    const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data;
     return {
       color: style.color,
       background: style.backgroundColor,
+      backgroundRgb: { r, g, b },
       border: style.borderTopColor,
       hover: style.getPropertyValue(`--leaf-color-${semantic}-hover`).trim(),
       active: style.getPropertyValue(`--leaf-color-${semantic}-active`).trim(),
@@ -239,6 +248,41 @@ const appearance = (button: Locator) =>
   });
 
 for (const theme of ['light', 'dark']) {
+  test(`soft buttons keep a neutral gray surface, readable text and stable geometry (${theme})`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=motion&theme=${theme}`);
+    const button = page.getByTestId('press-soft');
+    await button.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    const initial = await appearance(button);
+    const muted = await button.evaluate((node) =>
+      getComputedStyle(node).getPropertyValue('--leaf-color-surface-muted').trim(),
+    );
+    expect(initial.background).toBe(new TinyColor(muted).toRgbString());
+    expect(readability(initial.color, initial.background)).toBeGreaterThanOrEqual(4.5);
+    const before = await measure(button);
+    expect(before.height).toBe(36);
+    await expect(button.locator('.leaf-button__wave')).toHaveCount(0);
+    await button.hover();
+    await expect
+      .poll(async () => (await appearance(button)).background)
+      .not.toBe(initial.background);
+    const hovered = await appearance(button);
+    expect(hovered.color).toBe(initial.color);
+    expect(await measure(button)).toEqual(before);
+    await page.mouse.down();
+    await expect
+      .poll(async () => (await appearance(button)).background)
+      .not.toBe(hovered.background);
+    const pressed = await appearance(button);
+    expect(readability(pressed.color, pressed.backgroundRgb)).toBeGreaterThanOrEqual(4.5);
+    expect(await measure(button)).toEqual(before);
+    await page.mouse.up();
+    await page.mouse.move(0, 0);
+    await expect(button).toHaveCSS('background-color', initial.background);
+  });
+
   test(`hover and press use distinct action colors, preserving outlined surfaces (${theme})`, async ({
     page,
   }) => {
@@ -288,7 +332,7 @@ for (const theme of ['light', 'dark']) {
       await expect(button).toHaveCSS('color', original.color);
       await expect(button).toHaveCSS('border-top-color', original.border);
     }
-    for (const id of ['ghost', 'danger-ghost']) {
+    for (const id of ['soft', 'danger-soft']) {
       const button = page.getByTestId(`press-${id}`);
       const danger = id.startsWith('danger');
       await button.scrollIntoViewIfNeeded();
@@ -380,9 +424,9 @@ test('Space, Enter and touch retain native activation, focus and accessible name
     await expect(button).toHaveAttribute('data-click-count', '3');
   }
   await expect(button).toHaveAccessibleName('solid');
-  for (const id of ['press-ghost', 'press-danger-ghost']) {
-    const textButton = page.getByTestId(id);
-    await textButton.evaluate((node) => {
+  for (const id of ['press-soft', 'press-danger-soft']) {
+    const softButton = page.getByTestId(id);
+    await softButton.evaluate((node) => {
       node.addEventListener('click', () => {
         node.setAttribute(
           'data-click-count',
@@ -390,13 +434,13 @@ test('Space, Enter and touch retain native activation, focus and accessible name
         );
       });
     });
-    await textButton.click();
-    await textButton.focus();
+    await softButton.click();
+    await softButton.focus();
     await page.keyboard.press('Space');
     await page.keyboard.press('Enter');
-    await expect(textButton).toBeFocused();
-    await expect(textButton).toHaveAttribute('data-click-count', '3');
-    expect(await textButton.locator('.leaf-button__wave').count()).toBe(0);
+    await expect(softButton).toBeFocused();
+    await expect(softButton).toHaveAttribute('data-click-count', '3');
+    expect(await softButton.locator('.leaf-button__wave').count()).toBe(0);
   }
   for (const id of ['press-disabled', 'press-loading']) {
     const disabled = page.getByTestId(id);

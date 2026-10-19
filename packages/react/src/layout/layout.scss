@@ -40,7 +40,6 @@
   &__sider-content {
     flex: 1;
     min-height: 0;
-    overflow: auto;
   }
   &__sider[data-collapsed] > .leaf-button {
     width: 100%;

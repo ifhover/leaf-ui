@@ -6,13 +6,13 @@ export function AppBarBasic({ english = false }: { english?: boolean }) {
     <AppBar elevation>
       <Toolbar>
         <Button
-          variant="ghost"
+          variant="soft"
           startIcon={<Menu size={18} />}
           aria-label={english ? 'Menu' : '菜单'}
         />
         <strong style={{ marginInlineEnd: 'auto' }}>Leaf workspace</strong>
         <Button
-          variant="ghost"
+          variant="soft"
           startIcon={<Search size={18} />}
           aria-label={english ? 'Search' : '搜索'}
         />

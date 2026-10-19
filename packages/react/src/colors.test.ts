@@ -9,12 +9,124 @@ describe('theme color derivation', () => {
     expect(mixColors('#20834a', 'transparent', 12)).toBe('rgba(32, 131, 74, 0.12)');
     expect(mixColors('rgba(255, 0, 0, 0.5)', 'blue', 50)).toBe('rgba(85, 0, 170, 0.75)');
     expect(mixColors('invalid', '#fff', 50)).toBeUndefined();
+    expect(mixColors('color(srgb 1 0.5 0)', '#fff', 50)).toBe(
+      'color-mix(in srgb, color(srgb 1 0.5 0) 50%, #fff)',
+    );
+  });
+  it('keeps CSS color recipes reactive in initial HTML without replacing them with a static palette', () => {
+    const surface = 'color-mix(in srgb, var(--leaf-color-primary) 8%, white)';
+    const variables = leafThemeVariables({
+      primaryColor: '#ff6900',
+      tokens: { mutedSurfaceColor: surface, borderColor: 'var(--brand-ink)' },
+    });
+    expect(variables['--leaf-color-surface-muted']).toBe(surface);
+    expect(variables['--leaf-color-primary-surface-8']).toBeDefined();
+    expect(variables['--leaf-color-border-alpha-65']).toBe(
+      'color-mix(in srgb, var(--brand-ink) 65%, transparent)',
+    );
+    expect(variables['--leaf-frame-border-color']).toBe('var(--brand-ink)');
+    expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
+    expect(leafThemeVariables({})['--leaf-frame-border-color']).toBeUndefined();
+  });
+  it('chooses readable primary labels automatically and preserves explicit overrides', () => {
+    for (const [primaryColor, foreground] of [
+      ['#ff6900', '#ffffff'],
+      ['#1d9bf0', '#ffffff'],
+      ['#ffee00', '#000000'],
+      ['#18181b', '#ffffff'],
+      ['#20834a', '#ffffff'],
+      ['#9a9a9a', '#ffffff'],
+      ['#9b9b9b', '#000000'],
+    ] as const) {
+      for (const appearance of ['light', 'dark'] as const) {
+        const variables = leafThemeVariables({ primaryColor, appearance });
+        expect(variables['--leaf-color-on-primary']).toBe(foreground);
+        expect(
+          readability(variables['--leaf-color-primary'] ?? '', foreground),
+        ).toBeGreaterThanOrEqual(2.8);
+        for (const state of ['hover', 'active'])
+          expect(
+            readability(variables[`--leaf-color-primary-${state}`] ?? '', foreground),
+          ).toBeGreaterThanOrEqual(2.8);
+      }
+    }
+    expect(
+      leafThemeVariables({ primaryColor: '#ffee00', tokens: { onPrimaryColor: '#123456' } })[
+        '--leaf-color-on-primary'
+      ],
+    ).toBe('#123456');
+  });
+  it('keeps dark brand fills and derives readable ink and selected indicators separately', () => {
+    for (const primaryColor of ['#18181b', '#000000', '#102c42']) {
+      const theme = Object.freeze({ primaryColor, appearance: 'dark' as const });
+      const variables = leafThemeVariables(theme);
+      expect(variables['--leaf-color-primary']).toBe(primaryColor);
+      expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
+      const ink = String(variables['--leaf-color-primary-ink']);
+      const indicator = String(variables['--leaf-color-primary-indicator']);
+      for (const surface of [defaultColors.dark.surface, defaultColors.dark['surface-muted']]) {
+        expect(readability(ink, surface)).toBeGreaterThanOrEqual(4.5);
+        expect(readability(indicator, surface)).toBeGreaterThanOrEqual(3);
+        for (const shade of ['80', '55', '85'])
+          expect(
+            readability(String(variables[`--leaf-color-primary-text-${shade}`]), surface),
+          ).toBeGreaterThanOrEqual(4.5);
+      }
+      expect(variables['--leaf-color-primary-fill-border']).not.toBe('transparent');
+      expect(variables['--leaf-color-primary-focus']).toBe(indicator);
+      const before = new TinyColor(primaryColor).toHsl();
+      const after = new TinyColor(ink).toHsl();
+      expect(after.l).toBeGreaterThan(before.l);
+      expect(after.s).toBeCloseTo(before.s, 1);
+      if (before.s > 0.1) expect(after.h).toBeCloseTo(before.h, 0);
+      const palette = deriveColors('dark', { primary: primaryColor });
+      expect(variables).toEqual(palette);
+      expect(theme.primaryColor).toBe(primaryColor);
+      expect(leafThemeVariables({ ...theme, appearance: 'light' })['--leaf-color-primary']).toBe(
+        primaryColor,
+      );
+    }
+    for (const primaryColor of ['#1d9bf0', '#ff6900']) {
+      const variables = leafThemeVariables({ primaryColor, appearance: 'dark' });
+      expect(variables['--leaf-color-primary']).toBe(primaryColor);
+      expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
+      expect(variables['--leaf-color-primary-ink']).toBe(primaryColor);
+      expect(variables['--leaf-color-primary-fill-border']).toBe('transparent');
+    }
+  });
+  it('adapts against custom surfaces while retaining explicit foreground and interaction paint', () => {
+    const theme = mergeLeafTheme(
+      { appearance: 'dark', primaryColor: '#18181b' },
+      {
+        tokens: {
+          surfaceColor: '#333333',
+          mutedSurfaceColor: '#383838',
+          onPrimaryColor: '#123456',
+          primaryHoverColor: '#abcdef',
+        },
+      },
+    );
+    const variables = leafThemeVariables(theme);
+    expect(variables['--leaf-color-primary']).toBe('#18181b');
+    expect(
+      readability(String(variables['--leaf-color-primary-ink']), '#383838'),
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(variables['--leaf-color-on-primary']).toBe('#123456');
+    expect(variables['--leaf-color-primary-hover']).toBe('#abcdef');
+    expect(
+      leafThemeVariables(mergeLeafTheme(theme, { appearance: 'light' }))['--leaf-color-primary'],
+    ).toBe('#18181b');
+    expect(
+      leafThemeVariables({ primaryColor: 'var(--brand)', appearance: 'dark' })[
+        '--leaf-color-primary'
+      ],
+    ).toBe('var(--brand)');
   });
   it('produces every static recipe in both appearances', () => {
     for (const mode of ['light', 'dark'] as const) {
       const values = deriveColors(mode);
       for (const key of Object.keys(colorRecipes))
-        expect(values[key as keyof typeof values], key).toMatch(/^rgba\(/);
+        expect(new TinyColor(values[key as keyof typeof values]).isValid, key).toBe(true);
     }
   });
   it('keeps bright warning accents separate from readable tag labels', () => {
@@ -74,7 +186,7 @@ describe('theme color derivation', () => {
     expect(darkCustom['--leaf-color-on-primary']).toBe('#ffffff');
     expect(
       readability(darkCustom['--leaf-color-primary-hover'] ?? '', '#fff'),
-    ).toBeGreaterThanOrEqual(4.5);
+    ).toBeGreaterThanOrEqual(2.8);
     const customInk = leafThemeVariables({
       appearance: 'dark',
       primaryColor: '#83cf9e',
@@ -112,9 +224,13 @@ describe('theme color derivation', () => {
       { tokens: { surfaceColor: '#000', primarySoftColor: '#123456' } },
     );
     const values = leafThemeVariables(theme);
-    expect(values['--leaf-color-primary-alpha-12']).toBe('rgba(255, 0, 0, 0.12)');
+    expect(values['--leaf-color-primary-alpha-12']).toBe(
+      mixColors(String(values['--leaf-color-primary']), 'transparent', 12),
+    );
     expect(values['--leaf-color-danger-alpha-12']).toBe('rgba(0, 0, 255, 0.12)');
-    expect(values['--leaf-color-primary-surface-8']).toBe('rgba(20, 0, 0, 1)');
+    expect(values['--leaf-color-primary-surface-8']).toBe(
+      mixColors(String(values['--leaf-color-primary']), '#000', 8),
+    );
     expect(values['--leaf-color-primary-soft']).toBe('#123456');
     expect(leafThemeVariables({})).toEqual({});
   });

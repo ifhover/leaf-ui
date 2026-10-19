@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Carousel } from '../carousel';
 import { ConfigProvider } from '../config-provider';
-import { Segmented } from '../segmented';
 import { Statistic } from '../statistic';
 import { Tree } from '../tree';
 import { Tabs } from './tabs';
@@ -120,24 +119,23 @@ describe('Navigation motion contracts', () => {
     expect(animate).not.toHaveBeenCalled();
   });
 
-  it('keeps RTL segmented keyboard selection and submitted form value aligned', async () => {
-    const { container } = render(
+  it('keeps RTL card tabs selection aligned while skipping disabled items', async () => {
+    render(
       <ConfigProvider direction="rtl">
-        <form>
-          <Segmented
-            name="view"
-            options={['First', { value: 'disabled', label: 'Disabled', disabled: true }, 'Last']}
-          />
-        </form>
+        <Tabs
+          type="card"
+          items={[
+            { key: 'first', label: 'First' },
+            { key: 'disabled', label: 'Disabled', disabled: true },
+            { key: 'last', label: 'Last' },
+          ]}
+        />
       </ConfigProvider>,
     );
-    screen.getByRole('radio', { name: 'First' }).focus();
+    screen.getByRole('tab', { name: 'First' }).focus();
     await userEvent.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('radio', { name: 'Last' })).toHaveFocus();
-    expect(screen.getByRole('radio', { name: 'Last' })).toHaveAttribute('aria-checked', 'true');
-    expect(new FormData(container.querySelector('form') as HTMLFormElement).get('view')).toBe(
-      'Last',
-    );
+    expect(screen.getByRole('tab', { name: 'Last' })).toHaveFocus();
+    expect(screen.getByRole('tab', { name: 'Last' })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('preserves carousel slide state and moves forward through the last-to-first wrap', async () => {

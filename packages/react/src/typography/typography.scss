@@ -58,7 +58,7 @@
   &__action {
     border: 0;
     background: transparent;
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     font: inherit;
     cursor: pointer;
     border-radius: var(--leaf-radius-sm);
@@ -67,7 +67,7 @@
       background: var(--leaf-color-primary-alpha-8);
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       outline-offset: 2px;
     }
   }
@@ -92,7 +92,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--leaf-color-primary);
+  color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   text-decoration: none;
   font: inherit;
   text-underline-offset: 4px;
@@ -102,7 +102,7 @@
     color: var(--leaf-color-primary-text-85);
   }
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -126,7 +126,7 @@
   color: var(--leaf-color-text);
   font: inherit;
   &:focus {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: 2px;
   }
 }

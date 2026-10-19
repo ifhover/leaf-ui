@@ -23,6 +23,9 @@ export function Capabilities({ english = false }) {
             : '最多选择两人，只展示一个标签'}
         </Text>
         <TreeSelect
+          aria-label={english ? 'Team members' : '团队成员'}
+          popupWidth="auto"
+          popupMaxWidth={320}
           treeCheckable
           options={options}
           maxCount={2}

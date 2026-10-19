@@ -1,4 +1,4 @@
-export type { LeafComponentTokens, LeafThemeStyle } from '../theme';
+export type { LeafComponentStateTokens, LeafComponentTokens, LeafThemeStyle } from '../theme';
 export type {
   ConfigProviderProps,
   LeafComponentDefaults,

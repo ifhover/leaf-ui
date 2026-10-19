@@ -8,9 +8,9 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 基础用法
 
-`solid` 适合主要操作，`outline` 使用白底、正文色和细边框，适合次要操作，`ghost` 适合低优先级操作，`link` 使用主题色文字，无内边距、边框和固定控件高度。页面跳转使用 Link 组件。
+`solid` 适合主要操作，`outline` 使用内容底色、正文色和细边框，`soft` 为柔和按钮，使用中性浅底，适合次要操作；设置 `danger` 后使用淡红色背景和红色文字。柔和按钮的底色随深浅主题变化，悬停和按下时逐渐加深。`link` 使用主题色文字，无内边距、边框和固定控件高度。页面跳转使用 Link 组件。
 
-主按钮和描边按钮点击时，外缘波纹快速扩散后缓慢淡出，按钮与文字保持稳定；文字和链接按钮不展示波纹。主按钮悬停时提亮、按下时加深；描边按钮保持底色，通过文字和边框变色反馈。危险操作使用红色，波纹跟随主题；关闭动效或启用系统减少动态效果后不展示波纹。
+主按钮和描边按钮点击时，外缘波纹快速扩散后缓慢淡出，按钮与文字保持稳定；柔和按钮和链接按钮不展示波纹。主按钮悬停时提亮、按下时加深；描边按钮保持底色，通过文字和边框变色反馈。危险操作使用红色，波纹跟随主题；关闭动效或启用系统减少动态效果后不展示波纹。
 
 <ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -100,7 +100,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | `'solid'` | 视觉样式 |
+| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
 | `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
@@ -155,13 +155,13 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | — | 按钮样式 |
+| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | 按钮样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
 | `danger` | `boolean` | — | 危险操作颜色 |
 | `loading` | `boolean` | — | 加载状态 |
 | `fullWidth` | `boolean` | — | 占满宽度 |
 | `startIcon` | `ReactNode` | — | 前置图标 |
 | `endIcon` | `ReactNode` | — | 后置图标 |
-| `items` | `readonly `[`DropdownItem`](../components/dropdown#dropdownitem)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
+| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
 | `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
-| `dropdownProps` | `Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |
+| `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |

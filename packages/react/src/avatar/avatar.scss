@@ -9,7 +9,7 @@
   height: 40px;
   overflow: hidden;
   vertical-align: middle;
-  border: 1px solid var(--leaf-color-border);
+  border: 2px solid #fff;
   color: var(--leaf-component-avatar-color, var(--leaf-color-text-muted));
   background: var(--leaf-component-avatar-background, var(--leaf-color-surface-muted));
   font: var(--leaf-font-weight) 15px/1 var(--leaf-font-family);
@@ -63,12 +63,13 @@
 .leaf-avatar-group {
   display: flex;
   align-items: center;
-  padding-inline-start: 3px;
   > .leaf-avatar,
   > button {
-    margin-inline-start: -3px;
-    box-shadow: 0 0 0 3px var(--leaf-color-surface);
+    margin-inline-start: -8px;
     border-radius: 50%;
+  }
+  > :first-child {
+    margin-inline-start: 0;
   }
   &__more {
     display: flex;
@@ -87,7 +88,7 @@
       transform: scale(0.96);
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       outline-offset: 3px;
     }
   }

@@ -49,6 +49,8 @@ showSearch filters existing options; multiple accepts an array and keeps the men
 
 ## Popup width and content
 
+The popup matches the Select width by default. Set `popupWidth="auto"` to fit the content or `popupWidth={300}` for a fixed 300px width. Set `popupMaxWidth` separately when a maximum is needed; it is unset by default. The popup still avoids viewport edges.
+
 <ComponentExample title="Popup width and content" preview={<SelectPopup />} fileName="popup.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/select/popup.tsx"
@@ -108,8 +110,8 @@ Set `tagWrap={false}` to keep selected values on one line. Long labels truncate;
 | `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Customize the selected value. |
 | `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | Customize selected tags; use remove to request removal. |
 | `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | Popup scroll event, useful for loading another page. |
-| `popupWidth` | `number \| string` | `'auto'` | Popup width: auto fits content, trigger matches the field, or use pixels / a CSS length |
-| `popupMaxWidth` | `number \| string` | `420` | Maximum width, also limited by the viewport |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width: trigger matches the field, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum width; unset by default, still bounded by the viewport |
 | `loading` | `boolean` | `false` | Loading indicator |
 | `notFoundContent` | `ReactNode` | — | Content when no options match |
 | `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Custom option content |
@@ -159,7 +161,7 @@ Use name to include values in FormData. Uncontrolled fields follow form reset; r
 
 In multiple mode, clearing returns []. FormData submits repeated values under the same name; read them with `formData.getAll(name)`. Empty-query Backspace removes the last enabled tag. Leaving clears the query; searches never create values. For node labels, supply searchLabel. The ref and other input attributes target the input.
 
-The field keeps its layout width. The popup is at least as wide as the field and grows to fit its options, up to popupMaxWidth. Use `popupWidth="trigger"` for a matching width or set `popupWidth={300}` for a fixed width. Content wraps only after reaching its width limit.
+The field keeps its layout width. The popup matches it by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to size the popup solely from its option content, which may be narrower than the field. Use `popupWidth={300}` for a fixed 300px width or pass a CSS length. `popupMaxWidth` is unset by default and can be supplied when needed. All width modes remain bounded by the available viewport width; content wraps when it exceeds the actual popup width.
 
 ## Extension types
 

@@ -1,5 +1,5 @@
 import type { MenuItem } from '@ifhover/leaf-ui';
-import { Button, Flex, Menu, Text } from '@ifhover/leaf-ui';
+import { Button, Flex, Menu, Tabs } from '@ifhover/leaf-ui';
 import { BookOpen, Folder, House, Palette, Settings } from 'lucide-react';
 import { useState } from 'react';
 
@@ -16,21 +16,59 @@ const items: MenuItem[] = [
   },
   { key: 'settings', label: '设置', icon: <Settings /> },
 ];
-export function MenuHorizontal() {
-  const [collapsed, setCollapsed] = useState(false);
+export function MenuLayouts() {
+  const [collapsed, setCollapsed] = useState(true);
   return (
-    <Flex direction="column" gap={20}>
-      <Flex direction="column" gap="sm" align="center">
-        <Text tone="muted">横向导航</Text>
-        <Menu mode="horizontal" items={items} defaultSelectedKey="home" />
-      </Flex>
-      <Flex direction="column" gap="sm" align="center">
-        <Text tone="muted">可折叠侧栏</Text>
-        <Button variant="ghost" size="sm" onClick={() => setCollapsed((value) => !value)}>
-          切换折叠
-        </Button>
-        <Menu collapsed={collapsed} items={items} defaultSelectedKey="home" />
-      </Flex>
-    </Flex>
+    <Tabs
+      aria-label="菜单排列方式"
+      items={[
+        {
+          key: 'vertical',
+          label: '垂直',
+          children: (
+            <Menu
+              mode="vertical"
+              items={items}
+              defaultSelectedKey="components"
+              defaultOpenKeys={['resources']}
+            />
+          ),
+        },
+        {
+          key: 'inline',
+          label: '内嵌',
+          children: (
+            <Menu
+              mode="inline"
+              items={items}
+              defaultSelectedKey="components"
+              defaultOpenKeys={['resources']}
+            />
+          ),
+        },
+        {
+          key: 'horizontal',
+          label: '横向',
+          children: <Menu mode="horizontal" items={items} defaultSelectedKey="components" />,
+        },
+        {
+          key: 'collapsed',
+          label: '折叠侧栏',
+          children: (
+            <Flex direction="column" gap="md" align="start">
+              <Button
+                variant="soft"
+                size="sm"
+                aria-expanded={!collapsed}
+                onClick={() => setCollapsed((value) => !value)}
+              >
+                {collapsed ? '展开侧栏' : '折叠侧栏'}
+              </Button>
+              <Menu collapsed={collapsed} items={items} defaultSelectedKey="components" />
+            </Flex>
+          ),
+        },
+      ]}
+    />
   );
 }

@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { forwardRef, type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import type { DropdownItem } from '../dropdown';
@@ -9,6 +9,46 @@ import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 import { useMovingIndicator } from '../tabs/use-moving-indicator';
+
+export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+  title: ReactNode;
+}
+
+const MenuGroupControl = forwardRef<HTMLDivElement, MenuGroupProps>(function MenuGroupControl(
+  { title, children, className, ...props },
+  ref,
+) {
+  const titleId = useId();
+  return (
+    // biome-ignore lint/a11y/useSemanticElements: Menu groups and arbitrary sidebar content are not form fieldsets.
+    <div
+      role="group"
+      aria-labelledby={props['aria-label'] !== undefined ? undefined : titleId}
+      {...props}
+      ref={ref}
+      className={classes('leaf-menu__group', className)}
+    >
+      <div id={titleId} className="leaf-menu__group-label">
+        {title}
+      </div>
+      {children}
+    </div>
+  );
+});
+
+export const MenuGroup = forwardRef<HTMLDivElement, MenuGroupProps>(
+  function MenuGroup(rawProps, ref) {
+    const props = useComponentProps('MenuGroup', rawProps);
+    return (
+      <MenuGroupControl
+        {...props}
+        ref={ref}
+        className={classes('leaf-menu-group', props.className)}
+      />
+    );
+  },
+);
+
 export interface MenuItem {
   key: string;
   label: ReactNode;
@@ -132,14 +172,9 @@ export function Menu(rawProps: MenuProps) {
       if (item.type === 'divider') return <hr className="leaf-menu__divider" key={item.key} />;
       if (item.type === 'group')
         return (
-          <fieldset
-            aria-label={typeof item.label === 'string' ? item.label : undefined}
-            key={item.key}
-            className="leaf-menu__group"
-          >
-            <legend className="leaf-menu__group-label">{item.label}</legend>
+          <MenuGroupControl key={item.key} title={item.label}>
             {renderItems(item.children ?? [], depth)}
-          </fieldset>
+          </MenuGroupControl>
         );
       const expanded = opened.includes(item.key);
       const hasChildren = Boolean(item.children?.length);
@@ -166,7 +201,10 @@ export function Menu(rawProps: MenuProps) {
         'aria-disabled': item.disabled || undefined,
         'aria-expanded': hasChildren ? expanded : undefined,
         'aria-controls': hasChildren ? `${id}-${item.key}` : undefined,
-        'data-selected': selected === item.key || undefined,
+        'data-selected':
+          selected === item.key ||
+          ((mode === 'horizontal' || collapsed) && hasChildren && hasSelected(item)) ||
+          undefined,
         'data-active-parent': (hasChildren && hasSelected(item)) || undefined,
         'data-danger': item.danger || undefined,
         className: classes(
@@ -194,11 +232,28 @@ export function Menu(rawProps: MenuProps) {
           <div key={item.key} className="leaf-menu__entry">
             <Dropdown
               items={convert(item.children ?? [])}
+              navigation={{ selectedKey: selected, title: collapsed ? item.label : undefined }}
+              popupWidth={208}
+              popupPlacement={
+                collapsed ? (direction === 'rtl' ? 'left-start' : 'right-start') : 'bottom-start'
+              }
               open={expanded}
               disabled={item.disabled}
               onOpenChange={(next) => setOpened(next ? [item.key] : [])}
             >
-              <button {...common} type="button">
+              <button
+                {...common}
+                type="button"
+                onKeyDown={(event) => {
+                  if (
+                    collapsed &&
+                    event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')
+                  ) {
+                    event.preventDefault();
+                    if (!item.disabled) setOpened([item.key]);
+                  }
+                }}
+              >
                 {content}
               </button>
             </Dropdown>
@@ -289,9 +344,16 @@ export function Menu(rawProps: MenuProps) {
               if (item.children?.length) {
                 if (!opened.includes(item.key)) setOpened([...opened, item.key]);
                 else {
-                  const child = item.children.find(
-                    (entry) => !entry.disabled && entry.type !== 'divider',
-                  );
+                  const firstEnabled = (entries: readonly MenuItem[]): MenuItem | undefined => {
+                    for (const entry of entries) {
+                      if (entry.type === 'group') {
+                        const child = firstEnabled(entry.children ?? []);
+                        if (child) return child;
+                      } else if (!entry.disabled && entry.type !== 'divider') return entry;
+                    }
+                    return undefined;
+                  };
+                  const child = firstEnabled(item.children);
                   if (child) focusItem(child.key);
                 }
               }
@@ -301,16 +363,22 @@ export function Menu(rawProps: MenuProps) {
               event.preventDefault();
               if (opened.includes(item.key)) toggle(item.key);
               else {
-                const parentOf = (entries: readonly MenuItem[]): MenuItem | undefined => {
+                const parentOf = (
+                  entries: readonly MenuItem[],
+                  parentItem?: MenuItem,
+                ): MenuItem | undefined => {
                   for (const entry of entries) {
-                    if (entry.children?.some((child) => child.key === item.key)) return entry;
-                    const parent = parentOf(entry.children ?? []);
+                    if (entry.key === item.key) return parentItem;
+                    const parent = parentOf(
+                      entry.children ?? [],
+                      entry.type === 'group' ? parentItem : entry,
+                    );
                     if (parent) return parent;
                   }
                   return undefined;
                 };
                 const parent = parentOf(items);
-                if (parent && parent.type !== 'group') focusItem(parent.key);
+                if (parent) focusItem(parent.key);
               }
               return;
             }

@@ -1,6 +1,11 @@
 @use '../styles/mixins' as mixins;
 .leaf-switch {
-  @include mixins.choice;
+  @include mixins.choice(switch);
+  @include mixins.choice-label-states(switch);
+  --leaf-switch-border-width: var(
+    --leaf-component-switch-border-width,
+    var(--leaf-border-width, 1px)
+  );
   --leaf-switch-width: 36px;
   --leaf-switch-height: 20px;
   --leaf-switch-thumb: 14px;
@@ -40,10 +45,20 @@
     display: block;
     width: 100%;
     height: 100%;
-    padding: 3px;
+    padding: max(0px, calc(3px - var(--leaf-switch-border-width)));
+    border: var(--leaf-switch-border-width) solid
+      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent));
     border-radius: 999px;
-    background: var(--leaf-color-text-subtle-surface-muted-38);
-    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+    --leaf-switch-track-background: var(
+      --leaf-component-switch-background,
+      var(--leaf-color-text-subtle-surface-muted-38)
+    );
+    --leaf-switch-track-shadow: var(
+      --leaf-component-switch-shadow,
+      var(--leaf-control-shadow, inset 0 1px 2px rgb(0 0 0 / 8%))
+    );
+    background: var(--leaf-switch-track-background);
+    box-shadow: var(--leaf-switch-track-shadow);
     pointer-events: none;
     transition:
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
@@ -65,7 +80,8 @@
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__input:checked + &__track {
-    background: var(--leaf-color-primary);
+    --leaf-switch-track-background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    background: var(--leaf-switch-track-background);
   }
   &__input:checked + &__track &__thumb {
     transform: translateX(
@@ -83,13 +99,55 @@
       )
     );
   }
-  &:hover:not([data-disabled]) &__track {
-    box-shadow:
-      inset 0 1px 2px rgb(0 0 0 / 8%),
-      0 0 0 3px var(--leaf-color-primary-alpha-8);
-  }
   &__input:focus-visible + &__track {
     @include mixins.focus-ring;
+  }
+  &__input:focus-visible:not(:disabled) + &__track {
+    @include mixins.state-paint(
+      switch,
+      focus,
+      inherit,
+      var(--leaf-switch-track-background),
+      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(--leaf-switch-track-shadow)
+    );
+  }
+  &:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) &__track {
+    @include mixins.state-paint(
+      switch,
+      hover,
+      inherit,
+      var(--leaf-switch-track-background),
+      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(
+        --leaf-component-switch-shadow,
+        var(
+          --leaf-control-shadow,
+          inset 0 1px 2px rgb(0 0 0 / 8%),
+          0 0 0 3px var(--leaf-color-primary-alpha-8)
+        )
+      )
+    );
+  }
+  &:active:not([data-disabled]) &__track {
+    @include mixins.state-paint(
+      switch,
+      active,
+      inherit,
+      var(--leaf-switch-track-background),
+      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(--leaf-switch-track-shadow)
+    );
+  }
+  &[data-disabled] &__track {
+    @include mixins.state-paint(
+      switch,
+      disabled,
+      inherit,
+      var(--leaf-switch-track-background),
+      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(--leaf-switch-track-shadow)
+    );
   }
   &__spinner {
     width: 10px;
@@ -110,14 +168,14 @@
     }
   }
   @media (forced-colors: active) {
-    &__track {
-      border: 1px solid ButtonText;
+    & &__control > &__input + &__track {
+      border-color: ButtonText;
       background: Canvas;
     }
     &__thumb {
       background: ButtonText;
     }
-    &__input:checked + &__track {
+    & &__control > &__input:checked + &__track {
       background: Highlight;
     }
     &__input:checked + &__track &__thumb {

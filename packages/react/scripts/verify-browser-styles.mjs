@@ -22,6 +22,12 @@ const cases = {
     include: ['button', 'input'],
     exclude: ['table', 'modal', 'select'],
   },
+  menuGroup: {
+    names: ['MenuGroup'],
+    subpath: '/menu',
+    include: ['menu'],
+    exclude: ['input', 'table', 'modal'],
+  },
   table: {
     names: ['Table'],
     include: ['table', 'scrollbar', 'loading'],
@@ -29,18 +35,18 @@ const cases = {
   },
   date: {
     names: ['DatePicker'],
-    include: ['date-picker', 'calendar', 'time-picker'],
+    include: ['date-picker', 'calendar', 'time-picker', 'scrollbar'],
     exclude: ['table', 'color-picker'],
   },
   card: {
     names: ['Card'],
-    include: ['card', 'skeleton', 'tabs'],
+    include: ['card', 'skeleton', 'tabs', 'scrollbar'],
     exclude: ['table', 'input', 'color-picker'],
   },
   cardSubpath: {
     names: ['Card'],
     subpath: '/card',
-    include: ['card', 'skeleton', 'tabs'],
+    include: ['card', 'skeleton', 'tabs', 'scrollbar'],
     exclude: ['table', 'input', 'color-picker'],
   },
   config: {

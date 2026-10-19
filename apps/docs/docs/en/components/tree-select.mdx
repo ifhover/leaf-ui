@@ -48,6 +48,8 @@ Choose one or more values from hierarchical data.
 
 ## Selection limits and node rendering
 
+The popup matches the field width by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to fit the content, which may be narrower than the field, or `popupWidth={300}` for a fixed 300px width; CSS lengths are also supported. `popupMaxWidth` is unset by default. The example below fits the content with an explicit maximum width. Viewport edge avoidance still applies.
+
 <ComponentExample title="Selection limits and node rendering" preview={<Capabilities english />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/tree-select/capabilities.tsx"
@@ -87,8 +89,8 @@ Reopening preserves the expanded branches. Click a category that cannot be selec
 | `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | Values expanded initially |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation status |
-| `popupWidth` | `number \| string` | `Content width` | Panel width / maximum width; at least as wide as the trigger |
-| `popupMaxWidth` | `number \| string` | `420` | Panel width / maximum width; at least as wide as the trigger |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width: trigger matches the field, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum width; unset by default, still bounded by the viewport |
 | `notFoundContent` | `ReactNode` | No options | Content when no options match |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
 | `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | Load children on expansion; signal supports cancellation |

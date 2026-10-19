@@ -23,12 +23,14 @@ import {
 import { createPortal } from 'react-dom';
 import { tabbable } from 'tabbable';
 import { useLeafConfig } from '../config-provider/context';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import type { LeafThemeStyle } from '../theme';
 import { composedEventTarget, composedParent, deepActiveElement } from './dom';
 import { assignRef } from './field';
 import { inertProps } from './inert';
 import { OverlayOwner } from './overlay-owner';
 import { usePresence } from './presence';
+import { readThemeVariables } from './theme-variables';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const PopupParent = createContext<string | undefined>(undefined);
@@ -36,7 +38,8 @@ const popupNodes = new Map<string, HTMLElement>();
 const dismissStack: RefObject<HTMLElement | null>[] = [];
 function insidePopup(target: Node, panel: HTMLElement | null) {
   if (!panel) return false;
-  if (panel.contains(target)) return true;
+  const boundary = panel.closest<HTMLElement>('[data-leaf-popup]') ?? panel;
+  if (boundary.contains(target)) return true;
   let popup = target instanceof Element ? target.closest<HTMLElement>('[data-leaf-popup]') : null;
   const visited = new Set<string>();
   while (popup?.dataset.leafPopupParent) {
@@ -44,7 +47,7 @@ function insidePopup(target: Node, panel: HTMLElement | null) {
     if (visited.has(parent)) break;
     visited.add(parent);
     popup = popupNodes.get(parent) ?? null;
-    if (popup === panel) return true;
+    if (popup === boundary) return true;
   }
   return false;
 }
@@ -93,6 +96,8 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   maxWidth?: CSSProperties['maxWidth'];
   maxHeight?: CSSProperties['maxHeight'];
   placement?: Placement;
+  sideFallback?: boolean;
+  resetSurfaceGeometry?: boolean;
   container?: Element | DocumentFragment | (() => Element | DocumentFragment);
   render?: (content: React.ReactNode) => React.ReactNode;
   position?: { x: number; y: number };
@@ -109,6 +114,8 @@ export function FloatingPanel({
   maxWidth,
   maxHeight,
   placement = 'bottom-start',
+  sideFallback = false,
+  resetSurfaceGeometry = false,
   container,
   render,
   position,
@@ -120,7 +127,8 @@ export function FloatingPanel({
   const parentPopup = useContext(PopupParent);
   const config = useLeafConfig();
   const owner = useContext(OverlayOwner);
-  const present = usePresence(open, panelRef);
+  const floatingRef = useRef<HTMLDivElement>(null);
+  const present = usePresence(open, floatingRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
   const [inheritedMotion, setInheritedMotion] = useState<string>();
   const openRef = useRef(open);
@@ -147,38 +155,51 @@ export function FloatingPanel({
       }),
     middleware: [
       offset(6),
-      flip({ padding: 12 }),
+      flip({ padding: 12, fallbackAxisSideDirection: sideFallback ? 'end' : 'none' }),
       shift({ padding: 12 }),
-      size({
-        padding: 12,
-        apply({ availableHeight, availableWidth, rects, elements }) {
-          if (!openRef.current) return;
-          const length = (value: string | number) =>
-            typeof value === 'number' ? `${value}px` : value;
-          const widthMaximum = maxWidth ?? style?.maxWidth;
-          const heightMaximum = maxHeight ?? style?.maxHeight;
-          const viewportWidth = `${Math.max(0, availableWidth)}px`;
-          const viewportHeight = `${Math.max(0, availableHeight)}px`;
-          const widthLimit =
-            widthMaximum === undefined
-              ? viewportWidth
-              : `min(${length(widthMaximum)}, ${viewportWidth})`;
-          Object.assign(elements.floating.style, {
-            maxHeight:
-              heightMaximum === undefined
-                ? viewportHeight
-                : `min(${length(heightMaximum)}, ${viewportHeight})`,
-            maxWidth: widthLimit,
-            width: matchWidth
-              ? `${Math.min(rects.reference.width, availableWidth)}px`
-              : length(width ?? style?.width ?? ''),
-            minWidth:
-              minWidth === 'trigger'
-                ? `min(${rects.reference.width}px, ${widthLimit})`
-                : length(minWidth ?? style?.minWidth ?? ''),
-          });
+      size(
+        {
+          padding: 12,
+          apply({ availableHeight, availableWidth, rects, elements }) {
+            if (!openRef.current) return;
+            const length = (value: string | number) =>
+              typeof value === 'number' ? `${value}px` : value;
+            const widthMaximum = maxWidth ?? style?.maxWidth;
+            const heightMaximum = maxHeight ?? style?.maxHeight;
+            const viewportWidth = `${Math.max(0, availableWidth)}px`;
+            const viewportHeight = `${Math.max(0, availableHeight)}px`;
+            const widthLimit =
+              widthMaximum === undefined
+                ? viewportWidth
+                : `min(${length(widthMaximum)}, ${viewportWidth})`;
+            Object.assign(elements.floating.style, {
+              maxHeight:
+                heightMaximum === undefined
+                  ? viewportHeight
+                  : `min(${length(heightMaximum)}, ${viewportHeight})`,
+              maxWidth: widthLimit,
+              width: matchWidth
+                ? `${Math.min(rects.reference.width, availableWidth)}px`
+                : length(width ?? style?.width ?? ''),
+              minWidth:
+                minWidth === 'trigger'
+                  ? `min(${rects.reference.width}px, ${widthLimit})`
+                  : length(minWidth ?? style?.minWidth ?? ''),
+            });
+          },
         },
-      }),
+        [
+          matchWidth,
+          width,
+          minWidth,
+          maxWidth,
+          maxHeight,
+          style?.width,
+          style?.minWidth,
+          style?.maxWidth,
+          style?.maxHeight,
+        ],
+      ),
     ],
   });
   if (open) previousPosition.current = floatingStyles;
@@ -186,10 +207,10 @@ export function FloatingPanel({
     (node: HTMLDivElement | null) => {
       if (node) popupNodes.set(popupId, node);
       else popupNodes.delete(popupId);
-      assignRef(panelRef, node);
+      assignRef(floatingRef, node);
       refs.setFloating(node);
     },
-    [panelRef, refs.setFloating, popupId],
+    [refs.setFloating, popupId],
   );
 
   useBrowserLayoutEffect(() => {
@@ -212,19 +233,22 @@ export function FloatingPanel({
         : trigger,
     );
     const syncTheme = () => {
-      const computed = getComputedStyle(trigger);
       let motionAncestor: HTMLElement | null = trigger;
       while (motionAncestor && !motionAncestor.hasAttribute('data-leaf-motion'))
         motionAncestor = composedParent(motionAncestor);
       setInheritedMotion(motionAncestor?.getAttribute('data-leaf-motion') ?? undefined);
-      const variables: LeafThemeStyle = {
-        colorScheme: computed.colorScheme,
-        direction: computed.direction as CSSProperties['direction'],
-      };
-      for (let i = 0; i < computed.length; i += 1) {
-        const key = computed.item(i);
-        if (key.startsWith('--leaf-'))
-          variables[key as `--leaf-${string}`] = computed.getPropertyValue(key);
+      const variables = readThemeVariables(trigger);
+      if (resetSurfaceGeometry) {
+        // Navigation triggers define their own inset surface. The popup solves
+        // its geometry independently while keeping scoped theme paint/shadows.
+        for (const key of Object.keys(variables)) {
+          if (
+            /^--leaf-surface-(?:radius$|border$|padding(?:-|$)|inner-)/.test(key) ||
+            key === '--leaf-floating-option-radius'
+          ) {
+            delete variables[key as `--leaf-${string}`];
+          }
+        }
       }
       setTheme(variables);
     };
@@ -239,7 +263,7 @@ export function FloatingPanel({
       ancestor = composedParent(ancestor);
     }
     return () => observer.disconnect();
-  }, [triggerRef, referenceElement, refs.setReference, present, position]);
+  }, [triggerRef, referenceElement, refs.setReference, present, position, resetSurfaceGeometry]);
 
   useBrowserLayoutEffect(() => {
     // A quick reopen can reuse the exit-presence node without remounting autoUpdate.
@@ -247,11 +271,25 @@ export function FloatingPanel({
   }, [open, present, update]);
 
   if (!present || typeof document === 'undefined') return null;
+  const viewportProps: HTMLAttributes<HTMLDivElement> = {};
+  const rootProps = { ...props };
+  for (const key of Object.keys(rootProps)) {
+    if (key === 'id' || key === 'role' || key === 'tabIndex' || key.startsWith('aria-')) {
+      Object.assign(viewportProps, { [key]: rootProps[key as keyof typeof rootProps] });
+      delete rootProps[key as keyof typeof rootProps];
+    }
+  }
   return createPortal(
     <PopupParent.Provider value={popupId}>
-      <div
-        {...props}
-        ref={setPanelRef}
+      <ScrollbarControl
+        {...rootProps}
+        ref={panelRef}
+        rootRef={setPanelRef}
+        viewportProps={viewportProps}
+        viewportClassName="leaf-floating__viewport"
+        role={props.role ?? 'presentation'}
+        tabIndex={props.tabIndex ?? -1}
+        scrollbarTabIndex={-1}
         data-leaf-owner={owner}
         data-leaf-popup={popupId}
         data-leaf-popup-parent={parentPopup}
@@ -271,7 +309,7 @@ export function FloatingPanel({
           : open
             ? children
             : closingContent.current}
-      </div>
+      </ScrollbarControl>
     </PopupParent.Provider>,
     (typeof container === 'function' ? container() : container) ??
       config.getPopupContainer?.() ??

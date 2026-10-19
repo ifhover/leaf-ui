@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { DatePicker, Select, TimePicker } from '../index';
@@ -13,6 +13,36 @@ vi.mock('tabbable', async (importOriginal) => {
 });
 
 describe('Floating field focus', () => {
+  it('keeps scroll events on the list viewport and scrollbar controls outside listbox semantics', async () => {
+    const scroll = vi.fn((event) => event.currentTarget);
+    const height = vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(100);
+    const content = vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(500);
+    try {
+      render(
+        <Select
+          aria-label="Scrollable"
+          options={[{ value: 'leaf', label: 'Leaf' }]}
+          onPopupScroll={scroll}
+        />,
+      );
+      const trigger = screen.getByRole('combobox', { name: 'Scrollable' });
+      await userEvent.click(trigger);
+      const list = screen.getByRole('listbox');
+      expect(list).toHaveClass('leaf-scrollbar__viewport');
+      fireEvent.scroll(list);
+      expect(scroll.mock.results[0]?.value).toBe(list);
+      const track = screen.getByRole('scrollbar');
+      expect(list.contains(track)).toBe(false);
+      expect(track).toHaveAttribute('tabindex', '-1');
+      fireEvent.pointerDown(track, { button: 0, pointerId: 1, clientY: 40 });
+      fireEvent.pointerUp(track, { pointerId: 1 });
+      expect(screen.getByRole('listbox')).toBe(list);
+      expect(trigger).toHaveFocus();
+    } finally {
+      height.mockRestore();
+      content.mockRestore();
+    }
+  });
   it('returns from the last portaled time control to the next field in the original form', async () => {
     const onOpenChange = vi.fn();
     render(

@@ -29,15 +29,28 @@ test('Cascader expands without transient overflow and keeps equal inline insets'
   });
   expect(frames.some((frame) => frame.columns === 2)).toBe(true);
   expect(Math.max(...frames.map((frame) => frame.horizontalOverflow))).toBeLessThanOrEqual(1);
-  const insets = await panel.evaluate((node) => {
+  const columns = await panel.evaluate((node) => {
     const panel = node.getBoundingClientRect();
-    const options = node.querySelectorAll('.leaf-cascader__column .leaf-floating__option');
-    const first = options[0]?.getBoundingClientRect();
-    const last = options[options.length - 1]?.getBoundingClientRect();
-    if (!first || !last) throw new Error('Missing cascade options');
-    return [first.left - panel.left, panel.right - last.right] as const;
+    // Trigger-width panels can be wider than their fixed-width columns. Insets
+    // belong to each column's content box, including the separator between levels.
+    return [...node.querySelectorAll('.leaf-cascader__column')].map((column) => {
+      const bounds = column.getBoundingClientRect();
+      const style = getComputedStyle(column);
+      const option = column.querySelector('.leaf-floating__option')?.getBoundingClientRect();
+      if (!option) throw new Error('Missing cascade options');
+      return {
+        left: option.left - bounds.left - Number.parseFloat(style.borderLeftWidth),
+        right: bounds.right - option.right - Number.parseFloat(style.borderRightWidth),
+        contained: bounds.left >= panel.left && bounds.right <= panel.right,
+      };
+    });
   });
-  expect(insets[0]).toBeCloseTo(insets[1], 0);
+  expect(columns).toHaveLength(2);
+  for (const column of columns) {
+    expect(column.left).toBeGreaterThan(0);
+    expect(column.left).toBeCloseTo(column.right, 0);
+    expect(column.contained).toBe(true);
+  }
   await panel.getByRole('option', { name: 'UI', exact: true }).click();
   await expect(panel).toBeHidden();
 });

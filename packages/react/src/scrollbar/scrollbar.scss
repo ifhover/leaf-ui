@@ -12,6 +12,18 @@
   overflow: hidden;
   border-radius: inherit;
 
+  &--external {
+    display: block;
+    overflow: visible;
+    max-width: none;
+    > textarea {
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
   &__viewport {
     flex: 1 1 auto;
     min-height: 0;
@@ -83,7 +95,7 @@
     touch-action: none;
   }
   &__bar:has(:focus-visible) {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: 2px;
     border-radius: 999px;
   }

@@ -10,7 +10,7 @@ export function ButtonDanger() {
       <Button danger variant="outline">
         Revoke access
       </Button>
-      <Button danger variant="ghost">
+      <Button danger variant="soft">
         Clear
       </Button>
       <Button danger disabled>

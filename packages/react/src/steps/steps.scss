@@ -12,6 +12,9 @@
   --leaf-steps-icon-size: calc(var(--leaf-current-control-height) * 0.7);
   --leaf-steps-gap: 10px;
   &__item {
+    display: grid;
+    grid-template-columns: auto minmax(12px, 1fr);
+    column-gap: var(--leaf-steps-gap);
     list-style: none;
     position: relative;
     flex: 1;
@@ -19,21 +22,20 @@
     padding-inline-end: 24px;
   }
   &__item:last-child {
+    display: block;
     flex: 0 1 auto;
     padding-inline-end: 0;
   }
   &__item:not(:last-child)::before,
   &__item:not(:last-child)::after {
     content: '';
-    position: absolute;
-    top: calc(var(--leaf-steps-icon-size) / 2);
-    inset-inline-start: calc(var(--leaf-steps-icon-size) + var(--leaf-steps-gap));
-    inset-inline-end: 12px;
+    grid-area: 1 / 2;
+    margin-block-start: calc(var(--leaf-steps-icon-size) / 2);
     height: 1px;
     background: var(--leaf-color-border);
   }
   &__item:not(:last-child)::after {
-    background: var(--leaf-color-primary);
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
@@ -42,6 +44,7 @@
     transform: scaleX(1);
   }
   &__content {
+    grid-area: 1 / 1;
     position: relative;
     z-index: 1;
     display: flex;
@@ -94,7 +97,6 @@
     display: inline-block;
     padding-block: calc((var(--leaf-steps-icon-size) - 1.5em) / 2);
     padding-inline-end: 10px;
-    background: var(--leaf-color-surface);
   }
   &__description {
     display: block;
@@ -103,16 +105,16 @@
   }
   [data-status='process'] &__icon {
     background: var(--leaf-color-surface);
-    border-color: var(--leaf-color-primary);
-    color: var(--leaf-color-primary);
+    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     border-width: 1.5px;
   }
   [data-status='process'] &__title {
     font-weight: var(--leaf-font-weight);
   }
   [data-status='finish'] &__icon {
-    background: var(--leaf-color-primary);
-    border-color: var(--leaf-color-primary);
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     color: var(--leaf-color-on-primary);
   }
   [data-status='error'] &__icon {
@@ -134,10 +136,13 @@
     flex-direction: column;
     gap: 20px;
     .leaf-steps__item {
+      display: block;
       padding-inline-end: 0;
     }
     .leaf-steps__item::before,
     .leaf-steps__item::after {
+      position: absolute;
+      margin-block-start: 0;
       top: calc(var(--leaf-steps-icon-size) + 6px);
       bottom: -14px;
       inset-inline-start: calc(var(--leaf-steps-icon-size) / 2);
@@ -158,6 +163,12 @@
     gap: 8px;
     .leaf-steps__item {
       padding-inline-end: 4px;
+    }
+    .leaf-steps__item::before,
+    .leaf-steps__item::after {
+      position: absolute;
+      inset-inline-start: calc(var(--leaf-steps-icon-size) + 8px);
+      inset-inline-end: 0;
     }
     .leaf-steps__content {
       flex-direction: column;
@@ -197,7 +208,7 @@
 }
 .leaf-steps--dot [data-status='process'] .leaf-steps__icon,
 .leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
-  color: var(--leaf-color-primary);
+  color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   background: transparent;
 }
 .leaf-steps__icon > .leaf-steps__progress {
@@ -206,7 +217,7 @@
   width: calc(100% + 8px);
   height: calc(100% + 8px);
   fill: none;
-  stroke: var(--leaf-color-primary);
+  stroke: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   stroke-width: 2;
   transform: rotate(-90deg);
   pointer-events: none;

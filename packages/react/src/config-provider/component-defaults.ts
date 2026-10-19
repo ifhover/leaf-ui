@@ -53,7 +53,7 @@ import type { LoadingProps } from '../loading/loading';
 import type { LoadingBarProps } from '../loadingbar/loadingbar';
 import type { MasonryProps } from '../masonry/masonry';
 import type { MentionsProps } from '../mentions/mentions';
-import type { MenuProps } from '../menu/menu';
+import type { MenuGroupProps, MenuProps } from '../menu/menu';
 import type { MessageOptions, MessageProps } from '../message/message';
 import type { ModalProps } from '../modal/modal';
 import type { NotificationOptions, NotificationProps } from '../notification/notification';
@@ -67,7 +67,6 @@ import type { RateProps } from '../rate/rate';
 import type { ResultProps } from '../result/result';
 import type { ScrollAreaProps } from '../scrollarea/scrollarea';
 import type { ScrollbarProps } from '../scrollbar/scrollbar';
-import type { SegmentedProps } from '../segmented/segmented';
 import type { SelectProps } from '../select/select';
 import type { SkeletonProps } from '../skeleton/skeleton';
 import type { SliderProps } from '../slider/slider';
@@ -189,6 +188,7 @@ interface ComponentPropsMap {
   Masonry: MasonryProps;
   Mentions: MentionsProps;
   Menu: MenuProps;
+  MenuGroup: MenuGroupProps;
   Message: MessageProps;
   Modal: ModalProps;
   Notification: NotificationProps;
@@ -205,7 +205,6 @@ interface ComponentPropsMap {
   Row: RowProps;
   ScrollArea: ScrollAreaProps;
   Scrollbar: ScrollbarProps;
-  Segmented: SegmentedProps;
   Select: SelectProps;
   Skeleton: SkeletonProps;
   Slider: SliderProps;
@@ -341,6 +340,7 @@ export interface LeafComponentDefaults {
   Masonry?: Partial<Omit<MasonryProps, 'key' | 'ref'>> | null;
   Mentions?: Partial<Omit<MentionsProps, 'key' | 'ref' | 'options'>> | null;
   Menu?: Partial<Omit<MenuProps, 'key' | 'ref' | 'items'>> | null;
+  MenuGroup?: Partial<Omit<MenuGroupProps, 'key' | 'ref' | 'title'>> | null;
   Message?: Partial<Omit<MessageOptions, 'key' | 'content'>> | null;
   Modal?: Partial<Omit<ModalProps, 'key' | 'ref' | 'open'>> | null;
   Notification?: Partial<Omit<NotificationOptions, 'key' | 'title'>> | null;
@@ -357,7 +357,6 @@ export interface LeafComponentDefaults {
   Row?: Partial<Omit<RowProps, 'key' | 'ref'>> | null;
   ScrollArea?: Partial<Omit<ScrollAreaProps, 'key' | 'ref'>> | null;
   Scrollbar?: Partial<Omit<ScrollbarProps, 'key' | 'ref'>> | null;
-  Segmented?: Partial<Omit<SegmentedProps, 'key' | 'ref' | 'options'>> | null;
   /** Required data, mode-dependent values and callbacks belong on each Select. */
   Select?: Partial<
     Omit<

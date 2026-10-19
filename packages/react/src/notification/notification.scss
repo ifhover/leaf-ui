@@ -59,13 +59,20 @@
   display: flex;
   gap: var(--leaf-component-notification-gap, 12px);
   padding: var(--leaf-component-notification-padding, 16px);
-  border: 1px solid var(--leaf-color-divider);
+  border: var(--leaf-component-notification-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-notification-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    );
   border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
   background: var(
     --leaf-component-notification-background,
     var(--leaf-color-surface-raised, var(--leaf-color-surface))
   );
-  box-shadow: var(--leaf-component-notification-shadow, var(--leaf-shadow-md));
+  box-shadow: var(
+    --leaf-component-notification-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-md))
+  );
   color: var(--leaf-component-notification-color, var(--leaf-color-text));
   font: var(--leaf-component-notification-font-size, var(--leaf-font-size))/1.6
     var(--leaf-font-family);
@@ -136,7 +143,7 @@
       scale: 0.9;
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
   }
   @each $type in info, success, warning, error {

@@ -73,12 +73,6 @@ const images = {
         .join(''),
     )
     .join(''),
-  segmented:
-    r(38, 55, 224, 40, '#f0f4f1', 'none', 10) +
-    r(112, 59, 73, 32) +
-    t(56, 80, 'Daily') +
-    t(128, 80, 'Weekly') +
-    t(198, 80, 'Monthly'),
   menu:
     r(50, 20, 200, 120) +
     r(62, 48, 176, 26, '#eaf4ed', 'none') +

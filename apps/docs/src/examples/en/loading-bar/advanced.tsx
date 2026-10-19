@@ -15,7 +15,7 @@ export function LoadingBarProgress() {
         40% progress
       </Button>
       <Button onClick={() => bar.finish()}>Finish</Button>
-      <Button variant="ghost" onClick={() => bar.reset()}>
+      <Button variant="soft" onClick={() => bar.reset()}>
         Reset
       </Button>
     </Space>

@@ -17,7 +17,7 @@ export function DatePickerFooter() {
         onChange={setValue}
         todayText="Today"
         renderExtraFooter={
-          <Button variant="ghost" size="sm" onClick={tomorrow}>
+          <Button variant="soft" size="sm" onClick={tomorrow}>
             Tomorrow
           </Button>
         }

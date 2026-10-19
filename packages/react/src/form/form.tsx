@@ -19,13 +19,15 @@ import { classes } from '../shared/classes';
 import type { LeafThemeStyle } from '../theme';
 
 export interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
-  layout?: 'horizontal' | 'vertical';
+  layout?: 'horizontal' | 'vertical' | 'settings';
   labelWidth?: number | 'auto';
   labelAlign?: 'left' | 'right';
   disabled?: boolean;
 }
 export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
   label?: ReactNode;
+  description?: ReactNode;
+  layout?: FormProps['layout'];
   htmlFor?: string;
   required?: boolean;
   help?: ReactNode;
@@ -38,7 +40,7 @@ export interface FormError {
   label?: ReactNode;
 }
 const FormContext = createContext({
-  layout: 'horizontal' as 'horizontal' | 'vertical',
+  layout: 'horizontal' as NonNullable<FormProps['layout']>,
   labelAlign: 'right' as 'left' | 'right',
   disabled: false,
   measure: (_id: string, _width: number | null) => {},
@@ -137,6 +139,8 @@ Form.displayName = 'Form';
 export function FormField(rawProps: FormFieldProps) {
   const {
     label,
+    description,
+    layout: suppliedLayout,
     htmlFor,
     required,
     help,
@@ -148,10 +152,12 @@ export function FormField(rawProps: FormFieldProps) {
     ...props
   } = useComponentProps('FormField', rawProps);
   const form = useContext(FormContext);
+  const layout = suppliedLayout ?? form.layout;
   const { messages } = useLeafConfig();
   const generated = useId();
   const inputId = htmlFor ?? `${generated}-control`;
   const descriptionId = `${generated}-description`;
+  const summaryId = `${generated}-summary`;
   const labelRef = useRef<HTMLSpanElement>(null);
   const [validationError, setValidationError] = useState<string>();
   const displayedError = error ?? validationError;
@@ -163,7 +169,7 @@ export function FormField(rawProps: FormFieldProps) {
     return () => form.registerError(inputId, null);
   }, [form.registerError, inputId, displayedError, label]);
   useEffect(() => {
-    if (label == null) return;
+    if (label == null || layout !== 'horizontal' || labelWidth !== undefined) return;
     const element = labelRef.current;
     if (!element) return;
     const measure = () => form.measure(generated, element.getBoundingClientRect().width);
@@ -174,7 +180,7 @@ export function FormField(rawProps: FormFieldProps) {
       observer?.disconnect();
       form.measure(generated, null);
     };
-  }, [form.measure, generated, label]);
+  }, [form.measure, generated, label, layout, labelWidth]);
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const owner = root.current?.closest('form');
@@ -192,7 +198,10 @@ export function FormField(rawProps: FormFieldProps) {
     required,
     disabled: form.disabled,
     error: displayedError,
-    descriptionId: displayedError || help ? descriptionId : undefined,
+    descriptionId:
+      [description != null && summaryId, (displayedError || help) && descriptionId]
+        .filter(Boolean)
+        .join(' ') || undefined,
   };
   const variables: LeafThemeStyle = {
     ...(labelWidth !== undefined
@@ -207,7 +216,8 @@ export function FormField(rawProps: FormFieldProps) {
         ref={root}
         className={classes(
           'leaf-form-field',
-          `leaf-form-field--${form.layout}`,
+          `leaf-form-field--${layout}`,
+          form.layout === 'settings' && 'leaf-form-field--settings-row',
           `leaf-form-field--${form.labelAlign}`,
           className,
         )}
@@ -228,17 +238,26 @@ export function FormField(rawProps: FormFieldProps) {
           setValidationError(undefined);
         }}
       >
-        {label != null && (
-          <label id={`${generated}-label`} className="leaf-form-field__label" htmlFor={inputId}>
-            <span ref={labelRef}>
-              {required && (
-                <span className="leaf-form-field__required" aria-hidden="true">
-                  *
+        {(label != null || description != null) && (
+          <div className="leaf-form-field__header">
+            {label != null && (
+              <label id={`${generated}-label`} className="leaf-form-field__label" htmlFor={inputId}>
+                <span ref={labelRef}>
+                  {required && (
+                    <span className="leaf-form-field__required" aria-hidden="true">
+                      *
+                    </span>
+                  )}
+                  {label}
                 </span>
-              )}
-              {label}
-            </span>
-          </label>
+              </label>
+            )}
+            {description != null && (
+              <div id={summaryId} className="leaf-form-field__summary-description">
+                {description}
+              </div>
+            )}
+          </div>
         )}
         <div className="leaf-form-field__body">
           {children}
@@ -279,7 +298,11 @@ export function FormGroup(rawProps: FormGroupProps) {
       <fieldset
         {...props}
         disabled={context.disabled}
-        className={classes('leaf-form-group', className)}
+        className={classes(
+          'leaf-form-group',
+          inherited.layout === 'settings' && 'leaf-form-group--settings',
+          className,
+        )}
       >
         {legend && <legend>{legend}</legend>}
         {description && <p className="leaf-form-group__description">{description}</p>}

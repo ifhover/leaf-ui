@@ -2,7 +2,7 @@
 @use '../shared/picker';
 
 .leaf-autocomplete {
-  @include mixins.field('autocomplete');
+  @include mixins.field('auto-complete');
   display: inline-flex;
   position: relative;
   height: var(--leaf-current-control-height);
@@ -27,10 +27,6 @@
       cursor: not-allowed;
     }
   }
-  &[data-open] {
-    border-color: var(--leaf-field-color);
-    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
-  }
 }
 .leaf-autocomplete__panel .leaf-floating__option {
   justify-content: space-between;
@@ -39,4 +35,8 @@
   .leaf-floating__highlight {
     border-color: transparent;
   }
+}
+
+.leaf-autocomplete__panel {
+  @include mixins.floating-paint(auto-complete);
 }

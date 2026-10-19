@@ -62,16 +62,16 @@ export function TableStates({ english = false }: { english?: boolean }) {
   return (
     <Space direction="vertical" align="stretch">
       <Space wrap>
-        <Button variant={state === 'empty' ? 'outline' : 'ghost'} onClick={() => setState('empty')}>
+        <Button variant={state === 'empty' ? 'outline' : 'soft'} onClick={() => setState('empty')}>
           {english ? 'Empty' : '空数据'}
         </Button>
         <Button
-          variant={state === 'loading' ? 'outline' : 'ghost'}
+          variant={state === 'loading' ? 'outline' : 'soft'}
           onClick={() => setState('loading')}
         >
           {english ? 'Loading' : '加载中'}
         </Button>
-        <Button variant={state === 'error' ? 'outline' : 'ghost'} onClick={() => setState('error')}>
+        <Button variant={state === 'error' ? 'outline' : 'soft'} onClick={() => setState('error')}>
           {english ? 'Error' : '加载失败'}
         </Button>
       </Space>

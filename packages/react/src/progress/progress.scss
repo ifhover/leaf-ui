@@ -1,5 +1,5 @@
 .leaf-progress {
-  --leaf-progress-color: var(--leaf-color-primary);
+  --leaf-progress-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   &[data-status='success'] {
     --leaf-progress-color: var(--leaf-color-success);
   }

@@ -9,7 +9,6 @@ import {
   type LeafTheme,
   Mentions,
   Menu,
-  Segmented,
   Select,
   Tabs,
   TimePicker,
@@ -41,7 +40,6 @@ export function RadiusFixture() {
     theme.components = {
       Floating: { borderRadius: 24, padding: '4px 8px 6px 10px' },
       Dropdown: { borderRadius: 18, padding: '3px 7px 5px 9px' },
-      Segmented: { borderRadius: 14, padding: '2px 4px 6px 8px' },
       Tabs: { borderRadius: 14, padding: '2px 4px 6px 8px' },
       Menu: { borderRadius: 18, padding: '4px 6px 8px 10px' },
     };
@@ -74,7 +72,6 @@ export function RadiusFixture() {
         </Dropdown>
         <ColorPicker aria-label="Radius color" defaultValue="#1265f5" showText />
       </div>
-      <Segmented aria-label="Radius segmented" options={['Home', 'Team']} />
       <Tabs type="card" aria-label="Radius tabs" items={tabs} />
       <Menu aria-label="Radius menu" items={menu} defaultSelectedKey="home" />
       <Menu

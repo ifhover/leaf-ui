@@ -1,6 +1,7 @@
 import { type HTMLAttributes, type ReactNode, useEffect, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
@@ -99,14 +100,16 @@ export function Splitter(rawProps: SplitterProps) {
     >
       {panels.map((panel, index) => (
         <div key={panel.key} className="leaf-splitter__unit" style={{ display: 'contents' }}>
-          <div
+          <ScrollbarControl
             className="leaf-splitter__panel"
+            role="presentation"
+            tabIndex={-1}
             data-collapsed={normalized[index] === 0 || undefined}
             {...inertProps(normalized[index] === 0)}
             style={{ flexBasis: `${normalized[index] ?? 0}%`, flexGrow: 0, flexShrink: 1 }}
           >
             {panel.children}
-          </div>
+          </ScrollbarControl>
           {index < panels.length - 1 && (
             // biome-ignore lint/a11y/useSemanticElements: An adjustable, focusable splitter follows the ARIA window-splitter pattern; a static hr cannot contain its collapse button.
             <div

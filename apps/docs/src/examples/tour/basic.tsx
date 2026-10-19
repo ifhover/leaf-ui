@@ -13,7 +13,7 @@ export function TourBasic({ english = false }: { english?: boolean }) {
           {english ? 'Settings' : '工作区设置'}
         </Button>
         <Button
-          variant="ghost"
+          variant="soft"
           onClick={() => {
             setCurrent(0);
             setOpen(true);

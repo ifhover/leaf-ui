@@ -22,6 +22,7 @@ import Lightbox, {
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 import { LoadingControl as Loading } from '../loading/loading';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { motionDuration, useMotionEnabled } from '../shared/motion';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -83,7 +84,7 @@ function ViewerChrome({
   const { currentIndex } = useLightboxState();
   const { prev, next, close } = useController();
   const { prevDisabled, nextDisabled } = useNavigationState();
-  const strip = useRef<HTMLFieldSetElement>(null);
+  const strip = useRef<HTMLDivElement>(null);
   const [showThumbs, setShowThumbs] = useState(thumbnails);
   const [failedDownload, setFailedDownload] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -248,9 +249,14 @@ function ViewerChrome({
             >
               <ChevronLeft size={18} />
             </Control>
-            <fieldset
-              className="leaf-image-viewer__thumbnails"
+            <ScrollbarControl
+              className="leaf-image-viewer__strip"
+              contentClassName="leaf-image-viewer__thumbnails"
               ref={strip}
+              orientation="horizontal"
+              role="group"
+              tabIndex={-1}
+              scrollbarTabIndex={-1}
               aria-label={t('image.imageList')}
             >
               {items.map((image, target) => (
@@ -299,7 +305,7 @@ function ViewerChrome({
                   <span>{target + 1}</span>
                 </button>
               ))}
-            </fieldset>
+            </ScrollbarControl>
             <Control
               label={t('image.scrollThumbnailsForward')}
               onClick={() =>

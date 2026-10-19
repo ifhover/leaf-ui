@@ -8,7 +8,10 @@
   font-size: var(--leaf-font-size-sm);
   line-height: 1.6;
   overflow-wrap: anywhere;
-  box-shadow: var(--leaf-component-tooltip-shadow, var(--leaf-shadow-md));
+  box-shadow: var(
+    --leaf-component-tooltip-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-md))
+  );
   transition-duration:
     var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
   &[data-state='closing'] {

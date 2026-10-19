@@ -16,6 +16,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { estimateControlHeight } from '../density';
 import { ResultControl as Result } from '../result/result';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -502,14 +503,19 @@ export function TreeControl({
     return siblings.map((node, index) => renderNode(node, level, index, siblings.length));
   };
   const content = (
-    <div
-      {...props}
+    <ScrollbarControl
       ref={root}
-      style={{ ...(virtual ? { height, overflow: 'auto' } : {}), ...props.style }}
+      viewportProps={{
+        ...props,
+        'aria-multiselectable': multiple || checkable || undefined,
+        'aria-disabled': disabled || undefined,
+      }}
+      style={{ ...(virtual ? { height } : {}), ...props.style }}
+      viewportStyle={{ position: 'relative' }}
       role="tree"
       aria-label={label ?? messages.tree.label}
-      aria-multiselectable={multiple || checkable || undefined}
-      aria-disabled={disabled || undefined}
+      tabIndex={-1}
+      scrollbarTabIndex={-1}
       className={classes('leaf-tree', showLine && 'leaf-tree--lines', className)}
     >
       {visible.length ? (
@@ -552,7 +558,7 @@ export function TreeControl({
       ) : (
         (notFoundContent ?? <Result size="sm" title={messages.select.empty} icon={null} />)
       )}
-    </div>
+    </ScrollbarControl>
   );
   return draggable ? (
     <TreeDragScope data={data} nodes={records} allowDrop={allowDrop} onDrop={onDrop}>

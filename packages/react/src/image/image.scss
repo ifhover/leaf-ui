@@ -27,7 +27,7 @@
   background: none;
   cursor: zoom-in;
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: -3px;
   }
   &:hover .leaf-image__zoom,
@@ -231,13 +231,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    overflow-x: auto;
     padding: 4px;
-    scrollbar-width: none;
     overscroll-behavior: contain;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
   &__thumbnail {
     position: relative;

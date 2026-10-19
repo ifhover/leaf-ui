@@ -86,17 +86,20 @@ for (const [name, code] of Object.entries(cases)) {
 // 0.6 includes ICU messages and five built-in languages; see QUALITY.md for
 // measured 0.5/0.6 comparisons and the retained optional-engine boundaries.
 assert.ok(report.cases.form.js.gzip < 88 * 1024, 'Form JS regression: over 88 KiB gzip');
-// This fixture now includes the shared base and all API feedback services;
-// the previous standalone-import fixture omitted their CSS.
+// Includes foundation, API feedback, portable frame tokens and four-state paint.
+// The theme expansion measures 15.76 KiB after removing duplicate paint rules;
+// keep roughly 5% headroom. See the theme preset comparison in QUALITY.md.
 assert.ok(
-  report.cases.form.css.gzip < 14.5 * 1024,
-  'Form + services CSS regression: over 14.5 KiB gzip',
+  report.cases.form.css.gzip < 16.5 * 1024,
+  'Form + services CSS regression: over 16.5 KiB gzip',
 );
 assert.ok(report.cases.all.js.gzip < 250 * 1024, 'Library JS regression: over 250 KiB gzip');
 // Static light/dark derived palettes and inherited density add ~2.6 KiB to the full CSS.
 // Standalone styles prune unused derived colors and retain their existing budgets.
 // Dialog sections and card/list choices add ~1.75 KiB to full CSS, with no new runtime engine.
-assert.ok(report.cases.all.css.gzip < 41 * 1024, 'Library CSS regression: over 41 KiB gzip');
+// Portable border/shadow tokens and component states measure 45.26 KiB total.
+// Native frame geometry and full theme state coverage are part of this budget.
+assert.ok(report.cases.all.css.gzip < 47 * 1024, 'Library CSS regression: over 47 KiB gzip');
 assert.ok(
   report.cases.button.css.gzip < report.cases.all.css.gzip,
   'Component CSS must be smaller than the whole library',

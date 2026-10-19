@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
@@ -267,11 +268,18 @@ function DrawerSurface({
               )}
             </div>
           )}
-          <div className="leaf-drawer__body">
+          <ScrollbarControl
+            className="leaf-drawer__body"
+            viewportClassName="leaf-drawer__viewport"
+            orientation="vertical"
+            role={title != null || props['aria-label'] ? 'region' : 'presentation'}
+            aria-labelledby={title != null ? `${id}-title` : undefined}
+            aria-label={title == null ? props['aria-label'] : undefined}
+          >
             <div ref={content} className="leaf-drawer__content">
               {children}
             </div>
-          </div>
+          </ScrollbarControl>
           {footer != null && <div className="leaf-drawer__footer">{footer}</div>}
         </OverlayOwner.Provider>
       </div>

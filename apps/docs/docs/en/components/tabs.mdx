@@ -1,3 +1,4 @@
+import { TabsViewSwitcher } from '../../../src/examples/en/tabs/view-switcher';
 import { Capabilities } from '../../../src/examples/tabs/capabilities';
 import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
 import { TabsClosable } from '../../../src/examples/en/tabs/closable';
@@ -11,13 +12,24 @@ Switch between content views within the same region.
 
 Content and panel height update immediately without transition animations. The tab bar's selection indicator keeps its movement animation.
 
-The card-style tab bar fits its labels by default and scrolls within the bar when space is limited. `size` controls the entire tab bar; content panels use the available width.
+The card-style tab bar fits its labels by default and scrolls within the bar when space is limited. `size` controls the entire 30 / 36 / 42 px bar, including its 3 px padding and border. Tabs use a 3 px gap, a muted background and a raised selected surface. Pressing a tab keeps its size. Set `block` for equal-width tabs; content panels use the available width.
 
 ## Basic usage
 
 <ComponentExample title="Basic usage" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## View switching
+
+Omit item `children` when controlling an existing view. Only the tab bar is rendered, with no empty content area. `block` fills the available width.
+
+<ComponentExample title="View switching" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/view-switcher.tsx"
 ```
 
 </ComponentExample>
@@ -66,13 +78,14 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Tab items; an empty array hides the component |
+| `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Required. Tab items; an empty array hides the component |
 | `activeKey` | `string` | First enabled item | Controlled / initial active key |
 | `defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card'` | `'line'` | Tab appearance |
 | `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tab bar placement |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size; the card style includes the tab bar padding and border |
+| `block` | `boolean` | `false` | Fill the available width with equal-width tabs |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
 | `extra` | `ReactNode` | — | Extra tab bar content |
@@ -89,7 +102,7 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Required. Unique identifier |
 | `label` | `ReactNode` | Required | Required. Tab label |
-| `children` | `ReactNode` | Required | Required. Tab content |
+| `children` | `ReactNode` | — | Optional panel content; omit it to render only the tab bar |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `icon` | `ReactNode` | — | Leading icon |
 | `closable` | `boolean` | `false` | Show a close button; requires onClose |

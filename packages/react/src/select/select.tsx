@@ -138,8 +138,8 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     showSearch: searchProp = false,
     filterOption = true,
     onSearch,
-    popupWidth = 'auto',
-    popupMaxWidth = 420,
+    popupWidth = 'trigger',
+    popupMaxWidth,
     popupClassName,
     popupStyle,
     popupPlacement,
@@ -184,7 +184,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     [suppliedOptions],
   );
   const virtual = virtualProp ?? options.length > 100;
-  const { messages, theme, density } = useLeafConfig();
+  const { messages, theme, density, direction: configuredDirection } = useLeafConfig();
   const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4);
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
@@ -415,6 +415,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         className,
       )}
       style={style}
+      dir={props.dir ?? configuredDirection}
       data-status={status}
       data-disabled={disabled ? '' : undefined}
       data-open={open ? '' : undefined}
@@ -646,7 +647,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         width={
           popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
         }
-        minWidth={popupWidth === 'auto' ? 'trigger' : undefined}
         maxWidth={popupMaxWidth}
         {...(filtered.length ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}

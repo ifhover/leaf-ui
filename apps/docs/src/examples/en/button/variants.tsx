@@ -5,7 +5,7 @@ export function ButtonVariants() {
     <Space wrap>
       <Button>Primary</Button>
       <Button variant="outline">Outline</Button>
-      <Button variant="ghost">Ghost</Button>
+      <Button variant="soft">Soft</Button>
       <Button variant="link">Link</Button>
     </Space>
   );

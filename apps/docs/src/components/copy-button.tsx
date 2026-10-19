@@ -39,7 +39,7 @@ export function CopyButton({
 
   return (
     <Button
-      variant="ghost"
+      variant="soft"
       size="sm"
       onClick={copy}
       startIcon={<Icon name={status === 'copied' ? 'check' : 'copy'} />}

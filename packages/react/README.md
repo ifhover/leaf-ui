@@ -51,7 +51,7 @@ Browser component entries automatically load theme variables, shared popup style
 - Alert: inline success, info, warning and error feedback.
 - Message / useMessage: transient feedback, loading and keyed updates.
 - Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
-- Segmented / Menu / BackTop: compact selection, nested navigation and scroll-to-top.
+- Tabs / Menu / BackTop: content and view switching, nested navigation and scroll-to-top.
 - Descriptions / Timeline / QRCode: details, event histories, QR codes.
 - Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.

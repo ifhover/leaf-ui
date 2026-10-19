@@ -36,7 +36,7 @@ export function Capabilities({ english = false }) {
           popupRender={(content) => (
             <>
               {content}
-              <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
+              <Button size="sm" variant="soft" onClick={() => setOpen(false)}>
                 {english ? 'Done' : '完成'}
               </Button>
             </>

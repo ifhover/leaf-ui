@@ -12,6 +12,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { InputControl } from '../input/input';
 import { ModalBase } from '../modal/modal';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface CommandItem {
@@ -193,13 +194,17 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
           {error}
         </p>
       )}
-      <div
+      <ScrollbarControl
         ref={listRef}
         id={id}
         role="listbox"
         aria-label={t('commandPalette.commands')}
-        aria-busy={loading || !!busy}
-        className="leaf-command-palette__list"
+        viewportProps={{ 'aria-busy': loading || !!busy }}
+        className="leaf-command-palette__results"
+        viewportClassName="leaf-command-palette__list"
+        tabIndex={-1}
+        scrollbarTabIndex={-1}
+        maxHeight={340}
       >
         <div
           className="leaf-command-palette__selection"
@@ -234,7 +239,7 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
             {loading ? messages.common.loading : (emptyContent ?? messages.common.noData)}
           </div>
         )}
-      </div>
+      </ScrollbarControl>
       <div className="leaf-command-palette__hint" aria-hidden="true">
         <span>
           <kbd>↑</kbd>

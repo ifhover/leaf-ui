@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
+import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { Menu, type MenuItem } from './menu';
+import { ConfigProvider } from '../config-provider';
+import { Menu, MenuGroup, type MenuItem } from './index';
 
 const items: MenuItem[] = [
   {
@@ -83,4 +86,184 @@ describe('Menu transitions', () => {
     rerender(<Menu items={items} openKeys={['projects']} onOpenChange={onOpenChange} />);
     expect(screen.getByRole('menuitem', { name: 'Design' })).toBe(child);
   });
+});
+
+describe('Menu groups', () => {
+  const grouped: MenuItem[] = [
+    {
+      key: 'workspace',
+      type: 'group',
+      label: <span>Workspace</span>,
+      children: [
+        { key: 'disabled', label: 'Unavailable', disabled: true },
+        { key: 'home', label: 'Home' },
+      ],
+    },
+    { key: 'divider', type: 'divider', label: '' },
+    {
+      key: 'account',
+      type: 'group',
+      label: 'Account',
+      children: [{ key: 'settings', label: 'Settings' }],
+    },
+  ];
+
+  it('names groups from rich titles and navigates across groups without selecting titles', async () => {
+    const onSelect = vi.fn();
+    render(<Menu items={grouped} onSelect={onSelect} />);
+    expect(screen.getByRole('group', { name: 'Workspace' })).toContainElement(
+      screen.getByRole('menuitem', { name: 'Home' }),
+    );
+    const home = screen.getByRole('menuitem', { name: 'Home' });
+    const settings = screen.getByRole('menuitem', { name: 'Settings' });
+    await userEvent.tab();
+    expect(home).toHaveFocus();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(settings).toHaveFocus();
+    await userEvent.keyboard('{Home}{End}{Enter}');
+    expect(settings).toHaveAttribute('aria-current', 'page');
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith('settings', grouped[2]?.children?.[0]);
+    await userEvent.click(screen.getByText('Workspace'));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it('moves into and out of nested groups with horizontal arrow keys', async () => {
+    render(<Menu items={[{ key: 'parent', label: 'Parent', children: grouped }]} />);
+    const parent = screen.getByRole('menuitem', { name: 'Parent' });
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+    expect(screen.getByRole('menuitem', { name: 'Home' })).toHaveFocus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(parent).toHaveFocus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(parent).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('reuses the title for custom content while leaving controls outside menu navigation', async () => {
+    const onSelect = vi.fn();
+    const onCreate = vi.fn();
+    const ref = createRef<HTMLDivElement>();
+    render(
+      <>
+        <Menu items={grouped} onSelect={onSelect} />
+        <MenuGroup title="Quick create" ref={ref} data-testid="custom-group">
+          <input aria-label="Project name" defaultValue="Draft" />
+          <button type="button" onClick={onCreate}>
+            Create
+          </button>
+        </MenuGroup>
+      </>,
+    );
+    expect(ref.current).toBe(screen.getByRole('group', { name: 'Quick create' }));
+    expect(ref.current?.closest('[role="menu"]')).toBeNull();
+    const input = screen.getByRole('textbox', { name: 'Project name' });
+    await userEvent.click(input);
+    await userEvent.keyboard('{Home}New {End}');
+    expect(input).toHaveValue('New Draft');
+    expect(input).toHaveFocus();
+    await userEvent.tab();
+    await userEvent.keyboard('{Enter}');
+    expect(onCreate).toHaveBeenCalledOnce();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('applies standalone defaults without changing Menu internal groups or remounting content', async () => {
+    const content = (
+      <>
+        <Menu items={grouped} />
+        <MenuGroup title="Custom" data-testid="default-group">
+          <input aria-label="Draft" defaultValue="Retained" />
+        </MenuGroup>
+        <MenuGroup title="Explicit" className="explicit" />
+        <ConfigProvider components={{ MenuGroup: null }}>
+          <MenuGroup title="Cleared" />
+        </ConfigProvider>
+      </>
+    );
+    const { rerender } = render(
+      <ConfigProvider components={{ MenuGroup: { className: 'regional' } }}>
+        {content}
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('default-group')).toHaveClass('regional');
+    expect(screen.getByRole('group', { name: 'Explicit' })).not.toHaveClass('regional');
+    expect(screen.getByRole('group', { name: 'Cleared' })).not.toHaveClass('regional');
+    expect(screen.getByRole('group', { name: 'Workspace' })).not.toHaveClass('regional');
+    const input = screen.getByRole('textbox', { name: 'Draft' });
+    await userEvent.click(input);
+    rerender(
+      <ConfigProvider components={{ MenuGroup: { className: 'updated' } }}>
+        {content}
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('default-group')).toHaveClass('updated');
+    expect(screen.getByRole('textbox', { name: 'Draft' })).toBe(input);
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue('Retained');
+  });
+
+  it('renders unique labelled groups on the server', () => {
+    const html = renderToString(
+      <>
+        <Menu items={grouped} />
+        <MenuGroup title={<span>Custom title</span>}>Custom content</MenuGroup>
+      </>,
+    );
+    const labels = [...html.matchAll(/aria-labelledby="([^"]+)"/g)].map((match) => match[1]);
+    expect(labels).toHaveLength(3);
+    expect(new Set(labels).size).toBe(3);
+    for (const label of labels) expect(html).toContain(`id="${label}"`);
+    expect(html).toContain('Custom content');
+  });
+});
+
+describe('Menu popup navigation', () => {
+  it.each(['horizontal', 'collapsed'] as const)(
+    'keeps selected links and nested navigation in the %s popup',
+    async (variant) => {
+      const onSelect = vi.fn();
+      render(
+        <Menu
+          mode={variant === 'horizontal' ? 'horizontal' : 'vertical'}
+          collapsed={variant === 'collapsed'}
+          defaultSelectedKey="design"
+          onSelect={onSelect}
+          items={[
+            {
+              key: 'resources',
+              label: 'Resources',
+              children: [
+                { key: 'design', label: 'Design', href: '#design' },
+                {
+                  key: 'more',
+                  label: 'More',
+                  children: [{ key: 'templates', label: 'Templates' }],
+                },
+              ],
+            },
+          ]}
+        />,
+      );
+      const trigger = screen.getByRole('menuitem', { name: 'Resources' });
+      await userEvent.click(trigger);
+      expect(screen.getByRole('menuitem', { name: 'Design' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      );
+      expect(trigger).toHaveAttribute('data-selected', 'true');
+      await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+      expect(screen.getByRole('menuitem', { name: 'Templates' })).toHaveFocus();
+      await userEvent.keyboard('{Enter}');
+      expect(onSelect).toHaveBeenCalledWith(
+        'templates',
+        expect.objectContaining({ key: 'templates' }),
+      );
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await userEvent.click(trigger);
+      await userEvent.keyboard('{Escape}');
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    },
+  );
 });

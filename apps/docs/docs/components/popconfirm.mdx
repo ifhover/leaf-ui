@@ -64,8 +64,8 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `confirmText` | `ReactNode` | — | 确认按钮内容 |
 | `cancelText` | `ReactNode` | — | 取消按钮内容 |
-| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 确认按钮属性 |
-| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 取消按钮属性 |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 确认按钮属性 |
+| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 取消按钮属性 |
 | `showCancel` | `boolean` | `true` | 展示取消按钮 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认操作，支持异步等待 |
 | `onCancel` | `() => void` | — | 取消操作 |
@@ -75,7 +75,7 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'soft' \| 'outline' \| 'ghost'` | `'solid'` | 按钮样式 |
+| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | 按钮样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
 | `danger` | `boolean` | `false` | 危险操作颜色 |
 | `loading` | `boolean` | `false` | 加载状态 |

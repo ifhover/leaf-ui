@@ -447,7 +447,27 @@ const descriptions = {
   abort: ['取消指定文件或所有上传。', 'Abort a specified upload or all uploads.'],
   focus: ['聚焦控件。', 'Focus the control.'],
 };
+const choicePopupWidth = [
+  '浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。',
+  'Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported.',
+];
+const choicePopupMaxWidth = [
+  '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
+  'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
+];
 const specific = {
+  ...Object.fromEntries(
+    [
+      'SelectProps',
+      'AutoCompleteProps',
+      'TreeSelectProps',
+      'MentionsProps',
+      'CascaderProps',
+    ].flatMap((name) => [
+      [`${name}.popupWidth`, choicePopupWidth],
+      [`${name}.popupMaxWidth`, choicePopupMaxWidth],
+    ]),
+  ),
   'CheckboxProps.variant': [
     '普通选项或整块可点击的卡片选项。',
     'Plain choice or a card with a full clickable surface.',
@@ -638,6 +658,53 @@ const specific = {
   ],
   'LeafThemeTokens.borderHoverColor': ['悬停时的中性边框色。', 'Neutral border color on hover.'],
   'LeafThemeTokens.shadowXs': ['最轻的表面阴影。', 'The lightest surface shadow.'],
+  'LeafThemeTokens.borderWidth': [
+    '控件、内容表面和浮层的边框宽度；数字为 px。',
+    'Border width for controls, content surfaces and popups; numbers are px.',
+  ],
+  'LeafThemeTokens.controlShadow': [
+    '可交互控件的默认阴影。',
+    'Default shadow for interactive controls.',
+  ],
+  'LeafThemeTokens.surfaceShadow': [
+    '内容表面与浮层的默认阴影；未设置时保留组件的分层阴影。',
+    'Default shadow for content surfaces and popups; component elevation remains the fallback.',
+  ],
+  'LeafComponentTokens.borderWidth': [
+    '此组件的边框宽度；数字为 px。',
+    'Border width for this component; numbers are px.',
+  ],
+  'LeafComponentTokens.hover': [
+    '悬停状态覆盖；嵌套区域逐字段合并。',
+    'Hover overrides, merged field by field in nested scopes.',
+  ],
+  'LeafComponentTokens.active': [
+    '按下状态覆盖；嵌套区域逐字段合并。',
+    'Pressed overrides, merged field by field in nested scopes.',
+  ],
+  'LeafComponentTokens.focus': [
+    '键盘聚焦状态覆盖；保留可见焦点轮廓。',
+    'Keyboard focus overrides; the visible focus outline remains.',
+  ],
+  'LeafComponentTokens.disabled': [
+    '禁用状态覆盖；不改变禁用行为。',
+    'Disabled appearance overrides; disabled behavior is unchanged.',
+  ],
+  'LeafThemeTokens.borderColor': [
+    '全局外框色；显式设置时统一覆盖实色控件和弱描边外框，组件级覆盖优先。',
+    'Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence.',
+  ],
+  'LeafThemeTokens.onPrimaryColor': [
+    '主题背景上的文字色；默认自动选择可读的黑色或白色。',
+    'Primary background text color, chosen automatically for contrast.',
+  ],
+  'LeafComponentStateTokens.color': ['当前状态的文字颜色。', 'Text color in this state.'],
+  'LeafComponentStateTokens.background': ['当前状态的背景。', 'Background in this state.'],
+  'LeafComponentStateTokens.borderColor': ['当前状态的边框颜色。', 'Border color in this state.'],
+  'LeafComponentStateTokens.shadow': [
+    '当前状态的 CSS box-shadow。',
+    'CSS box-shadow in this state.',
+  ],
   'TourProps.steps': ['引导的步骤列表。', 'Steps in the guided tour.'],
   'AppBarProps.elevation': ['展示导航栏阴影。', 'Show a shadow below the bar.'],
   'FloatButtonGroupProps.direction': [

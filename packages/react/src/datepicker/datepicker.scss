@@ -63,7 +63,7 @@
     inset-inline-end: 30px;
   }
   &[data-open] &__icon {
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   }
   &__panel {
     width: 292px;
@@ -153,7 +153,7 @@
     &--selected,
     &--selected:hover:not(:disabled) {
       color: var(--leaf-color-on-primary);
-      background: var(--leaf-color-primary);
+      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       box-shadow: var(--leaf-shadow-xs);
     }
     &--selected:disabled {
@@ -188,4 +188,8 @@
   padding: 6px;
   background: var(--leaf-color-surface-muted);
   border-radius: var(--leaf-radius);
+}
+
+.leaf-date-picker__panel {
+  @include mixins.floating-paint(date-picker);
 }

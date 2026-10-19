@@ -15,10 +15,6 @@
   &[data-clearable] {
     padding-inline-end: 54px;
   }
-  &[data-open] {
-    border-color: var(--leaf-field-color);
-    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
-  }
   &__input-wrap {
     position: relative;
     flex: 1;
@@ -28,7 +24,7 @@
     display: block;
     box-sizing: border-box;
     width: 100%;
-    height: calc(var(--leaf-current-control-height) - 2px);
+    height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
     min-width: 0;
     border: 0;
     padding: 0;
@@ -100,10 +96,16 @@
     transform: rotate(180deg);
   }
   &--multiple {
-    padding-block: 3px;
+    @include selection.trigger-padding('tree-select', 30px);
   }
   &--multiple &__input {
-    height: calc(var(--leaf-current-control-height) - 8px);
+    height: max(
+      1px,
+      calc(
+        var(--leaf-current-control-height) - 6px - 2 *
+          var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+      )
+    );
   }
   &__panel {
     --leaf-tree-select-row-margin: 3px;
@@ -162,4 +164,8 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+}
+
+.leaf-tree-select__panel {
+  @include mixins.floating-paint(tree-select);
 }

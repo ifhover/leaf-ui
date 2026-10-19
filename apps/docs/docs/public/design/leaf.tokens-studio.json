@@ -49,6 +49,22 @@
         "type": "color",
         "value": "#e5e5e8"
       },
+      "primary-ink": {
+        "type": "color",
+        "value": "#20834a"
+      },
+      "primary-indicator": {
+        "type": "color",
+        "value": "#20834a"
+      },
+      "primary-fill-border": {
+        "type": "color",
+        "value": "transparent"
+      },
+      "primary-focus": {
+        "type": "color",
+        "value": "rgba(32, 131, 74, 0.42)"
+      },
       "option-hover": {
         "type": "color",
         "value": "rgba(235, 235, 235, 1)"
@@ -545,6 +561,14 @@
         "type": "color",
         "value": "rgba(27, 111, 63, 1)"
       },
+      "primary-ink-hover": {
+        "type": "color",
+        "value": "rgba(38, 134, 79, 1)"
+      },
+      "primary-ink-active": {
+        "type": "color",
+        "value": "rgba(27, 111, 63, 1)"
+      },
       "danger-hover": {
         "type": "color",
         "value": "rgba(203, 72, 72, 1)"
@@ -604,6 +628,22 @@
       "border": {
         "type": "color",
         "value": "#38383f"
+      },
+      "primary-ink": {
+        "type": "color",
+        "value": "#83cf9e"
+      },
+      "primary-indicator": {
+        "type": "color",
+        "value": "#83cf9e"
+      },
+      "primary-fill-border": {
+        "type": "color",
+        "value": "transparent"
+      },
+      "primary-focus": {
+        "type": "color",
+        "value": "rgba(131, 207, 158, 0.42)"
       },
       "option-hover": {
         "type": "color",
@@ -1098,6 +1138,14 @@
         "value": "rgba(143, 212, 168, 1)"
       },
       "primary-active": {
+        "type": "color",
+        "value": "rgba(111, 176, 134, 1)"
+      },
+      "primary-ink-hover": {
+        "type": "color",
+        "value": "rgba(143, 212, 168, 1)"
+      },
+      "primary-ink-active": {
         "type": "color",
         "value": "rgba(111, 176, 134, 1)"
       },

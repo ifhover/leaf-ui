@@ -2,6 +2,7 @@ import { ComponentExample } from '../../src/components/component-example';
 import { ThemeBasic } from '../../src/examples/theming/basic';
 import { ThemeAppearance } from '../../src/examples/theming/appearance';
 import { ThemeScoped } from '../../src/examples/theming/scoped';
+import { ThemePresets } from '../../src/examples/theming/presets';
 
 # 定制主题
 
@@ -19,6 +20,8 @@ import { ThemeScoped } from '../../src/examples/theming/scoped';
 </ComponentExample>
 
 把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；悬停、按下和焦点颜色会自动生成。
+
+主色背景上的文字默认优先使用白色；白字与主色的对比度低于 `2.8:1` 时切换为黑色。例如蓝色 `#1d9bf0` 和橙色 `#ff6900` 使用白字，亮黄色 `#ffee00` 使用黑字。需要指定文字色时，可设置 `theme.tokens.onPrimaryColor`。
 
 `borderRadius` 是圆角的基准值。卡片、弹窗等会按各自的层级生成圆角，因此不必逐个组件设置。数字表示像素，也支持 `'0.5rem'` 等 CSS 长度。
 
@@ -40,6 +43,35 @@ import { ThemeScoped } from '../../src/examples/theming/scoped';
 
 完整参数见 [LeafTheme](/components/config-provider#leaftheme)。需要单独调整文字色、背景色或某个尺寸时，再查阅 [LeafThemeTokens](/api/theme-tokens#leafthemetokens)。
 
+## 复制主题示例
+
+下面的示例包含默认、插画、Windows XP、Material 和拟物五种风格的完整定义。将源码复制到自己的项目，把生成的 `LeafTheme` 对象传给 `ConfigProvider` 即可使用；主题定义保留在示例源码中，可以直接修改。
+
+| 风格 | 外观 |
+| --- | --- |
+| `default` | 组件库原始外观，不增加主题覆盖。 |
+| `illustration` | 高对比描边、鲜明配色与偏移硬阴影。 |
+| `windows-xp` | 小圆角、Tahoma 字体、斜面高光与渐变卡片标题。 |
+| `material` | 参考 MUI 的简洁轮廓、4px 圆角与层次阴影。 |
+| `skeuomorphic` | 柔和底面、双向浮雕阴影与按下时的内凹效果。 |
+
+<ComponentExample title="切换主题风格" preview={<ThemePresets />} fileName="presets.tsx" width={640}>
+
+```tsx lineNumbers file="../../src/examples/theming/presets.tsx"
+```
+
+</ComponentExample>
+
+默认风格不增加任何 token；`density` 使用默认值时也无需设置。悬停、按下、焦点和主色上的文字颜色由组件库自动生成，不需要在配置中逐项写出；示例仅按风格调整必要的阴影反馈。
+
+自定义风格只定义差异：圆角、描边宽度、全局 `tokens.borderColor`、阴影，以及用 `color-mix()` 生成的染色表面。设置一次全局边框色，实色按钮、开关、卡片、表格、浮层等组件的外框都会生效，无需为每个组件重复配置。组件级覆盖优先，错误、选中等状态继续保留各自语义；原本无边框的组件保持自身结构。
+
+调用 `createExampleTheme('illustration', '#1d9bf0')` 设置主色。染色背景和描边使用 `var(--leaf-color-primary)`，阴影复用 `var(--leaf-color-border)`，因此会随主色自动变化，无需为每种颜色手写整套色板。省略颜色参数可继承所在区域的主题色；表面色继续由组件库按深浅外观生成，染色背景在此基础上混入主色。
+
+Windows XP 和 Material 是使用 Leaf UI 主题能力制作的风格示例。Windows XP 保留当前主色，用斜面、字体和渐变表达复古质感；Material 使用本地可用的 Roboto 或回退字体。拟物的表面用 `light-dark()` 区分深浅模式，再通过 `color-mix()` 混入主色；固定的光照与中性基底不需要为每种主色重写。组件级配置仅用于卡片标题渐变和按钮阴影反馈，全局描边与阴影继续由一份 token 统一应用。
+
+切换风格不会重挂载子组件，输入值与选择状态会保留。浮层及服务反馈继承调用区域的主题。展开示例源码即可查看完整主题定义，复制到项目的 `ConfigProvider` 中使用。页面插画、背景纹理与字体文件由应用自行提供。
+
 ## 使用深色模式
 
 设置 `appearance: 'dark'` 即可；改回 `'light'` 恢复浅色：
@@ -50,7 +82,9 @@ import { ThemeScoped } from '../../src/examples/theming/scoped';
 </ConfigProvider>
 ```
 
-组件的文字、背景和边框会一起切换。显式设置的 `primaryColor` 会保留原色；没有指定时使用该外观的默认主题色。
+组件的文字、背景和边框会一起切换。没有指定 `primaryColor` 时，使用该外观的默认主题色。显式主色始终保留原值：黑色按钮在深色模式下仍使用黑底白字，并在需要时添加细微边界。
+
+主色文字、选中指示和焦点颜色分别派生。深色下，文字色以内容表面和辅助表面 `4.5:1` 的对比度为目标，选中指示以 `3:1` 为目标；只提高不足部分的亮度，不把实心按钮背景整体变亮。蓝色、橙色保持原色和白字。显式的文字色、焦点色与交互色 token 仍优先；CSS 颜色表达式在浏览器解析后参与派生，不修改传入的主题对象或颜色选择器的值。
 
 ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动添加背景。业务页面的背景和文字也需要跟随外观时，可使用下文的 [CSS 变量](#在业务样式中使用主题)。
 
@@ -157,6 +191,31 @@ const theme = {
 
 这里的 `theme.components` 调整样式。如果想统一按钮的 `size`、`variant` 或其他组件参数，使用 ConfigProvider 上的 `components`，见 [组件默认值](/components/config-provider#组件默认值)。
 
+### 描边、阴影与交互状态
+
+`tokens.borderWidth` 设置控件与内容表面的外框宽度；`controlShadow` 和 `surfaceShadow` 分别设置控件、内容表面的阴影。分区分隔线保持各自的细线样式。组件的 `borderWidth` 和 `shadow` 优先于全局值。
+
+支持状态覆盖的组件还可用 `hover`、`active`、`focus`、`disabled` 调整颜色、背景、边框颜色和阴影：
+
+```tsx
+<ConfigProvider theme={{
+  tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
+  components: {
+    Button: {
+      borderColor: '#252525',
+      hover: { shadow: '4px 4px 0 #252525' },
+      active: { shadow: '1px 1px 0 #252525' },
+      disabled: { shadow: 'none' },
+    },
+    Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
+  },
+}}>
+  <App />
+</ConfigProvider>
+```
+
+状态配置只修改外观，不改变组件的事件、尺寸、禁用或只读行为，也不移除键盘焦点轮廓。嵌套区域按状态内的字段合并，`undefined` 继续继承。完整字段与支持范围见 [主题变量](/api/theme-tokens#leafcomponenttokens)。
+
 ### 在业务样式中使用主题
 
 ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内容位于该区域内时，可以读取当前主题，随颜色和外观一起更新：
@@ -180,10 +239,16 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 | 常用变量 | 用途 |
 | --- | --- |
 | `--leaf-color-primary` | 当前主题色。 |
+| `--leaf-color-primary-ink` | 主色文字，深色下按表面对比度提亮。 |
+| `--leaf-color-primary-indicator` | 选中、进度和轮廓的主色指示。 |
+| `--leaf-color-primary-focus` | 默认主色焦点轮廓。 |
+| `--leaf-color-primary-fill-border` | 实心主色背景的辅助边界，通常透明。 |
 | `--leaf-color-on-primary` | 实色主题背景上的文字色。 |
 | `--leaf-color-text` / `--leaf-color-text-muted` | 主要、次要文字色。 |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。 |
 | `--leaf-color-border` | 边框颜色。 |
+| `--leaf-border-width` | 外框宽度。 |
+| `--leaf-control-shadow` / `--leaf-surface-shadow` | 控件与内容表面阴影。 |
 | `--leaf-radius` | 基础圆角。 |
 
 调整 Leaf UI 组件的主题仍通过 ConfigProvider，业务 CSS 用这些变量读取结果。仅修改某个基础 CSS 变量，不会重新生成整套交互颜色。

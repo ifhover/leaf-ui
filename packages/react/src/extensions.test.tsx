@@ -15,7 +15,6 @@ import {
   InputOTP,
   InputSearch,
   Menu,
-  Segmented,
   Select,
   Tabs,
   Textarea,
@@ -102,26 +101,6 @@ describe('Extended inputs and form integration', () => {
     await userEvent.type(screen.getByRole('textbox'), '3');
     expect(change).toHaveBeenLastCalledWith('123', '123');
     expect(screen.getByRole('textbox')).toHaveValue('12');
-  });
-  it('skips disabled segmented options by keyboard and submits the selected value', async () => {
-    const { container } = render(
-      <form>
-        <Segmented
-          name="view"
-          options={['Daily', { value: 'weekly', label: 'Weekly', disabled: true }, 'Monthly']}
-        />
-      </form>,
-    );
-    await userEvent.tab();
-    await userEvent.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: 'Monthly' })).toHaveFocus();
-    expect(new FormData(container.querySelector('form') as HTMLFormElement).get('view')).toBe(
-      'Monthly',
-    );
-    fireEvent.reset(container.querySelector('form') as HTMLFormElement);
-    await waitFor(() =>
-      expect(screen.getByRole('radio', { name: 'Daily' })).toHaveAttribute('aria-checked', 'true'),
-    );
   });
   it('enforces CheckboxGroup limits while retaining checked values in native submission', async () => {
     const { container } = render(

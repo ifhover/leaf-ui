@@ -1,3 +1,4 @@
+import { MentionsPopup } from '../../../src/examples/mentions/popup';
 import { ComponentExample } from '../../../src/components/component-example';
 import { MentionsBasic, MentionsPrefixes } from '../../../src/examples/mentions/basic';
 
@@ -23,6 +24,17 @@ Insert people or references into text.
 
 </ComponentExample>
 
+## Popup width
+
+The popup matches the field width by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to fit the content, which may be narrower than the field, or `popupWidth={300}` for a fixed 300px width; CSS lengths are also supported. `popupMaxWidth` is unset by default. The example below fits the content with an explicit maximum width. Viewport edge avoidance still applies.
+
+<ComponentExample title="Popup width" preview={<MentionsPopup english />} fileName="popup.tsx">
+
+```tsx lineNumbers file="../../../src/examples/mentions/popup.tsx"
+```
+
+</ComponentExample>
+
 ## MentionOption
 
 | Property | Type | Default | Description |
@@ -42,6 +54,8 @@ Insert people or references into text.
 | `autoSize` | `boolean \| `[`TextareaAutoSize`](../components/textarea#textareaautosize-api) | — | Configure auto size. |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | Configure show count. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width: trigger matches the field, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum width; unset by default, still bounded by the viewport |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |

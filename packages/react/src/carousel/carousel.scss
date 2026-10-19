@@ -58,7 +58,7 @@
       transform: translateY(-50%) scale(0.94);
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       outline-offset: 3px;
     }
     &:disabled {
@@ -89,12 +89,12 @@
         width var(--leaf-motion-slow) var(--leaf-motion-spring),
         background var(--leaf-motion-duration) var(--leaf-motion-easing);
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary);
+        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
         outline-offset: 3px;
       }
       &[aria-current] {
         width: 20px;
-        background: var(--leaf-color-primary);
+        background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       }
     }
   }

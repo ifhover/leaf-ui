@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 @use '../styles/geometry' as geometry;
 
 .leaf-time-picker {
@@ -47,13 +48,12 @@
   }
   &__column {
     position: relative;
+    overscroll-behavior: contain;
+  }
+  &__options {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    max-height: 210px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    overscroll-behavior: contain;
   }
   &__column .leaf-floating__option {
     position: relative;
@@ -101,4 +101,8 @@
   .leaf-time-picker__check {
     transition: none;
   }
+}
+
+.leaf-time-picker__panel {
+  @include mixins.floating-paint(time-picker);
 }

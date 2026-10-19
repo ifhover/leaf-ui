@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { ScrollArea } from '../scrollarea';
-import { Scrollbar } from './scrollbar';
+import { Scrollbar, ScrollbarControl } from './scrollbar';
 
 let width = 300;
 let height = 160;
@@ -46,6 +46,21 @@ afterEach(() => {
 });
 
 describe('Scrollbar', () => {
+  it('keeps composite scrollbars independent from public Scrollbar defaults', () => {
+    render(
+      <ConfigProvider components={{ Scrollbar: { scrollbar: 'hidden', height: 12 } }}>
+        <Scrollbar aria-label="Public viewport">Public</Scrollbar>
+        <ScrollbarControl aria-label="Internal viewport">Internal</ScrollbarControl>
+      </ConfigProvider>,
+    );
+    const publicRoot = screen.getByRole('region', { name: 'Public viewport' }).parentElement;
+    const internalRoot = screen.getByRole('region', { name: 'Internal viewport' }).parentElement;
+    expect(publicRoot).toHaveAttribute('data-scrollbar', 'hidden');
+    expect(publicRoot).toHaveStyle({ height: '12px' });
+    expect(internalRoot).toHaveAttribute('data-scrollbar', 'auto');
+    expect(internalRoot?.style.height).toBe('');
+    expect(internalRoot?.querySelectorAll('[role="scrollbar"]')).toHaveLength(2);
+  });
   it('forwards viewport refs, names and scroll events while preserving native wheel behavior', () => {
     const ref = createRef<HTMLDivElement>();
     const onScroll = vi.fn((event) => event.currentTarget);

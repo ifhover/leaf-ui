@@ -13,7 +13,12 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--leaf-color-border);
+  border: var(--leaf-component-transfer-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-transfer-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
+  box-shadow: var(--leaf-component-transfer-shadow, var(--leaf-surface-shadow, none));
   border-radius: var(--leaf-radius-md);
   background: var(--leaf-color-surface);
   transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
@@ -42,9 +47,8 @@
   padding: 8px;
 }
 .leaf-transfer__list {
-  overflow: auto;
+  box-sizing: border-box;
   padding: 0 4px 4px;
-  scrollbar-width: thin;
 }
 .leaf-transfer__item {
   padding: 3px 6px;

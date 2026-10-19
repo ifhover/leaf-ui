@@ -2,6 +2,7 @@ import { ExtensionDemo } from '../../src/examples/form/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { FormBasic } from '../../src/examples/form/basic';
 import { FormLabelWidth } from '../../src/examples/form/label-width';
+import { FormSettings } from '../../src/examples/form/settings';
 
 # Form 表单
 
@@ -25,6 +26,19 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 </ComponentExample>
 
+## 设置布局
+
+设置 `layout="settings"`，在左侧展示标签和 `description`，右侧展示保持自然宽度的控件，字段之间带有分隔线。较宽的控件可以单独设置 `FormField layout="vertical"`，让标签和描述位于控件上方，控件占满整行。窄屏下自动改为纵向排列。
+
+`description` 用于说明字段含义，始终跟随标签；`help` 用于控件下方的操作提示，校验失败时由 `error` 替代。
+
+<ComponentExample title="设置布局与垂直字段" preview={<FormSettings />} fileName="settings.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/form/settings.tsx"
+```
+
+</ComponentExample>
+
 ## 扩展用法
 
 <ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
@@ -38,9 +52,9 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | 标签与字段的排列方式 |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | 数字设置像素宽度；auto 统一使用最宽标签 |
-| `labelAlign` | `'left' \| 'right'` | `'right'` | 标签对齐方向 |
+| `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | 字段默认布局；settings 将标签与描述放在左侧，控件靠右排列 |
+| `labelWidth` | `number \| 'auto'` | `'auto'` | 仅用于 horizontal 字段；数字设置像素宽度，auto 统一使用最宽标签 |
+| `labelAlign` | `'left' \| 'right'` | `'right'` | horizontal 字段的标签对齐方向 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `ref` | `Ref<HTMLFormElement>` | — | 表单引用 |
 
@@ -49,11 +63,13 @@ import { FormLabelWidth } from '../../src/examples/form/label-width';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `label` | `ReactNode` | — | 字段标签 |
+| `description` | `ReactNode` | — | 标签下方的字段说明；与控件下方的 help 和 error 独立展示 |
+| `layout` | [`FormProps`](#form-api)`['layout']` | 继承 Form | 当前字段的布局；vertical 可用于占满整行的宽控件 |
 | `htmlFor` | `string` | 自动生成 | 与输入控件的 id 关联；一个字段对应一个控件或组 |
 | `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
 | `help` | `ReactNode` | — | 显示在控件下方的辅助提示，占据正常布局空间 |
 | `error` | `ReactNode` | — | 错误提示，优先于 help 展示 |
-| `labelWidth` | `number` | — | 当前字段的标签宽度，单位像素 |
+| `labelWidth` | `number` | — | 当前 horizontal 字段的标签宽度，单位像素 |
 
 ## 类型
 
@@ -65,7 +81,7 @@ import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 
 ## 使用说明
 
-默认自动计算同一 Form 中最宽的标签。标签文本、字体或可见字段变化时更新；窄屏和 vertical 布局按纵向排列。支持 onSubmit、onReset、action、method 等表单属性。
+默认使用 horizontal 布局，自动计算同一 Form 中水平字段最宽的标签。标签文本、字体或可见字段变化时更新；窄屏和 vertical 布局按纵向排列。FormField 可以通过 layout 覆盖 Form 的默认布局；labelWidth 和 labelAlign 只作用于 horizontal 字段。支持 onSubmit、onReset、action、method 等表单属性。
 
 help 和错误提示会占据正常布局空间，并与下一项保留表单间距；文字换行后自然增加高度。
 

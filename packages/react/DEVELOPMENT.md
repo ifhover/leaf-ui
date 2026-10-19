@@ -1,6 +1,6 @@
 # 组件编写与开发规则
 
-此文件是新增、修改和重构组件时必须遵守的编写规则，面向源码贡献者。开发与发布同时遵守 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)，视觉和交互遵守 [设计标准](../../DESIGN-STANDARDS.md)；组件使用说明见 [README.md](README.md)。
+此文件是新增、修改和重构组件时必须遵守的编写规则，面向源码贡献者。开发与发布同时遵守 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)：用户未指定具体分支时，集中使用并复用以目标版本号命名的开发分支，不为每个需求新建分支。视觉和交互遵守 [设计标准](../../DESIGN-STANDARDS.md)；组件使用说明见 [README.md](README.md)。
 
 ## 本地开发
 
@@ -31,6 +31,8 @@ pnpm dev
 公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。组件状态的派生色在组件自身计算，确保局部主题继承正确。
 
 对外主题配置统一经过 ConfigProvider 的 theme：常用配置只有 primaryColor、borderRadius、controlHeight、fontSize、fontFamily、appearance 和 motion；高级覆盖放在 LeafThemeTokens。src/theme.ts 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致。新增 token 需维护映射、类型和中英 API；保持派生尺寸只需设置基础值，业务 CSS 只消费变量。
+
+主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前主色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色在 SSR 中保留表达式，浏览器中解析后参与对比度和交互色计算。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、波纹偏移、连接边及浮层内圆角计算。
 
 使用 leaf- 类名前缀。提供减少动态效果和强制颜色模式下的必要样式。组件样式不重置应用的全局元素。
 
@@ -85,6 +87,8 @@ DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格
 ## 发布 npm
 
 每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
+
+开发分支将 Button 的公开 `variant="ghost"` 移除，次要操作改用柔和外观的 `variant="soft"`，普通状态使用中性浅底，危险状态使用淡红底和红色文字；`solid`、`outline` 和 `link` 保留。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件仍由私有 ButtonControl 渲染，不开放到 Button 的公共 API。这项兼容性变化需纳入下次正式发布的迁移说明。
 
 ## 扩展组件的实现
 
@@ -201,3 +205,5 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 `pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
 
 `DESIGN-STANDARDS.md` defines state and geometry rules. `ACCESSIBILITY.md` records executed browser coverage and pending device/screen-reader acceptance. The public documentation includes a bilingual visual and interaction guide; detailed acceptance evidence stays in the repository. Automatic screenshot baseline comparison remains deferred.
+
+开发分支移除 Segmented 及其类型、子路径和样式入口；统一使用 `Tabs type="card"`。迁移时将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 保持等宽铺满。只切换视图时可省略 `TabItem.children`，不会产生空面板或内容留白。卡片标签统一 3px 内边距与间距、普通文字色及浮起选中块，按下不缩放。Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。这项兼容性变化需纳入下一次正式发布的迁移说明。

@@ -28,7 +28,7 @@ describe('Button', () => {
     expect(button).not.toHaveAttribute('danger');
     await userEvent.click(button);
     expect(onClick).toHaveBeenCalledOnce();
-    for (const variant of ['solid', 'outline', 'ghost', 'link'] as const) {
+    for (const variant of ['solid', 'outline', 'soft', 'link'] as const) {
       rerender(
         <Button danger variant={variant}>
           删除项目
@@ -133,7 +133,7 @@ describe('Button', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('replaces an unfinished wave and cancels it when disabled, switched to text or unmounted', () => {
+  it('replaces an unfinished wave and cancels it when disabled, switched to soft or unmounted', () => {
     const { rerender, unmount } = render(<Button>继续</Button>);
     const button = screen.getByRole('button', { name: '继续' });
     const wave = button.querySelector('.leaf-button__wave') as HTMLElement;
@@ -158,7 +158,7 @@ describe('Button', () => {
     expect(animate).toHaveBeenCalledTimes(2);
     rerender(<Button>继续</Button>);
     fireEvent.click(button);
-    rerender(<Button variant="ghost">继续</Button>);
+    rerender(<Button variant="soft">继续</Button>);
     expect(third.cancel).toHaveBeenCalledOnce();
     fireEvent.click(button);
     expect(animate).toHaveBeenCalledTimes(3);

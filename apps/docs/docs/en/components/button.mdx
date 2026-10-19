@@ -8,9 +8,9 @@ Trigger an action, such as saving, submitting or deleting.
 
 ## Examples
 
-Use solid for primary actions, outline for secondary actions with a white surface and a fine border, and ghost for low-priority actions. Link buttons use the theme color without padding, border or a fixed control height; use the Link component for navigation. Loading preserves the label and prevents duplicate clicks. Set type="submit" for form submission, and aria-label for icon-only actions.
+Use solid for primary actions, outline for a content surface with a fine border, and soft for secondary actions on a subtle neutral surface. Danger soft buttons use a pale red surface with red text. Soft surfaces follow the light or dark theme and deepen on hover and press. Link buttons use the theme color without padding, border or a fixed control height; use the Link component for navigation. Loading preserves the label and prevents duplicate clicks. Set type="submit" for form submission, and aria-label for icon-only actions.
 
-On activation, solid and outlined buttons emit a wave that quickly expands outside the button and slowly fades while the button and label stay still. Ghost and link buttons do not emit a wave. Solid buttons brighten on hover and deepen on press; outlined buttons keep their surface and change their text and border colors. Danger actions use red. The wave follows the theme and respects regional and system motion preferences.
+On activation, solid and outlined buttons emit a wave that quickly expands outside the button and slowly fades while the button and label stay still. Soft and link buttons do not emit a wave. Solid buttons brighten on hover and deepen on press; outlined buttons keep their surface and change their text and border colors. Danger actions use red. The wave follows the theme and respects regional and system motion preferences.
 
 <ComponentExample title="Variants" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -74,7 +74,7 @@ On activation, solid and outlined buttons emit a wave that quickly expands outsi
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | `'solid'` | Visual style |
+| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | Visual style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `danger` | `boolean` | `false` | Danger colors; works with every variant |
 | `loading` | `boolean` | `false` | Show loading and disable interaction |
@@ -115,13 +115,13 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost' \| 'link'` | — | Button appearance |
+| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | Button appearance |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
 | `danger` | `boolean` | — | Danger colors |
 | `loading` | `boolean` | — | Loading state |
 | `fullWidth` | `boolean` | — | Fill available width |
 | `startIcon` | `ReactNode` | — | Leading icon |
 | `endIcon` | `ReactNode` | — | Trailing icon |
-| `items` | `readonly `[`DropdownItem`](../components/dropdown#dropdownitem)`[]` | Required | Required. Items; keep keys unique and stable |
+| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | Required | Required. Items; keep keys unique and stable |
 | `menuLabel` | `string` | — | Accessible menu button label |
-| `dropdownProps` | `Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | Action menu props |
+| `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | Action menu props |

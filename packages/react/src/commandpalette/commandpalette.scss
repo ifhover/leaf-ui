@@ -11,14 +11,14 @@
   .leaf-modal__body {
     padding: 4px 16px 0;
   }
+  &__results {
+    margin-top: 10px;
+  }
   &__list {
     --leaf-floating-option-radius: var(--leaf-radius-sm);
     position: relative;
-    margin-top: 10px;
     padding: 4px;
     min-height: 72px;
-    max-height: 340px;
-    overflow: auto;
     overscroll-behavior: contain;
     .leaf-floating__option {
       position: relative;

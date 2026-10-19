@@ -31,7 +31,7 @@ export function NotificationOptions() {
         持续错误通知
       </Button>
       <Button
-        variant="ghost"
+        variant="soft"
         onClick={() => notification.open({ key: 'sync', title: '重新同步中', duration: 2 })}
       >
         更新同一通知

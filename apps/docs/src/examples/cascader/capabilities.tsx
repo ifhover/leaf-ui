@@ -36,7 +36,15 @@ export function Capabilities({ english = false }) {
         <Text>
           {english ? 'Search, multiple paths and intermediate levels' : '搜索、多选与选择中间层'}
         </Text>
-        <Cascader options={options} showSearch multiple changeOnSelect />
+        <Cascader
+          aria-label={english ? 'Product or team' : '产品或团队'}
+          options={options}
+          popupWidth="auto"
+          popupMaxWidth={320}
+          showSearch
+          multiple
+          changeOnSelect
+        />
       </Flex>
       <Flex direction="column" gap="sm" align="center">
         <Text>{english ? 'Lazy loading and explicit cache refresh' : '懒加载与刷新缓存'}</Text>

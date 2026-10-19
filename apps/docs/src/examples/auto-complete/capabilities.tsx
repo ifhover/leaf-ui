@@ -43,11 +43,13 @@ export function Capabilities({ english = false }) {
       </Space>
       <AutoComplete
         aria-label={english ? 'Team email' : '团队邮箱'}
+        popupWidth="auto"
+        popupMaxWidth={320}
         options={state === 'ready' ? options : []}
         loading={state === 'loading'}
         errorContent={
           state === 'error' ? (
-            <Button size="sm" variant="ghost" onClick={() => setState('ready')}>
+            <Button size="sm" variant="soft" onClick={() => setState('ready')}>
               {english ? 'Retry' : '重新加载'}
             </Button>
           ) : undefined

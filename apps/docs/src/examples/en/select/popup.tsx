@@ -9,9 +9,18 @@ const options: SelectOption[] = [
 export function SelectPopup() {
   return (
     <Form layout="vertical">
-      <FormField label="Automatic popup width">
+      <FormField label="Match Select width by default">
         <Select
-          aria-label="Automatic popup width"
+          aria-label="Match Select width by default"
+          style={{ width: 180 }}
+          options={options}
+          defaultValue="studio"
+        />
+      </FormField>
+      <FormField label="Fit content">
+        <Select
+          aria-label="Fit content"
+          popupWidth="auto"
           style={{ width: 180 }}
           options={options}
           defaultValue="studio"
@@ -21,7 +30,6 @@ export function SelectPopup() {
         <Select
           aria-label="Fixed popup width"
           popupWidth={300}
-          popupMaxWidth={360}
           style={{ width: 180 }}
           options={options}
           optionRender={(option) => (
@@ -30,6 +38,15 @@ export function SelectPopup() {
               <div style={{ fontSize: 12, opacity: 0.65 }}>{option.value}</div>
             </div>
           )}
+        />
+      </FormField>
+      <FormField label="Fit content, maximum 200px">
+        <Select
+          aria-label="Fit content, maximum 200px"
+          popupWidth="auto"
+          popupMaxWidth={200}
+          style={{ width: 180 }}
+          options={options}
         />
       </FormField>
       <FormField label="Selection limit">

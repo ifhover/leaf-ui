@@ -205,6 +205,101 @@ describe('Form', () => {
     expect(screen.getByRole('group', { name: 'Theme' })).toBeDisabled();
     expect(screen.getByRole('radio')).toBeDisabled();
   });
+  it('keeps the label description when help is replaced by an error', async () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Form layout="settings">
+          <FormField
+            label="Instructions"
+            description={
+              <>
+                Applied to all chats. <a href="#details">Instruction details</a>
+              </>
+            }
+            help="Keep it brief."
+            layout="vertical"
+            required
+          >
+            <Textarea name="instructions" />
+          </FormField>
+          <Button type="submit">Save</Button>
+        </Form>
+      </ConfigProvider>,
+    );
+    const input = screen.getByRole('textbox', { name: 'Instructions' });
+    expect(input).toHaveAccessibleDescription(
+      'Applied to all chats. Instruction details Keep it brief.',
+    );
+    await userEvent.click(screen.getByText('Instructions', { exact: true }));
+    expect(input).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(input).toHaveAccessibleDescription(
+      'Applied to all chats. Instruction details Please fill out this field',
+    );
+    expect(screen.getByRole('link', { name: 'Instruction details' })).toBeInTheDocument();
+    await userEvent.type(input, 'Brief answers');
+    expect(input).toHaveAccessibleDescription(
+      'Applied to all chats. Instruction details Keep it brief.',
+    );
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+  it('measures only horizontal labels when layouts are mixed or changed', () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+      this: HTMLElement,
+    ) {
+      return { width: (this.textContent?.length ?? 0) * 8 } as DOMRect;
+    });
+    const fields = (layout: 'vertical' | 'horizontal') => (
+      <Form layout="settings">
+        <FormField label="Short" layout="horizontal">
+          <Input />
+        </FormField>
+        <FormField label="A longer vertical label" layout={layout}>
+          <Textarea />
+        </FormField>
+        <FormField label="A very long settings label">
+          <Input />
+        </FormField>
+      </Form>
+    );
+    const { container, rerender } = render(fields('vertical'));
+    const width = () =>
+      container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width');
+    expect(width()).toBe('40px');
+    rerender(fields('horizontal'));
+    expect(width()).toBe('184px');
+    rerender(fields('vertical'));
+    expect(width()).toBe('40px');
+  });
+  it('inherits region layout defaults and keeps explicit field overrides', () => {
+    const { container } = render(
+      <ConfigProvider
+        components={{
+          Form: { layout: 'settings' },
+          FormField: { description: 'Default hint' },
+        }}
+      >
+        <Form>
+          <FormField label="Name">
+            <Input />
+          </FormField>
+          <FormField label="Notes" layout="vertical">
+            <Textarea />
+          </FormField>
+        </Form>
+      </ConfigProvider>,
+    );
+    expect(container.querySelector('.leaf-form')).toHaveClass('leaf-form--settings');
+    expect(screen.getByRole('textbox', { name: 'Name' }).closest('.leaf-form-field')).toHaveClass(
+      'leaf-form-field--settings',
+    );
+    expect(screen.getByRole('textbox', { name: 'Notes' }).closest('.leaf-form-field')).toHaveClass(
+      'leaf-form-field--vertical',
+    );
+    expect(screen.getByRole('textbox', { name: 'Notes' })).toHaveAccessibleDescription(
+      'Default hint',
+    );
+  });
   it('respects prevented resets', async () => {
     render(
       <Form onReset={(event) => event.preventDefault()}>

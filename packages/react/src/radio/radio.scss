@@ -1,7 +1,7 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/choice-surfaces';
 .leaf-radio {
-  @include mixins.choice;
+  @include mixins.choice(radio);
   @include choice-surfaces.item(radio);
   &__input {
     border-radius: 50%;
@@ -55,4 +55,8 @@
     align-items: flex-start;
   }
   @include choice-surfaces.group(radio);
+}
+
+.leaf-radio {
+  @include mixins.choice-states(radio);
 }

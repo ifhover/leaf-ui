@@ -62,6 +62,8 @@ interface CascaderBaseProps
   cacheKey?: string | number;
   tagWrap?: boolean;
   maxTagCount?: number | 'responsive';
+  popupWidth?: number | string;
+  popupMaxWidth?: number | string;
 }
 export type CascaderProps = CascaderBaseProps &
   (
@@ -125,6 +127,8 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     cacheKey,
     tagWrap = true,
     maxTagCount,
+    popupWidth = 'trigger',
+    popupMaxWidth,
     popupPlacement,
     popupClassName,
     popupStyle,
@@ -171,6 +175,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
   const ariaDescribedBy =
     [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const ref = useMergedRef(triggerRef, forwardedRef);
   const panelId = `${useId()}-cascader`;
@@ -315,6 +320,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
 
   return (
     <div
+      ref={rootRef}
       className={classes(
         'leaf-cascader',
         `leaf-cascader--${size}`,
@@ -322,6 +328,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         className,
       )}
       style={style}
+      dir={props.dir ?? direction}
       data-status={status}
       data-disabled={disabled ? '' : undefined}
       data-open={open ? '' : undefined}
@@ -329,6 +336,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     >
       <button
         {...props}
+        dir={props.dir ?? direction}
         ref={ref}
         type="button"
         form={form}
@@ -428,8 +436,13 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         render={popupRender}
         style={popupStyle}
         open={open}
-        triggerRef={triggerRef}
+        triggerRef={rootRef}
         panelRef={panelRef}
+        matchWidth={popupWidth === 'trigger'}
+        width={
+          popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
+        }
+        maxWidth={popupMaxWidth}
         id={panelId}
         className={classes('leaf-floating leaf-cascader__panel', popupClassName)}
         role="dialog"

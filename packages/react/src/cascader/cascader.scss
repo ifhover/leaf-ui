@@ -11,7 +11,7 @@
     box-sizing: border-box;
     display: flex;
     width: 100%;
-    min-height: calc(var(--leaf-current-control-height) - 2px);
+    min-height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
     align-items: center;
     gap: 10px;
     justify-content: space-between;
@@ -47,7 +47,7 @@
     color: var(--leaf-color-text-muted);
   }
   &--multiple &__trigger {
-    padding-block: 3px;
+    @include selection.trigger-padding('cascader', 10px);
   }
   &--multiple &__value {
     white-space: normal;
@@ -62,8 +62,6 @@
   &__panel {
     width: max-content;
     max-width: min(560px, calc(100vw - 24px));
-    overflow-x: auto;
-    overflow-y: hidden;
   }
   &__columns {
     display: flex;
@@ -105,10 +103,6 @@
     &:dir(rtl)[aria-selected='true'] > .lucide-chevron-right {
       transform: rotate(180deg) translateX(2px);
     }
-  }
-  &[data-open] {
-    border-color: var(--leaf-field-color);
-    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
   }
   &[data-open] &__trigger > svg {
     transform: rotate(180deg);
@@ -173,4 +167,8 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+}
+
+.leaf-cascader__panel {
+  @include mixins.floating-paint(cascader);
 }

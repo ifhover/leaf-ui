@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 .leaf-popover {
   padding: var(--leaf-component-popover-padding, 14px 16px);
   outline: none;
@@ -20,4 +21,8 @@
       margin-block-end: 0;
     }
   }
+}
+
+.leaf-popover {
+  @include mixins.floating-paint(popover, var(--leaf-color-border-alpha-85));
 }

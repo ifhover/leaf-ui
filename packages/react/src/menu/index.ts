@@ -1,2 +1,2 @@
-export type { MenuItem, MenuProps } from './menu';
-export { Menu } from './menu';
+export type { MenuGroupProps, MenuItem, MenuProps } from './menu';
+export { Menu, MenuGroup } from './menu';

@@ -8,7 +8,12 @@
   font: var(--leaf-component-collapse-font-size, var(--leaf-current-font-size))/1.6
     var(--leaf-font-family);
   &--bordered {
-    border: 1px solid var(--leaf-color-border);
+    border: var(--leaf-component-collapse-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-collapse-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    box-shadow: var(--leaf-component-collapse-shadow, var(--leaf-surface-shadow, none));
   }
   &__item + &__item {
     border-top: 1px solid var(--leaf-color-divider);
@@ -52,7 +57,7 @@
       cursor: not-allowed;
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       outline-offset: -3px;
     }
   }

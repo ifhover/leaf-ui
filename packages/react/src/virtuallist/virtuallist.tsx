@@ -15,6 +15,7 @@ import {
   useGenericComponentDefaults,
 } from '../config-provider/component-defaults';
 import { ResultControl as Result } from '../result/result';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 export interface VirtualListHandle {
   element: HTMLDivElement | null;
@@ -68,12 +69,15 @@ function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListH
     [virtualizer],
   );
   return (
-    <div
-      {...props}
+    <ScrollbarControl
       ref={root}
-      role={props.role}
+      viewportProps={props}
+      role={props.role ?? 'presentation'}
       tabIndex={props.tabIndex ?? 0}
       className={classes('leaf-virtual-list', className)}
+      viewportClassName="leaf-virtual-list__viewport"
+      viewportStyle={{ position: 'relative' }}
+      scrollbarTabIndex={-1}
       style={{ height, ...style }}
     >
       {!items.length ? (
@@ -107,7 +111,7 @@ function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListH
           ))}
         </ul>
       )}
-    </div>
+    </ScrollbarControl>
   );
 }
 export const VirtualListControl = forwardRef(VirtualListRoot) as <T>(

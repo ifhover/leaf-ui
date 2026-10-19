@@ -1,8 +1,10 @@
 import type { LeafComponentDefaults } from '../src';
 import {
+  Button,
   DatePicker,
   FormList,
   InputNumber,
+  MenuGroup,
   Modal,
   Select,
   Slider,
@@ -39,6 +41,7 @@ export const completeComponentDefaultsCoverage: [MissingDefaults, UnknownDefault
 // Compile-only contracts; required JSX props and mode-specific types stay instance-owned.
 export function componentDefaultsTypeContracts() {
   const root: LeafComponentDefaults = {
+    Button: { variant: 'soft' },
     Input: { value: '', defaultValue: 'Leaf', onChange: (event) => event.currentTarget.value },
     Select: { showSearch: true, onSearch: (query) => query },
     Modal: { footer: null },
@@ -73,6 +76,14 @@ export function componentDefaultsTypeContracts() {
   const missingOptions = <Select />;
   // @ts-expect-error Modal open remains required even if configured elsewhere.
   const missingOpen = <Modal />;
+  // @ts-expect-error MenuGroup titles belong to each instance.
+  const groupTitle: LeafComponentDefaults = { MenuGroup: { title: 'Global title' } };
+  // @ts-expect-error Provider defaults do not relax required group titles.
+  const missingGroupTitle = <MenuGroup />;
+  // @ts-expect-error Borderless ghost controls are no longer a public Button appearance.
+  const removedButtonVariant = <Button variant="ghost" />;
+  // @ts-expect-error Regional defaults use the same public Button appearances.
+  const removedButtonDefault: LeafComponentDefaults = { Button: { variant: 'ghost' } };
   const multi = <Select multiple options={[]} onChange={(values) => values.map(String)} />;
   const single = <Select options={[]} onChange={(value) => value.toUpperCase()} />;
   return {
@@ -89,6 +100,10 @@ export function componentDefaultsTypeContracts() {
     open,
     missingOptions,
     missingOpen,
+    groupTitle,
+    missingGroupTitle,
+    removedButtonVariant,
+    removedButtonDefault,
     multi,
     single,
   };

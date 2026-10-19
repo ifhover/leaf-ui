@@ -23,6 +23,11 @@ export function MultiSelectFixture() {
       className="browser-multi-select"
       density={compact ? 'compact' : 'comfortable'}
       direction={rtl ? 'rtl' : 'ltr'}
+      theme={{
+        tokens: {
+          borderWidth: new URLSearchParams(location.search).has('thick-border') ? 3 : 1,
+        },
+      }}
     >
       <h1>Multiple selections</h1>
       <Space>
@@ -113,6 +118,35 @@ export function MultiSelectFixture() {
           />
           <TreeSelect aria-label="Single tree" options={tree} />
           <TreeSelect aria-label="Checked tree" options={tree} treeCheckable />
+          <ConfigProvider
+            theme={{
+              components: {
+                select: { padding: '3px 44px 3px 9px' },
+                treeSelect: { padding: '3px 44px 3px 9px' },
+                cascader: { padding: '3px 44px 3px 9px' },
+              },
+            }}
+          >
+            <Select
+              aria-label="Custom padding select"
+              multiple
+              options={options}
+              defaultValue={['design']}
+            />
+            <TreeSelect
+              aria-label="Custom padding tree"
+              treeCheckable
+              allowClear={false}
+              options={tree}
+              defaultValue={['design']}
+            />
+            <Cascader
+              aria-label="Custom padding cascader"
+              multiple
+              options={tree}
+              defaultValue={[['team', 'design']]}
+            />
+          </ConfigProvider>
           <button type="reset">Reset selections</button>
         </Space>
       </form>

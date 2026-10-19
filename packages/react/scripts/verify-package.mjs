@@ -269,8 +269,8 @@ const components = [
   ['ScrollArea', { height: 100 }, 'Content', /leaf-scroll-area/],
   ['Scrollbar', { height: 100 }, 'Content', /leaf-scrollbar/],
   ['Masonry', {}, 'Cards', /leaf-masonry/],
-  ['Segmented', { options: ['Daily', 'Monthly'] }, null, /role="radiogroup"/],
   ['Menu', { items: [{ key: 'home', label: 'Home' }] }, null, /role="menu"/],
+  ['MenuGroup', { title: 'Workspace' }, 'Custom content', /role="group"/],
   ['BackTop', {}, null, /leaf-back-top/],
   ['Descriptions', { items: [{ key: 'name', label: 'Name', children: 'Leaf' }] }, null, /<dl/],
   ['Image', { src: '/test.png', alt: 'Preview' }, null, /leaf-image/],
@@ -421,6 +421,32 @@ for (const [format, api] of [
   assert.match(themed, /--leaf-radius:8px/);
   assert.match(themed, /--leaf-control-height:38px/);
   assert.match(themed, /--leaf-control-height-lg:48px/);
+  const configEntry =
+    format === 'ESM'
+      ? await import('@ifhover/leaf-ui/config-provider')
+      : require('@ifhover/leaf-ui/config-provider');
+  const theme = {
+    tokens: { borderWidth: 2, controlShadow: '2px 2px 0 #222', surfaceShadow: '4px 4px 0 #222' },
+    components: { Button: { borderWidth: 2, hover: { background: '#eee' } } },
+  };
+  const themeSnapshot = JSON.stringify(theme);
+  const element = createElement(
+    configEntry.ConfigProvider,
+    { theme },
+    createElement(
+      api.ConfigProvider,
+      { theme: { components: { Button: { hover: { shadow: 'none' } } } } },
+      createElement(api.Button, null, 'Portable theme'),
+    ),
+  );
+  const html = renderToStaticMarkup(element);
+  assert.equal(renderToStaticMarkup(element), html, `${format}: deterministic theme SSR`);
+  assert.match(html, /--leaf-border-width:2px/);
+  assert.match(html, /--leaf-control-shadow:2px 2px 0 #222/);
+  assert.match(html, /--leaf-component-button-hover-background:#eee/);
+  assert.match(html, /--leaf-component-button-hover-shadow:none/);
+  assert.doesNotMatch(html, /<style|\[object Object\]/u);
+  assert.equal(JSON.stringify(theme), themeSnapshot, `${format}: theme stays pure`);
   const buttonEntry =
     format === 'ESM' ? await import('@ifhover/leaf-ui/button') : require('@ifhover/leaf-ui/button');
   const defaults = renderToStaticMarkup(
@@ -488,18 +514,23 @@ const consumerDirectory = await mkdtemp(path.join(qualityDirectory, 'defaults-co
 const consumerPath = path.join(consumerDirectory, 'consumer.tsx');
 const consumerConfigPath = path.join(consumerDirectory, 'tsconfig.json');
 const consumerSource = `
-import { Button, ConfigProvider, type LeafComponentDefaults, type DataTablePresentationProps, type LeafTranslation, type LeafTranslations } from '@ifhover/leaf-ui';
+import { Button, ConfigProvider, type LeafTheme, type LeafComponentStateTokens, type LeafComponentDefaults, type DataTablePresentationProps, type LeafTranslation, type LeafTranslations } from '@ifhover/leaf-ui';
+import { type LeafComponentStateTokens as ScopedStateTokens, type LeafTheme as ScopedTheme } from '@ifhover/leaf-ui/config-provider';
 import leafPreset from '@ifhover/leaf-ui/tailwind';
 const spacing: string = leafPreset.theme.extend.spacing.leaf;
 const pack: LeafTranslation = { select: { placeholder: 'Choose' } };
 const translations: LeafTranslations = { 'ja-JP': pack };
 const languages = ['ja-JP', 'en-US'] as const;
+const hover: LeafComponentStateTokens = { borderColor: '#123', shadow: 'none' };
+const scopedHover: ScopedStateTokens = hover;
+const customTheme: LeafTheme = { tokens: { borderWidth: 2, controlShadow: '2px 2px black', surfaceShadow: '4px 4px black' }, components: { Button: { borderWidth: 2, hover: scopedHover } } };
+const scopedTheme: ScopedTheme = customTheme;
 const presentation: DataTablePresentationProps = { size: 'sm', selection: 'multiple' };
 const components: LeafComponentDefaults = {
   Button: { variant: 'outline' }, DataTable: presentation,
   DataTablePagination: { showSizeChanger: true }, VirtualList: { estimateSize: 36 },
 };
-export const example = <ConfigProvider components={components} locale={languages} translations={translations}><Button>Leaf</Button></ConfigProvider>;
+export const example = <ConfigProvider components={components} locale={languages} translations={translations} theme={scopedTheme}><ConfigProvider theme={customTheme}><Button>Leaf</Button></ConfigProvider></ConfigProvider>;
 `;
 try {
   await writeFile(consumerPath, consumerSource);
@@ -554,9 +585,13 @@ assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary
 const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
 assert.match(css, /--leaf-control-height:\s*36px/);
 assert.match(css, /--leaf-color-danger/);
-assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]/);
-for (const name of ['List', 'ListItem', 'OrgChart'])
-  assert.ok(!(name in esm), `${name} is no longer exported`);
+assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]|\.leaf-segmented/);
+for (const name of ['List', 'ListItem', 'OrgChart', 'Segmented']) {
+  assert.ok(!(name in esm), `${name} is no longer exported from ESM`);
+  assert.ok(!(name in cjs), `${name} is no longer exported from CommonJS`);
+}
+assert.equal(manifest.exports['./segmented'], undefined);
+assert.equal(manifest.exports['./segmented/style.css'], undefined);
 for (const name of [
   'button',
   'input',
@@ -608,7 +643,6 @@ for (const name of [
   'scroll-area',
   'scrollbar',
   'masonry',
-  'segmented',
   'menu',
   'back-top',
   'descriptions',

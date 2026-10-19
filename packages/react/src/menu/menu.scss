@@ -69,12 +69,15 @@
       }
     }
     &[data-active-parent] {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       font-weight: var(--leaf-font-weight);
     }
     &[data-selected],
     &[data-selected]:hover:not(:disabled) {
-      color: var(--leaf-color-primary);
+      color: var(
+        --leaf-color-primary-ink-active,
+        var(--leaf-color-primary-ink, var(--leaf-color-primary))
+      );
       background: transparent;
       font-weight: var(--leaf-font-weight);
     }
@@ -130,6 +133,9 @@
     @include mixins.section-label;
     padding: 14px 12px 6px;
   }
+  &--collapsed &__group-label {
+    display: none;
+  }
   &__divider {
     height: 1px;
     margin: 8px 12px;
@@ -149,17 +155,6 @@
   }
   &--horizontal &__entry {
     position: relative;
-  }
-  &--horizontal &__submenu {
-    position: absolute;
-    z-index: var(--leaf-z-index-popup);
-    inset-inline-start: 0;
-    top: 100%;
-    min-width: 180px;
-    padding: 6px;
-    background: var(--leaf-color-surface);
-    border-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
-    box-shadow: 0 6px 24px #00000018;
   }
   &--collapsed &__label {
     max-width: 0;
@@ -221,8 +216,99 @@
   margin: 0;
   min-width: 0;
 }
+.leaf-menu-group > .leaf-menu__group-label {
+  padding-inline: 0;
+}
 .leaf-menu__divider {
   border: 0;
+}
+
+.leaf-menu__popup.leaf-dropdown {
+  @include mixins.floating-paint(menu);
+  --leaf-surface-radius: var(--leaf-component-menu-radius, var(--leaf-radius-lg));
+  --leaf-surface-padding: var(--leaf-component-menu-padding, 6px);
+  @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: var(
+      --leaf-component-menu-padding-#{$side},
+      var(--leaf-surface-padding)
+    );
+  }
+  --leaf-floating-option-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
+  min-width: min(208px, calc(100vw - 24px));
+  border-radius: var(--leaf-surface-radius);
+  gap: 2px;
+  font-size: var(--leaf-component-menu-font-size, var(--leaf-font-size));
+
+  > .leaf-floating__viewport {
+    border-radius: var(--leaf-surface-inner-radius);
+  }
+  > .leaf-floating__viewport > .leaf-scrollbar__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .leaf-floating__option {
+    min-height: var(--leaf-control-height);
+    gap: 10px;
+    margin: 0;
+    padding-inline: 10px;
+    text-decoration: none;
+    line-height: 1.5;
+    font-size: inherit;
+    &[aria-current='page'],
+    &[aria-current='page']:is(:hover, :focus-visible, :active):not(:disabled):not(
+        [aria-disabled='true']
+      ) {
+      background: var(--leaf-color-primary-surface-9);
+      color: var(
+        --leaf-color-primary-ink-active,
+        var(--leaf-color-primary-ink, var(--leaf-color-primary))
+      );
+      font-weight: var(--leaf-font-weight);
+    }
+    &[data-active-parent='true'] {
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      font-weight: var(--leaf-font-weight);
+    }
+  }
+  .leaf-dropdown__highlight {
+    border: 0;
+    left: 0;
+    right: 0;
+  }
+  .leaf-dropdown__arrow {
+    flex: none;
+    color: var(--leaf-color-text-muted);
+  }
+  .leaf-dropdown__group {
+    padding: 10px 10px 5px;
+  }
+  .leaf-dropdown__divider {
+    border-color: var(--leaf-color-divider);
+    margin-block: 5px;
+  }
+}
+.leaf-menu__popup-title {
+  @include mixins.section-label;
+  margin: 0 4px 4px;
+  padding: 6px 6px 10px;
+  border-bottom: 1px solid var(--leaf-color-divider);
+}
+.leaf-menu__popup-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+.leaf-menu__popup-label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 @media (forced-colors: active) {
   .leaf-menu__indicator {
@@ -231,5 +317,9 @@
   }
   .leaf-menu__item[data-selected] {
     color: HighlightText;
+  }
+  .leaf-menu__popup .leaf-floating__option[aria-current='page'] {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
   }
 }

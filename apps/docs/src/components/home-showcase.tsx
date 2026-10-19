@@ -12,10 +12,10 @@ import {
   Menu,
   Modal,
   Progress,
-  Segmented,
   Select,
   Statistic,
   Switch,
+  Tabs,
   Tag,
   Tooltip,
   useMessage,
@@ -94,14 +94,15 @@ export function HomeShowcase() {
       }
     >
       <div className="leaf-showroom__toolbar">
-        <Segmented
+        <Tabs
+          type="card"
           aria-label={t('预览场景', 'Preview scene')}
-          value={scene}
+          activeKey={scene}
           onChange={setScene}
-          options={[
-            { value: 'components', label: t('组件', 'Components') },
-            { value: 'project', label: t('工作台', 'Workspace') },
-            { value: 'files', label: t('文件', 'Files') },
+          items={[
+            { key: 'components', label: t('组件', 'Components') },
+            { key: 'project', label: t('工作台', 'Workspace') },
+            { key: 'files', label: t('文件', 'Files') },
           ]}
         />
         <fieldset className="leaf-showroom__colors" aria-label={t('场景主题色', 'Scene accent')}>
@@ -119,12 +120,7 @@ export function HomeShowcase() {
           ))}
         </fieldset>
       </div>
-      <ConfigProvider
-        theme={{
-          primaryColor: accent,
-          tokens: { onPrimaryColor: '#fff' },
-        }}
-      >
+      <ConfigProvider theme={{ primaryColor: accent }}>
         <div hidden={scene !== 'components'}>
           <ComponentShowcase />
         </div>
@@ -218,7 +214,7 @@ function ProjectShowcase() {
         <Tooltip content={t('恢复示例', 'Reset example')}>
           <Button
             size="sm"
-            variant="ghost"
+            variant="soft"
             aria-label={t('恢复示例', 'Reset example')}
             startIcon={<RotateCcw size={15} />}
             onClick={() => {
@@ -292,15 +288,16 @@ function ProjectShowcase() {
             <div className="leaf-workspace__columns">
               <div className="leaf-workspace__tasks">
                 <div className="leaf-workspace__toolbar">
-                  <Segmented
+                  <Tabs
+                    type="card"
                     size="sm"
                     aria-label={t('任务筛选', 'Task filter')}
-                    value={filter}
+                    activeKey={filter}
                     onChange={setFilter}
-                    options={[
-                      { value: 'all', label: t('全部', 'All tasks') },
-                      { value: 'open', label: t('进行中', 'In progress') },
-                      { value: 'done', label: t('已完成', 'Done') },
+                    items={[
+                      { key: 'all', label: t('全部', 'All tasks') },
+                      { key: 'open', label: t('进行中', 'In progress') },
+                      { key: 'done', label: t('已完成', 'Done') },
                     ]}
                   />
                   <span className="leaf-workspace__count">
@@ -352,7 +349,7 @@ function ProjectShowcase() {
                           }
                         >
                           <Button
-                            variant="ghost"
+                            variant="soft"
                             size="sm"
                             aria-label={`${t('任务操作', 'Task actions')}: ${t(task.zh, task.en)}`}
                             startIcon={<Ellipsis size={16} />}
@@ -365,7 +362,7 @@ function ProjectShowcase() {
                   <div className="leaf-workspace__empty">
                     <CheckCheck size={24} />
                     <span>{t('这里已经整理好了。', 'Everything is in order.')}</span>
-                    <Button size="sm" variant="ghost" onClick={() => setFilter('all')}>
+                    <Button size="sm" variant="soft" onClick={() => setFilter('all')}>
                       {t('查看全部任务', 'View all tasks')}
                     </Button>
                   </div>
@@ -373,7 +370,7 @@ function ProjectShowcase() {
                 <Button
                   className="leaf-workspace__add"
                   size="sm"
-                  variant="ghost"
+                  variant="soft"
                   startIcon={<Plus size={15} />}
                   onClick={create}
                 >
@@ -467,7 +464,7 @@ function ProjectShowcase() {
         width={430}
         footer={
           <>
-            <Button variant="ghost" onClick={() => (step ? setStep(0) : setOpen(false))}>
+            <Button variant="soft" onClick={() => (step ? setStep(0) : setOpen(false))}>
               {step ? t('上一步', 'Back') : t('取消', 'Cancel')}
             </Button>
             <Button

@@ -97,7 +97,7 @@ export function TableServer({ english = false }: { english?: boolean }) {
         >
           {english ? 'Refresh' : '刷新'}
         </Button>
-        <Button variant="ghost" disabled={loading} onClick={() => setError(true)}>
+        <Button variant="soft" disabled={loading} onClick={() => setError(true)}>
           {english ? 'Simulate error' : '模拟失败'}
         </Button>
       </DataTable.Toolbar>

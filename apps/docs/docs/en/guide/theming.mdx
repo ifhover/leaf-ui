@@ -2,6 +2,7 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { ThemeBasic } from '../../../src/examples/en/theming/basic';
 import { ThemeAppearance } from '../../../src/examples/en/theming/appearance';
 import { ThemeScoped } from '../../../src/examples/en/theming/scoped';
+import { ThemePresets } from '../../../src/examples/en/theming/presets';
 
 # Theming
 
@@ -19,6 +20,8 @@ Wrap your application in ConfigProvider. This example uses a purple primary colo
 </ComponentExample>
 
 Replace Button with your application content. Buttons, fields, selectors and popups share the theme. Hover, pressed and focus colors derive automatically.
+
+Text on primary backgrounds prefers white and switches to black when white has a contrast ratio below `2.8:1`. For example, blue `#1d9bf0` and orange `#ff6900` use white text, while bright yellow `#ffee00` uses black text. Set `theme.tokens.onPrimaryColor` to choose an explicit text color.
 
 `borderRadius` sets the base radius. Cards, dialogs and other surfaces derive radii for their own level, so you do not need to configure each component. Numbers represent pixels; CSS lengths such as `'0.5rem'` also work.
 
@@ -40,6 +43,35 @@ Unspecified fields inherit the outer configuration. Defaults are light appearanc
 
 See [LeafTheme](/en/components/config-provider#leaftheme) for all theme fields. For individual text colors, backgrounds or sizes, use [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens).
 
+## Copy a theme example
+
+The following example includes complete definitions for default, illustration, Windows XP, Material and skeuomorphic styles. Copy the source into your project and pass the resulting `LeafTheme` object to `ConfigProvider`. These definitions live in the example source and can be edited directly.
+
+| Style | Appearance |
+| --- | --- |
+| `default` | The unmodified library defaults, with no additional theme tokens. |
+| `illustration` | Contrasting borders, vivid colors and offset hard shadows. |
+| `windows-xp` | Small corners, Tahoma typography, beveled highlights and a gradient card header. |
+| `material` | MUI-inspired shapes, 4px corners and layered elevation. |
+| `skeuomorphic` | Soft surfaces, two-sided relief shadows and an inset pressed effect. |
+
+<ComponentExample title="Switch theme styles" preview={<ThemePresets />} fileName="presets.tsx" width={640}>
+
+```tsx lineNumbers file="../../../src/examples/en/theming/presets.tsx"
+```
+
+</ComponentExample>
+
+The default style adds no tokens. Omit `density` for its default value. Automatic hover, active, focus and primary label colors come from the library, so these values do not need to be copied into your configuration. The examples only customize shadow feedback where the style calls for it.
+
+Custom styles only define their differences: radius, border width, a global `tokens.borderColor`, shadows, and tinted surfaces using `color-mix()`. A single border color applies to all component frames, including solid buttons, switches, cards, tables and popups. Individual component overrides take precedence; error and selected states keep their meaning. Components that are borderless by design stay borderless.
+
+`createExampleTheme('illustration', '#1d9bf0')` sets the primary color. Tinted surfaces and borders use `var(--leaf-color-primary)`, and shadows reuse `var(--leaf-color-border)`, so they update automatically without listing a new palette for each color. Omit the color argument to inherit the surrounding theme. Base surfaces keep the library's automatic light/dark palette; tinted backgrounds mix the primary color into those surfaces.
+
+Windows XP and Material are style examples made with Leaf UI theme settings. Windows XP keeps the current primary color and uses bevels, typography and a gradient for a retro feel. Material uses locally available Roboto or fallback fonts. The skeuomorphic style uses `light-dark()` for light/dark surfaces and `color-mix()` to tint them with the primary color; neutral bases and lighting do not need a separate palette for each primary color. Component overrides only customize the card header gradient and button shadow feedback; global borders and shadows remain shared.
+
+Changing styles keeps child components mounted, preserving input and selection values. Popups and service feedback inherit their calling region's theme. Expand the example source to view the complete theme definitions and copy them into your project's `ConfigProvider`. Applications provide their own illustrations, textures and font files.
+
 ## Use dark mode
 
 Set `appearance: 'dark'`. Use `'light'` to switch back:
@@ -50,7 +82,9 @@ Set `appearance: 'dark'`. Use `'light'` to switch back:
 </ConfigProvider>
 ```
 
-Component text, backgrounds and borders change together. An explicit `primaryColor` keeps its value; otherwise, the appearance supplies its default primary color.
+Component text, backgrounds and borders change together. When `primaryColor` is omitted, the appearance supplies its default primary color. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed.
+
+Primary text, selected indicators and focus colors derive separately. In dark mode, text targets `4.5:1` contrast against content and muted surfaces, while selected indicators target `3:1`. Only insufficient colors gain lightness; solid button fills stay unchanged. Blue and orange retain their original fills and white labels. Explicit foreground, focus and interaction tokens still take precedence. CSS color expressions participate after browser resolution without modifying the supplied theme object or color picker value.
 
 ConfigProvider styles the components in its region. It does not add a background to the page's `body`. To update your own page backgrounds and text, use the [CSS variables](#use-the-theme-in-application-css) below.
 
@@ -157,6 +191,31 @@ See [LeafComponentTokens](/en/api/theme-tokens#leafcomponenttokens) for style fi
 
 `theme.components` changes styles. To set default button `size`, `variant` or other component props, use ConfigProvider's separate `components` prop; see [Component defaults](/en/components/config-provider#component-defaults).
 
+### Borders, shadows and interaction states
+
+`tokens.borderWidth` sets outer borders on controls and content surfaces. `controlShadow` and `surfaceShadow` set control and content surface shadows. Section dividers keep their own fine lines. Component `borderWidth` and `shadow` take precedence over global values.
+
+Components supporting state overrides also accept `hover`, `active`, `focus` and `disabled` colors, backgrounds, border colors and shadows:
+
+```tsx
+<ConfigProvider theme={{
+  tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
+  components: {
+    Button: {
+      borderColor: '#252525',
+      hover: { shadow: '4px 4px 0 #252525' },
+      active: { shadow: '1px 1px 0 #252525' },
+      disabled: { shadow: 'none' },
+    },
+    Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
+  },
+}}>
+  <App />
+</ConfigProvider>
+```
+
+State settings change appearance without changing events, dimensions, disabled or read-only behavior, or removing keyboard focus outlines. Nested providers merge each state's fields; `undefined` inherits. See [theme tokens](/en/api/theme-tokens#leafcomponenttokens) for fields and support scope.
+
 ### Use the theme in application CSS
 
 ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own content can read them to follow color and appearance changes:
@@ -180,10 +239,16 @@ ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own cont
 | Common variable | Purpose |
 | --- | --- |
 | `--leaf-color-primary` | Current primary color. |
+| `--leaf-color-primary-ink` | Primary text, lifted for contrast on dark surfaces. |
+| `--leaf-color-primary-indicator` | Primary selected, progress and outline indicators. |
+| `--leaf-color-primary-focus` | Default primary focus outline. |
+| `--leaf-color-primary-fill-border` | Subtle solid primary boundary, normally transparent. |
 | `--leaf-color-on-primary` | Text on a solid primary background. |
 | `--leaf-color-text` / `--leaf-color-text-muted` | Primary and secondary text. |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | Content and supporting backgrounds. |
 | `--leaf-color-border` | Border color. |
+| `--leaf-border-width` | Outer border width. |
+| `--leaf-control-shadow` / `--leaf-surface-shadow` | Control and content surface shadows. |
 | `--leaf-radius` | Base radius. |
 
 Configure Leaf UI component themes through ConfigProvider and read the results from application CSS. Changing a single base CSS variable does not regenerate the full set of interaction colors.

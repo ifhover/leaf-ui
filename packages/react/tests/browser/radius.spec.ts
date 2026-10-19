@@ -105,12 +105,6 @@ for (const appearance of ['light', 'dark']) {
     await expectInset(formats, formats.getByRole('button').first());
     await page.keyboard.press('Escape');
 
-    const segmented = page.getByRole('radiogroup', { name: 'Radius segmented' });
-    await expectInset(segmented, segmented.getByRole('radio').first());
-    await expectMatching(
-      segmented.getByRole('radio').first(),
-      segmented.locator('.leaf-segmented__indicator'),
-    );
     const tabs = page.locator('.leaf-tabs__list');
     await expectInset(tabs, tabs.getByRole('tab').first());
     await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));
@@ -137,9 +131,6 @@ for (const radius of [0, 3]) {
     await expectInset(panel, panel.getByRole('option').first());
     await expect(panel.getByRole('option').first()).toHaveCSS('border-radius', '0px');
     await page.keyboard.press('Escape');
-    const segmented = page.getByRole('radiogroup', { name: 'Radius segmented' });
-    await expectInset(segmented, segmented.getByRole('radio').first());
-    await expect(segmented.getByRole('radio').first()).toHaveCSS('border-radius', '0px');
     const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
     await expectMatching(menu, page.getByRole('button', { name: 'Change radius', exact: true }));
     await expectMatching(menu, menu.getByRole('menuitem').first());
@@ -176,8 +167,6 @@ test('component padding shorthand keeps highlight geometry aligned in an RTL por
   await expect(panel).toHaveCSS('border-radius', '24px');
   await expectInset(panel, panel.getByRole('option').first());
   await page.keyboard.press('Escape');
-  const segmented = page.locator('.leaf-segmented');
-  await expectInset(segmented, segmented.getByRole('radio').first());
   const tabs = page.getByRole('tablist', { name: 'Radius tabs' });
   await expectInset(tabs, tabs.getByRole('tab').first());
   await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));

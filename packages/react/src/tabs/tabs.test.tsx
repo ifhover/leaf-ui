@@ -10,6 +10,30 @@ const items = [
   { key: 'two', label: 'Second', children: 'Second content' },
 ];
 describe('Tabs', () => {
+  it('switches header-only views without empty panels or dangling ARIA references', async () => {
+    const change = vi.fn();
+    const views = [
+      { key: 'week', label: 'Week' },
+      { key: 'disabled', label: 'Disabled', disabled: true },
+      { key: 'month', label: 'Month' },
+    ];
+    const { container, rerender } = render(
+      <Tabs type="card" block items={views} onChange={change} />,
+    );
+    const week = screen.getByRole('tab', { name: 'Week' });
+    expect(week).not.toHaveAttribute('aria-controls');
+    expect(container.querySelector('.leaf-tabs__panels')).toBeNull();
+    week.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    const month = screen.getByRole('tab', { name: 'Month' });
+    expect(month).toHaveFocus();
+    expect(month).toHaveAttribute('aria-selected', 'true');
+    expect(change).toHaveBeenLastCalledWith('month');
+    rerender(<Tabs type="card" items={views.map((item) => ({ ...item, children: item.label }))} />);
+    const panel = screen.getByRole('tabpanel');
+    expect(panel).toHaveAccessibleName('Month');
+    expect(month).toHaveAttribute('aria-controls', panel.id);
+  });
   it('removes the whole surface after the last close and restores it when items are added', async () => {
     const onAdd = vi.fn();
     function Example() {

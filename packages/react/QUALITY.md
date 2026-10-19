@@ -2,6 +2,138 @@
 
 面向源码维护者。新增能力必须验证用户行为、公开产物和相应文档，不能仅以组件数量或测试数量判断成熟度。审计对应清单见 [AUDIT-IMPLEMENTATION.md](AUDIT-IMPLEMENTATION.md)。
 
+## 表单设置布局（2026-10-19，开发分支）
+
+Form 新增 `layout="settings"`，左侧展示标签与独立的 `description`，右侧控件保持自然宽度并靠行尾排列；相邻字段使用主题分隔线，窄屏转为纵向排列。FormField 可单独覆盖 layout，`vertical` 字段的描述位于控件上方，文本域占满整行。description 与 help / error 分别关联到控件，校验错误替换 help 时保留说明。只有水平字段参与共享标签宽度测量；设置布局中的分组、错误汇总与操作区域保留边界间距。双语文档、可复制示例及生成 API 同步。
+
+全仓 `pnpm typecheck`、`pnpm test`（443 项组件测试、13 项发布规则、23 项文档与 9 项 Skill 测试）及最终 `pnpm build` 通过，包含声明、独立样式、ESM / CommonJS SSR 与双语 AI 文档。相关 Biome、SCSS 和 diff 检查通过。`pnpm check` 在全仓格式检查阶段受已有 `.omo` 目录的三个 JSON 格式问题阻断，不能记录为通过；类型与测试已单独完整执行。
+
+Chromium / WebKit 的 24 项表单浏览器用例通过（8 项设置布局与 16 项原有表单回归），覆盖真实双语示例的桌面 / 375px 窄屏、深浅色、两种密度、RTL、自然宽度、分隔线、全宽文本域、说明与错误的可访问关联、标签聚焦、Switch 与 Select 键盘交互，以及相邻 FormGroup 的间距；设置布局的 axe 无违规。已查看中文浅色桌面和英文深色紧凑 RTL 窄屏截图。Firefox 启动阶段返回 `spawn UNKNOWN`，未进入页面；未执行真实读屏和真机触控。
+
+证据位于根目录 `.quality/form-settings-{check,typecheck,tests,build}.log`、`.quality/form-settings-browser.json` 与 `.quality/form-settings-docs-results.json`，布局截图位于 `packages/react/.quality/form-settings-*.png` 及 `.quality/form-settings-docs-*.png`。实际文档中英文 × 1280 / 375px × 浅深色 8/8 通过，包含源码展开收起、复制内容、主题切换、无溢出和页面异常检查；首次访问的语言跳转由浏览器 locale 控制，按页面语言验证后两种 `.html` 地址均正常。改动保留在 `codex/form-settings`，未合并、发布 npm 或部署在线文档。
+
+## 导航子菜单浮层重做（2026-10-19，开发分支）
+
+横向导航和折叠侧栏使用统一的导航浮层：208px 宽度、36px 基础行高、18px 图标、独立大圆角、细边框与浮层阴影，标题、分组、分隔线和文字对齐。折叠侧栏向侧面展开并显示父级标题，两侧空间不足时回退到下方；RTL 反转方向。当前页面通过 aria-current 与选中底色表示，父级保持高亮；选中底色在悬停和键盘聚焦时保持，文字使用较深一级主题色改善浅色对比。链接项目取消下划线，三级菜单沿用同一外观。Menu 独立 CSS 增加 Dropdown 依赖。
+
+导航浮层通过私有参数清除从 Menu 触发器复制来的内部表面几何，保留主题色、阴影及配置覆盖，让浮层独立计算边框、圆角与内边距。共享 FloatingPanel 增加仅由导航启用的侧向定位回退；其他调用方保留原行为。浮层显式保留自身圆角，滚动视口内的高亮与条目完整对齐。双语示例默认选中二级页面，并同步展开方向与选中态说明。
+
+Menu、Dropdown 和共享浮层 19 项单元测试、全仓类型检查、23 项文档测试、完整 pnpm build（库、声明、SSR、83 个公共 JS 子路径、按需样式和双语文档）通过。Chromium / WebKit 的 18 项导航浮层测试通过，覆盖浅深色、紧凑密度、RTL、圆角与边框、悬停及聚焦保留选中态、链接、三级菜单、Escape 返回焦点、axe 和居中侧栏窄屏回退；补齐取消链接下划线后，两种浏览器的链接定向复验通过。真实文档完成中英文 × 1440 / 375px × 浅深色 × 两种浮层共 16 组检查，axe 无违规、无页面错误或横向溢出，已查看最终桌面浅色与英文窄屏深色截图。
+
+证据位于 .quality/menu-popup-build-final.log、menu-popup-browser-final.log、menu-popup-link-final.log、menu-popup-docs-tests.log、menu-popup-docs-results.json 与 menu-popup-docs-*.png。全仓 check 仍受既有 .omo 的三个 JSON 格式问题影响，本次相关 Biome、SCSS 和 diff 检查通过。未执行 Firefox 或真实读屏；改动尚未提交、合并或发布。
+
+## 菜单分组与可复用标题（2026-10-19，开发分支）
+
+Menu 的数据分组使用带标题关联的 group 语义，支持 ReactNode 标题；折叠时隐藏标题，方向键跨组导航并跳过禁用项。修复子菜单中的分组阻断左右方向键进入和返回上级的问题。新增 MenuGroup / MenuGroupProps，独立分组可展示菜单或任意自定义内容，支持 div ref、原生属性及区域默认参数；Menu 内部复用样式和实现，同时隔离独立 MenuGroup 的区域默认值。独立标题与自定义内容左边缘对齐。双语文档增加分组和自定义内容示例，公共入口、API、默认配置参考与组件总览同步更新。
+
+Menu 和区域默认值的 30 项单元测试、全仓类型检查、23 项文档测试、9 项 Skill 查询测试通过。完整 pnpm build 通过 ESM / CommonJS、声明、SSR、83 个公共 JS 子路径、自动样式和双语文档构建；增加 MenuGroup 的 SSR 和 Vite / Rspack 子路径样式消费验证。实际文档通过语言切换完成中英文 × 1440 / 375px × 浅深色共 8 组检查，验证菜单键盘选择、自定义按钮、代码展开与复制，无页面脚本错误或横向溢出，已查看最终浅色桌面与深色窄屏截图。
+
+Chromium / WebKit 定向用例覆盖分组语义、选择、折叠、独立标题与输入框外框对齐、自定义输入与 Tab、浅深色、紧凑密度、RTL 和 axe。对比度检查等待折叠文字恢复完整透明度与菜单自然宽度，避免在过渡中采样；不等待 WebKit 中可能持续报告 running 的全部动画。最终日志位于 .quality/menu-browser-final.log，构建为 .quality/menu-build-final.log，文档证据为 .quality/menu-docs-results.json 与 menu-*.png。全仓 pnpm check 在既有 .omo/run-continuation 三个 JSON 缺少末尾换行处停止，不能记录为通过。未执行 Firefox 或真实读屏；改动位于 codex/menu-groups，尚未提交、合并或发布。
+
+## 深色模式按用途派生主色（2026-10-18）
+
+参考 HeroUI 的背景与文字配对及语义色分工，取消将主色填充整体提亮到 4.5:1 的方案。显式主色在深浅模式均保留原值，深色黑色实心按钮保持黑底白字并补充细微边界。主色文字按内容、柔和表面 4.5:1 目标派生，选中与进度指示按 3:1 派生，过暗主色的焦点改用可见指示色；正常主色的焦点透明度与按钮交互色保持原行为。显式文字、焦点与交互色覆盖继续优先。CSS 表达式在浏览器解析后使用相同派生逻辑，嵌套主题、Portal 和默认静态色板共用结果；中英文主题指南、维护说明和设计资源同步更新。
+
+430 项组件测试、组件与文档类型检查、23 项文档测试通过。pnpm build 通过组件产物、样式裁剪和双语文档构建；随后 Timeline 指示和 Tailwind 焦点回退同步后再次完成库构建及产物检查。设计 token 与 Figma 资源验证通过。Chromium / WebKit 的深色主色和现有主题预设共 22 项浏览器测试通过，覆盖表达式、嵌套继承、原色填充及白字、可见边界和焦点、链接、Switch、Slider、Select Portal、显式覆盖、颜色和模式回切。首轮 17/22：旧预设测试仍要求橙蓝黑字，按已确认行为改为白字；WebKit 首次颜色解析等待延长为 20 秒，实际对比与颜色断言保留。Chromium 文档验收完成中英文 × 深浅外观 × 1440 / 375px × 五种主色共 40 组检查，以及 8 组空间创建弹窗的主题继承检查，无页面错误和横向溢出。
+
+证据位于根目录 .quality/semantic-primary-unit.log、semantic-primary-browser-final.log、semantic-primary-build.log、semantic-primary-build-final.log、semantic-primary-docs-results.json 和 semantic-primary-*.png。此次未执行 Firefox、真实读屏或真机验收；改动尚未提交或发布。
+
+## 首页移除主题展示（2026-10-18）
+
+按最新要求从中英文首页删除“定制主题，随心而变”区块、专用组件与样式，清理旧版展示的无用 CSS 和通栏布局例外。主题指南的五种风格、完整示例源码和组件库主题能力保留，指南与维护说明同步更新。
+
+文档类型检查、生产文档构建（198 个 AI Markdown 页面）、相关 Biome / SCSS 格式及 git diff --check 通过。Chromium / WebKit 完成 24 组首页检查（中英文 × 1440 / 375 / 320px × 深浅外观），确认区块消失、特点区与后续入口自然衔接、场景配色可切换且无横向溢出或脚本错误。另检查中英文指南的桌面与手机示例，键盘切换五种风格保留输入，源码展开 / 收起正常。实际查看桌面和手机完整首页截图。
+
+证据位于 .quality/theme-presets/build-remove-home.log、typecheck-remove-home.log、remove-home.log、remove-home.json 与 remove-home-*.png。此次只删除首页展示并同步说明，没有重跑组件整库测试；尚未提交或发布。
+
+## 五种可复制主题风格（2026-10-18，示例跟进）
+
+首页与中英文主题指南保留默认、插画，移除卡通，新增 Windows XP、Material（MUI 风格）和拟物。XP 使用 Tahoma 回退字体、小圆角、斜面高光与 Card 标题渐变；Material 使用 4px 圆角、简洁轮廓和按钮层次阴影；拟物使用浅灰 / 深灰中性基底、双向浮雕光照和按下内凹效果。所有定义仍在可复制的中英文 presets.tsx 示例中，首页直接展示当前配置，组件包没有新增内置风格或依赖。
+
+默认样式不增加覆盖，未改变的密度与动效继续省略。配色通过现有主色派生变量、color-mix 与 light-dark 生成，组件级配置仅用于卡片标题和按钮阴影反馈；没有逐组件重复边框色，也没有按主色列举多套色板。风格切换继续保留组件实例和输入状态；右上角选择器支持五种风格，手机换行且无页面横向溢出。中英文示例生成函数保持一致，字体仅使用本地可用字体和回退栈。
+
+文档类型检查、生产文档构建（198 个 AI Markdown 页面）、23 项文档 / Tailwind 检查、相关 Biome / SCSS 格式和 git diff --check 通过。Chromium / WebKit 完成 240 组布局验收（中英文 × 六种宽度 × 深浅外观 × 五种风格），无重叠、横向溢出或脚本错误。Chromium 另完成 120 组主色检查（中英文 × 桌面 / 手机 × 深浅外观 × 五种风格 × 绿 / 橙 / 蓝），覆盖源码与复制、默认最少配置、风格外观差异、表面亮度、主色文字、输入保留、Select 浮层、按钮按下阴影与指南入口。实际查看三种新风格的桌面浅色、拟物 / XP 深色、英文手机深色和包含切换栏的完整区块截图。
+
+证据位于 .quality/theme-presets/build-five.log、typecheck-five.log、test-five-docs.log、docs-five-layout.log、docs-five-palettes.log、docs-five-layout.json、docs-five-palettes.json 和 five-*.png。本轮仅修改文档示例与布局，没有重跑组件整库测试；尚未提交或发布。
+
+## 通栏淡背景与组件细节（2026-10-18，展示跟进）
+
+首页内容最大外宽收回至 1280px（宽屏内部 1216px），主题区背景独立铺满视口；风格与配色入口放在右上角。通栏底色仅混入 2% / 3% / 4% 主色，配合低对比的 Lucide 叶片、星点和圆弧装饰。桌面三列紧凑排列独立组件，平板按区域重排为两列，手机单列；新增四位验证码、统计、圆形进度、按钮和标签，主题配置代码继续直接展示。背景布局使用真实通栏容器，避免 100vw 在滚动条环境造成横向溢出。
+
+Steps 文字背景透明，横向连线独立排在文字之后，保留纵向和窄屏连线；Avatar 改为单圈 2px 白边，AvatarGroup 移除外圈阴影。Table 表头下方保留细分隔线，正文悬停使用主色派生表面，与自定义主题表头区分。这些修复位于组件样式中，中英文设计规则同步。
+
+全量类型检查、pnpm build（库、公共产物与自动样式检查、声明、SSR、198 个 AI Markdown 页面）、最终文档重建和 pnpm test 通过：63 个组件测试文件 / 428 项测试、13 项发布规则、23 项文档 / Tailwind、9 项 Skill 检查。Chromium / WebKit 的主题回归共 20 项通过，新增断言覆盖透明步骤文字、横纵连线、单层白色头像边缘和悬停行与表头区分。
+
+最终生产文档完成 144 组 Chromium / WebKit 布局检查（中英文、1920 / 1440 / 1024 / 768 / 375 / 320px、深浅模式、三种风格），包括通栏背景、居中宽度、独立组件不重叠、表单保存 / 重置且没有页面横向溢出。另完成 72 组配色复验，以及新验证码输入与风格切换后保留、重新发送、复制主题、滑块与圆形进度同步、表头悬停和双语主题指南检查。实际查看完整主题区浅色 / 深色、平板和英文窄屏深色截图，无脚本错误。
+
+全仓 SCSS、相关 Biome、git diff --check 通过；pnpm check 仍在既有 .omo/run-continuation 的三个 JSON 缺少末尾换行处停止，其余类型与测试已独立执行。日志和证据在 .quality/theme-presets/：build-refine.log、build-refine-docs-final.log、typecheck-refine-final.log、test-refine.log、browser-refine.log、docs-refine.json、docs-refine-palettes.log、refine-interactions.log、check-refine.log 和 refine-*.png。尚未提交、合并或发布。
+
+## 首页宽度与分散主题展示（2026-10-18，布局跟进）
+
+首页取消独立的 1184px 最大宽度，宽屏左右边界复用文档侧栏、目录和顶部导航的留白变量；1440px 视口下可用展示宽度由 1104px 扩展至 1400px。主题展示拆除三个外层 Card，表单、Tabs、头像、步骤、表格、评分和提示分散排列，仅保留一张进度卡片展示 Card 风格。桌面错落排列，平板两列，手机按内容顺序单列；继续使用组件默认样式和统一主题配置。
+
+文档类型检查、23 项文档 / Tailwind 测试、生产文档构建（198 个 AI Markdown 页面）、相关 Biome / SCSS 格式与 git diff --check 通过。Chromium / WebKit 完成 144 组布局检查：中英文 × 1920 / 1440 / 1024 / 768 / 375 / 320px × 深浅模式 × 三种风格，断言宽屏首页与导航边界一致、组件区域不重叠且没有页面横向溢出，并实际操作表单保存与重置。
+
+Chromium 另复验 72 组主色 / 风格组合，检查全局描边、副色背景、输入状态保留、配置源码与复制、Select 浮层、折叠、分页及中英文主题指南。已查看完整桌面首页、主题展示桌面 / 平板 / 手机及英文窄屏深色截图，无脚本错误。证据位于 .quality/theme-presets/docs-layout.json、docs-layout.log、docs-layout-palettes.log、layout-*.png 与 global-*.png；构建和文档测试日志分别为 build-layout.log、test-layout-docs.log。此次仅调整文档布局，没有重新执行整库测试或发布。
+
+## 全局风格、最少配置与自动配色（2026-10-18，补充验收）
+
+首页移除右侧控制面板，保留顶部主色入口并与站点配色同步，以三列 / 窄屏单列展示表单、日期、步骤、评分、表格、分页、折叠面板、提示等组件。默认风格不增加 theme token，默认配色直接展示普通组件代码；只改变主色时仅生成 primaryColor。默认 density / motion 均省略。
+
+卡通 / 插画配置仅包含圆角和 5 个 token：描边宽度、全局描边色、染色背景、控件阴影、内容面阴影。基础表面及交互色由库生成，color-mix 复用主色、文字和表面变量，阴影复用全局描边色，没有 components 覆盖或逐色手写色板。显式 tokens.borderColor 通过内部 frame 变量统一应用于控件、卡片、表格、选择容器、浮层、弹窗及服务反馈；组件级覆盖优先，无边框结构与错误状态保留原有行为，结构分隔线保持细线。
+
+主色文字对比移入库的自动派生机制。CSS 表达式在 SSR 中保留 color-mix；浏览器将 CSS Color 4 计算结果转换为 sRGB 后再进行对比和交互色计算，避免 TinyColor 将 color(srgb ...) 的 0–1 通道误当成 0–255 通道，导致选中表面和 Tag 底色变黑。新增单元及浏览器断言覆盖这条回归，同时覆盖 CSS 变量主色的自动文字色与动态更新。
+
+最终类型检查、完整 pnpm build（83 个公共 JS 子路径、ESM / CommonJS、声明、SSR、自动样式、198 个 AI Markdown 页面）通过；pnpm test 串行复验通过 63 个组件文件 / 428 项测试、13 项发布规则、23 项文档 / Tailwind 与 9 项 Skill 检查。一次与构建 / 浏览器并行的测试中，4 项本地化资源子进程触发 5 秒超时；未改动测试超时或本地化实现，完整串行复验通过。Chromium / WebKit 的 18 项主题回归全部通过，包含统一外框、组件覆盖、错误状态、嵌套重置、粗描边几何、CSS 主色及浮层 / 弹窗继承。
+
+生产文档完成 72 组配色检查（中英文 × 1440px / 375px × 深浅模式 × 三种风格 × 绿 / 橙 / 蓝），并检查复制源码、状态保留、浮层、折叠、分页与双语指南。逐一断言 11 类组件的外框及主题背景；对选中表面和 Tag 背景增加亮度断言。实际查看默认 / 插画桌面、深色和窄屏截图，无页面横向溢出或脚本错误。页面检查先移开指针，避免将日期字段的 hover 色误判为默认外框色。
+
+最新 gzip KiB：Button JS / CSS 为 3.04 / 6.74，常见表单为 84.33 / 15.79，整库为 218.13 / 45.35；现有预算全部通过，未再放宽。相关源码与工作流的 Biome、全仓 SCSS 格式及 git diff --check 通过。pnpm check 仍在既有未跟踪 .omo/run-continuation 的三个 JSON 缺少末尾换行处停止，不能记录为完整 check 通过。日志位于 .quality/theme-presets/*global*，最终全量测试为 test-global-recheck.log，页面证据为 docs-global.json 与 global-*.png。尚未提交、合并或发布。
+
+## 首轮主题定制能力与首页展示（2026-10-18，开发分支）
+
+文档示例源码提供 default、cartoon、illustration 三种风格的完整定义，组件包不内置主题预设；新增全局 / 组件描边宽度、控件 / 内容面阴影和四种交互状态的外观覆盖。状态按字段纯合并并忽略 undefined。支持范围写入中英文主题变量参考；复用 DateInput 的日期时间控件沿用 DatePicker 外壳状态，InputOTP 不宣称支持四种完整状态。结构分隔线保留细线。
+
+粗描边计入字段内部高度、多选标签、Tabs 内部高度与圆角、按钮波纹及连接边；状态不新增控件移动。默认预设用显式 initial 重置可选阴影和焦点色，保留字段的错误 / 警告焦点语义。共享 Portal 变量快照保留 guaranteed-invalid 的 initial，避免内层默认主题挂到外层插画容器时重新继承硬阴影。对两个 Portal 路径均增加单元及实际浏览器回归。
+
+`pnpm test` 通过 63 个组件文件 / 426 项测试、13 项发布规则、23 项文档 / Tailwind 和 9 项 Skill 检查；全仓类型检查、完整组件与双语文档构建、83 个公共 JS 子路径、ESM / CommonJS、声明、SSR、自动样式与 198 个 AI Markdown 页面检查通过。主题与状态类型也实际编译消费打包声明。应用 / 组件 / Skill / 工作流及根配置的 Biome、全仓 SCSS 格式与 `git diff --check` 通过。标准 `pnpm check` 在原有未跟踪 `.omo/run-continuation/` 的三个 JSON 缺少末尾换行处停止，未改写这些任务状态文件；其余检查另行执行，不能记录为完整 check 通过。
+
+Chromium / WebKit 的较大回归首轮 116 项中通过 108 项、跳过 1 项、失败 7 项；失败均为悬停选择器优先级盖住按下反馈。修复并去重状态规则后，22 项定向复验全部通过，覆盖原失败项、字段 / 选择控件 / 两种 Tabs 的状态、稳定几何、输入及选择保留、粗描边浮层圆角、弹窗与 Message 继承，以及自定义容器中的默认主题重置。旧的高度、圆角、内容表面与 Tabs 几何用例在首轮通过；没有把首轮记作全绿。Firefox、真机与读屏本轮未执行。
+
+移除包内风格预设后，重新执行全仓类型检查、`pnpm test`、`pnpm build` 及 Chromium / WebKit 的 14 项主题回归，全部通过。三种固定色板仅保留在不发布的测试夹具中；产物验证改为直接消费公共主题与状态类型。
+
+最新生产文档完成中英文、1440px / 375px、三种风格 × 橙色 / 蓝色及指南示例共 28 组检查，无页面横向溢出或脚本错误。逐一断言 Tabs 背景、Card 表面、阴影、按钮文字与直接展示的完整主题配置一致；复制内容一致（Windows 剪贴板换行归一化后比对），输入内容跨风格保留，深色文档下的局部浅色主题与 Select Portal 正常。指南的完整源码包含配色生成函数并实际验证通过 ColorPicker 改色。辅助色以纯函数计算为 HEX，服务端与客户端使用同样的完整配色；错误、警告、成功色保持语义。已实际查看橙色主题的桌面与窄屏截图。最新日志及截图位于 `.quality/theme-presets/*correction*` 与 `home-color-*.png`。
+
+新增 CSS 能力经去重后的体积与仓库此前记录对比如下（KiB gzip）：
+
+| 场景 | 此前记录 JS / CSS | 本次 JS / CSS | 本次预算 |
+| --- | --- | --- | --- |
+| Button | 3.04 / 6.28 | 3.04 / 6.73 | JS 5；CSS foundation + 4.25（保持） |
+| ConfigProvider 与常见表单 / 服务 | 83.77 / 14.08 | 83.91 / 15.76 | JS 88（保持）；CSS 16.5 |
+| 整库 | 218.06 / 40.83 | 218.30 / 45.19 | JS 250（保持）；CSS 47 |
+
+原有 14.5 / 41 KiB CSS 上限不能容纳新增描边、状态和表面覆盖。删除重复字段状态、旧 Button 绘制及重复减少动效规则后，明确按实测成本调整两项 CSS 预算，并保留约 4–5% 余量。普通 Button 的 JS、原生 Table / 可选适配器与整库 JS 边界继续通过，样式按需检查仍确认未使用组件不引入对应样式。日志、JSON、截图及浏览器失败证据位于根目录 `.quality/theme-presets/` 和组件目录同名质量目录；本次改动保留原有工作区内容，位于 `codex/theme-presets-showcase`，尚未提交、合并、发布 npm 或部署正式文档。
+
+## 分段控制器迁移到卡片标签（2026-10-17，开发分支）
+
+移除 Segmented 的源码、导出、包子路径、样式与中英文文档入口，首页场景、消息渠道、周期和任务筛选统一使用卡片 Tabs。卡片栏全尺寸统一 3px 内边距与间距、中性文字和浮起选中块，按下保持尺寸；新增 `block` 等宽铺满，省略选项内容时不渲染空面板或 `aria-controls`。迁移及表单提交边界见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+
+`pnpm check` 通过 62 个文件 / 418 项组件测试、13 项发布规则、23 项文档 / Tailwind 与 9 项 Skill 检查；首次并行构建时的语言资源子进程超时，在构建完成后完整复跑通过。`pnpm build` 通过 83 个公共 JS 子路径、全部 CSS 入口、ESM / CommonJS、SSR、自动样式及双语文档 / 198 个 AI Markdown 页面；包产物检查明确断言 Segmented 不再导出或进入聚合样式。`git diff --check` 通过。
+
+Chromium / WebKit 定向覆盖 Tabs、控件高度与嵌套圆角：首轮 66 项通过 65 项，WebKit 的动态 Portal 圆角用例单独复跑通过；Tabs 用例均在首轮通过，包含 30 / 36 / 42px 高度、3px 留白、等宽、按下不缩放、键盘跳过禁用项、横向溢出、纵向及 RTL。浏览器产物在组件目录 `.quality/tabs-migration/`。实际文档已检查中英文、深浅主题及 375px 窄屏，操作视图切换和首页四处迁移后的控件，未见页面横向溢出或脚本错误。Firefox、真机与读屏本轮未复测；改动尚未提交、发布 npm 或部署正式文档。
+
+## 柔和按钮与文档导航（2026-10-17，开发分支）
+
+Button 的公开外观移除 `ghost`、增加 `soft`，同步 Button 属性插槽、区域默认值、中英文文档与示例；复合组件的私有无边框控件保持各自的交互。类型反例确认公开 Button 与 Provider 默认值不再接受 `ghost`。API 生成器按 `ButtonControlProps` 提取内置默认值，现有文档回归覆盖默认尺寸与按钮类型。
+
+后续调整将中文名称统一为“柔和按钮”（Soft），危险外观默认使用淡红底和红色文字，底色随区域深浅主题派生。定向复验通过类型、格式、23 项文档检查与完整构建 / 包产物检查；Chromium / WebKit 的八项按钮用例分次通过，其中 Chromium 深色用例首次因追踪文件缺失而在清理阶段失败，隔离输出目录后通过。生产文档在 Chromium 检查中英文、深浅主题、1440 / 375px 八组展示，默认危险文字对比度分别为 4.62 / 6.19，无页面脚本错误或横向溢出，并实际查看桌面及窄屏截图。证据在 `.quality/button-nav/soft-danger-*`；未提交或发布。
+
+`pnpm check` 通过格式、类型、62 个文件 / 418 项组件测试、13 项发布规则、23 项文档 / Tailwind 与 9 项 Skill 检查。`pnpm build` 通过组件声明、ESM / CommonJS、SSR、自动样式和双语文档 / 200 个 AI Markdown 页面检查；包体积仍在原预算内，Button CSS 为 6.28 KiB gzip，整库 CSS 为 40.83 KiB gzip。浏览器测试的 CSS Color 4 按下底色经 Canvas 转成 sRGB 后检查文字对比度，最终类型与格式复验通过。
+
+Chromium / WebKit 检查覆盖深浅主题下的灰底、危险色、悬停 / 按下、稳定尺寸、无波纹、键盘与原生按钮操作；首轮颜色解析误判已修正，相关八项复验通过。WebKit 不支持模拟强制颜色的场景仍按配置跳过；本轮未运行 Firefox、真机和读屏。
+
+实际生产文档在 Chromium 完成中英文、深浅主题、1920 / 1440 / 1280 / 1024 / 960 / 375px 共 24 组布局检查：搜索框以视口为中心，导航不重叠，无页面或预览横向溢出。根路径与 `/leaf-ui/dev/nav-review/` 前缀分别完成八组交互验收，覆盖搜索结果 / 快捷键 / 弹层关闭、主题与配色切换、语言下拉键盘操作及页面 / 查询 / 锚点保留、窄屏抽屉关闭 / 焦点 / 桌面切换、示例展开 / 收起与复制源码一致。已查看桌面、窄屏、语言下拉与搜索截图，无页面脚本错误。切换构建 base 时发现 Rspress 持久缓存沿用旧站点数据，停止开发服务并设置 `RSPRESS_PERSISTENT_CACHE=false` 后，以独立静态服务验收完整新产物。日志、JSON 与截图在根目录 `.quality/button-nav/`；这是本地开发验收，未提交或发布到 npm / 正式文档。
+
 ## 0.6.0 发布前包体积验收（2026-10-16）
 
 使用 Node 26.8.1、esbuild 生产压缩与 gzip level 9，React / ReactDOM 外置。0.5.0 的发布报告与 0.6.0 构建产物对比如下（KiB gzip）：

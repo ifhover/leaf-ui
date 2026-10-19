@@ -5,7 +5,7 @@ export function SpaceBasic() {
     <Space size="md" wrap>
       <Button>Save</Button>
       <Button variant="outline">Cancel</Button>
-      <Button variant="ghost">More</Button>
+      <Button variant="soft">More</Button>
     </Space>
   );
 }

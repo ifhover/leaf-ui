@@ -20,7 +20,8 @@
     height: var(--leaf-indicator-height, 0px);
     transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
     box-sizing: border-box;
-    border: 1px solid var(--leaf-color-primary-border-24);
+    border: var(--leaf-border-width, 1px) solid
+      var(--leaf-frame-border-color, var(--leaf-color-primary-border-24));
     border-radius: var(--leaf-radius);
     background: var(--leaf-color-primary-surface-8);
     opacity: 0;
@@ -44,7 +45,7 @@
     min-width: var(--leaf-current-control-height);
     height: var(--leaf-current-control-height);
     padding: 0 8px;
-    border: 1px solid transparent;
+    border: var(--leaf-border-width, 1px) solid transparent;
     border-radius: var(--leaf-radius);
     color: inherit;
     background: transparent;
@@ -64,7 +65,7 @@
     &[aria-current='page'] {
       background: transparent;
       border-color: transparent;
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       font-weight: var(--leaf-font-weight);
     }
     &:active:not(:disabled) {
@@ -84,25 +85,38 @@
   &--outline {
     > button,
     .leaf-pagination__entry > button {
-      border-color: var(--leaf-color-border);
+      border-color: var(--leaf-frame-border-color, var(--leaf-color-border));
+      box-shadow: var(--leaf-control-shadow, none);
       // Keep the opaque button surface below the moving selection, but above the page.
       &::before {
         content: '';
         position: absolute;
         z-index: -2;
-        inset: -1px;
+        inset: calc(-1 * var(--leaf-border-width, 1px));
         border-radius: inherit;
         background: var(--leaf-color-surface);
         pointer-events: none;
       }
       &:hover:not(:disabled):not([aria-current='page']) {
-        color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
-        border-color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
+        color: var(
+          --leaf-color-primary-ink-hover,
+          var(--leaf-color-primary-hover, var(--leaf-color-primary))
+        );
+        border-color: var(
+          --leaf-color-primary-ink-hover,
+          var(--leaf-color-primary-hover, var(--leaf-color-primary))
+        );
         background: transparent;
       }
       &:active:not(:disabled):not([aria-current='page']) {
-        color: var(--leaf-color-primary-active, var(--leaf-color-primary));
-        border-color: var(--leaf-color-primary-active, var(--leaf-color-primary));
+        color: var(
+          --leaf-color-primary-ink-active,
+          var(--leaf-color-primary-active, var(--leaf-color-primary))
+        );
+        border-color: var(
+          --leaf-color-primary-ink-active,
+          var(--leaf-color-primary-active, var(--leaf-color-primary))
+        );
       }
       &[aria-current='page'] {
         border-color: transparent;
@@ -112,7 +126,10 @@
       }
     }
     .leaf-pagination__indicator {
-      border-color: var(--leaf-color-primary);
+      border-color: var(
+        --leaf-frame-border-color,
+        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+      );
     }
   }
   &[data-disabled] &__indicator[data-visible='true'] {

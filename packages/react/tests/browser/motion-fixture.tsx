@@ -9,7 +9,6 @@ import {
   Input,
   Loading,
   Modal,
-  Segmented,
   Select,
   Tabs,
   TimeRangePicker,
@@ -36,7 +35,7 @@ function AnimatedRows({ rows }: { rows: string[] }) {
 export function MotionFixture() {
   const [enabled, setEnabled] = useState(true);
   const [tab, setTab] = useState('a');
-  const [segment, setSegment] = useState('one');
+  const [view, setView] = useState('one');
   const [rows, setRows] = useState(['Alpha', 'Beta', 'Gamma']);
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState(false);
@@ -52,7 +51,7 @@ export function MotionFixture() {
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
         <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-          {(['solid', 'outline', 'ghost', 'link'] as const).map((variant) => (
+          {(['solid', 'outline', 'soft', 'link'] as const).map((variant) => (
             <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
               {variant}
             </Button>
@@ -75,8 +74,8 @@ export function MotionFixture() {
           <Button danger variant="outline" data-testid="press-danger-outline">
             Danger outline
           </Button>
-          <Button danger variant="ghost" data-testid="press-danger-ghost">
-            Danger ghost
+          <Button danger variant="soft" data-testid="press-danger-soft">
+            Danger soft
           </Button>
           <Button startIcon={<Plus />} aria-label="Add action" data-testid="press-icon" />
           <ConfigProvider theme={{ primaryColor: '#2563eb', borderRadius: 24 }}>
@@ -168,11 +167,12 @@ export function MotionFixture() {
             },
           ]}
         />
-        <Segmented
-          aria-label="Animated segmented"
-          value={segment}
-          onChange={setSegment}
-          options={['one', 'two', 'three']}
+        <Tabs
+          type="card"
+          aria-label="Animated view tabs"
+          activeKey={view}
+          onChange={setView}
+          items={['one', 'two', 'three'].map((key) => ({ key, label: key }))}
         />
         <label htmlFor="motion-portal">Portal field label</label>
         <Select

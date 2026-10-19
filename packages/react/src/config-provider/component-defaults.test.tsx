@@ -292,7 +292,7 @@ describe('ConfigProvider component defaults', () => {
           <Button>Outer</Button>
           <ConfigProvider components={{ Button: { size: 'lg', danger: false } }}>
             <Button size={undefined}>Inner</Button>
-            <Button size="md" variant="ghost">
+            <Button size="md" variant="soft">
               Instance
             </Button>
           </ConfigProvider>
@@ -317,7 +317,7 @@ describe('ConfigProvider component defaults', () => {
     );
     expect(screen.getByRole('button', { name: 'Inner' })).not.toHaveClass('leaf-button--danger');
     expect(screen.getByRole('button', { name: 'Instance' })).toHaveClass(
-      'leaf-button--ghost',
+      'leaf-button--soft',
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Inherited' })).toHaveClass('leaf-button--sm');
@@ -512,7 +512,9 @@ describe('ConfigProvider component defaults', () => {
     expect(input).not.toHaveAttribute('readonly');
     expect(input.closest('.leaf-select')).toHaveClass('leaf-select--sm');
     await userEvent.click(input);
-    expect(screen.getByRole('listbox')).toHaveClass('configured-popup');
+    expect(screen.getByRole('listbox').closest('[data-leaf-popup]')).toHaveClass(
+      'configured-popup',
+    );
     expect(popupRender).toHaveBeenCalled();
     await userEvent.click(screen.getByRole('option', { name: 'React' }));
     expect(selected).toHaveBeenLastCalledWith(['leaf', 'react'], options);
@@ -532,8 +534,9 @@ describe('ConfigProvider component defaults', () => {
     );
     const { rerender } = render(example('sm'));
     await userEvent.click(screen.getByRole('combobox'));
-    expect(screen.getByRole('listbox').style.color).toBe('blue');
-    expect(screen.getByRole('listbox').style.background).toBe('');
+    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+    expect(panel.style.color).toBe('blue');
+    expect(panel.style.background).toBe('');
     rerender(example('lg'));
     expect(screen.getByRole('combobox').closest('.leaf-select')).toHaveClass('leaf-select--lg');
     expect(screen.getByRole('option', { name: 'Leaf' })).toBeInTheDocument();

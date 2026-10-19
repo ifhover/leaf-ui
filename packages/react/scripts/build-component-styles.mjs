@@ -6,7 +6,12 @@ import { compileStringAsync } from 'sass-embedded';
 
 const root = path.resolve(import.meta.dirname, '..');
 const require = createRequire(import.meta.url);
-const common = ["@use 'styles/tokens';", "@use 'shared/floating';", "@use 'button/button';"];
+const common = [
+  "@use 'styles/tokens';",
+  "@use 'shared/floating';",
+  "@use 'button/button';",
+  "@use 'scrollbar/scrollbar';",
+];
 const dependencies = {
   button: ['dropdown'],
   inputnumber: ['input'],
@@ -51,6 +56,7 @@ const dependencies = {
   popover: [],
   popconfirm: ['popover', 'alert'],
   tabs: ['dropdown'],
+  menu: ['dropdown'],
   card: ['skeleton', 'tabs'],
 };
 const resolveStyles = (name, visited = new Set()) => {

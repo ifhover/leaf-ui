@@ -48,6 +48,8 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 ## 选择限制与节点展示
 
+浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并显式设置最大宽度。浮层仍会在视口边缘避让。
+
 <ComponentExample title="选择限制与节点展示" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tree-select/capabilities.tsx"
@@ -87,8 +89,8 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 | `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | 初始展开的 value |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验反馈 |
-| `popupWidth` | `number \| string` | `内容宽度` | 浮层宽度 / 最大宽度；至少与触发器等宽 |
-| `popupMaxWidth` | `number \| string` | `420` | 浮层宽度 / 最大宽度；至少与触发器等宽 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
+| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
 | `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | 展开时加载子项，signal 用于取消 |

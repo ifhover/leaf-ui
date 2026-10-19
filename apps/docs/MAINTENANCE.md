@@ -25,13 +25,15 @@ pnpm preview
 
 顶部 API 导航使用独立 `/api/`、`/en/api/` 侧边栏。ConfigProvider 页面先介绍多语言、主题与外观、组件默认值，底部独立 API 章节集中放置 `ConfigProvider API`、`LeafTheme` 与类型参考；API 表格使用三级标题。完整 `LeafComponentDefaults`、`LeafThemeTokens` 分别放在 `api/component-defaults`、`api/theme-tokens`，通过链接查询。默认参数示例要直观展示占位文本等变化，并说明配置键的命名规则与实例覆盖。使用建议只保留简短、常见的注意事项。
 
-所有文档页使用相同的正文宽度和水平留白，不根据是否包含演示切换布局；首页保留独立的展示布局。同步修改 API 表格时保留所在标题层级，避免自动生成额外的主章节。
+所有文档页使用相同的正文宽度和水平留白，不根据是否包含演示切换布局；首页保留独立展示布局，普通内容的最大外宽为 1280px，宽屏左右各留 32px。平板和手机留白分别为 24px、18px。同步修改 API 表格时保留所在标题层级，避免自动生成额外的主章节。
 
-阅读样式集中在 `theme/index.scss`：侧栏主文字 15px / 500、副标题 12px、行高 42px；顶栏 16px、代码 13px。侧栏分组标题吸顶，并保留 Rspress 展开/收起、路由与移动菜单。组件总览和详情页共用正文宽度与内边距。字体由 `@fontsource-variable/inter` 本地加载，中文用系统字体回退。
+阅读样式集中在 `theme/index.scss`：侧栏主文字 15px / 500、副标题 12px、行高 42px；代码 13px。侧栏分组标题吸顶，并保留 Rspress 展开/收起和路由。组件总览和详情页共用正文宽度与内边距。字体由 `@fontsource-variable/inter` 本地加载，中文用系统字体回退。
+
+顶部导航在 `src/components/docs-nav.tsx` 与 `.scss`，通过主题的 `Nav` 出口替换默认导航；页面入口读取 Rspress 的中英文导航配置，站内链接继续使用其 `Link`。桌面导航左侧为品牌和版本，中间搜索框独立水平居中，右侧为页面入口和外观工具，GitHub 入口复用 Rspress 的 `IconGithub` 品牌图标。宽屏的左右边界分别跟随文档侧栏和目录的外边距与内部留白，不另设导航最大宽度；颜色选择器的外层与内部触发按钮共用 28px 方形区域，色块居中。顶栏默认高 64px，低于 960px 时为 56px；桌面菜单撑满顶栏内容高度，菜单项间隔 24px，页面入口不显示前置图标。低于 1440px 使用 Leaf UI Drawer 展示页面入口；低于 960px 将搜索收为图标，语言和主题色设置收进抽屉，外观切换在顶栏和抽屉内均可操作。主导航用 `aria-current` 标记当前分区，桌面仅保留主题色文字与底部细线，悬停仅改变文字颜色，不显示背景色，抽屉保留选中浅底。语言切换使用带当前语言名称的 Leaf UI Dropdown，保留当前页面、查询参数和锚点；页面导航、Escape、遮罩点击和切回桌面布局均关闭抽屉。导航高度通过 `--rp-nav-height` 同步侧栏与正文偏移。
 
 组件总览顶部的输入框实时过滤组件目录，组件侧栏顶部的输入框独立过滤当前菜单；支持中英文名称和忽略大小写的匹配，清空后恢复全部内容。侧栏由 `docs-sidebar.tsx` 复用 Rspress `SidebarList`，搜索框位于独立滚动列表之外，分组标题仍在列表内吸顶。过滤时展开匹配分组，清空后保留原来的折叠状态；指南与 API 沿用原生侧栏。
 
-顶部导航、侧栏和右侧目录的选中与 hover 文字直接使用当前 `--leaf-color-primary`，不使用加深的派生文字色。侧栏分组标题的上边距与向上遮罩范围共用 `--rp-sidebar-padding`，避免遮住上一组最后一项的文字、选中背景和底部圆角。
+顶部导航、侧栏和右侧目录的选中与 hover 文字使用 `--leaf-color-primary-ink`，正常主题保留主色，深色下仅在对比不足时提亮。侧栏分组标题的上边距与向上遮罩范围共用 `--rp-sidebar-padding`，避免遮住上一组最后一项的文字、选中背景和底部圆角。
 
 组件总览通过 `component-thumbnails.ts` 将仓库静态 SVG 作为文本内联，主色、插画色阶和中性表面消费当前区域的主题变量，保留状态与多色示意的语义。新增缩略图沿用现有色板，使用新色值时同步映射；渐变和裁剪 ID 自动按组件名称隔离。不要改回隔离主题变量的 `<img>`，也不要挂载全部交互组件。
 
@@ -41,7 +43,7 @@ pnpm preview
 
 首页、认识 Leaf UI 和快速开始共用 `PackageInstall`。包管理器偏好存储在 `leaf-ui-docs-package-manager`，支持刷新、页面与语言切换、同页实例和同源标签页同步；存储不可用时仍可切换。品牌图标使用 `data-no-zoom` 排除文档图片放大。指南的四种命令保留在 MDX 子内容中，Markdown 导出完整输出这些命令。
 
-配色入口、首页和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。深浅外观保留预设原色，实色按钮文字与 Switch 滑块为白色；浅底内容保持可读。主题编辑器把 HEX / RGB / HSL 归一为 HEX，生成代码含 `onPrimaryColor: '#fff'`。
+配色入口和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。颜色选择、存储与实心主色背景保留原色；深色下的主色文字、选中指示、焦点和必要边界由组件库分别派生。主题指南示例使用 `src/examples/theming/presets.tsx` 中的完整主题定义，包含默认、插画、Windows XP、Material（MUI 风格）与拟物，移除卡通入口。中英文示例包含全部生成逻辑，组件包不内置风格预设。首页不展示主题定制模块。默认风格没有额外主题 token，省略默认密度和动效。自定义风格只写差异；基础表面继续由库生成，染色背景和统一描边使用 color-mix，阴影复用全局描边色。自动派生的交互色和主色文字不写进示例，主色文字对比由库统一处理；Switch 滑块保持白色。Windows XP 的斜面与渐变、Material 的层次阴影、拟物的双向光照与按下内凹由普通主题 token 表达；组件级差异只涉及 Card 标题渐变、Button 阴影反馈。XP / Material 字体使用本地字体与系统回退，不额外加载第三方资源。主题编辑器将 HEX / RGB / HSL 归一为 HEX。
 
 组件和站点主题使用 SCSS，由 `pluginSass` 编译。Tailwind 4 入口 `theme/tailwind.css` 只服务现有站点界面，不是组件示例的前置依赖；PostCSS 接入 `@tailwindcss/postcss`，扫描 `src`、`docs`、`theme`，不加载 Preflight，不使用全局 `!important`。组件行内布局通过公共参数调整。不要把 Tailwind 依赖加入组件包。
 
@@ -60,6 +62,8 @@ pnpm test:skills
 ```
 
 API 生成器从公共 TypeScript 导出更新中英文表格，保留人工说明与默认值；简单联合类型展开，公开数据类型链接到详情。可用 `--page=components/flex` 限定页面，用 `--from-ref=<git-ref>` 恢复历史说明。元数据与 AI 导出共用 `component-metadata.mjs`。
+
+公开 `FooProps` 的内置默认值位于私有 `FooControlProps` 实现时，生成器按此命名约定回退读取；公共 API 的类型仍取自 `FooProps`，不得把内部控件的额外外观或状态加入公开表格。
 
 两份全局配置参考也由 API 生成器同步，可分别使用 `--page=api/component-defaults`、`--page=api/theme-tokens`。没有独立默认值的参考表使用三列表头（属性、类型、说明），同步时保持三列。`documentationPage` 决定类型的唯一参考位置；AI 导出包含 `/api/` 页面及其版本标识，历史快照没有独立参考页时仍使用该快照原有的组件或指南页，不把新文档混入旧版本。
 

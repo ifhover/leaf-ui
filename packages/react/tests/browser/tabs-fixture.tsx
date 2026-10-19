@@ -27,6 +27,22 @@ export function TabsFixture() {
   const size = params.get('size') === 'sm' ? 'sm' : params.get('size') === 'lg' ? 'lg' : 'md';
   const placement = params.get('vertical') ? 'left' : 'top';
   const [items, setItems] = useState(initial);
+  if (params.has('view'))
+    return (
+      <Tabs
+        data-testid="view-tabs"
+        type="card"
+        size={size}
+        block
+        aria-label="View"
+        style={{ width: 360, maxWidth: '100%' }}
+        items={[
+          { key: 'week', label: 'Week' },
+          { key: 'month', label: 'Month' },
+          { key: 'year', label: 'Year', disabled: true },
+        ]}
+      />
+    );
   return (
     <Space direction="vertical" align="start">
       <Tabs

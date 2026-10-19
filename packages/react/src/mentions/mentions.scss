@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 .leaf-mentions__panel .leaf-floating__option {
   gap: 9px;
 }
@@ -29,4 +30,8 @@
   .leaf-mentions__prefix {
     transition: none;
   }
+}
+
+.leaf-mentions__panel {
+  @include mixins.floating-paint(mentions);
 }

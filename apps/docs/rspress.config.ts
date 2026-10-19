@@ -68,7 +68,6 @@ const componentSidebar = [
       { text: 'CommandPalette', tag: '命令面板', link: '/components/command-palette' },
       { text: 'FloatButton', tag: '悬浮按钮', link: '/components/float-button' },
       { text: 'Anchor', tag: '锚点与固钉', link: '/components/anchor' },
-      { text: 'Segmented', tag: '分段控制器', link: '/components/segmented' },
       { text: 'Menu', tag: '菜单', link: '/components/menu' },
       { text: 'BackTop', tag: '回到顶部', link: '/components/back-top' },
       { text: 'Steps', tag: '步骤条', link: '/components/steps' },

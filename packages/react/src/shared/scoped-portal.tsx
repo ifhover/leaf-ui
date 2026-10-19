@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useLeafConfig } from '../config-provider/context';
 import type { LeafThemeStyle } from '../theme';
 import { composedParent } from './dom';
+import { readThemeVariables } from './theme-variables';
 
 /** Transfer inherited variables into a portal without moving the React context. */
 export function ScopedPortal({
@@ -21,31 +22,7 @@ export function ScopedPortal({
     const sync = () => {
       // Read the owning element; hidden markers can omit inherited custom
       // properties from computed-style enumeration in Firefox.
-      const computed = getComputedStyle(composedParent(node) ?? node);
-      const next: LeafThemeStyle = {
-        colorScheme: computed.colorScheme,
-        direction: computed.direction as LeafThemeStyle['direction'],
-      };
-      const keys = new Set<string>();
-      for (let i = 0; i < computed.length; i++) {
-        const key = computed.item(i);
-        if (key.startsWith('--leaf-')) keys.add(key);
-      }
-      // Some engines do not enumerate every inherited custom property. Include
-      // inline scope keys, then read their effective values at the source.
-      let owner = composedParent(node);
-      while (owner) {
-        for (let i = 0; i < owner.style.length; i++) {
-          const key = owner.style.item(i);
-          if (key.startsWith('--leaf-')) keys.add(key);
-        }
-        owner = composedParent(owner);
-      }
-      for (const key of keys) {
-        const value = computed.getPropertyValue(key);
-        if (value.trim()) next[key as `--leaf-${string}`] = value;
-      }
-      setStyle(next);
+      setStyle(readThemeVariables(composedParent(node) ?? node));
     };
     sync();
     const observer = new MutationObserver(sync);

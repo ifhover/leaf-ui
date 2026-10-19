@@ -1,7 +1,9 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MenuBasic } from '../../../src/examples/en/menu/basic';
-import { MenuHorizontal } from '../../../src/examples/en/menu/advanced';
+import { MenuLayouts } from '../../../src/examples/en/menu/advanced';
 import { MenuRouting } from '../../../src/examples/menu/capabilities';
+import { MenuGroups } from '../../../src/examples/en/menu/groups';
+import { MenuCustomGroup } from '../../../src/examples/en/menu/custom-group';
 
 # Menu
 
@@ -16,11 +18,37 @@ Organize hierarchical navigation.
 
 </ComponentExample>
 
-## More examples
+## Menu layouts
 
-<ComponentExample title="More examples" preview={<MenuHorizontal />} fileName="advanced.tsx">
+Use Tabs to switch between vertical, inline, horizontal and collapsed sidebar layouts. Vertical and inline examples start with their submenu expanded. Horizontal navigation and collapsed sidebars show submenus in floating panels. Use the sidebar button to compare its expanded and collapsed states.
+
+<ComponentExample title="Menu layouts" preview={<MenuLayouts />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/menu/advanced.tsx"
+```
+
+</ComponentExample>
+
+## Vertical menu groups
+
+Use `type: 'group'` in `items`, with `label` for the group title and `children` for menu items. Titles accept ReactNode and are skipped by selection and arrow navigation. Collapsed menus hide titles while keeping items available.
+
+<ComponentExample title="Vertical menu groups" preview={<MenuGroups />} fileName="groups.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/menu/groups.tsx"
+```
+
+</ComponentExample>
+
+## Reuse group titles
+
+`MenuGroup` shares the menu group title style. Its `title` accepts ReactNode and its `children` can contain a menu, descriptions, buttons or any custom elements. For groups containing only menu items, prefer the `items` API above to share selection state and keyboard navigation within one Menu.
+
+Place custom content in a standalone `MenuGroup` beside Menu so controls keep their own Tab order and keyboard behavior. `MenuGroup` does not manage selection, expansion or collapse. The application decides whether to hide this section when a sidebar collapses.
+
+<ComponentExample title="Custom group content" preview={<MenuCustomGroup />} fileName="custom-group.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/menu/custom-group.tsx"
 ```
 
 </ComponentExample>
@@ -40,6 +68,8 @@ Keep `selectedKey` in sync with the current route. Use `linkRender` to replace t
 
 The vertical menu defaults to 240px (60px when collapsed); use style.width to customize it. items supports nesting, groups, dividers and links. selectedKey controls the current item and openKeys controls expanded items. Horizontal and collapsed modes display submenus in floating panels.
 
+Horizontal submenus open below their trigger. Collapsed sidebar submenus open to the side with a parent title. Popups share aligned icons, labels, group headings and selected backgrounds; the current page and its parent remain highlighted. RTL reverses the side placement, and popups adjust near viewport edges.
+
 Submenus animate in both directions, and the sidebar width transitions when collapsed. Closed items are excluded from keyboard navigation. Transitions are disabled when the system requests reduced motion.
 
 Menu items, hover backgrounds and selection highlights share the base radius with buttons. Set `ConfigProvider`'s `theme.borderRadius` to adjust them together, or use `theme.components.Menu.borderRadius` to customize the menu radius.
@@ -49,7 +79,7 @@ Menu items, hover backgrounds and selection highlights share the base radius wit
 Import these types for data, callbacks and refs.
 
 ```ts
-import type { MenuItem, MenuProps } from '@ifhover/leaf-ui';
+import type { MenuGroupProps, MenuItem, MenuProps } from '@ifhover/leaf-ui';
 ```
 
 ## MenuItem API
@@ -81,3 +111,12 @@ import type { MenuItem, MenuProps } from '@ifhover/leaf-ui';
 | `itemRender` | `(item: `[`MenuItem`](#menuitem-api)`, content: ReactNode) => ReactNode` | — | Customize item content. |
 | `linkRender` | `(item: `[`MenuItem`](#menuitem-api)`, link: ReactNode) => ReactNode` | — | Render a router link while retaining supplied accessibility and event props. |
 | `itemClassName` | `string \| ((item: `[`MenuItem`](#menuitem-api)`) => string)` | — | Item class, or a class computed from an item. |
+
+## MenuGroup API
+
+Accepts native div attributes and a ref to `HTMLDivElement`. The title provides an accessible name; override it with `aria-label` or `aria-labelledby`. Import from the package root or `@ifhover/leaf-ui/menu`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | Required. Group title, sharing the style used by Menu groups |
+| `children` | `ReactNode` | — | Menu or any custom content |

@@ -21,24 +21,138 @@
 
 @mixin focus-ring($color: var(--leaf-color-primary)) {
   outline: 3px solid
-    var(--leaf-color-focus, var(--leaf-focus-color, var(--leaf-color-primary-alpha-42)));
+    var(
+      --leaf-color-focus,
+      var(--leaf-focus-color, var(--leaf-color-primary-focus, var(--leaf-color-primary-alpha-42)))
+    );
   outline-offset: 2px;
+}
+
+// State paint never changes geometry or the focus outline. Call after the component's
+// semantic defaults, with those defaults as fallbacks (including danger/selected states).
+@mixin state-paint($component, $state, $color, $background, $border, $shadow) {
+  color: var(--leaf-component-#{$component}-#{$state}-color, #{$color});
+  background: var(--leaf-component-#{$component}-#{$state}-background, #{$background});
+  border-color: var(--leaf-component-#{$component}-#{$state}-border-color, #{$border});
+  box-shadow: var(--leaf-component-#{$component}-#{$state}-shadow, #{$shadow});
+}
+
+// Portal panels use the same public component paint tokens as their trigger,
+// while retaining the shared floating defaults and concentric radius solver.
+@mixin floating-paint($component, $border: var(--leaf-color-border)) {
+  --leaf-surface-border: var(
+    --leaf-component-#{$component}-border-width,
+    var(--leaf-component-floating-border-width, var(--leaf-border-width, 1px))
+  );
+  border-color: var(
+    --leaf-component-#{$component}-border-color,
+    var(--leaf-component-floating-border-color, var(--leaf-frame-border-color, #{$border}))
+  );
+  color: var(
+    --leaf-component-#{$component}-color,
+    var(--leaf-component-floating-color, var(--leaf-color-text))
+  );
+  background: var(
+    --leaf-component-#{$component}-background,
+    var(
+      --leaf-component-floating-background,
+      var(--leaf-color-surface-raised, var(--leaf-color-surface))
+    )
+  );
+  box-shadow: var(
+    --leaf-component-#{$component}-shadow,
+    var(--leaf-component-floating-shadow, var(--leaf-surface-shadow, var(--leaf-shadow-md)))
+  );
+}
+
+@mixin field-states($component) {
+  &:hover:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open])) {
+    @include state-paint(
+      $component,
+      hover,
+      var(--leaf-field-text),
+      var(--leaf-field-background),
+      var(--leaf-field-hover-color),
+      var(--leaf-field-shadow)
+    );
+  }
+
+  &:is(:focus-within, [data-open]):not([data-disabled]):not(:disabled) {
+    @include state-paint(
+      $component,
+      focus,
+      var(--leaf-field-text),
+      var(--leaf-field-background),
+      var(--leaf-field-color),
+      var(--leaf-field-shadow)
+    );
+    // Keep the keyboard/input focus cue visible even when a skin uses a hard shadow.
+    outline: 3px solid var(--leaf-color-focus, var(--leaf-field-color-alpha-12));
+    outline-offset: 0;
+  }
+  &:active:not([data-disabled]):not(:disabled) {
+    @include state-paint(
+      $component,
+      active,
+      var(--leaf-field-text),
+      var(--leaf-field-background),
+      var(--leaf-field-hover-color),
+      var(--leaf-field-shadow)
+    );
+  }
+  &[data-disabled],
+  &:disabled {
+    @include state-paint(
+      $component,
+      disabled,
+      var(--leaf-field-text),
+      var(--leaf-color-surface-muted),
+      var(--leaf-field-rest-border),
+      var(--leaf-field-shadow)
+    );
+  }
+  @media (forced-colors: active) {
+    &:is(:focus-within, [data-open]):not([data-disabled]):not(:disabled) {
+      outline: 2px solid Highlight;
+    }
+  }
 }
 
 @mixin field($component: field) {
   @include control-size;
-  --leaf-field-color: var(--leaf-color-primary);
+  --leaf-field-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   --leaf-field-color-alpha-12: var(--leaf-color-primary-alpha-12);
   --leaf-field-color-border-30: var(--leaf-color-primary-border-30);
   --leaf-field-hover-color: var(--leaf-color-border-hover, var(--leaf-field-color));
+  --leaf-field-border-width: var(
+    --leaf-component-#{$component}-border-width,
+    var(--leaf-border-width, 1px)
+  );
+  --leaf-field-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
+  --leaf-field-rest-border: var(
+    --leaf-component-#{$component}-border-color,
+    var(--leaf-frame-border-color, var(--leaf-color-border))
+  );
+  --leaf-field-background: var(
+    --leaf-component-#{$component}-background,
+    var(--leaf-color-surface)
+  );
+  --leaf-field-shadow: var(
+    --leaf-component-#{$component}-shadow,
+    var(--leaf-control-shadow, 0 0 0 0 transparent)
+  );
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  border: 1px solid var(--leaf-color-border);
+  border: var(--leaf-field-border-width) solid
+    var(
+      --leaf-component-#{$component}-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
   border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius));
   color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
   background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
-  box-shadow: var(--leaf-component-#{$component}-shadow, none);
+  box-shadow: var(--leaf-field-shadow);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-#{$component}-font-size, var(--leaf-current-font-size));
   line-height: var(--leaf-line-height, 1.5);
@@ -48,6 +162,7 @@
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
 
   &[data-status='error'] {
+    --leaf-field-rest-border: var(--leaf-field-color);
     --leaf-field-color: var(--leaf-color-danger);
     --leaf-field-color-alpha-12: var(--leaf-color-danger-alpha-12);
     --leaf-field-color-border-30: var(--leaf-color-danger-border-30);
@@ -56,6 +171,7 @@
   }
 
   &[data-status='warning'] {
+    --leaf-field-rest-border: var(--leaf-field-color);
     --leaf-field-color: var(--leaf-color-warning);
     --leaf-field-color-alpha-12: var(--leaf-color-warning-alpha-12);
     --leaf-field-color-border-30: var(--leaf-color-warning-border-30);
@@ -63,35 +179,20 @@
     border-color: var(--leaf-field-color);
   }
 
-  &:hover:not([data-disabled]):not(:disabled):not(:focus-within):not([data-open]) {
-    border-color: var(--leaf-field-hover-color);
-  }
-
-  &:focus-within,
-  &[data-open] {
-    border-color: var(--leaf-field-color);
-    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
-  }
-
   &[data-disabled],
   &:disabled {
-    background: var(--leaf-color-surface-muted);
     opacity: 0.55;
     cursor: not-allowed;
   }
 
+  @include field-states($component);
+
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
-
-  @media (forced-colors: active) {
-    &:focus-within {
-      outline: 2px solid Highlight;
-    }
-  }
 }
 
-@mixin choice {
+@mixin choice($component: choice) {
   @include control-size;
   box-sizing: border-box;
   display: inline-flex;
@@ -100,7 +201,7 @@
   gap: 8px;
   min-height: var(--leaf-current-control-height);
   max-width: 100%;
-  color: var(--leaf-color-text);
+  color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-current-font-size);
   line-height: 1.5;
@@ -124,8 +225,12 @@
     width: 18px;
     height: 18px;
     margin: 0;
-    border: 1px solid var(--leaf-color-border);
-    background: var(--leaf-color-surface);
+    border: var(--leaf-component-#{$component}-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-#{$component}-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
     appearance: none;
     cursor: inherit;
     transition:
@@ -136,20 +241,16 @@
 
     &:checked,
     &:indeterminate {
-      border-color: var(--leaf-color-primary);
-      background: var(--leaf-color-primary);
-    }
-
-    &:hover:not(:disabled) {
-      border-color: var(--leaf-color-primary);
+      border-color: var(
+        --leaf-frame-border-color,
+        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+      );
+      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
 
     &:focus-visible {
       @include focus-ring;
     }
-  }
-  &:hover:not([data-disabled]) &__input {
-    border-color: var(--leaf-color-primary);
   }
   @media (prefers-reduced-motion: reduce) {
     &__input,
@@ -167,6 +268,100 @@
       // Native indicators remain visible in forced colors; suppress decorative overlays.
       display: none !important;
     }
+  }
+}
+
+@mixin choice-states($component) {
+  @include choice-label-states($component);
+  &__input {
+    --leaf-choice-background: var(
+      --leaf-component-#{$component}-background,
+      var(--leaf-color-surface)
+    );
+    --leaf-choice-border: var(
+      --leaf-component-#{$component}-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
+    --leaf-choice-shadow: var(
+      --leaf-component-#{$component}-shadow,
+      var(--leaf-control-shadow, var(--leaf-shadow-xs))
+    );
+    box-shadow: var(--leaf-choice-shadow);
+    &:checked,
+    &:indeterminate {
+      --leaf-choice-background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      --leaf-choice-border: var(
+        --leaf-frame-border-color,
+        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+      );
+    }
+    &:focus-visible:not(:disabled) {
+      @include state-paint(
+        $component,
+        focus,
+        inherit,
+        var(--leaf-choice-background),
+        var(--leaf-choice-border),
+        var(--leaf-choice-shadow)
+      );
+    }
+    &:disabled {
+      @include state-paint(
+        $component,
+        disabled,
+        inherit,
+        var(--leaf-choice-background),
+        var(--leaf-choice-border),
+        var(--leaf-choice-shadow)
+      );
+    }
+  }
+  &:hover:not([data-disabled]) &__input:not(:disabled):where(:not(:focus-visible)) {
+    @include state-paint(
+      $component,
+      hover,
+      inherit,
+      var(--leaf-choice-background),
+      var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+      var(--leaf-choice-shadow)
+    );
+  }
+  &:active:not([data-disabled]) &__input:not(:disabled) {
+    @include state-paint(
+      $component,
+      active,
+      inherit,
+      var(--leaf-choice-background),
+      var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+      var(--leaf-choice-shadow)
+    );
+  }
+}
+
+@mixin choice-label-states($component) {
+  &:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) {
+    color: var(
+      --leaf-component-#{$component}-hover-color,
+      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
+    );
+  }
+  &:active:not([data-disabled]) {
+    color: var(
+      --leaf-component-#{$component}-active-color,
+      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
+    );
+  }
+  &:where(:has(input:focus-visible)):not([data-disabled]) {
+    color: var(
+      --leaf-component-#{$component}-focus-color,
+      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
+    );
+  }
+  &[data-disabled] {
+    color: var(
+      --leaf-component-#{$component}-disabled-color,
+      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
+    );
   }
 }
 

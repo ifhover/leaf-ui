@@ -9,9 +9,18 @@ const options: SelectOption[] = [
 export function SelectPopup() {
   return (
     <Form layout="vertical">
-      <FormField label="自动浮层宽度">
+      <FormField label="默认与选择器等宽">
         <Select
-          aria-label="自动浮层宽度"
+          aria-label="默认与选择器等宽"
+          style={{ width: 180 }}
+          options={options}
+          defaultValue="studio"
+        />
+      </FormField>
+      <FormField label="按内容定宽">
+        <Select
+          aria-label="按内容定宽"
+          popupWidth="auto"
           style={{ width: 180 }}
           options={options}
           defaultValue="studio"
@@ -21,7 +30,6 @@ export function SelectPopup() {
         <Select
           aria-label="固定浮层宽度"
           popupWidth={300}
-          popupMaxWidth={360}
           style={{ width: 180 }}
           options={options}
           optionRender={(option) => (
@@ -30,6 +38,15 @@ export function SelectPopup() {
               <div style={{ fontSize: 12, opacity: 0.65 }}>{option.value}</div>
             </div>
           )}
+        />
+      </FormField>
+      <FormField label="按内容定宽，最大 200px">
+        <Select
+          aria-label="按内容定宽，最大 200px"
+          popupWidth="auto"
+          popupMaxWidth={200}
+          style={{ width: 180 }}
+          options={options}
         />
       </FormField>
       <FormField label="多选数量限制">

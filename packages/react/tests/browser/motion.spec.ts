@@ -11,7 +11,9 @@ test('associated labels and quick reopening keep floating panels visible at thei
   for (let index = 0; index < 3; index++) {
     await label.click();
     await expect(field).toHaveAttribute('aria-expanded', 'true');
-    const panel = page.locator(`#${await field.getAttribute('aria-controls')}`);
+    const viewport = page.locator(`#${await field.getAttribute('aria-controls')}`);
+    await expect(viewport).toHaveAttribute('role', 'listbox');
+    const panel = viewport.locator('xpath=ancestor::*[@data-leaf-popup][1]');
     await expect(panel).toHaveAttribute('data-positioned', 'true');
     await expect
       .poll(() => panel.evaluate((element) => Number(getComputedStyle(element).opacity)), {
@@ -37,7 +39,9 @@ test('associated labels and quick reopening keep floating panels visible at thei
   }
   const upward = page.getByRole('combobox', { name: 'Upward portal', exact: true });
   await upward.click();
-  const panel = page.locator(`#${await upward.getAttribute('aria-controls')}`);
+  const viewport = page.locator(`#${await upward.getAttribute('aria-controls')}`);
+  await expect(viewport).toHaveAttribute('role', 'listbox');
+  const panel = viewport.locator('xpath=ancestor::*[@data-leaf-popup][1]');
   await expect(panel).toHaveAttribute('data-positioned', 'true');
   await expect(panel).toHaveAttribute('data-side', 'top');
   await expect
@@ -62,9 +66,10 @@ test('time columns keep their selection visible without scrolling the surroundin
   const field = page.getByRole('combobox', { name: 'Local time range', exact: true });
   await field.click();
   const panel = page.getByRole('dialog', { name: 'Choose time range', exact: true });
-  await expect(panel).toHaveAttribute('data-positioned', 'true');
+  const surface = panel.locator('xpath=ancestor::*[@data-leaf-popup][1]');
+  await expect(surface).toHaveAttribute('data-positioned', 'true');
   await expect
-    .poll(() => panel.evaluate((element) => Number(getComputedStyle(element).opacity)), {
+    .poll(() => surface.evaluate((element) => Number(getComputedStyle(element).opacity)), {
       timeout: 15_000,
     })
     .toBeGreaterThan(0.97);
@@ -142,7 +147,10 @@ async function changeModalStep(dialog: Locator) {
 test('selection animates while panels switch immediately and retain state', async ({ page }) => {
   await page.goto('/?fixture=motion&rtl=1');
   await page.getByRole('textbox', { name: 'Retained name', exact: true }).fill('kept value');
-  const indicator = page.locator('.leaf-tabs__indicator');
+  const indicator = page
+    .getByRole('tablist', { name: 'Animated tabs', exact: true })
+    .locator('xpath=ancestor::*[contains(concat(" ", @class, " "), " leaf-tabs ")][1]')
+    .locator('.leaf-tabs__indicator');
   const longer = page.getByRole('tab', { name: 'Longer content', exact: true });
   await longer.evaluate((button) => {
     button.addEventListener(

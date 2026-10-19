@@ -32,6 +32,8 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 
 ## 富文本分组与加载状态
 
+浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并显式设置最大宽度。浮层仍会在视口边缘避让。
+
 <ComponentExample title="富文本分组与加载状态" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/auto-complete/capabilities.tsx"
@@ -64,6 +66,8 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 | `listHeight` | `number` | `248` | 可视列表高度。 |
 | `optionHeight` | `number` | `32` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
 | `popupPlacement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 浮层相对触发控件的位置。 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
+| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupStyle']` | — | 浮层的自定义样式。 |
 | `popupRender` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupRender']` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
@@ -99,7 +103,7 @@ const options: AutoCompleteOption[] = [
 
 输入框聚焦或输入时展开建议。↑ / ↓ 高亮可用选项，Enter 选择，Escape 收起，Tab 继续访问后续控件。中文输入法合成期间的 Enter 不会选择建议。没有匹配项时可以继续填写。
 
-输入框可以直接参与 FormData、原生必填校验和表单 reset。建议面板跟随输入框宽度并继承局部主题；为输入框提供 label 或 aria-label。
+输入框可以直接参与 FormData、原生必填校验和表单 reset。建议面板默认跟随输入框宽度并继承局部主题；为输入框提供 label 或 aria-label。
 
 ## AutoCompleteOption
 

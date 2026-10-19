@@ -9,6 +9,7 @@
       "!**/.version-cache",
       "!**/node_modules",
       "!**/.quality",
+      "!**/.omo",
       "!**/test-results",
       "!**/playwright-report",
       "!audit-lint.json",

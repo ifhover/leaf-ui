@@ -107,8 +107,8 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
       status: statusProp,
       disabled: disabledProp,
       required: requiredProp,
-      popupWidth,
-      popupMaxWidth = 420,
+      popupWidth = 'trigger',
+      popupMaxWidth,
       notFoundContent,
       onOpenChange,
       loadData,
@@ -142,7 +142,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
     },
     forwardedRef,
   ) {
-    const { messages, theme, density } = useLeafConfig();
+    const { messages, theme, density, direction: configuredDirection } = useLeafConfig();
     const itemHeight =
       itemHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4) + 6;
     const field = useFormField();
@@ -290,6 +290,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
             className,
           )}
           style={style}
+          dir={props.dir ?? configuredDirection}
           data-disabled={disabled || undefined}
           data-status={status}
           data-open={open || undefined}
@@ -484,8 +485,14 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
           open={open}
           triggerRef={root}
           panelRef={panel}
-          minWidth="trigger"
-          width={popupWidth ?? 'max-content'}
+          matchWidth={popupWidth === 'trigger'}
+          width={
+            popupWidth === 'trigger'
+              ? undefined
+              : popupWidth === 'auto'
+                ? 'max-content'
+                : popupWidth
+          }
           maxWidth={popupMaxWidth}
           maxHeight={320}
           className={classes('leaf-floating leaf-tree-select__panel', popupClassName)}

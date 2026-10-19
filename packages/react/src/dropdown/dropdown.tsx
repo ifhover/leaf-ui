@@ -65,6 +65,13 @@ const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
       : [item],
   );
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+interface NavigationMenu {
+  selectedKey?: string;
+  title?: ReactNode;
+}
+interface DropdownControlProps extends DropdownProps {
+  navigation?: NavigationMenu;
+}
 export function DropdownControl({
   items,
   children,
@@ -85,7 +92,8 @@ export function DropdownControl({
   popupRender,
   getPopupContainer,
   itemRender,
-}: DropdownProps) {
+  navigation,
+}: DropdownControlProps) {
   const triggers = Array.isArray(triggerType) ? triggerType : [triggerType];
   const [position, setPosition] = useState<{ x: number; y: number }>();
   const [pointerOpen, setPointerOpen] = useState(false);
@@ -233,6 +241,7 @@ export function DropdownControl({
         },
       })}
       <MenuPanel
+        navigation={navigation}
         items={items}
         open={open}
         trigger={trigger}
@@ -261,6 +270,7 @@ export function DropdownControl({
   );
 }
 interface PanelProps extends PopupOptions {
+  navigation?: NavigationMenu;
   items: readonly DropdownItem[];
   open: boolean;
   trigger: RefObject<HTMLElement | null>;
@@ -282,6 +292,7 @@ interface PanelProps extends PopupOptions {
   itemRender?: (item: DropdownItem) => ReactNode;
 }
 function MenuPanel({
+  navigation,
   items,
   open,
   trigger,
@@ -411,9 +422,13 @@ function MenuPanel({
   };
   const child = rows.find((item) => item.key === submenu);
   const activeItem = rows.find((item) => item.key === current);
+  const containsSelected = (item: DropdownItem): boolean =>
+    item.key === navigation?.selectedKey || Boolean(item.children?.some(containsSelected));
   return (
     <>
       <FloatingPanel
+        sideFallback={Boolean(navigation)}
+        resetSurfaceGeometry={Boolean(navigation)}
         open={open}
         triggerRef={trigger}
         panelRef={panel}
@@ -421,7 +436,12 @@ function MenuPanel({
         placement={placement}
         width={width}
         maxWidth={maxWidth}
-        className={classes('leaf-floating', 'leaf-dropdown', popupClassName)}
+        className={classes(
+          'leaf-floating',
+          'leaf-dropdown',
+          navigation && 'leaf-menu__popup',
+          popupClassName,
+        )}
         position={position}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
@@ -429,15 +449,18 @@ function MenuPanel({
         render={popupRender}
         container={getPopupContainer}
         role="menu"
+        aria-label={typeof navigation?.title === 'string' ? navigation.title : undefined}
         tabIndex={-1}
         onKeyDown={keyDown}
       >
+        {navigation?.title && <div className="leaf-menu__popup-title">{navigation.title}</div>}
         <div
           className="leaf-dropdown__highlight"
           aria-hidden="true"
           data-ready={Boolean(highlight)}
           data-danger={activeItem?.danger || undefined}
           data-selected={
+            (navigation && activeItem?.key === navigation.selectedKey) ||
             ((activeItem?.type === 'checkbox' || activeItem?.type === 'radio') &&
               (activeItem.checked ?? Boolean(checks[activeItem.key]))) ||
             undefined
@@ -469,6 +492,10 @@ function MenuPanel({
                   : undefined
               }
               aria-haspopup={item.children?.length ? 'menu' : undefined}
+              aria-current={navigation && item.key === navigation.selectedKey ? 'page' : undefined}
+              data-active-parent={
+                navigation && item.children?.length && containsSelected(item) ? true : undefined
+              }
               aria-expanded={item.children?.length ? submenu === item.key : undefined}
               disabled={item.disabled}
               tabIndex={current === item.key ? 0 : -1}
@@ -504,10 +531,16 @@ function MenuPanel({
                   style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
                   aria-hidden="true"
                 />
+              ) : navigation && item.icon ? (
+                <span className="leaf-menu__popup-icon" aria-hidden="true">
+                  {item.icon}
+                </span>
               ) : (
                 item.icon
               )}
-              <span>{itemRender?.(item) ?? item.label}</span>
+              <span className={navigation ? 'leaf-menu__popup-label' : undefined}>
+                {itemRender?.(item) ?? item.label}
+              </span>
               {item.children?.length ? (
                 <ChevronRight size={14} className="leaf-dropdown__arrow" aria-hidden="true" />
               ) : null}
@@ -517,6 +550,7 @@ function MenuPanel({
       </FloatingPanel>
       {child?.children && (
         <MenuPanel
+          navigation={navigation ? { selectedKey: navigation.selectedKey } : undefined}
           items={child.children}
           open={open && Boolean(submenu)}
           trigger={submenuTrigger}
@@ -528,6 +562,7 @@ function MenuPanel({
           getPopupContainer={getPopupContainer}
           itemRender={itemRender}
           maxWidth={maxWidth}
+          width={navigation ? width : undefined}
           register={register}
           unregister={unregister}
           checks={checks}
@@ -553,6 +588,7 @@ function MenuAction({
         rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
         role={props.role}
         aria-disabled={item.disabled || undefined}
+        aria-current={props['aria-current']}
         className={props.className}
         tabIndex={props.tabIndex}
         data-key={item.key}

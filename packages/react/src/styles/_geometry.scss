@@ -37,7 +37,7 @@
 }
 
 // Each surface sets its own inputs, preventing inherited curves from leaking in.
-@mixin nested-surface($name, $radius, $padding, $border: 1px) {
+@mixin nested-surface($name, $radius, $padding, $border: var(--leaf-border-width, 1px)) {
   @extend %nested-surface;
   --leaf-surface-radius: #{$radius};
   --leaf-surface-padding: #{$padding};

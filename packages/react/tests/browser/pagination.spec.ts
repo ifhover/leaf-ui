@@ -1,4 +1,4 @@
-import { TinyColor } from '@ctrl/tinycolor';
+import { readability, TinyColor } from '@ctrl/tinycolor';
 import { expect, type Locator, test } from '@playwright/test';
 import axe from 'axe-core';
 
@@ -104,8 +104,16 @@ for (const appearance of ['light', 'dark']) {
     );
     await expect(custom.locator('.leaf-pagination__indicator')).toHaveCSS(
       'border-color',
-      'rgb(118, 84, 198)',
+      await color(custom, '--leaf-color-primary-indicator'),
     );
+    expect(await color(custom, '--leaf-color-primary')).toBe('rgb(118, 84, 198)');
+    if (appearance === 'dark')
+      expect(
+        readability(
+          await color(custom, '--leaf-color-primary-indicator'),
+          await color(custom, '--leaf-color-surface-muted'),
+        ),
+      ).toBeGreaterThanOrEqual(3);
     await expect(custom.getByRole('button', { name: 'Next page' }).locator('svg')).toHaveCSS(
       'transform',
       'matrix(-1, 0, 0, -1, 0, 0)',

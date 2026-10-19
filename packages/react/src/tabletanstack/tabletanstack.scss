@@ -24,7 +24,7 @@
     touch-action: none;
     &:hover {
       background: var(--leaf-color-primary-soft);
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include focus-ring;
@@ -85,14 +85,14 @@
     cursor: pointer;
     transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include focus-ring;
       border-radius: var(--leaf-radius-sm);
     }
     &[data-sorted] {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     svg {
       flex-shrink: 0;
@@ -128,7 +128,7 @@
     cursor: pointer;
     &:hover {
       background: var(--leaf-color-primary-soft);
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include focus-ring;
@@ -170,7 +170,7 @@
     &:hover::after,
     &:focus-visible::after,
     &[data-resizing]::after {
-      background: var(--leaf-color-primary);
+      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include focus-ring;

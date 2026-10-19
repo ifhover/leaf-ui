@@ -5,7 +5,7 @@ export function SpaceBasic() {
     <Space size="md" wrap>
       <Button>保存</Button>
       <Button variant="outline">取消</Button>
-      <Button variant="ghost">更多</Button>
+      <Button variant="soft">更多</Button>
     </Space>
   );
 }

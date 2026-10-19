@@ -108,6 +108,52 @@ test('true horizontal overflow remains usable and the menu disappears when tabs 
 });
 
 for (const size of ['sm', 'md', 'lg']) {
+  test(`card ${size} view switcher keeps compact geometry and never scales on press`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=tabs&view=1&size=${size}`);
+    const root = page.getByTestId('view-tabs');
+    const list = root.getByRole('tablist');
+    const week = root.getByRole('tab', { name: 'Week', exact: true });
+    const month = root.getByRole('tab', { name: 'Month', exact: true });
+    const metrics = await root.evaluate((node) => {
+      const list = node.querySelector('.leaf-tabs__list');
+      const track = node.querySelector('.leaf-tabs__track');
+      const tabs = [...node.querySelectorAll('.leaf-tabs__tab')];
+      if (!list || !track || !tabs[0]) throw new Error('Missing view tabs');
+      const style = getComputedStyle(list);
+      return {
+        height: list.getBoundingClientRect().height,
+        rootHeight: node.getBoundingClientRect().height,
+        padding: [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft],
+        gap: getComputedStyle(track).gap,
+        widths: tabs.map((tab) => tab.getBoundingClientRect().width),
+        color: getComputedStyle(tabs[0]).color,
+        expectedColor: getComputedStyle(node).color,
+      };
+    });
+    const height = size === 'sm' ? 30 : size === 'lg' ? 42 : 36;
+    expect(metrics.height).toBe(height);
+    expect(metrics.rootHeight).toBe(height);
+    expect(metrics.padding).toEqual(['3px', '3px', '3px', '3px']);
+    expect(metrics.gap).toBe('3px');
+    expect(Math.max(...metrics.widths) - Math.min(...metrics.widths)).toBeLessThan(1);
+    expect(metrics.color).toBe(metrics.expectedColor);
+    await expect(root.getByRole('tabpanel')).toHaveCount(0);
+    await month.hover();
+    const before = await month.boundingBox();
+    await page.mouse.down();
+    await expect(month).toHaveCSS('transform', 'none');
+    expect(await month.boundingBox()).toEqual(before);
+    await page.mouse.up();
+    await expect(month).toHaveAttribute('aria-selected', 'true');
+    await expect(month).toHaveCSS('color', metrics.expectedColor);
+    await expect(list).toHaveCSS('height', `${height}px`);
+    await week.focus();
+    await page.keyboard.press('End');
+    await expect(month).toBeFocused();
+  });
+
   test(`card ${size} header fits its labels and uses the full control height`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.goto(`/?fixture=tabs&wide=1&size=${size}`);

@@ -30,7 +30,12 @@
     min-height: 160px;
     padding: 24px 16px;
     box-sizing: border-box;
-    border: 1px dashed var(--leaf-color-border);
+    border: var(--leaf-component-upload-border-width, var(--leaf-border-width, 1px)) dashed
+      var(
+        --leaf-component-upload-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    box-shadow: var(--leaf-component-upload-shadow, var(--leaf-surface-shadow, none));
     border-radius: var(--leaf-radius-md);
     background: var(--leaf-color-surface);
     color: inherit;
@@ -42,7 +47,7 @@
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
       transform var(--leaf-motion-duration) var(--leaf-motion-spring);
     &:hover:not(:disabled) {
-      border-color: var(--leaf-color-primary);
+      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       background: var(--leaf-color-surface-raised);
     }
     &:active:not(:disabled) {
@@ -57,7 +62,7 @@
     }
   }
   &[data-dragging] &__dropzone {
-    border-color: var(--leaf-color-primary);
+    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     background: var(--leaf-color-primary-surface-7);
     box-shadow: 0 0 0 4px var(--leaf-color-primary-alpha-10);
   }
@@ -77,7 +82,7 @@
   }
   &__dropzone:hover:not(:disabled) &__symbol,
   &[data-dragging] &__symbol {
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     background: var(--leaf-color-primary-surface-8);
     transform: translateY(-2px);
   }

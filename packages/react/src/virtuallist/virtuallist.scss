@@ -1,11 +1,8 @@
 @use '../styles/mixins' as mixins;
 .leaf-virtual-list {
-  overflow: auto;
   min-width: 0;
   position: relative;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--leaf-color-border) transparent;
   color: var(--leaf-color-text);
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   &:focus-visible {

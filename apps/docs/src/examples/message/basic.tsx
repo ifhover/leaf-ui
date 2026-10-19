@@ -21,7 +21,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.warning('请检查输入内容')}>
         警告
       </Button>
-      <Button variant="ghost" onClick={() => message.close()}>
+      <Button variant="soft" onClick={() => message.close()}>
         清空消息
       </Button>
     </Flex>

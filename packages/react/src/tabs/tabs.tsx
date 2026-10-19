@@ -29,6 +29,7 @@ import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { DropdownControl as Dropdown } from '../dropdown/dropdown';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useMotionEnabled } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
@@ -40,7 +41,7 @@ import { useMovingIndicator } from './use-moving-indicator';
 export interface TabItem {
   key: string;
   label: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
   disabled?: boolean;
   icon?: ReactNode;
   closable?: boolean;
@@ -53,6 +54,8 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   type?: 'line' | 'card';
   placement?: 'top' | 'bottom' | 'left' | 'right';
   size?: ControlSize;
+  /** Fill the available width with equally sized tabs. */
+  block?: boolean;
   activationMode?: 'automatic' | 'manual';
   destroyInactive?: boolean;
   extra?: ReactNode;
@@ -71,6 +74,7 @@ export function TabsControl({
   type = 'line',
   placement = 'top',
   size = 'md',
+  block = false,
   activationMode = 'automatic',
   destroyInactive = false,
   extra,
@@ -174,22 +178,27 @@ export function TabsControl({
         `leaf-tabs--${type}`,
         `leaf-tabs--${placement}`,
         `leaf-tabs--${size}`,
+        block && 'leaf-tabs--block',
         className,
       )}
     >
       <TabDragScope enabled={sorting} items={items} onReorder={onReorder}>
         <div className="leaf-tabs__header" ref={header}>
-          <div
+          <ScrollbarControl
             ref={list}
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) setFocused(undefined);
             }}
             role="tablist"
             aria-label={label}
-            aria-orientation={
-              placement === 'left' || placement === 'right' ? 'vertical' : 'horizontal'
-            }
-            className="leaf-tabs__list"
+            viewportProps={{
+              'aria-orientation':
+                placement === 'left' || placement === 'right' ? 'vertical' : 'horizontal',
+            }}
+            className="leaf-tabs__scroll"
+            viewportClassName="leaf-tabs__list"
+            tabIndex={-1}
+            scrollbarTabIndex={-1}
           >
             <div ref={track} className="leaf-tabs__track">
               <span ref={indicator} className="leaf-tabs__indicator" aria-hidden="true" />
@@ -215,7 +224,7 @@ export function TabsControl({
                       type="button"
                       role="tab"
                       aria-selected={item.key === selected}
-                      aria-controls={`${id}-panel-${index}`}
+                      aria-controls={item.children != null ? `${id}-panel-${index}` : undefined}
                       disabled={item.disabled}
                       tabIndex={item.key === focusKey ? 0 : -1}
                       className="leaf-tabs__tab"
@@ -288,7 +297,7 @@ export function TabsControl({
                 ))}
               </SortableContext>
             </div>
-          </div>
+          </ScrollbarControl>
           {overflowKeys.length > 0 && (
             <Dropdown
               items={items
@@ -330,23 +339,28 @@ export function TabsControl({
           {extra && <div className="leaf-tabs__extra">{extra}</div>}
         </div>
       </TabDragScope>
-      <div className="leaf-tabs__panels">
-        {items.map((item, index) => (
-          <div
-            key={item.key}
-            id={`${id}-panel-${index}`}
-            role="tabpanel"
-            aria-labelledby={`${id}-tab-${index}`}
-            hidden={item.key !== selected}
-            // biome-ignore lint/a11y/noNoninteractiveTabindex: Tabpanels are keyboard focus destinations in the ARIA tabs pattern.
-            tabIndex={0}
-            className="leaf-tabs__panel"
-          >
-            {(item.key === selected || (!destroyInactive && visited.includes(item.key))) &&
-              item.children}
-          </div>
-        ))}
-      </div>
+      {items.some((item) => item.children != null) && (
+        <div className="leaf-tabs__panels">
+          {items.map(
+            (item, index) =>
+              item.children != null && (
+                <div
+                  key={item.key}
+                  id={`${id}-panel-${index}`}
+                  role="tabpanel"
+                  aria-labelledby={`${id}-tab-${index}`}
+                  hidden={item.key !== selected}
+                  // biome-ignore lint/a11y/noNoninteractiveTabindex: Tabpanels are keyboard focus destinations in the ARIA tabs pattern.
+                  tabIndex={0}
+                  className="leaf-tabs__panel"
+                >
+                  {(item.key === selected || (!destroyInactive && visited.includes(item.key))) &&
+                    item.children}
+                </div>
+              ),
+          )}
+        </div>
+      )}
     </div>
   );
 }

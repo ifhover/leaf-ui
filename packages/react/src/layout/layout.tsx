@@ -1,6 +1,7 @@
 import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
@@ -66,7 +67,9 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
       data-collapsed={folded || undefined}
       style={{ width: folded ? collapsedWidth : width, ...style }}
     >
-      <div className="leaf-layout__sider-content">{children}</div>
+      <ScrollbarControl className="leaf-layout__sider-content" role="presentation" tabIndex={-1}>
+        {children}
+      </ScrollbarControl>
       {collapsible && !narrow && (
         <ButtonControl
           variant="ghost"

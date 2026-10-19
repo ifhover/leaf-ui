@@ -71,10 +71,17 @@
   max-width: 100%;
   max-height: 100%;
   color: var(--leaf-component-drawer-color, var(--leaf-color-text));
-  border: 1px solid var(--leaf-component-drawer-border-color, var(--leaf-color-divider));
+  border: var(--leaf-component-drawer-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-drawer-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    );
   background: var(--leaf-component-drawer-background, var(--leaf-color-surface));
   font: var(--leaf-component-drawer-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
-  box-shadow: var(--leaf-component-drawer-shadow, var(--leaf-shadow-lg));
+  box-shadow: var(
+    --leaf-component-drawer-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-lg))
+  );
   outline: none;
   transform: translate(0);
   opacity: 1;
@@ -90,6 +97,19 @@
   }
   &__body {
     flex: 1;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+  &__viewport {
+    overscroll-behavior: contain;
+  }
+  &__content {
+    box-sizing: border-box;
+    padding: var(
+      --leaf-component-drawer-padding,
+      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
+    );
   }
 }
 .leaf-drawer-mask[data-state='closing'] .leaf-drawer {
@@ -115,7 +135,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--leaf-color-primary);
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     opacity: 0;
     transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
   }
@@ -124,7 +144,7 @@
     opacity: 0.12;
   }
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: -2px;
   }
 }

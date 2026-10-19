@@ -9,10 +9,10 @@ import {
   Input,
   InputOTP,
   Modal,
-  Segmented,
   Select,
   Slider,
   Switch,
+  Tabs,
   useMessage,
 } from '@ifhover/leaf-ui';
 import { ArrowRight, Check, CheckCheck, Leaf, Mail, Save, Sparkles, Users } from 'lucide-react';
@@ -123,17 +123,18 @@ export function ComponentShowcase() {
           />
         </div>
         <div className="leaf-component-scene__preferences">
-          <Segmented
+          <Tabs
+            type="card"
             block
             aria-label={t('消息渠道', 'Channel')}
-            value={channel}
+            activeKey={channel}
             onChange={(value) => {
               setChannel(value);
               setDirty(true);
             }}
-            options={[
-              { value: 'chat', label: t('协作消息', 'Chats'), icon: <Users size={16} /> },
-              { value: 'email', label: t('邮件', 'Emails'), icon: <Mail size={16} /> },
+            items={[
+              { key: 'chat', label: t('协作消息', 'Chats'), icon: <Users size={16} /> },
+              { key: 'email', label: t('邮件', 'Emails'), icon: <Mail size={16} /> },
             ]}
           />
           <div className="leaf-component-scene__notifications">
@@ -190,16 +191,17 @@ export function ComponentShowcase() {
               <span>{t('好想法，一起完成。', 'Good ideas, made together.')}</span>
             </div>
           </div>
-          <Segmented
+          <Tabs
+            type="card"
             block
             aria-label={t('查看周期', 'Period')}
-            value={period}
+            activeKey={period}
             onChange={setPeriod}
-            options={[
-              { value: 'day', label: '1D' },
-              { value: 'week', label: '7D' },
-              { value: 'month', label: '1M' },
-              { value: 'year', label: '1Y' },
+            items={[
+              { key: 'day', label: '1D' },
+              { key: 'week', label: '7D' },
+              { key: 'month', label: '1M' },
+              { key: 'year', label: '1Y' },
             ]}
           />
           <div className="leaf-component-scene__profile-stats">
@@ -253,7 +255,7 @@ export function ComponentShowcase() {
               : t('没有收到验证码？', 'Didn’t get a code?')}
             <Button
               size="sm"
-              variant="ghost"
+              variant="soft"
               onClick={() =>
                 message.success(t('示例验证码是 432100', 'The example code is 432100'))
               }
@@ -298,7 +300,7 @@ export function ComponentShowcase() {
               <small>{t('把灵感变成作品', 'Ideas into experiences')}</small>
             </p>
             <Button
-              variant="ghost"
+              variant="soft"
               size="sm"
               aria-label={t('加入设计伙伴', 'Join Design circle')}
               startIcon={<ArrowRight size={16} />}
@@ -314,7 +316,7 @@ export function ComponentShowcase() {
               <small>{t('一步步，做点不同', 'Make something different')}</small>
             </p>
             <Button
-              variant="ghost"
+              variant="soft"
               size="sm"
               aria-label={t('加入独立创造者', 'Join Indie makers')}
               startIcon={<ArrowRight size={16} />}
@@ -340,7 +342,7 @@ export function ComponentShowcase() {
             <Button variant="outline" size="sm" loading={saving} onClick={save}>
               {t('保存更改', 'Save changes')}
             </Button>
-            <Button variant="ghost" size="sm" disabled={saving} onClick={() => setDirty(false)}>
+            <Button variant="soft" size="sm" disabled={saving} onClick={() => setDirty(false)}>
               {t('暂时放下', 'Discard')}
             </Button>
           </div>

@@ -23,7 +23,8 @@ export const leafTailwindTokens = {
     'leaf-border-hover': 'var(--leaf-color-border-hover)',
     'leaf-divider': 'var(--leaf-color-divider)',
     'leaf-option-hover': 'var(--leaf-color-option-hover)',
-    'leaf-focus': 'var(--leaf-color-focus, var(--leaf-color-primary-alpha-42))',
+    'leaf-focus':
+      'var(--leaf-color-focus, var(--leaf-color-primary-focus, var(--leaf-color-primary-alpha-42)))',
   },
   borderRadius: {
     leaf: 'var(--leaf-radius)',

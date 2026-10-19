@@ -12,10 +12,6 @@
   &[data-searchable] {
     cursor: text;
   }
-  &[data-open] {
-    border-color: var(--leaf-field-color);
-    box-shadow: 0 0 0 3px var(--leaf-field-color-alpha-12);
-  }
   &[data-disabled] {
     cursor: not-allowed;
   }
@@ -32,7 +28,7 @@
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    height: calc(var(--leaf-current-control-height) - 2px);
+    height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
     padding: 0;
     border: 0;
     border-radius: inherit;
@@ -118,11 +114,16 @@
     transform: none;
   }
   &--multiple {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    @include selection.trigger-padding('select', 30px);
   }
   &--multiple &__input {
-    height: calc(var(--leaf-current-control-height) - 8px);
+    height: max(
+      1px,
+      calc(
+        var(--leaf-current-control-height) - 6px - 2 *
+          var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+      )
+    );
     min-width: 0;
   }
 }
@@ -164,4 +165,8 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+}
+
+.leaf-select__panel {
+  @include mixins.floating-paint(select);
 }

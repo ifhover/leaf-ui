@@ -7,6 +7,31 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.7.0 - 2026-10-19
+
+### Added
+
+- Form accepts `layout="settings"`: labels and descriptions sit on the left, controls retain their natural width on the right, rows have separators, and narrow screens stack the content. FormField adds independent `description` and `layout` props; use `layout="vertical"` for full-width controls such as textareas. Descriptions and help / errors are associated with the control separately.
+- `MenuGroup` / `MenuGroupProps` provides a titled, accessibly named group for menus or custom sidebar content, with scoped defaults, native attributes and a ref. Menu data groups support ReactNode titles and keyboard navigation across groups while skipping disabled items.
+- Theme tokens add global `borderWidth`, `controlShadow` and `surfaceShadow`, plus component border widths and text, background, border and shadow overrides for `hover` / `active` / `focus` / `disabled` states. Nested state overrides merge by field and retain the focus outline.
+- Tabs adds `block` for equally sized tabs across the available width. `TabItem.children` is optional, allowing a tab bar without panels. AutoComplete, Cascader and Mentions add `popupWidth` / `popupMaxWidth`, sharing trigger-width, content-width and explicit-width rules with Select and TreeSelect.
+
+### Improved and fixed
+
+- Reworked horizontal Menu and collapsed-sidebar navigation popups with consistent titles, groups, separators and selection feedback. Collapsed sidebars open to the side and fall back below when space is limited, with RTL support and highlighted current pages and parents. Fixed entering and leaving grouped submenus with arrow keys.
+- Dark themes preserve an explicit primary color for solid fills and derive readable text, selection indicators, focus and necessary boundaries by purpose. Solid primary fills choose black or white text automatically. Fixed selected surfaces and tags turning black after CSS color expressions were resolved; nested themes and popups update together.
+- Global borders and control / surface shadows apply consistently to supported components, with thicker borders included in control and popup geometry. Fixed reset themes in portals inheriting outer shadows again and hover states overriding pressed feedback.
+- More internal scrolling regions use Scrollbar, including Tabs, Tree, VirtualList, Textarea, sidebars, drawers and command palettes, while retaining semantics, focus, and native textarea selection and resizing.
+- Card Tabs use consistent 3px padding and gaps, a neutral background and a raised selection, without scaling when pressed. Soft buttons use a neutral tint, with pale red backgrounds and red text for danger states. Refined Steps connectors, single-ring Avatar edges, Table header separators and row-hover surfaces.
+- Updated bilingual documentation navigation, search and narrow-screen drawers, with better page / anchor retention during language changes and improved source expansion and copying. The theming guide includes five copyable configurations: default, illustration, Windows XP, Material and neumorphic. Design tokens and Figma resources are synchronized.
+
+### Migration
+
+- This `0.x` minor release includes API and default appearance changes. Review the following before upgrading.
+- Segmented, `SegmentedProps`, `SegmentedOption` and their component / stylesheet subpaths are removed. Use `Tabs type="card"`; replace `options` with `items`, option `value` with `key`, and `value` / `defaultValue` with `activeKey` / `defaultActiveKey`. `block` still fills the available width with equal items. Tabs does not submit a form field; manage a separate field in the application when native form submission is required.
+- Button removes `variant="ghost"`; use `variant="soft"`. Scoped Button defaults and related variant types follow this change. Other components, such as Pagination, retain their own `ghost` appearance.
+- Select and TreeSelect popups now match the control width by default, and `popupMaxWidth` no longer defaults to 420px. Set `popupWidth="auto"` for content sizing, which may be narrower than the control. Set `popupMaxWidth` explicitly when needed; all modes remain constrained by the viewport.
+
 ## 0.6.0 - 2026-10-16
 
 ### Added

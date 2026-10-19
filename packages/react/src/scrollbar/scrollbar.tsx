@@ -2,6 +2,8 @@ import {
   type CSSProperties,
   forwardRef,
   type HTMLAttributes,
+  type Ref,
+  type RefObject,
   useCallback,
   useEffect,
   useId,
@@ -33,6 +35,18 @@ interface Geometry {
   left: number;
   top: number;
   rtl: boolean;
+  x: number;
+  y: number;
+}
+
+interface ScrollbarControlProps extends ScrollbarProps {
+  /** Internal composition keeps semantic attributes on the actual scroll viewport. */
+  viewportProps?: HTMLAttributes<HTMLDivElement>;
+  rootRef?: Ref<HTMLDivElement>;
+  scrollbarTabIndex?: number;
+  externalViewport?: RefObject<HTMLElement | null>;
+  viewportRevision?: unknown;
+  resizeHandle?: boolean;
 }
 
 const initialGeometry: Geometry = {
@@ -43,9 +57,11 @@ const initialGeometry: Geometry = {
   left: 0,
   top: 0,
   rtl: false,
+  x: 0,
+  y: 0,
 };
 
-export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
+export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps>(
   function ScrollbarControl(
     {
       height,
@@ -57,6 +73,12 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
       contentClassName,
       contentStyle,
       verticalOffset = 0,
+      viewportProps,
+      rootRef,
+      scrollbarTabIndex,
+      externalViewport,
+      viewportRevision,
+      resizeHandle = false,
       className,
       style,
       children,
@@ -68,14 +90,17 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
       ...props
-    }: ScrollbarProps,
+    }: ScrollbarControlProps,
     forwarded,
   ) {
-    const viewport = useRef<HTMLDivElement>(null);
+    const internalViewport = useRef<HTMLDivElement>(null);
+    const viewport = externalViewport ?? internalViewport;
+    const root = useRef<HTMLDivElement>(null);
     const content = useRef<HTMLDivElement>(null);
-    const ref = useMergedRef(viewport, forwarded);
+    const ref = useMergedRef(internalViewport, forwarded);
+    const mergedRoot = useMergedRef(root, rootRef);
     const generatedId = useId();
-    const id = providedId ?? generatedId;
+    const id = viewportProps?.id ?? providedId ?? generatedId;
     const t = useText();
     const [geometry, setGeometry] = useState(initialGeometry);
     const [scrolling, setScrolling] = useState(false);
@@ -88,6 +113,8 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
     const measure = useCallback(() => {
       const element = viewport.current;
       if (!element) return;
+      const bounds = element.getBoundingClientRect();
+      const rootBounds = root.current?.getBoundingClientRect();
       const next: Geometry = {
         width: element.clientWidth,
         height: element.clientHeight,
@@ -96,6 +123,8 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
         left: Math.abs(element.scrollLeft),
         top: element.scrollTop,
         rtl: getComputedStyle(element).direction === 'rtl',
+        x: externalViewport && rootBounds ? bounds.left - rootBounds.left + element.clientLeft : 0,
+        y: externalViewport && rootBounds ? bounds.top - rootBounds.top + element.clientTop : 0,
       };
       setGeometry((previous) =>
         Object.keys(next).every(
@@ -104,7 +133,7 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
           ? previous
           : next,
       );
-    }, []);
+    }, [externalViewport, viewport]);
     const schedule = useCallback(() => {
       if (frame.current !== undefined) return;
       frame.current = requestAnimationFrame(() => {
@@ -112,12 +141,21 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
         measure();
       });
     }, [measure]);
+    const reportScroll = useCallback(() => {
+      schedule();
+      setScrolling(true);
+      clearTimeout(timeout.current);
+      timeout.current = setTimeout(() => setScrolling(false), 700);
+    }, [schedule]);
     useEffect(() => {
       measure();
       const observer =
         typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
       if (viewport.current) observer?.observe(viewport.current);
       if (content.current) observer?.observe(content.current);
+      const external = externalViewport?.current;
+      external?.addEventListener('scroll', reportScroll, { passive: true });
+      external?.addEventListener('input', schedule);
       const mutation =
         typeof MutationObserver === 'undefined' ? undefined : new MutationObserver(schedule);
       if (content.current)
@@ -131,12 +169,19 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
       return () => {
         observer?.disconnect();
         mutation?.disconnect();
+        external?.removeEventListener('scroll', reportScroll);
+        external?.removeEventListener('input', schedule);
         window.removeEventListener('resize', schedule);
         if (frame.current !== undefined) cancelAnimationFrame(frame.current);
         frame.current = undefined;
         clearTimeout(timeout.current);
       };
-    }, [measure, schedule]);
+    }, [externalViewport, viewport, measure, schedule, reportScroll]);
+    // Controlled native values can change scroll geometry without a DOM mutation or input event.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: viewportRevision explicitly invalidates external viewport measurements.
+    useEffect(() => {
+      if (externalViewport) measure();
+    }, [externalViewport, viewportRevision, measure]);
 
     function setPosition(vertical: boolean, value: number) {
       const element = viewport.current;
@@ -167,7 +212,8 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
       const contentSize = vertical ? geometry.scrollHeight : geometry.scrollWidth;
       const offset = vertical ? inset : 0;
       const crossOverflow = vertical ? horizontalOverflow : verticalOverflow;
-      const trackSize = Math.max(0, visibleSize - offset - 8 - (crossOverflow ? 8 : 0));
+      const endInset = resizeHandle ? 16 : crossOverflow ? 12 : 4;
+      const trackSize = Math.max(0, visibleSize - offset - 4 - endInset);
       const thumbSize = Math.min(
         trackSize,
         Math.max(24, (trackSize * (visibleSize - offset)) / Math.max(1, contentSize - offset)),
@@ -186,11 +232,27 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
           )}
           style={
             vertical
-              ? { top: inset + 4, bottom: horizontalOverflow ? 12 : 4 }
-              : {
-                  right: verticalOverflow && !geometry.rtl ? 12 : 4,
-                  left: verticalOverflow && geometry.rtl ? 12 : 4,
-                }
+              ? externalViewport
+                ? {
+                    top: geometry.y + inset + 4,
+                    left: geometry.rtl ? geometry.x + 4 : geometry.x + geometry.width - 12,
+                    height: trackSize,
+                    bottom: 'auto',
+                    right: 'auto',
+                  }
+                : { top: inset + 4, bottom: endInset }
+              : externalViewport
+                ? {
+                    top: geometry.y + geometry.height - 12,
+                    left: geometry.x + 4,
+                    width: trackSize,
+                    bottom: 'auto',
+                    right: 'auto',
+                  }
+                : {
+                    right: verticalOverflow && !geometry.rtl ? 12 : 4,
+                    left: verticalOverflow && geometry.rtl ? 12 : 4,
+                  }
           }
         >
           <span
@@ -204,12 +266,12 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
           />
           <div
             role="scrollbar"
-            tabIndex={maximum ? 0 : -1}
+            tabIndex={maximum ? (scrollbarTabIndex ?? 0) : -1}
             className="leaf-scrollbar__control"
             aria-label={
               vertical ? t('scrollbar.verticalScrollbar') : t('scrollbar.horizontalScrollbar')
             }
-            aria-controls={id}
+            aria-controls={externalViewport ? externalViewport.current?.id || undefined : id}
             aria-orientation={vertical ? 'vertical' : 'horizontal'}
             aria-valuemin={0}
             aria-valuemax={maximum}
@@ -293,40 +355,48 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarProps>(
     return (
       <div
         {...props}
-        className={classes('leaf-scrollbar', className)}
+        ref={mergedRoot}
+        className={classes(
+          'leaf-scrollbar',
+          externalViewport && 'leaf-scrollbar--external',
+          className,
+        )}
         data-scrollbar={scrollbar}
         data-scrolling={scrolling || undefined}
         data-dragging={dragging || undefined}
         style={{ height, maxHeight, ...style }}
       >
-        <div
-          ref={ref}
-          id={id}
-          tabIndex={tabIndex}
-          {...viewportAccessibility}
-          className={classes('leaf-scrollbar__viewport', viewportClassName)}
-          style={{
-            height: (style?.height ?? height) === undefined ? undefined : '100%',
-            overflowX: orientation === 'vertical' ? 'hidden' : 'auto',
-            overflowY: orientation === 'horizontal' ? 'hidden' : 'auto',
-            ...viewportStyle,
-          }}
-          onScroll={(event) => {
-            schedule();
-            setScrolling(true);
-            clearTimeout(timeout.current);
-            timeout.current = setTimeout(() => setScrolling(false), 700);
-            onScroll?.(event);
-          }}
-        >
+        {externalViewport ? (
+          children
+        ) : (
           <div
-            ref={content}
-            className={classes('leaf-scrollbar__content', contentClassName)}
-            style={contentStyle}
+            ref={ref}
+            id={id}
+            tabIndex={tabIndex}
+            {...viewportAccessibility}
+            {...viewportProps}
+            className={classes('leaf-scrollbar__viewport', viewportClassName)}
+            style={{
+              height: (style?.height ?? height) === undefined ? undefined : '100%',
+              overflowX: orientation === 'vertical' ? 'hidden' : 'auto',
+              overflowY: orientation === 'horizontal' ? 'hidden' : 'auto',
+              ...viewportStyle,
+            }}
+            onScroll={(event) => {
+              reportScroll();
+              onScroll?.(event);
+              viewportProps?.onScroll?.(event);
+            }}
           >
-            {children}
+            <div
+              ref={content}
+              className={classes('leaf-scrollbar__content', contentClassName)}
+              style={contentStyle}
+            >
+              {children}
+            </div>
           </div>
-        </div>
+        )}
         {scrollbar !== 'hidden' &&
           (verticalOverflow || (scrollbar === 'always' && orientation !== 'horizontal')) &&
           bar(true)}

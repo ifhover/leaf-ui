@@ -2,6 +2,7 @@ import { ExtensionDemo } from '../../../src/examples/en/form/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { FormBasic } from '../../../src/examples/en/form/basic';
 import { FormLabelWidth } from '../../../src/examples/en/form/label-width';
+import { FormSettings } from '../../../src/examples/en/form/settings';
 
 # Form
 
@@ -25,6 +26,19 @@ Organize fields, labels and validation feedback, and collect form data.
 
 </ComponentExample>
 
+## Settings layout
+
+Set `layout="settings"` to place labels and `description` on the left and naturally sized controls on the right, with dividers between fields. For wider controls, set `FormField layout="vertical"` to place the label and description above a full-width control. Fields stack automatically on narrow screens.
+
+Use `description` to explain a field beside its label. Use `help` for guidance below the control; validation feedback from `error` replaces `help`.
+
+<ComponentExample title="Settings layout with a vertical field" preview={<FormSettings />} fileName="settings.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/form/settings.tsx"
+```
+
+</ComponentExample>
+
 ## Extended features
 
 <ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
@@ -38,9 +52,9 @@ Organize fields, labels and validation feedback, and collect form data.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Label and field layout |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | A pixel width, or auto to align all labels to the widest label |
-| `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment |
+| `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | Default field layout; settings places labels and descriptions on the left and controls on the right |
+| `labelWidth` | `number \| 'auto'` | `'auto'` | Horizontal fields only: a pixel width, or auto to align labels to the widest label |
+| `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment for horizontal fields |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
 
@@ -49,11 +63,13 @@ Organize fields, labels and validation feedback, and collect form data.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `label` | `ReactNode` | — | Field label |
+| `description` | `ReactNode` | — | Description below the label, displayed independently of help and error below the control |
+| `layout` | [`FormProps`](#form-api)`['layout']` | Inherited from Form | Override this field's layout; vertical allows wider controls to fill the row |
 | `htmlFor` | `string` | Generated | The associated control ID; one field wraps one control or group |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `help` | `ReactNode` | — | Supporting text below the control, included in the field layout |
 | `error` | `ReactNode` | — | Error message, displayed instead of help |
-| `labelWidth` | `number` | — | Override this field’s label width in pixels |
+| `labelWidth` | `number` | — | Override this horizontal field’s label width in pixels |
 
 ## Types
 
@@ -65,7 +81,7 @@ import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-By default, all labels in one Form use the width of its widest label. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
+The default horizontal layout aligns labels to the widest horizontal field label in the Form. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. A FormField can override the Form layout with its own layout prop; labelWidth and labelAlign only apply to horizontal fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
 
 Help and error messages occupy normal layout space and preserve the form gap before the next field. Wrapped text naturally adds height.
 

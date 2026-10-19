@@ -1,4 +1,5 @@
 @use '../styles/geometry' as geometry;
+@use '../styles/mixins' as mixins;
 
 $include-field-styles: true !default;
 
@@ -6,7 +7,8 @@ $include-field-styles: true !default;
   @include geometry.nested-surface(
     floating,
     var(--leaf-component-floating-radius, var(--leaf-radius-lg)),
-    var(--leaf-component-floating-padding, 6px)
+    var(--leaf-component-floating-padding, 6px),
+    var(--leaf-component-floating-border-width, var(--leaf-border-width, 1px))
   );
   --leaf-floating-option-radius: var(--leaf-surface-inner-radius);
   --leaf-popup-x: 0px;
@@ -19,13 +21,23 @@ $include-field-styles: true !default;
   max-width: min(420px, calc(100vw - 24px));
   max-height: min(360px, calc(100vh - 32px));
   overflow: auto;
-  border: var(--leaf-surface-border) solid var(--leaf-color-border);
-  color: var(--leaf-color-text);
+  border: var(--leaf-surface-border) solid
+    var(
+      --leaf-component-floating-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
+  color: var(--leaf-component-floating-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
   line-height: 1.5;
-  background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
-  box-shadow: var(--leaf-shadow-md);
+  background: var(
+    --leaf-component-floating-background,
+    var(--leaf-color-surface-raised, var(--leaf-color-surface))
+  );
+  box-shadow: var(
+    --leaf-component-floating-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-md))
+  );
   overscroll-behavior: contain;
   opacity: 1;
   translate: 0 0;
@@ -81,6 +93,18 @@ $include-field-styles: true !default;
       transition: none;
     }
   }
+}
+
+.leaf-floating.leaf-scrollbar {
+  width: auto;
+  overflow: hidden;
+  border-radius: var(--leaf-surface-radius);
+}
+.leaf-floating > .leaf-floating__viewport {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: var(--leaf-surface-inner-radius);
+  overscroll-behavior: contain;
 }
 
 @if $include-field-styles {
@@ -147,7 +171,7 @@ $include-field-styles: true !default;
 
   @if $include-field-styles {
     &[aria-selected='true'] {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       font-weight: var(--leaf-font-weight);
       background: var(--leaf-color-primary-surface-9);
     }
@@ -161,7 +185,7 @@ $include-field-styles: true !default;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: -2px;
   }
 }
@@ -265,7 +289,7 @@ $include-field-styles: true !default;
     }
   }
   .leaf-floating__loading-icon {
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     animation: var(
       --leaf-motion-animation,
       leaf-floating-spin calc(var(--leaf-motion-duration) * 4) linear infinite

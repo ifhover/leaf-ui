@@ -100,7 +100,7 @@
       background var(--leaf-motion-duration),
       transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-current] {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       .leaf-bottom-navigation__icon {
         transform: translateY(-1px) scale(1.04);
       }
@@ -132,7 +132,7 @@
   display: contents;
 }
 .leaf-bottom-navigation [data-leaf-navigation]:focus-visible {
-  outline: 2px solid var(--leaf-color-primary);
+  outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   outline-offset: -2px;
 }
 .leaf-bottom-navigation [aria-disabled] {

@@ -6,7 +6,7 @@
   --leaf-card-title-font-size: calc(var(--leaf-font-size) + 1px);
   box-sizing: border-box;
   min-width: 0;
-  border: 1px solid transparent;
+  border: var(--leaf-component-card-border-width, var(--leaf-border-width, 1px)) solid transparent;
   border-radius: var(--leaf-component-card-radius, var(--leaf-radius-md));
   background: var(--leaf-component-card-background, var(--leaf-color-surface));
   color: var(--leaf-component-card-color, var(--leaf-color-text));
@@ -14,9 +14,13 @@
   transition:
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+  box-shadow: var(--leaf-component-card-shadow, var(--leaf-surface-shadow, none));
   &--bordered {
-    border-color: var(--leaf-component-card-border-color, var(--leaf-color-divider));
-    box-shadow: var(--leaf-component-card-shadow, none);
+    border-color: var(
+      --leaf-component-card-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    );
+    box-shadow: var(--leaf-component-card-shadow, var(--leaf-surface-shadow, none));
   }
   &--sm {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2));
@@ -88,14 +92,22 @@
     }
   }
   &--divided > &__header {
-    border-block-end: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
+    border-block-end: 1px solid
+      var(
+        --leaf-component-card-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-divider))
+      );
   }
   &--divided > &__header + &__body {
     padding-block-start: var(--leaf-card-padding);
   }
   &--divided > &__footer {
     @include mixins.action-footer-padding(card);
-    border-block-start: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
+    border-block-start: 1px solid
+      var(
+        --leaf-component-card-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-divider))
+      );
     background: var(--leaf-component-card-footer-background, var(--leaf-color-surface-muted));
   }
   &__cover {
@@ -121,13 +133,17 @@
     > .leaf-tabs__header {
       padding: var(--leaf-card-padding);
       padding-block: 0;
-      border-block-end: 1px solid var(--leaf-component-card-border-color, var(--leaf-color-divider));
+      border-block-end: 1px solid
+        var(
+          --leaf-component-card-border-color,
+          var(--leaf-frame-border-color, var(--leaf-color-divider))
+        );
       background: var(--leaf-component-card-header-background, transparent);
       border-start-start-radius: inherit;
       border-start-end-radius: inherit;
-      > .leaf-tabs__list {
+      > .leaf-tabs__scroll > .leaf-tabs__list {
         box-shadow: none;
-        > .leaf-tabs__track {
+        > .leaf-scrollbar__content > .leaf-tabs__track {
           gap: var(--leaf-spacing-md);
         }
       }
@@ -153,9 +169,9 @@
       calc(var(--leaf-card-title-font-size) * 1.5 + var(--leaf-card-heading-gap) * 2)
     );
     align-items: stretch;
-    > .leaf-tabs__list {
+    > .leaf-tabs__scroll > .leaf-tabs__list {
       display: flex;
-      > .leaf-tabs__track {
+      > .leaf-scrollbar__content > .leaf-tabs__track {
         flex-shrink: 0;
         > .leaf-tabs__entry {
           align-items: stretch;

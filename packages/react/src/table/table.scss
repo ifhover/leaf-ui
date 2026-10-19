@@ -11,14 +11,18 @@
   min-width: 0;
   max-width: 100%;
   contain: inline-size;
-  border: 1px solid var(--leaf-color-border);
+  border: var(--leaf-component-table-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-table-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
   border-radius: var(--leaf-component-table-radius, var(--leaf-radius));
   background: var(--leaf-table-surface);
   color: var(--leaf-component-table-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-table-font-size, var(--leaf-font-size));
   line-height: var(--leaf-line-height, 1.6);
-  box-shadow: var(--leaf-component-table-shadow, none);
+  box-shadow: var(--leaf-component-table-shadow, var(--leaf-surface-shadow, none));
 
   &--sm {
     --leaf-table-padding-block: 8px;
@@ -116,7 +120,7 @@
     font-size: var(--leaf-font-size-sm);
     font-weight: var(--leaf-font-weight);
     background: var(--leaf-color-surface-muted);
-    border-block-end: 0;
+    border-block-end: 1px solid var(--leaf-color-divider);
     white-space: nowrap;
   }
 
@@ -130,7 +134,7 @@
   }
 
   &__body > &__row:not(.leaf-table__state-row):hover {
-    --leaf-table-row-background: var(--leaf-color-surface-muted);
+    --leaf-table-row-background: var(--leaf-color-primary-surface-6);
   }
 
   &__body > &__row[data-selected],

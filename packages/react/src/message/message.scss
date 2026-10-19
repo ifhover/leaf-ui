@@ -47,7 +47,11 @@
   max-width: 100%;
   box-sizing: border-box;
   padding: var(--leaf-component-message-padding, 10px 14px);
-  border: 1px solid var(--leaf-color-divider);
+  border: var(--leaf-component-message-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-message-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    );
   border-radius: var(--leaf-component-message-radius, var(--leaf-radius));
   background: var(
     --leaf-component-message-background,
@@ -55,7 +59,10 @@
   );
   color: var(--leaf-component-message-color, var(--leaf-color-text));
   font: var(--leaf-component-message-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
-  box-shadow: var(--leaf-component-message-shadow, var(--leaf-shadow-md));
+  box-shadow: var(
+    --leaf-component-message-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-md))
+  );
   pointer-events: auto;
   transform: translateY(0);
   transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
@@ -70,7 +77,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: var(--leaf-feedback-color, var(--leaf-color-primary));
+    color: var(--leaf-feedback-color, var(--leaf-color-primary-ink, var(--leaf-color-primary)));
   }
   @each $type in info, success, warning, error {
     &--#{$type} {
@@ -94,7 +101,7 @@
       color: var(--leaf-color-text);
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
   }
   &[data-state='closing'] {

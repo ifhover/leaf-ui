@@ -37,6 +37,35 @@ async function assertSingleLine(control: Locator, height: number) {
   }
 }
 
+async function selectionInsets(control: Locator) {
+  return controlRoot(control).evaluate((element) => {
+    const style = getComputedStyle(element);
+    const bounds = element.getBoundingClientRect();
+    const firstTag = element.querySelector<HTMLElement>('.leaf-selection__tag:not([hidden])');
+    if (!firstTag) throw new Error('Expected a visible selection tag');
+    const tag = firstTag.getBoundingClientRect();
+    const content = element.querySelector('.leaf-selection')?.getBoundingClientRect();
+    const clear = element
+      .querySelector('.leaf-picker-clear, .leaf-tree-select__clear')
+      ?.getBoundingClientRect();
+    return {
+      start:
+        style.direction === 'rtl'
+          ? bounds.right - tag.right - parseFloat(style.borderRightWidth)
+          : tag.left - bounds.left - parseFloat(style.borderLeftWidth),
+      top: tag.top - bounds.top - parseFloat(style.borderTopWidth),
+      height: bounds.height,
+      tagHeight: tag.height,
+      clearGap:
+        clear && content
+          ? style.direction === 'rtl'
+            ? content.left - clear.right
+            : clear.left - content.right
+          : undefined,
+    };
+  });
+}
+
 for (const appearance of ['light', 'dark']) {
   test.describe(appearance, () => {
     test.beforeEach(async ({ page }) => {
@@ -119,6 +148,48 @@ for (const appearance of ['light', 'dark']) {
           { name: /^Remove/ },
         ),
       ).toHaveCount(0);
+    });
+
+    test('multiple tags have balanced starting insets with sizes, RTL and thick borders', async ({
+      page,
+    }) => {
+      for (const border of [1, 3]) {
+        await page.goto(
+          `/?fixture=multi-select&theme=${appearance}${border === 3 ? '&thick-border' : ''}`,
+        );
+        for (const direction of ['ltr', 'rtl']) {
+          if (direction === 'rtl')
+            await page.getByRole('button', { name: 'Toggle direction' }).click();
+          for (const [size, height] of [
+            ['sm', 30],
+            ['md', 36],
+            ['lg', 42],
+          ] as const) {
+            for (const kind of ['Select', 'Tree', 'Cascader']) {
+              const control = page.getByRole('combobox', {
+                name: `${kind} ${size}`,
+                exact: true,
+              });
+              const insets = await selectionInsets(control);
+              const context = `${kind} ${size}, ${direction}, border ${border}px`;
+              expect(insets.start, `${context}: starting inset`).toBeCloseTo(3);
+              expect(insets.top, `${context}: top inset`).toBeCloseTo(3);
+              expect(insets.height, `${context}: control height`).toBe(height);
+              expect(insets.tagHeight, `${context}: tag height`).toBe(height - 6 - border * 2);
+              expect(insets.clearGap, `${context}: space before clear`).toBeGreaterThanOrEqual(0);
+              if (kind === 'Select')
+                await expect(controlRoot(control)).toHaveCSS('padding-inline-end', '54px');
+            }
+          }
+          for (const kind of ['select', 'tree', 'cascader']) {
+            const control = page.getByRole('combobox', { name: `Custom padding ${kind}` });
+            const field = controlRoot(control);
+            const trigger = kind === 'cascader' ? field.locator('.leaf-cascader__trigger') : field;
+            await expect(trigger).toHaveCSS('padding-left', '9px');
+            await expect(trigger).toHaveCSS('padding-right', '44px');
+          }
+        }
+      }
     });
 
     test('tree expansion, whole-row checks, trigger edges and cascader search spacing', async ({

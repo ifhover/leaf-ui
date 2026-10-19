@@ -25,6 +25,7 @@ export interface LeafTheme {
 }
 export interface LeafComponentTokens {
   borderRadius?: string | number;
+  borderWidth?: string | number;
   controlHeight?: string | number;
   padding?: string | number;
   gap?: string | number;
@@ -34,6 +35,18 @@ export interface LeafComponentTokens {
   borderColor?: string;
   headerBackground?: string;
   footerBackground?: string;
+  shadow?: string;
+  hover?: LeafComponentStateTokens;
+  active?: LeafComponentStateTokens;
+  focus?: LeafComponentStateTokens;
+  disabled?: LeafComponentStateTokens;
+}
+
+/** Interaction overrides supported by themed controls; focus keeps the accessible outline. */
+export interface LeafComponentStateTokens {
+  color?: string;
+  background?: string;
+  borderColor?: string;
   shadow?: string;
 }
 
@@ -54,6 +67,9 @@ export interface LeafThemeTokens {
   borderColor?: string;
   borderHoverColor?: string;
   dividerColor?: string;
+  borderWidth?: number | string;
+  controlShadow?: string;
+  surfaceShadow?: string;
   borderRadiusSm?: number | string;
   borderRadiusMd?: number | string;
   borderRadiusLg?: number | string;
@@ -92,6 +108,19 @@ export interface LeafThemeTokens {
 const defined = <T extends object>(value?: T) =>
   Object.fromEntries(Object.entries(value ?? {}).filter(([, item]) => item !== undefined)) as T;
 
+const componentStates = ['hover', 'active', 'focus', 'disabled'] as const;
+
+function mergeComponentTokens(
+  parent?: LeafComponentTokens,
+  tokens?: LeafComponentTokens,
+): LeafComponentTokens {
+  const merged = { ...defined(parent), ...defined(tokens) };
+  for (const state of componentStates)
+    if (parent?.[state] || tokens?.[state])
+      merged[state] = { ...defined(parent?.[state]), ...defined(tokens?.[state]) };
+  return merged;
+}
+
 export function mergeLeafTheme(parent: LeafTheme, theme?: LeafTheme): LeafTheme {
   return {
     ...parent,
@@ -103,7 +132,10 @@ export function mergeLeafTheme(parent: LeafTheme, theme?: LeafTheme): LeafTheme 
           ...Object.keys(parent.components ?? {}),
           ...Object.keys(theme?.components ?? {}),
         ]),
-      ].map((key) => [key, { ...parent.components?.[key], ...defined(theme?.components?.[key]) }]),
+      ].map((key) => [
+        key,
+        mergeComponentTokens(parent.components?.[key], theme?.components?.[key]),
+      ]),
     ),
     ...(parent.tokens || theme?.tokens
       ? { tokens: { ...parent.tokens, ...defined(theme?.tokens) } }
@@ -127,6 +159,9 @@ const tokenVariables = {
   borderColor: 'color-border',
   borderHoverColor: 'color-border-hover',
   dividerColor: 'color-divider',
+  borderWidth: 'border-width',
+  controlShadow: 'control-shadow',
+  surfaceShadow: 'surface-shadow',
   borderRadiusSm: 'radius-sm',
   borderRadiusMd: 'radius-md',
   borderRadiusLg: 'radius-lg',
@@ -189,7 +224,6 @@ export function leafThemeColors(theme: LeafTheme): Record<string, string> {
   const colors: Record<string, string> = {};
   if (theme.primaryColor) {
     colors.primary = theme.primaryColor;
-    colors['on-primary'] = '#ffffff';
   }
   for (const key of Object.keys(tokenVariables) as (keyof LeafThemeTokens)[]) {
     const variable = tokenVariables[key];
@@ -230,6 +264,7 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
     if (value !== undefined) variables[`--leaf-breakpoint-${name}`] = `${value}px`;
   const componentKeys = {
     borderRadius: 'radius',
+    borderWidth: 'border-width',
     controlHeight: 'height',
     padding: 'padding',
     gap: 'gap',
@@ -241,31 +276,38 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
     footerBackground: 'footer-background',
     shadow: 'shadow',
   } as const;
-  for (const [component, tokens] of Object.entries(theme.components ?? {}))
+  const stateKeys = {
+    color: 'color',
+    background: 'background',
+    borderColor: 'border-color',
+    shadow: 'shadow',
+  } as const;
+  for (const [component, tokens] of Object.entries(theme.components ?? {})) {
+    if (!/^[a-z][a-z\d-]*$/i.test(component)) continue;
+    const name = component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
     for (const [key, value] of Object.entries(tokens))
-      if (value !== undefined && /^[a-z][a-z\d-]*$/i.test(component)) {
+      if (value !== undefined && typeof value !== 'object') {
         const token = componentKeys[key as keyof typeof componentKeys];
         if (token)
-          variables[
-            `--leaf-component-${component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase()}-${token}`
-          ] = typeof value === 'number' ? length(value) : value;
+          variables[`--leaf-component-${name}-${token}`] =
+            typeof value === 'number' ? length(value) : value;
         if (key === 'controlHeight') {
-          const name = component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
           variables[`--leaf-component-${name}-height-sm`] =
             `max(1px, calc(var(--leaf-component-${name}-height) - 6px))`;
           variables[`--leaf-component-${name}-height-lg`] =
             `calc(var(--leaf-component-${name}-height) + 6px)`;
         }
         if (key === 'padding') {
-          const name = component.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
           const sides = paddingSides(length(value));
           for (const [index, side] of ['top', 'right', 'bottom', 'left'].entries())
             variables[`--leaf-component-${name}-padding-${side}`] = sides[index];
         }
       }
-  if (theme.primaryColor !== undefined) {
-    variables['--leaf-color-primary'] = theme.primaryColor;
-    variables['--leaf-color-on-primary'] = '#ffffff';
+    for (const state of componentStates)
+      for (const [key, suffix] of Object.entries(stateKeys)) {
+        const value = tokens[state]?.[key as keyof LeafComponentStateTokens];
+        if (value !== undefined) variables[`--leaf-component-${name}-${state}-${suffix}`] = value;
+      }
   }
   if (theme.borderRadius !== undefined) {
     variables['--leaf-radius'] = length(theme.borderRadius);
@@ -297,10 +339,15 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
           : variable.includes('radius') ||
               variable.includes('height') ||
               variable.includes('font-size') ||
+              variable === 'border-width' ||
               variable.includes('spacing')
             ? length(value)
             : value;
   }
+  // An explicit global border color also styles frames whose normal border is
+  // transparent or muted. Component and semantic state overrides still win.
+  if (theme.tokens?.borderColor !== undefined)
+    variables['--leaf-frame-border-color'] = theme.tokens.borderColor;
   if (theme.motion !== undefined) {
     variables['--leaf-motion-play-state'] = theme.motion ? 'running' : 'paused';
     variables['--leaf-motion-animation'] = theme.motion ? 'initial' : 'none';

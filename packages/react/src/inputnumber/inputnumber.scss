@@ -56,7 +56,7 @@
         transition: transform var(--leaf-motion-fast) var(--leaf-motion-spring);
       }
       &:hover:not(:disabled) {
-        color: var(--leaf-color-primary);
+        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
         background: var(--leaf-color-surface-muted);
       }
       &:active:not(:disabled) {
@@ -70,7 +70,7 @@
         cursor: not-allowed;
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary);
+        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
         outline-offset: -2px;
       }
     }

@@ -1,7 +1,7 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/choice-surfaces';
 .leaf-checkbox {
-  @include mixins.choice;
+  @include mixins.choice(checkbox);
   @include choice-surfaces.item(checkbox);
   &__input {
     border-radius: var(--leaf-choice-radius, 5px);
@@ -77,4 +77,8 @@
     align-items: flex-start;
   }
   @include choice-surfaces.group(checkbox);
+}
+
+.leaf-checkbox {
+  @include mixins.choice-states(checkbox);
 }

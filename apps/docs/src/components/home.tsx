@@ -5,7 +5,6 @@ import { HomeShowcase } from './home-showcase';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 import { PackageInstall } from './package-install';
-import { ThemePlayground } from './theme-playground';
 
 export function HomeLayout() {
   const { t, url } = useDocsLocale();
@@ -101,31 +100,6 @@ export function HomeLayout() {
             )}
           </article>
         ))}
-      </section>
-      <section className="leaf-home-playground" aria-labelledby="playground-heading">
-        <div className="leaf-section-heading">
-          <div>
-            <span className="leaf-eyebrow">MAKE IT YOURS</span>
-            <h2 id="playground-heading">
-              {t('同一套组件，你的风格。', 'The same components. Your own style.')}
-            </h2>
-            <p>
-              {t(
-                '颜色、圆角、外观和动效，都可以按产品的节奏调整。',
-                'Tune colors, corners, appearance and motion to the rhythm of your product.',
-              )}
-            </p>
-          </div>
-          <ButtonLink
-            variant="ghost"
-            size="sm"
-            href={url('/guide/theming.html')}
-            endIcon={<Icon name="arrow" />}
-          >
-            {t('了解主题定制', 'Explore theming')}
-          </ButtonLink>
-        </div>
-        <ThemePlayground />
       </section>
       <section className="leaf-next">
         <div>

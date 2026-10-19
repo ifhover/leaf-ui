@@ -10,7 +10,7 @@ export function ButtonDanger() {
       <Button danger variant="outline">
         撤销授权
       </Button>
-      <Button danger variant="ghost">
+      <Button danger variant="soft">
         清空
       </Button>
       <Button danger disabled>

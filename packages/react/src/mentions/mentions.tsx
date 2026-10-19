@@ -26,6 +26,8 @@ export interface MentionsProps
   split?: string;
   loading?: boolean;
   notFoundContent?: ReactNode;
+  popupWidth?: number | string;
+  popupMaxWidth?: number | string;
 }
 const defaultPrefixes = ['@'];
 export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function Mentions(
@@ -43,6 +45,8 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     split = ' ',
     loading,
     notFoundContent,
+    popupWidth = 'trigger',
+    popupMaxWidth,
     popupPlacement,
     popupClassName,
     popupStyle,
@@ -159,7 +163,11 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         open={open}
         triggerRef={input}
         panelRef={panel}
-        matchWidth
+        matchWidth={popupWidth === 'trigger'}
+        width={
+          popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
+        }
+        maxWidth={popupMaxWidth}
         placement={popupPlacement}
         style={popupStyle}
         render={popupRender}

@@ -7,6 +7,31 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.7.0 - 2026-10-19
+
+### 新增
+
+- Form 新增 `layout="settings"`：左侧显示标签与说明，右侧控件保持自然宽度，字段之间显示分隔线，窄屏自动上下排列。FormField 新增独立的 `description` 和 `layout`，可用 `layout="vertical"` 为文本域等宽控件保留整行空间；说明与帮助 / 错误分别关联到控件。
+- 新增 `MenuGroup` / `MenuGroupProps`，可为菜单或自定义侧栏内容提供带可访问名称的标题分组，支持区域默认参数、原生属性与 ref。Menu 的数据分组支持 ReactNode 标题，方向键跨组导航并跳过禁用项。
+- 主题新增全局 `borderWidth`、`controlShadow`、`surfaceShadow`，以及组件描边宽度和 `hover` / `active` / `focus` / `disabled` 状态的文字、背景、描边与阴影覆盖。嵌套状态按字段合并，焦点轮廓继续保留。
+- Tabs 新增 `block`，支持标签等宽铺满；`TabItem.children` 变为可选，省略时只显示标签栏。AutoComplete、Cascader、Mentions 新增 `popupWidth` / `popupMaxWidth`，与 Select、TreeSelect 共用等宽、内容宽度及指定宽度规则。
+
+### 改进与修复
+
+- 重整横向 Menu 与折叠侧栏的导航浮层，统一标题、分组、分隔线和选中反馈。折叠侧栏向侧面展开，空间不足时回退到下方；支持 RTL，当前页面与父级保持高亮，修复分组内子菜单的方向键进入与返回。
+- 深色主题保留显式主色的实心填充，按用途派生可读的文字、选中指示、焦点与必要边界；实心主色上的文字自动选择黑白色。修复 CSS 颜色表达式解析后选中表面和标签底色变黑的问题，嵌套主题与浮层同步更新。
+- 全局描边、控件阴影及内容面阴影统一作用于相关组件，粗描边计入控件和浮层几何。修复 Portal 中默认主题重置后重新继承外层阴影，以及悬停状态遮盖按下反馈的问题。
+- 将更多内部滚动区域接入 Scrollbar，包括 Tabs、Tree、VirtualList、Textarea、侧栏、抽屉和命令面板等；保留原有语义、焦点及原生文本域的选择与缩放行为。
+- 卡片式 Tabs 使用统一的 3px 内边距和间距、灰底与浮起选中块，按下保持尺寸。柔和按钮使用中性浅底，危险状态使用淡红底和红色文字；改善 Steps 连线、Avatar 单圈边缘及 Table 表头分隔与行悬停层次。
+- 更新双语文档导航、搜索和窄屏抽屉，改善语言切换后的页面与锚点保留、源码展开及复制体验。主题指南提供默认、插画、Windows XP、Material 和拟物五种可复制配置，设计 token 与 Figma 资源同步更新。
+
+### 迁移说明
+
+- 本次 `0.x` 次版本包含 API 与默认外观变化，升级前请检查以下项目。
+- 移除 Segmented、`SegmentedProps`、`SegmentedOption` 及相关组件 / 样式子路径，改用 `Tabs type="card"`。将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 继续用于等宽铺满。Tabs 不提交表单字段，需要原生表单提交时由应用单独维护对应字段。
+- Button 移除 `variant="ghost"`，改用 `variant="soft"`；Button 的区域默认参数和相关外观类型同步调整。Pagination 等组件自己的 `ghost` 外观仍可使用。
+- Select 与 TreeSelect 的浮层默认改为与控件等宽，`popupMaxWidth` 不再默认限制为 420px。需要按内容定宽时设置 `popupWidth="auto"`，此时浮层可以比控件窄；需要最大宽度时显式设置 `popupMaxWidth`，所有模式仍受视口限制。
+
 ## 0.6.0 - 2026-10-16
 
 ### 新增

@@ -8,6 +8,7 @@ import { estimateControlHeight } from '../density';
 import { FieldScope, useFormField } from '../form/form';
 import { InputControl } from '../input/input';
 import { ResultControl as Result } from '../result/result';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import { useListMotion } from '../shared/motion';
@@ -194,13 +195,17 @@ export function Transfer(rawProps: TransferProps) {
             emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
           />
         ) : (
-          <div className="leaf-transfer__list" style={{ height }}>
+          <ScrollbarControl
+            viewportClassName="leaf-transfer__list"
+            height={height}
+            role="presentation"
+          >
             {list.length ? (
               list.map((item) => <div key={item.key}>{row(item)}</div>)
             ) : (
               <Result size="sm" icon={null} title={t('transfer.noItems')} />
             )}
-          </div>
+          </ScrollbarControl>
         )}
       </section>
     );

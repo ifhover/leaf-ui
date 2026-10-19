@@ -1,6 +1,6 @@
 .leaf-picker-clear {
   position: absolute;
-  right: 8px;
+  inset-inline-end: 8px;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
@@ -23,23 +23,23 @@
     background: var(--leaf-color-surface-muted);
   }
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: 2px;
   }
   &--before-arrow {
-    right: 30px;
+    inset-inline-end: 30px;
   }
 }
 
 .leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {
-  padding-right: 34px;
+  padding-inline-end: 34px;
 }
 .leaf-select[data-clearable] > .leaf-select__trigger,
 .leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
 .leaf-cascader[data-clearable] > .leaf-cascader__trigger {
   // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
   > span {
-    margin-right: 24px;
+    margin-inline-end: 24px;
   }
 }
 

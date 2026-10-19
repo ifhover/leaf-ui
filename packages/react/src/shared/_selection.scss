@@ -1,3 +1,14 @@
+@mixin trigger-padding($component, $inline-end) {
+  padding-block: var(--leaf-component-#{$component}-padding-top, 3px)
+    var(--leaf-component-#{$component}-padding-bottom, 3px);
+  padding-inline: var(--leaf-component-#{$component}-padding-left, 3px)
+    var(--leaf-component-#{$component}-padding-right, #{$inline-end});
+  &:where([dir='rtl']) {
+    padding-inline: var(--leaf-component-#{$component}-padding-right, 3px)
+      var(--leaf-component-#{$component}-padding-left, #{$inline-end});
+  }
+}
+
 .leaf-selection {
   display: flex;
   flex-wrap: wrap;
@@ -18,7 +29,13 @@
     gap: 4px;
     min-width: 0;
     max-width: 100%;
-    height: calc(var(--leaf-current-control-height) - 8px);
+    height: max(
+      1px,
+      calc(
+        var(--leaf-current-control-height) - 6px - 2 *
+          var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+      )
+    );
     padding: 0 7px;
     border-radius: var(--leaf-radius-sm);
     background: var(--leaf-color-surface-muted);

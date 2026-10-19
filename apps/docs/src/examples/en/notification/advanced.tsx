@@ -31,7 +31,7 @@ export function NotificationOptions() {
         Persistent error
       </Button>
       <Button
-        variant="ghost"
+        variant="soft"
         onClick={() => notification.open({ key: 'sync', title: 'Syncing again', duration: 2 })}
       >
         Update notification

@@ -1,6 +1,6 @@
 {
   "name": "@ifhover/leaf-ui",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -1242,27 +1242,6 @@
       }
     },
     "./scrollbar/style.css": "./dist/esm/styles/scrollbar.css",
-    "./segmented": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/segmented/index.d.ts",
-          "default": "./dist/esm/browser/segmented.js"
-        },
-        "require": {
-          "types": "./dist/cjs/segmented/index.d.cts",
-          "default": "./dist/cjs/browser/segmented.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/segmented/index.d.ts",
-        "default": "./dist/esm/segmented/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/segmented/index.d.cts",
-        "default": "./dist/cjs/segmented/index.cjs"
-      }
-    },
-    "./segmented/style.css": "./dist/esm/styles/segmented.css",
     "./select": {
       "browser": {
         "import": {

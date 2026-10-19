@@ -48,7 +48,12 @@
   }
   &--bordered {
     padding: 16px 20px;
-    border: 1px solid var(--leaf-color-border);
+    border: var(--leaf-component-descriptions-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-descriptions-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    box-shadow: var(--leaf-component-descriptions-shadow, var(--leaf-surface-shadow, none));
     border-radius: var(--leaf-radius-md);
     background: var(--leaf-color-surface);
     .leaf-descriptions__header {

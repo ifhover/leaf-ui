@@ -21,12 +21,16 @@
   max-width: calc(100vw - 32px);
   padding: 18px;
   border-radius: var(--leaf-radius-lg);
-  border: 1px solid var(--leaf-color-border);
+  border: var(--leaf-component-tour-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-tour-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
   background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
   color: var(--leaf-color-text);
   font: var(--leaf-component-tour-font-size, var(--leaf-font-size)) var(--leaf-font-family);
   z-index: calc(var(--leaf-z-index-modal) + 5);
-  box-shadow: var(--leaf-shadow-lg, 0 12px 50px rgb(0 0 0 / 0.2));
+  box-shadow: var(--leaf-component-tour-shadow, var(--leaf-surface-shadow, var(--leaf-shadow-lg)));
   pointer-events: auto;
   &--center {
     position: fixed;

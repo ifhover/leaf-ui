@@ -56,7 +56,7 @@ for (const [suffix, base] of [
         .first();
       await expect.poll(async () => (await row.boundingBox())?.height).toBeCloseTo(rowHeight, 0);
       if (name === 'Select md' || name === 'AutoComplete md' || name === 'TreeSelect md') {
-        const scroll = name.startsWith('TreeSelect') ? panel.locator('.leaf-tree') : panel;
+        const scroll = panel.getByRole(name.startsWith('TreeSelect') ? 'tree' : 'listbox');
         await scroll.evaluate((node) => {
           node.scrollTop = node.scrollHeight;
         });

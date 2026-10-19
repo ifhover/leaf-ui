@@ -206,6 +206,7 @@ export function documentationPage(entry, availablePages) {
     LeafComponentDefaults: 'api/component-defaults',
     LeafThemeTokens: 'api/theme-tokens',
     LeafComponentTokens: 'api/theme-tokens',
+    LeafComponentStateTokens: 'api/theme-tokens',
     LeafThemeStyle: 'api/theme-tokens',
     PopupOptions: 'api/popup-options',
     LeafTranslation: 'api/translations',

@@ -19,7 +19,7 @@
   &__spinner {
     width: var(--leaf-spinner-size);
     height: var(--leaf-spinner-size);
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     animation: var(
       --leaf-motion-animation,
       leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite

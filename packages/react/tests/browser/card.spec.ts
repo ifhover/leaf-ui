@@ -1,3 +1,4 @@
+import { TinyColor } from '@ctrl/tinycolor';
 import { expect, type Locator, test } from '@playwright/test';
 import axe from 'axe-core';
 
@@ -188,9 +189,17 @@ for (const [label, size] of [
       'rgb(136, 136, 153)',
     );
     await expect(card.locator('.leaf-card__header')).toHaveCSS('border-bottom-width', '0px');
+    const primary = await card.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        brand: style.getPropertyValue('--leaf-color-primary').trim(),
+        ink: style.getPropertyValue('--leaf-color-primary-ink').trim(),
+      };
+    });
+    expect(new TinyColor(primary.brand).toRgbString()).toBe('rgb(124, 58, 237)');
     await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS(
       'color',
-      'rgb(124, 58, 237)',
+      new TinyColor(primary.ink).toRgbString(),
     );
     expect((await geometry(card)).bodyPadding).toEqual(['12px', '24px', '12px', '24px']);
     const customized = await geometry(card);

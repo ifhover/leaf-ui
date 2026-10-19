@@ -242,7 +242,12 @@ export async function properties(file, name) {
     return new Map();
   }
   const result = await flatten(found.module, found.node);
-  for (const [key, value] of result) value.defaultValue = found.module.defaults.get(name)?.get(key);
+  // Internal controls can narrow or extend presentation props while owning the
+  // public component's built-in defaults, independently of Provider overrides.
+  const defaults =
+    found.module.defaults.get(name) ??
+    found.module.defaults.get(name.replace(/Props$/u, 'ControlProps'));
+  for (const [key, value] of result) value.defaultValue = defaults?.get(key);
   return result;
 }
 export async function typeExpression(file, name) {

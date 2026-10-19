@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Tag } from '@ifhover/leaf-ui';
+import { Button, Checkbox, ConfigProvider, Select, Slider, Switch, Tag } from '@ifhover/leaf-ui';
 import { type CSSProperties, useState } from 'react';
 
 export function ColorFixture() {
@@ -26,6 +26,55 @@ export function ColorFixture() {
           Custom tag
         </Tag>
       </ConfigProvider>
+      <DarkPrimaryColors />
     </div>
+  );
+}
+
+function DarkPrimaryColors() {
+  const [dark, setDark] = useState(true);
+  const [primary, setPrimary] = useState('#18181b');
+  return (
+    <section style={{ '--dark-accent': primary } as CSSProperties}>
+      <Button onClick={() => setDark(!dark)}>Toggle accent appearance</Button>
+      <Button onClick={() => setPrimary(primary === '#18181b' ? '#1d9bf0' : '#18181b')}>
+        Toggle accent color
+      </Button>
+      <ConfigProvider
+        data-testid="dark-primary-theme"
+        theme={{
+          primaryColor: 'var(--dark-accent)',
+          appearance: dark ? 'dark' : 'light',
+          tokens: {
+            surfaceColor: 'light-dark(#fff, #1c1c20)',
+            mutedSurfaceColor: 'light-dark(#f6f6f7, #25252b)',
+          },
+        }}
+      >
+        <Button>Adaptive primary</Button>
+        <Button variant="link">Adaptive link</Button>
+        <Checkbox defaultChecked>Adaptive checkbox</Checkbox>
+        <Switch defaultChecked aria-label="Adaptive switch" />
+        <Slider defaultValue={50} aria-label="Adaptive slider" />
+        <Tag color="primary">Adaptive tag</Tag>
+        <Select
+          aria-label="Adaptive select"
+          options={[{ value: 'one', label: 'One' }]}
+          defaultValue="one"
+        />
+        <ConfigProvider data-testid="inherited-primary-theme">
+          <Button>Inherited primary</Button>
+        </ConfigProvider>
+        <ConfigProvider data-testid="light-primary-theme" theme={{ appearance: 'light' }}>
+          <Button>Light primary</Button>
+        </ConfigProvider>
+        <ConfigProvider
+          data-testid="explicit-primary-theme"
+          theme={{ tokens: { onPrimaryColor: '#123456', primaryHoverColor: '#abcdef' } }}
+        >
+          <Button>Explicit primary ink</Button>
+        </ConfigProvider>
+      </ConfigProvider>
+    </section>
   );
 }

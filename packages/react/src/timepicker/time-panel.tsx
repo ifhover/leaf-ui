@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { useLeafConfig } from '../config-provider/context';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { padTime, type TimeParts } from '../shared/time';
 
 interface TimePanelProps {
@@ -89,7 +90,17 @@ function TimeColumn({ label, choices, selected, change, labels, disabled }: Time
       <div className="leaf-time-picker__column-label" aria-hidden="true">
         {label}
       </div>
-      <div ref={ref} className="leaf-time-picker__column" role="listbox" aria-label={label}>
+      <ScrollbarControl
+        ref={ref}
+        viewportClassName="leaf-time-picker__column"
+        contentClassName="leaf-time-picker__options"
+        role="listbox"
+        aria-label={label}
+        maxHeight={210}
+        orientation="vertical"
+        tabIndex={-1}
+        scrollbarTabIndex={-1}
+      >
         <div
           className="leaf-time-picker__selection"
           data-ready={Boolean(selection)}
@@ -122,7 +133,7 @@ function TimeColumn({ label, choices, selected, change, labels, disabled }: Time
             />
           </button>
         ))}
-      </div>
+      </ScrollbarControl>
     </div>
   );
 }

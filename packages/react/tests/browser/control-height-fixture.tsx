@@ -11,7 +11,6 @@ import {
   InputNumber,
   InputOTP,
   Radio,
-  Segmented,
   Select,
   Space,
   Switch,
@@ -90,9 +89,6 @@ export function ControlHeightFixture() {
           </div>
           <div data-height-control="Switch">
             <Switch size={size}>Setting</Switch>
-          </div>
-          <div data-height-control="Segmented">
-            <Segmented size={size} options={['One', 'Two']} />
           </div>
           <div data-height-control="Tabs">
             <Tabs

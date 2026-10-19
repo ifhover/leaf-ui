@@ -28,7 +28,7 @@
       cursor: default;
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
   }
   &__weekdays,
@@ -116,7 +116,7 @@
     gap: 4px;
   }
   .leaf-button--ghost {
-    color: var(--leaf-color-primary);
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   }
 }
 .leaf-picker-time-toggle {
@@ -125,7 +125,7 @@
   border: 0;
   border-radius: var(--leaf-radius-sm);
   background: transparent;
-  color: var(--leaf-color-primary);
+  color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   font: inherit;
   font-size: 11px;
   cursor: pointer;
@@ -136,7 +136,7 @@
     background: var(--leaf-color-primary-alpha-10);
   }
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   }
 }
 .leaf-picker-time-view {

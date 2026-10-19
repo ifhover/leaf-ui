@@ -11,7 +11,12 @@
   color: var(--leaf-component-alert-color, var(--leaf-color-text));
   font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
   border-radius: var(--leaf-component-alert-radius, var(--leaf-radius-md));
-  border: 1px solid var(--leaf-component-alert-border-color, var(--leaf-color-divider));
+  border: var(--leaf-component-alert-border-width, var(--leaf-border-width, 1px)) solid
+    var(
+      --leaf-component-alert-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    );
+  box-shadow: var(--leaf-component-alert-shadow, var(--leaf-surface-shadow, none));
   padding: var(--leaf-component-alert-padding, 14px 16px);
   &--info {
     --leaf-feedback-color: var(--leaf-color-info);
@@ -124,6 +129,25 @@
   }
 }
 .leaf-confirm {
+  border-width: var(
+    --leaf-component-confirm-border-width,
+    var(--leaf-component-modal-border-width, var(--leaf-border-width, 1px))
+  );
+  border-color: var(
+    --leaf-component-confirm-border-color,
+    var(
+      --leaf-component-modal-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
+    )
+  );
+  background: var(
+    --leaf-component-confirm-background,
+    var(--leaf-component-modal-background, var(--leaf-color-surface))
+  );
+  box-shadow: var(
+    --leaf-component-confirm-shadow,
+    var(--leaf-component-modal-shadow, var(--leaf-surface-shadow, var(--leaf-shadow-lg)))
+  );
   --leaf-feedback-color: var(--leaf-color-text);
   --leaf-feedback-color-border-12: var(--leaf-color-text-border-12);
   --leaf-feedback-color-surface-5: var(--leaf-color-text-surface-5);

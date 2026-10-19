@@ -45,7 +45,7 @@
       color: var(--leaf-color-text);
     }
     &[aria-checked='true'] {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       background: var(--leaf-color-primary-surface-9);
       &.leaf-dropdown__danger {
         color: var(--leaf-color-danger);
@@ -114,4 +114,8 @@
   .leaf-dropdown__arrow {
     transition: none;
   }
+}
+
+.leaf-dropdown {
+  @include mixins.floating-paint(dropdown);
 }

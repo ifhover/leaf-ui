@@ -55,6 +55,8 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 
 ## 浮层宽度与内容
 
+浮层默认与选择器等宽。设置 `popupWidth="auto"` 按内容定宽，`popupWidth={300}` 固定为 300px；使用 `popupMaxWidth` 单独限制最大宽度，默认不设置最大宽度。浮层仍会在视口边缘避让。
+
 <ComponentExample title="浮层宽度与内容" preview={<SelectPopup />} fileName="popup.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/select/popup.tsx"
@@ -114,8 +116,8 @@ showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持
 | `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选中值的展示。 |
 | `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | 自定义选中标签；通过 remove 请求移除。 |
 | `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | 浮层滚动事件，可用来加载下一页。 |
-| `popupWidth` | `number \| string` | `'auto'` | 浮层宽度；auto 按内容扩宽，trigger 与控件等宽，也可指定像素或 CSS 长度 |
-| `popupMaxWidth` | `number \| string` | `420` | 最大宽度，仍受视口限制 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
+| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `loading` | `boolean` | `false` | 加载提示 |
 | `notFoundContent` | `ReactNode` | — | 没有选项时的内容 |
 | `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选项内容 |
@@ -171,7 +173,7 @@ Enter、空格或方向键打开面板，↑ / ↓ 移动高亮并跳过禁用�
 
 多选清除返回 `[]`；FormData 在同一个 name 下提交多个值，通过 `formData.getAll(name)` 读取。搜索文字为空时，Backspace 移除最后一个可用标签。离开控件会清空搜索文字，默认不创建选项；设置 allowCreate 可创建未匹配的选项。label 为 React 节点时，用 searchLabel 指定搜索文字。ref 与原生 input 属性作用于输入框。
 
-控件保持页面中的布局宽度，浮层默认至少与控件等宽，并按选项内容扩宽，最多达到 popupMaxWidth。使用 `popupWidth="trigger"` 保持等宽，或通过 `popupWidth={300}` 指定宽度。内容超过最大宽度时才换行。
+控件保持页面中的布局宽度，浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 后，浮层仅按选项内容定宽，也可以比控件窄；通过 `popupWidth={300}` 固定为 300px，或传入 CSS 长度。`popupMaxWidth` 默认未设置，可按需指定最大宽度；所有宽度模式仍受可用视口宽度限制，内容超出实际浮层宽度时换行。
 
 ## 扩展类型
 

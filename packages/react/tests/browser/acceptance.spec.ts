@@ -35,11 +35,16 @@ test('remote labels persist and clicking a select edge opens a correctly positio
     .getByRole('listbox')
     .filter({ has: page.getByRole('option', { name: 'Charlie' }) });
   await expect(popup).toBeVisible();
-  const triggerBox = await control.boundingBox(),
-    panelBox = await popup.boundingBox();
-  expect(triggerBox).toBeTruthy();
-  expect(panelBox).toBeTruthy();
-  expect(Math.abs((panelBox?.x ?? 0) - (triggerBox?.x ?? 0))).toBeLessThan(8);
+  // The semantic viewport is inset inside the positioned popup surface.
+  const surface = popup.locator('xpath=ancestor::*[@data-leaf-popup][1]');
+  await expect
+    .poll(async () => {
+      const triggerBox = await control.boundingBox();
+      const panelBox = await surface.boundingBox();
+      if (!triggerBox || !panelBox) return Number.POSITIVE_INFINITY;
+      return Math.abs(panelBox.x - triggerBox.x);
+    })
+    .toBeLessThan(8);
   await page.getByRole('option', { name: 'Charlie' }).click();
   await expect(popup).toBeHidden();
   await expect(input).toHaveValue('Charlie');
@@ -160,9 +165,15 @@ test('hover menus and context menus work at pointer coordinates', async ({ page 
     .getByRole('menu')
     .filter({ has: page.getByRole('menuitem', { name: 'Copy', exact: true }) });
   await expect(menu).toBeVisible();
-  const triggerBox = await trigger.boundingBox(),
-    menuBox = await menu.boundingBox();
-  expect(Math.abs((menuBox?.x ?? 0) - ((triggerBox?.x ?? 0) + 25))).toBeLessThan(8);
+  const surface = menu.locator('xpath=ancestor::*[@data-leaf-popup][1]');
+  await expect
+    .poll(async () => {
+      const triggerBox = await trigger.boundingBox();
+      const menuBox = await surface.boundingBox();
+      if (!triggerBox || !menuBox) return Number.POSITIVE_INFINITY;
+      return Math.abs(menuBox.x - (triggerBox.x + 25));
+    })
+    .toBeLessThan(8);
 });
 
 test('custom ShadowRoot portals preserve theme, direction and dismissal', async ({ page }) => {

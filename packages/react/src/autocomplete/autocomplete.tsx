@@ -63,6 +63,8 @@ export interface AutoCompleteProps
   virtual?: boolean;
   listHeight?: number;
   optionHeight?: number;
+  popupWidth?: number | string;
+  popupMaxWidth?: number | string;
   popupPlacement?: PopupOptions['popupPlacement'];
   popupClassName?: string;
   popupStyle?: PopupOptions['popupStyle'];
@@ -100,6 +102,8 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
     virtual: virtualProp,
     listHeight = 248,
     optionHeight: optionHeightProp,
+    popupWidth = 'trigger',
+    popupMaxWidth,
     popupPlacement,
     popupClassName,
     popupStyle,
@@ -119,6 +123,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   const format = useFormattedText();
   const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4);
   const inputRef = useRef<HTMLInputElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const ref = useMergedRef(inputRef, forwardedRef);
   const [text, setText] = useFieldValue(value, defaultValue, inputRef, form);
@@ -197,6 +202,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
 
   return (
     <div
+      ref={rootRef}
       className={classes('leaf-autocomplete', `leaf-autocomplete--${size}`, className)}
       style={style}
       data-status={status}
@@ -272,9 +278,13 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
       )}
       <FloatingPanel
         open={expanded}
-        triggerRef={inputRef}
+        triggerRef={rootRef}
         panelRef={panelRef}
-        matchWidth
+        matchWidth={popupWidth === 'trigger'}
+        width={
+          popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
+        }
+        maxWidth={popupMaxWidth}
         {...(hasSuggestions ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
         data-hover-motion=""

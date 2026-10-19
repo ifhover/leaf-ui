@@ -49,7 +49,7 @@ export function ScrollbarDynamic({ english = false }: { english?: boolean }) {
           {english ? 'Add items' : '增加内容'}
         </Button>
         <Button
-          variant="ghost"
+          variant="soft"
           onClick={() => viewport.current?.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           {english ? 'Back to top' : '返回顶部'}

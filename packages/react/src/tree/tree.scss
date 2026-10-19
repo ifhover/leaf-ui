@@ -34,7 +34,7 @@
   }
   &__item:focus-visible > .leaf-tree__row,
   &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
-    outline: 2px solid var(--leaf-color-primary);
+    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     outline-offset: -2px;
     &:not([data-disabled]):not([data-selected]) {
       background: var(--leaf-color-option-hover);
@@ -59,7 +59,7 @@
     }
     &[data-selected],
     &[data-selected]:hover {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       background: var(--leaf-color-primary-surface-9);
     }
     &[data-disabled] {
@@ -113,7 +113,7 @@
     overflow-wrap: anywhere;
     &[data-match] {
       font-weight: 600;
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
   }
   &--lines .leaf-tree__group {
@@ -165,7 +165,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: var(--leaf-color-primary);
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   }
   &[data-drop='before']::before {
     top: 0;

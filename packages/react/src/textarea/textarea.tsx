@@ -3,11 +3,13 @@ import {
   type ReactNode,
   type TextareaHTMLAttributes,
   useEffect,
+  useId,
   useLayoutEffect,
   useRef,
 } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
+import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
@@ -48,6 +50,7 @@ export const TextareaControl = forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref,
   ) {
     const field = useFormField();
+    const id = useId();
     const textarea = useRef<HTMLTextAreaElement>(null);
     const heightAnimation = useRef<Animation | undefined>(undefined);
     const measuredHeight = useRef(false);
@@ -117,26 +120,54 @@ export const TextareaControl = forwardRef<HTMLTextAreaElement, TextareaProps>(
     }, [autoSize, minRows, maxRows, current, motionEnabled]);
     useEffect(() => () => heightAnimation.current?.cancel(), []);
     const control = (
-      <textarea
-        {...props}
-        id={props.id ?? field?.id}
-        required={props.required ?? field?.required}
-        aria-describedby={
-          [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
-        }
-        ref={merged}
-        disabled={disabled}
-        rows={rows}
-        value={current}
-        onChange={(event) => {
-          setCurrent(event.target.value);
-          onChange?.(event);
+      <ScrollbarControl
+        externalViewport={textarea}
+        viewportRevision={current}
+        resizeHandle={!autoSize && resize !== 'none'}
+        scrollbarTabIndex={-1}
+        className="leaf-textarea-scrollbar"
+        style={{
+          width: style?.width,
+          minWidth: style?.minWidth,
+          maxWidth: style?.maxWidth,
+          flex: style?.flex,
+          flexBasis: style?.flexBasis,
+          flexGrow: style?.flexGrow,
+          flexShrink: style?.flexShrink,
+          alignSelf: style?.alignSelf,
+          order: style?.order,
+          gridArea: style?.gridArea,
+          gridColumn: style?.gridColumn,
+          gridRow: style?.gridRow,
         }}
-        className={classes('leaf-textarea', `leaf-textarea--${size}`, className)}
-        style={{ resize: autoSize ? 'none' : resize, ...style }}
-        data-status={status}
-        aria-invalid={status === 'error' ? true : ariaInvalid}
-      />
+      >
+        <textarea
+          {...props}
+          id={props.id ?? field?.id ?? id}
+          required={props.required ?? field?.required}
+          aria-describedby={
+            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
+          }
+          ref={merged}
+          disabled={disabled}
+          rows={rows}
+          value={current}
+          onChange={(event) => {
+            setCurrent(event.target.value);
+            onChange?.(event);
+          }}
+          className={classes('leaf-textarea', `leaf-textarea--${size}`, className)}
+          style={{
+            resize: autoSize ? 'none' : resize,
+            ...style,
+            minWidth: undefined,
+            maxWidth: undefined,
+            ...(style?.width === undefined ? {} : { width: '100%' }),
+          }}
+          data-status={status}
+          aria-invalid={status === 'error' ? true : ariaInvalid}
+        />
+      </ScrollbarControl>
     );
     return showCount ? (
       <div className="leaf-textarea-wrap">

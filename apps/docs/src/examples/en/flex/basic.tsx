@@ -5,7 +5,7 @@ export function FlexBasic() {
     <Flex gap="sm" wrap>
       <Button>Save</Button>
       <Button variant="outline">Cancel</Button>
-      <Button variant="ghost">More actions</Button>
+      <Button variant="soft">More actions</Button>
     </Flex>
   );
 }

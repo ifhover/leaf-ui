@@ -50,6 +50,10 @@ import { FeedbackFixture } from './feedback-fixture';
 import { FileListFixture } from './file-list-fixture';
 import { FlexFixture } from './flex-fixture';
 import { FormFixture, FormHelpFixture } from './form-fixture';
+import { FormSettingsFixture } from './form-settings-fixture';
+import { InputPopupWidthFixture } from './input-popup-width-fixture';
+import { InternalScrollbarFixture } from './internal-scrollbar-fixture';
+import { MenuFixture } from './menu-fixture';
 import { MotionFixture } from './motion-fixture';
 import { MultiSelectFixture } from './multi-select-fixture';
 import { PaginationFixture } from './pagination-fixture';
@@ -57,10 +61,12 @@ import { RadiusFixture } from './radius-fixture';
 import { RefinementsFixture } from './refinements-fixture';
 import { ScrollbarFixture } from './scrollbar-fixture';
 import { SearchSelectFixture } from './search-select-fixture';
+import { SelectWidthFixture } from './select-width-fixture';
 import { SelectionFixture } from './selection-fixture';
 import { SurfaceFixture } from './surface-fixture';
 import { TableFixture } from './table-fixture';
 import { TabsFixture } from './tabs-fixture';
+import { ThemePresetsFixture } from './theme-presets-fixture';
 import { TranslationsFixture } from './translations-fixture';
 import { WarningFixture } from './warning-fixture';
 
@@ -363,7 +369,11 @@ createRoot(root).render(
     }
   >
     <main>
-      {fixture === 'translations' ? (
+      {fixture === 'menu' ? (
+        <MenuFixture />
+      ) : fixture === 'theme-presets' ? (
+        <ThemePresetsFixture />
+      ) : fixture === 'translations' ? (
         <TranslationsFixture />
       ) : fixture === 'component-defaults' ? (
         <ComponentDefaultsFixture />
@@ -379,6 +389,8 @@ createRoot(root).render(
         <TabsFixture />
       ) : fixture === 'form-help' ? (
         <FormHelpFixture />
+      ) : fixture === 'form-settings' ? (
+        <FormSettingsFixture />
       ) : fixture === 'form' ? (
         <FormFixture />
       ) : fixture === 'file-list' ? (
@@ -389,6 +401,8 @@ createRoot(root).render(
         <WarningFixture />
       ) : fixture === 'scrollbar' ? (
         <ScrollbarFixture />
+      ) : fixture === 'internal-scrollbar' ? (
+        <InternalScrollbarFixture />
       ) : fixture === 'table' ? (
         <TableFixture />
       ) : fixture === 'radius' ? (
@@ -405,6 +419,10 @@ createRoot(root).render(
         <MultiSelectFixture />
       ) : fixture === 'search-select' ? (
         <SearchSelectFixture />
+      ) : fixture === 'select-width' ? (
+        <SelectWidthFixture />
+      ) : fixture === 'input-popup-width' ? (
+        <InputPopupWidthFixture />
       ) : fixture === 'selection' ? (
         <SelectionFixture />
       ) : fixture === 'motion' ? (

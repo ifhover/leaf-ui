@@ -66,7 +66,9 @@ test('Select search defaults retain instance-owned multi-select values', async (
   const input = page.getByRole('combobox', { name: 'Libraries' });
   await input.fill('rea');
   const popup = page.getByRole('listbox');
-  await expect(popup).toHaveClass(/defaults-popup/u);
+  await expect(popup.locator('xpath=ancestor::*[@data-leaf-popup][1]')).toHaveClass(
+    /defaults-popup/u,
+  );
   await expect(popup.getByRole('option', { name: 'Leaf', exact: true })).toHaveCount(0);
   await popup.getByRole('option', { name: 'React', exact: true }).click();
   await expect(page.getByRole('status', { name: 'Selected libraries' })).toHaveText('react');

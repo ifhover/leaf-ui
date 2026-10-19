@@ -27,14 +27,11 @@ export function ExtensionDemo() {
                       value={field.value}
                       onChange={(e) => ops.update(field.index, e.target.value)}
                     />
-                    <Button variant="ghost" onClick={() => ops.remove(field.index)}>
+                    <Button variant="soft" onClick={() => ops.remove(field.index)}>
                       Remove
                     </Button>
                     {field.index > 0 && (
-                      <Button
-                        variant="ghost"
-                        onClick={() => ops.move(field.index, field.index - 1)}
-                      >
+                      <Button variant="soft" onClick={() => ops.move(field.index, field.index - 1)}>
                         Move up
                       </Button>
                     )}
