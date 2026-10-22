@@ -1,12 +1,12 @@
-import { ColorPalette } from '../../src/components/color-palette';
+import { ColorPalette, PaletteVariableCount } from '../../src/components/color-palette';
 
 # 颜色
 
-Leaf UI 使用语义变量组织颜色。默认主题提供 144 个调色板变量；下面先展示核心语义色和常用角色，完整变量在页末折叠。
+Leaf UI 使用语义变量组织颜色。默认主题提供 <PaletteVariableCount /> 个调色板变量；下面先展示核心语义色和常用角色，完整变量在页末折叠。
 
 ## 核心语义色
 
-主题、成功、危险、警告和信息色表达含义，实色背景上的前景色保持独立入口。每张色卡左侧是浅色，右侧是深色。
+主题、成功、危险、警告和信息色表达含义，实色背景上的前景色保持独立入口。`-ink` 变量用于可读文字，`on-*` 变量用于实色背景上的内容。每张色卡左侧是浅色，右侧是深色。
 
 <ColorPalette family="base" />
 

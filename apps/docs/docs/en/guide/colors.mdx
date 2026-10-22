@@ -1,12 +1,12 @@
-import { ColorPalette } from '../../../src/components/color-palette';
+import { ColorPalette, PaletteVariableCount } from '../../../src/components/color-palette';
 
 # Colors
 
-Leaf UI organizes color with semantic variables. The default theme exposes 144 palette variables; core semantic colors and common roles appear first, with the complete set collapsed at the end.
+Leaf UI organizes color with semantic variables. The default theme exposes <PaletteVariableCount /> palette variables; core semantic colors and common roles appear first, with the complete set collapsed at the end.
 
 ## Core semantic colors
 
-Primary, success, danger, warning and info communicate meaning, while foreground colors on solid fills keep separate entry points. The left half of each swatch is light and the right half is dark.
+Primary, success, danger, warning and info communicate meaning, while foreground colors on solid fills keep separate entry points. `-ink` variables provide readable text, and `on-*` variables provide content on solid fills. The left half of each swatch is light and the right half is dark.
 
 <ColorPalette family="base" />
 

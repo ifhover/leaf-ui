@@ -94,3 +94,49 @@ test('each code fence points at its own example source', async () => {
   }
   assert.deepEqual(problems, [], `Shared example sources:\n${problems.join('\n')}`);
 });
+
+test('color guides derive palette totals and document semantic foreground roles', async () => {
+  const colorPages = [
+    path.join(docsRoot, 'docs/guide/colors.mdx'),
+    path.join(docsRoot, 'docs/en/guide/colors.mdx'),
+  ];
+  const themePages = [
+    path.join(docsRoot, 'docs/guide/theming.mdx'),
+    path.join(docsRoot, 'docs/en/guide/theming.mdx'),
+  ];
+  const paletteSource = await readFile(
+    path.join(docsRoot, 'src/components/color-palette.tsx'),
+    'utf8',
+  );
+
+  for (const page of colorPages) {
+    const text = await readFile(page, 'utf8');
+    assert.match(text, /PaletteVariableCount/u, `${page} must use the computed palette total`);
+    assert.doesNotMatch(text, /\b(?:144|150)\b/u, `${page} must not hardcode the palette total`);
+  }
+
+  assert.match(
+    paletteSource,
+    /export function PaletteVariableCount\(\) \{\s*return fullPaletteCount;/u,
+  );
+  for (const token of [
+    '--leaf-color-success-ink',
+    '--leaf-color-warning-ink',
+    '--leaf-color-danger-ink',
+    '--leaf-color-info-ink',
+    '--leaf-color-on-success',
+    '--leaf-color-on-info',
+  ]) {
+    assert.match(paletteSource, new RegExp(token, 'u'));
+  }
+
+  for (const page of themePages) {
+    const text = await readFile(page, 'utf8');
+    for (const token of ['success-ink', 'warning-ink', 'danger-ink', 'info-ink']) {
+      assert.match(text, new RegExp(token, 'u'), `${page} must document ${token}`);
+    }
+    for (const token of ['on-success', 'on-info']) {
+      assert.match(text, new RegExp(token, 'u'), `${page} must document ${token}`);
+    }
+  }
+});

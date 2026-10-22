@@ -92,6 +92,13 @@ const coreColorItems: CoreColorItem[] = [
     enDescription: 'Content on solid primary fills.',
   },
   {
+    variable: '--leaf-color-on-success',
+    zh: '成功前景',
+    en: 'On success',
+    zhDescription: '实色成功背景上的内容。',
+    enDescription: 'Content on solid success fills.',
+  },
+  {
     variable: '--leaf-color-on-danger',
     zh: '危险前景',
     en: 'On danger',
@@ -104,6 +111,13 @@ const coreColorItems: CoreColorItem[] = [
     en: 'On warning',
     zhDescription: '实色警告背景上的内容。',
     enDescription: 'Content on solid warning fills.',
+  },
+  {
+    variable: '--leaf-color-on-info',
+    zh: '信息前景',
+    en: 'On info',
+    zhDescription: '实色信息背景上的内容。',
+    enDescription: 'Content on solid info fills.',
   },
 ];
 
@@ -168,34 +182,40 @@ const semanticRoleItems: Record<SemanticFamily, RoleColorItem[]> = {
     { variable: '--leaf-color-primary-fill-border', zh: '实色边界', en: 'Solid fill border' },
     { variable: '--leaf-color-primary-surface-8', zh: '浅色背景', en: 'Tinted background' },
     { variable: '--leaf-color-primary-border-24', zh: '浅色边框', en: 'Tinted border' },
-    { variable: '--leaf-color-primary-text-80', zh: '可读文字', en: 'Readable text' },
   ],
   success: [
-    { variable: '--leaf-color-success-text-80', zh: '可读文字', en: 'Readable text' },
+    { variable: '--leaf-color-success-ink', zh: '状态文字', en: 'State text' },
+
     { variable: '--leaf-color-success-surface-8', zh: '浅色背景', en: 'Tinted background' },
     { variable: '--leaf-color-success-border-12', zh: '浅色边框', en: 'Tinted border' },
     { variable: '--leaf-color-success-alpha-10', zh: '透明反馈', en: 'Alpha feedback' },
+    { variable: '--leaf-color-on-success', zh: '实色前景', en: 'On solid fill' },
   ],
   danger: [
-    { variable: '--leaf-color-danger-text-80', zh: '可读文字', en: 'Readable text' },
+    { variable: '--leaf-color-danger-ink', zh: '状态文字', en: 'State text' },
+
     { variable: '--leaf-color-danger-surface-8', zh: '浅色背景', en: 'Tinted background' },
     { variable: '--leaf-color-danger-border-12', zh: '浅色边框', en: 'Tinted border' },
     { variable: '--leaf-color-danger-alpha-10', zh: '透明反馈', en: 'Alpha feedback' },
     { variable: '--leaf-color-danger-hover', zh: '悬停', en: 'Hover' },
     { variable: '--leaf-color-danger-active', zh: '按下', en: 'Active' },
+    { variable: '--leaf-color-on-danger', zh: '实色前景', en: 'On solid fill' },
   ],
   warning: [
-    { variable: '--leaf-color-warning-text-80', zh: '可读文字', en: 'Readable text' },
+    { variable: '--leaf-color-warning-ink', zh: '状态文字', en: 'State text' },
+
     { variable: '--leaf-color-warning-surface-8', zh: '浅色背景', en: 'Tinted background' },
     { variable: '--leaf-color-warning-border-12', zh: '浅色边框', en: 'Tinted border' },
     { variable: '--leaf-color-warning-alpha-10', zh: '透明反馈', en: 'Alpha feedback' },
-    { variable: '--leaf-color-on-warning', zh: '警告前景', en: 'On warning' },
+    { variable: '--leaf-color-on-warning', zh: '实色前景', en: 'On solid fill' },
   ],
   info: [
-    { variable: '--leaf-color-info-text-80', zh: '可读文字', en: 'Readable text' },
+    { variable: '--leaf-color-info-ink', zh: '状态文字', en: 'State text' },
+
     { variable: '--leaf-color-info-surface-8', zh: '浅色背景', en: 'Tinted background' },
     { variable: '--leaf-color-info-border-12', zh: '浅色边框', en: 'Tinted border' },
     { variable: '--leaf-color-info-alpha-10', zh: '透明反馈', en: 'Alpha feedback' },
+    { variable: '--leaf-color-on-info', zh: '实色前景', en: 'On solid fill' },
   ],
 };
 
@@ -253,7 +273,7 @@ const segmentLabels: Record<string, { zh: string; en: string }> = {
 };
 
 const stateLabels: Record<string, { zh: string; en: string }> = {
-  ink: { zh: '主色文字', en: 'Primary ink' },
+  ink: { zh: '可读文字', en: 'Readable text' },
   indicator: { zh: '选中指示', en: 'Selected indicator' },
   focus: { zh: '焦点', en: 'Focus' },
   'fill-border': { zh: '实色边界', en: 'Solid fill border' },
@@ -809,4 +829,8 @@ export function ColorPalette({ family }: { family: ColorFamily }) {
   if (family === 'neutral') return <NeutralPalette />;
   if (family === 'all') return <FullPalette />;
   return <SemanticPalette family={family} />;
+}
+
+export function PaletteVariableCount() {
+  return fullPaletteCount;
 }

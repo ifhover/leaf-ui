@@ -22,7 +22,7 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；按钮按下和其他交互状态的颜色会自动生成，按钮悬停保持原样。
 
-主色背景上的文字默认优先使用白色；白字与主色的对比度低于 `2.8:1` 时切换为黑色。例如蓝色 `#1d9bf0` 和橙色 `#ff6900` 使用白字，亮黄色 `#ffee00` 使用黑字。需要指定文字色时，可设置 `theme.tokens.onPrimaryColor`。
+实色背景上的文字自动选用可读前景色；需要指定文字色时，可设置 `theme.tokens.onPrimaryColor`。
 
 `borderRadius` 是圆角的基准值。卡片、弹窗等会按各自的层级生成圆角，因此不必逐个组件设置。数字表示像素，也支持 `'0.5rem'` 等 CSS 长度。
 
@@ -87,7 +87,7 @@ Windows XP 和 Material 是使用 Leaf UI 主题能力制作的风格示例。Wi
 
 组件的文字、背景和边框会一起切换。没有指定 `primaryColor` 时，使用该外观的默认主题色。显式主色始终保留原值：黑色按钮在深色模式下仍使用黑底白字，并在需要时添加细微边界。
 
-主色文字、选中指示和采用主色的焦点颜色分别派生；普通字段聚焦时加深中性边框，按钮的键盘焦点轮廓也使用中性色。深色下，文字色以内容表面和辅助表面 `4.5:1` 的对比度为目标，选中指示以 `3:1` 为目标；只提高不足部分的亮度，不把实心按钮背景整体变亮。蓝色、橙色保持原色和白字。显式的文字色、焦点色与交互色 token 仍优先；CSS 颜色表达式在浏览器解析后参与派生，不修改传入的主题对象或颜色选择器的值。
+主色与状态文字使用独立的可读文字色，实色背景保持原值。Input / Select 聚焦使用主题色边框，其他字段保留中性聚焦；显式文字色、焦点色与交互色配置优先。CSS 颜色表达式在浏览器解析后参与派生。
 
 ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动添加背景。业务页面的背景和文字也需要跟随外观时，可使用下文的 [CSS 变量](#在业务样式中使用主题)。
 
@@ -248,11 +248,12 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 | 常用变量                                              | 用途                                                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------ |
 | `--leaf-color-primary`                                | 当前主题色。                                                       |
-| `--leaf-color-primary-ink`                            | 主色文字，深色下按表面对比度提亮。                                 |
+| `--leaf-color-primary-ink`                            | 可读的主题文字，与主色基色分开。                                   |
+| `--leaf-color-success-ink` / `warning-ink` / `danger-ink` / `info-ink` | 各状态的可读文字，与状态基色分开。               |
 | `--leaf-color-primary-indicator`                      | 选中、进度和轮廓的主色指示。                                       |
 | `--leaf-color-primary-focus`                          | 供采用主色焦点提示的组件使用；普通字段与按钮默认使用中性焦点提示。 |
 | `--leaf-color-primary-fill-border`                    | 实心主色背景的辅助边界，通常透明。                                 |
-| `--leaf-color-on-primary`                             | 实色主题背景上的文字色。                                           |
+| `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | 各实色背景上的内容色。                             |
 | `--leaf-color-text` / `--leaf-color-text-muted`       | 主要、次要文字色。                                                 |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。                                               |
 | `--leaf-color-border`                                 | 边框颜色。                                                         |
