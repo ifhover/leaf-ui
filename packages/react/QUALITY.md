@@ -1,5 +1,25 @@
 # 组件质量验收
 
+## 全库颜色家族迁移与验收（2026-10-23，0.9.0 开发分支）
+
+本轮覆盖 81 个公共组件导出的源码用色责任（Table 与 TanStack 入口合并计数），清单见 [COLOR-MIGRATION.md](COLOR-MIGRATION.md)。字段、选项、状态标签、品牌 / 危险浅色反馈、分段轨道、画布、遮罩、日历与强调光晕使用有限共享配方；本身已有语义角色或继承组合的组件不再增加专属 token。Menu 外观、评分色、媒体背景、加载光泽和局部遮片保留有理由的精确例外。81 项源码责任审查不等于 81 项逐像素浏览器验收。
+
+新增四个状态 `*-ink` 和 `on-success` / `on-info` 派生角色，不增加主题配置字段。默认品牌与状态基色保持不变，普通文字在实际内容表面、辅助表面和对应浅底上以 4.5:1 验证；显式覆盖继续优先。默认浅色品牌 / 危险实底改用可读深色前景，解决此前白字对比度不足；自定义 Tag / Badge 与主题 CSS 表达式在挂载后解析并随祖先颜色变化更新。数字比例色阶继续保留，消费者不再自行选比例；不把兼容色板删除数量作为迁移成绩。
+
+清除反馈组件 51 处无消费者的源声明（55 个展开后的 CSS 实例），共享阴影和状态配方替代控件的重复混色。修正 Switch 浅深主题滑块及加载前景、Splitter 键盘焦点与交互反馈、ColorPicker 内输入框的阴影覆盖，保留 Input / Select 主题边框无外圈规则。全量回归发现 AutoComplete 尚未跟上 Select 的 34 / 30px 行高和零间距，已补齐普通 / 虚拟选项及显式 `optionHeight`，并修正旧尺寸、固定白字 / 白边以及 card Tabs 错误取层的断言。
+
+静态审计扫描 326 个源码文件，默认色板每模式 150 项、全局定义与可选入口并集 156 项、118 个兼容派生配方、9 个字段家族消费者。起始登记的 184 次用法中，20 次经逐项审查保留为局部责任例外；其他旧消费已移除或进入共享配方。未分类债务与无 fallback 的未定义变量风险均为 0，不代表所有颜色合并或任意自定义主题自动满足可访问性。历史 `surface-alpha-80` 仍通过局部 fallback 兼容，检查器保留警告，详见 [COLOR-AUDIT.md](COLOR-AUDIT.md)。
+
+`pnpm check` 通过：70 个单测文件 / 509 项行为用例、13 项发布规则、31 项文档、9 项 Skill 和 43 项颜色契约；Biome、SCSS 格式与工作区类型检查通过。`pnpm build`、最终组件库重建、81 份独立样式与浏览器入口、83 个公开 JS 子路径、ESM / CommonJS SSR、Rspack / Vite 样式裁剪、双语文档与设计资源校验通过。组件版本仍为稳定版本号 0.8.1，本轮内容在 0.9.0 分支开发，没有发布 npm 或部署正式文档。
+
+颜色页 Chromium 覆盖中文 / 英文、浅色 / 深色、1440px / 390px 共 8 组，逐项验证 150 行变量和 300 个浅深色块与色值一致、无整页横向溢出及无页面异常；已查看桌面浅色与英文手机深色截图。记录为 `.quality/docs-color-visual.json` 及同前缀 PNG。
+
+完整 Chromium 最终一次运行 **353/353 通过**，包含颜色家族、字段、表格、动态 CSS 表达式、实际文本对比、组件覆盖隔离、浅深主题、窄屏 / RTL、键盘、虚拟列表与既有交互回归，日志为 `.quality/color-final-chromium.log`。前两轮 337/349 与 348/353 的失败日志保留为 `.quality/color-full-chromium.log`、`.quality/color-accepted-chromium.log`；旧尺寸断言、card Tabs 取层和 AutoComplete 的真实尺寸不一致已分别处理，不把分次补测伪装为一次全绿运行。
+
+WebKit 对字段 10 项、语义颜色 7 项、表格 6 项、跨家族 6 项和主题预设 10 项共 **39 项不同用例分批取得通过结果**，不是一次完整矩阵。初跑 Windows WebKit 的计算样式回传超过 5 秒，语义测试调整等待时间但保留 4.5:1 门槛；表格固定列改为滚入视口并等待滚动边缘状态后再读取阴影，实际绘制颜色不变。分次记录为 `.quality/color-final-targeted.log`、`.quality/color-webkit-semantic-retry.log`、`.quality/color-final-webkit.log`、`.quality/color-webkit-final-retest.log` 与 `.quality/color-webkit-family-final.log`，最后一份额外复核 Switch 加载前景与滑块的对比。
+
+Firefox 本机启动仍返回 `spawn UNKNOWN`，未取得通过结果。未运行完整 WebKit 全库矩阵、React 18 全套、真实读屏、真机触控或 Figma 实际导入；没有新增逐像素截图基线比较。各项源码 / 浏览器证据不替代这些人工与跨平台覆盖。
+
 ## 颜色迁移第二批：Table 家族与字段职责复核（2026-10-23，0.9.0 开发分支）
 
 Table / DataTable 使用共享 `table-family` 配方维护表面、表头文字、条纹、悬停、选中、内部动作、加载遮罩和固定列阴影。保持原有 3% 主色悬停、80% 文字表头、2% 文字条纹、80% 表面遮罩与 4.5% 黑色固定列阴影，仍按当前表格表面 / 文字与嵌套主题计算。修复 3 处消费仅配置时存在的 `primary-soft` 而缺少 fallback 的问题：选中行默认使用既有 `primary-surface-8`，展开 / 拖拽小操作默认使用 `option-hover`，显式 `primarySoftColor` 仍优先。历史 `surface-alpha-80` CSS 覆盖保留表格局部 fallback，不生成新全局变量；检查器仍对此名称给出兼容警告。全局 token 仍为 150，默认色板仍为 144。
