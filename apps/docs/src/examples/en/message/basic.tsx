@@ -27,9 +27,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.warning('Please check your input')}>
         Warning
       </Button>
-      <Button  onClick={() => message.close()}>
-        Clear messages
-      </Button>
+      <Button onClick={() => message.close()}>Clear messages</Button>
     </Flex>
   );
 }

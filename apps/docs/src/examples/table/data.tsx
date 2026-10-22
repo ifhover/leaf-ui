@@ -153,7 +153,6 @@ export function TableColumns({ english = false }: { english?: boolean }) {
         <Button
           style={{ marginInlineStart: 'auto' }}
           size="sm"
-          
           onClick={() => table.resetColumnSizing()}
         >
           {english ? 'Reset widths' : '重置列宽'}

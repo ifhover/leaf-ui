@@ -27,13 +27,9 @@ export function ExtensionDemo() {
                       value={field.value}
                       onChange={(e) => ops.update(field.index, e.target.value)}
                     />
-                    <Button  onClick={() => ops.remove(field.index)}>
-                      移除
-                    </Button>
+                    <Button onClick={() => ops.remove(field.index)}>移除</Button>
                     {field.index > 0 && (
-                      <Button  onClick={() => ops.move(field.index, field.index - 1)}>
-                        上移
-                      </Button>
+                      <Button onClick={() => ops.move(field.index, field.index - 1)}>上移</Button>
                     )}
                   </Flex>
                 </FormField>

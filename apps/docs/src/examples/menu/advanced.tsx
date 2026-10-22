@@ -35,7 +35,6 @@ export function MenuLayouts() {
           children: (
             <Flex direction="column" gap="md" align="start">
               <Button
-                
                 size="sm"
                 aria-expanded={!collapsed}
                 onClick={() => setCollapsed((value) => !value)}

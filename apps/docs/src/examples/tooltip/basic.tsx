@@ -9,7 +9,7 @@ export function TooltipBasic() {
         </Tooltip>
       ))}
       <Tooltip content="该设置将应用到所有项目">
-        <Button  startIcon={<Info />} aria-label="设置说明" />
+        <Button startIcon={<Info />} aria-label="设置说明" />
       </Tooltip>
     </Flex>
   );

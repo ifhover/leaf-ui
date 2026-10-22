@@ -56,13 +56,7 @@ export function apiSectionMatches(document, name) {
 export function apiSectionMatch(document, name) {
   return apiSectionMatches(document, name)[0] ?? null;
 }
-export function apiDefaultCell({
-  defaultValue,
-  optional,
-  english,
-  override,
-  previousDefault,
-}) {
+export function apiDefaultCell({ defaultValue, optional, english, override, previousDefault }) {
   if (override !== undefined) return override;
   if (defaultValue) return defaultValue;
   if (!optional) return english ? 'Required' : '必填';

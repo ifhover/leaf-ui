@@ -76,7 +76,8 @@ describe('portal theme resets', () => {
     for (const key of ['--leaf-surface-shadow', '--leaf-color-focus'])
       expect(scoped?.style.getPropertyValue(key)).toBe('initial');
     await userEvent.click(screen.getByRole('combobox', { name: 'Nested default selection' }));
-    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+    if (!panel) throw new Error('Select popup missing');
     await waitFor(() => {
       expect(panel.style.getPropertyValue('--leaf-surface-shadow')).toBe('initial');
       expect(panel.style.getPropertyValue('--leaf-color-focus')).toBe('initial');

@@ -7,9 +7,7 @@ export function TooltipControlled() {
       <Tooltip content="受控展开的说明" open={open} onOpenChange={setOpen}>
         <Button variant="outline">悬停或点击切换</Button>
       </Tooltip>
-      <Button  onClick={() => setOpen((value) => !value)}>
-        {open ? '收起提示' : '展开提示'}
-      </Button>
+      <Button onClick={() => setOpen((value) => !value)}>{open ? '收起提示' : '展开提示'}</Button>
     </Flex>
   );
 }

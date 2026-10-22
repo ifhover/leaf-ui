@@ -91,7 +91,7 @@ export function TableServer({ english = false }: { english?: boolean }) {
           >
             {english ? 'Refresh' : '刷新'}
           </Button>
-          <Button  disabled={loading} onClick={() => setError(true)}>
+          <Button disabled={loading} onClick={() => setError(true)}>
             {english ? 'Simulate error' : '模拟失败'}
           </Button>
         </>

@@ -595,10 +595,6 @@ const specific = {
   'RadioOption.label': ['选项的显示内容。', 'Visible option content.'],
   'RadioOption.description': ['选项下方的补充说明。', 'Supporting text below the option.'],
   'RadioOption.icon': ['选项前的图标内容。', 'Leading icon content for the option.'],
-  'RadioOption.extra': [
-    '选项尾部的非交互状态文字或标签。',
-    'Trailing non-interactive status text or tag.',
-  ],
   'RadioOption.value': ['选项值；同一组内应唯一。', 'Option value; unique within the group.'],
   'RadioOption.disabled': ['禁用该选项。', 'Disable the option.'],
   'RadioProps.value': [

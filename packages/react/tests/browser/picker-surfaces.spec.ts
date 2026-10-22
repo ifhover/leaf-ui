@@ -145,10 +145,7 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
   );
   expect(metrics.actions).toHaveLength(2);
   for (const action of metrics.actions) {
-    expect(action.y - ((metrics.body?.y ?? 0) + (metrics.body?.height ?? 0))).toBeCloseTo(
-      10,
-      0,
-    );
+    expect(action.y - ((metrics.body?.y ?? 0) + (metrics.body?.height ?? 0))).toBeCloseTo(10, 0);
     const dialogInnerBottom =
       (metrics.dialog?.y ?? 0) + (metrics.dialog?.height ?? 0) - metrics.borderWidth;
     expect(dialogInnerBottom - (action.y + action.height)).toBeCloseTo(10, 0);

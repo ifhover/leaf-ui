@@ -61,9 +61,7 @@ export function FoundationPreview() {
             </Flex>
             <Flex justify="end" gap={8} wrap>
               <Button>描边按钮</Button>
-              <Button danger>
-                危险操作
-              </Button>
+              <Button danger>危险操作</Button>
               <Button variant="link">文字操作</Button>
               <Button variant="solid" onClick={() => setOpen(true)}>
                 打开弹窗

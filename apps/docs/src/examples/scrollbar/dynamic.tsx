@@ -9,10 +9,7 @@ export function ScrollbarDynamic({ english = false }: { english?: boolean }) {
         <Button variant="outline" onClick={() => setCount((previous) => previous + 3)}>
           {english ? 'Add items' : '增加内容'}
         </Button>
-        <Button
-          
-          onClick={() => viewport.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
+        <Button onClick={() => viewport.current?.scrollTo({ top: 0, behavior: 'smooth' })}>
           {english ? 'Back to top' : '返回顶部'}
         </Button>
       </Flex>

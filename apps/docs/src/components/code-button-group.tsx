@@ -16,7 +16,6 @@ export function CodeButtonGroup({
     <div className="rp-code-button-group leaf-docs-code-actions">
       {showWrapCodeButton && (
         <Button
-          
           size="sm"
           aria-label={t('切换代码换行', 'Toggle line wrapping')}
           title={t('切换代码换行', 'Toggle line wrapping')}

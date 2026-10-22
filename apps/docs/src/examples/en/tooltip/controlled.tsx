@@ -7,7 +7,7 @@ export function TooltipControlled() {
       <Tooltip content="Controlled tooltip" open={open} onOpenChange={setOpen}>
         <Button variant="outline">Hover or toggle</Button>
       </Tooltip>
-      <Button  onClick={() => setOpen((value) => !value)}>
+      <Button onClick={() => setOpen((value) => !value)}>
         {open ? 'Hide tooltip' : 'Show tooltip'}
       </Button>
     </Flex>

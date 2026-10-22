@@ -11,7 +11,6 @@ export function SwitchAppearance({ onClick }: { onClick?: () => void }) {
   return (
     <Button
       className="leaf-docs-theme-button"
-      
       size="sm"
       aria-label={t(
         dark ? '切换到浅色主题' : '切换到深色主题',

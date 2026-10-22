@@ -21,7 +21,7 @@ export function PopupAction({ english = false }) {
       popupRender={(content) => (
         <>
           {content}
-          <Button onClick={() => setOpen(false)} size="sm" >
+          <Button onClick={() => setOpen(false)} size="sm">
             {english ? 'Done' : '完成'}
           </Button>
         </>

@@ -17,7 +17,7 @@ export function ErrorBoundaryCustom() {
           <Alert
             title="This section is unavailable"
             description={
-              <Button size="sm"  onClick={reset}>
+              <Button size="sm" onClick={reset}>
                 Try again
               </Button>
             }

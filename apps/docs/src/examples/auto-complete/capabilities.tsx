@@ -47,7 +47,7 @@ export function Capabilities({ english = false }) {
         aria-label={english ? 'Team email' : '团队邮箱'}
         errorContent={
           state === 'error' ? (
-            <Button onClick={() => setState('ready')} size="sm" >
+            <Button onClick={() => setState('ready')} size="sm">
               {english ? 'Retry' : '重新加载'}
             </Button>
           ) : undefined

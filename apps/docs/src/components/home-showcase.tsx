@@ -214,7 +214,6 @@ function ProjectShowcase() {
         <Tooltip content={t('恢复示例', 'Reset example')}>
           <Button
             size="sm"
-            
             aria-label={t('恢复示例', 'Reset example')}
             startIcon={<RotateCcw size={15} />}
             onClick={() => {
@@ -349,7 +348,6 @@ function ProjectShowcase() {
                           }
                         >
                           <Button
-                            
                             size="sm"
                             aria-label={`${t('任务操作', 'Task actions')}: ${t(task.zh, task.en)}`}
                             startIcon={<Ellipsis size={16} />}
@@ -362,7 +360,7 @@ function ProjectShowcase() {
                   <div className="leaf-workspace__empty">
                     <CheckCheck size={24} />
                     <span>{t('这里已经整理好了。', 'Everything is in order.')}</span>
-                    <Button size="sm"  onClick={() => setFilter('all')}>
+                    <Button size="sm" onClick={() => setFilter('all')}>
                       {t('查看全部任务', 'View all tasks')}
                     </Button>
                   </div>
@@ -370,7 +368,6 @@ function ProjectShowcase() {
                 <Button
                   className="leaf-workspace__add"
                   size="sm"
-                  
                   startIcon={<Plus size={15} />}
                   onClick={create}
                 >
@@ -464,7 +461,7 @@ function ProjectShowcase() {
         width={430}
         footer={
           <>
-            <Button  onClick={() => (step ? setStep(0) : setOpen(false))}>
+            <Button onClick={() => (step ? setStep(0) : setOpen(false))}>
               {step ? t('上一步', 'Back') : t('取消', 'Cancel')}
             </Button>
             <Button

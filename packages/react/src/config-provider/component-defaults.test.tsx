@@ -534,7 +534,8 @@ describe('ConfigProvider component defaults', () => {
     );
     const { rerender } = render(example('sm'));
     await userEvent.click(screen.getByRole('combobox'));
-    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+    if (!panel) throw new Error('Select popup missing');
     expect(panel.style.color).toBe('blue');
     expect(panel.style.background).toBe('');
     rerender(example('lg'));

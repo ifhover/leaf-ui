@@ -61,9 +61,7 @@ export function FoundationPreview() {
             </Flex>
             <Flex justify="end" gap={8} wrap>
               <Button>Outlined</Button>
-              <Button danger>
-                Danger action
-              </Button>
+              <Button danger>Danger action</Button>
               <Button variant="link">Text action</Button>
               <Button variant="solid" onClick={() => setOpen(true)}>
                 Open dialog

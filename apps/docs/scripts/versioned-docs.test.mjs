@@ -289,10 +289,7 @@ test('API defaults distinguish required, explicit, previous and absent values', 
     apiDefaultCell({ optional: true, english: true, previousDefault: '`previous`' }),
     '`previous`',
   );
-  assert.equal(
-    apiDefaultCell({ optional: false, english: true, override: '—' }),
-    '—',
-  );
+  assert.equal(apiDefaultCell({ optional: false, english: true, override: '—' }), '—');
 });
 
 test('API defaults use the declared parameter type for composed table roots', async () => {
