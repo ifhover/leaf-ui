@@ -122,8 +122,9 @@ for (const appearance of ['light', 'dark']) {
     await page.keyboard.press('Escape');
 
     const tabs = page.locator('.leaf-tabs__list');
-    await expectInset(tabs, tabs.getByRole('tab').first());
-    await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));
+    const firstTab = tabs.getByRole('tab').first();
+    await expect(firstTab).toHaveCSS('border-radius', '10px');
+    await expectMatching(firstTab, tabs.locator('.leaf-tabs__indicator'));
     const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
     await expect(menu.getByRole('menuitem').first()).toHaveCSS('border-radius', '8px');
     await expect(
@@ -148,9 +149,9 @@ for (const radius of [0, 3]) {
       `${Math.max(0, radius - 2)}px`,
     );
     const tabs = page.getByRole('tablist', { name: 'Radius tabs' });
-    await expectInset(tabs, tabs.getByRole('tab').first());
-    await expect(tabs.getByRole('tab').first()).toHaveCSS('border-radius', '0px');
-    await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));
+    const firstTab = tabs.getByRole('tab').first();
+    await expect(firstTab).toHaveCSS('border-radius', `${radius}px`);
+    await expectMatching(firstTab, tabs.locator('.leaf-tabs__indicator'));
   });
 }
 
@@ -193,8 +194,9 @@ test('component padding shorthand keeps highlight geometry aligned in an RTL por
   await expectInset(panel, panel.getByRole('option').first());
   await page.keyboard.press('Escape');
   const tabs = page.getByRole('tablist', { name: 'Radius tabs' });
-  await expectInset(tabs, tabs.getByRole('tab').first());
-  await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));
+  const firstTab = tabs.getByRole('tab').first();
+  await expect(firstTab).toHaveCSS('border-radius', '14px');
+  await expectMatching(firstTab, tabs.locator('.leaf-tabs__indicator'));
   const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
   await expect(menu).toHaveCSS('border-radius', '18px');
   await expectMatching(menu, menu.getByRole('menuitem').first());

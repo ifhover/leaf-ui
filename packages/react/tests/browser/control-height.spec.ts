@@ -58,7 +58,9 @@ for (const [suffix, base] of [
       'TreeSelect md',
       'Time md',
     ]) {
-      const rowHeight = name === 'Select md' || name === 'TreeSelect md' ? base : base - 4;
+      const rowHeight = ['Select md', 'AutoComplete md', 'TreeSelect md'].includes(name)
+        ? base
+        : base - 4;
       await page.getByRole('combobox', { name, exact: true }).click();
       const panel = page.locator('.leaf-floating[data-state="open"]');
       await expect(panel).toBeVisible();

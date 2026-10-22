@@ -29,7 +29,25 @@
   }
 }
 .leaf-autocomplete__panel .leaf-floating__option {
+  min-height: var(--leaf-autocomplete-option-height, var(--leaf-current-control-height, 34px));
+  padding-block: min(
+    var(--leaf-density-option-padding),
+    max(
+      0px,
+      calc(
+        (
+            var(--leaf-autocomplete-option-height, var(--leaf-current-control-height, 34px)) - var(
+                --leaf-line-height-sm
+              )
+          ) /
+          2
+      )
+    )
+  );
   justify-content: space-between;
+}
+.leaf-autocomplete__panel .leaf-floating__options {
+  gap: 0;
 }
 .leaf-autocomplete__panel[data-hover-motion] {
   .leaf-floating__highlight {

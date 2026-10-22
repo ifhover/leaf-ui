@@ -45,7 +45,7 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
   await dialog.getByRole('combobox', { name: 'Dialog owner' }).click();
   await expect(page.getByRole('option', { name: 'Alex', exact: true })).toHaveCSS(
     'min-height',
-    '26px',
+    '30px',
   );
 });
 

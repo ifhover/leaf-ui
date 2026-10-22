@@ -25,6 +25,13 @@ export function SearchSelectFixture() {
             />
           ))}
           <AutoComplete aria-label="Matching suggestions" options={options} filterOption={false} />
+          <AutoComplete aria-label="Short suggestions" options={options} optionHeight={28} />
+          <AutoComplete
+            aria-label="Virtual short suggestions"
+            options={options}
+            optionHeight={28}
+            virtual
+          />
           <Select aria-label="Empty selection" options={[]} />
           <Select aria-label="Loading selection" options={[]} loading />
           <AutoComplete aria-label="Empty suggestions" options={[]} />

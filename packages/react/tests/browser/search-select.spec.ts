@@ -102,6 +102,21 @@ for (const appearance of ['light', 'dark']) {
       await expect(autocomplete).toHaveValue('bob');
     });
 
+    test('explicit suggestion row heights apply to ordinary and virtual options', async ({
+      page,
+    }) => {
+      for (const name of ['Short suggestions', 'Virtual short suggestions']) {
+        const input = page.getByRole('combobox', { name, exact: true });
+        await input.click();
+        const row = page.locator('.leaf-autocomplete__panel').getByRole('option').first();
+        await expect(row).toHaveCSS('min-height', '28px');
+        await expect
+          .poll(() => row.evaluate((node) => node.getBoundingClientRect().height))
+          .toBe(28);
+        await input.press('Escape');
+      }
+    });
+
     test('empty and busy panels put a decorative icon above the message and honor reduced motion', async ({
       page,
     }, info) => {

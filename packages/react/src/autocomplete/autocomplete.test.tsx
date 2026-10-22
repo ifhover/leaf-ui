@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { ConfigProvider } from '../config-provider';
 import { AutoComplete } from './autocomplete';
 
 const options = [
@@ -57,5 +58,27 @@ describe('AutoComplete', () => {
     await userEvent.tab();
     expect(screen.getByRole('button', { name: '继续' })).toHaveFocus();
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+  it('uses the current control height for suggestion rows unless optionHeight is explicit', async () => {
+    const { unmount } = render(
+      <ConfigProvider density="compact">
+        <AutoComplete aria-label="紧凑建议" options={options} />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    const compactPanel = screen
+      .getByRole('listbox')
+      .closest<HTMLElement>('.leaf-autocomplete__panel');
+    expect(compactPanel).not.toBeNull();
+    expect(compactPanel?.style.getPropertyValue('--leaf-autocomplete-option-height')).toBe('30px');
+
+    unmount();
+    render(<AutoComplete aria-label="自定义建议" options={options} optionHeight={28} />);
+    await userEvent.click(screen.getByRole('combobox'));
+    const customPanel = screen
+      .getByRole('listbox')
+      .closest<HTMLElement>('.leaf-autocomplete__panel');
+    expect(customPanel).not.toBeNull();
+    expect(customPanel?.style.getPropertyValue('--leaf-autocomplete-option-height')).toBe('28px');
   });
 });
