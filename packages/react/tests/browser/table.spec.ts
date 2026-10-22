@@ -1,13 +1,89 @@
 import { expect, test } from '@playwright/test';
 import axe from 'axe-core';
 
+const colorChannels = (color: string) => {
+  const srgb = color.match(/^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)$/);
+  if (srgb) return srgb.slice(1).map((value) => Number(value) * 255);
+  const rgb = color.match(/^rgba?\(([\d.]+),?\s+([\d.]+),?\s+([\d.]+)/);
+  if (rgb) return rgb.slice(1).map(Number);
+  throw new Error(`Unsupported color: ${color}`);
+};
+const colorDistance = (left: string, right: string) => {
+  const a = colorChannels(left);
+  const b = colorChannels(right);
+  return Math.hypot(
+    (a[0] ?? 0) - (b[0] ?? 0),
+    (a[1] ?? 0) - (b[1] ?? 0),
+    (a[2] ?? 0) - (b[2] ?? 0),
+  );
+};
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/?fixture=table');
 });
 
 for (const theme of ['light', 'dark']) {
+  for (const width of [1100, 375]) {
+    test(`automatic toolbar and pagination APIs: ${theme}, ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/?fixture=table&theme=${theme}`);
+      const demo = page.getByRole('region', { name: 'Table API demo', exact: true });
+      const table = demo.getByRole('table', { name: 'Dynamic pagination', exact: true });
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(10);
+      await table.getByRole('checkbox', { name: 'Select row: 0', exact: true }).check();
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(14);
+      await expect(
+        table.getByRole('checkbox', { name: 'Select row: 0', exact: true }),
+      ).toBeChecked();
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(10);
+      const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-data-table")][1]');
+      await root.getByRole('button', { name: 'Next page', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(4);
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await root.getByRole('textbox', { name: 'Search table' }).fill('00000');
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(1);
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(1);
+      await expect(
+        table.getByRole('checkbox', { name: 'Select row: 0', exact: true }),
+      ).toBeChecked();
+      const pages = demo.getByRole('navigation', { name: 'Unknown pages' });
+      await expect(pages).toHaveAttribute('id', 'unknown-total-pages');
+      await expect(pages).toHaveCSS('margin-top', '12px');
+      await expect(pages.getByRole('button', { name: 'Next page', exact: true })).toBeDisabled();
+
+      const selections = page.getByRole('region', {
+        name: 'Controlled selection demos',
+        exact: true,
+      });
+      for (const [label, searchName, rowLabel] of [
+        ['成员选择', '搜索表格', '选择行: 1'],
+        ['Member selection', 'Search table', 'Select row: 1'],
+      ]) {
+        const selectedTable = selections.getByRole('table', { name: label, exact: true });
+        const root = selectedTable.locator(
+          'xpath=ancestor::div[contains(@class, "leaf-data-table")][1]',
+        );
+        await selectedTable.getByRole('checkbox', { name: rowLabel, exact: true }).check();
+        await root.getByRole('textbox', { name: searchName }).fill('Alex');
+        await expect(selectedTable.locator('tbody tr[data-row-id]')).toHaveCount(1);
+        await expect(
+          selectedTable.getByRole('checkbox', { name: rowLabel, exact: true }),
+        ).toBeChecked();
+        await expect(root.locator('.leaf-data-table__toolbar')).toContainText('1');
+      }
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+    });
+  }
+}
+
+for (const theme of ['light', 'dark']) {
   for (const compact of [false, true]) {
-    test(`borderless defaults and striped row dividers: ${theme}, ${compact ? 'compact' : 'comfortable'}`, async ({
+    test(`default frame, shadow and striped row dividers: ${theme}, ${compact ? 'compact' : 'comfortable'}`, async ({
       page,
     }, testInfo) => {
       await page.goto(`/?fixture=table&theme=${theme}${compact ? '&compact=1' : ''}`);
@@ -15,8 +91,27 @@ for (const theme of ['light', 'dark']) {
       for (const name of ['Team members']) {
         const table = page.getByRole('table', { name, exact: true });
         const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--md")][1]');
-        await expect(root).toHaveCSS('border-top-width', '0px');
-        await expect(root).toHaveCSS('border-radius', '0px');
+        await expect(root).toHaveCSS('border-top-width', '1px');
+        await expect(root).toHaveCSS('border-radius', '10px');
+        const shadow = await root.evaluate((node) => getComputedStyle(node).boxShadow);
+        expect(shadow).toContain('0px 3px 7px');
+        expect(shadow).toContain('0px 1px 2px');
+        const colors = await root.evaluate((node) => {
+          const divider = document.createElement('div');
+          divider.style.backgroundColor = 'var(--leaf-color-divider)';
+          document.body.append(divider);
+          const dividerColor = getComputedStyle(divider).backgroundColor;
+          divider.remove();
+          const style = getComputedStyle(node);
+          return {
+            border: style.borderTopColor,
+            divider: dividerColor,
+            surface: style.backgroundColor,
+          };
+        });
+        const frameDistance = colorDistance(colors.border, colors.surface);
+        expect(frameDistance).toBeGreaterThan(0);
+        expect(frameDistance).toBeLessThan(colorDistance(colors.divider, colors.surface));
         await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
         await expect(table.locator('thead th').first()).toHaveCSS(
           'background-color',
@@ -39,12 +134,14 @@ for (const theme of ['light', 'dark']) {
       const table = demo.getByRole('table');
       const root = demo.locator('.leaf-table');
       for (const bordered of [false, true]) {
-        await demo.getByRole('checkbox', { name: 'Borders', exact: true }).setChecked(bordered);
+        await demo
+          .getByRole('checkbox', { name: 'Column dividers', exact: true })
+          .setChecked(bordered);
         for (const striped of [false, true]) {
           await demo.getByRole('checkbox', { name: 'Striped rows' }).setChecked(striped);
           await page.mouse.move(0, 0);
-          await expect(root).toHaveCSS('border-top-width', bordered ? '1px' : '0px');
-          await expect(root).toHaveCSS('border-radius', bordered ? '10px' : '0px');
+          await expect(root).toHaveCSS('border-top-width', '1px');
+          await expect(root).toHaveCSS('border-radius', '10px');
           await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
           const cells = table.locator('tbody tr > td:first-child');
           const header = table.locator('thead th').first();
@@ -74,7 +171,8 @@ for (const theme of ['light', 'dark']) {
               await cells.first().evaluate((node) => getComputedStyle(node).backgroundColor),
             ).not.toBe(surface);
           }
-          // Both ordinary and striped rows must visibly respond to hover.
+          // Both ordinary and striped rows must visibly respond to hover and resolve to one color.
+          const hoverColors: string[] = [];
           for (const cell of [cells.nth(0), cells.nth(1)]) {
             await cell.evaluate((node) =>
               Promise.all(
@@ -86,12 +184,19 @@ for (const theme of ['light', 'dark']) {
             await expect
               .poll(() => cell.evaluate((node) => getComputedStyle(node).backgroundColor))
               .not.toBe(rest);
+            await cell.evaluate((node) =>
+              Promise.all(
+                node.getAnimations().map((animation) => animation.finished.catch(() => {})),
+              ),
+            );
+            hoverColors.push(await cell.evaluate((node) => getComputedStyle(node).backgroundColor));
             await page.mouse.move(0, 0);
             await expect(cell).toHaveCSS('background-color', rest);
           }
+          expect(hoverColors[0]).toBe(hoverColors[1]);
         }
       }
-      await demo.getByRole('checkbox', { name: 'Borders', exact: true }).uncheck();
+      await demo.getByRole('checkbox', { name: 'Column dividers', exact: true }).uncheck();
       await demo.screenshot({
         path: testInfo.outputPath(`table-${theme}-${compact ? 'compact' : 'comfortable'}.png`),
       });
@@ -120,10 +225,26 @@ test('data tables fill centered containers without collapsing or overflowing', a
       expect(geometry.width).toBeGreaterThan(200);
       expect(Math.abs(geometry.width - geometry.available)).toBeLessThan(2);
       expect(geometry.table).toBeGreaterThanOrEqual(geometry.client - 1);
-      expect(geometry.radius).toBe('0px');
+      expect(geometry.radius).toBe('10px');
       if (width === 375) expect(geometry.scroll).toBeGreaterThan(geometry.client);
     }
   }
+});
+
+test('basic and pinned-column demos share the same default header and row heights', async ({
+  page,
+}) => {
+  const measure = (name: string, page: import('@playwright/test').Page) => {
+    const table = page.getByRole('table', { name });
+    return table.evaluate((node) => ({
+      header: node.querySelector('thead th')?.getBoundingClientRect().height ?? 0,
+      row: node.querySelector('tbody tr')?.getBoundingClientRect().height ?? 0,
+    }));
+  };
+  const basic = await measure('Team members', page);
+  const pinned = await measure('Pinned and resizable columns', page);
+  expect(Math.abs(basic.header - pinned.header), JSON.stringify({ basic, pinned })).toBeLessThan(1);
+  expect(Math.abs(basic.row - pinned.row), JSON.stringify({ basic, pinned })).toBeLessThan(1);
 });
 
 test('keyboard sorting, page selection, filtering, expansion and column visibility share state', async ({
@@ -167,6 +288,7 @@ test('keyboard sorting, page selection, filtering, expansion and column visibili
 test('sticky header and logical pinned columns retain geometry in both directions', async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 640, height: 900 });
   for (const rtl of [false, true]) {
     await page.goto(`/?fixture=table${rtl ? '&rtl=1' : ''}`);
     const table = page.getByRole('table', { name: 'Pinned and resizable columns' });
@@ -176,15 +298,26 @@ test('sticky header and logical pinned columns retain geometry in both direction
     const first = table.locator('tbody tr').first().locator('td[data-pinned="start"]');
     const last = table.locator('tbody tr').first().locator('td[data-pinned="end"]');
     const header = table.locator('thead');
+    const edgeShadows = () =>
+      table.evaluate((node) => {
+        const firstPinned = node.querySelector('td[data-pinned="start"][data-pin-edge]');
+        const lastPinned = node.querySelector('td[data-pinned="end"][data-pin-edge]');
+        return [firstPinned, lastPinned].map((cell) =>
+          cell ? getComputedStyle(cell, '::after').backgroundImage !== 'none' : false,
+        );
+      });
     await expect(first).toHaveCSS('width', '230px');
     await expect(last).toHaveCSS('width', '110px');
     await viewport.scrollIntoViewIfNeeded();
+    await expect.poll(edgeShadows).toEqual([false, true]);
     const before = await first.boundingBox();
     const beforeEnd = await last.boundingBox();
     await viewport.evaluate((node) => {
       node.scrollTop = 180;
-      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -150 : 150;
+      const maximum = node.scrollWidth - node.clientWidth;
+      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -maximum / 2 : maximum / 2;
     });
+    await expect.poll(edgeShadows).toEqual([true, true]);
     const after = await first.boundingBox();
     const afterEnd = await last.boundingBox();
     expect(Math.abs((before?.x ?? 0) - (after?.x ?? 0))).toBeLessThan(2);
@@ -192,6 +325,15 @@ test('sticky header and logical pinned columns retain geometry in both direction
     const viewportBox = await viewport.boundingBox();
     const headerBox = await header.boundingBox();
     expect(Math.abs((viewportBox?.y ?? 0) - (headerBox?.y ?? 0))).toBeLessThan(2);
+    await viewport.evaluate((node) => {
+      const maximum = node.scrollWidth - node.clientWidth;
+      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -maximum : maximum;
+    });
+    await expect.poll(edgeShadows).toEqual([true, false]);
+    await viewport.evaluate((node) => {
+      node.scrollLeft = 0;
+    });
+    await expect.poll(edgeShadows).toEqual([false, true]);
   }
 });
 
@@ -286,6 +428,9 @@ test('rows and columns reorder by keyboard and pointer without replacing table s
   await rowHandle.focus();
   await page.keyboard.press('Space');
   await expect(table.locator('tr[data-dragging]')).toHaveAttribute('data-row-id', 'alex');
+  await expect(
+    page.locator('[role="status"]').filter({ hasText: 'Move to Alex Morgan' }),
+  ).toBeVisible();
   await page.keyboard.press('ArrowDown');
   await expect(
     page.locator('[role="status"]').filter({ hasText: 'Move to Sam Taylor' }),

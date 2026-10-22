@@ -1,7 +1,7 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-input {
-  @include mixins.field('input');
+  @include mixins.field('input', 'primary');
   display: inline-flex;
   align-items: center;
   gap: var(--leaf-component-input-gap, 8px);
@@ -73,14 +73,13 @@
     cursor: pointer;
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       background: var(--leaf-color-surface-muted);
       color: var(--leaf-color-text);
     }
     &:active:not(:disabled) {
-      transform: scale(0.9);
+      background: var(--leaf-color-option-hover);
     }
     &:disabled {
       cursor: not-allowed;

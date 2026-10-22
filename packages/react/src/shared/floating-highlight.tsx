@@ -9,12 +9,13 @@ export function useFloatingHighlight(
   panel: RefObject<HTMLElement | null>,
   activeId: string | undefined,
   revision: string,
+  selector = '[role="option"]',
 ) {
   const [geometry, setGeometry] = useState<Geometry>();
   useBrowserLayoutEffect(() => {
     const node = panel.current;
     if (!open || !node) return;
-    const row = Array.from(node.querySelectorAll<HTMLElement>('[role="option"]')).find(
+    const row = Array.from(node.querySelectorAll<HTMLElement>(selector)).find(
       (option) => option.id === activeId,
     );
     if (!row) {
@@ -46,11 +47,16 @@ export function useFloatingHighlight(
     const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
     observer?.observe(node);
     observer?.observe(row);
+    let ancestor = row.parentElement;
+    while (ancestor && ancestor !== node) {
+      observer?.observe(ancestor);
+      ancestor = ancestor.parentElement;
+    }
     return () => {
       node.removeEventListener('scroll', update);
       observer?.disconnect();
     };
-  }, [open, panel, activeId, revision]);
+  }, [open, panel, activeId, revision, selector]);
   return geometry
     ? ({
         '--leaf-option-highlight-x': `${geometry.x}px`,

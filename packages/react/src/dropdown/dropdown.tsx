@@ -12,7 +12,6 @@ import {
   useCallback,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
   version,
@@ -28,6 +27,7 @@ export interface DropdownItem {
   key: string;
   label?: ReactNode;
   icon?: ReactNode;
+  extra?: ReactNode;
   type?: 'item' | 'divider' | 'group' | 'checkbox' | 'radio';
   children?: readonly DropdownItem[];
   disabled?: boolean;
@@ -64,10 +64,10 @@ const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
       ? [{ ...item, children: undefined }, ...flatten(item.children ?? [])]
       : [item],
   );
-const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 interface NavigationMenu {
   selectedKey?: string;
   title?: ReactNode;
+  variant?: 'default' | 'raised' | 'primary';
 }
 interface DropdownControlProps extends DropdownProps {
   navigation?: NavigationMenu;
@@ -106,6 +106,7 @@ export function DropdownControl({
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const inactive = disabled || children.props.disabled;
   const open = !inactive && (controlled ?? internal);
+  const minimumWidth = popupWidth === undefined ? 'min(220px, calc(100vw - 24px))' : undefined;
   const panels = useRef(new Set<HTMLDivElement>());
   const register = useCallback((node: HTMLDivElement | null) => {
     if (node) panels.current.add(node);
@@ -257,6 +258,7 @@ export function DropdownControl({
         getPopupContainer={getPopupContainer}
         itemRender={itemRender}
         width={popupWidth}
+        minWidth={minimumWidth}
         maxWidth={popupMaxWidth}
         startAtEnd={startAtEnd}
         register={register}
@@ -277,6 +279,7 @@ interface PanelProps extends PopupOptions {
   id: string;
   placement: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'right-start' | 'left-start';
   width?: number | string;
+  minWidth?: CSSProperties['minWidth'];
   maxWidth: number | string;
   startAtEnd?: boolean;
   register: (node: HTMLDivElement | null) => void;
@@ -299,6 +302,7 @@ function MenuPanel({
   id,
   placement,
   width,
+  minWidth,
   maxWidth,
   startAtEnd,
   register,
@@ -326,34 +330,11 @@ function MenuPanel({
   );
   const [active, setActive] = useState<string>();
   const [submenu, setSubmenu] = useState<string>();
-  const [highlight, setHighlight] = useState<CSSProperties>();
   const current = enabled.some((item) => item.key === active)
     ? active
     : startAtEnd
       ? enabled.at(-1)?.key
       : enabled[0]?.key;
-  useBrowserLayoutEffect(() => {
-    const node = panel.current;
-    if (!open || !node) return;
-    const update = () => {
-      const row = Array.from(node.querySelectorAll<HTMLElement>('[data-key]')).find(
-        (item) => item.dataset.key === current,
-      );
-      setHighlight(
-        row
-          ? ({
-              '--leaf-menu-highlight-y': `${row.offsetTop}px`,
-              '--leaf-menu-highlight-height': `${row.offsetHeight}px`,
-            } as CSSProperties)
-          : undefined,
-      );
-    };
-    update();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(update);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [open, current]);
   useEffect(() => {
     if (!open) {
       setSubmenu(undefined);
@@ -421,7 +402,6 @@ function MenuPanel({
     event.stopPropagation();
   };
   const child = rows.find((item) => item.key === submenu);
-  const activeItem = rows.find((item) => item.key === current);
   return (
     <>
       <FloatingPanel
@@ -433,11 +413,13 @@ function MenuPanel({
         id={id}
         placement={placement}
         width={width}
+        minWidth={minWidth}
         maxWidth={maxWidth}
         className={classes(
           'leaf-floating',
           'leaf-dropdown',
           navigation && 'leaf-menu__popup',
+          navigation && `leaf-menu__popup--${navigation.variant ?? 'default'}`,
           popupClassName,
         )}
         position={position}
@@ -452,20 +434,6 @@ function MenuPanel({
         onKeyDown={keyDown}
       >
         {navigation?.title && <div className="leaf-menu__popup-title">{navigation.title}</div>}
-        <div
-          className="leaf-dropdown__highlight"
-          aria-hidden="true"
-          data-ready={Boolean(highlight)}
-          data-danger={activeItem?.danger || undefined}
-          data-selectable={(navigation && !activeItem?.children?.length) || undefined}
-          data-selected={
-            (navigation && activeItem?.key === navigation.selectedKey) ||
-            ((activeItem?.type === 'checkbox' || activeItem?.type === 'radio') &&
-              (activeItem.checked ?? Boolean(checks[activeItem.key]))) ||
-            undefined
-          }
-          style={highlight}
-        />
         {rows.map((item) =>
           item.type === 'divider' ? (
             <hr key={item.key} className="leaf-dropdown__divider" />
@@ -538,9 +506,17 @@ function MenuPanel({
               ) : (
                 item.icon
               )}
-              <span className={navigation ? 'leaf-menu__popup-label' : undefined}>
+              <span
+                className={classes('leaf-dropdown__label', navigation && 'leaf-menu__popup-label')}
+              >
                 {itemRender?.(item) ?? item.label}
               </span>
+              {item.extra != null && (
+                <>
+                  {' '}
+                  <span className="leaf-dropdown__extra">{item.extra}</span>
+                </>
+              )}
               {item.children?.length ? (
                 <ChevronRight size={14} className="leaf-dropdown__arrow" aria-hidden="true" />
               ) : null}
@@ -550,7 +526,11 @@ function MenuPanel({
       </FloatingPanel>
       {child?.children && (
         <MenuPanel
-          navigation={navigation ? { selectedKey: navigation.selectedKey } : undefined}
+          navigation={
+            navigation
+              ? { selectedKey: navigation.selectedKey, variant: navigation.variant }
+              : undefined
+          }
           items={child.children}
           open={open && Boolean(submenu)}
           trigger={submenuTrigger}
@@ -563,6 +543,7 @@ function MenuPanel({
           itemRender={itemRender}
           maxWidth={maxWidth}
           width={navigation ? width : undefined}
+          minWidth={minWidth}
           register={register}
           unregister={unregister}
           checks={checks}

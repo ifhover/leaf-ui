@@ -5,6 +5,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { DatePicker } from './datepicker';
 
 describe('DatePicker', () => {
+  it('marks the card panel preset while keeping the same calendar dialog', async () => {
+    render(<DatePicker aria-label="Card date" panelVariant="card" />);
+    await userEvent.click(screen.getByRole('combobox', { name: 'Card date' }));
+    expect(screen.getByRole('dialog', { name: '选择日期' }).closest('.leaf-floating')).toHaveClass(
+      'leaf-date-picker__panel',
+      'leaf-picker-panel--card',
+    );
+  });
   it('toggles with the calendar icon and clears pending input without committing it first', async () => {
     const change = vi.fn();
     render(<DatePicker defaultValue={new Date(2026, 9, 3)} onChange={change} />);

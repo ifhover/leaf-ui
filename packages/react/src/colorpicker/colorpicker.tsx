@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { defaultColors } from '../colors';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
@@ -62,7 +63,7 @@ type HSV = { h: number; s: number; v: number; a: number };
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 export function SolidColorPicker({
   value,
-  defaultValue = '#20834a',
+  defaultValue = defaultColors.light.primary,
   onChange,
   onChangeComplete,
   format: formatProp,
@@ -113,8 +114,8 @@ export function SolidColorPicker({
     defaultOpen,
   );
   const id = `${useId()}-color`;
-  const color = new TinyColor(current || '#20834a');
-  const hsv = color.isValid ? color.toHsv() : new TinyColor('#20834a').toHsv();
+  const color = new TinyColor(current || defaultColors.light.primary);
+  const hsv = color.isValid ? color.toHsv() : new TinyColor(defaultColors.light.primary).toHsv();
   const [rememberedHue, setRememberedHue] = useState(hsv.h);
   const [coordinates, setCoordinates] = useState<{ value: string; hsv: HSV }>();
   const activeHsv = {
@@ -408,7 +409,7 @@ export function SolidColorPicker({
             {
               label: messages.colorPicker.presets,
               colors: [
-                '#20834a',
+                defaultColors.light.primary,
                 '#13a8a8',
                 '#1677ff',
                 '#7654c6',

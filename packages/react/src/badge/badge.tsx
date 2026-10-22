@@ -1,6 +1,7 @@
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
+import { type FeedbackTypeInput, normalizeFeedbackType } from '../shared/feedback';
 import { useContentTransition } from '../shared/presence';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
@@ -8,7 +9,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   max?: number;
   showZero?: boolean;
   dot?: boolean;
-  status?: 'success' | 'warning' | 'error' | 'info' | 'default';
+  status?: FeedbackTypeInput | 'default';
   text?: ReactNode;
   color?: string;
 }
@@ -26,6 +27,7 @@ export function Badge(rawProps: BadgeProps) {
     style,
     ...props
   } = useComponentProps('Badge', rawProps);
+  const normalizedStatus = status && status !== 'default' ? normalizeFeedbackType(status) : status;
   const number = useRef<HTMLSpanElement>(null);
   const hasCount = count !== undefined && count !== '' && (count !== 0 || showZero);
   const visible = dot || status || hasCount;
@@ -35,7 +37,7 @@ export function Badge(rawProps: BadgeProps) {
     <span
       {...props}
       className={classes('leaf-badge', children != null && 'leaf-badge--attached', className)}
-      data-status={status}
+      data-status={normalizedStatus}
       style={{ ...(color ? { '--leaf-badge-color': color } : {}), ...style }}
     >
       {children}
@@ -43,7 +45,7 @@ export function Badge(rawProps: BadgeProps) {
         <span
           className={classes(
             'leaf-badge__indicator',
-            (dot || status) && 'leaf-badge__indicator--dot',
+            (dot || normalizedStatus) && 'leaf-badge__indicator--dot',
           )}
           role="status"
           aria-label={
@@ -56,7 +58,7 @@ export function Badge(rawProps: BadgeProps) {
           }
           title={count === undefined ? undefined : String(count)}
         >
-          {!dot && !status && (
+          {!dot && !normalizedStatus && (
             <span ref={number} className="leaf-badge__count">
               {display}
             </span>

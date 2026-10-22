@@ -91,7 +91,7 @@
     inset: 0;
     pointer-events: none;
     color: #f4f5f7;
-    font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+    font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
   }
   &__header {
     position: absolute;
@@ -203,7 +203,7 @@
     background: transparent;
     border: 0;
     border-radius: 6px;
-    font: 12px/1.5 var(--leaf-font-family);
+    font: 12px/var(--leaf-line-height-sm) var(--leaf-font-family);
     font-variant-numeric: tabular-nums;
     cursor: pointer;
     &:focus-visible {

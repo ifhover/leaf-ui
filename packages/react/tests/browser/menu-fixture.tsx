@@ -2,11 +2,15 @@ import { Button, Input, Menu, MenuGroup, Space, Text } from '@ifhover/leaf-ui';
 import { BookOpen, Folder, House, Palette } from 'lucide-react';
 import { useState } from 'react';
 import { MenuBasic as MenuBasicEn } from '../../../../apps/docs/src/examples/en/menu/basic';
+import { MenuRaised as MenuRaisedEn } from '../../../../apps/docs/src/examples/en/menu/raised';
 import { MenuBasic } from '../../../../apps/docs/src/examples/menu/basic';
+import { MenuRaised } from '../../../../apps/docs/src/examples/menu/raised';
 
 export function MenuFixture() {
   const [collapsed, setCollapsed] = useState(false);
   const [created, setCreated] = useState(false);
+  if (new URLSearchParams(location.search).has('raisedExample'))
+    return new URLSearchParams(location.search).has('english') ? <MenuRaisedEn /> : <MenuRaised />;
   if (new URLSearchParams(location.search).has('basic'))
     return new URLSearchParams(location.search).has('english') ? <MenuBasicEn /> : <MenuBasic />;
   if (new URLSearchParams(location.search).has('popup')) return <MenuPopupFixture />;
@@ -52,12 +56,20 @@ function MenuPopupFixture() {
   return (
     <Menu
       aria-label="Popup navigation"
-      mode={collapsed ? 'vertical' : 'horizontal'}
+      variant={
+        new URLSearchParams(location.search).has('primary')
+          ? 'primary'
+          : new URLSearchParams(location.search).has('raised')
+            ? 'raised'
+            : 'default'
+      }
       collapsed={collapsed}
       style={
         new URLSearchParams(location.search).has('center') ? { marginInline: 'auto' } : undefined
       }
-      defaultSelectedKey="components"
+      defaultSelectedKey={
+        new URLSearchParams(location.search).has('nested') ? 'examples' : 'components'
+      }
       items={[
         { key: 'home', label: 'Home', icon: <House /> },
         {

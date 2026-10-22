@@ -14,6 +14,8 @@ import {
   Textarea,
   TimePicker,
   Transfer,
+  Tree,
+  TreeSelect,
 } from '@ifhover/leaf-ui';
 
 export function SelectionFixture() {
@@ -37,6 +39,22 @@ export function SelectionFixture() {
             { value: 'alice', label: 'Alice' },
             { value: 'bob', label: 'Bob' },
             { value: 'disabled', label: 'Disabled', disabled: true },
+          ]}
+        />
+        <TreeSelect
+          aria-label="Selected tree person"
+          defaultValue="alice"
+          options={[
+            { value: 'alice', label: 'Tree Alice' },
+            { value: 'bob', label: 'Tree Bob' },
+          ]}
+        />
+        <Tree
+          aria-label="Selected tree"
+          defaultSelectedKeys={['alice']}
+          data={[
+            { key: 'alice', title: 'Tree Alice' },
+            { key: 'bob', title: 'Tree Bob' },
           ]}
         />
         <TimePicker aria-label="Selected time" defaultValue="09:00" />

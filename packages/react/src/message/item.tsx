@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeedbackIcon } from '../alert/alert';
 import { ConfigContext, useLeafConfig } from '../config-provider/context';
+import { normalizeFeedbackType } from '../shared/feedback';
 import { inertProps } from '../shared/inert';
 import { usePresence } from '../shared/presence';
 import { leafThemeVariables } from '../theme';
@@ -25,7 +26,8 @@ export function MessageItem({
   );
   const ref = useRef<HTMLDivElement>(null);
   const present = usePresence(entry.open, ref);
-  const type = entry.type ?? 'info';
+  const rawType = entry.type ?? 'info';
+  const type = rawType === 'loading' ? rawType : normalizeFeedbackType(rawType);
   const [hover, setHover] = useState(false);
   const duration = entry.duration ?? (entry.type === 'loading' ? 0 : 3);
   const remaining = useRef(duration * 1000);
@@ -72,7 +74,7 @@ export function MessageItem({
           <div
             className={`leaf-message leaf-message--${type}`}
             data-state={entry.open ? 'open' : 'closing'}
-            role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
+            role={type === 'danger' || type === 'warning' ? 'alert' : 'status'}
             onPointerEnter={() => setHover(true)}
             onPointerLeave={() => setHover(false)}
             onFocus={() => setHover(true)}

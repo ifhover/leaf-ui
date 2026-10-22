@@ -154,6 +154,8 @@
   },
   "tabs": {
     "moreTabs": "その他のタブ",
+    "scrollLeft": "タブを左にスクロール",
+    "scrollRight": "タブを右にスクロール",
     "addTab": "タブを追加",
     "reorder": "タブ「{label}」を並べ替え",
     "closeLabel": "タブ「{label}」を閉じる"

@@ -37,7 +37,7 @@
     align-items: center;
     align-self: start;
     min-height: var(--leaf-control-height);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height);
   }
   &__label > span {
     width: max-content;
@@ -76,14 +76,14 @@
     margin-top: 6px;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
     overflow-wrap: anywhere;
   }
   &__summary-description {
     margin-top: 4px;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
     overflow-wrap: anywhere;
   }
   &__error {

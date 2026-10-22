@@ -6,7 +6,7 @@ for (const mode of ['light', 'dark'] as const) {
     page,
   }) => {
     await page.goto(`/?fixture=warning&theme=${mode}`);
-    const expected = mode === 'light' ? 'rgb(250, 173, 20)' : 'rgb(255, 197, 61)';
+    const expected = mode === 'light' ? 'rgb(211, 139, 17)' : 'rgb(255, 197, 61)';
     for (const selector of ['.leaf-alert__icon', '.leaf-result__icon'])
       await expect(page.locator(selector)).toHaveCSS('color', expected);
     await expect(page.locator('.leaf-input')).toHaveCSS('border-color', expected);

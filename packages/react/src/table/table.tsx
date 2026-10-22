@@ -23,7 +23,7 @@ import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/def
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
-  bordered?: boolean;
+  columnDividers?: boolean;
   striped?: boolean;
   stickyHeader?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
@@ -35,7 +35,11 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
 }
 
 export type TableRowProps = DataTableRowProps;
-export type TableCellProps = DataTableCellProps;
+export type TableCellProps = DataTableCellProps & {
+  pinned?: 'start' | 'end';
+  pinOffset?: number;
+  pinEdge?: boolean;
+};
 
 export interface TableColumnHeaderProps
   extends Omit<ThHTMLAttributes<HTMLTableCellElement>, 'align'> {
@@ -57,7 +61,7 @@ export interface TableErrorProps extends TableStateProps {
 const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function TableRootControl(
   {
     size = 'md',
-    bordered = false,
+    columnDividers = false,
     striped = true,
     stickyHeader = true,
     maxHeight,
@@ -76,7 +80,47 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
   const t = useText();
   const element = useRef<HTMLTableElement>(null);
   const tableRef = useMergedRef(element, ref);
+  const viewport = useRef<HTMLDivElement>(null);
+  const viewportRef = useMergedRef(viewport, scrollRef);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [scrollEdges, setScrollEdges] = useState({ start: true, end: true });
+  useEffect(() => {
+    const node = viewport.current;
+    if (!node) return;
+    let frame: number | undefined;
+    const update = () => {
+      frame = undefined;
+      const maximum = Math.max(0, node.scrollWidth - node.clientWidth);
+      const offset = Math.min(maximum, Math.max(0, Math.abs(node.scrollLeft)));
+      const next = {
+        start: maximum <= 1 || offset <= 1,
+        end: maximum <= 1 || offset >= maximum - 1,
+      };
+      setScrollEdges((previous) =>
+        previous.start === next.start && previous.end === next.end ? previous : next,
+      );
+    };
+    const schedule = () => {
+      if (frame === undefined) frame = requestAnimationFrame(update);
+    };
+    update();
+    node.addEventListener('scroll', schedule, { passive: true });
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? undefined
+        : new ResizeObserver(() => {
+            schedule();
+          });
+    observer?.observe(node);
+    if (element.current) observer?.observe(element.current);
+    window.addEventListener('resize', schedule);
+    return () => {
+      node.removeEventListener('scroll', schedule);
+      observer?.disconnect();
+      window.removeEventListener('resize', schedule);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+    };
+  }, []);
   useEffect(() => {
     const table = element.current;
     if (!table || !stickyHeader) {
@@ -107,16 +151,18 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
       className={classes(
         'leaf-table',
         `leaf-table--${size}`,
-        bordered && 'leaf-table--bordered',
+        columnDividers && 'leaf-table--column-dividers',
         striped && 'leaf-table--striped',
         stickyHeader && 'leaf-table--sticky',
         className,
       )}
       style={style}
       data-loading={loading || undefined}
+      data-scroll-start={scrollEdges.start || undefined}
+      data-scroll-end={scrollEdges.end || undefined}
     >
       <Scrollbar
-        ref={scrollRef}
+        ref={viewportRef}
         className="leaf-table__scroll-area"
         viewportClassName="leaf-table__viewport"
         contentStyle={{ minWidth }}
@@ -194,9 +240,10 @@ function cellStyle(
 ): CSSProperties {
   return {
     textAlign: align,
+    ...style,
+    ...(pinned ? { position: 'sticky' as const } : {}),
     ...(pinned === 'start' ? { insetInlineStart: pinOffset } : {}),
     ...(pinned === 'end' ? { insetInlineEnd: pinOffset } : {}),
-    ...style,
   };
 }
 

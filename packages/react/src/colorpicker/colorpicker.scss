@@ -361,7 +361,7 @@
   align-items: center;
   gap: 12px;
   margin-block: 12px;
-  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
 }
 .leaf-color-picker__gradient .leaf-color-picker {
   width: 100%;

@@ -75,6 +75,7 @@ interface CalendarPanelProps {
   disabledDate?: (date: Date) => boolean;
   cellRender?: (date: Date) => ReactNode;
   showToday?: boolean;
+  fullLayout?: boolean;
 }
 export function CalendarPanel({
   value,
@@ -94,6 +95,7 @@ export function CalendarPanel({
   disabledDate,
   cellRender,
   showToday = false,
+  fullLayout = false,
 }: CalendarPanelProps) {
   const { locale, messages, weekStartsOn, direction } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
@@ -283,77 +285,114 @@ export function CalendarPanel({
     .map((date) => startOfPeriod(date, cellMode).getTime());
   const start = times.length === 2 ? Math.min(...times) : undefined;
   const end = times.length === 2 ? Math.max(...times) : undefined;
+  const headingControls = (
+    <>
+      {view === 'date' && (
+        <button
+          type="button"
+          className="leaf-calendar__heading leaf-calendar__heading--month"
+          aria-label={messages.calendar.month}
+          onClick={() => setView('month')}
+        >
+          {new Intl.DateTimeFormat(locale, { month: fullLayout ? 'long' : 'short' }).format(
+            visible,
+          )}
+        </button>
+      )}
+      <button
+        type="button"
+        className={classes(
+          'leaf-calendar__heading',
+          view === 'date' ? 'leaf-calendar__heading--year' : 'leaf-calendar__heading--range',
+        )}
+        aria-label={view === 'year' ? undefined : messages.calendar.year}
+        disabled={view === 'year'}
+        onClick={() => setView('year')}
+      >
+        {view === 'year' ? `${decade} – ${decade + 11}` : visible.getFullYear()}
+      </button>
+    </>
+  );
+  const previousControl = (
+    <button
+      type="button"
+      className="leaf-date-picker__nav"
+      aria-label={
+        view === 'date'
+          ? messages.calendar.previousMonth
+          : view === 'month'
+            ? messages.calendar.previousYear
+            : messages.calendar.previousYears
+      }
+      onClick={() => navigate(-1)}
+    >
+      <ChevronLeft size={16} aria-hidden="true" />
+    </button>
+  );
+  const nextControl = (
+    <button
+      type="button"
+      className="leaf-date-picker__nav"
+      aria-label={
+        view === 'date'
+          ? messages.calendar.nextMonth
+          : view === 'month'
+            ? messages.calendar.nextYear
+            : messages.calendar.nextYears
+      }
+      onClick={() => navigate(1)}
+    >
+      <ChevronRight size={16} aria-hidden="true" />
+    </button>
+  );
+  const todayControl = showToday ? (
+    <button
+      type="button"
+      className="leaf-calendar__today"
+      onClick={() => {
+        const today = new Date();
+        setVisible(today);
+        setActive(today);
+      }}
+    >
+      {messages.calendar.today}
+    </button>
+  ) : null;
+  const extraControl =
+    headerExtra != null ? <span className="leaf-calendar__extra">{headerExtra}</span> : null;
   return (
     <div
       ref={root}
       data-view={view}
       className={classes('leaf-calendar', range && 'leaf-calendar--range')}
     >
-      <div className="leaf-date-picker__header">
-        <button
-          type="button"
-          className="leaf-date-picker__nav"
-          aria-label={
-            view === 'date'
-              ? messages.calendar.previousMonth
-              : view === 'month'
-                ? messages.calendar.previousYear
-                : messages.calendar.previousYears
-          }
-          onClick={() => navigate(-1)}
-        >
-          <ChevronLeft size={16} aria-hidden="true" />
-        </button>
-        <div className="leaf-calendar__headings" aria-live="polite">
-          {view === 'date' && (
-            <button
-              type="button"
-              className="leaf-calendar__heading"
-              aria-label={messages.calendar.month}
-              onClick={() => setView('month')}
-            >
-              {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
-            </button>
-          )}
-          <button
-            type="button"
-            className="leaf-calendar__heading"
-            aria-label={view === 'year' ? undefined : messages.calendar.year}
-            disabled={view === 'year'}
-            onClick={() => setView('year')}
-          >
-            {view === 'year' ? `${decade} – ${decade + 11}` : visible.getFullYear()}
-          </button>
+      {fullLayout ? (
+        <div className="leaf-date-picker__header leaf-calendar__header">
+          <div className="leaf-calendar__title">
+            <div className="leaf-calendar__headings" aria-live="polite">
+              {headingControls}
+            </div>
+            {extraControl}
+          </div>
+          <div className="leaf-calendar__actions">
+            {todayControl}
+            <div className="leaf-calendar__nav-group">
+              {previousControl}
+              {nextControl}
+            </div>
+          </div>
         </div>
-        <button
-          type="button"
-          className="leaf-date-picker__nav"
-          aria-label={
-            view === 'date'
-              ? messages.calendar.nextMonth
-              : view === 'month'
-                ? messages.calendar.nextYear
-                : messages.calendar.nextYears
-          }
-          onClick={() => navigate(1)}
-        >
-          <ChevronRight size={16} aria-hidden="true" />
-        </button>
-        {showToday && (
-          <button
-            type="button"
-            className="leaf-calendar__today"
-            onClick={() => {
-              const today = new Date();
-              setVisible(today);
-              setActive(today);
-            }}
-          >
-            {messages.calendar.today}
-          </button>
-        )}
-        {headerExtra != null && <span className="leaf-calendar__extra">{headerExtra}</span>}
-      </div>
+      ) : (
+        <div className="leaf-date-picker__header">
+          {previousControl}
+          <div className="leaf-calendar__headings" aria-live="polite">
+            {headingControls}
+          </div>
+          {nextControl}
+          {todayControl}
+          {extraControl}
+        </div>
+      )}
       {view === 'date' && (
         <div className="leaf-calendar__weekdays">
           {Array.from(

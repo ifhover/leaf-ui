@@ -5,8 +5,8 @@
   border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius-md));
   color: var(--leaf-component-collapse-color, var(--leaf-color-text));
   background: var(--leaf-component-collapse-background, var(--leaf-color-surface));
-  font: var(--leaf-component-collapse-font-size, var(--leaf-current-font-size))/1.6
-    var(--leaf-font-family);
+  font: var(--leaf-component-collapse-font-size, var(--leaf-current-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
   &--bordered {
     border: var(--leaf-component-collapse-border-width, var(--leaf-border-width, 1px)) solid
       var(
@@ -35,7 +35,8 @@
     border: 0;
     background: transparent;
     color: inherit;
-    font: var(--leaf-font-weight) 1em/1.5 var(--leaf-font-family);
+    font: var(--leaf-font-weight) 1em var(--leaf-font-family);
+    line-height: var(--leaf-line-height);
     text-align: start;
     cursor: pointer;
     transition:

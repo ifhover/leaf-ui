@@ -6,12 +6,15 @@ import { JSDOM } from 'jsdom';
 const root = path.resolve(import.meta.dirname, '../../..'),
   assets = path.join(root, 'apps/docs/docs/public/design');
 const tokens = JSON.parse(await readFile(path.join(assets, 'leaf.tokens.json'), 'utf8'));
-assert.equal(tokens.light.color.primary.$value.hex, '#20834a');
+assert.equal(tokens.light.color.primary.$value.hex, '#1e964f');
 assert.equal(tokens.dark.color.primary.$value.hex, '#83cf9e');
-assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 36);
+assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 34);
 assert.equal(tokens.compact.dimension['control-height'].$value.value, 30);
-assert.equal(tokens.comfortable.dimension['density-option-height'].$value.value, 32);
+assert.equal(tokens.comfortable.dimension['density-option-height'].$value.value, 30);
 assert.equal(tokens.compact.dimension['density-option-height'].$value.value, 26);
+assert.equal(tokens.foundation.fontSize.$value.value, 14);
+assert.equal(tokens.foundation.lineHeight.$type, 'dimension');
+assert.deepEqual(tokens.foundation.lineHeight.$value, { value: 20, unit: 'px' });
 for (const mode of ['light', 'dark']) {
   for (const value of Object.values(tokens[mode].color)) {
     assert.equal(value.$type, 'color');
@@ -26,9 +29,37 @@ for (const mode of ['light', 'dark']) {
     assert.ok(dom.window.document.querySelector('title')?.textContent);
     assert.ok(dom.window.document.querySelectorAll('text').length > 10);
     assert.ok(dom.window.document.querySelectorAll('g[id]').length > 10);
+    if (sheet === 'foundations')
+      assert.ok(content.includes('Body 14 / 20'), `${mode} foundations include the 20px line grid`);
+    if (sheet === 'components') {
+      assert.equal(dom.window.document.querySelector('#button-soft-default'), null);
+      const outlineDefault = dom.window.document.querySelector('#button-outline-default');
+      const outlineHover = dom.window.document.querySelector('#button-outline-hover');
+      const outlinePressed = dom.window.document.querySelector('#button-outline-pressed');
+      assert.ok(outlineDefault?.querySelector('rect')?.getAttribute('filter'));
+      assert.equal(
+        outlineHover?.querySelector('rect')?.getAttribute('fill'),
+        outlineDefault.querySelector('rect').getAttribute('fill'),
+      );
+      assert.equal(
+        outlineHover?.querySelector('text')?.getAttribute('fill'),
+        outlineDefault.querySelector('text').getAttribute('fill'),
+      );
+      assert.notEqual(
+        outlinePressed?.querySelector('rect')?.getAttribute('stroke'),
+        outlineDefault.querySelector('rect').getAttribute('stroke'),
+      );
+      assert.equal(
+        outlinePressed?.querySelector('text')?.getAttribute('fill'),
+        outlineDefault.querySelector('text').getAttribute('fill'),
+      );
+    }
     dom.window.close();
   }
 }
+const plugin = await readFile(path.join(root, 'design/figma/code.js'), 'utf8');
+assert.ok(plugin.includes("['solid', 'outline', 'ghost']"));
+assert.ok(!plugin.includes("['solid', 'soft', 'outline', 'ghost']"));
 const zip = await readFile(path.join(assets, 'leaf-figma-plugin.zip'));
 assert.equal(zip.readUInt32LE(0), 0x04034b50);
 const end = zip.length - 22;

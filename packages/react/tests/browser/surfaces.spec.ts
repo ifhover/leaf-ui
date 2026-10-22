@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 import axe from 'axe-core';
 
 async function violations(page: Page) {
@@ -11,6 +11,38 @@ async function violations(page: Page) {
 
 test.use({ viewport: { width: 1100, height: 1000 } });
 test.setTimeout(120_000);
+
+async function expectQuietDialog(
+  page: Page,
+  dialog: Locator,
+  cancelText = 'Cancel',
+  cancelVariant: 'outline' = 'outline',
+) {
+  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('border-bottom-width', '0px');
+  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('border-top-width', '0px');
+  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  const cancel = dialog.getByRole('button', { name: cancelText, exact: true });
+  await expect(cancel).toHaveClass(new RegExp(`leaf-button--${cancelVariant}`));
+  await expect(cancel).toHaveCSS('border-top-width', '1px');
+  expect(await cancel.evaluate((element) => getComputedStyle(element).borderTopColor)).not.toBe(
+    'rgba(0, 0, 0, 0)',
+  );
+  const backdrop = page.locator('.leaf-modal-backdrop:visible');
+  await expect(backdrop).toHaveCSS('backdrop-filter', 'blur(12px)', { timeout: 20_000 });
+  const [red = 0, green = 0, blue = 0, alpha = 0] = await backdrop.evaluate((element) => {
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) throw new Error('Canvas context unavailable');
+    context.fillStyle = getComputedStyle(element).backgroundColor;
+    context.fillRect(0, 0, 1, 1);
+    return [...context.getImageData(0, 0, 1, 1).data];
+  });
+  expect(Math.max(red, green, blue) - Math.min(red, green, blue)).toBeLessThanOrEqual(4);
+  expect(alpha).toBeGreaterThan(0);
+  expect(alpha).toBeLessThan(60);
+}
 
 test('rich choices retain native form, reset, mouse and keyboard behavior', async ({ page }) => {
   await page.goto('/?fixture=surfaces');
@@ -48,15 +80,11 @@ test('dialog sections align icons, descriptions and actions, and preserve rich c
   await expect(dialog).toHaveAccessibleDescription(
     'Give the agent an identity, then grant the access it needs.',
   );
-  const header = dialog.locator('.leaf-modal__header');
-  const footer = dialog.locator('.leaf-modal__footer');
   await expect(dialog.locator('.leaf-steps--sm')).toHaveCSS('font-size', '14px');
   await expect(dialog.locator('.leaf-steps__icon').first()).toHaveCSS('width', '24px');
   await expect(dialog.locator('.leaf-checkbox--card').first()).toHaveCSS('box-shadow', 'none');
   await expect(dialog.locator('.leaf-checkbox--card').first()).toHaveCSS('border-radius', '12px');
-  await expect(header).toHaveCSS('border-bottom-width', '1px');
-  await expect(footer).toHaveCSS('border-top-width', '1px');
-  await expect(footer).toHaveCSS('background-color', 'rgb(246, 246, 247)');
+  await expectQuietDialog(page, dialog, 'Back');
   const bounds = await dialog.evaluate((element) => {
     const box = (selector: string) =>
       element.querySelector(selector)?.getBoundingClientRect().toJSON();
@@ -97,8 +125,7 @@ test('API confirmations keep a compact footer and a bare semantic icon in the bo
   expect(text?.x).toBeGreaterThan((icon?.x ?? 0) + (icon?.width ?? 0));
   await expect(dialog.locator('.leaf-confirm-description')).toHaveCSS('font-size', '15px');
   await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '16px');
-  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('border-bottom-width', '0px');
-  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('border-top-width', '0px');
+  await expectQuietDialog(page, dialog, 'Cancel');
   await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '12px');
   await expect(dialog.locator('.leaf-confirm__icon')).toHaveCSS(
     'background-color',
@@ -131,7 +158,7 @@ test('drawer and cards share section styling while spacing-only surfaces stay av
   await expect(drawer.locator('.leaf-drawer__header')).toHaveCSS('border-bottom-width', '1px');
   await expect(drawer.locator('.leaf-drawer__footer')).toHaveCSS(
     'background-color',
-    'rgb(246, 246, 247)',
+    'rgb(245, 245, 245)',
   );
   await drawer.screenshot({ path: `.quality/surface-drawer-${testInfo.project.name}.png` });
   await drawer.press('Escape');
@@ -141,11 +168,25 @@ test('drawer and cards share section styling while spacing-only surfaces stay av
   await expect(plain.locator('.leaf-modal__header')).toHaveCSS('border-bottom-width', '0px');
   await expect(plain.locator('.leaf-modal__footer')).toHaveCSS('border-top-width', '0px');
   await plain.press('Escape');
-  const divided = page.locator('.leaf-card--divided');
-  await expect(divided.locator('.leaf-card__header')).toHaveCSS('border-bottom-width', '1px');
-  await expect(
-    page.locator('.leaf-card:not(.leaf-card--divided)').first().locator('.leaf-card__header'),
-  ).toHaveCSS('border-bottom-width', '0px');
+  await expect(plain).toBeHidden();
+  await page.getByRole('button', { name: 'Divided dialog', exact: true }).click();
+  const dividedDialog = page.getByRole('dialog', { name: 'Divided dialog', exact: true });
+  await expect(dividedDialog.locator('.leaf-modal__header')).toHaveCSS(
+    'border-bottom-width',
+    '1px',
+  );
+  await expect(dividedDialog.locator('.leaf-modal__footer')).toHaveCSS('border-top-width', '1px');
+  await expect(dividedDialog.locator('.leaf-modal__footer')).toHaveCSS(
+    'background-color',
+    'rgb(245, 245, 245)',
+  );
+  await dividedDialog.press('Escape');
+  const card = page
+    .locator('.leaf-card')
+    .filter({ has: page.locator('.leaf-card__footer') })
+    .first();
+  await expect(card.locator('.leaf-card__header')).toHaveCSS('border-bottom-width', '0px');
+  await expect(card.locator('.leaf-card__footer')).toHaveCSS('border-top-width', '0px');
 });
 
 test('theme settings reach portalled section surfaces and dense choices', async ({ page }) => {
@@ -158,13 +199,9 @@ test('theme settings reach portalled section surfaces and dense choices', async 
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
   await expect(dialog).toHaveCSS('border-radius', '6.4px');
   await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-left', '18px');
-  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS(
-    'border-bottom-color',
-    'rgb(100, 110, 120)',
-  );
   const footer = dialog.locator('.leaf-modal__footer');
   const color = await footer.evaluate((element) => getComputedStyle(element).backgroundColor);
-  expect(color).not.toBe('rgb(246, 246, 247)');
+  expect(color).not.toBe('rgb(245, 245, 245)');
   await expect
     .poll(() =>
       dialog.getByRole('button', { name: 'Save access', exact: true }).evaluate((node) => {

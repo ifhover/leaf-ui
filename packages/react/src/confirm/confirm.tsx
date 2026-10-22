@@ -147,6 +147,7 @@ export function ConfirmDialog({
           )}
           <ButtonControl
             type="button"
+            variant="solid"
             {...confirmButtonProps}
             danger={type === 'danger'}
             loading={pending || confirmLoading || confirmButtonProps?.loading}

@@ -17,7 +17,7 @@ export interface LeafTheme {
   motion?: boolean;
   tokens?: LeafThemeTokens;
   spacing?: number;
-  lineHeight?: number;
+  lineHeight?: number | string;
   headingWeight?: number;
   elevation?: 'none' | 'soft' | 'medium';
   breakpoints?: Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', number>>;
@@ -102,7 +102,7 @@ export interface LeafThemeTokens {
   shadowXs?: string;
   shadowMd?: string;
   shadowLg?: string;
-  lineHeight?: number;
+  lineHeight?: number | string;
 }
 
 const defined = <T extends object>(value?: T) =>
@@ -199,6 +199,29 @@ const tokenVariables = {
 
 const length = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
 
+/** Keep the former unitless-number meaning while allowing explicit CSS lengths. */
+function lineHeightVariables(value: number | string): LeafThemeStyle {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0 && value <= 4) {
+    return {
+      '--leaf-line-height': `calc(var(--leaf-font-size) * ${value})`,
+      '--leaf-line-height-sm': `calc(var(--leaf-font-size-sm) * ${value})`,
+      '--leaf-line-height-lg': `calc(var(--leaf-font-size-lg) * ${value})`,
+    };
+  }
+  if (typeof value === 'number') {
+    return {
+      '--leaf-line-height': length(value),
+      '--leaf-line-height-sm': `max(1px, calc(${value}px - 2px))`,
+      '--leaf-line-height-lg': `calc(${value}px + 2px)`,
+    };
+  }
+  return {
+    '--leaf-line-height': value,
+    '--leaf-line-height-sm': 'calc(var(--leaf-line-height) - 2px)',
+    '--leaf-line-height-lg': 'calc(var(--leaf-line-height) + 2px)',
+  };
+}
+
 /** Expand CSS padding without splitting whitespace inside calc()/var(). */
 function paddingSides(value: string) {
   const parts: string[] = [];
@@ -248,7 +271,8 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
     ] as const)
       variables[`--leaf-spacing-${name}`] = `calc(var(--leaf-spacing) * ${scale})`;
   }
-  if (theme.lineHeight !== undefined) variables['--leaf-line-height'] = theme.lineHeight;
+  if (theme.lineHeight !== undefined)
+    Object.assign(variables, lineHeightVariables(theme.lineHeight));
   if (theme.headingWeight !== undefined) variables['--leaf-heading-weight'] = theme.headingWeight;
   if (theme.elevation)
     for (const [name, blur, y] of [
@@ -330,6 +354,10 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   for (const key of Object.keys(tokenVariables) as (keyof LeafThemeTokens)[]) {
     const value = theme.tokens?.[key];
     if (value === undefined) continue;
+    if (key === 'lineHeight') {
+      Object.assign(variables, lineHeightVariables(value));
+      continue;
+    }
     const variable = tokenVariables[key];
     variables[`--leaf-${variable}`] =
       typeof value !== 'number'

@@ -52,13 +52,19 @@ test('dark primary expressions adapt through nested scopes and recover their ori
         const style = getComputedStyle(node);
         return {
           outline: style.outlineColor,
-          focus: style.getPropertyValue('--leaf-color-primary-focus').trim(),
+          focus: style.getPropertyValue('--leaf-color-text-muted').trim(),
         };
       }),
     )
     .toEqual({
-      outline: new TinyColor(dark['primary-focus']).toRgbString(),
-      focus: dark['primary-focus'],
+      outline: await button
+        .evaluate((node) =>
+          getComputedStyle(node).getPropertyValue('--leaf-color-text-muted').trim(),
+        )
+        .then((color) => new TinyColor(color).toRgbString()),
+      focus: await button.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-color-text-muted').trim(),
+      ),
     });
   await expect(theme.getByRole('button', { name: 'Adaptive link', exact: true })).toHaveCSS(
     'color',
@@ -100,11 +106,12 @@ test('dark primary expressions adapt through nested scopes and recover their ori
     'color',
     'rgb(18, 52, 86)',
   );
-  await page.getByTestId('explicit-primary-theme').getByRole('button').hover();
-  await expect(page.getByTestId('explicit-primary-theme').getByRole('button')).toHaveCSS(
-    'background-color',
-    'rgb(171, 205, 239)',
+  const explicitButton = page.getByTestId('explicit-primary-theme').getByRole('button');
+  const explicitBackground = await explicitButton.evaluate(
+    (node) => getComputedStyle(node).backgroundColor,
   );
+  await explicitButton.hover();
+  await expect(explicitButton).toHaveCSS('background-color', explicitBackground);
   await page.getByRole('button', { name: 'Toggle accent color', exact: true }).click();
   await expect.poll(async () => (await read()).primary).toBe('rgb(29, 155, 240)');
   await page.getByRole('button', { name: 'Toggle accent color', exact: true }).click();

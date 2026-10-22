@@ -29,6 +29,37 @@ it('navigates enabled menu items, skips dividers, selects and restores focus', a
   expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
 });
 describe('controlled menus', () => {
+  it('renders trailing content at the end of the row and before submenu affordances', async () => {
+    const selected = vi.fn();
+    render(
+      <Dropdown
+        onSelect={selected}
+        items={[
+          { key: 'copy', label: 'Copy', extra: <span>Ctrl C</span> },
+          {
+            key: 'more',
+            label: 'More',
+            extra: <span>Ctrl M</span>,
+            children: [{ key: 'archive', label: 'Archive' }],
+          },
+        ]}
+      >
+        <Button>Menu</Button>
+      </Dropdown>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const copy = screen.getByRole('menuitem', { name: 'Copy Ctrl C' });
+    expect(copy.querySelector('.leaf-dropdown__extra')).toHaveTextContent('Ctrl C');
+    await userEvent.click(copy);
+    expect(selected).toHaveBeenCalledWith('copy');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const more = screen.getByRole('menuitem', { name: 'More Ctrl M' });
+    expect(more.querySelector('.leaf-dropdown__extra')?.nextElementSibling).toHaveClass(
+      'leaf-dropdown__arrow',
+    );
+  });
+
   it('moves the pointer highlight without stealing keyboard focus or checking disabled items', async () => {
     const change = vi.fn();
     render(

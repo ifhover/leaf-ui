@@ -31,7 +31,7 @@ Browser component entries automatically load theme variables, shared popup style
 
 ## Components
 
-- Button: four variants, icons, loading, disabled, full width and semantic red danger states. Defaults to type="button"; icon-only controls require an accessible label.
+- Button: solid, outlined and link appearances, plus icons, loading, disabled, full width and semantic red danger states. Defaults to the outlined appearance and type="button"; icon-only controls require an accessible label.
 - Input: native input properties and ref, prefix/suffix, error/warning and composition-aware onPressEnter.
 - Textarea: native multiline input, rows, maxLength, resize and validation states.
 - Checkbox: native checked/defaultChecked, disabled, mixed state and form submission.
@@ -48,7 +48,7 @@ Browser component entries automatically load theme variables, shared popup style
 - DateRangePicker: year, month, ISO week, date and date-time ranges with hover previews and text input.
 - Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
 - Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
-- Alert: inline success, info, warning and error feedback.
+- Alert: inline success, info, warning and danger feedback.
 - Message / useMessage: transient feedback, loading and keyed updates.
 - Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
 - Tabs / Menu / BackTop: content and view switching, nested navigation and scroll-to-top.
@@ -62,7 +62,7 @@ Browser component entries automatically load theme variables, shared popup style
 
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
-Single-line controls share sm / md / lg sizes of **30 / 36 / 42px**. The default **36px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
+Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 
 ## Data tables
 
@@ -86,7 +86,7 @@ export function ProjectTable() {
 }
 ```
 
-Tables are borderless and striped by default. Set `bordered` for an outer frame and column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
+Tables use the same softened frame and downward resting shadow as Card by default. Set `bordered` for column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
 
 Migration: replace native `Table`, `Table.Header`, `Table.Body`, `Table.Row`, `Table.Cell` and related named exports with a `DataTable` instance and column definitions. Native Table regional defaults are removed; use `components.DataTable` for presentation defaults. The `theme.components.Table` visual tokens remain available. The former `@ifhover/leaf-ui/table/tanstack` path remains a compatibility alias for `DataTable`.
 
@@ -152,7 +152,7 @@ Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in 
 
 Use Steps, Breadcrumb, Pagination and Tabs for navigation; Tag and Badge for classifications and notifications; Drawer, Loading, Progress and Tooltip for contextual feedback. Calendar supports compact and full layouts with custom schedule content. InputNumber handles numeric ranges, precision and stepping; Input with type="password" supports controlled visibility and custom toggle icons. See the [component overview](https://ifhover.github.io/leaf-ui/en/components/index.html) for examples and API details.
 
-Avatar, Card, Collapse and Tree organize content; Divider separates it. Result presents success, warning, error, information and empty states. The legacy Empty export remains compatible. TreeSelect chooses hierarchical values, and ColorPicker supports color formats, opacity and presets. Skeleton supplies loading placeholders, Popover offers nearby details or actions, and Slider and Rate collect numeric values and ratings. Select popups fit their content by default; popupWidth and popupMaxWidth customize the width. Input supports clear actions and character counts, Tabs supports closable items, and Progress can show indeterminate loading.
+Avatar, Card, Collapse and Tree organize content; Divider separates it. Result presents success, warning, danger, information and empty states. The legacy Empty export remains compatible. TreeSelect chooses hierarchical values, and ColorPicker supports color formats, opacity and presets. Skeleton supplies loading placeholders, Popover offers nearby details or actions, and Slider and Rate collect numeric values and ratings. Select popups fit their content by default; popupWidth and popupMaxWidth customize the width. Input supports clear actions and character counts, Tabs supports closable items, and Progress can show indeterminate loading.
 
 ## Icons
 

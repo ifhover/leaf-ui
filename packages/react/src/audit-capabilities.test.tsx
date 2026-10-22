@@ -44,7 +44,7 @@ describe('audit selection, date and native form capabilities', () => {
   });
   it('keeps a read-only color value locked even with a controlled-open request', async () => {
     const change = vi.fn();
-    render(<ColorPicker defaultValue="#20834a" readOnly open allowClear onChange={change} />);
+    render(<ColorPicker defaultValue="#1e964f" readOnly open allowClear onChange={change} />);
     await userEvent.click(screen.getByRole('button', { name: '选择颜色' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '清除颜色' })).not.toBeInTheDocument();

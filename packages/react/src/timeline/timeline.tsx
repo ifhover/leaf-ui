@@ -1,6 +1,7 @@
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
+import type { FeedbackTypeInput } from '../shared/feedback';
 import { useListMotion } from '../shared/motion';
 import type { LeafThemeStyle } from '../theme';
 export interface TimelineItem {
@@ -8,7 +9,7 @@ export interface TimelineItem {
   label?: ReactNode;
   children: ReactNode;
   dot?: ReactNode;
-  color?: 'primary' | 'success' | 'warning' | 'error' | 'info' | (string & {});
+  color?: 'primary' | FeedbackTypeInput | (string & {});
 }
 export interface TimelineProps extends Omit<HTMLAttributes<HTMLOListElement>, 'onChange'> {
   items: readonly TimelineItem[];
@@ -38,7 +39,7 @@ export function Timeline(rawProps: TimelineProps) {
     primary: 'primary',
     success: 'success',
     warning: 'warning',
-    error: 'danger',
+    danger: 'danger',
     info: 'info',
   };
   return (
@@ -47,32 +48,34 @@ export function Timeline(rawProps: TimelineProps) {
       ref={root}
       className={classes('leaf-timeline', `leaf-timeline--${mode}`, className)}
     >
-      {entries.map((item, index) => (
-        <li
-          key={item.key}
-          data-motion-key={item.key}
-          className="leaf-timeline__item"
-          data-pending={item.key === '__leaf-pending' || undefined}
-          data-side={mode === 'right' || (mode === 'alternate' && index % 2) ? 'right' : 'left'}
-          style={
-            {
-              '--leaf-timeline-color':
-                item.color && item.color in colors
-                  ? `var(--leaf-color-${colors[item.color as keyof typeof colors]})`
-                  : (item.color ??
-                    'var(--leaf-color-primary-indicator, var(--leaf-color-primary))'),
-            } as LeafThemeStyle
-          }
-        >
-          <div className="leaf-timeline__dot" aria-hidden="true">
-            {item.dot}
-          </div>
-          <div className="leaf-timeline__content">
-            {item.label != null && <div className="leaf-timeline__label">{item.label}</div>}
-            {item.children}
-          </div>
-        </li>
-      ))}
+      {entries.map((item, index) => {
+        const color = item.color === 'error' ? 'danger' : item.color;
+        return (
+          <li
+            key={item.key}
+            data-motion-key={item.key}
+            className="leaf-timeline__item"
+            data-pending={item.key === '__leaf-pending' || undefined}
+            data-side={mode === 'right' || (mode === 'alternate' && index % 2) ? 'right' : 'left'}
+            style={
+              {
+                '--leaf-timeline-color':
+                  color && color in colors
+                    ? `var(--leaf-color-${colors[color as keyof typeof colors]})`
+                    : (color ?? 'var(--leaf-color-primary-indicator, var(--leaf-color-primary))'),
+              } as LeafThemeStyle
+            }
+          >
+            <div className="leaf-timeline__dot" aria-hidden="true">
+              {item.dot}
+            </div>
+            <div className="leaf-timeline__content">
+              {item.label != null && <div className="leaf-timeline__label">{item.label}</div>}
+              {item.children}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

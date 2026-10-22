@@ -136,6 +136,7 @@ export function Tour(rawProps: TourProps) {
           )}
           <ButtonControl
             size="sm"
+            variant="solid"
             onClick={() => {
               if (index < steps.length - 1) setIndex(index + 1);
               else {

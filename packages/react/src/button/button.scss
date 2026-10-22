@@ -7,21 +7,14 @@
   );
   --leaf-button-color: var(--leaf-color-primary);
   --leaf-button-ink: var(--leaf-color-primary-ink, var(--leaf-button-color));
-  --leaf-button-ink-hover: var(--leaf-color-primary-ink-hover, var(--leaf-button-hover));
   --leaf-button-ink-active: var(--leaf-color-primary-ink-active, var(--leaf-button-active));
   --leaf-button-fill-border: var(--leaf-color-primary-fill-border, transparent);
   --leaf-button-color-alpha-18: var(--leaf-color-primary-alpha-18);
   --leaf-button-color-alpha-25: var(--leaf-color-primary-alpha-25);
   --leaf-button-color-alpha-42: var(--leaf-color-primary-alpha-42);
   --leaf-button-on-color: var(--leaf-color-on-primary);
-  --leaf-focus-color: var(--leaf-color-primary-focus, var(--leaf-button-color-alpha-42));
-  --leaf-button-hover: var(--leaf-color-primary-hover, var(--leaf-button-color));
+  --leaf-focus-color: var(--leaf-color-text-muted);
   --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
-  --leaf-button-soft-hover: var(--leaf-color-primary-soft-hover, var(--leaf-button-color-alpha-18));
-  --leaf-button-soft-active: var(
-    --leaf-color-primary-soft-active,
-    var(--leaf-button-color-alpha-25)
-  );
   --leaf-button-border: var(--leaf-color-primary-border, var(--leaf-button-color-alpha-42));
   box-sizing: border-box;
   display: inline-flex;
@@ -39,7 +32,7 @@
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-button-font-size, var(--leaf-current-font-size));
   font-weight: var(--leaf-font-weight);
-  line-height: 1.5;
+  line-height: var(--leaf-line-height);
   text-decoration: none;
   white-space: nowrap;
   vertical-align: middle;
@@ -47,15 +40,15 @@
   user-select: none;
   appearance: none;
   transition:
-    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    color var(--leaf-motion-color) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
+    opacity var(--leaf-motion-color) var(--leaf-motion-easing);
   @include mixins.control-size;
 
   &:focus-visible {
-    @include mixins.focus-ring(var(--leaf-button-color));
+    @include mixins.focus-ring;
   }
   &:disabled {
     cursor: not-allowed;
@@ -64,17 +57,6 @@
   &[data-loading] {
     cursor: default;
     opacity: 1;
-  }
-  &__wave {
-    position: absolute;
-    z-index: 1;
-    inset: calc(-1 * var(--leaf-button-border-width));
-    box-sizing: border-box;
-    border-radius: inherit;
-    color: var(--leaf-button-color);
-    box-shadow: 0 0 0 0 currentColor;
-    opacity: 0;
-    pointer-events: none;
   }
   &__content {
     display: inline-flex;
@@ -117,18 +99,13 @@
   &--danger {
     --leaf-button-color: var(--leaf-color-danger);
     --leaf-button-ink: var(--leaf-button-color);
-    --leaf-button-ink-hover: var(--leaf-button-hover);
     --leaf-button-ink-active: var(--leaf-button-active);
     --leaf-button-fill-border: transparent;
-    --leaf-focus-color: var(--leaf-button-color-alpha-42);
     --leaf-button-color-alpha-18: var(--leaf-color-danger-alpha-18);
     --leaf-button-color-alpha-25: var(--leaf-color-danger-alpha-25);
     --leaf-button-color-alpha-42: var(--leaf-color-danger-alpha-42);
     --leaf-button-on-color: var(--leaf-color-on-danger);
-    --leaf-button-hover: var(--leaf-color-danger-hover, var(--leaf-button-color));
     --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
-    --leaf-button-soft-hover: var(--leaf-button-color-alpha-18);
-    --leaf-button-soft-active: var(--leaf-button-color-alpha-25);
     --leaf-button-border: var(--leaf-button-color-alpha-42);
   }
 
@@ -136,22 +113,15 @@
   &--ghost {
     color: var(--leaf-color-text);
     background: transparent;
-    &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted);
-    }
     &:active:not(:disabled) {
       background: var(--leaf-color-border);
     }
   }
   &--danger#{&}--ghost {
     color: var(--leaf-button-color);
-    &:hover:not(:disabled) {
-      color: var(--leaf-button-hover);
-      background: var(--leaf-button-soft-hover);
-    }
     &:active:not(:disabled) {
       color: var(--leaf-button-active);
-      background: var(--leaf-button-soft-active);
+      background: var(--leaf-button-color-alpha-25);
     }
   }
 
@@ -197,7 +167,7 @@
     --leaf-button-rest-border: var(--leaf-button-fill-border);
     --leaf-button-rest-shadow: none;
     --leaf-button-hover-color: var(--leaf-button-rest-color);
-    --leaf-button-hover-background: var(--leaf-button-hover);
+    --leaf-button-hover-background: var(--leaf-button-rest-background);
     --leaf-button-hover-border: var(--leaf-button-rest-border);
     --leaf-button-active-color: var(--leaf-button-rest-color);
     --leaf-button-active-background: var(--leaf-button-active);
@@ -207,40 +177,22 @@
     --leaf-button-rest-color: var(--leaf-color-text);
     --leaf-button-rest-background: var(--leaf-color-surface);
     --leaf-button-rest-border: var(--leaf-color-border);
-    --leaf-button-rest-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-    --leaf-button-hover-color: var(--leaf-button-ink-hover);
-    --leaf-button-hover-background: var(--leaf-button-rest-background);
-    --leaf-button-hover-border: var(--leaf-button-ink-hover);
-    --leaf-button-active-color: var(--leaf-button-ink-active);
-    --leaf-button-active-background: var(--leaf-button-rest-background);
-    --leaf-button-active-border: var(--leaf-button-ink-active);
-    &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-button-color);
-      --leaf-button-rest-border: var(--leaf-button-border);
-    }
-  }
-  &:is(&--soft) {
-    --leaf-button-rest-color: var(--leaf-color-text);
-    --leaf-button-rest-background: var(--leaf-color-surface-muted);
-    --leaf-button-rest-border: transparent;
-    --leaf-button-rest-shadow: none;
+    --leaf-button-rest-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
     --leaf-button-hover-color: var(--leaf-button-rest-color);
-    --leaf-button-hover-background: var(--leaf-color-option-hover);
-    --leaf-button-hover-border: transparent;
+    --leaf-button-hover-background: var(--leaf-button-rest-background);
+    --leaf-button-hover-border: var(--leaf-button-rest-border);
     --leaf-button-active-color: var(--leaf-button-rest-color);
-    --leaf-button-active-background: color-mix(
-      in srgb,
-      var(--leaf-color-text) 14%,
-      var(--leaf-color-surface)
-    );
-    --leaf-button-active-border: transparent;
+    --leaf-button-active-background: var(--leaf-button-rest-background);
+    --leaf-button-active-border: var(--leaf-button-active);
     &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-button-color);
-      --leaf-button-rest-background: var(--leaf-color-danger-surface-6);
-      --leaf-button-hover-color: var(--leaf-button-hover);
-      --leaf-button-hover-background: var(--leaf-button-soft-hover);
-      --leaf-button-active-color: var(--leaf-button-active);
-      --leaf-button-active-background: var(--leaf-button-soft-active);
+      --leaf-button-rest-color: var(--leaf-color-danger-text-80, var(--leaf-button-color));
+      --leaf-button-rest-border: var(--leaf-button-color);
+      --leaf-button-hover-color: var(--leaf-button-rest-color);
+      --leaf-button-hover-background: var(--leaf-button-rest-background);
+      --leaf-button-hover-border: var(--leaf-button-rest-border);
+      --leaf-button-active-color: var(--leaf-button-rest-color);
+      --leaf-button-active-background: var(--leaf-button-rest-background);
+      --leaf-button-active-border: var(--leaf-button-active);
     }
   }
   &:is(&--link) {
@@ -248,14 +200,14 @@
     --leaf-button-rest-background: transparent;
     --leaf-button-rest-border: transparent;
     --leaf-button-rest-shadow: none;
-    --leaf-button-hover-color: var(--leaf-button-ink-hover);
+    --leaf-button-hover-color: var(--leaf-button-rest-color);
     --leaf-button-hover-background: transparent;
     --leaf-button-hover-border: transparent;
     --leaf-button-active-color: var(--leaf-button-ink-active);
     --leaf-button-active-background: transparent;
     --leaf-button-active-border: transparent;
   }
-  &:is(&--solid, &--outline, &--soft, &--link) {
+  &:is(&--solid, &--outline, &--link) {
     --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
     --leaf-button-base-background: var(
       --leaf-component-button-background,
@@ -337,19 +289,12 @@
   .leaf-button[data-loading] .leaf-button__spinner {
     animation: none;
   }
-  .leaf-button__wave {
-    display: none;
-  }
 }
 
 @media (forced-colors: active) {
-  .leaf-button__wave {
-    display: none;
-  }
   .leaf-button:is(
     .leaf-button--solid,
     .leaf-button--outline,
-    .leaf-button--soft,
     .leaf-button--link,
     .leaf-button--ghost
   ) {

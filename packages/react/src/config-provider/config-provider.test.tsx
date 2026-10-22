@@ -88,7 +88,7 @@ describe('ConfigProvider', () => {
       </ConfigProvider>,
     );
     expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-control-height')).toBe(
-      '36px',
+      '34px',
     );
     expect(screen.getByText('comfortable')).toBeInTheDocument();
   });

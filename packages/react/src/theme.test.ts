@@ -131,6 +131,29 @@ describe('portable component themes', () => {
 });
 
 describe('component padding geometry', () => {
+  it('keeps unitless line-height compatibility and derives an integer text scale', () => {
+    expect(leafThemeVariables({ lineHeight: 1.6 })).toEqual({
+      '--leaf-line-height': 'calc(var(--leaf-font-size) * 1.6)',
+      '--leaf-line-height-sm': 'calc(var(--leaf-font-size-sm) * 1.6)',
+      '--leaf-line-height-lg': 'calc(var(--leaf-font-size-lg) * 1.6)',
+    });
+    expect(leafThemeVariables({ lineHeight: 20 })).toEqual({
+      '--leaf-line-height': '20px',
+      '--leaf-line-height-sm': 'max(1px, calc(20px - 2px))',
+      '--leaf-line-height-lg': 'calc(20px + 2px)',
+    });
+    expect(leafThemeVariables({ lineHeight: '1.25rem' })).toEqual({
+      '--leaf-line-height': '1.25rem',
+      '--leaf-line-height-sm': 'calc(var(--leaf-line-height) - 2px)',
+      '--leaf-line-height-lg': 'calc(var(--leaf-line-height) + 2px)',
+    });
+    expect(leafThemeVariables({ lineHeight: '22px', tokens: { lineHeight: 18 } })).toMatchObject({
+      '--leaf-line-height': '18px',
+      '--leaf-line-height-sm': 'max(1px, calc(18px - 2px))',
+      '--leaf-line-height-lg': 'calc(18px + 2px)',
+    });
+  });
+
   it('merges and emits section surfaces through ConfigProvider theme inputs', () => {
     const theme = mergeLeafTheme(
       { components: { Modal: { footerBackground: '#f5f5f5', borderColor: '#ddd' } } },

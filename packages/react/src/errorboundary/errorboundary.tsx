@@ -65,7 +65,11 @@ function DefaultFallback({ reset }: { reset: () => void }) {
       status="error"
       title={t('errorBoundary.title')}
       description={t('errorBoundary.description')}
-      extra={<ButtonControl onClick={reset}>{t('common.retry')}</ButtonControl>}
+      extra={
+        <ButtonControl variant="solid" onClick={reset}>
+          {t('common.retry')}
+        </ButtonControl>
+      }
     />
   );
 }

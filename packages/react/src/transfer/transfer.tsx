@@ -223,6 +223,7 @@ export function Transfer(rawProps: TransferProps) {
           ref={trigger}
           id={props.id ?? field?.id}
           size="sm"
+          variant="solid"
           startIcon={<ArrowRight size={16} />}
           aria-label={t('transfer.moveToSelected')}
           disabled={

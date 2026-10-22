@@ -131,6 +131,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
             </ButtonControl>
             <ButtonControl
               size="sm"
+              variant="solid"
               disabled={!validText || disabledTime?.(draft)}
               onClick={() => {
                 change(draft);

@@ -1,20 +1,139 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/geometry' as geometry;
 
+// Each appearance supplies a complete state palette; row geometry stays shared.
+@mixin appearance($variant) {
+  --leaf-menu-unselected-color: color-mix(in srgb, currentColor 80%, var(--leaf-color-surface));
+  --leaf-menu-canvas: var(--leaf-color-surface);
+  --leaf-menu-hover-color: var(--leaf-menu-unselected-color);
+  --leaf-menu-hover-opacity: 1;
+  --leaf-menu-hover-background: rgba(0, 0, 0, 0.08);
+  --leaf-menu-selected-color: currentColor;
+  --leaf-menu-selected-background: rgba(0, 0, 0, 0.08);
+  --leaf-menu-active-background: rgba(0, 0, 0, 0.08);
+  --leaf-menu-selected-border: 0px solid transparent;
+  --leaf-menu-selected-shadow: none;
+  --leaf-menu-selected-clip: none;
+  --leaf-menu-entry-duration: var(--leaf-motion-fast);
+  --leaf-menu-exit-duration: var(--leaf-motion-fast);
+  @if $variant != default {
+    --leaf-menu-hover-opacity: 0;
+    --leaf-menu-hover-color: currentColor;
+    --leaf-menu-active-background: rgba(0, 0, 0, 0.04);
+    --leaf-menu-entry-duration: calc(var(--leaf-motion-duration) * 1.2);
+    --leaf-menu-exit-duration: 0s;
+  }
+  @if $variant == raised {
+    --leaf-menu-canvas: var(--leaf-color-surface-muted);
+    --leaf-menu-selected-background: var(--leaf-color-surface);
+    --leaf-menu-selected-border: 1px solid var(--leaf-color-border);
+    --leaf-menu-selected-shadow: 0 2px 3px -1px rgb(0 0 0 / 0.08);
+    --leaf-menu-selected-clip: inset(0 0 -4px);
+  }
+  @if $variant == primary {
+    --leaf-menu-hover-color: var(--leaf-color-primary-ink);
+    --leaf-menu-selected-color: var(--leaf-color-primary-ink);
+    --leaf-menu-selected-background: var(--leaf-color-primary-alpha-10);
+    --leaf-menu-active-background: var(--leaf-color-primary-alpha-4);
+  }
+}
+
+@mixin row-feedback {
+  color: var(--leaf-menu-item-color, var(--leaf-menu-unselected-color));
+  background: transparent;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 5% 1.5%;
+    z-index: -1;
+    box-sizing: border-box;
+    border-radius: inherit;
+    border: 0;
+    box-shadow: none;
+    clip-path: none;
+    background: var(--leaf-menu-hover-background);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity var(--leaf-menu-exit-duration) linear,
+      inset var(--leaf-menu-exit-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-menu-exit-duration) var(--leaf-motion-easing);
+  }
+  &:is(:hover, :focus-visible):not(:disabled):not([aria-disabled='true']):not([data-selected]):not(
+      [aria-current='page']
+    ) {
+    color: var(--leaf-menu-hover-color);
+    &::before {
+      opacity: var(--leaf-menu-hover-opacity);
+      inset: 0;
+      transition-duration: var(--leaf-menu-entry-duration);
+    }
+  }
+  &:active:not(:disabled):not([aria-disabled='true']):not([data-selected]):not(
+      [aria-current='page']
+    )::before {
+    background: var(--leaf-menu-active-background);
+    opacity: 1;
+    inset: 0;
+    transition-duration: var(--leaf-menu-entry-duration);
+  }
+  &:is([data-selected], [aria-current='page']) {
+    color: var(--leaf-menu-selected-color);
+    font-weight: var(--leaf-font-weight);
+    &::before {
+      background: var(--leaf-menu-selected-background);
+      border: var(--leaf-menu-selected-border);
+      box-shadow: var(--leaf-menu-selected-shadow);
+      clip-path: var(--leaf-menu-selected-clip);
+      opacity: 1;
+      inset: 0;
+      transition-duration: var(--leaf-menu-entry-duration);
+    }
+  }
+  &:is([data-danger], .leaf-dropdown__danger) {
+    color: var(--leaf-color-danger);
+    &::before {
+      background: var(--leaf-color-danger-surface-6);
+    }
+    &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']) {
+      color: var(--leaf-color-danger-active);
+    }
+    &:active:not(:disabled):not([aria-disabled='true'])::before {
+      background: var(--leaf-color-danger-surface-8);
+    }
+  }
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      transition: none;
+    }
+  }
+}
+
 .leaf-menu,
 .leaf-menu__popup {
-  --leaf-menu-hover-background: color-mix(
-    in srgb,
-    var(--leaf-color-text) 6%,
-    var(--leaf-color-surface)
-  );
-  --leaf-menu-active-background: var(--leaf-color-option-hover);
+  @include appearance(default);
+}
+.leaf-menu--raised,
+.leaf-menu__popup--raised {
+  @include appearance(raised);
+}
+.leaf-menu--primary,
+.leaf-menu__popup--primary {
+  @include appearance(primary);
 }
 
 .leaf-menu {
   @include geometry.nested-surface(
     menu,
-    var(--leaf-component-menu-radius, var(--leaf-radius)),
+    var(--leaf-component-menu-radius, max(0px, calc(var(--leaf-radius) - 2px))),
     var(--leaf-component-menu-padding, 6px),
     0px
   );
@@ -23,94 +142,37 @@
   width: 240px;
   max-width: 100%;
   box-sizing: border-box;
-  background: var(--leaf-component-menu-background, var(--leaf-color-surface));
+  background: var(--leaf-component-menu-background, var(--leaf-menu-canvas));
   color: var(--leaf-component-menu-color, var(--leaf-color-text));
-  font: var(--leaf-component-menu-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  font: var(--leaf-component-menu-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   transition: width var(--leaf-motion-duration) var(--leaf-motion-easing);
-  &__indicator {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    pointer-events: none;
-    width: var(--leaf-indicator-width, 0px);
-    height: var(--leaf-indicator-height, 0px);
-    transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
-    border-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
-    background: var(--leaf-color-primary-surface-9);
-    opacity: 0;
-    &[data-visible='true'] {
-      opacity: 1;
-    }
-    &[data-animate='true'] {
-      transition:
-        transform var(--leaf-motion-slow) var(--leaf-motion-spring),
-        width var(--leaf-motion-slow) var(--leaf-motion-spring),
-        height var(--leaf-motion-slow) var(--leaf-motion-spring);
-    }
-  }
   &__item {
+    position: relative;
+    isolation: isolate;
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: calc(var(--leaf-control-height) + 4px);
+    gap: 12px;
+    min-height: calc(var(--leaf-control-height) + 2px);
     margin-bottom: 3px;
     padding: var(--leaf-density-option-padding) var(--leaf-spacing-sm)
       var(--leaf-density-option-padding) var(--leaf-spacing-md);
     border: 0;
-    border-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
+    border-radius: var(--leaf-component-menu-radius, max(0px, calc(var(--leaf-radius) - 2px)));
     background: transparent;
-    color: var(--leaf-menu-item-color, inherit);
     text-decoration: none;
     text-align: start;
     font: inherit;
     cursor: pointer;
     box-sizing: border-box;
     transition:
-      background var(--leaf-motion-duration),
-      color var(--leaf-motion-duration),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-color) var(--leaf-motion-easing),
       gap var(--leaf-motion-duration) var(--leaf-motion-easing),
       padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:is(:hover, :focus-visible):not(:disabled):not([aria-disabled]):not([data-selectable]) {
-      background: var(--leaf-menu-hover-background);
-      &[data-danger] {
-        background: var(--leaf-color-danger-surface-6);
-      }
-    }
-    &[data-selected] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: transparent;
-      font-weight: var(--leaf-font-weight);
-    }
-    &:active:not(:disabled):not([aria-disabled]):not([data-selectable]) {
-      background: var(--leaf-menu-active-background);
-      &[data-danger] {
-        background: var(--leaf-color-danger-surface-8);
-      }
-    }
-    &[data-danger] {
-      color: var(--leaf-color-danger);
-    }
-    &[data-selectable]:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled]) {
-      color: var(
-        --leaf-color-primary-ink-active,
-        var(--leaf-color-primary-ink, var(--leaf-color-primary))
-      );
-      &[data-danger] {
-        color: var(--leaf-color-danger-active);
-      }
-    }
-    &:disabled,
-    &[aria-disabled] {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
+    @include row-feedback;
   }
+
   &__icon {
     display: inline-flex;
     align-items: center;
@@ -118,8 +180,8 @@
     width: 20px;
     flex: none;
     svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
     }
   }
   &__label {
@@ -132,6 +194,11 @@
     transition:
       max-width var(--leaf-motion-duration) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+  }
+  &__extra {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
   }
   &__arrow {
     flex: none;
@@ -156,21 +223,6 @@
     margin: 8px 12px;
     background: var(--leaf-color-divider);
   }
-  &--horizontal {
-    --leaf-surface-padding: var(--leaf-component-menu-padding, 4px);
-    width: max-content;
-  }
-  &--horizontal &__item {
-    padding-inline: 14px !important;
-  }
-  &--horizontal > [role='menubar'] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  &--horizontal &__entry {
-    position: relative;
-  }
   &--collapsed &__label {
     max-width: 0;
     opacity: 0;
@@ -187,16 +239,32 @@
     width: 60px;
   }
   &__submenu {
-    --leaf-menu-item-color: var(--leaf-color-text-muted);
+    position: relative;
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
     transition:
       grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0 4px;
+      inset-inline-start: var(--leaf-menu-submenu-line-offset);
+      width: 1px;
+      background: var(--leaf-color-divider);
+      border-radius: 999px;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
     &[data-open='true'] {
       grid-template-rows: 1fr;
       opacity: 1;
+      &::before {
+        opacity: 1;
+      }
     }
   }
   &__submenu-inner {
@@ -204,8 +272,13 @@
     overflow: hidden;
   }
   &__submenu &__item {
+    width: calc(100% - var(--leaf-menu-submenu-line-offset) - 9px);
+    margin-inline-start: calc(var(--leaf-menu-submenu-line-offset) + 9px);
+    // Inline tags can exceed the text line box; keep the navigation row's
+    // agreed height instead of letting trailing content grow the layout.
     min-height: var(--leaf-density-option-height);
-    padding-block: max(0px, calc((var(--leaf-density-option-height) - 1.5em) / 2));
+    height: var(--leaf-density-option-height);
+    padding-block: 0;
   }
   &__submenu-content {
     padding-block: 2px 4px;
@@ -221,11 +294,12 @@
   .leaf-menu__item,
   .leaf-menu__label,
   .leaf-menu__submenu,
+  .leaf-menu__submenu-content,
   .leaf-menu__arrow {
     transition: none;
   }
-  .leaf-menu__indicator[data-animate='true'],
-  .leaf-menu__submenu-content {
+  .leaf-menu__item::before,
+  .leaf-menu__popup .leaf-floating__option::before {
     transition: none;
   }
 }
@@ -245,7 +319,8 @@
 
 .leaf-menu__popup.leaf-dropdown {
   @include mixins.floating-paint(menu);
-  --leaf-surface-radius: var(--leaf-component-menu-radius, var(--leaf-radius-lg));
+  background: var(--leaf-component-menu-background, var(--leaf-menu-canvas));
+  --leaf-surface-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
   --leaf-surface-padding: var(--leaf-component-menu-padding, 6px);
   @each $side in top, right, bottom, left {
     --leaf-surface-padding-#{$side}: var(
@@ -253,7 +328,10 @@
       var(--leaf-surface-padding)
     );
   }
-  --leaf-floating-option-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
+  --leaf-floating-option-radius: var(
+    --leaf-component-menu-radius,
+    max(0px, calc(var(--leaf-radius) - 2px))
+  );
   min-width: min(208px, calc(100vw - 24px));
   border-radius: var(--leaf-surface-radius);
   gap: 2px;
@@ -269,62 +347,25 @@
   }
 
   .leaf-floating__option {
+    position: relative;
+    isolation: isolate;
     min-height: var(--leaf-density-option-height);
-    gap: 10px;
+    gap: 12px;
     margin: 0;
     padding-inline: 10px;
-    padding-block: max(0px, calc((var(--leaf-density-option-height) - 1.5em) / 2));
+    padding-block: max(
+      0px,
+      calc((var(--leaf-density-option-height) - var(--leaf-line-height)) / 2)
+    );
     text-decoration: none;
-    line-height: 1.5;
+    line-height: var(--leaf-line-height);
     font-size: inherit;
-    color: var(--leaf-color-text-muted);
-    &[aria-expanded='true'] {
-      color: var(--leaf-color-text-muted);
-    }
-    &[aria-current='page'] {
-      background: var(--leaf-color-primary-surface-9);
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      font-weight: var(--leaf-font-weight);
-    }
-    &:active:not(:disabled):not([aria-disabled='true'])[aria-haspopup='menu'] {
-      background: var(--leaf-menu-active-background);
-      &.leaf-dropdown__danger {
-        background: var(--leaf-color-danger-surface-8);
-      }
-    }
-    &.leaf-dropdown__danger {
-      color: var(--leaf-color-danger);
-    }
-    &:not([aria-haspopup='menu']):is(:hover, :focus-visible, :active):not(:disabled):not(
-        [aria-disabled='true']
-      ) {
-      background: transparent;
-      color: var(
-        --leaf-color-primary-ink-active,
-        var(--leaf-color-primary-ink, var(--leaf-color-primary))
-      );
-      &[aria-current='page'] {
-        background: var(--leaf-color-primary-surface-9);
-      }
-      &.leaf-dropdown__danger {
-        color: var(--leaf-color-danger-active);
-      }
-    }
+    transition: color var(--leaf-motion-color) var(--leaf-motion-easing);
+    @include row-feedback;
   }
+
   .leaf-dropdown__highlight {
-    border: 0;
-    left: 0;
-    right: 0;
-    background: var(--leaf-menu-hover-background);
-    &[data-selected] {
-      background: var(--leaf-color-primary-surface-9);
-    }
-    &[data-danger='true'] {
-      background: var(--leaf-color-danger-surface-6);
-    }
-    &[data-selectable] {
-      background: transparent;
-    }
+    display: none;
   }
   .leaf-dropdown__arrow {
     flex: none;
@@ -350,8 +391,8 @@
   justify-content: center;
   flex: 0 0 20px;
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 }
 .leaf-menu__popup-label {
@@ -359,12 +400,20 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
 @media (forced-colors: active) {
-  .leaf-menu__indicator {
+  :is(.leaf-menu, .leaf-menu__popup.leaf-dropdown)
+    :is(.leaf-menu__item, .leaf-floating__option):is(
+      [data-selected],
+      [aria-current='page'],
+      :hover,
+      :focus-visible
+    )::before {
     background: Highlight;
     forced-color-adjust: none;
   }
-  .leaf-menu__item[data-selected] {
+  :is(.leaf-menu, .leaf-menu__popup.leaf-dropdown)
+    :is(.leaf-menu__item, .leaf-floating__option):is([data-selected], [aria-current='page']) {
     color: HighlightText;
   }
   .leaf-menu__popup .leaf-floating__option[aria-current='page'] {

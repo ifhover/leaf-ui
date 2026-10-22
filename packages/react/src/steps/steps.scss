@@ -6,10 +6,10 @@
   margin: 0;
   list-style: none;
   color: var(--leaf-component-steps-color, var(--leaf-color-text));
-  font: var(--leaf-component-steps-font-size, var(--leaf-current-font-size))/1.5
-    var(--leaf-font-family);
-  // Indicators occupy less space than controls, leaving room for readable labels.
-  --leaf-steps-icon-size: calc(var(--leaf-current-control-height) * 0.7);
+  font: var(--leaf-component-steps-font-size, var(--leaf-current-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
+  // Indicators occupy less space than controls, with a whole-pixel floor.
+  --leaf-steps-icon-size: max(24px, calc(var(--leaf-current-control-height) * 0.7));
   --leaf-steps-gap: 10px;
   &__item {
     display: grid;
@@ -95,7 +95,7 @@
   }
   &__title {
     display: inline-block;
-    padding-block: calc((var(--leaf-steps-icon-size) - 1.5em) / 2);
+    padding-block: calc((var(--leaf-steps-icon-size) - var(--leaf-line-height)) / 2);
     padding-inline-end: 10px;
   }
   &__description {
@@ -245,7 +245,6 @@
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size);
-  --leaf-steps-icon-size: max(24px, calc(var(--leaf-current-control-height) * 0.7));
 }
 .leaf-steps--lg {
   --leaf-current-control-height: var(

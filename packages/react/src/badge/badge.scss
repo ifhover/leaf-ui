@@ -1,6 +1,7 @@
 .leaf-badge {
   --leaf-badge-color: var(--leaf-color-danger);
   --leaf-badge-direction: 1;
+  --leaf-badge-anchor-shift: -14px;
   &:dir(rtl) {
     --leaf-badge-direction: -1;
   }
@@ -9,6 +10,10 @@
   }
   &[data-status='warning'] {
     --leaf-badge-color: var(--leaf-color-warning);
+  }
+  &[data-status='danger'],
+  &[data-status='error'] {
+    --leaf-badge-color: var(--leaf-color-danger);
   }
   &[data-status='info'] {
     --leaf-badge-color: var(--leaf-color-info);
@@ -21,7 +26,7 @@
   align-items: center;
   gap: 8px;
   vertical-align: middle;
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
   &__indicator {
     box-sizing: border-box;
     display: inline-flex;
@@ -46,12 +51,14 @@
     height: 8px;
     min-width: 8px;
     padding: 0;
+    --leaf-badge-anchor-shift: -8px;
   }
+  // Keep the starting edge fixed so wider content only grows toward inline-end.
   &--attached &__indicator {
     position: absolute;
     top: 4px;
-    inset-inline-end: 4px;
-    transform: translate(calc(50% * var(--leaf-badge-direction)), -50%);
+    inset-inline-start: 100%;
+    transform: translate(calc(var(--leaf-badge-anchor-shift) * var(--leaf-badge-direction)), -50%);
     box-shadow: 0 0 0 2px var(--leaf-color-surface);
     pointer-events: none;
   }

@@ -40,7 +40,7 @@ describe('Navigation motion contracts', () => {
       this: HTMLElement,
     ) {
       if (this.classList.contains('leaf-tabs__list')) return 150;
-      if (this.classList.contains('leaf-tabs__track')) return secondWidth + 82;
+      if (this.classList.contains('leaf-tabs__track')) return secondWidth + 74;
       return 100;
     });
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(34);
@@ -49,13 +49,13 @@ describe('Navigation motion contracts', () => {
     ) {
       if (this.classList.contains('leaf-tabs__list')) return new DOMRect(100, 80, 120, 28.8);
       // The list scrolls; the indicator and entries share the inner track's local coordinates.
-      // Model a 150px list with 1px borders, a 70px first tab and a 12px gap at 0.8 scale.
-      const trackWidth = secondWidth + 82;
+      // Model a 150px list with 1px borders, a 70px first tab and a 4px gap at 0.8 scale.
+      const trackWidth = secondWidth + 74;
       const trackLeft = 100 + (1 + 148 - trackWidth - scrollLeft) * 0.8;
       if (this.classList.contains('leaf-tabs__track'))
         return new DOMRect(trackLeft, 80.8, trackWidth * 0.8, 27.2);
       if (this.dataset.tabKey === 'first')
-        return new DOMRect(trackLeft + (secondWidth + 12) * 0.8, 80.8, 56, 27.2);
+        return new DOMRect(trackLeft + (secondWidth + 4) * 0.8, 80.8, 56, 27.2);
       if (this.dataset.tabKey === 'second')
         return new DOMRect(trackLeft, 80.8, secondWidth * 0.8, 27.2);
       return new DOMRect(0, 0, 300, 100);
@@ -74,7 +74,7 @@ describe('Navigation motion contracts', () => {
     const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
     const geometry = (property: 'x' | 'y' | 'width' | 'height') =>
       Number.parseFloat(marker?.style.getPropertyValue(`--leaf-indicator-${property}`) ?? '');
-    expect(geometry('x')).toBeCloseTo(132);
+    expect(geometry('x')).toBeCloseTo(124);
     expect(geometry('y')).toBeCloseTo(0);
     expect(geometry('width')).toBeCloseTo(70);
     expect(geometry('height')).toBeCloseTo(34);
@@ -97,7 +97,7 @@ describe('Navigation motion contracts', () => {
     await waitFor(() => expect(geometry('width')).toBeCloseTo(155));
     expect(marker).toHaveAttribute('data-animate', 'false');
     fireEvent.click(screen.getByRole('tab', { name: 'First' }));
-    expect(geometry('x')).toBeCloseTo(167);
+    expect(geometry('x')).toBeCloseTo(159);
     expect(screen.getByRole('textbox')).toHaveValue('Saved draft');
   });
 

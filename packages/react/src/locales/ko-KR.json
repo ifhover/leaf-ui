@@ -154,6 +154,8 @@
   },
   "tabs": {
     "moreTabs": "다른 탭",
+    "scrollLeft": "탭을 왼쪽으로 스크롤",
+    "scrollRight": "탭을 오른쪽으로 스크롤",
     "addTab": "탭 추가",
     "reorder": "{label} 탭 순서 변경",
     "closeLabel": "{label} 탭 닫기"

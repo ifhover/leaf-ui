@@ -23,13 +23,35 @@ async function tokenColor(locator: Locator, token: string) {
   ).toRgbString();
 }
 
+async function menuFeedback(locator: Locator) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node, '::before');
+    return {
+      background: style.backgroundColor,
+      opacity: Number(style.opacity),
+    };
+  });
+}
+
+async function neutralFieldBorder(locator: Locator) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node);
+    const probe = document.createElement('span');
+    probe.style.color = `color-mix(in srgb, ${style.getPropertyValue('--leaf-color-text')} 45%, ${style.getPropertyValue('--leaf-color-border')})`;
+    document.body.append(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  });
+}
+
 for (const appearance of ['light', 'dark']) {
   test.describe(appearance, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto(`/?fixture=selection&theme=${appearance}`);
     });
 
-    test('focused fields and open color pickers retain emphasis under the pointer', async ({
+    test('focused inputs and open selects use the theme border without a halo', async ({
       page,
     }) => {
       for (const [name, selector] of [
@@ -38,20 +60,38 @@ for (const appearance of ['light', 'dark']) {
         ['Focused number', '.leaf-input-number'],
       ] as const) {
         const field = page.getByLabel(name, { exact: true });
+        await page.mouse.move(0, 0);
+        const restingBorder = await page
+          .locator(selector)
+          .evaluate((node) => getComputedStyle(node).borderTopColor);
         await field.focus();
-        await field.hover();
         const surface = page.locator(selector);
-        await expect(surface).toHaveCSS('border-color', 'rgb(18, 101, 245)');
+        const expectedBorder =
+          name === 'Focused input'
+            ? await tokenColor(surface, '--leaf-color-primary')
+            : await neutralFieldBorder(surface);
+        await expect(surface).toHaveCSS('border-color', expectedBorder);
+        await expect(surface).toHaveCSS('transition-property', /border-color/);
+        await expect
+          .poll(() => surface.evaluate((node) => getComputedStyle(node).borderTopColor))
+          .not.toBe(restingBorder);
+        await field.blur();
+        await field.hover();
+        await expect(surface).toHaveCSS('border-color', restingBorder);
+        await expect(field).not.toBeFocused();
+        await field.focus();
+        await expect(surface).toHaveCSS('border-color', expectedBorder);
+        await expect(surface).toHaveCSS('outline-style', 'none');
         await expect(field).toBeFocused();
       }
       const trigger = page.getByRole('button', { name: 'Accent', exact: true });
       await trigger.click();
       const picker = page.locator('.leaf-color-picker').filter({ has: trigger });
-      await expect(picker).toHaveCSS('border-color', 'rgb(18, 101, 245)');
+      await expect(picker).toHaveCSS('border-color', await neutralFieldBorder(picker));
       await page.getByRole('textbox', { name: 'Color value', exact: true }).focus();
       await trigger.hover();
       await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-      await expect(picker).toHaveCSS('border-color', 'rgb(18, 101, 245)');
+      await expect(picker).toHaveCSS('border-color', await neutralFieldBorder(picker));
       const selected = page.getByRole('button', { name: '#1265f5', exact: true });
       await page.mouse.move(0, 0);
       const before = await paint(selected);
@@ -60,16 +100,26 @@ for (const appearance of ['light', 'dark']) {
       await expect(selected).toHaveAttribute('aria-pressed', 'true');
     });
 
-    test('selected popup options preserve selection while hovering and pressing', async ({
+    test('selected popup options keep one moving highlight and a persistent check', async ({
       page,
     }) => {
       const select = page.getByRole('combobox', { name: 'Selected person' });
       await select.click();
-      await expect(page.locator('.leaf-select').filter({ has: select })).toHaveCSS(
+      const trigger = page.locator('.leaf-select').filter({ has: select });
+      await expect(trigger).toHaveCSS(
         'border-color',
-        'rgb(18, 101, 245)',
+        await tokenColor(trigger, '--leaf-color-primary'),
       );
+      await expect(trigger).toHaveCSS('outline-style', 'none');
+      const panel = page.locator('.leaf-select__panel');
+      const marker = panel.locator('.leaf-floating__highlight');
       const selected = page.getByRole('option', { name: 'Alice', exact: true });
+      const next = page.getByRole('option', { name: 'Bob', exact: true });
+      const neutral = await tokenColor(panel, '--leaf-color-option-hover');
+      await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(selected).toHaveCSS('color', await tokenColor(selected, '--leaf-color-text'));
+      await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
+      await expect(marker).toHaveCSS('background-color', neutral);
       await page.mouse.move(0, 0);
       const before = await paint(selected);
       await selected.hover();
@@ -80,6 +130,18 @@ for (const appearance of ['light', 'dark']) {
       await expect(select).toHaveValue('Alice');
       await expect(select).toHaveAttribute('aria-expanded', 'false');
       await select.click();
+      await next.hover();
+      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect(next).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
+      await page.mouse.move(0, 0);
+      await expect
+        .poll(async () => {
+          const mark = await marker.boundingBox();
+          const row = await selected.boundingBox();
+          return mark && row ? Math.abs(mark.y - row.y) : Infinity;
+        })
+        .toBeLessThan(1);
       await select.press('ArrowDown');
       await select.press('Enter');
       await expect(select).toHaveValue('Bob');
@@ -124,43 +186,57 @@ for (const appearance of ['light', 'dark']) {
       );
     });
 
-    test('checked menu values stay primary while candidates share neutral hover and press', async ({
+    test('checked menu values stay neutral while candidates share hover and press', async ({
       page,
     }) => {
       await page.getByRole('button', { name: 'Checked menu' }).click();
       const panel = page.locator('.leaf-dropdown');
-      const marker = panel.locator('.leaf-dropdown__highlight');
       const selected = panel.getByRole('menuitemcheckbox', { name: 'Saved filter' });
       const candidate = panel.getByRole('menuitemcheckbox', { name: 'Available filter' });
-      const primary = await tokenColor(panel, '--leaf-color-primary-surface-9');
       const neutral = await tokenColor(panel, '--leaf-color-option-hover');
       await expect(selected).toBeFocused();
-      await expect(selected).toHaveCSS('background-color', primary);
-      await expect(marker).toHaveCSS('background-color', primary);
+      await expect.poll(async () => (await menuFeedback(selected)).background).toBe(neutral);
+      await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await candidate.hover();
-      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect.poll(async () => (await menuFeedback(candidate)).background).toBe(neutral);
+      await expect.poll(async () => (await menuFeedback(candidate)).opacity).toBe(1);
       await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-      await expect(selected).toHaveCSS('background-color', primary);
+      await expect.poll(async () => (await menuFeedback(selected)).background).toBe(neutral);
       await panel.getByRole('menuitem', { name: 'Disabled filter' }).hover();
-      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect
+        .poll(
+          async () =>
+            (await menuFeedback(panel.getByRole('menuitem', { name: 'Disabled filter' }))).opacity,
+        )
+        .toBe(0);
       await page.keyboard.press('Home');
       await page.keyboard.press('ArrowDown');
       await expect(candidate).toBeFocused();
-      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect.poll(async () => (await menuFeedback(candidate)).background).toBe(neutral);
       await candidate.hover();
       await page.mouse.down();
       try {
         await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+        await expect.poll(async () => (await menuFeedback(candidate)).opacity).toBe(1);
       } finally {
         await page.mouse.up();
       }
       await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Checked menu' }).click();
-      await panel.getByRole('menuitem', { name: 'Delete filter' }).hover();
-      await expect(marker).toHaveCSS(
-        'background-color',
-        await tokenColor(panel, '--leaf-color-danger-surface-8'),
-      );
+      const danger = panel.getByRole('menuitem', { name: 'Delete filter' });
+      await danger.hover();
+      await expect
+        .poll(async () => (await menuFeedback(danger)).background)
+        .toBe(await tokenColor(panel, '--leaf-color-danger-surface-6'));
+      await page.mouse.down();
+      try {
+        await expect
+          .poll(async () => (await menuFeedback(danger)).background)
+          .toBe(await tokenColor(panel, '--leaf-color-danger-surface-8'));
+      } finally {
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
+      }
       await expect(selected).toHaveAttribute('aria-checked', 'true');
     });
 
@@ -221,7 +297,7 @@ for (const appearance of ['light', 'dark']) {
       await expect(engineering).toHaveCSS('background-color', neutral);
       await expect(cascader.getByRole('option', { name: 'Design', exact: true })).toHaveCSS(
         'background-color',
-        primary,
+        neutral,
       );
       await engineering.press('Home');
       await page.keyboard.press('ArrowDown');
@@ -232,11 +308,19 @@ for (const appearance of ['light', 'dark']) {
       await page.getByRole('combobox', { name: 'Radius tree', exact: true }).click();
       const tree = page.locator('.leaf-tree-select__panel');
       const bob = tree.getByRole('treeitem', { name: 'Bob', exact: true });
+      const treeMarker = tree.locator('.leaf-tree__highlight');
+      const alice = tree.getByRole('treeitem', { name: 'Alice', exact: true });
       await bob.locator('.leaf-tree__title').hover();
-      await expect(bob.locator('.leaf-tree__row')).toHaveCSS('background-color', neutral);
-      await expect(
-        tree.getByRole('treeitem', { name: 'Alice', exact: true }).locator('.leaf-tree__row'),
-      ).toHaveCSS('background-color', primary);
+      await expect(treeMarker).toHaveCSS('background-color', neutral);
+      await expect(bob.locator('.leaf-tree__row')).toHaveCSS(
+        'background-color',
+        'rgba(0, 0, 0, 0)',
+      );
+      await expect(alice.locator('.leaf-tree__row')).toHaveCSS(
+        'background-color',
+        'rgba(0, 0, 0, 0)',
+      );
+      await expect(alice.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '1');
       await page.keyboard.press('Escape');
 
       await page.getByRole('combobox', { name: 'Radius time', exact: true }).click();
@@ -252,21 +336,17 @@ for (const appearance of ['light', 'dark']) {
 
       const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
       const team = menu.getByRole('menuitem', { name: 'Team', exact: true });
-      const menuInk = await menu.evaluate((element) => {
-        const probe = document.createElement('span');
-        probe.style.color = 'var(--leaf-color-primary-ink-active)';
-        element.append(probe);
-        const color = getComputedStyle(probe).color;
-        probe.remove();
-        return color;
-      });
+      const menuText = await team.evaluate((node) => getComputedStyle(node).color);
+      // Menu deliberately uses its own translucent feedback over the navigation canvas.
+      const menuNeutral = await tokenColor(menu, '--leaf-menu-hover-background');
+      const menuFeedback = () =>
+        team.evaluate((node) => getComputedStyle(node, '::before').backgroundColor);
       await team.hover();
-      await expect(team).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-      await expect(team).toHaveCSS('color', menuInk);
+      await expect.poll(menuFeedback).toBe(menuNeutral);
+      await expect(team).toHaveCSS('color', menuText);
       await team.focus();
-      await expect(team).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-      await expect(team).toHaveCSS('color', menuInk);
-      await expect(menu.locator('.leaf-menu__indicator')).toHaveCSS('background-color', primary);
+      await expect.poll(menuFeedback).toBe(menuNeutral);
+      await expect(team).toHaveCSS('color', menuText);
     });
   });
 }

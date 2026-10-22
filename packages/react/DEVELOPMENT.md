@@ -26,13 +26,15 @@ pnpm dev
 
 ## 尺寸与样式约定
 
-**默认单行控件高度是 36px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 30 / 42px）。不要在每个组件中重复建立不同的尺寸基准。
+**默认单行控件高度是 34px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 28 / 40px）。不要在每个组件中重复建立不同的尺寸基准。
 
-公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。组件状态的派生色在组件自身计算，确保局部主题继承正确。
+公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。颜色遵守 [颜色系统规范](../../COLOR-SYSTEM.md)：组件优先使用共享语义角色与家族配方，派生公式集中维护并保证局部主题继承，不为组件自行增加近似比例色。
 
 对外主题配置统一经过 ConfigProvider 的 theme：常用配置只有 primaryColor、borderRadius、controlHeight、fontSize、fontFamily、appearance 和 motion；高级覆盖放在 LeafThemeTokens。src/theme.ts 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致。新增 token 需维护映射、类型和中英 API；保持派生尺寸只需设置基础值，业务 CSS 只消费变量。
 
-主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前主色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色在 SSR 中保留表达式，浏览器中解析后参与对比度和交互色计算。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、波纹偏移、连接边及浮层内圆角计算。
+主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前主色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色在 SSR 中保留表达式，浏览器中解析后参与对比度和交互色计算。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
+
+Input 与 Select 聚焦或展开时共用主题色边框变体，无外圈；其他字段使用共享中性聚焦配方。普通状态的字段边框相同，校验状态保留语义色，显式组件状态覆盖优先。共享浮层的持久选中项默认使用灰底、正文色与勾选标记；导航和动作组件的语义覆盖按各自规则保留。Button 不添加点击波纹，默认使用描边外观；描边按钮带有一层轻微静止阴影，悬停时外观不变，按下时仅将边框加深为区域主题的 active 色，文字、背景和阴影保持不变；危险外观使用可读的危险文字色，静止边框使用危险基色，按下时边框加深为危险 active 色。显式组件状态覆盖优先；其他按钮外观悬停保持原样，按下时变色；键盘焦点使用中性轮廓，强制颜色模式保留可见焦点。
 
 使用 leaf- 类名前缀。提供减少动态效果和强制颜色模式下的必要样式。组件样式不重置应用的全局元素。
 
@@ -60,7 +62,7 @@ pnpm --dir packages/react pack
 
 Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明。浏览器组件入口自动加载样式，显式 CSS 入口继续保留。
 
-check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、36px 公共 token、编译后的样式及 React / Lucide 外部依赖。
+check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、34px 公共 token、编译后的样式及 React / Lucide 外部依赖。
 
 ## 自定义浮层与表单
 
@@ -71,6 +73,8 @@ usePopupState 处理禁用时收起和去重后的 onOpenChange。useFloatingDis
 src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。FormValue 使用不可交互的文本输入参与 FormData 与 required 校验，拦截原生校验提示并聚焦触发器。自定义选择组件 onChange 返回业务值，事件属性仍透传到触发按钮；清除值分别为 Select 空字符串、日期 / 时间 null、级联空数组。
 
 DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格式可以定制，FormData 始终使用标准格式。周起点由 ConfigProvider 控制，ISO 周编号保持独立。TimePicker 支持分钟或秒精度，使用草稿并确认提交；禁用时间同时应用于输入、选择和键盘导航。Cascader 默认选择末级，changeOnSelect 可选择中间层，并支持搜索、多选和懒加载。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
+
+公开 Calendar 的完整布局通过 `fullLayout` 与浮层面板区分。完整日期、月份和年份视图使用无边框网格，桌面分别为 7 / 4 / 3 列；选中态使用整格淡主题色背景和实心圆形日期标签，今天以主题色数字与圆点表达，不依赖描边。`cellRender` 位于日期下方并单行省略。紧凑日历保留 32px 无边框日期格，DatePicker、DateTimePicker 和 DateRangePicker 等浮层继续复用原紧凑 CalendarPanel，不套用完整布局标题。
 
 包产物包含 dist、package.json、使用说明及第三方许可证。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
 
@@ -88,7 +92,7 @@ DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格
 
 每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
 
-开发分支将 Button 的公开 `variant="ghost"` 移除，次要操作改用柔和外观的 `variant="soft"`，普通状态使用中性浅底，危险状态使用淡红底和红色文字；`solid`、`outline` 和 `link` 保留。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件仍由私有 ButtonControl 渲染，不开放到 Button 的公共 API。这项兼容性变化需纳入下次正式发布的迁移说明。
+开发分支将 Button 的公开 `ghost` 与 `soft` 外观移除，只保留 `solid`、`outline` 和 `link`，并以 `outline` 作为默认外观；次要操作直接使用默认描边按钮。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件仍由私有 ButtonControl 渲染，不开放到 Button 的公共 API。这项兼容性变化需纳入下次正式发布的迁移说明。
 
 ## 扩展组件的实现
 
@@ -199,11 +203,14 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 
 ## 自动化质量检查
 
+颜色角色、共享配方和新增变量准入以 [颜色系统规范](../../COLOR-SYSTEM.md) 为准。`pnpm check:colors` 阻止未经登记的颜色增长，`pnpm test:colors` 验证检查器；浏览器 `field-color-contract.spec.ts` 比较 Input / Select 最终用色。存量债务在 `COLOR-AUDIT.md`，不得通过扩充基线绕过审查。
+
 验证范围、命令、兼容矩阵与体积基线见 [QUALITY.md](QUALITY.md)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
+
 ## 设计资源与验收支持
 
 `pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
 
 `DESIGN-STANDARDS.md` defines state and geometry rules. `ACCESSIBILITY.md` records executed browser coverage and pending device/screen-reader acceptance. The public documentation includes a bilingual visual and interaction guide; detailed acceptance evidence stays in the repository. Automatic screenshot baseline comparison remains deferred.
 
-开发分支移除 Segmented 及其类型、子路径和样式入口；统一使用 `Tabs type="card"`。迁移时将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 保持等宽铺满。只切换视图时可省略 `TabItem.children`，不会产生空面板或内容留白。卡片标签统一 3px 内边距与间距、普通文字色及浮起选中块，按下不缩放。Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。这项兼容性变化需纳入下一次正式发布的迁移说明。
+开发分支移除独立 Segmented 及其类型、子路径和样式入口；统一使用 Tabs。迁移时将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 保持等宽铺满。只切换视图时可省略 `TabItem.children`，不会产生空面板或内容留白。卡片标签使用无外层容器的浅灰圆角选中底，间距为 4px，未选中文字使用更淡的中性色；需要灰色外轨和白色移动滑块时使用 `type="segmented"`，其圆角由外轨圆角减去实际内边距与边框派生，滑块使用不回弹的标准缓动直接移动。线形标签仅在选中项下方显示居中的短圆角指示条。Tabs 只保留顶部与底部布局，不再支持左右纵向标签；溢出时以悬停或键盘聚焦后显示的两侧描边箭头代替更多菜单。Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。这项兼容性变化需纳入下一次正式发布的迁移说明。

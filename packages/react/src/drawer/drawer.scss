@@ -77,7 +77,8 @@
       var(--leaf-frame-border-color, var(--leaf-color-divider))
     );
   background: var(--leaf-component-drawer-background, var(--leaf-color-surface));
-  font: var(--leaf-component-drawer-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
+  font: var(--leaf-component-drawer-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
+    var(--leaf-font-family);
   box-shadow: var(
     --leaf-component-drawer-shadow,
     var(--leaf-surface-shadow, var(--leaf-shadow-lg))

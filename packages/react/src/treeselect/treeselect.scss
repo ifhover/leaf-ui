@@ -108,16 +108,16 @@
     );
   }
   &__panel {
-    --leaf-tree-select-row-margin: 3px;
     @include geometry.inset-corners(
       --leaf-tree-select-option-radius,
       var(--leaf-surface-radius),
-      calc(var(--leaf-surface-padding-top) + var(--leaf-tree-select-row-margin)),
+      var(--leaf-surface-padding-top),
       var(--leaf-surface-padding-right),
-      calc(var(--leaf-surface-padding-bottom) + var(--leaf-tree-select-row-margin)),
+      var(--leaf-surface-padding-bottom),
       var(--leaf-surface-padding-left),
       var(--leaf-surface-border)
     );
+    --leaf-tree-option-radius: var(--leaf-tree-select-option-radius);
     .leaf-tree__toggle {
       flex-basis: 24px;
       width: 24px;
@@ -127,9 +127,9 @@
       flex: 1;
     }
     .leaf-tree__row {
-      min-height: var(--leaf-density-option-height);
-      padding-block: min(3px, max(0px, calc((var(--leaf-density-option-height) - 24px) / 2)));
-      margin-block: var(--leaf-tree-select-row-margin);
+      min-height: var(--leaf-current-control-height);
+      padding-block: min(3px, max(0px, calc((var(--leaf-current-control-height) - 24px) / 2)));
+      margin-block: 0;
       border-radius: var(--leaf-tree-select-option-radius);
       white-space: nowrap;
     }

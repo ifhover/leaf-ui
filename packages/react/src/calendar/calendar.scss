@@ -12,200 +12,477 @@
   border-radius: var(--leaf-radius-md);
   background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
   color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
   .leaf-calendar {
     min-width: 0;
+  }
+  .leaf-date-picker__header {
+    gap: 6px;
+    margin-block-end: 8px;
+  }
+  .leaf-calendar__headings {
+    align-items: center;
+    gap: 4px;
+  }
+  .leaf-calendar__heading {
+    padding: 3px 4px;
+    border-radius: var(--leaf-radius-sm);
+    font-size: var(--leaf-font-size);
+    font-weight: var(--leaf-font-weight);
+    &--year {
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      font-weight: 500;
+    }
+    &--range {
+      font-weight: var(--leaf-heading-weight);
+    }
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+    }
+  }
+  .leaf-date-picker__nav {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    color: var(--leaf-color-text-muted);
+  }
+  .leaf-calendar__weekdays {
+    padding: 5px 0 8px;
+    color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .leaf-calendar__cells {
+    gap: 2px;
+  }
+  .leaf-calendar__cell {
+    min-width: 0;
+    padding: 0;
+    border-radius: var(--leaf-radius-sm);
+  }
+  .leaf-date-picker__day {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    min-height: 32px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 2px;
+    border: 0;
+    border-radius: var(--leaf-radius-sm);
+    background: transparent;
+    box-shadow: none;
+    color: var(--leaf-color-text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:hover:not(:disabled) {
+      background: var(--leaf-color-surface-muted);
+    }
+    &:active:not(:disabled) {
+      background: var(--leaf-color-text-muted-surface-9);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--leaf-color-text-muted);
+      outline-offset: -2px;
+    }
+    &:disabled {
+      background: transparent;
+      color: var(--leaf-color-text-muted);
+      cursor: not-allowed;
+      opacity: 0.38;
+    }
+    &--outside {
+      border-color: transparent;
+      background: transparent;
+      color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
+      opacity: 0.62;
+    }
+    &--selected,
+    &--selected:hover:not(:disabled) {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+      color: var(--leaf-color-text);
+    }
+    &--selected:disabled {
+      background: transparent;
+      color: var(--leaf-color-text-muted);
+      opacity: 0.65;
+    }
+  }
+  .leaf-calendar__cell-label {
+    position: relative;
+    display: inline-flex;
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 28px;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 3px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+    font-weight: inherit;
+    line-height: 1;
+    transition:
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-fast) var(--leaf-motion-easing);
+  }
+  .leaf-date-picker__day[aria-current='date']:not(.leaf-date-picker__day--selected)
+    .leaf-calendar__cell-label {
+    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+    font-weight: 600;
+  }
+  .leaf-date-picker__day[aria-current='date'] .leaf-calendar__cell-label::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 3px;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    transform: translateX(-50%);
+  }
+  .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label {
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    color: var(--leaf-color-on-primary);
+    font-weight: 600;
+  }
+  .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label::after {
+    background: var(--leaf-color-on-primary);
+    opacity: 0.72;
+  }
+  .leaf-date-picker__day--selected:disabled .leaf-calendar__cell-label {
+    background: var(--leaf-color-surface-muted);
+    color: var(--leaf-color-text-muted);
+  }
+  .leaf-calendar__cell-content {
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    margin-block-start: 2px;
+    color: var(--leaf-color-text-muted);
+    font-size: 10px;
+    line-height: 14px;
+    text-align: start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    > * {
+      max-width: 100%;
+      line-height: inherit;
+    }
+  }
+  .leaf-calendar__cell-content:empty {
+    display: none;
+  }
+  .leaf-calendar__cells--coarse {
+    gap: 4px;
+    .leaf-date-picker__day {
+      min-height: 42px;
+      width: 100%;
+    }
+    .leaf-calendar__cell-label {
+      min-height: 28px;
+      padding-inline: 8px;
+      border-radius: var(--leaf-radius-sm);
+    }
   }
   &--full {
     width: 100%;
     border-color: var(--leaf-color-border-surface-70);
     .leaf-calendar {
-      padding: 20px;
+      padding: 22px 24px 24px;
     }
-    .leaf-date-picker__header {
-      display: grid;
-      grid-template-columns: auto auto auto 1fr auto;
-      gap: 6px;
-      margin-bottom: 12px;
+    .leaf-calendar__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 16px;
+      margin-block-end: 18px;
+    }
+    .leaf-calendar__title {
+      display: flex;
+      min-width: 0;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 16px;
     }
     .leaf-calendar__headings {
-      grid-column: 2;
-      grid-row: 1;
+      flex: 0 1 auto;
       justify-content: flex-start;
-      padding-inline: 4px;
-    }
-    .leaf-calendar__extra {
-      grid-column: 4;
-      grid-row: 1;
-      justify-self: end;
-      min-width: 0;
-      font-size: var(--leaf-font-size-sm);
-      color: var(--leaf-color-text-muted);
-    }
-    .leaf-date-picker__nav {
-      width: 28px;
-      height: 32px;
-    }
-    .leaf-date-picker__nav:nth-of-type(2) {
-      grid-column: 3;
+      gap: 0;
+      padding: 0;
+      white-space: normal;
     }
     .leaf-calendar__heading {
-      padding: 4px;
-      font-size: 18px;
-      &:last-child {
-        color: var(--leaf-color-text-muted);
-        font-weight: 400;
+      margin-inline-start: -4px;
+      padding: 2px 4px;
+      font-size: 26px;
+      font-weight: var(--leaf-heading-weight);
+      letter-spacing: -0.035em;
+      line-height: 32px;
+      &--year {
+        margin-inline-start: 0;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        line-height: 20px;
+        &::before {
+          content: '';
+          display: inline-block;
+          width: 3px;
+          height: 3px;
+          margin-inline-end: 7px;
+          border-radius: 50%;
+          background: currentColor;
+          opacity: 0.55;
+          vertical-align: middle;
+        }
+        &:hover:not(:disabled) {
+          background: var(--leaf-color-surface-muted);
+        }
+      }
+      &--range {
+        font-size: 24px;
+        line-height: 30px;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-text-muted);
+        outline-offset: 2px;
+      }
+    }
+    .leaf-calendar__extra {
+      align-self: center;
+      max-width: 100%;
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      line-height: var(--leaf-line-height-sm);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .leaf-calendar__actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 6px;
+      margin-inline-start: auto;
+    }
+    .leaf-calendar__nav-group {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+      border-radius: 999px;
+      background: var(--leaf-color-surface-muted-alpha-45);
+    }
+    .leaf-calendar__nav-group .leaf-date-picker__nav {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: transparent;
+      &:hover:not(:disabled) {
+        background: var(--leaf-color-surface);
+        color: var(--leaf-color-text);
       }
     }
     .leaf-calendar__today {
-      grid-column: 5;
-      padding: 5px 12px;
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
       border: 0;
-      border-radius: var(--leaf-radius-sm);
-      background: var(--leaf-color-surface-muted);
-      color: var(--leaf-color-text);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
       font: inherit;
-      font-size: var(--leaf-font-size-sm);
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
       transition:
-        background-color var(--leaf-motion-duration),
-        color var(--leaf-motion-duration);
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        color var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.62;
+      }
       &:hover {
-        background: var(--leaf-color-primary-surface-10);
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        background: var(--leaf-color-primary-surface-5);
+      }
+      &:active {
+        background: var(--leaf-color-primary-surface-8);
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        outline: 2px solid var(--leaf-color-text-muted);
         outline-offset: 2px;
       }
     }
     .leaf-calendar__weekdays {
-      gap: 6px;
-      padding-block: 10px 12px;
-      font-size: var(--leaf-font-size-sm);
+      padding: 8px 10px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 16px;
+      text-align: start;
+      text-transform: uppercase;
     }
     .leaf-calendar__cells {
-      gap: 6px;
+      gap: 4px;
     }
     .leaf-calendar__cell {
-      padding: 0;
+      border-radius: var(--leaf-radius);
     }
     .leaf-date-picker__day {
-      box-sizing: border-box;
-      min-height: 76px;
+      min-height: 90px;
       height: 100%;
-      padding: 10px 6px;
+      align-items: flex-start;
+      justify-content: flex-start;
       gap: 4px;
-      flex-direction: column;
-      border-color: var(--leaf-color-border-surface-65);
+      padding: 10px 10px 8px;
       border-radius: var(--leaf-radius);
       font-size: var(--leaf-font-size);
-      transition:
-        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        scale var(--leaf-motion-duration) var(--leaf-motion-spring);
       &:hover:not(:disabled) {
-        border-color: var(--leaf-color-primary-border-35);
-        background: var(--leaf-color-primary-surface-5);
+        background: var(--leaf-color-text-muted-surface-8);
       }
-      &[aria-current='date']:not(:disabled) {
-        border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      &:active:not(:disabled) {
+        background: var(--leaf-color-text-muted-surface-9);
       }
       &--outside {
-        border-color: transparent;
-        opacity: 1;
-        background: var(--leaf-color-surface-muted);
+        opacity: 0.48;
+        &:hover:not(:disabled) {
+          background: var(--leaf-color-surface-muted-alpha-45);
+          opacity: 0.72;
+        }
       }
-      &--selected,
+      &--selected {
+        background: var(--leaf-color-primary-surface-5);
+      }
       &--selected:hover:not(:disabled) {
-        color: var(--leaf-color-text);
         background: var(--leaf-color-primary-surface-8);
-        border-color: var(--leaf-color-primary-border-30);
       }
       &:disabled {
-        opacity: 1;
-        color: var(--leaf-color-text-muted);
-        background: var(--leaf-color-surface-muted);
-        border-color: transparent;
+        background: transparent;
       }
       &--selected:disabled {
-        border-color: var(--leaf-color-border);
+        background: transparent;
       }
     }
     .leaf-calendar__cell-label {
-      display: inline-flex;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      min-width: 28px;
-      min-height: 28px;
-      padding-inline: 3px;
-      border-radius: 50%;
-      transition:
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        scale var(--leaf-motion-duration) var(--leaf-motion-spring);
-    }
-    .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label {
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      color: var(--leaf-color-on-primary);
-    }
-    .leaf-calendar__cells--coarse .leaf-calendar__cell-label {
-      border-radius: var(--leaf-radius-sm);
-      padding-inline: 8px;
+      min-width: 32px;
+      min-height: 32px;
+      padding-inline: 5px;
+      font-size: 13px;
     }
     .leaf-calendar__cell-content {
-      display: block;
-      width: 100%;
-      min-width: 0;
-      text-align: center;
-      font-size: var(--leaf-font-size-sm);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      > :first-child {
-        margin-block-start: 0;
+      margin-block-start: 4px;
+      padding-inline: 5px;
+      font-size: 11px;
+      line-height: 16px;
+    }
+    .leaf-calendar__cells--coarse {
+      gap: 8px;
+      .leaf-date-picker__day {
+        min-height: 64px;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
       }
-      > :last-child {
-        margin-block-end: 0;
+      .leaf-calendar__cell-label {
+        min-height: 34px;
+        padding-inline: 12px;
+        font-size: var(--leaf-font-size);
       }
     }
-    .leaf-calendar__cell-content:empty {
-      display: none;
+    .leaf-calendar[data-view='month'] .leaf-calendar__cells--coarse {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 }
-@media (max-width: 520px) {
+
+@media (max-width: 640px) {
   .leaf-calendar-view--full {
     .leaf-calendar {
-      padding: 12px;
+      padding: 14px;
     }
     .leaf-calendar__heading {
-      font-size: 15px;
+      font-size: 20px;
+      line-height: 26px;
     }
-    .leaf-calendar__weekdays,
+    .leaf-calendar__heading--year {
+      font-size: 12px;
+      line-height: 18px;
+    }
+    .leaf-calendar__actions {
+      gap: 4px;
+    }
+    .leaf-calendar__nav-group {
+      padding: 1px;
+    }
+    .leaf-calendar__nav-group .leaf-date-picker__nav {
+      width: 28px;
+      height: 28px;
+    }
+    .leaf-calendar__today {
+      min-height: 28px;
+      padding-inline: 8px;
+      font-size: 11px;
+    }
+    .leaf-calendar__weekdays {
+      padding: 6px 6px 8px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+    }
     .leaf-calendar__cells {
-      gap: 3px;
+      gap: 2px;
     }
     .leaf-date-picker__day {
-      min-height: 60px;
-      padding: 6px 2px;
-      border-radius: var(--leaf-radius);
+      min-height: 68px;
+      gap: 3px;
+      padding: 6px 4px;
     }
     .leaf-calendar__cell-label {
-      min-width: 24px;
-      min-height: 24px;
+      min-width: 28px;
+      min-height: 28px;
       font-size: 12px;
     }
     .leaf-calendar__cell-content {
-      font-size: 10px;
+      margin-block-start: 2px;
+      padding-inline: 2px;
+      font-size: 9px;
+      line-height: 14px;
     }
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .leaf-calendar-view--full .leaf-date-picker__day,
-  .leaf-calendar-view--full .leaf-calendar__cell-label,
-  .leaf-calendar-view--full .leaf-calendar__today {
+  .leaf-calendar-view .leaf-date-picker__day,
+  .leaf-calendar-view .leaf-calendar__cell-label,
+  .leaf-calendar-view .leaf-calendar__today {
     transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .leaf-calendar-view .leaf-date-picker__day--selected .leaf-calendar__cell-label {
+    outline: 2px solid ButtonText;
+    outline-offset: -2px;
   }
 }

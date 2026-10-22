@@ -119,6 +119,68 @@
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   }
 }
+.leaf-floating.leaf-picker-panel--card {
+  --leaf-surface-padding: var(--leaf-spacing);
+  @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: var(--leaf-spacing);
+  }
+  background: color-mix(in srgb, var(--leaf-color-surface-muted) 60%, var(--leaf-color-surface));
+}
+.leaf-date-picker__panel.leaf-picker-panel--card {
+  --leaf-picker-card-surface: var(
+    --leaf-component-date-picker-background,
+    var(--leaf-color-surface)
+  );
+}
+.leaf-datetime-panel.leaf-picker-panel--card {
+  --leaf-picker-card-surface: var(
+    --leaf-component-date-time-picker-background,
+    var(--leaf-color-surface)
+  );
+}
+.leaf-time-picker__panel.leaf-picker-panel--card {
+  --leaf-picker-card-surface: var(
+    --leaf-component-time-picker-background,
+    var(--leaf-color-surface)
+  );
+}
+.leaf-range-panel.leaf-picker-panel--card {
+  --leaf-picker-card-surface: var(
+    --leaf-component-date-range-picker-background,
+    var(--leaf-color-surface)
+  );
+}
+.leaf-time-range-picker__panel.leaf-picker-panel--card {
+  --leaf-picker-card-surface: var(
+    --leaf-component-time-range-picker-background,
+    var(--leaf-color-surface)
+  );
+}
+.leaf-date-picker__panel.leaf-picker-panel--card .leaf-calendar,
+.leaf-datetime-panel.leaf-picker-panel--card .leaf-picker-view,
+.leaf-time-picker__panel.leaf-picker-panel--card .leaf-time-picker__columns,
+.leaf-range-panel.leaf-picker-panel--card .leaf-range-panel__calendars,
+.leaf-time-range-picker__panel.leaf-picker-panel--card .leaf-time-range-picker__panels,
+.leaf-picker-panel--card .leaf-picker-presets {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--leaf-color-border);
+  border-radius: var(--leaf-radius-md);
+  background: var(--leaf-picker-card-surface, var(--leaf-color-surface));
+}
+.leaf-range-panel.leaf-picker-panel--card .leaf-range-panel__calendars,
+.leaf-time-range-picker__panel.leaf-picker-panel--card .leaf-time-range-picker__panels {
+  padding: var(--leaf-spacing);
+}
+.leaf-picker-panel--card .leaf-picker-presets {
+  margin: var(--leaf-spacing) 0 0;
+  padding: var(--leaf-spacing);
+}
+.leaf-picker-panel--card .leaf-picker-footer {
+  padding: var(--leaf-spacing) 0 0;
+  border-block-start: 0;
+  background: transparent;
+}
 .leaf-picker-time-toggle {
   flex: 0 0 auto;
   padding: 5px;

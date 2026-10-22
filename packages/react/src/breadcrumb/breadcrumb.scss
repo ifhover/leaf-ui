@@ -1,6 +1,6 @@
 .leaf-breadcrumb {
   color: var(--leaf-component-breadcrumb-color, var(--leaf-color-text-muted));
-  font: var(--leaf-component-breadcrumb-font-size, var(--leaf-font-size))/1.5
+  font: var(--leaf-component-breadcrumb-font-size, var(--leaf-font-size))/var(--leaf-line-height)
     var(--leaf-font-family);
   ol {
     display: flex;

@@ -17,21 +17,27 @@ import { usePresence } from '../shared/presence';
 import type { ControlSize } from '../shared/types';
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
-  color?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info' | (string & {});
+  color?:
+    | 'default'
+    | 'primary'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'error'
+    | 'info'
+    | (string & {});
   variant?: 'soft' | 'solid';
   size?: ControlSize;
-  bold?: boolean;
   icon?: ReactNode;
   closable?: boolean;
   onClose?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
-const presets = ['default', 'primary', 'success', 'warning', 'error', 'info'];
+const presets = ['default', 'primary', 'success', 'warning', 'danger', 'error', 'info'];
 export function Tag(rawProps: TagProps) {
   const {
-    color = 'default',
+    color = 'primary',
     variant = 'soft',
     size = 'md',
-    bold = true,
     icon,
     closable = false,
     onClose,
@@ -45,6 +51,7 @@ export function Tag(rawProps: TagProps) {
   const root = useRef<HTMLSpanElement>(null);
   const present = usePresence(!closed, root);
   const custom = !presets.includes(color);
+  const presetColor = color === 'default' ? 'primary' : color === 'error' ? 'danger' : color;
   const surface = theme.tokens?.surfaceColor ?? defaultColors[theme.appearance ?? 'light'].surface;
   const customVariables = custom
     ? {
@@ -94,14 +101,8 @@ export function Tag(rawProps: TagProps) {
       ref={root}
       data-state={closed ? 'closing' : undefined}
       aria-hidden={closed || props['aria-hidden']}
-      className={classes(
-        'leaf-tag',
-        `leaf-tag--${variant}`,
-        `leaf-tag--${size}`,
-        bold && 'leaf-tag--bold',
-        className,
-      )}
-      data-color={presets.includes(color) ? color : undefined}
+      className={classes('leaf-tag', `leaf-tag--${variant}`, `leaf-tag--${size}`, className)}
+      data-color={custom ? undefined : presetColor}
       style={{ ...customVariables, ...style }}
     >
       {icon && (

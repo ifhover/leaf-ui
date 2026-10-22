@@ -51,7 +51,7 @@ function DarkPrimaryColors() {
           },
         }}
       >
-        <Button>Adaptive primary</Button>
+        <Button variant="solid">Adaptive primary</Button>
         <Button variant="link">Adaptive link</Button>
         <Checkbox defaultChecked>Adaptive checkbox</Checkbox>
         <Switch defaultChecked aria-label="Adaptive switch" />
@@ -63,16 +63,16 @@ function DarkPrimaryColors() {
           defaultValue="one"
         />
         <ConfigProvider data-testid="inherited-primary-theme">
-          <Button>Inherited primary</Button>
+          <Button variant="solid">Inherited primary</Button>
         </ConfigProvider>
         <ConfigProvider data-testid="light-primary-theme" theme={{ appearance: 'light' }}>
-          <Button>Light primary</Button>
+          <Button variant="solid">Light primary</Button>
         </ConfigProvider>
         <ConfigProvider
           data-testid="explicit-primary-theme"
           theme={{ tokens: { onPrimaryColor: '#123456', primaryHoverColor: '#abcdef' } }}
         >
-          <Button>Explicit primary ink</Button>
+          <Button variant="solid">Explicit primary ink</Button>
         </ConfigProvider>
       </ConfigProvider>
     </section>

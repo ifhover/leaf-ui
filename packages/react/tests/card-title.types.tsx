@@ -4,7 +4,14 @@ import { CardTitle as SubpathCardTitle } from '../src/card';
 
 export function cardTitleTypeContracts() {
   const ref = createRef<HTMLHeadingElement>();
-  const props: CardTitleProps = { level: 2, size: 'sm', children: 'Section' };
+  const props: CardTitleProps = {
+    level: 2,
+    size: 'sm',
+    description: 'Supporting text',
+    extra: 'Action',
+    containerProps: { id: 'title-region', className: 'region' },
+    children: 'Section',
+  };
   const root = <CardTitle {...props} ref={ref} />;
   const subpath = <SubpathCardTitle level={6} size="lg" ref={ref} />;
   const defaults: LeafComponentDefaults = { CardTitle: { level: 2, size: 'sm' } };

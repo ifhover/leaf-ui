@@ -74,12 +74,6 @@ export function RadiusFixture() {
       </div>
       <Tabs type="card" aria-label="Radius tabs" items={tabs} />
       <Menu aria-label="Radius menu" items={menu} defaultSelectedKey="home" />
-      <Menu
-        aria-label="Horizontal radius menu"
-        mode="horizontal"
-        items={menu}
-        defaultSelectedKey="home"
-      />
       <Tree aria-label="Independent tree" data={[{ key: 'alice', title: 'Alice' }]} />
       <ConfigProvider
         theme={{ borderRadius: 4, components: { Floating: { borderRadius: 12, padding: 2 } } }}

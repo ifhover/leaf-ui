@@ -41,7 +41,7 @@ export const completeComponentDefaultsCoverage: [MissingDefaults, UnknownDefault
 // Compile-only contracts; required JSX props and mode-specific types stay instance-owned.
 export function componentDefaultsTypeContracts() {
   const root: LeafComponentDefaults = {
-    Button: { variant: 'soft' },
+    Button: { variant: 'outline' },
     Input: { value: '', defaultValue: 'Leaf', onChange: (event) => event.currentTarget.value },
     Select: { showSearch: true, onSearch: (query) => query },
     Modal: { footer: null },
@@ -84,6 +84,10 @@ export function componentDefaultsTypeContracts() {
   const removedButtonVariant = <Button variant="ghost" />;
   // @ts-expect-error Regional defaults use the same public Button appearances.
   const removedButtonDefault: LeafComponentDefaults = { Button: { variant: 'ghost' } };
+  // @ts-expect-error Soft is no longer a public Button appearance.
+  const removedSoftButtonVariant = <Button variant="soft" />;
+  // @ts-expect-error Regional defaults use the same public Button appearances.
+  const removedSoftButtonDefault: LeafComponentDefaults = { Button: { variant: 'soft' } };
   const multi = <Select multiple options={[]} onChange={(values) => values.map(String)} />;
   const single = <Select options={[]} onChange={(value) => value.toUpperCase()} />;
   return {
@@ -104,6 +108,8 @@ export function componentDefaultsTypeContracts() {
     missingGroupTitle,
     removedButtonVariant,
     removedButtonDefault,
+    removedSoftButtonVariant,
+    removedSoftButtonDefault,
     multi,
     single,
   };

@@ -10,6 +10,23 @@ const items = [
   { key: 'two', label: 'Second', children: 'Second content' },
 ];
 describe('Tabs', () => {
+  it('supports the segmented appearance while preserving tab semantics', () => {
+    render(
+      <Tabs
+        type="segmented"
+        block
+        aria-label="Content ranking"
+        items={[
+          { key: 'popular', label: 'Popular' },
+          { key: 'latest', label: 'Latest' },
+        ]}
+      />,
+    );
+    const root = screen.getByRole('tablist').closest('.leaf-tabs');
+    expect(root).toHaveClass('leaf-tabs--segmented', 'leaf-tabs--block');
+    expect(screen.getByRole('tab', { name: 'Popular' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('tabpanel')).toBeNull();
+  });
   it('switches header-only views without empty panels or dangling ARIA references', async () => {
     const change = vi.fn();
     const views = [

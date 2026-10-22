@@ -1,0 +1,1536 @@
+{
+  "version": 1,
+  "scope": {
+    "packageRoot": "packages/react",
+    "sourceRoot": "packages/react/src",
+    "comparison": "file + normalized expression + occurrence count; line numbers are not stored",
+    "excluded": ["styles/_palette.scss", "tests", "specs", "fixtures", "declaration files"],
+    "notConsumption": [
+      "colors.ts",
+      "color-recipes.ts",
+      "tailwind-tokens.ts",
+      "styles/tokens.scss",
+      "styles/_palette.scss"
+    ],
+    "updateMode": "none; baseline edits require manual review",
+    "sharedRecipeRegistry": "styles/_mixins.scss expressions require explicit review; no blanket formula allow region"
+  },
+  "globalTokens": [
+    "--leaf-color-border",
+    "--leaf-color-border-alpha-55",
+    "--leaf-color-border-alpha-60",
+    "--leaf-color-border-alpha-65",
+    "--leaf-color-border-alpha-85",
+    "--leaf-color-border-hover",
+    "--leaf-color-border-surface-35",
+    "--leaf-color-border-surface-65",
+    "--leaf-color-border-surface-70",
+    "--leaf-color-border-text-muted-65",
+    "--leaf-color-danger",
+    "--leaf-color-danger-active",
+    "--leaf-color-danger-alpha-10",
+    "--leaf-color-danger-alpha-11",
+    "--leaf-color-danger-alpha-12",
+    "--leaf-color-danger-alpha-15",
+    "--leaf-color-danger-alpha-18",
+    "--leaf-color-danger-alpha-22",
+    "--leaf-color-danger-alpha-25",
+    "--leaf-color-danger-alpha-42",
+    "--leaf-color-danger-alpha-7",
+    "--leaf-color-danger-alpha-8",
+    "--leaf-color-danger-alpha-9",
+    "--leaf-color-danger-border-12",
+    "--leaf-color-danger-border-30",
+    "--leaf-color-danger-hover",
+    "--leaf-color-danger-surface-4",
+    "--leaf-color-danger-surface-5",
+    "--leaf-color-danger-surface-6",
+    "--leaf-color-danger-surface-8",
+    "--leaf-color-danger-surface-9",
+    "--leaf-color-danger-text-80",
+    "--leaf-color-danger-white-97-5",
+    "--leaf-color-divider",
+    "--leaf-color-focus",
+    "--leaf-color-info",
+    "--leaf-color-info-alpha-10",
+    "--leaf-color-info-alpha-15",
+    "--leaf-color-info-alpha-22",
+    "--leaf-color-info-alpha-8",
+    "--leaf-color-info-alpha-9",
+    "--leaf-color-info-border-12",
+    "--leaf-color-info-surface-5",
+    "--leaf-color-info-surface-8",
+    "--leaf-color-info-surface-9",
+    "--leaf-color-info-text-80",
+    "--leaf-color-on-danger",
+    "--leaf-color-on-primary",
+    "--leaf-color-on-warning",
+    "--leaf-color-option-hover",
+    "--leaf-color-primary",
+    "--leaf-color-primary-active",
+    "--leaf-color-primary-alpha-10",
+    "--leaf-color-primary-alpha-11",
+    "--leaf-color-primary-alpha-12",
+    "--leaf-color-primary-alpha-15",
+    "--leaf-color-primary-alpha-16",
+    "--leaf-color-primary-alpha-18",
+    "--leaf-color-primary-alpha-20",
+    "--leaf-color-primary-alpha-22",
+    "--leaf-color-primary-alpha-25",
+    "--leaf-color-primary-alpha-35",
+    "--leaf-color-primary-alpha-4",
+    "--leaf-color-primary-alpha-42",
+    "--leaf-color-primary-alpha-45",
+    "--leaf-color-primary-alpha-55",
+    "--leaf-color-primary-alpha-8",
+    "--leaf-color-primary-alpha-9",
+    "--leaf-color-primary-border",
+    "--leaf-color-primary-border-12",
+    "--leaf-color-primary-border-24",
+    "--leaf-color-primary-border-30",
+    "--leaf-color-primary-border-35",
+    "--leaf-color-primary-fill-border",
+    "--leaf-color-primary-focus",
+    "--leaf-color-primary-hover",
+    "--leaf-color-primary-indicator",
+    "--leaf-color-primary-ink",
+    "--leaf-color-primary-ink-active",
+    "--leaf-color-primary-ink-hover",
+    "--leaf-color-primary-soft",
+    "--leaf-color-primary-soft-active",
+    "--leaf-color-primary-soft-hover",
+    "--leaf-color-primary-surface-10",
+    "--leaf-color-primary-surface-14",
+    "--leaf-color-primary-surface-28",
+    "--leaf-color-primary-surface-3",
+    "--leaf-color-primary-surface-5",
+    "--leaf-color-primary-surface-6",
+    "--leaf-color-primary-surface-7",
+    "--leaf-color-primary-surface-8",
+    "--leaf-color-primary-surface-9",
+    "--leaf-color-primary-text-55",
+    "--leaf-color-primary-text-80",
+    "--leaf-color-primary-text-85",
+    "--leaf-color-primary-white-97-5",
+    "--leaf-color-success",
+    "--leaf-color-success-alpha-10",
+    "--leaf-color-success-alpha-15",
+    "--leaf-color-success-alpha-22",
+    "--leaf-color-success-alpha-8",
+    "--leaf-color-success-alpha-9",
+    "--leaf-color-success-border-12",
+    "--leaf-color-success-surface-5",
+    "--leaf-color-success-surface-8",
+    "--leaf-color-success-surface-9",
+    "--leaf-color-success-text-80",
+    "--leaf-color-surface",
+    "--leaf-color-surface-alpha-55",
+    "--leaf-color-surface-alpha-90",
+    "--leaf-color-surface-muted",
+    "--leaf-color-surface-muted-alpha-45",
+    "--leaf-color-surface-muted-alpha-50",
+    "--leaf-color-surface-muted-border-65",
+    "--leaf-color-surface-muted-border-75",
+    "--leaf-color-surface-raised",
+    "--leaf-color-surface-text-98",
+    "--leaf-color-text",
+    "--leaf-color-text-alpha-10",
+    "--leaf-color-text-alpha-15",
+    "--leaf-color-text-alpha-16",
+    "--leaf-color-text-alpha-18",
+    "--leaf-color-text-alpha-8",
+    "--leaf-color-text-alpha-9",
+    "--leaf-color-text-border-12",
+    "--leaf-color-text-muted",
+    "--leaf-color-text-muted-alpha-10",
+    "--leaf-color-text-muted-alpha-22",
+    "--leaf-color-text-muted-surface-8",
+    "--leaf-color-text-muted-surface-9",
+    "--leaf-color-text-muted-surface-92",
+    "--leaf-color-text-subtle",
+    "--leaf-color-text-subtle-alpha-9",
+    "--leaf-color-text-subtle-surface-muted-38",
+    "--leaf-color-text-surface-5",
+    "--leaf-color-warning",
+    "--leaf-color-warning-alpha-10",
+    "--leaf-color-warning-alpha-12",
+    "--leaf-color-warning-alpha-15",
+    "--leaf-color-warning-alpha-16",
+    "--leaf-color-warning-alpha-22",
+    "--leaf-color-warning-alpha-8",
+    "--leaf-color-warning-alpha-9",
+    "--leaf-color-warning-border-12",
+    "--leaf-color-warning-border-30",
+    "--leaf-color-warning-surface-11",
+    "--leaf-color-warning-surface-5",
+    "--leaf-color-warning-surface-8",
+    "--leaf-color-warning-surface-9",
+    "--leaf-color-warning-text-80"
+  ],
+  "recipeFormulas": {
+    "--leaf-color-border-alpha-55": ["border", "alpha", 55],
+    "--leaf-color-border-alpha-60": ["border", "alpha", 60],
+    "--leaf-color-border-alpha-65": ["border", "alpha", 65],
+    "--leaf-color-border-alpha-85": ["border", "alpha", 85],
+    "--leaf-color-border-surface-35": ["border", "surface", 35],
+    "--leaf-color-border-surface-65": ["border", "surface", 65],
+    "--leaf-color-border-surface-70": ["border", "surface", 70],
+    "--leaf-color-border-text-muted-65": ["border", "text-muted", 65],
+    "--leaf-color-danger-alpha-10": ["danger", "alpha", 10],
+    "--leaf-color-danger-alpha-11": ["danger", "alpha", 11],
+    "--leaf-color-danger-alpha-12": ["danger", "alpha", 12],
+    "--leaf-color-danger-alpha-15": ["danger", "alpha", 15],
+    "--leaf-color-danger-alpha-18": ["danger", "alpha", 18],
+    "--leaf-color-danger-alpha-22": ["danger", "alpha", 22],
+    "--leaf-color-danger-alpha-25": ["danger", "alpha", 25],
+    "--leaf-color-danger-alpha-42": ["danger", "alpha", 42],
+    "--leaf-color-danger-alpha-7": ["danger", "alpha", 7],
+    "--leaf-color-danger-alpha-8": ["danger", "alpha", 8],
+    "--leaf-color-danger-alpha-9": ["danger", "alpha", 9],
+    "--leaf-color-danger-border-12": ["danger", "border", 12],
+    "--leaf-color-danger-border-30": ["danger", "border", 30],
+    "--leaf-color-danger-surface-4": ["danger", "surface", 4],
+    "--leaf-color-danger-surface-5": ["danger", "surface", 5],
+    "--leaf-color-danger-surface-6": ["danger", "surface", 6],
+    "--leaf-color-danger-surface-8": ["danger", "surface", 8],
+    "--leaf-color-danger-surface-9": ["danger", "surface", 9],
+    "--leaf-color-danger-text-80": ["danger", "text", 80],
+    "--leaf-color-danger-white-97-5": ["danger", "white", 97.5],
+    "--leaf-color-info-alpha-10": ["info", "alpha", 10],
+    "--leaf-color-info-alpha-15": ["info", "alpha", 15],
+    "--leaf-color-info-alpha-22": ["info", "alpha", 22],
+    "--leaf-color-info-alpha-8": ["info", "alpha", 8],
+    "--leaf-color-info-alpha-9": ["info", "alpha", 9],
+    "--leaf-color-info-border-12": ["info", "border", 12],
+    "--leaf-color-info-surface-5": ["info", "surface", 5],
+    "--leaf-color-info-surface-8": ["info", "surface", 8],
+    "--leaf-color-info-surface-9": ["info", "surface", 9],
+    "--leaf-color-info-text-80": ["info", "text", 80],
+    "--leaf-color-option-hover": ["text", "surface", 9],
+    "--leaf-color-primary-alpha-10": ["primary", "alpha", 10],
+    "--leaf-color-primary-alpha-11": ["primary", "alpha", 11],
+    "--leaf-color-primary-alpha-12": ["primary", "alpha", 12],
+    "--leaf-color-primary-alpha-15": ["primary", "alpha", 15],
+    "--leaf-color-primary-alpha-16": ["primary", "alpha", 16],
+    "--leaf-color-primary-alpha-18": ["primary", "alpha", 18],
+    "--leaf-color-primary-alpha-20": ["primary", "alpha", 20],
+    "--leaf-color-primary-alpha-22": ["primary", "alpha", 22],
+    "--leaf-color-primary-alpha-25": ["primary", "alpha", 25],
+    "--leaf-color-primary-alpha-35": ["primary", "alpha", 35],
+    "--leaf-color-primary-alpha-4": ["primary", "alpha", 4],
+    "--leaf-color-primary-alpha-42": ["primary", "alpha", 42],
+    "--leaf-color-primary-alpha-45": ["primary", "alpha", 45],
+    "--leaf-color-primary-alpha-55": ["primary", "alpha", 55],
+    "--leaf-color-primary-alpha-8": ["primary", "alpha", 8],
+    "--leaf-color-primary-alpha-9": ["primary", "alpha", 9],
+    "--leaf-color-primary-border-12": ["primary", "border", 12],
+    "--leaf-color-primary-border-24": ["primary", "border", 24],
+    "--leaf-color-primary-border-30": ["primary", "border", 30],
+    "--leaf-color-primary-border-35": ["primary", "border", 35],
+    "--leaf-color-primary-surface-10": ["primary", "surface", 10],
+    "--leaf-color-primary-surface-14": ["primary", "surface", 14],
+    "--leaf-color-primary-surface-28": ["primary", "surface", 28],
+    "--leaf-color-primary-surface-3": ["primary", "surface", 3],
+    "--leaf-color-primary-surface-5": ["primary", "surface", 5],
+    "--leaf-color-primary-surface-6": ["primary", "surface", 6],
+    "--leaf-color-primary-surface-7": ["primary", "surface", 7],
+    "--leaf-color-primary-surface-8": ["primary", "surface", 8],
+    "--leaf-color-primary-surface-9": ["primary", "surface", 9],
+    "--leaf-color-primary-text-55": ["primary", "text", 55],
+    "--leaf-color-primary-text-80": ["primary", "text", 80],
+    "--leaf-color-primary-text-85": ["primary", "text", 85],
+    "--leaf-color-primary-white-97-5": ["primary", "white", 97.5],
+    "--leaf-color-success-alpha-10": ["success", "alpha", 10],
+    "--leaf-color-success-alpha-15": ["success", "alpha", 15],
+    "--leaf-color-success-alpha-22": ["success", "alpha", 22],
+    "--leaf-color-success-alpha-8": ["success", "alpha", 8],
+    "--leaf-color-success-alpha-9": ["success", "alpha", 9],
+    "--leaf-color-success-border-12": ["success", "border", 12],
+    "--leaf-color-success-surface-5": ["success", "surface", 5],
+    "--leaf-color-success-surface-8": ["success", "surface", 8],
+    "--leaf-color-success-surface-9": ["success", "surface", 9],
+    "--leaf-color-success-text-80": ["success", "text", 80],
+    "--leaf-color-surface-alpha-55": ["surface", "alpha", 55],
+    "--leaf-color-surface-alpha-90": ["surface", "alpha", 90],
+    "--leaf-color-surface-muted-alpha-45": ["surface-muted", "alpha", 45],
+    "--leaf-color-surface-muted-alpha-50": ["surface-muted", "alpha", 50],
+    "--leaf-color-surface-muted-border-65": ["surface-muted", "border", 65],
+    "--leaf-color-surface-muted-border-75": ["surface-muted", "border", 75],
+    "--leaf-color-surface-text-98": ["surface", "text", 98],
+    "--leaf-color-text-alpha-10": ["text", "alpha", 10],
+    "--leaf-color-text-alpha-15": ["text", "alpha", 15],
+    "--leaf-color-text-alpha-16": ["text", "alpha", 16],
+    "--leaf-color-text-alpha-18": ["text", "alpha", 18],
+    "--leaf-color-text-alpha-8": ["text", "alpha", 8],
+    "--leaf-color-text-alpha-9": ["text", "alpha", 9],
+    "--leaf-color-text-border-12": ["text", "border", 12],
+    "--leaf-color-text-muted-alpha-10": ["text-muted", "alpha", 10],
+    "--leaf-color-text-muted-alpha-22": ["text-muted", "alpha", 22],
+    "--leaf-color-text-muted-surface-8": ["text-muted", "surface", 8],
+    "--leaf-color-text-muted-surface-9": ["text-muted", "surface", 9],
+    "--leaf-color-text-muted-surface-92": ["text-muted", "surface", 92],
+    "--leaf-color-text-subtle-alpha-9": ["text-subtle", "alpha", 9],
+    "--leaf-color-text-subtle-surface-muted-38": ["text-subtle", "surface-muted", 38],
+    "--leaf-color-text-surface-5": ["text", "surface", 5],
+    "--leaf-color-warning-alpha-10": ["warning", "alpha", 10],
+    "--leaf-color-warning-alpha-12": ["warning", "alpha", 12],
+    "--leaf-color-warning-alpha-15": ["warning", "alpha", 15],
+    "--leaf-color-warning-alpha-16": ["warning", "alpha", 16],
+    "--leaf-color-warning-alpha-22": ["warning", "alpha", 22],
+    "--leaf-color-warning-alpha-8": ["warning", "alpha", 8],
+    "--leaf-color-warning-alpha-9": ["warning", "alpha", 9],
+    "--leaf-color-warning-border-12": ["warning", "border", 12],
+    "--leaf-color-warning-border-30": ["warning", "border", 30],
+    "--leaf-color-warning-surface-11": ["warning", "surface", 11],
+    "--leaf-color-warning-surface-5": ["warning", "surface", 5],
+    "--leaf-color-warning-surface-8": ["warning", "surface", 8],
+    "--leaf-color-warning-surface-9": ["warning", "surface", 9],
+    "--leaf-color-warning-text-80": ["warning", "text", 80]
+  },
+  "reviewedChanges": [],
+  "fieldFamily": {
+    "consumers": [
+      "autocomplete/autocomplete.scss",
+      "cascader/cascader.scss",
+      "colorpicker/colorpicker.scss",
+      "datepicker/datepicker.scss",
+      "input/input.scss",
+      "inputnumber/inputnumber.scss",
+      "select/select.scss",
+      "textarea/textarea.scss",
+      "treeselect/treeselect.scss"
+    ],
+    "primaryFocusConsumers": ["input/input.scss", "select/select.scss"],
+    "neutralFocusConsumers": {
+      "autocomplete/autocomplete.scss": "auto-complete",
+      "cascader/cascader.scss": "cascader",
+      "colorpicker/colorpicker.scss": "color-picker",
+      "datepicker/datepicker.scss": "date-picker",
+      "inputnumber/inputnumber.scss": "input-number",
+      "textarea/textarea.scss": "textarea",
+      "treeselect/treeselect.scss": "tree-select"
+    }
+  },
+  "debt": {
+    "alert/alert.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-surface-35)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-10)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-15)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-7)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-danger-border-12)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-danger-surface-5)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-alpha-10)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-alpha-15)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-alpha-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-border-12)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-surface-5)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-alpha-10)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-alpha-15)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-alpha-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-border-12)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-surface-5)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-text-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-text-alpha-15)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-text-alpha-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-text-border-12)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-text-surface-5)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-10)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-15)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-warning-border-12)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-warning-surface-5)",
+          "count": 2
+        }
+      ]
+    },
+    "anchor/anchor.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-4)",
+          "count": 1
+        }
+      ]
+    },
+    "appbar/appbar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-8)",
+          "count": 1
+        }
+      ]
+    },
+    "avatar/avatar.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1
+        }
+      ]
+    },
+    "badge/badge.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1
+        },
+        {
+          "expression": "rgb(255 255 255/16%)",
+          "count": 1
+        }
+      ]
+    },
+    "breadcrumb/breadcrumb.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-45)",
+          "count": 1
+        }
+      ]
+    },
+    "button/button.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-alpha-18)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-25)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-alpha-42)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-text-80)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-18)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-25)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-42)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.06)",
+          "count": 1
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)",
+          "count": 1
+        }
+      ]
+    },
+    "calendar/calendar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-surface-70)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-5)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-surface-muted-alpha-45)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-text-muted-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-text-muted-surface-9)",
+          "count": 2
+        }
+      ]
+    },
+    "colorpicker/colorpicker.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-12)",
+          "count": 1
+        }
+      ],
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-color:var(--leaf-color-danger)",
+          "count": 1
+        },
+        {
+          "expression": "border-color:var(--leaf-color-primary-indicator,var(--leaf-color-primary))",
+          "count": 1
+        },
+        {
+          "expression": "border:1px solid var(--leaf-color-border)",
+          "count": 1
+        }
+      ]
+    },
+    "commandpalette/commandpalette.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-alpha-60)",
+          "count": 1
+        }
+      ]
+    },
+    "drawer/drawer.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.38)",
+          "count": 1
+        }
+      ]
+    },
+    "dropdown/dropdown.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-surface-6)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-surface-8)",
+          "count": 2
+        }
+      ]
+    },
+    "filelist/filelist.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-surface-4)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-surface-9)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-text-80)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-surface-5)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-14)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-5)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-9)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-success-text-80)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-surface-5)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-text-80)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "#111",
+          "count": 1
+        }
+      ]
+    },
+    "form/form.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-surface-6)",
+          "count": 1
+        }
+      ]
+    },
+    "inputnumber/inputnumber.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-surface-10)",
+          "count": 1
+        }
+      ]
+    },
+    "inputotp/inputotp.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-12)",
+          "count": 1
+        }
+      ]
+    },
+    "loading/loading.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-55)",
+          "count": 1
+        }
+      ]
+    },
+    "loadingbar/loadingbar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-55)",
+          "count": 1
+        }
+      ]
+    },
+    "menu/menu.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-surface-6)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-4)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.08)",
+          "count": 1
+        },
+        {
+          "expression": "rgba(0,0,0,0.04)",
+          "count": 1
+        },
+        {
+          "expression": "rgba(0,0,0,0.08)",
+          "count": 3
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))",
+          "count": 1
+        }
+      ]
+    },
+    "modal/modal.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-surface-35)",
+          "count": 2
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/10%)",
+          "count": 1
+        },
+        {
+          "expression": "rgb(0 0 0/24%)",
+          "count": 1
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)60%,var(--leaf-color-surface))",
+          "count": 1
+        }
+      ]
+    },
+    "pagination/pagination.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-border-24)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-8)",
+          "count": 1
+        }
+      ]
+    },
+    "popconfirm/popconfirm.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-alpha-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-info-alpha-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-success-alpha-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-8)",
+          "count": 1
+        }
+      ]
+    },
+    "popover/popover.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-alpha-85)",
+          "count": 2
+        }
+      ]
+    },
+    "progress/progress.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(255 255 255/0.35)",
+          "count": 1
+        }
+      ]
+    },
+    "qrcode/qrcode.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-90)",
+          "count": 1
+        }
+      ]
+    },
+    "rate/rate.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#ffc53d",
+          "count": 1
+        }
+      ]
+    },
+    "rate/rate.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "#ef5350",
+          "count": 1
+        },
+        {
+          "expression": "#f49b23",
+          "count": 1
+        },
+        {
+          "expression": "#ffc53d",
+          "count": 1
+        }
+      ]
+    },
+    "shared/_floating.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-alpha-55)",
+          "count": 1
+        }
+      ]
+    },
+    "shared/calendar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-12)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-surface-muted-alpha-45)",
+          "count": 1
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)60%,var(--leaf-color-surface))",
+          "count": 1
+        }
+      ]
+    },
+    "skeleton/skeleton.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-text-subtle-alpha-9)",
+          "count": 1
+        }
+      ]
+    },
+    "slider/slider.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-12)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-16)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-20)",
+          "count": 2
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/7%)",
+          "count": 1
+        }
+      ]
+    },
+    "splitter/splitter.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-surface-28)",
+          "count": 1
+        }
+      ]
+    },
+    "switch/switch.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-muted-border-65)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1
+        },
+        {
+          "expression": "rgb(0 0 0/14%)",
+          "count": 1
+        },
+        {
+          "expression": "rgb(0 0 0/15%)",
+          "count": 1
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-text)4%,var(--leaf-switch-track-background))",
+          "count": 1
+        },
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-text)8%,var(--leaf-switch-track-background))",
+          "count": 1
+        }
+      ]
+    },
+    "tabs/tabs.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-alpha-65)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)75%,var(--leaf-color-border))",
+          "count": 1
+        },
+        {
+          "expression": "color-mix(in srgb,var(--leaf-color-text-muted)72%,var(--leaf-color-surface))",
+          "count": 2
+        }
+      ]
+    },
+    "tag/tag.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-danger-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-danger-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-info-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-info-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-8)",
+          "count": 2
+        },
+        {
+          "expression": "var(--leaf-color-success-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-success-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-surface-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-text-80)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 2
+        },
+        {
+          "expression": "rgba(255,255,255,0.1)",
+          "count": 1
+        }
+      ]
+    },
+    "theme.ts": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/${theme.elevation === 'soft' ? '.08':'.16'})",
+          "count": 1
+        }
+      ]
+    },
+    "timepicker/timepicker.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-15)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-9)",
+          "count": 1
+        }
+      ]
+    },
+    "tour/tour.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.45)",
+          "count": 2
+        }
+      ]
+    },
+    "transfer/transfer.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-surface-8)",
+          "count": 1
+        }
+      ]
+    },
+    "tree/tree.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-border-alpha-55)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-12)",
+          "count": 1
+        }
+      ],
+      "hardcodedColors": [
+        {
+          "expression": "#0002",
+          "count": 1
+        }
+      ]
+    },
+    "typography/typography.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-8)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-text-85)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-warning-alpha-16)",
+          "count": 1
+        }
+      ]
+    },
+    "upload/upload.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-7)",
+          "count": 1
+        },
+        {
+          "expression": "var(--leaf-color-primary-surface-8)",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "exceptions": {
+    "colorpicker/colorpicker.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#000",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#00f",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#0f0",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#0ff",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#ddd",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#f00",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#f0f",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#ff0",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#fff",
+          "count": 6,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(0 0 0/25%)",
+          "count": 4,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(0 0 0/8%)",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(255 255 255/18%)",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        }
+      ],
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 3,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:1px solid rgb(0 0 0/8%)",
+          "count": 1,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:2px solid #fff",
+          "count": 3,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:2px solid var(--leaf-color-surface)",
+          "count": 1,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        }
+      ]
+    },
+    "colorpicker/colorpicker.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "#000",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#13a8a8",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#1677ff",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#203329",
+          "count": 2,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#7654c6",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#ef5350",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#f49b23",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#fff",
+          "count": 2,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        }
+      ]
+    },
+    "config-provider/helpers.ts": {
+      "hardcodedColors": [
+        {
+          "expression": "#ffffff",
+          "count": 1,
+          "reason": "Contrast helper uses white as a calculation canvas, not component paint."
+        }
+      ]
+    },
+    "image/image.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#0003",
+          "count": 2,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#0005",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#0006",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#0009",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#26292f",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#b7bfc9",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#e8edf3",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#f4f5f7",
+          "count": 2,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#f5b4b4",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#fff",
+          "count": 6,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff0b",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff0e",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff12",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff1c",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff24",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "rgba(0,0,0,0.22)",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "white",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        }
+      ]
+    },
+    "image/viewer.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "rgba(0,0,0,.92)",
+          "count": 1,
+          "reason": "Media viewer backdrop is a fixed photographic overlay color."
+        }
+      ]
+    },
+    "shared/_backdrop.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgba(8,12,18,0.44)",
+          "count": 1,
+          "reason": "Shared backdrop recipe keeps a fixed scrim fallback for environments without a theme color."
+        }
+      ]
+    },
+    "autocomplete/autocomplete.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-color:transparent",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:0",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "cascader/cascader.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-inline-start:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border:0",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "datepicker/datepicker.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-color:var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Calendar day geometry/disabled day boundary or inner action reset; not the outer date field."
+        },
+        {
+          "expression": "border:0",
+          "count": 3,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:1px solid transparent",
+          "count": 1,
+          "reason": "Calendar day geometry/disabled day boundary or inner action reset; not the outer date field."
+        }
+      ]
+    },
+    "input/input.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 3,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "inputnumber/inputnumber.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-inline-start-color:var(--leaf-field-color-border-30)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border-inline-start:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border-top:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "select/select.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-color:transparent",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "treeselect/treeselect.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    }
+  },
+  "risks": {
+    "undefinedGlobalTokens": {}
+  },
+  "sharedRecipeExpressions": {
+    "hardcodedColors": [
+      {
+        "expression": "rgb(0 0 0/0.04)",
+        "count": 1
+      },
+      {
+        "expression": "rgb(0 0 0/0.045)",
+        "count": 1
+      },
+      {
+        "expression": "rgb(0 0 0/0.05)",
+        "count": 1
+      }
+    ],
+    "mixFormulas": [
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-divider)70%,#{$surface})",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-primary)3%,var(--leaf-table-surface))",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
+        "count": 1
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)80%,var(--leaf-table-surface))",
+        "count": 1
+      }
+    ],
+    "derivedTokenUsages": [
+      {
+        "expression": "var(--leaf-color-danger-alpha-12)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-danger-border-30)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-primary-alpha-12)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-primary-surface-8)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-surface-alpha-80)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-warning-alpha-12)",
+        "count": 1
+      },
+      {
+        "expression": "var(--leaf-color-warning-border-30)",
+        "count": 1
+      }
+    ]
+  }
+}

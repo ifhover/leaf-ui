@@ -10,7 +10,7 @@
   align-items: center;
   gap: 10px;
   color: var(--leaf-color-text);
-  font: var(--leaf-font-size-sm)/1.5 var(--leaf-font-family);
+  font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
   &__track {
     flex: 1;
     overflow: hidden;

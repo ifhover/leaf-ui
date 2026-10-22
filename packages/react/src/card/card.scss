@@ -1,51 +1,89 @@
-@use '../styles/mixins';
+@use '../styles/mixins' as *;
 
 .leaf-card-title {
+  --leaf-card-title-font-size: var(--leaf-font-size);
+  --leaf-card-title-line-height: var(--leaf-line-height);
   min-width: 0;
   margin: 0;
   color: var(--leaf-color-text);
-  font: var(--leaf-heading-weight, 600) calc(var(--leaf-font-size) + 1px) / 1.5
-    var(--leaf-font-family);
+  font: var(--leaf-heading-weight, 600) var(--leaf-card-title-font-size) var(--leaf-font-family);
+  line-height: var(--leaf-card-title-line-height);
   overflow-wrap: anywhere;
   &--sm {
-    font-size: var(--leaf-font-size);
+    --leaf-card-title-font-size: var(--leaf-font-size-sm);
+    --leaf-card-title-line-height: var(--leaf-line-height-sm);
   }
   &--lg {
-    font-size: calc(var(--leaf-font-size) + 2px);
+    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
+    --leaf-card-title-line-height: var(--leaf-line-height-lg);
+  }
+}
+
+.leaf-card-title-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  &__heading {
+    min-width: 0;
+  }
+  &__description {
+    margin-block-start: 2px;
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+    overflow-wrap: anywhere;
+  }
+  &__extra {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
   }
 }
 
 .leaf-card {
   --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
   --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
-  --leaf-card-title-font-size: calc(var(--leaf-font-size) + 1px);
+  --leaf-card-title-font-size: var(--leaf-font-size);
+  --leaf-card-title-line-height: var(--leaf-line-height);
+  --leaf-card-surface: var(--leaf-component-card-background, var(--leaf-color-surface));
+  --leaf-card-border-width: var(--leaf-component-card-border-width, var(--leaf-border-width, 1px));
+  --leaf-card-radius: var(--leaf-component-card-radius, var(--leaf-radius-md));
+  --leaf-card-inset: calc(var(--leaf-spacing) * 0.75);
+  --leaf-card-inset-padding: max(
+    0px,
+    calc(var(--leaf-card-padding) - var(--leaf-card-inset) - var(--leaf-card-border-width))
+  );
+  --leaf-card-canvas: var(--leaf-color-surface-muted);
+  @include softened-frame-color(card, var(--leaf-card-surface));
   box-sizing: border-box;
   min-width: 0;
-  border: var(--leaf-component-card-border-width, var(--leaf-border-width, 1px)) solid transparent;
-  border-radius: var(--leaf-component-card-radius, var(--leaf-radius-md));
-  background: var(--leaf-component-card-background, var(--leaf-color-surface));
+  border: var(--leaf-card-border-width) solid transparent;
+  border-radius: var(--leaf-card-radius);
+  background: var(--leaf-card-surface);
   color: var(--leaf-component-card-color, var(--leaf-color-text));
-  font: var(--leaf-component-card-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
+  font: var(--leaf-component-card-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   transition:
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-  box-shadow: var(--leaf-component-card-shadow, var(--leaf-surface-shadow, none));
+  @include resting-surface-shadow(card);
   &--bordered {
     border-color: var(
       --leaf-component-card-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-divider))
+      var(--leaf-frame-border-color, var(--leaf-card-frame-color))
     );
-    box-shadow: var(--leaf-component-card-shadow, var(--leaf-surface-shadow, none));
   }
   &--sm {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2));
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 1.5));
-    --leaf-card-title-font-size: var(--leaf-font-size);
+    --leaf-card-title-font-size: var(--leaf-font-size-sm);
+    --leaf-card-title-line-height: var(--leaf-line-height-sm);
   }
   &--lg {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 3));
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2.5));
     --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
+    --leaf-card-title-line-height: var(--leaf-line-height-lg);
   }
   &__header {
     display: flex;
@@ -89,6 +127,9 @@
   &__header + &__body {
     padding-block-start: 0;
   }
+  &__header + &__panel > &__body {
+    padding-block-start: 0;
+  }
   &__footer {
     padding: var(--leaf-card-padding);
     padding-block-start: 0;
@@ -102,25 +143,6 @@
       margin-block-end: 0;
     }
   }
-  &--divided > &__header {
-    border-block-end: 1px solid
-      var(
-        --leaf-component-card-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-divider))
-      );
-  }
-  &--divided > &__header + &__body {
-    padding-block-start: var(--leaf-card-padding);
-  }
-  &--divided > &__footer {
-    @include mixins.action-footer-padding(card);
-    border-block-start: 1px solid
-      var(
-        --leaf-component-card-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-divider))
-      );
-    background: var(--leaf-component-card-footer-background, var(--leaf-color-surface-muted));
-  }
   &__cover {
     overflow: hidden;
     border-start-start-radius: inherit;
@@ -129,6 +151,53 @@
       display: block;
       width: 100%;
       object-fit: cover;
+    }
+  }
+  &__panel {
+    min-width: 0;
+    border-radius: inherit;
+  }
+  &--inset {
+    background: var(--leaf-card-canvas);
+    > .leaf-card__panel {
+      box-sizing: border-box;
+      min-width: 0;
+      margin: var(--leaf-card-inset);
+      border: var(--leaf-card-border-width) solid
+        var(
+          --leaf-component-card-border-color,
+          var(--leaf-frame-border-color, var(--leaf-card-frame-color))
+        );
+      border-radius: max(
+        0px,
+        calc(var(--leaf-card-radius) - var(--leaf-card-inset) - var(--leaf-card-border-width))
+      );
+      background: var(--leaf-card-surface);
+      box-shadow: var(--leaf-shadow-xs);
+    }
+    > .leaf-card__header + .leaf-card__panel {
+      margin-block-start: 0;
+    }
+    > .leaf-card__panel > .leaf-card__body {
+      padding-block: var(--leaf-card-inset-padding);
+      padding-inline: var(--leaf-card-inset-padding);
+    }
+    > .leaf-card__panel > .leaf-card__body:not(:last-child) {
+      padding-block-end: 16px;
+    }
+    > .leaf-card__panel > .leaf-card__tabs + .leaf-card__body {
+      padding-block-start: 0;
+    }
+    > .leaf-card__panel > .leaf-card__footer {
+      padding-inline: var(--leaf-card-inset-padding);
+      padding-block-end: var(--leaf-card-inset-padding);
+    }
+    > .leaf-card__panel > .leaf-card__footer:first-child {
+      padding-block-start: var(--leaf-card-inset-padding);
+    }
+    > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__header,
+    > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel {
+      padding-inline: var(--leaf-card-inset-padding);
     }
   }
   &--tabbed > &__header {
@@ -147,16 +216,26 @@
       border-block-end: 1px solid
         var(
           --leaf-component-card-border-color,
-          var(--leaf-frame-border-color, var(--leaf-color-divider))
+          var(--leaf-frame-border-color, var(--leaf-card-frame-color))
         );
       background: var(--leaf-component-card-header-background, transparent);
       border-start-start-radius: inherit;
       border-start-end-radius: inherit;
-      > .leaf-tabs__scroll > .leaf-tabs__list {
+      // Reserve the indicator's 1px overlap with the divider without growing the bar.
+      > .leaf-tabs__viewport > .leaf-tabs__scroll {
+        margin-block-end: -1px;
+      }
+      > .leaf-tabs__viewport > .leaf-tabs__scroll > .leaf-tabs__list {
         box-shadow: none;
         > .leaf-scrollbar__content > .leaf-tabs__track {
           gap: var(--leaf-spacing-md);
+          // The selected line replaces the card divider instead of stacking above it.
+          overflow: visible;
+          padding-block-end: 1px;
         }
+      }
+      .leaf-tabs__indicator::after {
+        bottom: -1px;
       }
       .leaf-tabs__tab {
         padding-inline: 0;
@@ -173,14 +252,16 @@
     }
   }
   & > &__tabs:first-child > .leaf-tabs__header,
-  & > &__cover + &__tabs > .leaf-tabs__header {
+  & > &__cover + &__tabs > .leaf-tabs__header,
+  &:not(.leaf-card--headed) > &__panel > &__tabs:first-child > .leaf-tabs__header,
+  &:not(.leaf-card--headed) > &__panel > &__cover + &__tabs > .leaf-tabs__header {
     // A replacement heading fills the whole row; the underline stays on its bottom edge.
     --leaf-card-tab-heading-height: max(
       var(--leaf-current-control-height),
-      calc(var(--leaf-card-title-font-size) * 1.5 + var(--leaf-card-heading-gap) * 2)
+      calc(var(--leaf-card-title-line-height) + var(--leaf-card-heading-gap) * 2)
     );
     align-items: stretch;
-    > .leaf-tabs__scroll > .leaf-tabs__list {
+    > .leaf-tabs__viewport > .leaf-tabs__scroll > .leaf-tabs__list {
       display: flex;
       > .leaf-scrollbar__content > .leaf-tabs__track {
         flex-shrink: 0;
@@ -200,7 +281,7 @@
       align-self: center;
     }
   }
-  &__header + &__tabs > .leaf-tabs__header {
+  &:not(.leaf-card--inset) > &__header + &__panel > &__tabs > .leaf-tabs__header {
     border-start-start-radius: 0;
     border-start-end-radius: 0;
   }
@@ -211,6 +292,11 @@
     display: flex;
     align-items: center;
     gap: var(--leaf-spacing-sm);
+  }
+}
+@media (forced-colors: active) {
+  .leaf-card--inset > .leaf-card__panel {
+    border-color: CanvasText;
   }
 }
 @media (prefers-reduced-motion: reduce) {

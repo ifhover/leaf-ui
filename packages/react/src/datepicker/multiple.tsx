@@ -85,6 +85,7 @@ export const MultipleDatePicker = forwardRef<HTMLInputElement, MultipleDatePicke
           .join(', ')}
         formValue={selected.map((date) => periodKey(date, picker)).join(',')}
         onClear={() => change([])}
+        panelClassName="leaf-date-picker__panel"
         onTextCommit={(text) => {
           if (!text) {
             change([]);

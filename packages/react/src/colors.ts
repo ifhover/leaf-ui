@@ -3,18 +3,18 @@ import { colorRecipes } from './color-recipes';
 
 export const defaultColors = {
   light: {
-    primary: '#20834a',
+    primary: '#1e964f',
     'on-primary': '#ffffff',
-    danger: '#c83c3c',
+    danger: '#dd3f2e',
     'on-danger': '#ffffff',
-    warning: '#faad14',
+    warning: '#d38b11',
     info: '#1677ff',
-    success: '#20834a',
-    text: '#202024',
-    'text-muted': '#68686f',
+    success: '#1e964f',
+    text: '#202020',
+    'text-muted': '#707070',
     surface: '#ffffff',
-    'surface-muted': '#f6f6f7',
-    border: '#e5e5e8',
+    'surface-muted': '#f5f5f5',
+    border: '#e2e2e2',
   },
   dark: {
     primary: '#83cf9e',
@@ -24,11 +24,11 @@ export const defaultColors = {
     warning: '#ffc53d',
     info: '#69b1ff',
     success: '#83cf9e',
-    text: '#ededf0',
-    'text-muted': '#a5a5ae',
-    surface: '#1c1c20',
-    'surface-muted': '#25252b',
-    border: '#38383f',
+    text: '#ededed',
+    'text-muted': '#aaaaaa',
+    surface: '#1c1c1c',
+    'surface-muted': '#272727',
+    border: '#3b3b3b',
   },
 };
 
@@ -99,7 +99,9 @@ function interactionColor(color: string, foreground: string, toward: string, amo
     !new TinyColor(foreground).isValid
   )
     return undefined;
-  const minimumContrast = Math.min(4.5, readability(color, foreground));
+  const baseContrast = readability(color, foreground);
+  // Keep a visible hover shade when a brand fill sits below normal-text AA.
+  const minimumContrast = Math.max(2.8, Math.min(4.5, baseContrast) - 0.1);
   for (const amount of amounts) {
     const candidate = mixColors(color, toward, 100 - amount);
     if (candidate && readability(candidate, foreground) >= minimumContrast) return candidate;

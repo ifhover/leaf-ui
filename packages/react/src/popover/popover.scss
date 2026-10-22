@@ -13,7 +13,7 @@
   &__content {
     min-width: 0;
     color: var(--leaf-color-text-muted);
-    line-height: 1.65;
+    line-height: var(--leaf-line-height);
     > :first-child {
       margin-block-start: 0;
     }

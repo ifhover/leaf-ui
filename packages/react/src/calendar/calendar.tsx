@@ -60,6 +60,7 @@ export function Calendar(rawProps: CalendarProps) {
       className={classes('leaf-calendar-view', fullscreen && 'leaf-calendar-view--full', className)}
     >
       <CalendarPanel
+        fullLayout={fullscreen}
         picker={mode}
         value={selected}
         visibleDate={visibleDate ?? visible}

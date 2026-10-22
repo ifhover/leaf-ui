@@ -171,7 +171,7 @@ const components = [
   ['Divider', {}, null, /role="separator"/],
   ['Empty', {}, null, /leaf-empty/],
   ['Result', { status: 'success' }, null, /leaf-result/],
-  ['ColorPicker', { defaultValue: '#20834a' }, null, /leaf-color-picker/],
+  ['ColorPicker', { defaultValue: '#1e964f' }, null, /leaf-color-picker/],
   ['Tree', { data: [{ key: 'leaf', title: 'Leaf' }] }, null, /role="tree"/],
   ['TreeSelect', { options: [{ value: 'leaf', label: 'Leaf' }] }, null, /role="combobox"/],
   ['Skeleton', { rows: 2 }, null, /role="status"/],
@@ -467,7 +467,7 @@ for (const [format, api] of [
       ),
     ),
   );
-  assert.match(resetDefaults, /leaf-button--solid leaf-button--md/);
+  assert.match(resetDefaults, /leaf-button--outline leaf-button--md/);
   assert.doesNotMatch(resetDefaults, /disabled=""/);
   for (const name of ['ButtonControl', 'InputControl', 'SelectControl', 'ModalBase'])
     assert.ok(!(name in api), `${name} must remain internal`);
@@ -568,13 +568,14 @@ const foundationCss = await readFile(
   new URL('dist/esm/styles/foundation.css', packageRoot),
   'utf8',
 );
-assert.match(foundationCss, /--leaf-control-height:\s*36px/);
+assert.match(foundationCss, /--leaf-control-height:\s*34px/);
+assert.match(foundationCss, /--leaf-font-size:\s*14px/);
 assert.match(baseCss, /@import ['"]\.\/foundation\.css['"]/);
 assert.match(baseCss, /components\/message\.css/);
 assert.match(baseCss, /components\/modal\.css/);
 assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary component styles');
 const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
-assert.match(css, /--leaf-control-height:\s*36px/);
+assert.match(css, /--leaf-control-height:\s*34px/);
 assert.match(css, /--leaf-color-danger/);
 assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]|\.leaf-segmented/);
 for (const name of ['List', 'ListItem', 'OrgChart', 'Segmented']) {
@@ -789,7 +790,7 @@ for (const [specifier, expected, excluded] of [
   const styles = result.outputFiles.find((file) => file.path.endsWith('.css'))?.text ?? '';
   assert.match(
     styles,
-    /--leaf-control-height:\s*36px/,
+    /--leaf-control-height:\s*34px/,
     `${specifier} automatically loads theme defaults`,
   );
   for (const name of expected)
@@ -814,7 +815,7 @@ assert.ok(
     (file) =>
       file.path.endsWith('.css') &&
       file.text.includes('.leaf-button') &&
-      /--leaf-control-height:\s*36px/.test(file.text),
+      /--leaf-control-height:\s*34px/.test(file.text),
   ),
 );
 console.log(

@@ -154,6 +154,8 @@
   },
   "tabs": {
     "moreTabs": "更多標籤頁",
+    "scrollLeft": "向左滾動標籤頁",
+    "scrollRight": "向右滾動標籤頁",
     "addTab": "新增標籤頁",
     "reorder": "移動標籤頁 {label}",
     "closeLabel": "關閉標籤頁 {label}"

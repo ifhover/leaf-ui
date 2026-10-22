@@ -11,7 +11,6 @@ export interface CheckableTagProps
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
   size?: ControlSize;
-  bold?: boolean;
 }
 export function CheckableTag(rawProps: CheckableTagProps) {
   const {
@@ -19,7 +18,6 @@ export function CheckableTag(rawProps: CheckableTagProps) {
     defaultChecked = false,
     onChange,
     size = 'md',
-    bold = true,
     children,
     className,
     onClick,
@@ -32,14 +30,13 @@ export function CheckableTag(rawProps: CheckableTagProps) {
       type={props.type ?? 'button'}
       className={classes(
         'leaf-tag',
-        'leaf-tag--soft',
+        `leaf-tag--${current ? 'solid' : 'soft'}`,
         `leaf-tag--${size}`,
-        bold && 'leaf-tag--bold',
         'leaf-checkable-tag',
         className,
       )}
       aria-pressed={current}
-      data-color={current ? 'primary' : 'default'}
+      data-color="primary"
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) change(!current);
@@ -62,7 +59,6 @@ export interface TagGroupProps
   onChange?: (values: string[]) => void;
   disabled?: boolean;
   size?: ControlSize;
-  bold?: boolean;
   name?: string;
   form?: string;
   required?: boolean;
@@ -75,7 +71,6 @@ export function TagGroup(rawProps: TagGroupProps) {
     onChange,
     disabled,
     size,
-    bold = true,
     name,
     form,
     required,
@@ -92,33 +87,35 @@ export function TagGroup(rawProps: TagGroupProps) {
   );
   return (
     <div {...props} ref={root} className={classes('leaf-tag-group', className)}>
-      {options.map((option, index) => (
-        <button
-          key={option.value}
-          ref={index === 0 ? trigger : undefined}
-          type="button"
-          className={classes(
-            'leaf-tag',
-            'leaf-tag--soft',
-            `leaf-tag--${size ?? 'md'}`,
-            bold && 'leaf-tag--bold',
-            'leaf-checkable-tag',
-          )}
-          data-color={current.includes(option.value) ? 'primary' : 'default'}
-          data-motion-key={option.value}
-          aria-pressed={current.includes(option.value)}
-          disabled={disabled || option.disabled}
-          onClick={() => {
-            const next = current.includes(option.value)
-              ? current.filter((key) => key !== option.value)
-              : [...current, option.value];
-            setCurrent(next);
-            onChange?.(next);
-          }}
-        >
-          {option.label}
-        </button>
-      ))}
+      {options.map((option, index) => {
+        const selected = current.includes(option.value);
+        return (
+          <button
+            key={option.value}
+            ref={index === 0 ? trigger : undefined}
+            type="button"
+            className={classes(
+              'leaf-tag',
+              `leaf-tag--${selected ? 'solid' : 'soft'}`,
+              `leaf-tag--${size ?? 'md'}`,
+              'leaf-checkable-tag',
+            )}
+            data-color="primary"
+            data-motion-key={option.value}
+            aria-pressed={selected}
+            disabled={disabled || option.disabled}
+            onClick={() => {
+              const next = selected
+                ? current.filter((key) => key !== option.value)
+                : [...current, option.value];
+              setCurrent(next);
+              onChange?.(next);
+            }}
+          >
+            {option.label}
+          </button>
+        );
+      })}
       <FormValue
         name={name}
         form={form}

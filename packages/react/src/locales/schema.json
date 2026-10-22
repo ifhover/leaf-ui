@@ -588,6 +588,14 @@
           "type": "string",
           "description": "English: More tabs"
         },
+        "scrollLeft": {
+          "type": "string",
+          "description": "English: Scroll tabs left"
+        },
+        "scrollRight": {
+          "type": "string",
+          "description": "English: Scroll tabs right"
+        },
         "addTab": {
           "type": "string",
           "description": "English: Add tab"

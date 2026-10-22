@@ -19,7 +19,8 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
-import { DataTable, type DataTableProps } from './tabletanstack';
+import { useDataTableSelection } from './selection';
+import { DataTable, type DataTableInstanceProps, useDataTable } from './tabletanstack';
 
 interface Person {
   id: string;
@@ -57,7 +58,7 @@ function Harness({
   pageCount,
   children,
   ...props
-}: Omit<DataTableProps<Person>, 'table'> & {
+}: Omit<DataTableInstanceProps<Person>, 'table'> & {
   source?: Person[];
   customColumns?: ColumnDef<Person>[];
   pageSize?: number;
@@ -135,8 +136,293 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeDisabled();
   });
 
+  it('separates local slicing from default pagination visibility', () => {
+    let instance: TanStackTable<Person> | undefined;
+    function HookTable() {
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        localPagination: true,
+        pagination: false,
+        options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
+      });
+      instance = table;
+      return <DataTable table={table} pagination={false} />;
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <HookTable />
+      </ConfigProvider>,
+    );
+    expect(instance?.options.manualPagination).toBeUndefined();
+    expect(bodyNames()).toEqual(['Alice', 'Bob']);
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+
+  it('warns and disables search when the instance has no filtering model', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    function CoreOnly() {
+      const table = useReactTable({
+        data,
+        columns,
+        getRowId: (row) => row.id,
+        getCoreRowModel: getCoreRowModel(),
+      });
+      return (
+        <DataTable table={table}>
+          <DataTable.Toolbar>
+            <DataTable.Search />
+          </DataTable.Toolbar>
+          <DataTable.Content />
+        </DataTable>
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <CoreOnly />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('getFilteredRowModel'));
+    warn.mockRestore();
+  });
+
+  it('warns and disables search for a missing or unfilterable column', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const unfilterable = [
+      { accessorKey: 'name', header: 'Name' },
+      { accessorKey: 'team', header: 'Team', enableColumnFilter: false },
+    ] satisfies ColumnDef<Person>[];
+    function SearchTable({ columnId }: { columnId: string }) {
+      const table = useReactTable({
+        data,
+        columns: unfilterable,
+        getRowId: (row) => row.id,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+      });
+      return (
+        <DataTable table={table}>
+          <DataTable.Toolbar>
+            <DataTable.Search columnId={columnId} />
+          </DataTable.Toolbar>
+          <DataTable.Content />
+        </DataTable>
+      );
+    }
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <SearchTable columnId="missing" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('does not match any'));
+    warn.mockClear();
+    rerender(
+      <ConfigProvider locale="en-US">
+        <SearchTable columnId="team" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('cannot filter column'));
+    warn.mockRestore();
+  });
+
+  it('hides sorting and pagination controls when the instance lacks their models', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    function CoreOnly() {
+      const table = useReactTable({
+        data,
+        columns,
+        getRowId: (row) => row.id,
+        getCoreRowModel: getCoreRowModel(),
+      });
+      return <DataTable table={table} />;
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <CoreOnly />
+      </ConfigProvider>,
+    );
+    expect(screen.queryByRole('button', { name: /Sort/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('getPaginationRowModel'));
+    warn.mockRestore();
+  });
+
+  it('supports manual model capabilities without installing local row models', () => {
+    function ManualOnly() {
+      const table = useReactTable({
+        data,
+        columns,
+        getRowId: (row) => row.id,
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
+        manualSorting: true,
+        manualFiltering: true,
+        rowCount: 60,
+      });
+      return (
+        <DataTable table={table}>
+          <DataTable.Toolbar>
+            <DataTable.Search />
+          </DataTable.Toolbar>
+          <DataTable.Content />
+          <DataTable.Footer>
+            <DataTable.Pagination />
+          </DataTable.Footer>
+        </DataTable>
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <ManualOnly />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Name: Sort ascending' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeEnabled();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+  });
+
+  it('normalizes a single-selection state to the last selected row', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    function MultipleSelected() {
+      const [rowSelection, setRowSelection] = useState<RowSelectionState>({
+        alice: true,
+        bob: true,
+      });
+      const table = useReactTable({
+        data,
+        columns,
+        getRowId: (row) => row.id,
+        getCoreRowModel: getCoreRowModel(),
+        state: { rowSelection },
+        onRowSelectionChange: setRowSelection,
+        enableMultiRowSelection: true,
+      });
+      return <DataTable table={table} selection="single" />;
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <MultipleSelected />
+      </ConfigProvider>,
+    );
+    await waitFor(() => {
+      expect(screen.getByRole('radio', { name: 'Select row: bob' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: 'Select row: alice' })).not.toBeChecked();
+    });
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('only the most recently requested key'),
+    );
+    warn.mockRestore();
+  });
+
+  it('provides a selection helper for controlled and uncontrolled states', async () => {
+    function Controlled() {
+      const [keys, setKeys] = useState<string[]>(['alice']);
+      const selection = useDataTableSelection({
+        mode: 'multiple',
+        selectedRowKeys: keys,
+        onSelectedRowKeysChange: setKeys,
+      });
+      return (
+        <DataTable
+          data={data}
+          columns={columns}
+          rowKey="id"
+          selection="multiple"
+          options={selection.selectionOptions}
+          toolbar={<span>{selection.selectedRowKeys.join(',')}</span>}
+        />
+      );
+    }
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <Controlled />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: bob' }));
+    expect(screen.getByText('alice,bob')).toBeInTheDocument();
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Controlled />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('checkbox', { name: 'Select row: alice' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeChecked();
+  });
+
+  it('keeps implicit children as a legacy custom layout and warns once', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <ConfigProvider locale="en-US">
+        <DataTable data={data} columns={columns} rowKey="id">
+          <DataTable.Content />
+        </DataTable>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('table')).toBeInTheDocument();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('layout="custom"'));
+    warn.mockRestore();
+  });
+
+  it('uses explicit automatic and custom layouts without guessing from children', () => {
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <DataTable data={data} columns={columns} rowKey="id" layout="auto">
+          <p>Ignored custom layout</p>
+        </DataTable>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('table')).toBeInTheDocument();
+    expect(screen.queryByText('Ignored custom layout')).not.toBeInTheDocument();
+
+    rerender(
+      <ConfigProvider locale="en-US">
+        <DataTable data={data} columns={columns} rowKey="id" layout="custom">
+          <p>Explicit custom layout</p>
+        </DataTable>
+      </ConfigProvider>,
+    );
+    expect(screen.getByText('Explicit custom layout')).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+
+  it('prefers columnDividers over the deprecated bordered alias', () => {
+    const { rerender } = render(
+      <DataTable
+        data={data}
+        columns={columns}
+        rowKey="id"
+        columnDividers
+        bordered={false}
+        pagination={false}
+      />,
+    );
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass(
+      'leaf-table--column-dividers',
+    );
+
+    rerender(
+      <DataTable
+        data={data}
+        columns={columns}
+        rowKey="id"
+        columnDividers={false}
+        bordered
+        pagination={false}
+      />,
+    );
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
+      'leaf-table--column-dividers',
+    );
+  });
+
   it('checks the stable row key contract in convenience mode', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // @ts-expect-error Runtime validation also protects JavaScript callers.
     expect(() => render(<DataTable data={data} columns={columns} rowKey="children" />)).toThrow(
       'DataTable rowKey must resolve',
     );
@@ -391,6 +677,209 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('table').querySelectorAll('tbody tr[data-row-id]')).toHaveLength(14);
   });
 
+  it('toggles convenience pagination without losing selection or the cached row model', async () => {
+    const options = { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } };
+    const props = { data, columns, rowKey: 'id' as const, options, selection: 'multiple' as const };
+    const { rerender } = render(<DataTable {...props} />, {
+      wrapper: ({ children }) => <ConfigProvider locale="en-US">{children}</ConfigProvider>,
+    });
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: alice' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
+    rerender(<DataTable {...props} pagination={false} />);
+    expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Select row: alice' })).toBeChecked();
+    rerender(<DataTable {...props} pagination />);
+    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+  });
+
+  it('keeps automatic content and configurable pagination when adding a toolbar', async () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <DataTable
+          data={data}
+          columns={columns}
+          rowKey="id"
+          toolbar={<DataTable.Search columnId="name" />}
+          pagination={{ showSizeChanger: false, showTotal: true, 'aria-label': 'People pages' }}
+          options={{ initialState: { pagination: { pageIndex: 0, pageSize: 2 } } }}
+        />
+      </ConfigProvider>,
+    );
+    expect(bodyNames()).toEqual(['Alice', 'Bob']);
+    expect(screen.getByRole('navigation', { name: 'People pages' })).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'char');
+    expect(bodyNames()).toEqual(['Charlie']);
+  });
+
+  it('resets the local page after filtering while pagination is temporarily disabled', async () => {
+    function ToggleTable() {
+      const [pagination, setPagination] = useState(true);
+      return (
+        <DataTable
+          data={data}
+          columns={columns}
+          rowKey="id"
+          options={{ initialState: { pagination: { pageIndex: 0, pageSize: 2 } } }}
+          pagination={pagination}
+          toolbar={
+            <>
+              <button type="button" onClick={() => setPagination((value) => !value)}>
+                Toggle
+              </button>
+              <DataTable.Search columnId="name" />
+            </>
+          }
+        />
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <ToggleTable />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
+    await userEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'alice');
+    expect(bodyNames()).toEqual(['Alice']);
+    await userEvent.click(screen.getByRole('button', { name: 'Toggle' }));
+    expect(bodyNames()).toEqual(['Alice']);
+  });
+
+  it('keeps native manual server options when creating an instance with the hook', () => {
+    const serverData = [data[2] as Person, data[0] as Person];
+    function ServerTable() {
+      const table = useDataTable({
+        data: serverData,
+        columns,
+        rowKey: 'id',
+        options: {
+          manualPagination: true,
+          manualSorting: true,
+          rowCount: 60,
+          initialState: {
+            pagination: { pageIndex: 2, pageSize: 2 },
+            sorting: [{ id: 'age', desc: false }],
+          },
+        },
+      });
+      return <DataTable table={table} />;
+    }
+    render(<ServerTable />);
+    expect(bodyNames()).toEqual(['Charlie', 'Alice']);
+  });
+
+  it('isolates automatic parts from public part defaults while resolving root defaults', () => {
+    render(
+      <ConfigProvider
+        components={{
+          DataTable: { toolbar: 'Default toolbar', pagination: { showSizeChanger: false } },
+          DataTableToolbar: { id: 'explicit-toolbar' },
+          DataTablePagination: { id: 'explicit-pagination' },
+        }}
+      >
+        <DataTable data={data} columns={columns} rowKey="id" />
+        <DataTable data={data} columns={columns} rowKey="id">
+          <DataTable.Toolbar>Explicit toolbar</DataTable.Toolbar>
+          <DataTable.Content />
+          <DataTable.Pagination />
+        </DataTable>
+      </ConfigProvider>,
+    );
+    expect(screen.getByText('Default toolbar')).not.toHaveAttribute('id');
+    expect(screen.getByText('Explicit toolbar')).toHaveAttribute('id', 'explicit-toolbar');
+    const pages = screen.getAllByRole('navigation');
+    expect(pages[0]).not.toHaveAttribute('id');
+    expect(pages[1]).toHaveAttribute('id', 'explicit-pagination');
+  });
+
+  it('lets explicit children replace the automatic toolbar, content and pagination', () => {
+    render(
+      <DataTable data={data} columns={columns} rowKey="id" toolbar="Automatic toolbar">
+        <p>Custom layout</p>
+      </DataTable>,
+    );
+    expect(screen.getByText('Custom layout')).toBeInTheDocument();
+    expect(screen.queryByText('Automatic toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+
+  it('preserves native pagination props and events with an unknown total', async () => {
+    const onClick = vi.fn();
+    render(
+      <Harness
+        manual
+        pageCount={-1}
+        pagination={{
+          id: 'people-pages',
+          style: { marginTop: 12 },
+          'aria-label': 'Custom pages',
+          dir: 'rtl',
+          onClick,
+          showTotal: true,
+          showSizeChanger: true,
+        }}
+      />,
+    );
+    const nav = screen.getByRole('navigation', { name: 'Custom pages' });
+    expect(nav).toHaveAttribute('id', 'people-pages');
+    expect(nav).toHaveAttribute('dir', 'rtl');
+    expect(nav).toHaveStyle({ marginTop: '12px' });
+    expect(nav).not.toHaveAttribute('showTotal');
+    expect(nav).not.toHaveAttribute('showSizeChanger');
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it('shares the managed defaults through a public hook without requiring controlled state', async () => {
+    let instance: TanStackTable<Person> | undefined;
+    function HookTable({ pagination = true }: { pagination?: boolean }) {
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: (row) => row.age,
+        pagination,
+        options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
+      });
+      instance = table;
+      return (
+        <DataTable
+          table={table}
+          pagination={pagination}
+          toolbar={
+            <button type="button" onClick={() => table.resetSorting()}>
+              Reset sorting
+            </button>
+          }
+        />
+      );
+    }
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <HookTable />
+      </ConfigProvider>,
+    );
+    const first = instance;
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort descending' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Alice']);
+    expect(instance?.getRow('45').original.name).toBe('Charlie');
+    rerender(
+      <ConfigProvider locale="en-US">
+        <HookTable pagination={false} />
+      </ConfigProvider>,
+    );
+    expect(instance).toBe(first);
+    expect(bodyNames()).toEqual(['Charlie', 'Alice', 'Dana', 'Bob']);
+    await userEvent.click(screen.getByRole('button', { name: 'Reset sorting' }));
+    expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+  });
+
   it('keeps internal single-row selection out of the surrounding FormData', async () => {
     render(
       <form aria-label="Settings">
@@ -419,6 +908,124 @@ describe('DataTable TanStack adapter', () => {
     const row = screen.getByRole('table').querySelector('tbody tr[data-row-id]');
     expect(row?.querySelectorAll('td')).toHaveLength(2);
     expect(row?.querySelector('td')).toHaveAttribute('colspan', '2');
+  });
+
+  it('owns pinned cell geometry even when getCellProps supplies conflicting styles', () => {
+    function PinnedTable() {
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        localPagination: false,
+        options: { initialState: { columnPinning: { left: ['name'] } } },
+      });
+      return (
+        <DataTable
+          table={table}
+          pagination={false}
+          getCellProps={(cell) =>
+            cell.column.id === 'name'
+              ? { style: { insetInlineStart: 999, position: 'static' } }
+              : {}
+          }
+        />
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <PinnedTable />
+      </ConfigProvider>,
+    );
+    const cell = screen
+      .getByRole('table')
+      .querySelector<HTMLTableCellElement>('tbody tr[data-row-id] td[data-pinned="start"]');
+    expect(cell?.style.position).toBe('sticky');
+    expect(cell?.style.insetInlineStart).toBe('0px');
+  });
+
+  it('allows search to opt out of its default clear action', async () => {
+    function SearchWithoutClear() {
+      const table = useDataTable({ data, columns, rowKey: 'id', localPagination: false });
+      return (
+        <DataTable table={table} layout="custom" pagination={false}>
+          <DataTable.Toolbar>
+            <DataTable.Search allowClear={false} />
+          </DataTable.Toolbar>
+          <DataTable.Content />
+        </DataTable>
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <SearchWithoutClear />
+      </ConfigProvider>,
+    );
+    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'Alice');
+    expect(screen.queryByRole('button', { name: 'Clear input' })).not.toBeInTheDocument();
+  });
+
+  it('supports uncontrolled multiple and single selections through the helper', async () => {
+    function Uncontrolled({ mode }: { mode: 'single' | 'multiple' }) {
+      const selection = useDataTableSelection({
+        mode,
+        defaultSelectedRowKeys: mode === 'single' ? ['alice', 'bob'] : ['alice'],
+      });
+      return (
+        <DataTable
+          data={data}
+          columns={columns}
+          rowKey="id"
+          selection={mode}
+          options={selection.selectionOptions}
+          pagination={false}
+          toolbar={
+            <>
+              <span data-testid="selected-keys">{selection.selectedRowKeys.join(',')}</span>
+              <button type="button" onClick={selection.clearSelection}>
+                Clear selection
+              </button>
+            </>
+          }
+        />
+      );
+    }
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <Uncontrolled mode="multiple" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('selected-keys')).toHaveTextContent('alice');
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: bob' }));
+    expect(screen.getByTestId('selected-keys')).toHaveTextContent('alice,bob');
+
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Uncontrolled mode="single" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('selected-keys')).toHaveTextContent('bob');
+    expect(screen.getByRole('radio', { name: 'Select row: bob' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Select row: alice' })).not.toBeChecked();
+    await userEvent.click(screen.getByRole('radio', { name: 'Select row: alice' }));
+    expect(screen.getByTestId('selected-keys')).toHaveTextContent('alice');
+    expect(screen.getByRole('radio', { name: 'Select row: bob' })).not.toBeChecked();
+
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Uncontrolled mode="multiple" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('selected-keys')).toHaveTextContent('alice');
+    expect(screen.getByRole('checkbox', { name: 'Select row: alice' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).not.toBeChecked();
+
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Uncontrolled mode="single" />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Clear selection' }));
+    expect(screen.getByTestId('selected-keys')).toBeEmptyDOMElement();
   });
 
   it('exposes accessible reordering handles only in supported data modes', async () => {

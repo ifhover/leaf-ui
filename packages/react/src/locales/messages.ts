@@ -155,6 +155,8 @@ export interface LocaleMessages {
   };
   readonly tabs: {
     readonly moreTabs: string;
+    readonly scrollLeft: string;
+    readonly scrollRight: string;
     readonly addTab: string;
     readonly reorder: string;
     readonly closeLabel: string;

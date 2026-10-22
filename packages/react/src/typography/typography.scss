@@ -2,10 +2,10 @@
   color: var(--leaf-color-text);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-typography-font-size, var(--leaf-font-size));
-  line-height: var(--leaf-line-height, 1.65);
+  line-height: var(--leaf-line-height);
 }
 .leaf-typography--compact {
-  line-height: 1.4;
+  line-height: var(--leaf-line-height-sm);
   p {
     margin-block: 0 0.65em;
   }
@@ -13,7 +13,7 @@
 .leaf-text {
   color: var(--leaf-color-text);
   font: inherit;
-  line-height: var(--leaf-line-height, 1.65);
+  line-height: var(--leaf-line-height);
   &--muted {
     color: var(--leaf-color-text-muted);
   }

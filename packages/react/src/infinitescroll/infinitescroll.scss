@@ -8,7 +8,7 @@
     justify-content: center;
     padding: 12px;
     color: var(--leaf-color-text-muted);
-    font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+    font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
   }
   &__feedback {
     display: inline-flex;

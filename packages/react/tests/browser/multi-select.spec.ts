@@ -77,9 +77,9 @@ for (const appearance of ['light', 'dark']) {
       page,
     }) => {
       for (const [size, height] of [
-        ['sm', 30],
-        ['md', 36],
-        ['lg', 42],
+        ['sm', 28],
+        ['md', 34],
+        ['lg', 40],
       ] as const) {
         for (const kind of ['Select', 'Tree', 'Cascader'])
           await assertSingleLine(
@@ -94,7 +94,7 @@ for (const appearance of ['light', 'dark']) {
       await page.getByRole('button', { name: 'Toggle direction' }).click();
       for (const kind of ['Select', 'Tree', 'Cascader']) {
         const input = page.getByRole('combobox', { name: `${kind} md`, exact: true });
-        await assertSingleLine(input, 36);
+        await assertSingleLine(input, 34);
         await expect(
           controlRoot(input)
             .locator('.leaf-selection__tag[title]')
@@ -121,8 +121,8 @@ for (const appearance of ['light', 'dark']) {
           .evaluate((label) => label.scrollWidth > label.clientWidth),
       ).toBe(true);
       await input.fill('Engineering');
-      await assertSingleLine(input, 36);
-      expect(await input.boundingBox()).toMatchObject({ height: 28 });
+      await assertSingleLine(input, 34);
+      expect(await input.boundingBox()).toMatchObject({ height: 26 });
       await expect(page.getByRole('option', { name: 'Engineering', exact: true })).toBeVisible();
       await input.press('Escape');
       await root.getByRole('button', { name: /^Remove A very long/ }).click();
@@ -133,10 +133,10 @@ for (const appearance of ['light', 'dark']) {
       await expect(root.locator('[data-selection-item][title="Engineering"]')).toHaveCount(0);
       await expect(root.locator('[data-selection-item][title="Locked"]')).toHaveCount(1);
       await page.getByRole('button', { name: 'Reset selections' }).click();
-      await assertSingleLine(input, 36);
-      await assertSingleLine(page.getByRole('combobox', { name: 'One long value' }), 36);
-      await assertSingleLine(page.getByRole('combobox', { name: 'Custom tags' }), 36);
-      await assertSingleLine(page.getByRole('combobox', { name: 'Count only' }), 36);
+      await assertSingleLine(input, 34);
+      await assertSingleLine(page.getByRole('combobox', { name: 'One long value' }), 34);
+      await assertSingleLine(page.getByRole('combobox', { name: 'Custom tags' }), 34);
+      await assertSingleLine(page.getByRole('combobox', { name: 'Count only' }), 34);
       await expect(
         controlRoot(page.getByRole('combobox', { name: 'Count only' })).locator(
           '[data-selection-overflow]',
@@ -161,9 +161,9 @@ for (const appearance of ['light', 'dark']) {
           if (direction === 'rtl')
             await page.getByRole('button', { name: 'Toggle direction' }).click();
           for (const [size, height] of [
-            ['sm', 30],
-            ['md', 36],
-            ['lg', 42],
+            ['sm', 28],
+            ['md', 34],
+            ['lg', 40],
           ] as const) {
             for (const kind of ['Select', 'Tree', 'Cascader']) {
               const control = page.getByRole('combobox', {

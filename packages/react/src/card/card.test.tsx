@@ -85,3 +85,27 @@ describe('Card tabs', () => {
     expect(screen.getByText('Shared explanation')).toBeInTheDocument();
   });
 });
+
+describe('Card variants', () => {
+  it('keeps the heading on the canvas and groups content inside an inset panel', () => {
+    render(
+      <Card
+        data-testid="inset-card"
+        description="Standalone supporting text"
+        footer="Footer content"
+        title="Inset card"
+        variant="inset"
+      >
+        Body content
+      </Card>,
+    );
+
+    const card = screen.getByTestId('inset-card');
+    const panel = card.querySelector(':scope > .leaf-card__panel');
+    expect(card).toHaveClass('leaf-card--inset');
+    expect(panel).not.toBeNull();
+    expect(panel?.contains(screen.getByRole('heading', { name: 'Inset card' }))).toBe(false);
+    expect(panel?.contains(screen.getByText('Body content'))).toBe(true);
+    expect(panel?.contains(screen.getByText('Footer content'))).toBe(true);
+  });
+});

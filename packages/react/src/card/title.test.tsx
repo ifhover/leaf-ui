@@ -38,6 +38,50 @@ describe('CardTitle', () => {
     expect(ref.current).toHaveClass('leaf-card-title--md');
   });
 
+  it('defaults to the Card heading level and supports description and extra content', () => {
+    render(
+      <CardTitle
+        data-testid="rich-title"
+        description="Supporting details"
+        extra={<button type="button">Manage</button>}
+      >
+        Project overview
+      </CardTitle>,
+    );
+    const heading = screen.getByRole('heading', { level: 3, name: 'Project overview' });
+    expect(heading).toHaveAttribute('data-testid', 'rich-title');
+    expect(heading).toHaveTextContent('Project overview');
+    expect(heading).not.toHaveTextContent('Supporting details');
+    expect(screen.getByText('Supporting details')).toHaveClass(
+      'leaf-card-title-group__description',
+    );
+    const action = screen.getByRole('button', { name: 'Manage' });
+    expect(action.parentElement).toHaveClass('leaf-card-title-group__extra');
+  });
+
+  it('applies containerProps only to the title region wrapper', () => {
+    render(
+      <CardTitle
+        id="heading-id"
+        containerProps={{
+          id: 'title-region',
+          className: 'custom-title-region',
+          title: 'Title region',
+        }}
+        description="Supporting details"
+      >
+        Project overview
+      </CardTitle>,
+    );
+    const heading = screen.getByRole('heading', { level: 3, name: 'Project overview' });
+    const region = heading.closest('.leaf-card-title-group');
+    expect(region).toHaveAttribute('id', 'title-region');
+    expect(region).toHaveAttribute('title', 'Title region');
+    expect(region).toHaveClass('custom-title-region');
+    expect(heading).toHaveAttribute('id', 'heading-id');
+    expect(heading).not.toHaveAttribute('title');
+  });
+
   it('applies standalone defaults and instance overrides while Card owns its embedded title', () => {
     render(
       <ConfigProvider

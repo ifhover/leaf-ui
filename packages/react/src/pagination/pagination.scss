@@ -8,8 +8,8 @@
   align-items: center;
   gap: var(--leaf-component-pagination-gap, 6px);
   color: var(--leaf-component-pagination-color, var(--leaf-color-text));
-  font: var(--leaf-component-pagination-font-size, var(--leaf-current-font-size))/1.5
-    var(--leaf-font-family);
+  font: var(--leaf-component-pagination-font-size, var(--leaf-current-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
   &__indicator {
     position: absolute;
     top: 0;
@@ -109,10 +109,6 @@
         background: transparent;
       }
       &:active:not(:disabled):not([aria-current='page']) {
-        color: var(
-          --leaf-color-primary-ink-active,
-          var(--leaf-color-primary-active, var(--leaf-color-primary))
-        );
         border-color: var(
           --leaf-color-primary-ink-active,
           var(--leaf-color-primary-active, var(--leaf-color-primary))

@@ -154,6 +154,8 @@
   },
   "tabs": {
     "moreTabs": "More tabs",
+    "scrollLeft": "Scroll tabs left",
+    "scrollRight": "Scroll tabs right",
     "addTab": "Add tab",
     "reorder": "Reorder tab {label}",
     "closeLabel": "Close tab {label}"

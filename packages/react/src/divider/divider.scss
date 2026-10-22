@@ -5,7 +5,7 @@
   margin-block: 20px;
   min-width: 0;
   color: var(--leaf-component-divider-color, var(--leaf-color-text));
-  font: 500 var(--leaf-component-divider-font-size, var(--leaf-font-size))/1.5
+  font: 500 var(--leaf-component-divider-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
     var(--leaf-font-family);
   &::before,
   &::after {

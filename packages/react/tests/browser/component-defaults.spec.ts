@@ -8,14 +8,14 @@ for (const appearance of ['light', 'dark']) {
     await page.goto(`/?fixture=component-defaults&theme=${appearance}`);
     const inherited = page.getByRole('button', { name: 'Inherited', exact: true });
     await expect(inherited).toHaveClass(/leaf-button--outline/u);
-    await expect(inherited).toHaveCSS('height', '30px');
-    await expect(page.getByRole('button', { name: 'Nested override' })).toHaveCSS('height', '42px');
+    await expect(inherited).toHaveCSS('height', '28px');
+    await expect(page.getByRole('button', { name: 'Nested override' })).toHaveCSS('height', '40px');
     await expect(page.getByRole('button', { name: 'Instance override' })).toHaveCSS(
       'height',
-      '36px',
+      '34px',
     );
     await expect(page.getByRole('button', { name: 'Outside defaults' })).toHaveClass(
-      /leaf-button--solid/u,
+      /leaf-button--outline/u,
     );
     await expect(
       page.getByRole('textbox', { name: 'Disabled search', exact: true }),
@@ -47,7 +47,7 @@ test('updating defaults preserves native inputs, search values and current reset
   await page.getByRole('button', { name: 'Update defaults' }).click();
   await expect(name).toHaveValue('Edited name');
   await expect(search).toHaveValue('Leaf search');
-  await expect(page.getByRole('button', { name: 'Find', exact: true })).toHaveCSS('height', '42px');
+  await expect(page.getByRole('button', { name: 'Find', exact: true })).toHaveCSS('height', '40px');
   await search.press('Enter');
   await expect(page.getByRole('status', { name: 'Search result' })).toHaveText('Leaf search');
   await page.getByRole('button', { name: 'Reset inputs' }).click();
@@ -87,7 +87,7 @@ test('Modal portal inherits defaults and preserves keyboard/focus behavior', asy
   const dialog = page.getByRole('dialog', { name: 'Default modal' });
   await expect(dialog).toHaveCSS('width', '520px');
   await expect(dialog).toHaveAccessibleDescription('Modal defaults only');
-  await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveCSS('height', '30px');
+  await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveCSS('height', '28px');
   await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveClass(
     /leaf-button--outline/u,
   );
@@ -125,8 +125,8 @@ test('cleared defaults restore editable local inputs, builtin buttons and native
   await expect(input).toHaveAttribute('type', 'text');
   await input.fill('Changed locally');
   const reset = form.getByRole('button', { name: 'Reset local input' });
-  await expect(reset).toHaveCSS('height', '36px');
-  await expect(reset).toHaveClass(/leaf-button--solid/u);
+  await expect(reset).toHaveCSS('height', '34px');
+  await expect(reset).toHaveClass(/leaf-button--outline/u);
   await reset.click();
   await expect(input).toHaveValue('Editable');
 });
@@ -143,8 +143,8 @@ test('global defaults cannot change composite button actions, page size or comma
   await expect(main).toBeEnabled();
   await expect(menu).toBeEnabled();
   await expect(menu).toHaveAttribute('type', 'button');
-  await expect(main).toHaveCSS('height', '30px');
-  await expect(menu).toHaveCSS('height', '30px');
+  await expect(main).toHaveCSS('height', '28px');
+  await expect(menu).toHaveCSS('height', '28px');
   await menu.click();
   await page.getByRole('menuitem', { name: 'Copy item' }).click();
   await expect(section.getByLabel('Copied item')).toHaveText('true');

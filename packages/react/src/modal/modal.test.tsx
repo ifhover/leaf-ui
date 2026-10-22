@@ -7,6 +7,19 @@ import { Button, ConfigProvider, Select, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
+  it('marks the card surface preset without changing dialog semantics', () => {
+    render(
+      <Modal open variant="card" title="Card surface">
+        Content
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Card surface' });
+    expect(dialog).toHaveClass('leaf-modal--card');
+    expect(dialog).not.toHaveClass('leaf-modal--divided');
+    expect(dialog.querySelector('.leaf-modal__footer .leaf-button')).toHaveClass(
+      'leaf-button--outline',
+    );
+  });
   it('associates supporting text with the dialog and keeps decorative icons outside its name', () => {
     render(
       <Modal

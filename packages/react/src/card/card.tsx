@@ -20,8 +20,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
   footer?: ReactNode;
   loading?: boolean;
   bordered?: boolean;
-  /** Opt into section dividers and a muted footer surface. */
-  divided?: boolean;
+  /** `inset` places the content surface inside a muted canvas. */
+  variant?: 'default' | 'inset';
   /** Card spacing, heading typography and height, and the default size of embedded tabs. */
   size?: 'sm' | 'md' | 'lg';
 }
@@ -35,7 +35,7 @@ export function Card(rawProps: CardProps) {
     footer,
     loading = false,
     bordered = true,
-    divided = false,
+    variant = 'default',
     size = 'md',
     children,
     className,
@@ -54,35 +54,9 @@ export function Card(rawProps: CardProps) {
     ) : (
       tabs?.extra
     );
-  return (
-    <div
-      {...props}
-      aria-busy={loading || undefined}
-      className={classes(
-        'leaf-card',
-        `leaf-card--${size}`,
-        bordered && 'leaf-card--bordered',
-        divided && 'leaf-card--divided',
-        hasTabs && 'leaf-card--tabbed',
-        className,
-      )}
-    >
+  const content = (
+    <>
       {cover != null && <div className="leaf-card__cover">{cover}</div>}
-      {(hasHeading || (!hasTabs && extra != null)) && (
-        <div className="leaf-card__header">
-          {(title != null || description != null) && (
-            <div className="leaf-card__heading">
-              {title != null && (
-                <CardTitleControl size={size} className="leaf-card__title">
-                  {title}
-                </CardTitleControl>
-              )}
-              {description != null && <div className="leaf-card__description">{description}</div>}
-            </div>
-          )}
-          {extra != null && <div className="leaf-card__extra">{extra}</div>}
-        </div>
-      )}
       {hasTabs && tabs && (
         <Tabs
           {...tabs}
@@ -111,6 +85,38 @@ export function Card(rawProps: CardProps) {
         </div>
       )}
       {footer != null && <div className="leaf-card__footer">{footer}</div>}
+    </>
+  );
+  return (
+    <div
+      {...props}
+      aria-busy={loading || undefined}
+      className={classes(
+        'leaf-card',
+        `leaf-card--${size}`,
+        bordered && 'leaf-card--bordered',
+        variant === 'inset' && 'leaf-card--inset',
+        hasHeading && 'leaf-card--headed',
+        hasTabs && 'leaf-card--tabbed',
+        className,
+      )}
+    >
+      {(hasHeading || (!hasTabs && extra != null)) && (
+        <div className="leaf-card__header">
+          {(title != null || description != null) && (
+            <div className="leaf-card__heading">
+              {title != null && (
+                <CardTitleControl size={size} className="leaf-card__title">
+                  {title}
+                </CardTitleControl>
+              )}
+              {description != null && <div className="leaf-card__description">{description}</div>}
+            </div>
+          )}
+          {extra != null && <div className="leaf-card__extra">{extra}</div>}
+        </div>
+      )}
+      <div className="leaf-card__panel">{content}</div>
     </div>
   );
 }

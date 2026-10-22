@@ -295,6 +295,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
               </div>
               <ButtonControl
                 size="sm"
+                variant="solid"
                 disabled={!validText || !inBounds(draft)}
                 onClick={() => {
                   change(draft);

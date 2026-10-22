@@ -2,6 +2,17 @@ import { TinyColor } from '@ctrl/tinycolor';
 import { expect, type Locator, test } from '@playwright/test';
 import axe from 'axe-core';
 
+async function backgroundColor(locator: Locator) {
+  return locator.evaluate((node) => {
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) throw new Error('Canvas context unavailable');
+    context.fillStyle = getComputedStyle(node).backgroundColor;
+    context.fillRect(0, 0, 1, 1);
+    const [red = 0, green = 0, blue = 0, alpha = 0] = context.getImageData(0, 0, 1, 1).data;
+    return [red, green, blue, alpha];
+  });
+}
+
 async function geometry(card: Locator) {
   return card.evaluate((node) => {
     const heading = node.querySelector<HTMLElement>('.leaf-card__header');
@@ -59,8 +70,13 @@ for (const appearance of ['light', 'dark']) {
     expect(shape.tabLeft).toBeCloseTo(shape.bodyLeft, 1);
     expect(shape.bodyPadding).toEqual(['20px', '20px', '20px', '20px']);
     expect(shape.overflow).toBeLessThanOrEqual(1);
-    await expect(titled.locator('.leaf-card__footer')).toHaveCSS('padding-top', '12px');
-    await expect(titled.locator('.leaf-card__footer')).toHaveCSS('padding-bottom', '12px');
+    await expect(titled.locator('.leaf-card__footer')).toHaveCSS('padding-top', '0px');
+    await expect(titled.locator('.leaf-card__footer')).toHaveCSS('padding-bottom', '20px');
+    await expect(titled.locator('.leaf-card__footer')).toHaveCSS('border-top-width', '0px');
+    await expect(titled.locator('.leaf-card__footer')).toHaveCSS(
+      'background-color',
+      'rgba(0, 0, 0, 0)',
+    );
     const plain = page.getByTestId('untitled-card');
     await expect(plain.locator('.leaf-card__header')).toHaveCount(0);
     await expectTabsFillHeading(plain);
@@ -116,15 +132,178 @@ for (const appearance of ['light', 'dark']) {
   });
 }
 
+for (const [label, tabsQuery, cardQuery, expectedLine] of [
+  ['small', '&size=sm', '&small', '2px'],
+  ['medium', '', '', '3px'],
+  ['large', '&size=lg', '&large', '4px'],
+] as const) {
+  test(`embedded ${label} line tabs match the standalone selected indicator thickness`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=tabs&line=1${tabsQuery}`);
+    const standalone = page.getByTestId('motion-tabs');
+    const standaloneLine = await standalone
+      .locator('.leaf-tabs__indicator')
+      .evaluate((indicator) => getComputedStyle(indicator, '::after').height);
+
+    await page.goto(`/?fixture=card${cardQuery}`);
+    const card = page.getByTestId('titled-card');
+    await card.waitFor();
+    await page.waitForTimeout(50);
+    const cardLine = await card.locator('.leaf-tabs__indicator').evaluate((indicator) => {
+      const style = getComputedStyle(indicator, '::after');
+      const lineBottom = indicator.getBoundingClientRect().bottom - Number.parseFloat(style.bottom);
+      const clipBottom = indicator.closest('.leaf-scrollbar')?.getBoundingClientRect().bottom;
+      return { height: style.height, bottom: style.bottom, lineBottom, clipBottom };
+    });
+
+    expect(standaloneLine).toBe(expectedLine);
+    expect(cardLine.height).toBe(standaloneLine);
+    expect(cardLine.bottom).toBe('-1px');
+    expect(cardLine.clipBottom).toBeCloseTo(cardLine.lineBottom, 1);
+  });
+}
+
+test('cards keep a subtle resting shadow without a hover lift', async ({ page }) => {
+  await page.goto('/?fixture=card');
+  const card = page.getByTestId('titled-card');
+  const restingShadow = await card.evaluate((node) => getComputedStyle(node).boxShadow);
+  expect(restingShadow).not.toBe('none');
+  expect(restingShadow).toContain('0px 3px 7px');
+  expect(restingShadow).toContain('0px 1px 2px');
+  await card.hover();
+  expect(await card.evaluate((node) => getComputedStyle(node).boxShadow)).toBe(restingShadow);
+});
+
+for (const appearance of ['light', 'dark']) {
+  test(`inset cards place aligned content on a nested surface in ${appearance}`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto(`/?fixture=card&theme=${appearance}`);
+    const card = page.getByTestId('inset-card');
+    const panel = card.locator(':scope > .leaf-card__panel');
+
+    expect(await backgroundColor(panel)).toEqual(
+      appearance === 'light' ? [255, 255, 255, 255] : [28, 28, 28, 255],
+    );
+    expect(await backgroundColor(card)).not.toEqual(await backgroundColor(panel));
+
+    const metrics = await card.evaluate((node) => {
+      const panel = node.querySelector<HTMLElement>(':scope > .leaf-card__panel');
+      const header = node.querySelector<HTMLElement>(':scope > .leaf-card__header');
+      const heading = header?.querySelector<HTMLElement>('.leaf-card__heading');
+      const body = panel?.querySelector<HTMLElement>(':scope > .leaf-card__body');
+      const footer = panel?.querySelector<HTMLElement>(':scope > .leaf-card__footer');
+      const bodyStyle = body ? getComputedStyle(body) : undefined;
+      const panelStyle = panel ? getComputedStyle(panel) : undefined;
+      const cardBox = node.getBoundingClientRect();
+      const panelBox = panel?.getBoundingClientRect();
+      const headerBox = header?.getBoundingClientRect();
+      const headingBox = heading?.getBoundingClientRect();
+      const bodyBox = body?.getBoundingClientRect();
+      const footerBox = footer?.getBoundingClientRect();
+      return {
+        bodyContentLeft:
+          (bodyBox?.left ?? 0) + Number.parseFloat(bodyStyle?.paddingInlineStart ?? '0'),
+        bodyPaddingTop: bodyStyle?.paddingBlockStart,
+        borderWidth: Number.parseFloat(getComputedStyle(node).borderInlineStartWidth),
+        cardBox: cardBox.toJSON(),
+        footerBottom: footerBox?.bottom,
+        headerBottom: headerBox?.bottom,
+        headingLeft: headingBox?.left,
+        panelBorderWidth: Number.parseFloat(panelStyle?.borderInlineStartWidth ?? '0'),
+        panelBottom: panelBox?.bottom,
+        panelBox: panelBox?.toJSON(),
+        panelLeft: panelBox?.left,
+        panelRadius: panelStyle?.borderStartStartRadius,
+        panelRight: panelBox?.right,
+        panelShadow: panelStyle?.boxShadow,
+        panelTop: panelBox?.top,
+        scrollOverflow: node.scrollWidth - node.clientWidth,
+      };
+    });
+    const inset = 6 + metrics.borderWidth;
+    expect(metrics.panelLeft).toBeCloseTo((metrics.cardBox?.x ?? 0) + inset, 1);
+    expect(metrics.panelRight).toBeCloseTo(
+      (metrics.cardBox?.x ?? 0) + (metrics.cardBox?.width ?? 0) - inset,
+      1,
+    );
+    expect(metrics.panelBottom).toBeCloseTo(
+      (metrics.cardBox?.y ?? 0) + (metrics.cardBox?.height ?? 0) - inset,
+      1,
+    );
+    expect(metrics.panelTop).toBeCloseTo(metrics.headerBottom ?? 0, 1);
+    expect(metrics.panelRadius).toBe('5px');
+    expect(metrics.panelBorderWidth).toBe(1);
+    expect(metrics.panelShadow).not.toBe('none');
+    expect(metrics.bodyPaddingTop).toBe('13px');
+    expect(metrics.headingLeft).toBeCloseTo(metrics.bodyContentLeft, 1);
+    expect(metrics.footerBottom).toBeLessThanOrEqual(metrics.panelBottom ?? 0);
+    expect(metrics.scrollOverflow).toBeLessThanOrEqual(1);
+
+    const tabbed = page.getByTestId('inset-tabbed-card');
+    await expect(tabbed.locator(':scope > .leaf-card__panel > .leaf-card__tabs')).toHaveCount(1);
+    await expect(tabbed.getByRole('tabpanel')).toHaveText('Latest visit summary');
+    await expect(tabbed.getByRole('tabpanel')).toHaveCSS('padding-left', '13px');
+
+    await card.screenshot({
+      path: `.quality/card-inset-${appearance}-${testInfo.project.name}.png`,
+    });
+  });
+}
+
+for (const appearance of ['light', 'dark']) {
+  test(`card frames use a softer neutral than dividers in ${appearance}`, async ({ page }) => {
+    await page.goto(`/?fixture=card&theme=${appearance}`);
+    const colors = await page.getByTestId('titled-card').evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        border: style.borderTopColor,
+        divider: style.getPropertyValue('--leaf-color-divider').trim(),
+        surface: style.backgroundColor,
+      };
+    });
+    const channels = (color: string) => {
+      const srgb = color.match(/^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)$/);
+      if (srgb) return srgb.slice(1).map((value) => Number(value) * 255);
+      const rgb = color.match(/^rgba?\(([\d.]+),?\s+([\d.]+),?\s+([\d.]+)/);
+      if (rgb) return rgb.slice(1).map(Number);
+      throw new Error(`Unsupported color: ${color}`);
+    };
+    const distance = (left: string, right: string) => {
+      const a = channels(left);
+      const b = channels(right);
+      return Math.hypot(
+        (a[0] ?? 0) - (b[0] ?? 0),
+        (a[1] ?? 0) - (b[1] ?? 0),
+        (a[2] ?? 0) - (b[2] ?? 0),
+      );
+    };
+    const frameDistance = distance(colors.border, colors.surface);
+    expect(frameDistance).toBeGreaterThan(0);
+    expect(frameDistance).toBeLessThan(distance(colors.divider, colors.surface));
+  });
+}
+
 test('embedded tabs handle real overflow, closing all pages and restoring a normal card', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/?fixture=card');
   const card = page.getByTestId('overflow-card');
-  await expect(card.getByRole('button', { name: 'More tabs', exact: true })).toBeVisible();
-  await card.getByRole('button', { name: 'More tabs', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Draft 9', exact: true }).click();
+  const list = card.locator('.leaf-tabs__list');
+  const end = card.locator('.leaf-tabs__scroll-action--end');
+  await expect(end).toHaveCount(1);
+  await expect(end).toBeHidden();
+  await card.locator('.leaf-tabs__header').hover();
+  await expect(end).toBeVisible();
+  const before = await list.evaluate((node) => Math.abs(node.scrollLeft));
+  await end.click();
+  await expect
+    .poll(() => list.evaluate((node) => Math.abs(node.scrollLeft)), { timeout: 15_000 })
+    .toBeGreaterThan(before);
+  await card.getByRole('tab', { name: 'Draft 9', exact: true }).click();
   await expect(card.getByRole('tab', { name: 'Draft 9', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
@@ -156,9 +335,10 @@ test('embedded tabs handle real overflow, closing all pages and restoring a norm
   await page.goto('/?fixture=card');
   await page.getByRole('button', { name: 'Toggle heading' }).click();
   await expect(card.locator('.leaf-card__header')).toHaveCount(0);
-  await expect(card.getByRole('button', { name: 'More tabs', exact: true })).toBeVisible();
-  await card.getByRole('button', { name: 'More tabs', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Draft 9', exact: true }).click();
+  await expect(end).toHaveCount(1);
+  await card.locator('.leaf-tabs__header').hover();
+  await expect(end).toBeVisible();
+  await card.getByRole('tab', { name: 'Draft 9', exact: true }).click();
   await expect(card.getByRole('tabpanel')).toHaveText('Draft 9 content');
   const untitled = await geometry(card);
   expect(untitled.tabTop).toBeCloseTo(untitled.barTop, 1);
@@ -178,7 +358,7 @@ for (const [label, size] of [
     await expect(card.locator('.leaf-tabs')).toHaveClass(new RegExp(`leaf-tabs--${size}`));
     await expect(card.locator('.leaf-card__title')).toHaveCSS(
       'font-size',
-      size === 'sm' ? '14px' : '16px',
+      size === 'sm' ? '13px' : '16px',
     );
     await expect(card.locator('.leaf-tabs__header')).toHaveCSS(
       'background-color',
@@ -197,10 +377,8 @@ for (const [label, size] of [
       };
     });
     expect(new TinyColor(primary.brand).toRgbString()).toBe('rgb(124, 58, 237)');
-    await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS(
-      'color',
-      new TinyColor(primary.ink).toRgbString(),
-    );
+    const text = await card.evaluate((node) => getComputedStyle(node).color);
+    await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS('color', text);
     expect((await geometry(card)).bodyPadding).toEqual(['12px', '24px', '12px', '24px']);
     const customized = await geometry(card);
     expect(customized.tabLeft).toBeCloseTo(customized.bodyLeft, 1);
@@ -216,22 +394,22 @@ test('large cards derive their heading height and keep tab and child sizes indep
   await page.goto('/?fixture=card&large');
   const card = page.getByTestId('titled-card');
   await expect(card.locator('.leaf-tabs')).toHaveClass(/leaf-tabs--lg/);
-  await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS('min-height', '42px');
+  await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS('min-height', '44px');
   expect((await geometry(card)).bodyPadding).toEqual(['24px', '24px', '24px', '24px']);
   await expect(card.locator('.leaf-card__header')).toHaveCSS('padding-top', '20px');
   await expect(card.locator('.leaf-card__title')).toHaveCSS('font-size', '16px');
-  await expect(card.locator('.leaf-input')).toHaveCSS('height', '36px');
-  await expect(card.getByRole('button', { name: 'Save settings' })).toHaveCSS('height', '36px');
+  await expect(card.locator('.leaf-input')).toHaveCSS('height', '34px');
+  await expect(card.getByRole('button', { name: 'Save settings' })).toHaveCSS('height', '34px');
   await expectTabsFillHeading(page.getByTestId('untitled-card'));
   await expect(page.getByTestId('untitled-card').getByRole('tab').first()).toHaveCSS(
     'min-height',
-    '64px',
+    '62px',
   );
 
   await page.goto('/?fixture=card&large&tabs-small');
   await expect(card.locator('.leaf-tabs')).toHaveClass(/leaf-tabs--sm/);
   expect((await geometry(card)).bodyPadding).toEqual(['24px', '24px', '24px', '24px']);
-  await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS('min-height', '30px');
+  await expect(card.getByRole('tab', { name: 'Details' })).toHaveCSS('min-height', '32px');
 });
 
 test('reordering loaded pages keeps original content when loading ends', async ({ page }) => {
@@ -247,6 +425,7 @@ test('reordering loaded pages keeps original content when loading ends', async (
   await page.waitForTimeout(150);
   await handle.press('ArrowRight');
   await expect(card.locator('[data-dragging]')).toHaveAttribute('style', /translate3d\((?!0px)/);
+  await expect(page.locator('[role="status"]').filter({ hasText: 'Move to Second' })).toBeVisible();
   await handle.press('Space');
   await expect(card.getByRole('tab')).toHaveText(['Second', 'First']);
   await page.getByRole('button', { name: 'Toggle loading' }).click();
@@ -294,9 +473,15 @@ for (const appearance of ['light', 'dark']) {
           };
         });
       });
+      const sizes = [
+        { fontSize: '13px', lineHeight: '18px' },
+        { fontSize: '14px', lineHeight: '20px' },
+        { fontSize: '16px', lineHeight: '22px' },
+      ];
       for (const [index, pair] of typography.entries()) {
         expect(pair.standalone).toEqual(pair.embedded);
-        expect(pair.standalone.fontSize).toBe(`${14 + index}px`);
+        expect(pair.standalone.fontSize).toBe(sizes[index]?.fontSize);
+        expect(pair.standalone.lineHeight).toBe(sizes[index]?.lineHeight);
         expect(pair.standalone.fontWeight).toBe('600');
         expect(pair.standalone.margin).toBe('0px');
         expect(pair.standalone.overflowWrap).toBe('anywhere');
@@ -305,13 +490,22 @@ for (const appearance of ['light', 'dark']) {
         expect(pair.outsideCard).toBe(true);
       }
       const semantic = fixture.getByRole('heading', { level: 2, name: 'Small section heading' });
-      await expect(semantic).toHaveCSS('font-size', '14px');
+      await expect(semantic).toHaveCSS('font-size', '13px');
       await expect(semantic).toHaveAttribute('title', 'Native heading hint');
+      const richTitle = fixture.getByTestId('rich-title');
+      await expect(richTitle).toHaveJSProperty('tagName', 'H3');
+      await expect(fixture.getByText('Supporting details stay beneath the heading.')).toHaveCSS(
+        'color',
+        appearance === 'dark' ? 'rgb(170, 170, 170)' : 'rgb(112, 112, 112)',
+      );
+      const titleGroup = richTitle.locator('..').locator('..');
+      await expect(titleGroup).toHaveClass(/leaf-card-title-group/);
+      await expect(titleGroup.locator('.leaf-card-title-group__extra')).toContainText('Manage');
       await expect(fixture.getByTestId('regional-title')).toHaveJSProperty('tagName', 'H4');
       await expect(fixture.getByTestId('regional-title')).toHaveCSS('font-size', '16px');
       const isolated = fixture.getByTestId('regional-card').getByRole('heading');
       await expect(isolated).toHaveJSProperty('tagName', 'H3');
-      await expect(isolated).toHaveCSS('font-size', '14px');
+      await expect(isolated).toHaveCSS('font-size', '13px');
 
       for (const [standaloneId, cardId, weight] of [
         ['custom-title', 'custom-card', '700'],
@@ -320,7 +514,7 @@ for (const appearance of ['light', 'dark']) {
         const standalone = fixture.getByTestId(standaloneId);
         const embedded = fixture.getByTestId(cardId).getByRole('heading');
         for (const heading of [standalone, embedded]) {
-          await expect(heading).toHaveCSS('font-size', '19px');
+          await expect(heading).toHaveCSS('font-size', '18px');
           await expect(heading).toHaveCSS('font-family', 'monospace');
           await expect(heading).toHaveCSS('font-weight', weight);
           await expect(heading).toHaveCSS(

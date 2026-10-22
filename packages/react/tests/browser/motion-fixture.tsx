@@ -51,7 +51,7 @@ export function MotionFixture() {
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
         <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-          {(['solid', 'outline', 'soft', 'link'] as const).map((variant) => (
+          {(['solid', 'outline', 'link'] as const).map((variant) => (
             <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
               {variant}
             </Button>
@@ -67,19 +67,40 @@ export function MotionFixture() {
             Loading action
           </Button>
         </div>
+        <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
+          <Button variant="outline" disabled data-testid="press-disabled-outline">
+            Disabled outline
+          </Button>
+          <Button variant="outline" loading data-testid="press-loading-outline">
+            Loading outline
+          </Button>
+          <ConfigProvider
+            theme={{
+              components: {
+                Button: {
+                  hover: { borderColor: '#a31010' },
+                  active: { color: '#12695f', borderColor: '#7654c6' },
+                },
+              },
+            }}
+          >
+            <Button variant="outline" data-testid="press-component-outline">
+              Component state overrides
+            </Button>
+          </ConfigProvider>
+        </div>
         <div style={{ display: 'flex', gap: 16, marginBlock: 16 }}>
-          <Button danger data-testid="press-danger">
+          <Button danger variant="solid" data-testid="press-danger">
             Danger action
           </Button>
           <Button danger variant="outline" data-testid="press-danger-outline">
             Danger outline
           </Button>
-          <Button danger variant="soft" data-testid="press-danger-soft">
-            Danger soft
-          </Button>
           <Button startIcon={<Plus />} aria-label="Add action" data-testid="press-icon" />
           <ConfigProvider theme={{ primaryColor: '#2563eb', borderRadius: 24 }}>
-            <Button data-testid="press-custom">Custom rounded action</Button>
+            <Button variant="solid" data-testid="press-custom">
+              Custom rounded action
+            </Button>
           </ConfigProvider>
           <FloatButton
             fixed={false}
@@ -106,11 +127,13 @@ export function MotionFixture() {
           }}
         >
           <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-            <Button data-testid="press-override-solid">Custom state colors</Button>
+            <Button variant="solid" data-testid="press-override-solid">
+              Custom state colors
+            </Button>
             <Button variant="outline" data-testid="press-override-outline">
               Custom outline state colors
             </Button>
-            <Button danger data-testid="press-override-danger">
+            <Button danger variant="solid" data-testid="press-override-danger">
               Custom danger state colors
             </Button>
           </div>

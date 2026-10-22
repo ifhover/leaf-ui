@@ -143,8 +143,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
     forwardedRef,
   ) {
     const { messages, theme, density, direction: configuredDirection } = useLeafConfig();
-    const itemHeight =
-      itemHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4) + 6;
+    const itemHeight = itemHeightProp ?? estimateControlHeight(theme, density);
     const field = useFormField();
     const disabled = disabledProp || field?.disabled;
     const required = requiredProp ?? field?.required;
@@ -543,6 +542,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
               checkedKeys={selected}
               searchValue={searchQuery}
               notFoundContent={notFoundContent ?? messages.treeSelect.empty}
+              highlightFirst={open && !searchQuery}
               onSelect={(keys) => commit(keys)}
               onCheck={(keys) => {
                 const checked = new Set(keys);

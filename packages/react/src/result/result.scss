@@ -3,13 +3,15 @@
   padding: var(--leaf-component-result-padding, 36px 20px);
   text-align: center;
   color: var(--leaf-component-result-color, var(--leaf-color-text));
-  font: var(--leaf-component-result-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
+  font: var(--leaf-component-result-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
+    var(--leaf-font-family);
   &--success {
     --leaf-result-color: var(--leaf-color-success);
   }
   &--warning {
     --leaf-result-color: var(--leaf-color-warning);
   }
+  &--danger,
   &--error {
     --leaf-result-color: var(--leaf-color-danger);
   }

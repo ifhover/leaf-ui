@@ -6,26 +6,72 @@
 
 @mixin control-size {
   --leaf-current-font-size: var(--leaf-font-size);
-  --leaf-current-control-height: var(--leaf-control-height, 36px);
+  --leaf-current-control-height: var(--leaf-control-height, 34px);
 
   &--sm {
-    --leaf-current-control-height: var(--leaf-control-height-sm, 30px);
-    --leaf-current-font-size: var(--leaf-font-size-sm, 12px);
+    --leaf-current-control-height: var(--leaf-control-height-sm, 28px);
+    --leaf-current-font-size: var(--leaf-font-size-sm, 13px);
   }
 
   &--lg {
-    --leaf-current-control-height: var(--leaf-control-height-lg, 42px);
+    --leaf-current-control-height: var(--leaf-control-height-lg, 40px);
     --leaf-current-font-size: var(--leaf-font-size-lg, 16px);
   }
 }
 
-@mixin focus-ring($color: var(--leaf-color-primary)) {
-  outline: 3px solid
-    var(
-      --leaf-color-focus,
-      var(--leaf-focus-color, var(--leaf-color-primary-focus, var(--leaf-color-primary-alpha-42)))
-    );
+@mixin focus-ring($color: var(--leaf-color-text-muted)) {
+  outline: 2px solid var(--leaf-color-focus, var(--leaf-focus-color, var(--leaf-color-text-muted)));
   outline-offset: 2px;
+}
+
+// Card and Table share one quiet resting surface; component and global overrides still win.
+@mixin resting-surface-shadow($component) {
+  box-shadow: var(
+    --leaf-component-#{$component}-shadow,
+    var(--leaf-surface-shadow, 0 3px 7px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04))
+  );
+}
+
+// Frame borders are intentionally lighter than standalone dividers.
+@mixin softened-frame-color($component, $surface) {
+  --leaf-#{$component}-frame-color: color-mix(in srgb, var(--leaf-color-divider) 70%, #{$surface});
+}
+
+// The table family resolves its colors from the current table surface and text,
+// so component overrides and nested themes stay local to each table instance.
+@mixin table-family($component: table) {
+  --leaf-table-surface: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
+  --leaf-table-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
+  --leaf-table-header-background: var(--leaf-table-surface);
+  --leaf-table-header-color: color-mix(
+    in srgb,
+    var(--leaf-table-text) 80%,
+    var(--leaf-table-surface)
+  );
+  --leaf-table-hover-background: color-mix(
+    in srgb,
+    var(--leaf-color-primary) 3%,
+    var(--leaf-table-surface)
+  );
+  --leaf-table-striped-background: color-mix(
+    in srgb,
+    var(--leaf-table-text) 2%,
+    var(--leaf-table-surface)
+  );
+  --leaf-table-selected-background: var(
+    --leaf-color-primary-soft,
+    var(--leaf-color-primary-surface-8)
+  );
+  --leaf-table-action-hover-background: var(
+    --leaf-color-primary-soft,
+    var(--leaf-color-option-hover)
+  );
+  // Retain the historical optional compatibility variable; its default is local to this family.
+  --leaf-table-overlay-background: var(
+    --leaf-color-surface-alpha-80,
+    color-mix(in srgb, var(--leaf-table-surface) 80%, transparent)
+  );
+  --leaf-table-pin-shadow: rgb(0 0 0 / 0.045);
 }
 
 // State paint never changes geometry or the focus outline. Call after the component's
@@ -66,13 +112,15 @@
 }
 
 @mixin field-states($component) {
+  // Hover and press keep the resting paint by default. Explicit component
+  // overrides still apply, while only focus or an open popup deepens the border.
   &:hover:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open])) {
     @include state-paint(
       $component,
       hover,
       var(--leaf-field-text),
       var(--leaf-field-background),
-      var(--leaf-field-hover-color),
+      var(--leaf-field-rest-border),
       var(--leaf-field-shadow)
     );
   }
@@ -86,17 +134,16 @@
       var(--leaf-field-color),
       var(--leaf-field-shadow)
     );
-    // Keep the keyboard/input focus cue visible even when a skin uses a hard shadow.
-    outline: 3px solid var(--leaf-color-focus, var(--leaf-field-color-alpha-12));
-    outline-offset: 0;
+    // Focus is expressed by the existing border, without adding an outer halo.
+    outline: none;
   }
-  &:active:not([data-disabled]):not(:disabled) {
+  &:active:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open])) {
     @include state-paint(
       $component,
       active,
       var(--leaf-field-text),
       var(--leaf-field-background),
-      var(--leaf-field-hover-color),
+      var(--leaf-field-rest-border),
       var(--leaf-field-shadow)
     );
   }
@@ -118,11 +165,21 @@
   }
 }
 
-@mixin field($component: field) {
+@mixin field($component: field, $focus: neutral) {
   @include control-size;
-  --leaf-field-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+  @if $focus == primary {
+    --leaf-field-color: var(--leaf-color-primary);
+  } @else if $focus == neutral {
+    --leaf-field-color: color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border));
+  } @else {
+    @error "Unknown field focus variant: #{$focus}.";
+  }
   --leaf-field-color-alpha-12: var(--leaf-color-primary-alpha-12);
-  --leaf-field-color-border-30: var(--leaf-color-primary-border-30);
+  --leaf-field-color-border-30: color-mix(
+    in srgb,
+    var(--leaf-field-color) 30%,
+    var(--leaf-color-border)
+  );
   --leaf-field-hover-color: var(--leaf-color-border-hover, var(--leaf-field-color));
   --leaf-field-border-width: var(
     --leaf-component-#{$component}-border-width,
@@ -155,11 +212,11 @@
   box-shadow: var(--leaf-field-shadow);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-#{$component}-font-size, var(--leaf-current-font-size));
-  line-height: var(--leaf-line-height, 1.5);
+  line-height: var(--leaf-line-height);
   transition:
-    border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
 
   &[data-status='error'] {
     --leaf-field-rest-border: var(--leaf-field-color);
@@ -204,7 +261,7 @@
   color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-current-font-size);
-  line-height: 1.5;
+  line-height: var(--leaf-line-height);
   cursor: pointer;
 
   &[data-disabled] {
@@ -368,9 +425,10 @@
 // Quiet heading for groups of options or content regions; never the only label of a field.
 @mixin section-label {
   color: var(--leaf-color-text-muted);
-  font-size: max(1px, calc(var(--leaf-font-size) - 2px));
+  // Keep tertiary labels readable when the base font is compact.
+  font-size: max(12px, calc(var(--leaf-font-size) - 2px));
   font-weight: var(--leaf-font-weight);
-  line-height: 1.5;
+  line-height: var(--leaf-line-height-sm);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }

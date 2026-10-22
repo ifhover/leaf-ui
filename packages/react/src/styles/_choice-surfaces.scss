@@ -11,7 +11,7 @@
   &__description {
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
   }
   &__icon {
     display: inline-flex;

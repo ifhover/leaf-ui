@@ -58,6 +58,7 @@ function ConfirmationActions() {
 export function SurfaceFixture() {
   const [saved, setSaved] = useState('');
   const [plain, setPlain] = useState(false);
+  const [divided, setDivided] = useState(false);
   const tokens = new URLSearchParams(location.search).has('surface-tokens');
   return (
     <div className="surface-fixture">
@@ -91,6 +92,9 @@ export function SurfaceFixture() {
           <Button variant="outline" onClick={() => setPlain(true)}>
             Spacing only
           </Button>
+          <Button variant="outline" onClick={() => setDivided(true)}>
+            Divided dialog
+          </Button>
         </Space>
         <Modal
           open={plain}
@@ -100,6 +104,9 @@ export function SurfaceFixture() {
           onClose={() => setPlain(false)}
         >
           Content grouped with spacing.
+        </Modal>
+        <Modal open={divided} title="Divided dialog" divided onClose={() => setDivided(false)}>
+          Content grouped with dividers.
         </Modal>
         <h2>Choice and notice states</h2>
         <form

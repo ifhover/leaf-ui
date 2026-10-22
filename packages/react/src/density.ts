@@ -5,12 +5,12 @@ export type LeafDensity = 'comfortable' | 'compact';
 /** Keep text readable; density reduces geometry and spacing, not font size. */
 export const densityTokens = {
   comfortable: {
-    'control-height': 36,
+    'control-height': 34,
     spacing: 8,
     'density-form-gap': 24,
     'density-label-gap': 6,
     'density-row-padding': 12,
-    'density-option-height': 32,
+    'density-option-height': 30,
     'density-option-padding': 6,
     'density-field-padding': 10,
     'density-dialog-block': 20,

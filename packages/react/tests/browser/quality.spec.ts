@@ -40,7 +40,7 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
   await page.getByRole('button', { name: 'Open dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Edit details' });
   await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '30px');
-  await expect(dialog).toHaveCSS('color', 'rgb(237, 237, 240)');
+  await expect(dialog).toHaveCSS('color', 'rgb(237, 237, 237)');
   await expect(dialog.locator('..')).toHaveAttribute('data-blur', 'off');
   await dialog.getByRole('combobox', { name: 'Dialog owner' }).click();
   await expect(page.getByRole('option', { name: 'Alex', exact: true })).toHaveCSS(
@@ -55,7 +55,7 @@ test('themes produce concrete colors in both appearances', async ({ page }) => {
     if (!scope) throw new Error('Missing scope');
     return getComputedStyle(scope).getPropertyValue('--leaf-color-primary-alpha-12');
   });
-  expect(result.trim()).toBe('rgba(32, 131, 74, 0.12)');
+  expect(result.trim()).toBe('rgba(30, 150, 79, 0.12)');
   await page.getByRole('switch', { name: 'Dark', exact: true }).check();
   await expect
     .poll(() =>

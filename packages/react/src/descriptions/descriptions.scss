@@ -2,8 +2,8 @@
   box-sizing: border-box;
   min-width: 0;
   color: var(--leaf-component-descriptions-color, var(--leaf-color-text));
-  font: var(--leaf-component-descriptions-font-size, var(--leaf-font-size))/1.6
-    var(--leaf-font-family);
+  font: var(--leaf-component-descriptions-font-size, var(--leaf-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
   &__header {
     display: flex;
     align-items: center;

@@ -1,9 +1,15 @@
 @use '../table/table';
 @use '../styles/mixins' as *;
 
+html:has(.leaf-data-table [data-dragging]),
+body:has(.leaf-data-table [data-dragging]) {
+  overflow-anchor: none;
+}
+
 .leaf-data-table {
   &__heading {
     display: flex;
+    min-height: 24px;
     align-items: center;
     gap: 6px;
     min-width: 0;
@@ -23,7 +29,7 @@
     cursor: grab;
     touch-action: none;
     &:hover {
-      background: var(--leaf-color-primary-soft);
+      background: var(--leaf-table-action-hover-background);
       color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
@@ -127,7 +133,7 @@
     color: var(--leaf-color-text-muted);
     cursor: pointer;
     &:hover {
-      background: var(--leaf-color-primary-soft);
+      background: var(--leaf-table-action-hover-background);
       color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {

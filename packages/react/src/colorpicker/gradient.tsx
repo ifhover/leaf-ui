@@ -2,6 +2,7 @@ import { TinyColor } from '@ctrl/tinycolor';
 import { Plus, X } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
 import { ButtonControl } from '../button/button';
+import { defaultColors } from '../colors';
 import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
 import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
@@ -43,8 +44,8 @@ export function parseGradient(value: string): ColorGradient | null {
 const defaultGradient: ColorGradient = {
   angle: 90,
   stops: [
-    { color: '#20834a', offset: 0 },
-    { color: '#83cf9e', offset: 100 },
+    { color: defaultColors.light.primary, offset: 0 },
+    { color: defaultColors.dark.primary, offset: 100 },
   ],
 };
 const initial = gradientString(defaultGradient);
@@ -116,7 +117,7 @@ export function GradientColorPicker({
     };
   const model = cache.current.model;
   const selected = model.stops[Math.min(active, model.stops.length - 1)] ??
-    defaultGradient.stops[0] ?? { color: '#20834a', offset: 0 };
+    defaultGradient.stops[0] ?? { color: defaultColors.light.primary, offset: 0 };
   const change = (next: ColorGradient, complete = false) => {
     if (disabled || readOnly) return;
     const text = gradientString(next);

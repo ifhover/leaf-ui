@@ -27,7 +27,7 @@ function FeedbackContent() {
           description="Some fields need attention."
           type="warning"
         />
-        <Alert title="Unable to save" type="error" />
+        <Alert title="Unable to save" type="danger" />
       </div>
       <Result
         status="success"

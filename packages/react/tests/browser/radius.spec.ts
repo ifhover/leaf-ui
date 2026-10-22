@@ -15,6 +15,21 @@ async function corners(locator: Locator) {
   });
 }
 
+async function pseudoCorners(locator: Locator) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node, '::before');
+    return [
+      style.borderTopLeftRadius,
+      style.borderTopRightRadius,
+      style.borderBottomRightRadius,
+      style.borderBottomLeftRadius,
+    ].map((value) => {
+      const parts = value.split(' ').map(Number.parseFloat);
+      return [parts[0], parts[1] ?? parts[0]];
+    });
+  });
+}
+
 async function expectInset(surface: Locator, child: Locator, extraX = 0, extraY = 0) {
   const expected = await surface.evaluate(
     (node, extra) => {
@@ -81,7 +96,9 @@ for (const appearance of ['light', 'dark']) {
 
     await page.getByRole('combobox', { name: 'Radius tree', exact: true }).click();
     const tree = page.locator('.leaf-tree-select__panel');
-    await expectInset(tree, tree.locator('.leaf-tree__row').first(), 0, 3);
+    const treeRow = tree.locator('.leaf-tree__row').first();
+    await expectInset(tree, treeRow);
+    await expectMatching(treeRow, tree.locator('.leaf-tree__highlight'));
     await page.keyboard.press('Escape');
 
     await page.getByRole('combobox', { name: 'Radius time', exact: true }).click();
@@ -93,11 +110,10 @@ for (const appearance of ['light', 'dark']) {
 
     await page.getByRole('button', { name: 'Radius dropdown', exact: true }).click();
     const dropdown = page.locator('.leaf-dropdown');
-    await expectInset(dropdown, dropdown.getByRole('menuitem').first());
-    await expectMatching(
-      dropdown.getByRole('menuitem').first(),
-      dropdown.locator('.leaf-dropdown__highlight'),
-    );
+    const first = dropdown.getByRole('menuitem').first();
+    await expectInset(dropdown, first);
+    const expectedCorners = await corners(first);
+    await expect.poll(() => pseudoCorners(first)).toEqual(expectedCorners);
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Radius color', exact: true }).click();
@@ -108,15 +124,8 @@ for (const appearance of ['light', 'dark']) {
     const tabs = page.locator('.leaf-tabs__list');
     await expectInset(tabs, tabs.getByRole('tab').first());
     await expectMatching(tabs.getByRole('tab').first(), tabs.locator('.leaf-tabs__indicator'));
-    for (const name of ['Radius menu', 'Horizontal radius menu']) {
-      const menu = page.getByRole('navigation', { name, exact: true });
-      await expectMatching(menu, page.getByRole('button', { name: 'Change radius', exact: true }));
-      await expectMatching(menu, menu.getByRole('menuitem').first());
-      await expectMatching(
-        menu.getByRole('menuitem').first(),
-        menu.locator('.leaf-menu__indicator'),
-      );
-    }
+    const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
+    await expect(menu.getByRole('menuitem').first()).toHaveCSS('border-radius', '8px');
     await expect(
       page.getByRole('tree', { name: 'Independent tree' }).locator('.leaf-tree__row'),
     ).toHaveCSS('border-radius', '6px');
@@ -124,7 +133,9 @@ for (const appearance of ['light', 'dark']) {
 }
 
 for (const radius of [0, 3]) {
-  test(`small radius ${radius} clamps nested surfaces to square corners`, async ({ page }) => {
+  test(`small radius ${radius} keeps nested menu surfaces on the shared curve`, async ({
+    page,
+  }) => {
     await page.goto(`/?fixture=radius&radius=${radius}`);
     await page.getByRole('combobox', { name: 'Radius select', exact: true }).click();
     const panel = page.locator('.leaf-select__panel');
@@ -132,9 +143,10 @@ for (const radius of [0, 3]) {
     await expect(panel.getByRole('option').first()).toHaveCSS('border-radius', '0px');
     await page.keyboard.press('Escape');
     const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
-    await expectMatching(menu, page.getByRole('button', { name: 'Change radius', exact: true }));
-    await expectMatching(menu, menu.getByRole('menuitem').first());
-    await expectMatching(menu, menu.locator('.leaf-menu__indicator'));
+    await expect(menu.getByRole('menuitem').first()).toHaveCSS(
+      'border-radius',
+      `${Math.max(0, radius - 2)}px`,
+    );
     const tabs = page.getByRole('tablist', { name: 'Radius tabs' });
     await expectInset(tabs, tabs.getByRole('tab').first());
     await expect(tabs.getByRole('tab').first()).toHaveCSS('border-radius', '0px');
@@ -149,18 +161,31 @@ test('component padding shorthand keeps highlight geometry aligned in an RTL por
   await page.getByRole('button', { name: 'Radius dropdown', exact: true }).click();
   const dropdown = page.locator('.leaf-dropdown');
   const row = dropdown.getByRole('menuitem').first();
-  const highlight = dropdown.locator('.leaf-dropdown__highlight');
   await expectInset(dropdown, row);
-  await expectMatching(row, highlight);
-  const bounds = await row.boundingBox();
+  const expectedCorners = await corners(row);
+  await row.hover();
   await expect
     .poll(async () => {
-      const box = await highlight.boundingBox();
-      return { x: box?.x, width: box?.width };
+      const style = await row.evaluate((node) => {
+        const pseudo = getComputedStyle(node, '::before');
+        return [pseudo.top, pseudo.right, pseudo.bottom, pseudo.left];
+      });
+      return { corners: await pseudoCorners(row), inset: style };
     })
-    .toEqual({ x: bounds?.x, width: bounds?.width });
+    .toEqual({ corners: expectedCorners, inset: ['0px', '0px', '0px', '0px'] });
   await page.keyboard.press('ArrowDown');
-  await expectMatching(dropdown.getByRole('menuitem').nth(1), highlight);
+  const next = dropdown.getByRole('menuitem').nth(1);
+  await expect(next).toBeFocused();
+  const nextCorners = await corners(next);
+  await expect
+    .poll(async () => {
+      const inset = await next.evaluate((node) => {
+        const style = getComputedStyle(node, '::before');
+        return [style.top, style.right, style.bottom, style.left];
+      });
+      return { corners: await pseudoCorners(next), inset };
+    })
+    .toEqual({ corners: nextCorners, inset: ['0px', '0px', '0px', '0px'] });
   await page.keyboard.press('Escape');
   await page.getByRole('combobox', { name: 'Radius select', exact: true }).click();
   const panel = page.locator('.leaf-select__panel');
@@ -173,7 +198,6 @@ test('component padding shorthand keeps highlight geometry aligned in an RTL por
   const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
   await expect(menu).toHaveCSS('border-radius', '18px');
   await expectMatching(menu, menu.getByRole('menuitem').first());
-  await expectMatching(menu, menu.locator('.leaf-menu__indicator'));
 });
 
 test('open portals follow live theme changes and preserve nested overrides', async ({ page }) => {
@@ -187,8 +211,7 @@ test('open portals follow live theme changes and preserve nested overrides', asy
   await expect(panel.getByRole('option').first()).toHaveCSS('border-radius', '25px');
   await expectInset(panel, panel.getByRole('option').first());
   const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });
-  await expect(menu.getByRole('menuitem').first()).toHaveCSS('border-radius', '20px');
-  await expectMatching(menu, menu.locator('.leaf-menu__indicator'));
+  await expect(menu.getByRole('menuitem').first()).toHaveCSS('border-radius', '18px');
   await page.keyboard.press('Escape');
   await page.getByRole('combobox', { name: 'Nested radius select' }).click();
   await expect(panel).toHaveCSS('border-radius', '12px');

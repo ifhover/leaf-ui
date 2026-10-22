@@ -3,15 +3,14 @@ import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
-import { useButtonWave } from './wave';
 
-export type ButtonVariant = 'solid' | 'outline' | 'soft' | 'link';
+export type ButtonVariant = 'solid' | 'outline' | 'link';
 export type ButtonSize = ControlSize;
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Visual style. @default 'solid' */
+  /** Visual style. @default 'outline' */
   variant?: ButtonVariant;
-  /** Shared control size. @default 'md' (36px) */
+  /** Shared control size. @default 'md' (34px) */
   size?: ButtonSize;
   /** Uses the semantic danger color in every variant. */
   danger?: boolean;
@@ -34,7 +33,7 @@ interface ButtonControlProps extends Omit<ButtonProps, 'variant'> {
 export const ButtonControl = forwardRef<HTMLButtonElement, ButtonControlProps>(
   function ButtonControl(rawProps: ButtonControlProps, ref) {
     const {
-      variant = 'solid',
+      variant = 'outline',
       size = 'md',
       danger = false,
       loading = false,
@@ -52,8 +51,6 @@ export const ButtonControl = forwardRef<HTMLButtonElement, ButtonControlProps>(
     const hasLabel =
       children !== undefined && children !== null && children !== false && children !== '';
     const iconOnly = !hasLabel && Boolean(startIcon || endIcon || loading);
-    const hasWave = variant === 'solid' || variant === 'outline';
-    const { wave, play } = useButtonWave(disabled || loading || !hasWave);
 
     return (
       <button
@@ -72,12 +69,8 @@ export const ButtonControl = forwardRef<HTMLButtonElement, ButtonControlProps>(
         disabled={disabled || loading}
         aria-busy={loading || ariaBusy}
         data-loading={loading ? '' : undefined}
-        onClick={(event) => {
-          play(event.currentTarget);
-          onClick?.(event);
-        }}
+        onClick={onClick}
       >
-        {hasWave && <span ref={wave} className="leaf-button__wave" aria-hidden="true" />}
         <span className="leaf-button__content">
           {startIcon && (
             <span className="leaf-button__icon" aria-hidden="true">

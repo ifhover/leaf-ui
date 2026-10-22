@@ -1,4 +1,12 @@
-import { Button, Card, CardTitle, ConfigProvider, Input, type TabItem } from '@ifhover/leaf-ui';
+import {
+  Button,
+  Card,
+  CardTitle,
+  ConfigProvider,
+  Input,
+  type TabItem,
+  Tag,
+} from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 function CardTitlesFixture() {
@@ -17,6 +25,13 @@ function CardTitlesFixture() {
       ))}
       <CardTitle data-testid="semantic-title" level={2} size="sm" title="Native heading hint">
         Small section heading
+      </CardTitle>
+      <CardTitle
+        data-testid="rich-title"
+        description="Supporting details stay beneath the heading."
+        extra={<Button variant="link">Manage</Button>}
+      >
+        Project overview
       </CardTitle>
       <ConfigProvider components={{ CardTitle: { size: 'lg', level: 4 } }} style={{ minHeight: 0 }}>
         <CardTitle data-testid="regional-title">Regional standalone title</CardTitle>
@@ -92,7 +107,6 @@ export function CardTabsFixture() {
           title={title ? 'Project settings' : undefined}
           description={title ? 'Manage project details and members.' : undefined}
           extra={<Button variant="link">Manage project</Button>}
-          divided
           loading={loading}
           size={size}
           tabs={{
@@ -144,6 +158,27 @@ export function CardTabsFixture() {
           title="Ordered pages"
           loading={loading}
           tabs={{ items: sortedItems, sortable: true, onReorder: setSortedItems }}
+        />
+        <Card
+          data-testid="inset-card"
+          title="Visit at risk"
+          description="The next visit starts later than the scheduled arrival."
+          extra={<Tag color="warning">17 min late</Tag>}
+          footer={<Button variant="outline">Review visit</Button>}
+          variant="inset"
+        >
+          The assigned caregiver has not started travel. Traffic places the arrival at 2:17 PM.
+        </Card>
+        <Card
+          data-testid="inset-tabbed-card"
+          title="Visit notes"
+          variant="inset"
+          tabs={{
+            items: [
+              { key: 'summary', label: 'Summary', children: 'Latest visit summary' },
+              { key: 'history', label: 'History', children: 'Previous visits' },
+            ],
+          }}
         />
       </div>
     </ConfigProvider>

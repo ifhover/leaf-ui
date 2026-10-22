@@ -9,7 +9,7 @@
   align-items: flex-start;
   gap: var(--leaf-component-alert-gap, 12px);
   color: var(--leaf-component-alert-color, var(--leaf-color-text));
-  font: var(--leaf-font-size)/1.5 var(--leaf-font-family);
+  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
   border-radius: var(--leaf-component-alert-radius, var(--leaf-radius-md));
   border: var(--leaf-component-alert-border-width, var(--leaf-border-width, 1px)) solid
     var(
@@ -34,6 +34,7 @@
     --leaf-feedback-color-alpha-15: var(--leaf-color-warning-alpha-15);
     --leaf-feedback-color-alpha-8: var(--leaf-color-warning-alpha-8);
   }
+  &--danger,
   &--error {
     --leaf-feedback-color: var(--leaf-color-danger);
     --leaf-feedback-color-border-12: var(--leaf-color-danger-border-12);
@@ -89,6 +90,7 @@
     margin-block-start: 2px;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
+    line-height: var(--leaf-line-height-sm);
   }
   &__close {
     align-items: center;
@@ -226,7 +228,7 @@
 }
 .leaf-confirm-description {
   font-size: var(--leaf-component-confirm-font-size, calc(var(--leaf-font-size) + 1px));
-  color: var(--leaf-component-confirm-color, var(--leaf-color-text));
+  color: var(--leaf-component-confirm-color, var(--leaf-color-text-muted));
   line-height: var(--leaf-line-height);
   overflow-wrap: anywhere;
 }

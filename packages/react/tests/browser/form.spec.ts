@@ -96,3 +96,16 @@ for (const [name, query, width] of [
     expect((await geometry()).nextTop).toBeCloseTo(baseline.nextTop, 0);
   });
 }
+
+test('vertical fields and labels align to the integer line-height grid', async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?fixture=form-help&layout=vertical');
+  const field = page.locator('.leaf-form-field').first();
+  const label = field.locator('.leaf-form-field__label');
+  const description = field.locator('.leaf-form-field__description');
+  await expect(label).toHaveCSS('line-height', '20px');
+  const fieldHeight = await field.evaluate((node) => node.getBoundingClientRect().height);
+  expect(fieldHeight).toBe(60);
+  await page.getByRole('button', { name: 'One line', exact: true }).click();
+  await expect(description).toHaveCSS('line-height', '18px');
+});

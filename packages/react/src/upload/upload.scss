@@ -3,7 +3,8 @@
   width: 100%;
   min-width: 0;
   color: var(--leaf-component-upload-color, var(--leaf-color-text));
-  font: var(--leaf-component-upload-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  font: var(--leaf-component-upload-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   &__input {
     position: absolute;
     width: 1px;

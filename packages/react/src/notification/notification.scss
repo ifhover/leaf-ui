@@ -74,8 +74,8 @@
     var(--leaf-surface-shadow, var(--leaf-shadow-md))
   );
   color: var(--leaf-component-notification-color, var(--leaf-color-text));
-  font: var(--leaf-component-notification-font-size, var(--leaf-font-size))/1.6
-    var(--leaf-font-family);
+  font: var(--leaf-component-notification-font-size, var(--leaf-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
   pointer-events: auto;
   transform: translate(0) scale(1);
   transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
@@ -89,7 +89,7 @@
     align-items: center;
     justify-content: center;
     width: 20px;
-    height: calc(1em * 1.6);
+    height: var(--leaf-line-height);
     color: var(--leaf-notification-color);
     > svg {
       width: 20px;
@@ -146,7 +146,7 @@
       outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
   }
-  @each $type in info, success, warning, error {
+  @each $type in info, success, warning, danger, error {
     &--#{$type} {
       --leaf-notification-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
       --leaf-notification-color-alpha-9: var(

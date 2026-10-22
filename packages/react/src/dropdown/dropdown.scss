@@ -14,7 +14,6 @@
       var(--leaf-component-floating-padding-#{$side}, var(--leaf-surface-padding))
     );
   }
-  min-width: 164px;
   display: flex;
   flex-direction: column;
   gap: var(--leaf-component-dropdown-gap, 2px);
@@ -30,60 +29,97 @@
   }
   .leaf-floating__option {
     position: relative;
+    isolation: isolate;
     z-index: 1;
     gap: 8px;
     justify-content: flex-start;
     min-height: var(--leaf-density-option-height);
     font-size: var(--leaf-font-size);
-    // Keep shared option fills from covering or doubling the moving highlight.
-    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']),
-    &:focus-visible:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']),
-    &:active:not(:disabled):not([aria-disabled='true']):not([aria-checked='true']) {
+    background: transparent;
+    transition:
+      color var(--leaf-motion-color) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-color) var(--leaf-motion-easing);
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 5% 1.5%;
+      z-index: -1;
+      border-radius: inherit;
+      background: var(--leaf-color-option-hover);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        opacity var(--leaf-motion-fast) linear,
+        inset var(--leaf-motion-fast) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-color) var(--leaf-motion-easing);
+    }
+    &.leaf-dropdown__danger::before {
+      background: var(--leaf-color-danger-surface-6);
+    }
+    // Keep shared option fills from painting a second layer over the pseudo-element.
+    &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']):not(
+        [aria-selected='true']
+      ):not([aria-checked='true']) {
       background: transparent;
     }
     &[aria-expanded='true'] {
       color: var(--leaf-color-text);
     }
     &[aria-checked='true'] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: var(--leaf-color-primary-surface-9);
+      color: inherit;
+      background: transparent;
+      &::before {
+        background: var(--leaf-color-option-hover);
+        opacity: 1;
+        inset: 0;
+      }
       &.leaf-dropdown__danger {
         color: var(--leaf-color-danger);
-        background: var(--leaf-color-danger-surface-8);
+        &::before {
+          background: var(--leaf-color-danger-surface-8);
+        }
       }
     }
-  }
-  &__highlight {
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    // The highlight is positioned against the floating viewport, whose content
-    // already starts after the surface padding. Applying the padding again
-    // shifts and shrinks it, especially with asymmetric RTL padding.
-    left: 0;
-    right: 0;
-    height: var(--leaf-menu-highlight-height, var(--leaf-density-option-height));
-    translate: 0 var(--leaf-menu-highlight-y, 0px);
-    border: 1px solid var(--leaf-color-border-alpha-55);
-    border-radius: var(--leaf-floating-option-radius);
-    background: var(--leaf-color-option-hover);
-    &[data-selected] {
-      background: var(--leaf-color-primary-surface-9);
-      border-color: var(--leaf-color-primary-alpha-15);
+    &.leaf-dropdown__danger {
+      color: var(--leaf-color-danger);
     }
-    &[data-danger='true'] {
+    &.leaf-dropdown__danger:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(
+        :disabled
+      ):not([aria-disabled='true']) {
+      color: var(--leaf-color-danger-active);
+    }
+    &:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(:disabled):not(
+        [aria-disabled='true']
+      ) {
+      &::before {
+        opacity: 1;
+        inset: 0;
+      }
+    }
+    &.leaf-dropdown__danger:not([aria-checked='true']):active:not(:disabled):not(
+        [aria-disabled='true']
+      )::before {
       background: var(--leaf-color-danger-surface-8);
-      border-color: var(--leaf-color-danger-alpha-15);
     }
-    pointer-events: none;
-    transition:
-      translate var(--leaf-motion-duration) var(--leaf-motion-spring),
-      height var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &[data-ready='false'] {
-      visibility: hidden;
-    }
+  }
+  &__label {
+    min-width: 0;
+    flex: 1;
+    overflow-wrap: anywhere;
+  }
+  &__extra {
+    display: block;
+    width: 0;
+    min-width: 50%;
+    max-width: 50%;
+    flex: none;
+    overflow: hidden;
+    color: var(--leaf-color-text-muted);
+    font-size: var(--leaf-font-size-sm);
+    line-height: var(--leaf-line-height-sm);
+    text-align: end;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   &__check {
     flex: 0 0 15px;
@@ -111,8 +147,21 @@
     translate: 2px 0;
   }
 }
+@media (forced-colors: active) {
+  .leaf-dropdown .leaf-floating__option[aria-checked='true']::before,
+  .leaf-dropdown .leaf-floating__option:is(:hover, :focus-visible)::before {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+  .leaf-dropdown .leaf-floating__option[aria-checked='true'] {
+    color: HighlightText;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  .leaf-dropdown__highlight,
+  .leaf-dropdown .leaf-floating__option,
+  .leaf-dropdown .leaf-floating__option::before,
   .leaf-dropdown__check,
   .leaf-dropdown__arrow {
     transition: none;

@@ -107,13 +107,6 @@
   &[data-open] &__trigger > svg {
     transform: rotate(180deg);
   }
-  &__column[data-level]:not([data-level='0']) {
-    animation: var(
-      --leaf-motion-animation,
-      leaf-cascader-column-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
-    );
-    animation-play-state: var(--leaf-motion-play-state, running);
-  }
   &__check {
     animation: var(
       --leaf-motion-animation,
@@ -131,20 +124,11 @@
     transform: scale(1);
   }
 }
-@keyframes leaf-cascader-column-enter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .leaf-cascader__trigger > svg,
   .leaf-cascader__column .leaf-floating__option > svg {
     transition: none;
   }
-  .leaf-cascader__column[data-level]:not([data-level='0']),
   .leaf-cascader__check {
     animation: none;
   }

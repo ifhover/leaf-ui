@@ -20,6 +20,14 @@ test('contact actions remain aligned with inputs when validation adds an error',
   }
 });
 
+test('alerts with descriptions use an integer text stack', async ({ page }) => {
+  await page.goto('/?fixture=feedback');
+  const alert = page.locator('.leaf-alert').filter({ hasText: 'Changes saved' });
+  await expect(alert).toHaveCSS('line-height', '20px');
+  await expect(alert.locator('.leaf-alert__description')).toHaveCSS('line-height', '18px');
+  expect(await alert.evaluate((node) => node.getBoundingClientRect().height)).toBe(70);
+});
+
 test('modal form shares the footer edge and uses balanced spacing', async ({ page }) => {
   await page.goto('/?fixture=feedback');
   await page.getByRole('button', { name: '编辑项目' }).click();
@@ -77,7 +85,11 @@ for (const surface of ['modal', 'drawer']) {
           return true;
         }),
       ).toBe(true);
-      await expect(backdrop).toHaveCSS('backdrop-filter', 'blur(3px)', { timeout: 20_000 });
+      await expect(backdrop).toHaveCSS(
+        'backdrop-filter',
+        surface === 'modal' ? 'blur(12px)' : 'blur(3px)',
+        { timeout: 20_000 },
+      );
       await page.keyboard.press('Escape');
       await expect(page.locator(`.leaf-${surface}-mask`)).toBeHidden({ timeout: 20_000 });
     }

@@ -136,7 +136,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: var(--leaf-font-weight);
-    line-height: 1.6;
+    line-height: var(--leaf-line-height);
   }
   &__meta {
     display: flex;
@@ -146,7 +146,7 @@
     margin-top: 2px;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
     font-variant-numeric: tabular-nums;
     > span {
       display: inline-flex;
@@ -237,7 +237,7 @@
     min-width: 0;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
     font-variant-numeric: tabular-nums;
     > svg {
       flex: none;
@@ -272,7 +272,7 @@
     min-width: 0;
     margin: 4px 0 0;
     font-size: var(--leaf-font-size-sm);
-    line-height: 1.5;
+    line-height: var(--leaf-line-height-sm);
     color: var(--leaf-color-danger-text-80);
     overflow-wrap: anywhere;
   }

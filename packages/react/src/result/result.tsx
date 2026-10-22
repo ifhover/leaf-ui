@@ -3,10 +3,11 @@ import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import type { FeedbackTypeInput } from '../shared/feedback';
 import { useContentTransition } from '../shared/presence';
 
 export interface ResultProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
-  status?: 'empty' | 'success' | 'warning' | 'error' | 'info';
+  status?: 'empty' | FeedbackTypeInput;
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
@@ -17,7 +18,7 @@ const icons = {
   empty: Inbox,
   success: Check,
   warning: TriangleAlert,
-  error: X,
+  danger: X,
   info: Info,
 };
 export function ResultControl({
@@ -32,20 +33,21 @@ export function ResultControl({
   ...props
 }: ResultProps) {
   const { messages } = useLeafConfig();
+  const normalizedStatus = status === 'error' ? 'danger' : status;
   const root = useRef<HTMLDivElement>(null);
-  useContentTransition(root, status);
-  const Icon = icons[status];
+  useContentTransition(root, normalizedStatus);
+  const Icon = icons[normalizedStatus];
   const heading =
     title !== undefined
       ? title
-      : status === 'empty'
+      : normalizedStatus === 'empty'
         ? messages.common.noData
         : messages.result[
-            status === 'success'
+            normalizedStatus === 'success'
               ? 'success'
-              : status === 'warning'
+              : normalizedStatus === 'warning'
                 ? 'warning'
-                : status === 'error'
+                : normalizedStatus === 'danger'
                   ? 'error'
                   : 'info'
           ];
@@ -55,13 +57,13 @@ export function ResultControl({
       ref={root}
       className={classes(
         'leaf-result',
-        `leaf-result--${status}`,
+        `leaf-result--${normalizedStatus}`,
         `leaf-result--${size}`,
         className,
       )}
     >
       {icon !== null && (
-        <div className="leaf-result__icon" aria-hidden="true" key={status}>
+        <div className="leaf-result__icon" aria-hidden="true" key={normalizedStatus}>
           {icon ?? <Icon />}
         </div>
       )}

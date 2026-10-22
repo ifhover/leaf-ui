@@ -161,6 +161,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
               </ButtonControl>
               <ButtonControl
                 size="sm"
+                variant="solid"
                 disabled={!validText || !valid(draft)}
                 onClick={() => {
                   change(draft);

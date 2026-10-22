@@ -286,14 +286,14 @@ describe('component defaults rollout', () => {
         components={{
           Alert: { type: 'warning', showIcon: false },
           Badge: { dot: true },
-          Card: { size: 'sm', divided: true },
+          Card: { size: 'sm', bordered: true },
           Progress: { showInfo: false, active: false },
           Tag: { variant: 'solid', closable: true },
         }}
       >
         <Alert title="Scoped warning" />
         <Badge count={2}>Badge target</Badge>
-        <Card title="Scoped card" divided={false}>
+        <Card title="Scoped card" bordered={false}>
           Card body
         </Card>
         <Progress percent={28} aria-label="Scoped progress" />
@@ -306,7 +306,7 @@ describe('component defaults rollout', () => {
       'leaf-badge__indicator--dot',
     );
     expect(container.querySelector('.leaf-card')).toHaveClass('leaf-card--sm');
-    expect(container.querySelector('.leaf-card')).not.toHaveClass('leaf-card--divided');
+    expect(container.querySelector('.leaf-card')).not.toHaveClass('leaf-card--bordered');
     expect(screen.getByRole('progressbar')).not.toHaveAttribute('data-active');
     expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--solid');
     expect(container.querySelector('.leaf-tag__close')).toBeNull();

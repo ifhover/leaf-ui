@@ -6,9 +6,9 @@
     --leaf-component-switch-border-width,
     var(--leaf-border-width, 1px)
   );
-  --leaf-switch-width: 36px;
-  --leaf-switch-height: 20px;
-  --leaf-switch-thumb: 14px;
+  --leaf-switch-width: 40px;
+  --leaf-switch-height: 24px;
+  --leaf-switch-thumb: 20px;
   --leaf-switch-direction: 1;
   &:dir(rtl) {
     --leaf-switch-direction: -1;
@@ -17,14 +17,14 @@
     cursor: default;
   }
   &--sm {
-    --leaf-switch-width: 30px;
-    --leaf-switch-height: 16px;
-    --leaf-switch-thumb: 10px;
+    --leaf-switch-width: 32px;
+    --leaf-switch-height: 20px;
+    --leaf-switch-thumb: 16px;
   }
   &--lg {
-    --leaf-switch-width: 42px;
-    --leaf-switch-height: 24px;
-    --leaf-switch-thumb: 18px;
+    --leaf-switch-width: 48px;
+    --leaf-switch-height: 28px;
+    --leaf-switch-thumb: 24px;
   }
   &__control {
     width: var(--leaf-switch-width);
@@ -45,17 +45,20 @@
     display: block;
     width: 100%;
     height: 100%;
-    padding: max(0px, calc(3px - var(--leaf-switch-border-width)));
-    border: var(--leaf-switch-border-width) solid
-      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent));
+    padding: max(0px, calc(2px - var(--leaf-switch-border-width)));
+    --leaf-switch-track-border: var(
+      --leaf-component-switch-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border))
+    );
+    border: var(--leaf-switch-border-width) solid var(--leaf-switch-track-border);
     border-radius: 999px;
     --leaf-switch-track-background: var(
       --leaf-component-switch-background,
-      var(--leaf-color-text-subtle-surface-muted-38)
+      var(--leaf-color-surface-muted-border-65)
     );
     --leaf-switch-track-shadow: var(
       --leaf-component-switch-shadow,
-      var(--leaf-control-shadow, inset 0 1px 2px rgb(0 0 0 / 8%))
+      var(--leaf-control-shadow, none)
     );
     background: var(--leaf-switch-track-background);
     box-shadow: var(--leaf-switch-track-shadow);
@@ -73,13 +76,16 @@
     border-radius: 999px;
     color: var(--leaf-color-primary);
     background: #fff;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 22%);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 14%);
     transition:
-      transform var(--leaf-motion-slow) var(--leaf-motion-spring),
-      width var(--leaf-motion-fast) var(--leaf-motion-spring),
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__input:checked + &__track {
+    --leaf-switch-track-border: var(
+      --leaf-component-switch-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-primary-indicator, var(--leaf-color-primary)))
+    );
     --leaf-switch-track-background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     background: var(--leaf-switch-track-background);
   }
@@ -89,15 +95,7 @@
     );
   }
   &:active:not([data-disabled]) &__thumb {
-    width: calc(var(--leaf-switch-thumb) + 4px);
     box-shadow: 0 1px 1px rgb(0 0 0 / 15%);
-  }
-  &:active:not([data-disabled]) &__input:checked + &__track &__thumb {
-    transform: translateX(
-      calc(
-        (var(--leaf-switch-width) - var(--leaf-switch-height) - 4px) * var(--leaf-switch-direction)
-      )
-    );
   }
   &__input:focus-visible + &__track {
     @include mixins.focus-ring;
@@ -108,7 +106,7 @@
       focus,
       inherit,
       var(--leaf-switch-track-background),
-      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(--leaf-switch-track-border),
       var(--leaf-switch-track-shadow)
     );
   }
@@ -117,16 +115,9 @@
       switch,
       hover,
       inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
-      var(
-        --leaf-component-switch-shadow,
-        var(
-          --leaf-control-shadow,
-          inset 0 1px 2px rgb(0 0 0 / 8%),
-          0 0 0 3px var(--leaf-color-primary-alpha-8)
-        )
-      )
+      color-mix(in srgb, var(--leaf-color-text) 4%, var(--leaf-switch-track-background)),
+      var(--leaf-switch-track-border),
+      var(--leaf-switch-track-shadow)
     );
   }
   &:active:not([data-disabled]) &__track {
@@ -134,8 +125,8 @@
       switch,
       active,
       inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      color-mix(in srgb, var(--leaf-color-text) 8%, var(--leaf-switch-track-background)),
+      var(--leaf-switch-track-border),
       var(--leaf-switch-track-shadow)
     );
   }
@@ -145,7 +136,7 @@
       disabled,
       inherit,
       var(--leaf-switch-track-background),
-      var(--leaf-component-switch-border-color, var(--leaf-frame-border-color, transparent)),
+      var(--leaf-switch-track-border),
       var(--leaf-switch-track-shadow)
     );
   }

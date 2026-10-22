@@ -8,7 +8,6 @@ import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
-import { useMovingIndicator } from '../tabs/use-moving-indicator';
 
 export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
@@ -53,6 +52,7 @@ export interface MenuItem {
   key: string;
   label: ReactNode;
   icon?: ReactNode;
+  extra?: ReactNode;
   href?: string;
   disabled?: boolean;
   danger?: boolean;
@@ -61,7 +61,7 @@ export interface MenuItem {
 }
 export interface MenuProps extends Omit<HTMLAttributes<HTMLElement>, 'onSelect'> {
   items: readonly MenuItem[];
-  mode?: 'vertical' | 'horizontal' | 'inline';
+  variant?: 'default' | 'raised' | 'primary';
   selectedKey?: string;
   defaultSelectedKey?: string;
   onSelect?: (key: string, item: MenuItem) => void;
@@ -77,11 +77,13 @@ function MenuSubmenu({
   open,
   id,
   label,
+  lineOffset,
   children,
 }: {
   open: boolean;
   id: string;
   label?: string;
+  lineOffset: string;
   children: () => ReactNode;
 }) {
   const [visited, setVisited] = useState(open);
@@ -95,6 +97,7 @@ function MenuSubmenu({
       aria-hidden={!open || undefined}
       {...inertProps(!open)}
       data-open={open || undefined}
+      style={{ '--leaf-menu-submenu-line-offset': lineOffset } as React.CSSProperties}
     >
       <div className="leaf-menu__submenu-inner">
         <div className="leaf-menu__submenu-content">{visited && children()}</div>
@@ -105,7 +108,6 @@ function MenuSubmenu({
 export function Menu(rawProps: MenuProps) {
   const {
     items,
-    mode = 'vertical',
     selectedKey,
     defaultSelectedKey = '',
     onSelect,
@@ -113,6 +115,7 @@ export function Menu(rawProps: MenuProps) {
     defaultOpenKeys = [],
     onOpenChange,
     collapsed = false,
+    variant = 'default',
     itemRender,
     linkRender,
     itemClassName,
@@ -123,19 +126,12 @@ export function Menu(rawProps: MenuProps) {
   const { direction } = useLeafConfig();
   const id = useId();
   const root = useRef<HTMLElement>(null);
-  const indicator = useRef<HTMLSpanElement>(null);
   const [selected, setSelected] = useControllable(selectedKey, defaultSelectedKey);
   const [active, setActive] = useState<string | undefined>(undefined);
   const [opened, setOpened] = useControllable<readonly string[]>(
     openKeys,
     defaultOpenKeys,
     (keys) => onOpenChange?.([...keys]),
-  );
-  useMovingIndicator(
-    root,
-    indicator,
-    '[data-selected="true"]',
-    `${selected}-${collapsed}-${mode}-${direction}-${opened.join(',')}`,
   );
   const toggle = (key: string) =>
     setOpened(opened.includes(key) ? opened.filter((value) => value !== key) : [...opened, key]);
@@ -145,8 +141,7 @@ export function Menu(rawProps: MenuProps) {
       if (item.type === 'group') collect(item.children ?? []);
       else if (item.type !== 'divider') {
         if (!item.disabled) visibleItems.push(item);
-        if (opened.includes(item.key) && mode !== 'horizontal' && !collapsed)
-          collect(item.children ?? []);
+        if (opened.includes(item.key) && !collapsed) collect(item.children ?? []);
       }
     }
   };
@@ -189,6 +184,12 @@ export function Menu(rawProps: MenuProps) {
             </span>
           )}
           <span className="leaf-menu__label">{item.label}</span>
+          {!collapsed && item.extra != null && (
+            <>
+              {' '}
+              <span className="leaf-menu__extra">{item.extra}</span>
+            </>
+          )}
           {hasChildren && <ChevronDown className="leaf-menu__arrow" size={14} aria-hidden="true" />}
         </>
       );
@@ -208,11 +209,15 @@ export function Menu(rawProps: MenuProps) {
         ),
         tabIndex: !item.disabled && focusKey === item.key ? 0 : -1,
         'data-menu-key': item.key,
-        'data-leaf-indicator-item': '',
         'aria-label': collapsed && typeof item.label === 'string' ? item.label : undefined,
         onFocus: () => setActive(item.key),
         title: collapsed && typeof item.label === 'string' ? item.label : undefined,
-        style: { paddingInlineStart: 12 + depth * 30 },
+        style: {
+          // Keep label alignment while reserving the guide rail outside the row.
+          paddingInlineStart: depth
+            ? `calc(${12 + depth * 32}px - var(--leaf-menu-submenu-line-offset) - 9px)`
+            : 12,
+        },
       };
       const activate = () => {
         if (item.disabled) return;
@@ -222,16 +227,18 @@ export function Menu(rawProps: MenuProps) {
           onSelect?.(item.key, item);
         }
       };
-      if (hasChildren && (mode === 'horizontal' || collapsed))
+      if (hasChildren && collapsed)
         return (
           <div key={item.key} className="leaf-menu__entry">
             <Dropdown
               items={convert(item.children ?? [])}
-              navigation={{ selectedKey: selected, title: collapsed ? item.label : undefined }}
+              navigation={{
+                selectedKey: selected,
+                title: collapsed ? item.label : undefined,
+                variant,
+              }}
               popupWidth={208}
-              popupPlacement={
-                collapsed ? (direction === 'rtl' ? 'left-start' : 'right-start') : 'bottom-start'
-              }
+              popupPlacement={direction === 'rtl' ? 'left-start' : 'right-start'}
               open={expanded}
               disabled={item.disabled}
               onOpenChange={(next) => setOpened(next ? [item.key] : [])}
@@ -279,6 +286,7 @@ export function Menu(rawProps: MenuProps) {
               id={`${id}-${item.key}`}
               open={expanded}
               label={typeof item.label === 'string' ? item.label : undefined}
+              lineOffset={`calc(var(--leaf-spacing-md) + ${direction === 'rtl' ? 10 : 6}px + ${depth * 32}px)`}
             >
               {() => renderItems(item.children ?? [], depth + 1)}
             </MenuSubmenu>
@@ -292,16 +300,14 @@ export function Menu(rawProps: MenuProps) {
       ref={root}
       className={classes(
         'leaf-menu',
-        `leaf-menu--${mode}`,
+        `leaf-menu--${variant}`,
         collapsed && 'leaf-menu--collapsed',
         className,
       )}
       aria-label={props['aria-label'] ?? t('menu.navigationMenu')}
     >
-      <span ref={indicator} className="leaf-menu__indicator" aria-hidden="true" />
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: This container delegates arrow navigation for the menu or menubar role. */}
       <div
-        role={mode === 'horizontal' ? 'menubar' : 'menu'}
+        role="menu"
         onKeyDown={(event) => {
           if (event.defaultPrevented) return;
           if (
@@ -333,7 +339,7 @@ export function Menu(rawProps: MenuProps) {
               node?.focus();
             });
           };
-          if (mode !== 'horizontal' && !collapsed && item) {
+          if (!collapsed && item) {
             if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
               event.preventDefault();
               if (item.children?.length) {
@@ -377,11 +383,6 @@ export function Menu(rawProps: MenuProps) {
               }
               return;
             }
-          }
-          if (mode === 'horizontal' && event.key === 'ArrowDown' && item?.children?.length) {
-            event.preventDefault();
-            setOpened([item.key]);
-            return;
           }
           const next =
             event.key === 'Home'

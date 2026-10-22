@@ -26,6 +26,8 @@ export interface PickerFieldProps
   status?: ControlStatus;
   allowClear?: boolean;
   inputReadOnly?: boolean;
+  /** `card` insets the picker content on a muted canvas. */
+  panelVariant?: 'plain' | 'card';
   open?: boolean;
   defaultOpen?: boolean;
 }
@@ -55,6 +57,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     required: requiredProp,
     allowClear = true,
     inputReadOnly,
+    panelVariant = 'plain',
     defaultOpen: _defaultOpen,
     popupPlacement,
     popupClassName,
@@ -298,7 +301,12 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         triggerRef={root}
         panelRef={panel}
         id={panelId}
-        className={classes('leaf-floating', panelClassName, popupClassName)}
+        className={classes(
+          'leaf-floating',
+          panelVariant === 'card' && 'leaf-picker-panel--card',
+          panelClassName,
+          popupClassName,
+        )}
         placement={popupPlacement}
         style={popupStyle}
         render={popupRender}

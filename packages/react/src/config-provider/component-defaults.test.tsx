@@ -136,7 +136,7 @@ describe('ConfigProvider component defaults', () => {
     const input = screen.getByRole('textbox', { name: 'Local name' });
     expect(input).not.toHaveAttribute('readonly');
     expect(screen.getByRole('button', { name: 'Built in again' })).toHaveClass(
-      'leaf-button--solid',
+      'leaf-button--outline',
     );
     await userEvent.type(input, ' edit');
     rerender(example('Updated shared'));
@@ -292,7 +292,7 @@ describe('ConfigProvider component defaults', () => {
           <Button>Outer</Button>
           <ConfigProvider components={{ Button: { size: 'lg', danger: false } }}>
             <Button size={undefined}>Inner</Button>
-            <Button size="md" variant="soft">
+            <Button size="md" variant="link">
               Instance
             </Button>
           </ConfigProvider>
@@ -303,7 +303,7 @@ describe('ConfigProvider component defaults', () => {
       </>,
     );
     expect(screen.getByRole('button', { name: 'Built in' })).toHaveClass(
-      'leaf-button--solid',
+      'leaf-button--outline',
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Outer' })).toHaveClass(
@@ -317,7 +317,7 @@ describe('ConfigProvider component defaults', () => {
     );
     expect(screen.getByRole('button', { name: 'Inner' })).not.toHaveClass('leaf-button--danger');
     expect(screen.getByRole('button', { name: 'Instance' })).toHaveClass(
-      'leaf-button--soft',
+      'leaf-button--link',
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Inherited' })).toHaveClass('leaf-button--sm');

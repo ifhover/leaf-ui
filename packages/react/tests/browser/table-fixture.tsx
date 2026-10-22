@@ -1,10 +1,14 @@
 import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
-import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { TableGrouped, TableServer } from '../../../../apps/docs/src/examples/table/advanced';
 import { TableAppearance } from '../../../../apps/docs/src/examples/table/appearance';
-import { TableBasic, TableStates } from '../../../../apps/docs/src/examples/table/basic';
+import {
+  TableBasic,
+  TableSelection,
+  TableStates,
+} from '../../../../apps/docs/src/examples/table/basic';
 import { TableColumns, TableData } from '../../../../apps/docs/src/examples/table/data';
 import { TableReordering } from '../../../../apps/docs/src/examples/table/reordering';
 
@@ -17,6 +21,48 @@ const records = Array.from({ length: 10000 }, (_, index) => ({
       : 'A short description.',
 }));
 type RecordRow = (typeof records)[number];
+const apiRecords = records.slice(0, 14);
+const apiColumns: ColumnDef<RecordRow>[] = [{ accessorKey: 'name', header: 'Name' }];
+
+function ApiTable() {
+  const [pagination, setPagination] = useState(true);
+  const table = useDataTable({
+    data: apiRecords,
+    columns: apiColumns,
+    rowKey: 'id',
+    options: { manualPagination: true, pageCount: -1 },
+  });
+  return (
+    <section aria-label="Table API demo">
+      <h2>Automatic layout and dynamic pagination</h2>
+      <DataTable
+        data={apiRecords}
+        columns={apiColumns}
+        rowKey="id"
+        aria-label="Dynamic pagination"
+        selection="multiple"
+        pagination={pagination ? { showSizeChanger: false } : false}
+        toolbar={
+          <>
+            <Button onClick={() => setPagination((value) => !value)}>Toggle pagination</Button>
+            <DataTable.Search columnId="name" />
+          </>
+        }
+      />
+      <DataTable
+        table={table}
+        aria-label="Unknown total"
+        pagination={{
+          id: 'unknown-total-pages',
+          'aria-label': 'Unknown pages',
+          style: { marginTop: 12 },
+          hasNextPage: false,
+        }}
+      />
+    </section>
+  );
+}
+
 const columns: ColumnDef<RecordRow>[] = [
   {
     accessorKey: 'name',
@@ -31,12 +77,12 @@ const columns: ColumnDef<RecordRow>[] = [
 
 function VirtualTable() {
   const [narrow, setNarrow] = useState(false);
-  const table = useReactTable({
+  const table = useDataTable({
     data: records,
     columns,
-    getRowId: (row) => row.id,
-    getCoreRowModel: getCoreRowModel(),
-    getRowCanExpand: () => true,
+    rowKey: 'id',
+    localPagination: false,
+    options: { getRowCanExpand: () => true },
   });
   return (
     <section aria-label="Virtual table demo">
@@ -72,13 +118,21 @@ export function TableFixture() {
         </div>
       </section>
       <section aria-label="Table appearance demo">
-        <h2>Borders and stripes</h2>
+        <h2>Column dividers and stripes</h2>
         <TableAppearance english />
       </section>
       <section aria-label="Data table demo">
         <h2>Manage members</h2>
         <TableData english />
       </section>
+      <section aria-label="Controlled selection demos">
+        <h2>Control only selection</h2>
+        <ConfigProvider locale="zh-CN">
+          <TableSelection />
+        </ConfigProvider>
+        <TableSelection english />
+      </section>
+      <ApiTable />
       <section aria-label="Pinned table demo">
         <h2>Pinned columns</h2>
         <TableColumns english />

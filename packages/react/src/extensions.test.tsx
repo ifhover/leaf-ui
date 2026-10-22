@@ -283,7 +283,6 @@ describe('Extended inputs and form integration', () => {
   it('uses left/right keys for inline Menu hierarchy navigation', async () => {
     render(
       <Menu
-        mode="inline"
         items={[
           { key: 'parent', label: 'Projects', children: [{ key: 'child', label: 'Design' }] },
           { key: 'other', label: 'Settings' },

@@ -118,6 +118,12 @@ export function ThemePresetsFixture() {
             current={1}
             items={[{ title: 'An idea', description: 'Start here' }, { title: 'Create' }]}
           />
+          <Steps
+            aria-label="Large theme steps"
+            size="lg"
+            current={1}
+            items={[{ title: 'An idea' }, { title: 'Bring it to life' }, { title: 'Share' }]}
+          />
           <Collapse items={[{ key: 'one', label: 'Global collapse', children: 'Shared frame' }]} />
           <Pagination aria-label="Global pagination" total={30} />
           <Alert title="Global alert" />
@@ -146,9 +152,8 @@ export function ThemePresetsFixture() {
             ]}
           />
           <Space wrap>
-            <Button>Solid action</Button>
-            <Button variant="outline">Outline action</Button>
-            <Button variant="soft">Soft action</Button>
+            <Button variant="solid">Solid action</Button>
+            <Button>Outline action</Button>
             <Button disabled>Disabled action</Button>
           </Space>
           <Space wrap>

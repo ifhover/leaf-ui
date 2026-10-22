@@ -1,3 +1,4 @@
+import { TinyColor } from '@ctrl/tinycolor';
 import { expect, test } from '@playwright/test';
 
 test('steps stay transparent, avatars have one white edge, and hovered rows remain distinct from headers', async ({
@@ -17,10 +18,24 @@ test('steps stay transparent, avatars have one white edge, and hovered rows rema
         .first()
         .evaluate((node) => {
           const line = getComputedStyle(node, '::before');
-          return { height: line.height, column: line.gridColumnStart };
+          const icon = node.querySelector<HTMLElement>('.leaf-steps__icon');
+          const title = node.querySelector<HTMLElement>('.leaf-steps__title');
+          if (!icon || !title) throw new Error('Missing step geometry');
+          return {
+            height: line.height,
+            column: line.gridColumnStart,
+            iconWidth: icon.getBoundingClientRect().width,
+            iconHeight: icon.getBoundingClientRect().height,
+            titleLineHeight: Number.parseFloat(getComputedStyle(title).lineHeight),
+            titlePadding: Number.parseFloat(getComputedStyle(title).paddingBlockStart),
+          };
         });
       expect(horizontal.height).toBe('1px');
       expect(horizontal.column).toBe('2');
+      expect(horizontal.iconWidth).toBe(24);
+      expect(horizontal.iconHeight).toBe(24);
+      expect(horizontal.titleLineHeight).toBe(20);
+      expect(horizontal.titlePadding).toBe(2);
       const vertical = page.getByRole('list', { name: 'Vertical theme steps' });
       const verticalLine = await vertical
         .locator('.leaf-steps__item')
@@ -36,6 +51,12 @@ test('steps stay transparent, avatars have one white edge, and hovered rows rema
       expect(verticalLine.position).toBe('absolute');
       expect(verticalLine.width).toBe('1px');
       expect(verticalLine.height).toBeGreaterThan(10);
+      const largeIcon = page
+        .getByRole('list', { name: 'Large theme steps', exact: true })
+        .locator('.leaf-steps__icon')
+        .first();
+      expect((await largeIcon.boundingBox())?.width).toBe(28);
+      expect((await largeIcon.boundingBox())?.height).toBe(28);
       for (const avatar of await page.locator('.leaf-avatar-group > .leaf-avatar').all()) {
         await expect(avatar).toHaveCSS('border-top-color', 'rgb(255, 255, 255)');
         await expect(avatar).toHaveCSS('border-top-width', '2px');
@@ -69,7 +90,6 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         '.leaf-input:not(:has([aria-label="Explicit frame override"]))',
         '.leaf-switch__track',
         '.leaf-checkbox__input',
-        '.leaf-tabs--card .leaf-tabs__list',
         '.leaf-table',
         '.leaf-collapse',
         '.leaf-alert',
@@ -104,7 +124,7 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         .toBe(true);
       const frames = await readFrames();
       const primary = color === 'orange' ? [255, 105, 0] : [29, 155, 240];
-      const text = dark ? [237, 237, 240] : [32, 32, 36];
+      const text = dark ? [237, 237, 237] : [32, 32, 32];
       const expected = primary.map((channel, index) =>
         Math.round(channel * 0.12 + (text[index] ?? 0) * 0.88),
       );
@@ -150,7 +170,7 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         .filter({ has: page.getByLabel('Invalid theme name', { exact: true }) });
       await expect(error).toHaveCSS(
         'border-top-color',
-        dark ? 'rgb(239, 133, 133)' : 'rgb(200, 60, 60)',
+        dark ? 'rgb(239, 133, 133)' : 'rgb(221, 63, 46)',
       );
     }
     await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
@@ -329,9 +349,10 @@ test('nested default resets remain isolated when portals target the themed ances
   const colors = await field.evaluate((node) => {
     const style = getComputedStyle(node);
     return {
-      actual: style.outlineColor,
-      expected: style.getPropertyValue('--leaf-field-color-alpha-12').trim(),
+      actual: style.borderTopColor,
+      expected: style.getPropertyValue('--leaf-color-danger').trim(),
     };
   });
-  expect(colors.actual).toBe(colors.expected);
+  expect(colors.actual).toBe(new TinyColor(colors.expected).toRgbString());
+  await expect(field).toHaveCSS('outline-style', 'none');
 });

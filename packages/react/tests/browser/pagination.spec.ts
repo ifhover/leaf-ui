@@ -39,10 +39,12 @@ for (const appearance of ['light', 'dark']) {
       'border-color',
       await color(outline, '--leaf-color-primary-hover'),
     );
+    const candidateColor = await candidate.evaluate((node) => getComputedStyle(node).color);
     const before = await candidate.boundingBox();
     await page.mouse.down();
     try {
       await expect(candidate).toHaveCSS('transform', 'none');
+      await expect(candidate).toHaveCSS('color', candidateColor);
       expect(await candidate.boundingBox()).toEqual(before);
       await expect(candidate).toHaveCSS(
         'border-color',
@@ -81,9 +83,9 @@ for (const appearance of ['light', 'dark']) {
   test(`sizes, region overrides and disabled controls in ${appearance}`, async ({ page }) => {
     await page.goto(`/?fixture=pagination&theme=${appearance}`);
     for (const [size, height] of [
-      ['sm', 30],
-      ['md', 36],
-      ['lg', 42],
+      ['sm', 28],
+      ['md', 34],
+      ['lg', 40],
     ] as const) {
       const pagination = page.getByRole('navigation', { name: `Size ${size}` });
       await expect(pagination.getByRole('button', { name: 'Page 1', exact: true })).toHaveCSS(
