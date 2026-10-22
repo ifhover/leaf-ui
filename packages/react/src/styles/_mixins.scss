@@ -37,6 +37,103 @@
   --leaf-#{$component}-frame-color: color-mix(in srgb, var(--leaf-color-divider) 70%, #{$surface});
 }
 
+// Branded soft cues for selections and actions, never ordinary neutral option feedback.
+@mixin accent-soft-feedback-family {
+  --leaf-accent-soft-background: var(--leaf-color-primary-surface-8);
+  --leaf-accent-soft-border: var(--leaf-color-primary-border-24);
+}
+
+@mixin danger-soft-feedback-family {
+  --leaf-danger-soft-background: var(--leaf-color-danger-surface-6);
+  --leaf-danger-soft-active-background: var(--leaf-color-danger-surface-8);
+}
+
+// Base status colors paint indicators; text uses their contrast-aware ink roles.
+@mixin status-ink-family($tone) {
+  @if $tone == primary {
+    --leaf-status-ink: var(--leaf-color-primary-ink);
+  } @else if $tone == success {
+    --leaf-status-ink: var(--leaf-color-success-ink);
+  } @else if $tone == warning {
+    --leaf-status-ink: var(--leaf-color-warning-ink);
+  } @else if $tone == danger {
+    --leaf-status-ink: var(--leaf-color-danger-ink);
+  } @else if $tone == info {
+    --leaf-status-ink: var(--leaf-color-info-ink);
+  } @else {
+    @error "Unknown status ink family: #{$tone}.";
+  }
+}
+
+@mixin status-label-family($tone) {
+  @include status-ink-family($tone);
+  --leaf-status-label-base: var(--leaf-color-#{$tone});
+  @if $tone == primary {
+    --leaf-status-label-foreground: var(--leaf-color-on-primary);
+    --leaf-status-label-background: var(--leaf-color-primary-surface-8);
+  } @else if $tone == success {
+    --leaf-status-label-foreground: var(--leaf-color-on-success);
+    --leaf-status-label-background: var(--leaf-color-success-surface-8);
+  } @else if $tone == warning {
+    --leaf-status-label-foreground: var(--leaf-color-on-warning);
+    --leaf-status-label-background: var(--leaf-color-warning-surface-8);
+  } @else if $tone == danger {
+    --leaf-status-label-foreground: var(--leaf-color-on-danger);
+    --leaf-status-label-background: var(--leaf-color-danger-surface-8);
+  } @else if $tone == info {
+    --leaf-status-label-foreground: var(--leaf-color-on-info);
+    --leaf-status-label-background: var(--leaf-color-info-surface-8);
+  }
+  --leaf-status-label-close-background: color-mix(in srgb, currentColor 10%, transparent);
+  --leaf-status-label-feedback-background: var(--leaf-status-label-close-background);
+}
+
+// Modal and inset picker panels share the same muted canvas.
+@mixin panel-canvas-family {
+  --leaf-panel-canvas-background: color-mix(
+    in srgb,
+    var(--leaf-color-surface-muted) 60%,
+    var(--leaf-color-surface)
+  );
+}
+
+@mixin segmented-surface-family {
+  --leaf-segmented-border: var(--leaf-color-divider);
+  --leaf-segmented-background: color-mix(
+    in srgb,
+    var(--leaf-color-surface-muted) 75%,
+    var(--leaf-color-border)
+  );
+  --leaf-segmented-selected-background: var(--leaf-color-surface);
+  --leaf-segmented-muted-color: var(--leaf-color-text-muted);
+}
+
+// A spotlight must obscure the surrounding page more than a blurred dialog.
+@mixin overlay-family($kind: dialog) {
+  @if $kind == dialog {
+    --leaf-overlay-background: rgb(0 0 0 / 10%);
+    --leaf-overlay-fallback-background: rgb(0 0 0 / 24%);
+  } @else if $kind == spotlight {
+    --leaf-overlay-background: rgb(0 0 0 / 45%);
+  } @else {
+    @error "Unknown overlay family: #{$kind}.";
+  }
+}
+
+// Transparent range spans are distinct from opaque, persistent selections.
+@mixin calendar-selection-family {
+  --leaf-calendar-range-background: var(--leaf-color-primary-alpha-12);
+  --leaf-calendar-selected-background: var(--leaf-color-primary-surface-5);
+  --leaf-calendar-selected-hover-background: var(--leaf-color-primary-surface-8);
+}
+
+// Halo intensity is shared by discrete inputs, draggable handles and drop targets.
+@mixin accent-halo-family {
+  --leaf-accent-halo-color: var(--leaf-color-primary-alpha-12);
+  --leaf-accent-halo-active-color: var(--leaf-color-primary-alpha-16);
+  --leaf-accent-halo-focus-color: var(--leaf-color-primary-alpha-20);
+}
+
 // The table family resolves its colors from the current table surface and text,
 // so component overrides and nested themes stay local to each table instance.
 @mixin table-family($component: table) {
@@ -165,6 +262,23 @@
   }
 }
 
+@mixin field-status($status) {
+  --leaf-field-rest-border: var(--leaf-field-color);
+  @if $status == error {
+    --leaf-field-color: var(--leaf-color-danger);
+
+    --leaf-field-color-border-30: var(--leaf-color-danger-border-30);
+  } @else if $status == warning {
+    --leaf-field-color: var(--leaf-color-warning);
+
+    --leaf-field-color-border-30: var(--leaf-color-warning-border-30);
+  } @else {
+    @error "Unknown field validation status: #{$status}.";
+  }
+
+  border-color: var(--leaf-field-color);
+}
+
 @mixin field($component: field, $focus: neutral) {
   @include control-size;
   @if $focus == primary {
@@ -174,13 +288,13 @@
   } @else {
     @error "Unknown field focus variant: #{$focus}.";
   }
-  --leaf-field-color-alpha-12: var(--leaf-color-primary-alpha-12);
+
   --leaf-field-color-border-30: color-mix(
     in srgb,
     var(--leaf-field-color) 30%,
     var(--leaf-color-border)
   );
-  --leaf-field-hover-color: var(--leaf-color-border-hover, var(--leaf-field-color));
+
   --leaf-field-border-width: var(
     --leaf-component-#{$component}-border-width,
     var(--leaf-border-width, 1px)
@@ -219,21 +333,11 @@
     box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
 
   &[data-status='error'] {
-    --leaf-field-rest-border: var(--leaf-field-color);
-    --leaf-field-color: var(--leaf-color-danger);
-    --leaf-field-color-alpha-12: var(--leaf-color-danger-alpha-12);
-    --leaf-field-color-border-30: var(--leaf-color-danger-border-30);
-    --leaf-field-hover-color: var(--leaf-field-color);
-    border-color: var(--leaf-field-color);
+    @include field-status(error);
   }
 
   &[data-status='warning'] {
-    --leaf-field-rest-border: var(--leaf-field-color);
-    --leaf-field-color: var(--leaf-color-warning);
-    --leaf-field-color-alpha-12: var(--leaf-color-warning-alpha-12);
-    --leaf-field-color-border-30: var(--leaf-color-warning-border-30);
-    --leaf-field-hover-color: var(--leaf-field-color);
-    border-color: var(--leaf-field-color);
+    @include field-status(warning);
   }
 
   &[data-disabled],

@@ -28,7 +28,7 @@
     "check:release": "node packages/react/scripts/check-release-notes.mjs",
     "format:scss": "prettier --write \"**/*.scss\"",
     "check:colors": "node packages/react/scripts/color-contract.mjs",
-    "test:colors": "node --test packages/react/scripts/color-contract.test.mjs"
+    "test:colors": "node --test packages/react/scripts/*color*.test.mjs"
   },
   "devDependencies": {
     "@babel/parser": "^7.29.9",

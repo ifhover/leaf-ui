@@ -217,7 +217,7 @@ $include-field-styles: true !default;
   width: var(--leaf-option-highlight-width, 0px);
   height: var(--leaf-option-highlight-height, var(--leaf-density-option-height));
   translate: var(--leaf-option-highlight-x, 0px) var(--leaf-option-highlight-y, 0px);
-  border: 1px solid var(--leaf-color-border-alpha-55);
+  border: 1px solid var(--leaf-color-divider);
   border-radius: var(--leaf-floating-option-radius);
   background: var(--leaf-color-option-hover);
   pointer-events: none;

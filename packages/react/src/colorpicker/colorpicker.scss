@@ -195,11 +195,12 @@
       repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
   }
   &__formats {
+    @include mixins.segmented-surface-family;
     @include geometry.nested-surface(color-picker-formats, var(--leaf-radius-sm), 3px, 1px);
     display: inline-flex;
     gap: 4px;
-    border: 1px solid var(--leaf-color-border);
-    background: var(--leaf-color-surface-muted);
+    border: 1px solid var(--leaf-segmented-border);
+    background: var(--leaf-segmented-background);
     margin: 0 0 8px;
     button {
       padding: 3px 8px;
@@ -222,40 +223,38 @@
         transform: scale(0.95);
       }
       &[aria-pressed='true'] {
-        background: var(--leaf-color-surface-raised);
+        background: var(--leaf-segmented-selected-background);
         color: var(--leaf-color-text);
         box-shadow: var(--leaf-shadow-xs);
       }
     }
   }
   &__input {
+    @include mixins.field('color-picker', 'primary');
+    --leaf-field-shadow: var(
+      --leaf-component-color-picker-shadow,
+      var(--leaf-control-shadow, var(--leaf-shadow-xs))
+    );
     box-sizing: border-box;
     width: 100%;
     min-height: var(--leaf-control-height);
     padding: 5px 9px;
-    border: 1px solid var(--leaf-color-border);
     border-radius: var(--leaf-radius-sm);
-    background: var(--leaf-color-surface);
-    color: var(--leaf-color-text);
     font: inherit;
     font-size: 12px;
     outline: none;
-    box-shadow: var(--leaf-shadow-xs);
     transition:
       border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:focus {
-      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      box-shadow: 0 0 0 3px var(--leaf-color-primary-alpha-12);
-    }
+
     &[aria-invalid='true'] {
-      border-color: var(--leaf-color-danger);
+      @include mixins.field-status(error);
     }
   }
   &__error {
     display: block;
     margin-top: 4px;
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
     font-size: 12px;
   }
   &__preset-label {

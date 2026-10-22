@@ -31,7 +31,8 @@
 | 内容表面           | `--leaf-color-surface`、`--leaf-color-surface-muted`、`--leaf-color-surface-raised`                                                     |
 | 结构边界           | `--leaf-color-border`、`--leaf-color-border-hover`、`--leaf-color-divider`                                                              |
 | 主色可读前景与指示 | `--leaf-color-primary-ink`、`--leaf-color-primary-indicator`、`--leaf-color-primary-focus`、`--leaf-color-primary-fill-border`          |
-| 实色前景           | `--leaf-color-on-primary`、`--leaf-color-on-danger`、`--leaf-color-on-warning`                                                          |
+| 状态可读文字       | `--leaf-color-success-ink`、`--leaf-color-danger-ink`、`--leaf-color-warning-ink`、`--leaf-color-info-ink`                              |
+| 实色前景           | `--leaf-color-on-primary`、`--leaf-color-on-success`、`--leaf-color-on-danger`、`--leaf-color-on-warning`、`--leaf-color-on-info`        |
 | 动作交互           | `--leaf-color-primary-active`、`--leaf-color-danger-active`，以及当前保留的 hover / ink-hover / ink-active 角色；是否使用由动作配方决定 |
 | 普通选项反馈       | `--leaf-color-option-hover`；不为每个列表再建 selected / hover 近似色                                                                   |
 | 字段边框与背景     | `field` 配方内部的 `--leaf-field-rest-border`、`--leaf-field-color`、`--leaf-field-background`；不是新的全局配置 API                    |
@@ -68,6 +69,29 @@ Input、Select、Textarea、InputNumber、TreeSelect、Cascader 与日期 / 时�
 
 Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。条纹、悬停和遮罩基于当前表格的表面与文字计算，不能替换成仅对默认白底近似的全局色。选中行在没有显式 `primarySoftColor` 时使用现有 `primary-surface-8`，内部展开 / 拖拽操作默认复用 `option-hover`；保留可选覆盖的优先级，不为补默认值生成新全局 token。
 
+### 跨组件的有限配方
+
+| 配方 | 责任与实际消费者 |
+| --- | --- |
+| `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、时间选择、导航、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中 |
+| `danger-soft-feedback-family` | 危险浅底反馈，供 Dropdown / Menu 危险操作、Form / Confirm 错误摘要、FileList 动作复用 |
+| `status-ink-family` / `status-label-family` | 五种语义的可读文字、浅底标签和实底前景；Typography / FileList / Tag 不再自行选择 `text-80` |
+| `panel-canvas-family` | Modal 与日期面板共用柔和画布 |
+| `segmented-surface-family` | Tabs 与 ColorPicker 格式切换共用轨道、选中底和弱文字 |
+| `overlay-family(dialog / spotlight)` | Modal / Drawer 共用普通遮罩与无模糊回退；Tour 保留更强的聚光遮罩 |
+| `calendar-selection-family` | Calendar 与日期选择共用范围透明底、整格选中底；不等于普通选项反馈 |
+| `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈 |
+
+配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 使用动作角色；Switch 未选中滑块使用弱文字色，选中滑块使用 `on-primary`，不能固定白色或机械使用暗色表面。
+
+### 可读颜色与兼容性
+
+本轮新增的全局角色仅限四个状态 `*-ink` 和 `on-success` / `on-info`。这些角色分别供文字和实色前景复用，不增加新的基础配置入口。基础品牌色与状态色保持不变；文字色在实际 surface、surface-muted 和对应浅底上计算，目标是普通文字 4.5:1。自定义实色的自动前景选择对比更高的黑或白，内置深色保留已验证的深色前景角色；显式 `onPrimaryColor` / `onDangerColor` 与组件覆盖优先，显式覆盖不保证自动满足对比度。
+
+CSS 表达式在 SSR 中保留响应式表达，挂载后解析实际颜色再派生；透明色或无法解析的输入不能承诺满足对比度。已有公开数字色阶保持原比例含义，不为了通过文字对比测试暗改 `text-80`，历史 warning 可读配方除外。默认色板现在有 150 个颜色变量，全局定义与可选覆盖入口的并集为 156 个；文档计数从运行时读取，不手写固定总数。
+
+Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和局部遮片有独立绘制责任，保留精确的局部例外。不能把相似颜色都抽成全局 token，也不能把 Badge / Tag 的固定白字或普通控件的重复混色当作例外。逐组件责任见 [迁移清单](packages/react/COLOR-MIGRATION.md)，实际静态结果见 [审计报告](packages/react/COLOR-AUDIT.md)。
+
 ## 新增变量准入
 
 新增全局颜色必须在审查中同时回答：
@@ -86,7 +110,7 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 
 - 用色检查必须覆盖全局派生定义和组件消费；新文件也必须扫描，不能只核对已有文件数量。
 - 组件不得绕过配方新增默认 HEX / RGB / HSL、颜色混合公式或百分比 token 消费。业务传入色、ColorPicker 色板、QR 前景背景、媒体和强制颜色模式属于可说明的例外，不能全仓库一刀切。
-- 存量例外登记为迁移债务，不代表符合目标规范。登记精确到文件和用法；新增或改变例外需要明确理由，不通过自动重建基线悄悄放行。
+- 未审查的存量用法登记为迁移债务，不代表符合目标规范；有独立视觉责任的局部例外需要逐项给出理由。两者都精确到文件、表达式和次数，不通过自动重建基线悄悄放行。
 - 公共 `_mixins.scss` 不是免检区：其中的混色、固定色和比例变量消费使用独立的已审查配方登记，新增表达式或复制消费也要复核。配方登记不算组件债务，不替代状态优先级的浏览器验证。
 - 静态检查不等于视觉验收。浏览器比较 Input / Select 在普通、悬停、聚焦 / 展开、校验和禁用时的最终边框；覆盖浅深主题、自定义基础色、嵌套主题和显式组件 / 状态覆盖，确认覆盖不会泄漏到同类组件。
 - 颜色生成器验证 CSS 表达式、SSR、对比度与兼容变量；修改默认生成结果时同步静态 palette 和设计 / Figma 导出。

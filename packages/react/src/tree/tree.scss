@@ -1,4 +1,6 @@
+@use '../styles/mixins' as mixins;
 .leaf-tree {
+  @include mixins.accent-soft-feedback-family;
   min-width: 0;
   color: var(--leaf-component-tree-color, var(--leaf-color-text));
   font: var(--leaf-component-tree-font-size, var(--leaf-font-size))/var(--leaf-line-height)
@@ -11,7 +13,7 @@
     width: var(--leaf-option-highlight-width, 0px);
     height: var(--leaf-option-highlight-height, var(--leaf-control-height));
     translate: var(--leaf-option-highlight-x, 0px) var(--leaf-option-highlight-y, 0px);
-    border: 1px solid var(--leaf-color-border-alpha-55);
+    border: 1px solid var(--leaf-color-divider);
     border-radius: var(--leaf-tree-option-radius, var(--leaf-radius-sm));
     background: var(--leaf-color-option-hover);
     pointer-events: none;
@@ -191,7 +193,7 @@
     opacity: 0.4;
   }
   &[data-drop='inside'] {
-    background: var(--leaf-color-primary-alpha-12);
+    background: var(--leaf-accent-soft-background);
     border-radius: var(--leaf-radius-sm);
   }
   &[data-drop='before']::before,
@@ -232,5 +234,5 @@
   border-radius: var(--leaf-radius);
   background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
-  box-shadow: 0 4px 20px #0002;
+  box-shadow: var(--leaf-shadow-md);
 }

@@ -1,6 +1,9 @@
 // Keep opacity on the backdrop itself. A translucent ancestor blocks its
 // backdrop sampling and would make the blur appear only after that fade ends.
-@mixin blur($mask, $fallback: rgba(8, 12, 18, 0.44)) {
+@mixin blur(
+  $mask,
+  $fallback: var(--leaf-overlay-fallback-background, var(--leaf-overlay-background))
+) {
   opacity: 1;
   backdrop-filter: blur(var(--leaf-backdrop-blur, 3px));
   transition:

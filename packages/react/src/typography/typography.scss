@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-typography {
   color: var(--leaf-color-text);
   font-family: var(--leaf-font-family);
@@ -11,16 +13,29 @@
   }
 }
 .leaf-text {
+  @include mixins.accent-soft-feedback-family;
+
   color: var(--leaf-color-text);
   font: inherit;
   line-height: var(--leaf-line-height);
   &--muted {
     color: var(--leaf-color-text-muted);
   }
-  @each $tone in primary, success, warning, danger {
-    &--#{$tone} {
-      color: var(--leaf-color-#{$tone});
-    }
+  &--primary {
+    @include mixins.status-ink-family(primary);
+    color: var(--leaf-status-ink);
+  }
+  &--success {
+    @include mixins.status-ink-family(success);
+    color: var(--leaf-status-ink);
+  }
+  &--warning {
+    @include mixins.status-ink-family(warning);
+    color: var(--leaf-status-ink);
+  }
+  &--danger {
+    @include mixins.status-ink-family(danger);
+    color: var(--leaf-status-ink);
   }
   &--strong {
     font-weight: 600;
@@ -58,13 +73,13 @@
   &__action {
     border: 0;
     background: transparent;
-    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+    color: var(--leaf-color-primary-ink);
     font: inherit;
     cursor: pointer;
     border-radius: var(--leaf-radius-sm);
     transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
-      background: var(--leaf-color-primary-alpha-8);
+      background: var(--leaf-accent-soft-background);
     }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
@@ -92,14 +107,14 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+  color: var(--leaf-color-primary-ink);
   text-decoration: none;
   font: inherit;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
   transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
   &:hover:not([aria-disabled]) {
-    color: var(--leaf-color-primary-text-85);
+    color: var(--leaf-color-primary-ink-hover);
   }
   &:focus-visible {
     outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));

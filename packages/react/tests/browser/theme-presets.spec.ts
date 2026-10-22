@@ -1,7 +1,7 @@
 import { TinyColor } from '@ctrl/tinycolor';
 import { expect, test } from '@playwright/test';
 
-test('steps stay transparent, avatars have one white edge, and hovered rows remain distinct from headers', async ({
+test('steps stay transparent, avatars have one surface edge, and hovered rows remain distinct from headers', async ({
   page,
 }) => {
   await page.goto('/?fixture=theme-presets&global');
@@ -58,7 +58,15 @@ test('steps stay transparent, avatars have one white edge, and hovered rows rema
       expect((await largeIcon.boundingBox())?.width).toBe(28);
       expect((await largeIcon.boundingBox())?.height).toBe(28);
       for (const avatar of await page.locator('.leaf-avatar-group > .leaf-avatar').all()) {
-        await expect(avatar).toHaveCSS('border-top-color', 'rgb(255, 255, 255)');
+        const surface = await avatar.evaluate((node) => {
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--leaf-color-surface)';
+          node.append(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        });
+        await expect(avatar).toHaveCSS('border-top-color', surface);
         await expect(avatar).toHaveCSS('border-top-width', '2px');
         await expect(avatar).toHaveCSS('box-shadow', 'none');
       }
@@ -117,7 +125,7 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
       await expect(page.getByRole('button', { name: 'Solid action', exact: true })).toHaveCSS(
         'color',
-        'rgb(255, 255, 255)',
+        'rgb(0, 0, 0)',
       );
       await expect
         .poll(async () => (await readFrames()).every((frame) => frame.width === '2px'))
@@ -182,11 +190,11 @@ test('CSS variable primary colors get readable labels and update their derived p
 }) => {
   await page.goto('/?fixture=theme-presets&global&css-primary');
   const solid = page.getByRole('button', { name: 'Solid action', exact: true });
-  await expect(solid).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(solid).toHaveCSS('color', 'rgb(0, 0, 0)');
   await expect(solid).toHaveCSS('background-color', 'rgb(255, 105, 0)');
   await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
   await expect(solid).toHaveCSS('background-color', 'rgb(29, 155, 240)');
-  await expect(solid).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(solid).toHaveCSS('color', 'rgb(0, 0, 0)');
 });
 
 test('presets theme controls and portals and retain values when switched', async ({ page }) => {

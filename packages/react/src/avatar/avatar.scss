@@ -9,7 +9,7 @@
   height: 40px;
   overflow: hidden;
   vertical-align: middle;
-  border: 2px solid #fff;
+  border: 2px solid var(--leaf-color-surface);
   color: var(--leaf-component-avatar-color, var(--leaf-color-text-muted));
   background: var(--leaf-component-avatar-background, var(--leaf-color-surface-muted));
   font: var(--leaf-font-weight) 15px/1 var(--leaf-font-family);

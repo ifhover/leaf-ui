@@ -287,7 +287,38 @@
     "--leaf-color-warning-surface-9": ["warning", "surface", 9],
     "--leaf-color-warning-text-80": ["warning", "text", 80]
   },
-  "reviewedChanges": [],
+  "reviewedChanges": [
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-success-ink",
+      "reason": "Readable success text is shared by Tag, Typography and FileList. Base success paint remains independent from brand color even when numerically equal."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-warning-ink",
+      "reason": "Readable warning text is shared by status labels, Typography and FileList. The old text-80 variable remains a compatibility numeric recipe."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-danger-ink",
+      "reason": "Readable danger text is shared by action labels, validation errors, Tag, Typography and FileList; base danger still paints borders and indicators."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-info-ink",
+      "reason": "Readable info text is shared by status labels and FileList, rather than creating per-component blue text variants."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-on-success",
+      "reason": "A semantic on-fill counterpart to on-primary/on-danger is required by the shared status-label recipe and Badge status palette; derived from existing success configuration, not a new configuration matrix."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-on-info",
+      "reason": "A semantic on-fill counterpart is required for info status labels and the Badge status palette; kept global for documented CSS consumption and generated static/runtime parity rather than per-component foreground heuristics."
+    }
+  ],
   "fieldFamily": {
     "consumers": [
       "autocomplete/autocomplete.scss",
@@ -311,788 +342,7 @@
       "treeselect/treeselect.scss": "tree-select"
     }
   },
-  "debt": {
-    "alert/alert.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-surface-35)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-10)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-15)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-7)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-danger-border-12)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-danger-surface-5)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-alpha-10)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-alpha-15)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-alpha-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-border-12)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-surface-5)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-alpha-10)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-alpha-15)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-alpha-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-border-12)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-surface-5)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-text-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-text-alpha-15)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-text-alpha-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-text-border-12)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-text-surface-5)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-10)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-15)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-warning-border-12)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-warning-surface-5)",
-          "count": 2
-        }
-      ]
-    },
-    "anchor/anchor.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-4)",
-          "count": 1
-        }
-      ]
-    },
-    "appbar/appbar.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-8)",
-          "count": 1
-        }
-      ]
-    },
-    "avatar/avatar.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 1
-        }
-      ]
-    },
-    "badge/badge.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 1
-        },
-        {
-          "expression": "rgb(255 255 255/16%)",
-          "count": 1
-        }
-      ]
-    },
-    "breadcrumb/breadcrumb.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-45)",
-          "count": 1
-        }
-      ]
-    },
-    "button/button.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-alpha-18)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-25)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-alpha-42)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-text-80)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-18)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-25)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-42)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/0.06)",
-          "count": 1
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)",
-          "count": 1
-        }
-      ]
-    },
-    "calendar/calendar.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-surface-70)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-5)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-surface-muted-alpha-45)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-text-muted-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-text-muted-surface-9)",
-          "count": 2
-        }
-      ]
-    },
-    "colorpicker/colorpicker.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-12)",
-          "count": 1
-        }
-      ],
-      "fieldFamilyBorders": [
-        {
-          "expression": "border-color:var(--leaf-color-danger)",
-          "count": 1
-        },
-        {
-          "expression": "border-color:var(--leaf-color-primary-indicator,var(--leaf-color-primary))",
-          "count": 1
-        },
-        {
-          "expression": "border:1px solid var(--leaf-color-border)",
-          "count": 1
-        }
-      ]
-    },
-    "commandpalette/commandpalette.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-alpha-60)",
-          "count": 1
-        }
-      ]
-    },
-    "drawer/drawer.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/0.38)",
-          "count": 1
-        }
-      ]
-    },
-    "dropdown/dropdown.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-surface-6)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-surface-8)",
-          "count": 2
-        }
-      ]
-    },
-    "filelist/filelist.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-surface-4)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-surface-9)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-text-80)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-surface-5)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-14)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-5)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-9)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-success-text-80)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-surface-5)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-text-80)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "#111",
-          "count": 1
-        }
-      ]
-    },
-    "form/form.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-surface-6)",
-          "count": 1
-        }
-      ]
-    },
-    "inputnumber/inputnumber.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-surface-10)",
-          "count": 1
-        }
-      ]
-    },
-    "inputotp/inputotp.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-12)",
-          "count": 1
-        }
-      ]
-    },
-    "loading/loading.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-surface-alpha-55)",
-          "count": 1
-        }
-      ]
-    },
-    "loadingbar/loadingbar.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-55)",
-          "count": 1
-        }
-      ]
-    },
-    "menu/menu.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-surface-6)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-4)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/0.08)",
-          "count": 1
-        },
-        {
-          "expression": "rgba(0,0,0,0.04)",
-          "count": 1
-        },
-        {
-          "expression": "rgba(0,0,0,0.08)",
-          "count": 3
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))",
-          "count": 1
-        }
-      ]
-    },
-    "modal/modal.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-surface-35)",
-          "count": 2
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/10%)",
-          "count": 1
-        },
-        {
-          "expression": "rgb(0 0 0/24%)",
-          "count": 1
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)60%,var(--leaf-color-surface))",
-          "count": 1
-        }
-      ]
-    },
-    "pagination/pagination.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-border-24)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-8)",
-          "count": 1
-        }
-      ]
-    },
-    "popconfirm/popconfirm.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-alpha-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-info-alpha-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-success-alpha-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-8)",
-          "count": 1
-        }
-      ]
-    },
-    "popover/popover.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-alpha-85)",
-          "count": 2
-        }
-      ]
-    },
-    "progress/progress.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "rgb(255 255 255/0.35)",
-          "count": 1
-        }
-      ]
-    },
-    "qrcode/qrcode.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-surface-alpha-90)",
-          "count": 1
-        }
-      ]
-    },
-    "rate/rate.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "#ffc53d",
-          "count": 1
-        }
-      ]
-    },
-    "rate/rate.tsx": {
-      "hardcodedColors": [
-        {
-          "expression": "#ef5350",
-          "count": 1
-        },
-        {
-          "expression": "#f49b23",
-          "count": 1
-        },
-        {
-          "expression": "#ffc53d",
-          "count": 1
-        }
-      ]
-    },
-    "shared/_floating.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-alpha-55)",
-          "count": 1
-        }
-      ]
-    },
-    "shared/calendar.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-12)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-surface-muted-alpha-45)",
-          "count": 1
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)60%,var(--leaf-color-surface))",
-          "count": 1
-        }
-      ]
-    },
-    "skeleton/skeleton.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-text-subtle-alpha-9)",
-          "count": 1
-        }
-      ]
-    },
-    "slider/slider.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-12)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-16)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-20)",
-          "count": 2
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/7%)",
-          "count": 1
-        }
-      ]
-    },
-    "splitter/splitter.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-surface-28)",
-          "count": 1
-        }
-      ]
-    },
-    "switch/switch.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-surface-muted-border-65)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 1
-        },
-        {
-          "expression": "rgb(0 0 0/14%)",
-          "count": 1
-        },
-        {
-          "expression": "rgb(0 0 0/15%)",
-          "count": 1
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-text)4%,var(--leaf-switch-track-background))",
-          "count": 1
-        },
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-text)8%,var(--leaf-switch-track-background))",
-          "count": 1
-        }
-      ]
-    },
-    "tabs/tabs.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-alpha-65)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 1
-        }
-      ],
-      "mixFormulas": [
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)75%,var(--leaf-color-border))",
-          "count": 1
-        },
-        {
-          "expression": "color-mix(in srgb,var(--leaf-color-text-muted)72%,var(--leaf-color-surface))",
-          "count": 2
-        }
-      ]
-    },
-    "tag/tag.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-danger-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-danger-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-info-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-info-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-10)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-8)",
-          "count": 2
-        },
-        {
-          "expression": "var(--leaf-color-success-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-success-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-surface-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-text-80)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 2
-        },
-        {
-          "expression": "rgba(255,255,255,0.1)",
-          "count": 1
-        }
-      ]
-    },
-    "theme.ts": {
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/${theme.elevation === 'soft' ? '.08':'.16'})",
-          "count": 1
-        }
-      ]
-    },
-    "timepicker/timepicker.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-15)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-9)",
-          "count": 1
-        }
-      ]
-    },
-    "tour/tour.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "rgb(0 0 0/0.45)",
-          "count": 2
-        }
-      ]
-    },
-    "transfer/transfer.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-surface-8)",
-          "count": 1
-        }
-      ]
-    },
-    "tree/tree.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-border-alpha-55)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-alpha-12)",
-          "count": 1
-        }
-      ],
-      "hardcodedColors": [
-        {
-          "expression": "#0002",
-          "count": 1
-        }
-      ]
-    },
-    "typography/typography.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-8)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-text-85)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-warning-alpha-16)",
-          "count": 1
-        }
-      ]
-    },
-    "upload/upload.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-10)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-7)",
-          "count": 1
-        },
-        {
-          "expression": "var(--leaf-color-primary-surface-8)",
-          "count": 1
-        }
-      ]
-    }
-  },
+  "debt": {},
   "exceptions": {
     "colorpicker/colorpicker.scss": {
       "hardcodedColors": [
@@ -1169,11 +419,6 @@
           "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
         },
         {
-          "expression": "border:1px solid var(--leaf-color-border)",
-          "count": 1,
-          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
-        },
-        {
           "expression": "border:2px solid #fff",
           "count": 3,
           "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
@@ -1182,6 +427,11 @@
           "expression": "border:2px solid var(--leaf-color-surface)",
           "count": 1,
           "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:1px solid var(--leaf-segmented-border)",
+          "count": 1,
+          "reason": "The internal format switch paints its segmented-family track, not the outer field shell."
         }
       ]
     },
@@ -1341,15 +591,6 @@
         }
       ]
     },
-    "shared/_backdrop.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "rgba(8,12,18,0.44)",
-          "count": 1,
-          "reason": "Shared backdrop recipe keeps a fixed scrim fallback for environments without a theme color."
-        }
-      ]
-    },
     "autocomplete/autocomplete.scss": {
       "fieldFamilyBorders": [
         {
@@ -1452,6 +693,153 @@
           "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
         }
       ]
+    },
+    "button/button.scss": {
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)",
+          "count": 1,
+          "reason": "Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color."
+        }
+      ]
+    },
+    "filelist/filelist.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#111",
+          "count": 1,
+          "reason": "Fixed letterboxing belongs to the video content, not the regional theme surface."
+        }
+      ]
+    },
+    "loading/loading.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-55)",
+          "count": 1,
+          "reason": "A busy overlay allows the obscured content to remain visible; not an opaque surface or interactive option."
+        }
+      ]
+    },
+    "loadingbar/loadingbar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-55)",
+          "count": 1,
+          "reason": "Glow around the progress indicator is an optical effect; it does not define label or selection paint."
+        }
+      ]
+    },
+    "menu/menu.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.08)",
+          "count": 1,
+          "reason": "Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract."
+        },
+        {
+          "expression": "rgb(0 0 0/8%)",
+          "count": 1,
+          "reason": "One private translucent neutral feedback recipe shared by default Menu hover, press and selection; preserves exact white-canvas equivalence and is not an ordinary option-row default."
+        },
+        {
+          "expression": "rgba(0,0,0,0.04)",
+          "count": 1,
+          "reason": "Raised Menu press uses a lighter transient layer than default feedback, preserving its established motion/paint contract."
+        }
+      ],
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))",
+          "count": 1,
+          "reason": "Menu unselected labels soften the current inherited navigation ink; a private appearance recipe, not a new global text tier."
+        }
+      ],
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 1,
+          "reason": "Primary Menu appearance retains its established translucent persistent-selection layer."
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-4)",
+          "count": 1,
+          "reason": "Primary Menu press clears its persistent layer and uses a lighter transient feedback layer."
+        }
+      ]
+    },
+    "progress/progress.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(255 255 255/0.35)",
+          "count": 1,
+          "reason": "The moving light band is a shine effect over the progress fill, not a foreground/background role."
+        }
+      ]
+    },
+    "qrcode/qrcode.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-90)",
+          "count": 1,
+          "reason": "Invalid/loading QR scrim deliberately obscures machine-readable content more strongly than a generic busy overlay."
+        }
+      ]
+    },
+    "rate/rate.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "Rating gold is an independent rating semantic, not warning feedback."
+        }
+      ]
+    },
+    "rate/rate.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "#ef5350",
+          "count": 1,
+          "reason": "Public colorByValue default belongs to the rating scale, not danger status feedback."
+        },
+        {
+          "expression": "#f49b23",
+          "count": 1,
+          "reason": "Public colorByValue default belongs to the rating scale, not warning status feedback."
+        },
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "Public colorByValue gold is the same documented rating default, not a theme status alias."
+        }
+      ]
+    },
+    "skeleton/skeleton.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-text-subtle-alpha-9)",
+          "count": 1,
+          "reason": "A moving skeleton highlight is an optical loading effect, not a readable text tier."
+        }
+      ]
+    },
+    "theme.ts": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/${theme.elevation === 'soft' ? '.08':'.16'})",
+          "count": 1,
+          "reason": "Infrastructure generates the existing soft/strong elevation shadow inputs; this is not per-component paint."
+        }
+      ]
+    },
+    "typography/typography.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-warning-alpha-16)",
+          "count": 1,
+          "reason": "Inline mark highlighting annotates document content; it is distinct from warning feedback and status-label surfaces."
+        }
+      ]
     }
   },
   "risks": {
@@ -1461,76 +849,165 @@
     "hardcodedColors": [
       {
         "expression": "rgb(0 0 0/0.04)",
-        "count": 1
+        "count": 1,
+        "reason": "Shared Card/Table secondary resting shadow."
       },
       {
         "expression": "rgb(0 0 0/0.045)",
-        "count": 1
+        "count": 1,
+        "reason": "Table pinned-column optical shadow."
       },
       {
         "expression": "rgb(0 0 0/0.05)",
-        "count": 1
+        "count": 1,
+        "reason": "Shared Card/Table primary resting shadow."
+      },
+      {
+        "expression": "rgb(0 0 0/10%)",
+        "count": 1,
+        "reason": "Shared blurred-dialog backdrop."
+      },
+      {
+        "expression": "rgb(0 0 0/24%)",
+        "count": 1,
+        "reason": "Shared dialog backdrop fallback when blur is unavailable."
+      },
+      {
+        "expression": "rgb(0 0 0/45%)",
+        "count": 1,
+        "reason": "Spotlight mask must obscure non-target content."
       }
     ],
     "mixFormulas": [
       {
+        "expression": "color-mix(in srgb,currentColor 10%,transparent)",
+        "count": 1,
+        "reason": "Status-label close and checkable feedback share a foreground-relative tint."
+      },
+      {
         "expression": "color-mix(in srgb,var(--leaf-color-divider)70%,#{$surface})",
-        "count": 1
+        "count": 1,
+        "reason": "Card/Table softened frames follow their actual local surface."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-color-primary)3%,var(--leaf-table-surface))",
-        "count": 1
+        "count": 1,
+        "reason": "Table hover follows component-local surface."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)60%,var(--leaf-color-surface))",
+        "count": 1,
+        "reason": "Modal and all inset picker canvases share one formula."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)75%,var(--leaf-color-border))",
+        "count": 1,
+        "reason": "Tabs and ColorPicker segmented tracks share one formula."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))",
-        "count": 1
+        "count": 1,
+        "reason": "Neutral-focus field variant preserves existing interactions."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",
-        "count": 1
+        "count": 1,
+        "reason": "Shared field internal separator follows semantic validation color."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
-        "count": 1
+        "count": 1,
+        "reason": "Table loading scrim follows the actual table surface with a compatibility override."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
-        "count": 1
+        "count": 1,
+        "reason": "Table stripes follow component-local text and surface."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-text)80%,var(--leaf-table-surface))",
-        "count": 1
+        "count": 1,
+        "reason": "Table header ink follows component-local text and surface."
       }
     ],
     "derivedTokenUsages": [
       {
-        "expression": "var(--leaf-color-danger-alpha-12)",
-        "count": 1
+        "expression": "var(--leaf-color-danger-border-30)",
+        "count": 1,
+        "reason": "Shared error field internal separator."
       },
       {
-        "expression": "var(--leaf-color-danger-border-30)",
-        "count": 1
+        "expression": "var(--leaf-color-danger-surface-6)",
+        "count": 1,
+        "reason": "Shared danger-soft feedback resting/candidate tint."
+      },
+      {
+        "expression": "var(--leaf-color-danger-surface-8)",
+        "count": 2,
+        "reason": "Danger-soft pressed feedback and danger status-label surface."
+      },
+      {
+        "expression": "var(--leaf-color-info-surface-8)",
+        "count": 1,
+        "reason": "Info status-label surface."
       },
       {
         "expression": "var(--leaf-color-primary-alpha-12)",
-        "count": 1
+        "count": 2,
+        "reason": "Calendar range spans and control halo have distinct transparency responsibilities."
+      },
+      {
+        "expression": "var(--leaf-color-primary-alpha-16)",
+        "count": 1,
+        "reason": "Shared active control halo."
+      },
+      {
+        "expression": "var(--leaf-color-primary-alpha-20)",
+        "count": 1,
+        "reason": "Shared keyboard control halo."
+      },
+      {
+        "expression": "var(--leaf-color-primary-border-24)",
+        "count": 1,
+        "reason": "Shared branded soft feedback border."
+      },
+      {
+        "expression": "var(--leaf-color-primary-surface-5)",
+        "count": 1,
+        "reason": "Calendar full-cell selected surface retains its established visual hierarchy."
       },
       {
         "expression": "var(--leaf-color-primary-surface-8)",
-        "count": 1
+        "count": 4,
+        "reason": "Branded soft feedback, calendar stronger selection, status labels and optional Table selected fallback."
+      },
+      {
+        "expression": "var(--leaf-color-success-surface-8)",
+        "count": 1,
+        "reason": "Success status-label surface."
       },
       {
         "expression": "var(--leaf-color-surface-alpha-80)",
-        "count": 1
-      },
-      {
-        "expression": "var(--leaf-color-warning-alpha-12)",
-        "count": 1
+        "count": 1,
+        "reason": "Historical optional Table scrim compatibility input, with a local fallback."
       },
       {
         "expression": "var(--leaf-color-warning-border-30)",
-        "count": 1
+        "count": 1,
+        "reason": "Shared warning field internal separator."
+      },
+      {
+        "expression": "var(--leaf-color-warning-surface-8)",
+        "count": 1,
+        "reason": "Warning status-label surface."
       }
     ]
+  },
+  "migrationReview": {
+    "branch": "0.9.0",
+    "componentInventory": "packages/react/COLOR-MIGRATION.md",
+    "policy": "No unclassified component debt. Existing local effects and private Menu appearances are responsibility-specific exceptions, not reusable component defaults. Retired allowances are removed.",
+    "originalDebtOccurrences": 184,
+    "reviewedLocalOccurrences": 20
   }
 }

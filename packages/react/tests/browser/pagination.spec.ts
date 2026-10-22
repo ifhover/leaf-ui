@@ -37,7 +37,7 @@ for (const appearance of ['light', 'dark']) {
     await candidate.hover();
     await expect(candidate).toHaveCSS(
       'border-color',
-      await color(outline, '--leaf-color-primary-hover'),
+      await color(outline, '--leaf-color-primary-ink-hover'),
     );
     const candidateColor = await candidate.evaluate((node) => getComputedStyle(node).color);
     const before = await candidate.boundingBox();
@@ -48,7 +48,7 @@ for (const appearance of ['light', 'dark']) {
       expect(await candidate.boundingBox()).toEqual(before);
       await expect(candidate).toHaveCSS(
         'border-color',
-        await color(outline, '--leaf-color-primary-active'),
+        await color(outline, '--leaf-color-primary-ink-active'),
       );
     } finally {
       await page.mouse.up();

@@ -1,5 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-upload {
+  @include mixins.accent-soft-feedback-family;
+  @include mixins.accent-halo-family;
   width: 100%;
   min-width: 0;
   color: var(--leaf-component-upload-color, var(--leaf-color-text));
@@ -63,9 +65,10 @@
     }
   }
   &[data-dragging] &__dropzone {
-    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    background: var(--leaf-color-primary-surface-7);
-    box-shadow: 0 0 0 4px var(--leaf-color-primary-alpha-10);
+    border-color: var(--leaf-accent-soft-border);
+    background: var(--leaf-accent-soft-background);
+    // Keep the shared halo role distinct from the solid keyboard focus outline.
+    box-shadow: 0 0 0 4px var(--leaf-accent-halo-color);
   }
   &__symbol {
     display: grid;
@@ -84,7 +87,7 @@
   &__dropzone:hover:not(:disabled) &__symbol,
   &[data-dragging] &__symbol {
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    background: var(--leaf-color-primary-surface-8);
+    background: var(--leaf-accent-soft-background);
     transform: translateY(-2px);
   }
   &__dropzone:active:not(:disabled) &__symbol {
@@ -100,7 +103,7 @@
   &__errors {
     margin: 8px 0;
     padding-inline-start: 20px;
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
     font-size: var(--leaf-font-size-sm);
   }
   > .leaf-file-list {

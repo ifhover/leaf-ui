@@ -166,21 +166,21 @@ for (const appearance of ['light', 'dark'] as const) {
       const pinnedViewport = pinnedTable.locator(
         'xpath=ancestor::*[contains(@class, "leaf-table__viewport")][1]',
       );
+      await pinnedTable.scrollIntoViewIfNeeded();
       await pinnedViewport.evaluate((node) => {
         node.scrollLeft = (node.scrollWidth - node.clientWidth) / 2;
       });
       await expect
-        .poll(async () =>
-          colorDistance(
-            pinShadowColor(
-              await pinnedTable
-                .locator('tbody td[data-pinned="start"][data-pin-edge]')
-                .first()
-                .evaluate((node) => getComputedStyle(node, '::after').backgroundImage),
-            ),
-            [0, 0, 0, 0.045],
-          ),
-        )
+        .poll(async () => {
+          const image = await pinnedTable
+            .locator('tbody td[data-pinned="start"][data-pin-edge]')
+            .first()
+            .evaluate((node) => getComputedStyle(node, '::after').backgroundImage);
+          // Wait for the scroll-edge observer before parsing the painted gradient.
+          return image === 'none'
+            ? Number.POSITIVE_INFINITY
+            : colorDistance(pinShadowColor(image), [0, 0, 0, 0.045]);
+        })
         .toBeLessThanOrEqual(1.5);
 
       const actionTable = table(page, 'Default action table color contract');

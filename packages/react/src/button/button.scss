@@ -1,6 +1,7 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-button {
+  @include mixins.danger-soft-feedback-family;
   --leaf-button-border-width: var(
     --leaf-component-button-border-width,
     var(--leaf-border-width, 1px)
@@ -9,13 +10,9 @@
   --leaf-button-ink: var(--leaf-color-primary-ink, var(--leaf-button-color));
   --leaf-button-ink-active: var(--leaf-color-primary-ink-active, var(--leaf-button-active));
   --leaf-button-fill-border: var(--leaf-color-primary-fill-border, transparent);
-  --leaf-button-color-alpha-18: var(--leaf-color-primary-alpha-18);
-  --leaf-button-color-alpha-25: var(--leaf-color-primary-alpha-25);
-  --leaf-button-color-alpha-42: var(--leaf-color-primary-alpha-42);
   --leaf-button-on-color: var(--leaf-color-on-primary);
   --leaf-focus-color: var(--leaf-color-text-muted);
   --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
-  --leaf-button-border: var(--leaf-color-primary-border, var(--leaf-button-color-alpha-42));
   box-sizing: border-box;
   display: inline-flex;
   position: relative;
@@ -98,15 +95,11 @@
 
   &--danger {
     --leaf-button-color: var(--leaf-color-danger);
-    --leaf-button-ink: var(--leaf-button-color);
-    --leaf-button-ink-active: var(--leaf-button-active);
+    --leaf-button-ink: var(--leaf-color-danger-ink);
+    --leaf-button-ink-active: var(--leaf-color-danger-ink);
     --leaf-button-fill-border: transparent;
-    --leaf-button-color-alpha-18: var(--leaf-color-danger-alpha-18);
-    --leaf-button-color-alpha-25: var(--leaf-color-danger-alpha-25);
-    --leaf-button-color-alpha-42: var(--leaf-color-danger-alpha-42);
     --leaf-button-on-color: var(--leaf-color-on-danger);
     --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
-    --leaf-button-border: var(--leaf-button-color-alpha-42);
   }
 
   // Borderless actions are private controls used by composite components.
@@ -118,10 +111,10 @@
     }
   }
   &--danger#{&}--ghost {
-    color: var(--leaf-button-color);
+    color: var(--leaf-color-danger-ink);
     &:active:not(:disabled) {
-      color: var(--leaf-button-active);
-      background: var(--leaf-button-color-alpha-25);
+      color: var(--leaf-color-danger-ink);
+      background: var(--leaf-danger-soft-active-background);
     }
   }
 
@@ -177,7 +170,7 @@
     --leaf-button-rest-color: var(--leaf-color-text);
     --leaf-button-rest-background: var(--leaf-color-surface);
     --leaf-button-rest-border: var(--leaf-color-border);
-    --leaf-button-rest-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
+    --leaf-button-rest-shadow: var(--leaf-shadow-xs);
     --leaf-button-hover-color: var(--leaf-button-rest-color);
     --leaf-button-hover-background: var(--leaf-button-rest-background);
     --leaf-button-hover-border: var(--leaf-button-rest-border);
@@ -185,7 +178,7 @@
     --leaf-button-active-background: var(--leaf-button-rest-background);
     --leaf-button-active-border: var(--leaf-button-active);
     &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-color-danger-text-80, var(--leaf-button-color));
+      --leaf-button-rest-color: var(--leaf-color-danger-ink);
       --leaf-button-rest-border: var(--leaf-button-color);
       --leaf-button-hover-color: var(--leaf-button-rest-color);
       --leaf-button-hover-background: var(--leaf-button-rest-background);
@@ -206,6 +199,9 @@
     --leaf-button-active-color: var(--leaf-button-ink-active);
     --leaf-button-active-background: transparent;
     --leaf-button-active-border: transparent;
+    &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
+      text-decoration: underline;
+    }
   }
   &:is(&--solid, &--outline, &--link) {
     --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
@@ -352,12 +348,12 @@
 .leaf-split-button > .leaf-button--outline {
   --leaf-split-button-divider-color: var(
     --leaf-component-button-border-color,
-    var(--leaf-frame-border-color, var(--leaf-color-border))
+    var(--leaf-frame-border-color, var(--leaf-color-primary-border, var(--leaf-color-border)))
   );
   &.leaf-button--danger {
     --leaf-split-button-divider-color: var(
       --leaf-component-button-border-color,
-      var(--leaf-frame-border-color, var(--leaf-button-border))
+      var(--leaf-frame-border-color, var(--leaf-button-color))
     );
   }
   // The shared edge stays neutral while the outer border responds to each action.

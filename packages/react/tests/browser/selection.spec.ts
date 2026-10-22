@@ -182,7 +182,7 @@ for (const appearance of ['light', 'dark']) {
       );
       await expect(page.locator('.leaf-switch__thumb')).toHaveCSS(
         'background-color',
-        'rgb(255, 255, 255)',
+        await tokenColor(page.locator('.leaf-switch'), '--leaf-color-on-primary'),
       );
     });
 
@@ -248,7 +248,7 @@ for (const appearance of ['light', 'dark']) {
       await select.click();
       const selectPanel = page.locator('.leaf-select__panel');
       const neutral = await tokenColor(selectPanel, '--leaf-color-option-hover');
-      const primary = await tokenColor(selectPanel, '--leaf-color-primary-surface-9');
+      const primary = await tokenColor(selectPanel, '--leaf-color-primary-surface-8');
       await selectPanel.getByRole('option', { name: 'Bob', exact: true }).hover();
       await expect(selectPanel.locator('.leaf-floating__highlight')).toHaveCSS(
         'background-color',

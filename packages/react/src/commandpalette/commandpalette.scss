@@ -56,7 +56,7 @@
     inset-inline: 4px;
     height: var(--leaf-command-selection-height, var(--leaf-density-option-height));
     translate: 0 var(--leaf-command-selection-y, 0px);
-    border: 1px solid var(--leaf-color-border-alpha-60);
+    border: 1px solid var(--leaf-color-divider);
     border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     background: var(--leaf-color-option-hover);
     pointer-events: none;
@@ -85,7 +85,7 @@
   }
   &__error {
     margin: 10px 4px;
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
     font-size: var(--leaf-font-size-sm);
   }
 }

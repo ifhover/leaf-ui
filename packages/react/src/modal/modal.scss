@@ -1,5 +1,6 @@
 @use '../shared/backdrop';
 @use '../styles/dialog-sections';
+@use '../styles/mixins' as mixins;
 
 .leaf-modal-mask {
   --leaf-backdrop-blur: 12px;
@@ -17,6 +18,7 @@
   }
 }
 .leaf-modal-backdrop {
+  @include mixins.overlay-family;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -24,16 +26,13 @@
   padding: 0;
   border: 0;
   cursor: default;
-  background: rgb(0 0 0 / 10%);
-  @include backdrop.blur('.leaf-modal-mask', rgb(0 0 0 / 24%));
+  background: var(--leaf-overlay-background);
+  @include backdrop.blur('.leaf-modal-mask');
 }
 .leaf-modal {
   @include dialog-sections.sections(modal);
-  --leaf-modal-canvas-background: color-mix(
-    in srgb,
-    var(--leaf-color-surface-muted) 60%,
-    var(--leaf-color-surface)
-  );
+  @include mixins.panel-canvas-family;
+  --leaf-modal-canvas-background: var(--leaf-panel-canvas-background);
   --leaf-modal-card-inset: calc(var(--leaf-spacing) * 0.75);
   --leaf-modal-card-border-width: var(--leaf-border-width, 1px);
   --leaf-modal-card-body-inline-start: var(
@@ -176,8 +175,7 @@
       transform: translateY(2px);
     }
     > .leaf-modal__footer {
-      padding-block: 0
-        var(--leaf-component-modal-padding-bottom, calc(var(--leaf-spacing) * 1.25));
+      padding-block: 0 var(--leaf-component-modal-padding-bottom, calc(var(--leaf-spacing) * 1.25));
       padding-inline: var(--leaf-modal-card-outer-inline);
       background: transparent;
     }
@@ -204,10 +202,10 @@
       background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
       color: var(--leaf-color-text);
-      background: var(--leaf-color-border-surface-35);
+      background: var(--leaf-color-option-hover);
     }
     &:active {
-      background: var(--leaf-color-border-surface-35);
+      background: var(--leaf-color-option-hover);
     }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));

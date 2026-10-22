@@ -7,10 +7,11 @@
   --leaf-menu-canvas: var(--leaf-color-surface);
   --leaf-menu-hover-color: var(--leaf-menu-unselected-color);
   --leaf-menu-hover-opacity: 1;
-  --leaf-menu-hover-background: rgba(0, 0, 0, 0.08);
+  --leaf-menu-neutral-background: rgb(0 0 0 / 8%);
+  --leaf-menu-hover-background: var(--leaf-menu-neutral-background);
   --leaf-menu-selected-color: currentColor;
-  --leaf-menu-selected-background: rgba(0, 0, 0, 0.08);
-  --leaf-menu-active-background: rgba(0, 0, 0, 0.08);
+  --leaf-menu-selected-background: var(--leaf-menu-neutral-background);
+  --leaf-menu-active-background: var(--leaf-menu-neutral-background);
   --leaf-menu-selected-border: 0px solid transparent;
   --leaf-menu-selected-shadow: none;
   --leaf-menu-selected-clip: none;
@@ -91,15 +92,15 @@
     }
   }
   &:is([data-danger], .leaf-dropdown__danger) {
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
     &::before {
-      background: var(--leaf-color-danger-surface-6);
+      background: var(--leaf-danger-soft-background);
     }
     &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']) {
-      color: var(--leaf-color-danger-active);
+      color: var(--leaf-color-danger-ink);
     }
     &:active:not(:disabled):not([aria-disabled='true'])::before {
-      background: var(--leaf-color-danger-surface-8);
+      background: var(--leaf-danger-soft-active-background);
     }
   }
   &:disabled,
@@ -119,6 +120,7 @@
 
 .leaf-menu,
 .leaf-menu__popup {
+  @include mixins.danger-soft-feedback-family;
   @include appearance(default);
 }
 .leaf-menu--raised,

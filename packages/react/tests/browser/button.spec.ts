@@ -123,7 +123,7 @@ const appearance = (button: Locator) =>
     };
     return {
       accent: resolveColor('var(--leaf-button-color)'),
-      dangerText: resolveColor('var(--leaf-color-danger-text-80)'),
+      dangerText: resolveColor('var(--leaf-color-danger-ink)'),
       text: resolveColor('var(--leaf-color-text)'),
       color: style.color,
       background: style.backgroundColor,
@@ -201,6 +201,7 @@ for (const theme of ['light', 'dark']) {
       await button.scrollIntoViewIfNeeded();
       await page.mouse.move(0, 0);
       const original = await appearance(button);
+      expect(readability(original.color, original.backgroundRgb)).toBeGreaterThanOrEqual(4.5);
       expect(original.hover).not.toBe(original.active);
       await button.hover();
       expect(await appearance(button)).toEqual(original);

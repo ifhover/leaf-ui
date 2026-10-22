@@ -3,7 +3,7 @@
   padding: var(--leaf-component-popover-padding, 14px 16px);
   outline: none;
   overflow-wrap: anywhere;
-  border-color: var(--leaf-color-border-alpha-85);
+  border-color: var(--leaf-color-divider);
   &__title {
     margin-block-end: 6px;
     color: var(--leaf-color-text);
@@ -24,5 +24,5 @@
 }
 
 .leaf-popover {
-  @include mixins.floating-paint(popover, var(--leaf-color-border-alpha-85));
+  @include mixins.floating-paint(popover, var(--leaf-color-divider));
 }

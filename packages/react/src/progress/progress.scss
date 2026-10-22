@@ -28,6 +28,7 @@
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &[data-active] &__fill::after {
+    // The light band is a motion/readability effect, not a theme color role.
     content: '';
     position: absolute;
     inset-block: 0;
@@ -169,8 +170,4 @@
   .leaf-progress__fill::after {
     display: none;
   }
-}
-
-.leaf-progress .leaf-progress__arc--success {
-  stroke: var(--leaf-color-success);
 }

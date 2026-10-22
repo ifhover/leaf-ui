@@ -35,7 +35,7 @@
     align-self: stretch;
     flex-direction: column;
     border-inline-start: 1px solid var(--leaf-color-border);
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-option-hover);
     transition:
       border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
@@ -57,10 +57,10 @@
       }
       &:hover:not(:disabled) {
         color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-        background: var(--leaf-color-surface-muted);
+        background: var(--leaf-color-option-hover);
       }
       &:active:not(:disabled) {
-        background: var(--leaf-color-primary-surface-10);
+        background: var(--leaf-color-option-hover);
         svg {
           transform: scale(0.8);
         }

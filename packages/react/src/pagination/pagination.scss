@@ -1,6 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-pagination {
   @include mixins.control-size;
+  @include mixins.accent-soft-feedback-family;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -21,9 +22,9 @@
     transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
     box-sizing: border-box;
     border: var(--leaf-border-width, 1px) solid
-      var(--leaf-frame-border-color, var(--leaf-color-primary-border-24));
+      var(--leaf-frame-border-color, var(--leaf-accent-soft-border));
     border-radius: var(--leaf-radius);
-    background: var(--leaf-color-primary-surface-8);
+    background: var(--leaf-accent-soft-background);
     opacity: 0;
     &[data-visible='true'] {
       opacity: 1;

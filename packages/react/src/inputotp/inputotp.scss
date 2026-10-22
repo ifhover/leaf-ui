@@ -1,4 +1,6 @@
+@use '../styles/mixins' as mixins;
 .leaf-input-otp {
+  @include mixins.accent-halo-family;
   position: relative;
   display: inline-flex;
   max-width: 100%;
@@ -74,7 +76,7 @@
       --leaf-component-input-otp-focus-shadow,
       var(--leaf-component-input-otp-shadow, var(--leaf-control-shadow, var(--leaf-shadow-xs)))
     );
-    outline: 3px solid var(--leaf-color-focus, var(--leaf-color-primary-alpha-12));
+    outline: 3px solid var(--leaf-color-focus, var(--leaf-accent-halo-color));
     outline-offset: 0;
     transform: translateY(-1px);
   }

@@ -1,5 +1,6 @@
 .leaf-badge {
   --leaf-badge-color: var(--leaf-color-danger);
+  --leaf-badge-on-color: var(--leaf-color-on-danger);
   --leaf-badge-direction: 1;
   --leaf-badge-anchor-shift: -14px;
   &:dir(rtl) {
@@ -7,19 +8,24 @@
   }
   &[data-status='success'] {
     --leaf-badge-color: var(--leaf-color-success);
+    --leaf-badge-on-color: var(--leaf-color-on-success);
   }
   &[data-status='warning'] {
     --leaf-badge-color: var(--leaf-color-warning);
+    --leaf-badge-on-color: var(--leaf-color-on-warning);
   }
   &[data-status='danger'],
   &[data-status='error'] {
     --leaf-badge-color: var(--leaf-color-danger);
+    --leaf-badge-on-color: var(--leaf-color-on-danger);
   }
   &[data-status='info'] {
     --leaf-badge-color: var(--leaf-color-info);
+    --leaf-badge-on-color: var(--leaf-color-on-info);
   }
   &[data-status='default'] {
     --leaf-badge-color: var(--leaf-color-text-muted);
+    --leaf-badge-on-color: var(--leaf-color-surface);
   }
   position: relative;
   display: inline-flex;
@@ -36,14 +42,13 @@
     height: 20px;
     padding: 0 6px;
     border-radius: 100px;
-    color: #fff;
+    color: var(--leaf-badge-on-color);
     background: var(--leaf-badge-color);
     font-size: 11px;
     line-height: 1;
     font-weight: 500;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%);
     transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__indicator--dot {

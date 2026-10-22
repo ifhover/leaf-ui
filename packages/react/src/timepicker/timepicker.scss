@@ -3,6 +3,7 @@
 
 .leaf-time-picker {
   &__panel {
+    @include mixins.accent-soft-feedback-family;
     min-width: 240px;
     --leaf-surface-padding: 0px;
     @each $side in top, right, bottom, left {
@@ -77,9 +78,9 @@
     top: 0;
     height: var(--leaf-time-selection-height, var(--leaf-density-option-height));
     translate: 0 var(--leaf-time-selection-y, 0px);
-    border: 1px solid var(--leaf-color-primary-alpha-15);
+    border: 1px solid var(--leaf-accent-soft-border);
     border-radius: var(--leaf-floating-option-radius);
-    background: var(--leaf-color-primary-surface-9);
+    background: var(--leaf-accent-soft-background);
     pointer-events: none;
     transition:
       translate var(--leaf-motion-duration) var(--leaf-motion-spring),

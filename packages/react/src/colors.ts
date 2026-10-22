@@ -4,12 +4,15 @@ import { colorRecipes } from './color-recipes';
 export const defaultColors = {
   light: {
     primary: '#1e964f',
-    'on-primary': '#ffffff',
+    'on-primary': '#000000',
     danger: '#dd3f2e',
-    'on-danger': '#ffffff',
+    'on-danger': '#000000',
     warning: '#d38b11',
+    'on-warning': '#202024',
     info: '#1677ff',
+    'on-info': '#000000',
     success: '#1e964f',
+    'on-success': '#000000',
     text: '#202020',
     'text-muted': '#707070',
     surface: '#ffffff',
@@ -22,8 +25,11 @@ export const defaultColors = {
     danger: '#ef8585',
     'on-danger': '#381818',
     warning: '#ffc53d',
+    'on-warning': '#202024',
     info: '#69b1ff',
+    'on-info': '#11271a',
     success: '#83cf9e',
+    'on-success': '#11271a',
     text: '#ededed',
     'text-muted': '#aaaaaa',
     surface: '#1c1c1c',
@@ -32,17 +38,22 @@ export const defaultColors = {
   },
 };
 
-/** Prefer white labels at 2.8:1 contrast; brighter fills use black unless explicitly overridden. */
+/** Choose the higher-contrast black or white label unless the caller supplies another value. */
 export function primaryForeground(color: string) {
   if (cssColorExpression(color) || !new TinyColor(color).isValid) return undefined;
-  return readability(color, '#ffffff') >= 2.8 ? '#ffffff' : '#000000';
+  return readability(color, '#000000') >= readability(color, '#ffffff') ? '#000000' : '#ffffff';
 }
 
 const cssColorExpression = (color: string) =>
   /^(?:var|color-mix|light-dark|oklch|oklab|lab|lch|color)\(/i.test(color);
 
 /** Derive visible ink/indicators without altering the brand fill or supplied theme. */
-function visibleDarkColor(color: string, backgrounds: string[], minimum: number) {
+export function readableColor(
+  color: string,
+  backgrounds: string[],
+  minimum = 4.5,
+  appearance: 'light' | 'dark' = 'light',
+) {
   if ([color, ...backgrounds].some((value) => cssColorExpression(value))) return color;
   const primary = new TinyColor(color);
   const surfaces = backgrounds.map((value) => new TinyColor(value));
@@ -50,20 +61,40 @@ function visibleDarkColor(color: string, backgrounds: string[], minimum: number)
     return color;
   const contrasts = (candidate: string) =>
     backgrounds.every((background) => readability(candidate, background) >= minimum);
-  if (contrasts(color) || !contrasts('#ffffff')) return color;
+  if (contrasts(color)) return color;
   const { h, s, l } = primary.toHsl();
-  let low = l;
-  let high = 1;
-  let result = '#ffffff';
-  for (let step = 0; step < 16; step++) {
-    const lightness = (low + high) / 2;
-    const candidate = new TinyColor({ h, s, l: lightness }).toHexString();
-    if (contrasts(candidate)) {
-      result = candidate;
-      high = lightness;
-    } else low = lightness;
+  const endpoints = appearance === 'dark' ? ['#ffffff', '#000000'] : ['#000000', '#ffffff'];
+  for (const endpoint of endpoints) {
+    if (!contrasts(endpoint)) continue;
+    const endpointLightness = endpoint === '#000000' ? 0 : 1;
+    if (endpointLightness < l) {
+      let low = endpointLightness;
+      let high = l;
+      let result = endpoint;
+      for (let step = 0; step < 16; step++) {
+        const lightness = (low + high) / 2;
+        const candidate = new TinyColor({ h, s, l: lightness }).toHexString();
+        if (contrasts(candidate)) {
+          result = candidate;
+          low = lightness;
+        } else high = lightness;
+      }
+      return result;
+    }
+    let low = l;
+    let high = endpointLightness;
+    let result = endpoint;
+    for (let step = 0; step < 16; step++) {
+      const lightness = (low + high) / 2;
+      const candidate = new TinyColor({ h, s, l: lightness }).toHexString();
+      if (contrasts(candidate)) {
+        result = candidate;
+        high = lightness;
+      } else low = lightness;
+    }
+    return result;
   }
-  return result;
+  return color;
 }
 
 /** sRGB mixing with premultiplied alpha, matching CSS transparent-color semantics. */
@@ -99,9 +130,8 @@ function interactionColor(color: string, foreground: string, toward: string, amo
     !new TinyColor(foreground).isValid
   )
     return undefined;
-  const baseContrast = readability(color, foreground);
-  // Keep a visible hover shade when a brand fill sits below normal-text AA.
-  const minimumContrast = Math.max(2.8, Math.min(4.5, baseContrast) - 0.1);
+  // Keep distinct interaction shades without sacrificing normal-text AA.
+  const minimumContrast = 4.5;
   for (const amount of amounts) {
     const candidate = mixColors(color, toward, 100 - amount);
     if (candidate && readability(candidate, foreground) >= minimumContrast) return candidate;
@@ -114,20 +144,27 @@ export function deriveColors(appearance: 'light' | 'dark', overrides: Record<str
   const colors: Record<string, string> = { ...defaultColors[appearance], ...overrides };
   const backgrounds = [colors.surface ?? '', colors['surface-muted'] ?? ''];
   const visible = (color: string, minimum: number) =>
-    appearance === 'dark' ? visibleDarkColor(color, backgrounds, minimum) : color;
+    readableColor(color, backgrounds, minimum, appearance);
   const primary = colors.primary ?? '';
-  const ink = visible(primary, 4.5);
   const indicator = visible(primary, 3);
   const dim = indicator !== primary;
   const hasPrimary = Boolean(overrides.primary);
   if (hasPrimary && !overrides['on-primary'])
     colors['on-primary'] =
       primaryForeground(colors.primary ?? '') ?? defaultColors[appearance]['on-primary'];
+  const hasDanger = Boolean(overrides.danger);
+  if (hasDanger && !overrides['on-danger'])
+    colors['on-danger'] =
+      primaryForeground(colors.danger ?? '') ?? defaultColors[appearance]['on-danger'];
+  for (const status of ['success', 'warning', 'info'] as const) {
+    if (!overrides[status] || overrides[`on-${status}`]) continue;
+    colors[`on-${status}`] =
+      primaryForeground(colors[status] ?? '') ?? defaultColors[appearance][`on-${status}`];
+  }
   colors['text-subtle'] ??= mixColors(colors['text-muted'], colors.surface, 92) ?? '#68686f';
   colors['surface-raised'] ??= mixColors(colors.surface, colors.text, 98) ?? '#ffffff';
   colors['border-hover'] ??= mixColors(colors.border, colors['text-muted'], 65) ?? '#e5e5e8';
   const result: Record<`--leaf-${string}`, string> = {};
-  result['--leaf-color-primary-ink'] = ink;
   result['--leaf-color-primary-indicator'] = indicator;
   result['--leaf-color-primary-fill-border'] = dim
     ? (mixColors(primary, colors.text, 80) ?? 'transparent')
@@ -137,8 +174,13 @@ export function deriveColors(appearance: 'light' | 'dark', overrides: Record<str
     : (mixColors(primary, 'transparent', 42) ?? 'transparent');
   if (hasPrimary) {
     result['--leaf-color-primary'] = colors.primary ?? '';
-    result['--leaf-color-on-primary'] =
-      colors['on-primary'] ?? defaultColors[appearance]['on-primary'];
+  }
+  if (hasDanger) {
+    result['--leaf-color-danger'] = colors.danger ?? '';
+  }
+  for (const status of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
+    result[`--leaf-color-on-${status}`] =
+      colors[`on-${status}`] ?? defaultColors[appearance][`on-${status}`];
   }
   for (const [key, [first, second, ratio]] of Object.entries(colorRecipes)) {
     const other =
@@ -151,10 +193,20 @@ export function deriveColors(appearance: 'light' | 'dark', overrides: Record<str
             : colors[second];
     const source = dim && first === 'primary' && second === 'surface' ? indicator : colors[first];
     const value = mixColors(source, other, ratio);
-    if (value)
-      result[key as `--leaf-${string}`] = key.startsWith('--leaf-color-primary-text-')
-        ? visible(value, 4.5)
-        : value;
+    if (value) result[key as `--leaf-${string}`] = value;
+  }
+  for (const status of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
+    const statusBackgrounds = [
+      colors.surface,
+      colors['surface-muted'],
+      result[`--leaf-color-${status}-surface-8`],
+    ].filter((color): color is string => Boolean(color));
+    result[`--leaf-color-${status}-ink`] = readableColor(
+      colors[status] ?? '',
+      statusBackgrounds,
+      4.5,
+      appearance,
+    );
   }
   for (const key of ['text-subtle', 'surface-raised', 'border-hover'])
     result[`--leaf-color-${key}`] = colors[key] ?? '';
@@ -181,8 +233,6 @@ export function deriveColors(appearance: 'light' | 'dark', overrides: Record<str
         break;
       }
     }
-    result['--leaf-color-on-warning'] =
-      readability(warning, '#202024') >= readability(warning, '#ffffff') ? '#202024' : '#ffffff';
   }
   for (const key of ['primary', 'danger']) {
     const color = colors[key];

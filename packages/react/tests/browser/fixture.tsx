@@ -48,6 +48,7 @@ import { CardTabsFixture } from './card-fixture';
 import { ColorFixture } from './color-fixture';
 import { ComponentDefaultsFixture } from './component-defaults-fixture';
 import { ControlHeightFixture } from './control-height-fixture';
+import { FamilyColorContractFixture } from './family-color-contract-fixture';
 import { FeedbackFixture } from './feedback-fixture';
 import { FieldColorContractFixture } from './field-color-contract-fixture';
 import { FileListFixture } from './file-list-fixture';
@@ -67,6 +68,7 @@ import { ScrollbarFixture } from './scrollbar-fixture';
 import { SearchSelectFixture } from './search-select-fixture';
 import { SelectWidthFixture } from './select-width-fixture';
 import { SelectionFixture } from './selection-fixture';
+import { SemanticColorContractFixture } from './semantic-color-contract-fixture';
 import { StatisticFixture } from './statistic-fixture';
 import { SurfaceFixture } from './surface-fixture';
 import { TableColorContractFixture } from './table-color-contract-fixture';
@@ -418,6 +420,8 @@ createRoot(root).render(
         <InternalScrollbarFixture />
       ) : fixture === 'table' ? (
         <TableFixture />
+      ) : fixture === 'family-color-contract' ? (
+        <FamilyColorContractFixture />
       ) : fixture === 'table-color-contract' ? (
         <TableColorContractFixture />
       ) : fixture === 'tags' ? (
@@ -444,6 +448,8 @@ createRoot(root).render(
         <SelectionFixture />
       ) : fixture === 'field-color-contract' ? (
         <FieldColorContractFixture />
+      ) : fixture === 'semantic-color-contract' ? (
+        <SemanticColorContractFixture />
       ) : fixture === 'statistic' ? (
         <StatisticFixture />
       ) : fixture === 'motion' ? (

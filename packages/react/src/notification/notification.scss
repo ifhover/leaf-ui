@@ -149,9 +149,6 @@
   @each $type in info, success, warning, danger, error {
     &--#{$type} {
       --leaf-notification-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
-      --leaf-notification-color-alpha-9: var(
-        --leaf-color-#{if(sass($type == error): danger; else: $type)}-alpha-9
-      );
     }
   }
 }

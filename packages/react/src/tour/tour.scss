@@ -1,3 +1,4 @@
+@use '../styles/mixins' as mixins;
 .leaf-tour-root {
   position: fixed;
   inset: 0;
@@ -71,9 +72,10 @@
     }
   }
   &__mask {
+    @include mixins.overlay-family(spotlight);
     position: fixed;
     inset: 0;
-    background: rgb(0 0 0 / 0.45);
+    background: var(--leaf-overlay-background);
     border-radius: var(--leaf-radius);
     pointer-events: none;
     z-index: var(--leaf-z-index-modal);
@@ -86,7 +88,7 @@
   border-radius: 0;
   > div {
     position: absolute;
-    background: rgb(0 0 0 / 0.45);
+    background: var(--leaf-overlay-background);
     pointer-events: auto;
     transition:
       top var(--leaf-motion-slow) var(--leaf-motion-spring),

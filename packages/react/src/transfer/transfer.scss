@@ -1,4 +1,6 @@
+@use '../styles/mixins' as mixins;
 .leaf-transfer {
+  @include mixins.accent-soft-feedback-family;
   display: inline-flex;
   width: 404px;
   max-width: 100%;
@@ -55,10 +57,10 @@
   border-radius: var(--leaf-radius-sm);
   transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-option-hover);
   }
   &[data-selected] {
-    background: var(--leaf-color-primary-surface-8);
+    background: var(--leaf-accent-soft-background);
   }
   .leaf-checkbox {
     display: flex;

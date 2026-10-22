@@ -1,6 +1,9 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-file-list {
+  @include mixins.accent-soft-feedback-family;
+  @include mixins.danger-soft-feedback-family;
+
   --leaf-file-visual-size: 40px;
   --leaf-file-action-size: var(--leaf-control-height-sm);
   box-sizing: border-box;
@@ -76,7 +79,7 @@
     }
     &:hover,
     &:focus-within {
-      background: var(--leaf-color-surface-muted);
+      background: var(--leaf-color-option-hover);
     }
     &:not(:has(.leaf-file-list__actions:not(:empty))) {
       grid-template-columns: var(--leaf-file-visual-size) minmax(0, 1fr);
@@ -84,7 +87,6 @@
   }
   &__icon {
     --leaf-file-accent: var(--leaf-color-text-muted);
-    --leaf-file-surface: var(--leaf-color-surface-muted);
     position: relative;
     grid-column: 1;
     grid-row: 1;
@@ -95,27 +97,27 @@
     box-sizing: border-box;
     border: 1px solid var(--leaf-color-border);
     border-radius: var(--leaf-radius-sm);
-    background: var(--leaf-file-surface);
+    background: var(--leaf-color-surface-muted);
     color: var(--leaf-file-accent);
     overflow: hidden;
     &[data-kind='image'],
     &[data-kind='sheet'] {
-      --leaf-file-accent: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      --leaf-file-surface: var(--leaf-color-primary-surface-5);
+      @include mixins.status-ink-family(primary);
+      --leaf-file-accent: var(--leaf-status-ink);
     }
     &[data-kind='document'],
     &[data-kind='video'] {
-      --leaf-file-accent: var(--leaf-color-info);
-      --leaf-file-surface: var(--leaf-color-info-surface-5);
+      @include mixins.status-ink-family(info);
+      --leaf-file-accent: var(--leaf-status-ink);
     }
     &[data-kind='audio'],
     &[data-kind='archive'] {
-      --leaf-file-accent: var(--leaf-color-warning-text-80);
-      --leaf-file-surface: var(--leaf-color-warning-surface-5);
+      @include mixins.status-ink-family(warning);
+      --leaf-file-accent: var(--leaf-status-ink);
     }
     &[data-extension='pdf'] {
-      --leaf-file-accent: var(--leaf-color-danger);
-      --leaf-file-surface: var(--leaf-color-danger-surface-4);
+      @include mixins.status-ink-family(danger);
+      --leaf-file-accent: var(--leaf-status-ink);
     }
     img {
       position: absolute;
@@ -203,12 +205,14 @@
       background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
       border-color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not(:disabled):not([aria-disabled='true']) {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: var(--leaf-color-primary-surface-9);
+      color: var(--leaf-color-primary-ink);
+      border-color: var(--leaf-accent-soft-border);
+      background: var(--leaf-accent-soft-background);
     }
     &:active:not(:disabled):not([aria-disabled='true']) {
       color: var(--leaf-color-primary-ink-active, var(--leaf-color-primary-active));
-      background: var(--leaf-color-primary-surface-14);
+      border-color: var(--leaf-accent-soft-border);
+      background: var(--leaf-accent-soft-background);
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -222,10 +226,17 @@
     }
   }
   &__actions &__remove {
-    &:hover:not(:disabled),
-    &:active:not(:disabled) {
-      color: var(--leaf-color-danger);
-      background: var(--leaf-color-danger-surface-9);
+    &:hover:not(:disabled):not([aria-disabled='true']) {
+      @include mixins.status-ink-family(danger);
+      color: var(--leaf-status-ink);
+      border-color: transparent;
+      background: var(--leaf-danger-soft-background);
+    }
+    &:active:not(:disabled):not([aria-disabled='true']) {
+      @include mixins.status-ink-family(danger);
+      color: var(--leaf-status-ink);
+      border-color: transparent;
+      background: var(--leaf-danger-soft-active-background);
     }
   }
   &__status {
@@ -243,13 +254,16 @@
       flex: none;
     }
     &[data-status='done'] {
-      color: var(--leaf-color-success-text-80);
+      @include mixins.status-ink-family(success);
+      color: var(--leaf-status-ink);
     }
     &[data-status='error'] {
-      color: var(--leaf-color-danger-text-80);
+      @include mixins.status-ink-family(danger);
+      color: var(--leaf-status-ink);
     }
     &[data-status='uploading'] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      @include mixins.status-ink-family(primary);
+      color: var(--leaf-status-ink);
     }
   }
   &__progress {
@@ -268,12 +282,13 @@
     }
   }
   &__error {
+    @include mixins.status-ink-family(danger);
     grid-column: 2;
     min-width: 0;
     margin: 4px 0 0;
     font-size: var(--leaf-font-size-sm);
     line-height: var(--leaf-line-height-sm);
-    color: var(--leaf-color-danger-text-80);
+    color: var(--leaf-status-ink);
     overflow-wrap: anywhere;
   }
   &__empty {
@@ -295,6 +310,7 @@
       width: 100%;
       max-height: 70vh;
       display: block;
+      // Static letterboxing belongs to the video content, not the theme surface.
       background: #111;
       border-radius: var(--leaf-radius);
     }

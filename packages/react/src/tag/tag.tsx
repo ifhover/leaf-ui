@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { defaultColors, mixColors } from '../colors';
+import { defaultColors, mixColors, primaryForeground, readableColor } from '../colors';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
@@ -52,33 +52,81 @@ export function Tag(rawProps: TagProps) {
   const present = usePresence(!closed, root);
   const custom = !presets.includes(color);
   const presetColor = color === 'default' ? 'primary' : color === 'error' ? 'danger' : color;
-  const surface = theme.tokens?.surfaceColor ?? defaultColors[theme.appearance ?? 'light'].surface;
+  const appearance = theme.appearance ?? 'light';
+  const surface = theme.tokens?.surfaceColor ?? defaultColors[appearance].surface;
+  const mutedSurface =
+    theme.tokens?.mutedSurfaceColor ?? defaultColors[appearance]['surface-muted'];
+  const customSurface = custom ? mixColors(color, surface, 8) : undefined;
   const customVariables = custom
     ? {
         '--leaf-tag-color': color,
         '--leaf-tag-color-alpha-10': mixColors(color, 'transparent', 10),
-        '--leaf-tag-color-surface-8': mixColors(color, surface, 8),
+        '--leaf-tag-color-surface-8': customSurface,
+        '--leaf-tag-ink': readableColor(
+          color,
+          [surface, mutedSurface, customSurface ?? surface],
+          4.5,
+          appearance,
+        ),
+        '--leaf-tag-solid-ink': primaryForeground(color) ?? defaultColors[appearance]['on-primary'],
       }
     : {};
   useEffect(() => {
     const node = root.current;
     if (!node || !custom) return;
+    let canvas: CanvasRenderingContext2D | null | undefined;
     const sync = () => {
       const probe = document.createElement('span');
-      probe.style.color = color;
       probe.hidden = true;
       node.append(probe);
-      const concrete = getComputedStyle(probe).color;
-      const background =
-        getComputedStyle(node).getPropertyValue('--leaf-color-surface').trim() || surface;
+      const resolve = (value: string) => {
+        probe.style.color = '';
+        probe.style.color = value;
+        let concrete = getComputedStyle(probe).color;
+        if (
+          /^(?:color|oklch|oklab|lab|lch)\(/i.test(concrete) &&
+          globalThis.CSS?.supports?.('color', concrete)
+        ) {
+          canvas ??= document
+            .createElement('canvas')
+            .getContext('2d', { willReadFrequently: true });
+          if (canvas) {
+            canvas.clearRect(0, 0, 1, 1);
+            canvas.fillStyle = concrete;
+            canvas.fillRect(0, 0, 1, 1);
+            const [r, g, b, a = 255] = canvas.getImageData(0, 0, 1, 1).data;
+            concrete = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+          }
+        }
+        return concrete;
+      };
+      const concrete = resolve(color);
+      const nodeStyle = getComputedStyle(node);
+      // Theme surfaces can themselves be CSS expressions; contrast needs their rendered sRGB.
+      const background = resolve(
+        nodeStyle.getPropertyValue('--leaf-color-surface').trim() || surface,
+      );
+      const muted = resolve(
+        nodeStyle.getPropertyValue('--leaf-color-surface-muted').trim() || mutedSurface,
+      );
       probe.remove();
-      for (const [suffix, target, weight] of [
-        ['alpha-10', 'transparent', 10],
-        ['surface-8', background, 8],
+      const softSurface = mixColors(concrete, background, 8);
+      for (const [key, value] of [
+        ['--leaf-tag-color-alpha-10', mixColors(concrete, 'transparent', 10)],
+        ['--leaf-tag-color-surface-8', softSurface],
+        [
+          '--leaf-tag-ink',
+          readableColor(concrete, [background, muted, softSurface ?? background], 4.5, appearance),
+        ],
+        ['--leaf-tag-solid-ink', primaryForeground(concrete)],
       ] as const) {
-        const value = mixColors(concrete, target, weight);
-        const key = `--leaf-tag-color-${suffix}`;
-        if (value && node.style.getPropertyValue(key) !== value) node.style.setProperty(key, value);
+        if (
+          !value ||
+          (style && Object.hasOwn(style, key)) ||
+          node.style.getPropertyValue(key) === value
+        )
+          continue;
+        node.style.setProperty(key, value);
       }
     };
     sync();
@@ -92,7 +140,7 @@ export function Tag(rawProps: TagProps) {
       ancestor = composedParent(ancestor);
     }
     return () => observer.disconnect();
-  }, [color, custom, surface]);
+  }, [appearance, color, custom, mutedSurface, style, surface]);
   if (!present) return null;
   return (
     <span

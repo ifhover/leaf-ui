@@ -2,6 +2,7 @@
 @use '../styles/geometry' as geometry;
 .leaf-tabs {
   @include mixins.control-size;
+  @include mixins.segmented-surface-family;
   min-width: 0;
   color: var(--leaf-component-tabs-color, var(--leaf-color-text));
   font: var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) /
@@ -257,12 +258,9 @@
     border: var(--leaf-surface-border) solid
       var(
         --leaf-component-tabs-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-border-alpha-65))
+        var(--leaf-frame-border-color, var(--leaf-segmented-border))
       );
-    background: var(
-      --leaf-component-tabs-background,
-      color-mix(in srgb, var(--leaf-color-surface-muted) 75%, var(--leaf-color-border))
-    );
+    background: var(--leaf-component-tabs-background, var(--leaf-segmented-background));
     box-shadow: var(--leaf-component-tabs-shadow, var(--leaf-control-shadow, none));
   }
   &--segmented &__track {
@@ -278,7 +276,7 @@
     border-radius: var(--leaf-surface-inner-radius);
     background: var(
       --leaf-component-tabs-indicator-background,
-      light-dark(#fff, var(--leaf-color-surface-raised))
+      var(--leaf-segmented-selected-background)
     );
     box-shadow: var(--leaf-component-tabs-indicator-shadow, var(--leaf-shadow-xs));
     &[data-animate='true'] {
@@ -426,7 +424,7 @@
   &--card &__tab {
     --leaf-tabs-tab-color: var(
       --leaf-component-tabs-muted-color,
-      color-mix(in srgb, var(--leaf-color-text-muted) 72%, var(--leaf-color-surface))
+      var(--leaf-segmented-muted-color)
     );
     --leaf-tabs-tab-hover-color: var(--leaf-color-text);
     --leaf-tabs-tab-active-color: var(--leaf-color-text);
@@ -439,7 +437,7 @@
   &--segmented &__tab {
     --leaf-tabs-tab-color: var(
       --leaf-component-tabs-muted-color,
-      color-mix(in srgb, var(--leaf-color-text-muted) 72%, var(--leaf-color-surface))
+      var(--leaf-segmented-muted-color)
     );
     --leaf-tabs-tab-hover-color: var(--leaf-color-text);
     --leaf-tabs-tab-active-color: var(--leaf-color-text);

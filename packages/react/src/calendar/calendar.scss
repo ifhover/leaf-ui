@@ -1,4 +1,6 @@
+@use '../styles/mixins' as mixins;
 .leaf-calendar-view {
+  @include mixins.calendar-selection-family;
   box-sizing: border-box;
   min-width: 0;
   width: 300px;
@@ -90,7 +92,7 @@
       background: var(--leaf-color-surface-muted);
     }
     &:active:not(:disabled) {
-      background: var(--leaf-color-text-muted-surface-9);
+      background: var(--leaf-color-option-hover);
     }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-text-muted);
@@ -202,7 +204,7 @@
   }
   &--full {
     width: 100%;
-    border-color: var(--leaf-color-border-surface-70);
+    border-color: var(--leaf-color-divider);
     .leaf-calendar {
       padding: 22px 24px 24px;
     }
@@ -287,7 +289,7 @@
       align-items: center;
       padding: 2px;
       border-radius: 999px;
-      background: var(--leaf-color-surface-muted-alpha-45);
+      background: var(--leaf-color-surface-muted);
     }
     .leaf-calendar__nav-group .leaf-date-picker__nav {
       width: 30px;
@@ -325,10 +327,10 @@
         opacity: 0.62;
       }
       &:hover {
-        background: var(--leaf-color-primary-surface-5);
+        background: var(--leaf-calendar-selected-background);
       }
       &:active {
-        background: var(--leaf-color-primary-surface-8);
+        background: var(--leaf-calendar-selected-hover-background);
       }
       &:focus-visible {
         outline: 2px solid var(--leaf-color-text-muted);
@@ -360,23 +362,23 @@
       border-radius: var(--leaf-radius);
       font-size: var(--leaf-font-size);
       &:hover:not(:disabled) {
-        background: var(--leaf-color-text-muted-surface-8);
+        background: var(--leaf-color-option-hover);
       }
       &:active:not(:disabled) {
-        background: var(--leaf-color-text-muted-surface-9);
+        background: var(--leaf-color-option-hover);
       }
       &--outside {
         opacity: 0.48;
         &:hover:not(:disabled) {
-          background: var(--leaf-color-surface-muted-alpha-45);
+          background: var(--leaf-color-surface-muted);
           opacity: 0.72;
         }
       }
       &--selected {
-        background: var(--leaf-color-primary-surface-5);
+        background: var(--leaf-calendar-selected-background);
       }
       &--selected:hover:not(:disabled) {
-        background: var(--leaf-color-primary-surface-8);
+        background: var(--leaf-calendar-selected-hover-background);
       }
       &:disabled {
         background: transparent;

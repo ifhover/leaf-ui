@@ -1,5 +1,6 @@
 @use '../styles/mixins' as mixins;
 .leaf-dropdown {
+  @include mixins.danger-soft-feedback-family;
   --leaf-surface-radius: var(
     --leaf-component-dropdown-radius,
     var(--leaf-component-floating-radius, var(--leaf-radius-lg))
@@ -25,7 +26,7 @@
     border-top: 1px solid var(--leaf-color-border);
   }
   &__danger {
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
   }
   .leaf-floating__option {
     position: relative;
@@ -54,7 +55,7 @@
         background-color var(--leaf-motion-color) var(--leaf-motion-easing);
     }
     &.leaf-dropdown__danger::before {
-      background: var(--leaf-color-danger-surface-6);
+      background: var(--leaf-danger-soft-background);
     }
     // Keep shared option fills from painting a second layer over the pseudo-element.
     &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']):not(
@@ -74,19 +75,19 @@
         inset: 0;
       }
       &.leaf-dropdown__danger {
-        color: var(--leaf-color-danger);
+        color: var(--leaf-color-danger-ink);
         &::before {
-          background: var(--leaf-color-danger-surface-8);
+          background: var(--leaf-danger-soft-active-background);
         }
       }
     }
     &.leaf-dropdown__danger {
-      color: var(--leaf-color-danger);
+      color: var(--leaf-color-danger-ink);
     }
     &.leaf-dropdown__danger:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(
         :disabled
       ):not([aria-disabled='true']) {
-      color: var(--leaf-color-danger-active);
+      color: var(--leaf-color-danger-ink);
     }
     &:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(:disabled):not(
         [aria-disabled='true']
@@ -99,7 +100,7 @@
     &.leaf-dropdown__danger:not([aria-checked='true']):active:not(:disabled):not(
         [aria-disabled='true']
       )::before {
-      background: var(--leaf-color-danger-surface-8);
+      background: var(--leaf-danger-soft-active-background);
     }
   }
   &__label {

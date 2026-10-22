@@ -767,6 +767,8 @@ export function renderAuditReport(scan, evaluation, baseline) {
   const fieldDebt = countDebtEntries(scan.findings, baseline.exceptions, FIELD_BORDER_CATEGORY);
   const exceptionHardcoded = countBaselineEntries(baseline.exceptions, HARDCODED_COLOR_CATEGORY);
   const exceptionMix = countBaselineEntries(baseline.exceptions, MIX_FORMULA_CATEGORY);
+  const exceptionDerived = countBaselineEntries(baseline.exceptions, DERIVED_TOKEN_CATEGORY);
+  const exceptionField = countBaselineEntries(baseline.exceptions, FIELD_BORDER_CATEGORY);
   const sourceCounts = {};
   for (const sources of Object.values(scan.definitions.sources))
     for (const source of sources) sourceCounts[source] = (sourceCounts[source] ?? 0) + 1;
@@ -807,9 +809,9 @@ export function renderAuditReport(scan, evaluation, baseline) {
   });
   return `# Leaf UI color contract audit
 
-> This file records existing migration debt, reviewed exceptions, and structural contracts. It is not a compliance claim and does not mean the existing component colors have been migrated.
+> This file records migration debt, reviewed component-specific recipes, and structural contracts. Zero debt is not a claim that all colors were merged or every possible custom theme meets accessibility requirements. See COLOR-MIGRATION.md for component coverage and QUALITY.md for browser evidence.
 
-Snapshot: 0.9.0 dirty worktree, generated from a static source scan. The checker compares normalized expressions and occurrence counts, not line numbers.
+Snapshot: 0.9.0 development sources, generated from a static source scan. The checker compares normalized expressions and occurrence counts, not line numbers.
 
 ## Scope
 
@@ -829,6 +831,8 @@ Snapshot: 0.9.0 dirty worktree, generated from a static source scan. The checker
 | Field-family border debt | ${fieldDebt.expressions} | ${fieldDebt.occurrences} |
 | Legal hardcoded-color exceptions | ${exceptionHardcoded.expressions} | ${exceptionHardcoded.occurrences} |
 | Legal color-mix exceptions | ${exceptionMix.expressions} | ${exceptionMix.occurrences} |
+| Reviewed derived-token exceptions | ${exceptionDerived.expressions} | ${exceptionDerived.occurrences} |
+| Reviewed field-structure exceptions | ${exceptionField.expressions} | ${exceptionField.occurrences} |
 
 Registered undefined-token risk occurrences: ${evaluation.stats.undefinedRiskOccurrences}.
 
@@ -836,7 +840,15 @@ Global color tokens: ${scan.definitions.tokens.length}. Color recipes: ${Object.
 
 Definition source counts (a token may have multiple sources): ${sourceSummary(sourceCounts)}.
 
-## Global token review
+${
+  baseline.migrationReview
+    ? `## Migration accounting
+
+The starting register contained ${baseline.migrationReview.originalDebtOccurrences} debt occurrences. ${baseline.migrationReview.reviewedLocalOccurrences} existing occurrences were retained after responsibility-specific review and moved to exact local exception budgets. Other retired component allowances were removed or replaced by shared recipes. These are occurrence classifications, not a claim that this many global colors were deleted. Public numeric palette outputs remain compatible.
+
+`
+    : ''
+}## Global token review
 
 The baseline includes the union of palette output, recipe keys, literal derived outputs from \`colors.ts\`, token aliases, theme override mappings, and any other global definitions. New or removed global \`--leaf-color-*\` tokens fail until an explicit review entry is added. \`_palette.scss\` is an output inventory only and is never counted as a consumer.
 
@@ -878,7 +890,7 @@ ${zeroComponentConsumers.length ? zeroComponentConsumers.map((token) => `- \`${t
 
 ## Existing debt detail
 
-${formatFindings(scan.findings, baseline.exceptions)}
+${formatFindings(scan.findings, baseline.exceptions) || '- None.'}
 
 ## Reviewed exceptions
 
@@ -886,11 +898,11 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ${formatExceptions(baseline.exceptions)}
 
-## Priority migration
+## Ongoing controls
 
-1. Field shell: outer field shells already share the field recipe; continue reviewing the ColorPicker private value input without confusing native border resets, internal dividers or swatch outlines with duplicated shell paint. Retain neutral focus variants; only Input/Select opt into primary focus.
-2. Option and surface families: migrate remaining numeric derived-token consumers in Menu, Calendar, Dropdown, and related popup surfaces to shared family recipes. Table/DataTable now consume the shared table-family recipe, including defined selected/action fallbacks.
-3. Neutral shadows and overlays: consolidate remaining hardcoded black/white alpha paint in theme and component SCSS without changing resting geometry.
+1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. Outer neutral-focus fields retain their contract; Input/Select and the private native color input select primary focus.
+2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
+3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
 4. Optional/compatibility inputs: keep \`primarySoftColor\` as an optional override with family-local fallbacks, not a default-generated global token. The historical \`surface-alpha-80\` CSS override remains supported with a table-surface fallback; its unknown-name warning is intentional until compatibility cleanup is separately reviewed.
 5. Generated token cleanup: review zero-consumer tokens only after removing all consumers; removal is a separate reviewed recipe/palette change.
 
