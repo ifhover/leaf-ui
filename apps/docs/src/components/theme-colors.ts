@@ -1,5 +1,5 @@
 export const themeColorPresets = [
-  { color: '#20834a', zh: '主题绿', en: 'Theme green' },
+  { color: '#1e964f', zh: '主题绿', en: 'Theme green' },
   { color: '#18181b', zh: '黑色', en: 'Black' },
   { color: '#ff6900', zh: '活力橙', en: 'Orange' },
   { color: '#1d9bf0', zh: '亮蓝', en: 'Blue' },

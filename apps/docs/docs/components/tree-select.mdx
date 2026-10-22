@@ -1,6 +1,11 @@
 import { SingleLine } from '../../src/examples/tree-select/single-line';
-import { Capabilities } from '../../src/examples/tree-select/capabilities';
-import { ExtensionDemo } from '../../src/examples/tree-select/extensions';
+import { Expanded } from '../../src/examples/tree-select/expanded';
+import { LazyLoad } from '../../src/examples/tree-select/lazy';
+import { NodeRender } from '../../src/examples/tree-select/node-render';
+import { PopupWidth } from '../../src/examples/tree-select/popup-width';
+import { Search } from '../../src/examples/tree-select/search';
+import { SelectLimit } from '../../src/examples/tree-select/select-limit';
+import { TagLimit } from '../../src/examples/tree-select/tag-limit';
 import { ComponentExample } from '../../src/components/component-example';
 import { TreeSelectBasic } from '../../src/examples/tree-select/basic';
 import { TreeSelectMultiple } from '../../src/examples/tree-select/multiple';
@@ -37,25 +42,83 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 
 </ComponentExample>
 
-## 扩展用法
+## 异步加载分支
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+`loadData` 在展开未加载的节点时调用，返回的节点会写回对应分支；`virtual` 让长列表也只渲染可视区域。
 
-```tsx lineNumbers file="../../src/examples/tree-select/extensions.tsx"
+<ComponentExample title="展开加载成员" preview={<LazyLoad />} fileName="lazy.tsx">
+
+```tsx lineNumbers file="../../src/examples/tree-select/lazy.tsx"
 ```
 
 </ComponentExample>
 
-## 选择限制与节点展示
+## 选择数量上限
+
+`maxCount` 限制可勾选的数量，`treeCheckable` 启用复选框；达到上限后其余节点不能再勾选。
+
+<ComponentExample title="最多两人" preview={<SelectLimit />} fileName="select-limit.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/select-limit.tsx"
+```
+
+</ComponentExample>
+
+## 标签数量上限
+
+`maxTagCount` 只影响已选标签的展示数量，不限制可以选择的数量。
+
+<ComponentExample title="只展示一个标签" preview={<TagLimit />} fileName="tag-limit.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/tag-limit.tsx"
+```
+
+</ComponentExample>
+
+## 自定义节点内容
+
+`nodeRender` 接收节点数据并返回自定义内容；示例把节点名称加粗。
+
+<ComponentExample title="加粗节点名称" preview={<NodeRender />} fileName="node-render.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/node-render.tsx"
+```
+
+</ComponentExample>
+
+## 搜索匹配
+
+`showSearch` 打开搜索框，`filterTreeNode` 决定某个节点是否匹配输入内容。
+
+<ComponentExample title="自定义匹配规则" preview={<Search />} fileName="search.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/search.tsx"
+```
+
+</ComponentExample>
+
+## 受控展开
+
+`treeExpandedKeys` 与 `onExpand` 控制展开的分支，适合需要记住展开状态的场景。
+
+<ComponentExample title="保持展开状态" preview={<Expanded />} fileName="expanded.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/tree-select/expanded.tsx"
+```
+
+</ComponentExample>
+
+## 浮层宽度
 
 浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并显式设置最大宽度。浮层仍会在视口边缘避让。
 
-<ComponentExample title="选择限制与节点展示" preview={<Capabilities />} fileName="capabilities.tsx">
+<ComponentExample title="按内容定宽" preview={<PopupWidth />} fileName="popup-width.tsx">
 
-```tsx lineNumbers file="../../src/examples/tree-select/capabilities.tsx"
+```tsx lineNumbers file="../../src/examples/tree-select/popup-width.tsx"
 ```
 
 </ComponentExample>
+
 
 ## 单行多选
 
@@ -89,15 +152,15 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 | `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | 初始展开的 value |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验反馈 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
-| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
 | `notFoundContent` | `ReactNode` | 暂无选项 | 无匹配内容 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
 | `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | 展开时加载子项，signal 用于取消 |
 | `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | 加载失败，再次展开可重试 |
 | `virtual` | `boolean` | `false` | 仅渲染可见项目 |
 | `listHeight` | `number` | `256` | 列表高度 |
-| `itemHeight` | `number` | `38` | 跟随区域控件高度和密度的预估行高，包含行间距；实际行会被测量。 |
+| `itemHeight` | `number` | `34` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
@@ -109,8 +172,8 @@ import { TreeSelectStates } from '../../src/examples/tree-select/states';
 | `filterTreeNode` | `(option: `[`TreeSelectOption`](#treeselectoption)`, query: string) => boolean` | — | 自定义节点的搜索匹配。 |
 | `nodeRender` | `(option: `[`TreeSelectOption`](#treeselectoption)`) => ReactNode` | — | 自定义节点展示内容。 |
 | `cacheKey` | `string \| number` | — | 数据版本改变时清空懒加载缓存，并取消旧请求。 |
-| `multiple` | `false \| true \| boolean` | `false` | 多选 / 复选框模式，后者自动开启多选 |
-| `treeCheckable` | `false \| boolean \| true` | `false` | 多选 / 复选框模式，后者自动开启多选 |
+| `multiple` | `false \| true \| boolean` | `false` | 是否启用多值选择。 |
+| `treeCheckable` | `false \| boolean \| true` | `false` | 是否启用复选框模式，会自动开启多选。 |
 | `value` | `string \| null \| readonly string[] \| readonly string[]` | `null` | 受控 / 初始值；多选使用数组 |
 | `defaultValue` | `string \| null \| readonly string[] \| readonly string[]` | `null` | 受控 / 初始值；多选使用数组 |
 | `onChange` | `(((value: string \| null) => void) \| ((value: readonly string[]) => void)) \| ((value: readonly string[]) => void)` | — | 选择变化，清除单选返回 null，多选返回 [] |
@@ -143,11 +206,10 @@ import type { TreeSelectProps, TreeSelectOption, TreeSelectValue } from '@ifhove
 
 ## 使用说明
 
-选项的 `value` 应唯一且稳定。示例数据：
-
-```ts lineNumbers file="../../src/examples/tree-select/options.ts"
-```
+选项的 `value` 应唯一且稳定，完整选项数据已包含在基础示例中。
 
 `TreeSelectValue` 是 `string | readonly string[] | null`，可用于组装受控值。复选框默认提交最终子节点；`showCheckedStrategy` 同时决定显示和回调值。禁用的已有选项不会被清除或父子联动修改。
+
+选中行与 Select 使用同一套中性移动高亮和勾选标记：打开后从已选项或首个可用行开始，高亮跟随悬停或键盘目标，离开树后回到已选项，行之间不保留额外垂直空隙。
 
 方向键下进入树，Enter 选择，空格勾选，Escape 关闭。多选时，搜索为空按 Backspace 可移除最后一个可用选项。FormData 在同一字段名下提交多个值，使用 `getAll(name)` 读取；非受控字段响应表单 reset。

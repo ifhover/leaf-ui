@@ -35,6 +35,53 @@ export function readApiRows(section) {
   }
   return result;
 }
+function escapePattern(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+}
+export function apiSectionMatches(document, name) {
+  const headings = [...new Set([`${name.replace(/Props$/u, '')} API`, `${name} API`, name])];
+  const matches = [];
+  for (const heading of headings) {
+    for (let level = 2; level <= 6; level++) {
+      const expression = new RegExp(
+        `(^#{${level}} ${escapePattern(heading)}\\r?\\n)([\\s\\S]*?)(?=^#{1,${level}} |$(?![\\s\\S]))`,
+        'gmu',
+      );
+      for (const match of document.matchAll(expression))
+        matches.push({ match, heading, expression });
+    }
+  }
+  return matches.sort((left, right) => left.match.index - right.match.index);
+}
+export function apiSectionMatch(document, name) {
+  return apiSectionMatches(document, name)[0] ?? null;
+}
+export function apiDefaultCell({
+  defaultValue,
+  optional,
+  english,
+  override,
+  previousDefault,
+}) {
+  if (override !== undefined) return override;
+  if (defaultValue) return defaultValue;
+  if (!optional) return english ? 'Required' : '必填';
+  return previousDefault ?? '—';
+}
+/** Keep the first documented table for a public type and remove generated duplicates. */
+export function removeDuplicateApiSections(document, names) {
+  let result = document;
+  for (const name of names) {
+    const matches = apiSectionMatches(result, name);
+    for (const duplicate of matches.slice(1).reverse()) {
+      let start = duplicate.match.index;
+      const end = start + duplicate.match[0].length;
+      if (result.slice(Math.max(0, start - 2), start) === '\n\n') start -= 1;
+      result = result.slice(0, start) + result.slice(end);
+    }
+  }
+  return result;
+}
 async function modulePath(base, relative) {
   const target = path.resolve(path.dirname(base), relative);
   for (const candidate of [target, `${target}.ts`, `${target}.tsx`, `${target}/index.ts`]) {
@@ -142,7 +189,7 @@ function merge(properties, additions) {
     const existing = properties.get(key);
     if (!existing) properties.set(key, value);
     else if (existing.type !== value.type) {
-      const types = [...new Set([existing.type, value.type])];
+      const types = [...new Set([existing.type, value.type])].filter((type) => type !== 'never');
       properties.set(key, {
         ...value,
         optional: existing.optional || value.optional,
@@ -186,6 +233,11 @@ export async function properties(file, name) {
       if (!referenced) return new Map();
       visited.add(key);
       const result = await flatten(referenced.module, referenced.node);
+      const defaults =
+        referenced.module.defaults.get(id) ??
+        referenced.module.defaults.get(id.replace(/Props$/u, 'ControlProps'));
+      for (const [key, value] of result)
+        value.defaultValue = defaults?.get(key) ?? value.defaultValue;
       visited.delete(key);
       return result;
     }
@@ -247,7 +299,7 @@ export async function properties(file, name) {
   const defaults =
     found.module.defaults.get(name) ??
     found.module.defaults.get(name.replace(/Props$/u, 'ControlProps'));
-  for (const [key, value] of result) value.defaultValue = defaults?.get(key);
+  for (const [key, value] of result) value.defaultValue = defaults?.get(key) ?? value.defaultValue;
   return result;
 }
 export async function typeExpression(file, name) {

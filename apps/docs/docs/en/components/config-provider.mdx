@@ -18,11 +18,11 @@ Set a shared theme, language and component defaults for an application or a loca
 
 Wrap the application to configure it globally, or nest providers to customize one region.
 
-| Configure | Prop |
-| --- | --- |
-| Built-in text and custom languages | `locale`, `translations` |
-| Primary color, appearance, size and spacing | `theme`, `density` |
-| Shared component props | `components` |
+| Configure                                   | Prop                     |
+| ------------------------------------------- | ------------------------ |
+| Built-in text and custom languages          | `locale`, `translations` |
+| Primary color, appearance, size and spacing | `theme`, `density`       |
+| Shared component props                      | `components`             |
 
 ## Multilingual
 
@@ -32,13 +32,13 @@ Wrap the application to configure it globally, or nest providers to customize on
 
 These translations are included without importing a language pack. The default is Simplified Chinese when `locale` is not configured.
 
-| Language | `locale` |
-| --- | --- |
-| 简体中文 (Simplified Chinese) | `zh-CN` |
-| 繁體中文 (Traditional Chinese) | `zh-TW` |
-| English | `en-US` |
-| 日本語 (Japanese) | `ja-JP` |
-| 한국어 (Korean) | `ko-KR` |
+| Language                       | `locale` |
+| ------------------------------ | -------- |
+| 简体中文 (Simplified Chinese)  | `zh-CN`  |
+| 繁體中文 (Traditional Chinese) | `zh-TW`  |
+| English                        | `en-US`  |
+| 日本語 (Japanese)              | `ja-JP`  |
+| 한국어 (Korean)                | `ko-KR`  |
 
 For another language, [provide translation resources](#add-your-own-language). A language tag alone does not translate built-in text. Missing entries ultimately fall back to English.
 
@@ -49,6 +49,7 @@ Update `locale` to switch languages. Select a language from the dropdown, then o
 <ComponentExample title="Built-in language" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/locale.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,14 +69,12 @@ It uses the private-use language tag `zh-CN-x-mars`, so dates and numbers retain
 <ComponentExample title="Custom Martian translations" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/translations.tsx"
+
 ```
 
 </ComponentExample>
 
-The imported `zh-CN-x-mars.json`:
-
-```json file="../../../src/examples/config-provider/zh-CN-x-mars.json"
-```
+The example keeps the translation object inline; you can also import it from a JSON file and pass it through `translations`.
 
 `locale={['zh-CN-x-mars', 'en-US']}` looks up each missing entry in order, with built-in English as the final fallback. The first tag always controls the current language and regional date and number formatting. A string equals a one-item array; empty arrays are invalid. No implicit `zh-CN-x-mars → zh-CN` or `fr-CA → fr` fallback is added.
 
@@ -90,6 +89,7 @@ The theme applies to components and their popups. Usually a primary color or bas
 <ComponentExample title="Regional theme" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -101,6 +101,7 @@ The theme applies to components and their popups. Usually a primary color or bas
 <ComponentExample title="Comfortable and compact" preview={<ConfigProviderDensity />} fileName="density.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/density.tsx"
+
 ```
 
 </ComponentExample>
@@ -112,6 +113,7 @@ Set `theme.controlHeight` to change the size baseline. Small and large controls 
 <ComponentExample title="Base height" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/sizes.tsx"
+
 ```
 
 </ComponentExample>
@@ -131,6 +133,7 @@ This example shares placeholders, clear buttons and button styles. The end date 
 <ComponentExample title="Common props, configured once" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/defaults.tsx"
+
 ```
 
 </ComponentExample>
@@ -142,6 +145,7 @@ Keep an accidental mask click from interrupting an edit: set `Modal: { maskClosa
 <ComponentExample title="Open the modal and try clicking the mask" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/modal-defaults.tsx"
+
 ```
 
 </ComponentExample>
@@ -153,6 +157,7 @@ Shared defaults leave room for local changes: **instance props > inner configura
 <ComponentExample title="Inheritance and overrides" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/inheritance.tsx"
+
 ```
 
 </ComponentExample>
@@ -164,6 +169,7 @@ Set a component entry to `null` to restore its built-in defaults locally, for ex
 <ComponentExample title="Clearing inherited defaults" preview={<ConfigProviderReset />} fileName="reset.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/reset.tsx"
+
 ```
 
 </ComponentExample>
@@ -205,16 +211,16 @@ Common theme options. Unspecified fields inherit from the outer region.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#20834a'` | Primary color with derived interaction states; dark appearance defaults to a lighter green |
+| `primaryColor` | `string` | `'#1e964f'` | Primary color with derived interaction states; dark appearance defaults to a lighter green |
 | `borderRadius` | `number \| string` | `10` | Base radius; small / medium / large radii use × 0.6 / 1.2 / 1.6 |
-| `controlHeight` | `number \| string` | `36` | Base height; small / large heights use − / + 6px |
+| `controlHeight` | `number \| string` | `34` | Base height; small / large heights use − / + 6px |
 | `fontSize` | `number \| string` | `14` | Base font; small font − 1px, large font + 2px |
 | `fontFamily` | `string` | System sans-serif | Font family |
 | `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
 | `motion` | `boolean` | `true` | Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it. |
 | `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | Optional advanced overrides |
 | `spacing` | `number` | — | Base spacing; other spacing values are derived. |
-| `lineHeight` | `number` | — | Body line height. |
+| `lineHeight` | `number \| string` | `20` | Body line height. Numbers are pixels, except numbers greater than 0 and up to 4 which keep the legacy multiplier meaning; strings are CSS lengths. |
 | `headingWeight` | `number` | — | Weight of Typography document headings; component titles use `tokens.fontWeight`. |
 | `elevation` | `'none' \| 'soft' \| 'medium'` | — | Overall shadow strength. |
 | `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Responsive thresholds used by useBreakpoint. |

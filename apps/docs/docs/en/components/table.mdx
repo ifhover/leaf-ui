@@ -1,5 +1,5 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TableBasic, TableStates } from '../../../src/examples/table/basic';
+import { TableBasic, TableStates, TableSelection } from '../../../src/examples/table/basic';
 import { TableData, TableColumns } from '../../../src/examples/table/data';
 import { TableVirtual, TableServer, TableGrouped, TableEditable } from '../../../src/examples/table/advanced';
 import { TableReordering } from '../../../src/examples/table/reordering';
@@ -33,13 +33,26 @@ The table subpath loads its styles automatically. Import DataTable and its data 
 
 </ComponentExample>
 
-The `data + columns + rowKey` mode creates one TanStack instance and uses the same renderer as the advanced mode. `rowKey` must identify a stable, unique string/number field or return a string. Local sorting, filtering, pagination and expansion are configured by default. Use `options` for initial state, controlled callbacks or server configuration. `pagination={false}` displays all rows without internally truncating the data.
+The `data + columns + rowKey` mode creates one TanStack instance and uses the same renderer as the advanced mode. `rowKey` must identify a required string/number field or return a string/number; identities must be stable and unique. Local sorting, filtering, pagination and expansion are configured by default. Use `options` for initial state, controlled callbacks or server configuration. `localPagination={false}` keeps pagination state and controls but stops slicing rows locally; `pagination={false}` remains a legacy shorthand that also hides the footer. Toggling does not remount the instance or clear selection.
 
-These modes are mutually exclusive: when supplying `table`, do not also pass `data`, `columns`, `rowKey` or `options`. Prefer your own `useReactTable` instance for advanced grouping or query state.
+These modes are mutually exclusive: when supplying `table`, do not also pass `data`, `columns`, `rowKey` or `options`. Use `useDataTable` when you need access to the instance, or native `useReactTable` for complete row-model configuration.
 
-## Borders and striped rows
+## Control only the state you need
 
-DataTable defaults to no outer frame or column dividers, with `striped` rows enabled. Borderless tables have square corners and no tinted header background, with a 1px divider below the header. Enable `bordered` for a rounded frame, white header background and column dividers (following the dark surface in dark mode). Headers are bold and slightly lighter than body text in both modes, with sorting icons immediately after the label. Stripes start on the first body row with a faint background and hide row dividers; set `striped={false}` to show fine dividers between rows. Both ordinary and striped rows show subtle primary-color feedback on hover.
+<ComponentExample title="Search and selection" preview={<TableSelection english />} fileName="basic.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/table/basic.tsx"
+```
+
+</ComponentExample>
+
+Put only the state and callbacks required by your application into `options`; TanStack manages the rest. This example uses `useDataTableSelection` to map business row keys to TanStack `rowSelection` without also controlling sorting, filtering or pagination. Pass `selectedRowKeys` and `onSelectedRowKeysChange` for controlled selection; omit both for internal state. Controlled callbacks use the native TanStack value-or-updater contract.
+
+`toolbar` inserts content above the default table. `pagination={{ ... }}` customizes presentation options such as `pageSizeOptions`, `showTotal` and `hasNextPage`. Pagination state still belongs in `options.state.pagination` / `options.initialState.pagination`, not a second state store.
+
+## Frame, column dividers and striped rows
+
+DataTable always shows a base-radius outer frame and a downward resting shadow by default. The frame uses the same softened divider color as Card; the header keeps the same surface as the table with a 1px divider below it. `striped` remains enabled by default, while `columnDividers` adds column dividers only. The legacy `bordered` alias still works but is deprecated. Headers are bold and slightly lighter than body text, with sorting icons immediately after the label. Stripes start on the first body row with a faint background and hide row dividers; set `striped={false}` to show fine dividers between rows. Ordinary and striped rows use the same opaque primary-tinted hover background; selected rows use a light primary background that takes precedence over hover.
 
 <ComponentExample title="Switch table appearance" preview={<TableAppearance english />} fileName="appearance.tsx" width="100%">
 
@@ -50,6 +63,8 @@ DataTable defaults to no outer frame or column dividers, with `striped` rows ena
 
 ## Sorting, filtering, selection and pagination
 
+`useDataTable` returns a regular TanStack instance with the same row models, stable keys and RTL resize direction as data mode. Read selection, reset filters or build bulk actions without manually configuring every row model and controlled state:
+
 <ComponentExample title="Manage team members" preview={<TableData english />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/data.tsx"
@@ -57,7 +72,7 @@ DataTable defaults to no outer frame or column dividers, with `striped` rows ena
 
 </ComponentExample>
 
-The provided instance is the **only state owner**. Leaf UI does not sort or paginate the data again, or create a second selection/filter store. Configure the row models required by your application:
+The provided instance is the **only state owner**. Leaf UI does not sort or paginate the data again, or create a second filter/expansion store; `useDataTableSelection` only maps business keys to `rowSelection`. `useDataTable` configures the common local row models; with native `useReactTable`, configure the row models your application needs:
 
 | Feature | TanStack configuration |
 | --- | --- |
@@ -75,14 +90,14 @@ DataTable.Search updates the global filter unless columnId is specified. ColumnV
 
 ## Sticky headers, pinned columns and resizing
 
-<ComponentExample title="Compact table and column sizing" preview={<TableColumns english />} fileName="data.tsx" width="100%">
+<ComponentExample title="Pinned columns and column sizing" preview={<TableColumns english />} fileName="data.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/table/data.tsx"
 ```
 
 </ComponentExample>
 
-Control pinning through `columnPinning`, order through `columnOrder`, and widths through each column's `size`, `minSize` and `maxSize`. Leaf interprets left/right as logical start/end sides. For RTL also configure TanStack `columnResizeDirection: 'rtl'`.
+Control pinning through `columnPinning`, order through `columnOrder`, and widths through each column's `size`, `minSize` and `maxSize`. Leaf interprets left/right as logical start/end sides. For RTL also configure TanStack `columnResizeDirection: 'rtl'`. A pinned-column shadow appears only while hidden content remains in that direction and disappears at the corresponding logical scroll edge. Styles returned by `getCellProps` cannot override internal pinned positioning.
 
 Tables fill their container and scroll horizontally only when the columns need more space. Headers are sticky by default. Set `maxHeight` to scroll overflowing rows within the body. Overlay tracks use [Scrollbar](./scrollbar); the vertical track starts below the header. When content fits or reaches an edge, wheel scrolling continues to the page.
 
@@ -147,7 +162,15 @@ This is not a spreadsheet DataGrid: it does not add arrow-key cell navigation, c
 
 Use `manualPagination` with `rowCount`, and `manualSorting` / `manualFiltering` for corresponding server features. Use controlled TanStack state as request parameters and cancel stale requests. Set `pageCount: -1` for unknown totals; the footer then offers only Previous/Next. Supply `<DataTable.Pagination hasNextPage={hasMore} />` to prevent advancing past the available records.
 
-Refreshing keeps existing rows, adds a loading overlay and prevents duplicate interactions. First load, empty data and errors have separate state rows. DataTable automatically renders content and pagination unless pagination is false. Providing children replaces the default layout; explicitly arrange Toolbar, Content and Footer in that case.
+Refreshing keeps existing rows, adds a loading overlay and prevents duplicate interactions. First load, empty data and errors have separate state rows. The automatic layout renders content and includes pagination when that capability exists; `toolbar` only adds the toolbar. For a custom composition, set `layout="custom"` and arrange Toolbar, Content and Footer explicitly. For compatibility, omitting `layout` still lets children replace the automatic layout, but emits a development warning; `layout="auto"` ignores children and renders the automatic layout.
+
+In data mode, `pagination={false}` hides the default footer and disables local slicing. With a supplied `table`, it only hides the default footer and never changes the external instance. With `useDataTable`, control local slicing with `localPagination` and footer visibility with DataTable's `pagination`. `localPagination={false}` forces local slicing off; when it is `true`, `options.manualPagination` remains authoritative. Server pagination uses `options.manualPagination: true`. The Hook's `pagination` prop remains only as a compatibility alias.
+
+When the table lacks the corresponding `getFilteredRowModel()` / `manualFiltering`, `getPaginationRowModel()` / `manualPagination` or similar capability, related interactions are hidden or disabled with a development warning. `DataTable.Search` is also disabled for a missing or unfilterable `columnId`.
+
+`DataTable.Search` enables its clear action and inherits the DataTable size by default; `DataTable.Pagination` enables its page-size selector by default. Pass `false` to opt out.
+
+Unknown-total pagination preserves native `id`, `style`, events, `dir` and accessible names. It only offers Previous/Next; `showSizeChanger`, `showQuickJumper`, `showTotal`, `simple` and `hideOnSinglePage` do not apply in this mode.
 
 ## Empty, loading and error
 
@@ -160,14 +183,17 @@ Refreshing keeps existing rows, adds a loading overlay and prevents duplicate in
 
 ## DataTable API
 
-This table describes the instance mode. For the data and columns mode, see [DataTableData API](#datatabledata-api).
+These props are shared by both modes. `DataTableProps<TData>` is `DataTableInstanceProps<TData> | DataTableDataProps<TData>`. Use this union when forwarding the complete component props, or `DataTableInstanceProps<TData>` for an instance-only wrapper. Mode-specific props are listed under [instance mode](#datatableinstance-api) and [data mode](#datatabledata-api).
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Replace the default Content/Pagination layout. |
+| `layout` | `'auto' \| 'custom'` | — | Explicitly choose the built-in layout or a fully custom composition. When omitted, legacy behavior applies: children replace the automatic layout; only children={false} keeps the automatic layout. |
+| `children` | `ReactNode` | — | The complete composition for layout="custom". With layout omitted, children replace the automatic layout and emit a development warning. Do not place nested row data here. |
+| `toolbar` | `ReactNode` | — | Toolbar content in the automatic layout; DataTable still renders Content and pagination. Compose public parts directly for a custom layout. |
 | `caption` | `ReactNode` | — | Table caption. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `bordered` | `boolean` | `false` | Show the outer frame and column dividers. Borderless headers have a 1px bottom divider. |
+| `columnDividers` | `boolean` | — | Add column dividers only; the outer frame, radius and downward resting shadow are always enabled. |
+| `bordered` | `boolean` | `false` | Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence. |
 | `striped` | `boolean` | `true` | Alternate row backgrounds and hide row dividers. Disable to show fine dividers between rows. |
 | `stickyHeader` | `boolean` | `true` | Keep headers at the top of the scroll region. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum scroll height; virtual mode defaults to 400 when omitted. |
@@ -181,14 +207,14 @@ This table describes the instance mode. For the data and columns mode, see [Data
 | `resizable` | `boolean` | `false` | Show resize handles for eligible columns. |
 | `columnReordering` | `boolean` | `false` | Show drag handles for single-level headers. |
 | `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | Explicit row virtualization. |
-| `pagination` | `boolean` | `true` | Pagination in the default layout. |
+| `pagination` | `boolean \| `[`DataTablePaginationProps`](#datatablepagination-api) | `true` | Automatic pagination visibility or presentation options; false also disables local slicing in data mode. |
 | `tableRef` | `Ref<HTMLTableElement>` | — | Native table DOM ref. |
-| `table` | `TanStackTable<TData>` | — | Required. Instance created by useReactTable; the sole data and state owner. |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | Accessible row-action name; defaults to row.id. |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | Leaf-row details; configure getRowCanExpand. |
 | `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | Custom row attributes/events. |
 | `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | Cell attributes, styles or spans; a zero colSpan / rowSpan omits the cell. |
 | `onRowReorder` | `(info: `[`DataTableRowReorderInfo`](#datatablerowreorderinfo)`<TData>) => void` | — | Show row handles and return reordered current-page rows; the application updates the data. |
+| `localPagination` | `boolean` | — | Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows. |
 
 aria-label/aria-labelledby name the native table; other div attributes apply to the wrapper.
 
@@ -207,21 +233,18 @@ aria-label/aria-labelledby name the native table; other div attributes apply to 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `align` | `'start' \| 'center' \| 'end'` | `'start'` | Cell content alignment. |
-| `pinned` | `'start' \| 'end'` | — | Pin to the logical start or end. |
-| `pinOffset` | `number` | `0` | Pixel offset from that side. |
-| `pinEdge` | `boolean` | — | Show a subtle pinned-edge shadow. |
 
 ## DataTableSearch API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Inherit DataTable size by default. |
+| `size` | `'sm' \| 'md' \| 'lg'` | DataTable size | Inherit DataTable size by default. |
 | `status` | `'error' \| 'warning'` | — | Input validation status. |
 | `prefix` | `ReactNode` | — | Leading content; defaults to a search icon. |
 | `suffix` | `ReactNode` | — | Trailing content. |
-| `allowClear` | `boolean` | `true` | Show a clear action. |
+| `allowClear` | `boolean` | `true` | Shown by default; pass false to remove the clear action. |
 | `onClear` | `() => void` | — | Called when the search is cleared. |
-| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | Display or customize the input count. |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display or customize the input count. |
 | `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Called on Enter. |
 | `columnId` | `string` | — | Filter one column; omit for global search. |
 
@@ -238,14 +261,14 @@ Other Input attributes are supported; value and onChange belong to the instance.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `showSizeChanger` | `boolean` | `true` | Show the page-size selector. |
+| `showSizeChanger` | `boolean` | `true` | Show the page-size selector; enabled by default in DataTable and can be disabled with false. |
 | `pageSizeOptions` | `readonly number[]` | — | Available page sizes. |
 | `showQuickJumper` | `boolean` | `false` | Commit a quick jump on Enter or when leaving the pagination region. |
 | `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true shows a localized total; pass a function to customize the total and visible range. |
-| `simple` | `boolean` | — | Use compact pagination. |
-| `disabled` | `boolean` | — | Disable interaction. |
-| `hideOnSinglePage` | `boolean` | — | Hide when only one page exists. |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Inherit DataTable size by default. |
+| `simple` | `boolean` | `false` | Use compact pagination. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `hideOnSinglePage` | `boolean` | `false` | Hide when only one page exists. |
+| `size` | `'sm' \| 'md' \| 'lg'` | DataTable size | Inherit DataTable size by default. |
 | `variant` | `'outline' \| 'ghost'` | `'outline'` | Pagination button appearance: outlined or borderless. |
 | `hasNextPage` | `boolean` | — | Control next-page availability when the total is unknown. |
 
@@ -263,7 +286,23 @@ Supports Pagination display options. Total, current, pageSize and onChange belon
 
 ## DataTableColumnMeta
 
-Use this exported type to assemble the following optional properties on TanStack column meta. Supply label for functional headers.
+Use these optional properties on TanStack column meta, and supply `label` for functional headers. The optional `DataTableColumnDef<TData, TValue>` alias adds completion and spelling checks to native `ColumnDef` metadata without augmenting TanStack's global types. Native column definitions remain supported.
+
+```tsx
+import type { DataTableColumnDef, DataTableColumnMeta } from '@ifhover/leaf-ui/table';
+import type { ColumnDef } from '@tanstack/react-table';
+
+type Member = { id: string; name: string };
+
+const columns = [
+  { accessorKey: 'name', header: 'Name', meta: { align: 'start', label: 'Name' } },
+] satisfies DataTableColumnDef<Member>[];
+
+const nativeColumn: ColumnDef<Member> = {
+  accessorKey: 'name',
+  meta: { align: 'start' } satisfies DataTableColumnMeta,
+};
+```
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -271,6 +310,10 @@ Use this exported type to assemble the following optional properties on TanStack
 | `align` | `'start' \| 'center' \| 'end'` | `'start'` | Header and cell alignment. |
 | `cellClassName` | `string` | — | Cell class. |
 | `headerClassName` | `string` | — | Header class. |
+
+## DataTableRowKey
+
+`DataTableRowKey<TData>` accepts required string/number fields or functions returning either primitive. Boolean, object, array and optional fields cannot be used directly. When records have no natural identity, generate stable unique business keys rather than using indices after sorting or pagination.
 
 ## DataTableVirtualOptions
 
@@ -282,11 +325,65 @@ Use this exported type to assemble the following optional properties on TanStack
 ## Types and composition
 
 ```ts
-import type { DataTableProps, DataTableDataProps, DataTableRowProps, DataTableCellProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table';
+import { useDataTable, useDataTableSelection } from '@ifhover/leaf-ui/table';
+import type { DataTableProps, DataTableInstanceProps, DataTableDataProps, DataTableColumnDef, DataTableRowKey, UseDataTableOptions, DataTableRowProps, DataTableCellProps, DataTableSearchProps, DataTableColumnVisibilityProps, DataTablePaginationProps, DataTableContentProps, DataTableColumnMeta, DataTableVirtualOptions, DataTableRowReorderInfo } from '@ifhover/leaf-ui/table';
+import type { DataTableRowSelectionKey, DataTableSelectionMode, DataTableSelectionOptions, UseDataTableSelectionOptions, UseDataTableSelectionResult } from '@ifhover/leaf-ui/table';
 import type { ColumnDef, Table as TanStackTable, Row, Cell } from '@tanstack/react-table';
 ```
 
 DataTable.Toolbar/Footer/Content accept div attributes. Use TanStack's own [column definitions](https://tanstack.com/table/v8/docs/guide/column-defs), [controlled state](https://tanstack.com/table/v8/docs/framework/react/guide/table-state), [row selection](https://tanstack.com/table/v8/docs/guide/row-selection) and [pinning](https://tanstack.com/table/v8/docs/guide/column-pinning) rather than a second Leaf column model.
+
+## useDataTable
+
+`useDataTable<TData>(config: UseDataTableOptions<TData>): TanStackTable<TData>`
+
+The Hook creates and returns one stable native instance. It does not read DataTable presentation defaults or fetch data. Local sorting, filtering, pagination and expansion models are configured; `options` can override the corresponding models and server settings. Pass the instance to DataTable or use native TanStack APIs in your application. Enable detail rows explicitly with `options.getRowCanExpand`.
+
+## useDataTableSelection
+
+`useDataTableSelection(options?): UseDataTableSelectionResult`
+
+Manage TanStack row selection with business row keys, without maintaining another `RowSelectionState`:
+
+```tsx
+const selection = useDataTableSelection({
+  mode: 'multiple',
+  selectedRowKeys: selectedKeys,
+  onSelectedRowKeysChange: setSelectedKeys,
+});
+
+const table = useDataTable({
+  data,
+  columns,
+  rowKey: 'id',
+  options: selection.selectionOptions,
+});
+```
+
+Spread `selection.selectionOptions` into `useDataTable` options or pass it to native `useReactTable`. `selectedRowKeys` is uncontrolled or controlled and returns the latest single key or all multiple keys; `clearSelection()` clears state and notifies the callback. Row IDs must match `rowKey` / `getRowId`.
+
+## UseDataTableOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `data` | `readonly TData[]` | — | Required. Data to display; provide a new array when updating. |
+| `columns` | `readonly ColumnDef<TData>[]` | — | Required. Native TanStack column definitions. |
+| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | — | Required. A stable, unique string/number identity for every row. |
+| `localPagination` | `boolean` | — | Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows. |
+| `pagination` | `boolean` | `true` | Deprecated; use localPagination instead. Acts as a compatibility alias when localPagination is omitted; false disables local slicing. |
+| `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | Customize native TanStack state, callbacks, row models and server settings. |
+
+
+Hook configuration. `pagination` controls local slicing only; DataTable configures the pagination UI.
+
+## DataTableInstance API
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `table` | `TanStackTable<TData>` | — | Required. The only data and state owner in instance mode; do not also pass data, columns, rowKey or options. |
+
+
+Instance-mode props. Shared props are listed under [DataTable API](#datatable-api). Create the instance with `useDataTable` or native `useReactTable`.
 
 ## DataTableData API
 
@@ -295,8 +392,8 @@ Additional convenience-mode properties are listed below. Presentation, selection
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `data` | `readonly TData[]` | — | Required. Data to display; provide a new array when updating. |
-| `columns` | `ColumnDef<TData>[]` | — | Required. Native TanStack column definitions. |
-| `rowKey` | `keyof TData \| ((row: TData, index: number) => string)` | — | Required. A stable unique key field or a function returning a string identifier. |
+| `columns` | `readonly ColumnDef<TData>[]` | — | Required. Native TanStack column definitions. |
+| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | — | Required. A required string/number identity field, or a function returning a string/number identity. |
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | Customize TanStack state, callbacks and server configuration. |
 
 ## DataTableRowReorderInfo
@@ -315,10 +412,13 @@ ConfigProvider's `components.DataTable` uses these row-independent props. Import
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
+| `layout` | `'auto' \| 'custom'` | — | Explicitly choose the built-in layout or a fully custom composition. When omitted, legacy behavior applies: children replace the automatic layout; only children={false} keeps the automatic layout. |
+| `children` | `ReactNode` | — | The complete composition for layout="custom". With layout omitted, children replace the automatic layout and emit a development warning. Do not place nested row data here. |
+| `toolbar` | `ReactNode` | — | Toolbar content for the automatic layout; custom layouts render DataTable.Toolbar themselves. |
 | `caption` | `ReactNode` | — | Configure caption. |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
-| `bordered` | `boolean` | — | Configure bordered. |
+| `columnDividers` | `boolean` | — | Add column dividers only; the outer frame, radius and downward resting shadow are always enabled. |
+| `bordered` | `boolean` | — | Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence. |
 | `striped` | `boolean` | — | Configure striped. |
 | `stickyHeader` | `boolean` | — | Configure sticky header. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Configure max height. |
@@ -332,5 +432,38 @@ ConfigProvider's `components.DataTable` uses these row-independent props. Import
 | `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
 | `columnReordering` | `boolean` | — | Configure column reordering. |
 | `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | — | Enable row virtualization; disabled by default. |
-| `pagination` | `boolean` | — | Configure pagination. |
+| `pagination` | `boolean \| `[`DataTablePaginationProps`](#datatablepagination-api) | — | Configure pagination. |
 | `tableRef` | `Ref<HTMLTableElement>` | — | Configure table ref. |
+
+## DataTableColumnDef
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `meta` | [`DataTableColumnMeta`](#datatablecolumnmeta) | — | Configure meta. |
+
+## DataTableSelectionOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `{ rowSelection: RowSelectionState }` | — | Required. Controlled rowSelection state for useDataTable options. |
+| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | — | Required. Native TanStack selection callback; business keys are normalized internally. |
+| `enableMultiRowSelection` | `boolean` | — | Required. Derived from mode: false for single and true for multiple. |
+
+## UseDataTableSelectionOptions
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `mode` | `'single' \| 'multiple'` | `multiple` | Single keeps only the most recently requested key; multiple keeps every selected key. |
+| `selectedRowKeys` | `readonly DataTableRowSelectionKey[]` | — | Controlled selected business row keys; array order determines which key single mode retains. |
+| `defaultSelectedRowKeys` | `readonly DataTableRowSelectionKey[]` | `[]` | Initial selected business row keys for uncontrolled usage. |
+| `onSelectedRowKeysChange` | `(selectedRowKeys: string[]) => void` | — | Called with normalized, unique string keys whenever selection changes. |
+
+## UseDataTableSelectionResult
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `selectedRowKeys` | `string[]` | — | Required. Current selected business row keys; sourced from selectedRowKeys when controlled, otherwise from internal state. |
+| `rowSelection` | `RowSelectionState` | — | Required. Native TanStack rowSelection map derived from business keys. |
+| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | — | Required. Pass directly to useDataTable or native useReactTable. |
+| `selectionOptions` | [`DataTableSelectionOptions`](#datatableselectionoptions) | — | Required. Complete selection options ready to spread into useDataTable options. |
+| `clearSelection` | `() => void` | — | Required. Clear controlled or uncontrolled selection and notify the change callback. |

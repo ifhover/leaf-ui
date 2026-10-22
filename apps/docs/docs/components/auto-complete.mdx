@@ -8,7 +8,7 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 
 ## 基础输入
 
-通过 `options` 设置建议，默认按显示文本进行不区分大小写的包含匹配。`onChange` 响应输入和选择，`onSelect` 仅响应选择建议。
+通过 `options` 设置建议，默认按显示文本进行不区分大小写的包含匹配。`onChange` 响应输入和选择，`onSelect` 仅响应选择建议。选项上的 `disabled` 只禁用该条建议（示例中的 `Archived Garden`）；写在 AutoComplete 上的 `disabled` 则禁用整个输入控件。
 
 <ComponentExample title="输入与选择建议" preview={<AutoCompleteBasic />} fileName="basic.tsx" width={360}>
 
@@ -42,12 +42,11 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 </ComponentExample>
 
 ## AutoComplete API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | 必填 | 必需。建议列表 |
-| `value` | `string` | `''` | 受控文本 / 非受控初始文本 |
-| `defaultValue` | `string` | `''` | 受控文本 / 非受控初始文本 |
+| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | 必填 | 建议列表 |
+| `value` | `string` | `''` | 受控文本；省略时使用内部非受控值。 |
+| `defaultValue` | `string` | `''` | 非受控模式的初始文本；支持表单重置。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `filterOption` | `false \| ((query: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => boolean)` | 包含匹配 | `false` 关闭本地过滤；函数可定制过滤 |
@@ -65,9 +64,9 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 | `virtual` | `boolean` | — | 启用虚拟滚动；大量选项默认启用。 |
 | `listHeight` | `number` | `248` | 可视列表高度。 |
 | `optionHeight` | `number` | `32` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
 | `popupPlacement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 浮层相对触发控件的位置。 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
-| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupStyle']` | — | 浮层的自定义样式。 |
 | `popupRender` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupRender']` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
@@ -92,31 +91,21 @@ const options: AutoCompleteOption[] = [
 ```
 
 ### AutoCompleteOption
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 必填 | 唯一建议值，选择后填入输入框 |
-| `label` | `string` | — | 建议的显示文字，也用于默认的本地过滤 |
-| `disabled` | `boolean` | `false` | 禁用该建议 |
+| `value` | `string` | 必填 | 唯一建议值；选择后写入输入框。 |
+| `label` | `ReactNode` | — | 建议的显示文字；默认也用于本地过滤。 |
+| `searchLabel` | `string` | — | 复杂 label 的搜索纯文本；省略时使用可读文字或 value。 |
+| `disabled` | `boolean` | `false` | 禁用该建议。 |
 
 ## 键盘与表单
 
 输入框聚焦或输入时展开建议。↑ / ↓ 高亮可用选项，Enter 选择，Escape 收起，Tab 继续访问后续控件。中文输入法合成期间的 Enter 不会选择建议。没有匹配项时可以继续填写。
 
 输入框可以直接参与 FormData、原生必填校验和表单 reset。建议面板默认跟随输入框宽度并继承局部主题；为输入框提供 label 或 aria-label。
-
-## AutoCompleteOption
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 必需。受控值。 |
-| `label` | `ReactNode` | — | 展示文字或内容。 |
-| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
-| `disabled` | `boolean` | — | 禁用交互。 |
-
 ## AutoCompleteOptionGroup
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
-| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | — | 必需。可供选择的选项。 |
+| `label` | `ReactNode` | 必填 | 建议分组的标题。 |
+| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | 必填 | 该分组内的建议。 |
+

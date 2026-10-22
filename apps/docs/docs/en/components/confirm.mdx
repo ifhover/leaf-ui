@@ -47,8 +47,8 @@ The returned object is [`ConfirmApi`](#confirmapi).
 | `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
 | `confirmText` | `ReactNode` | Locale default | Confirm button label. |
 | `cancelText` | `ReactNode` | Locale default | Cancel button label. |
-| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Confirm button props. |
-| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Cancel button props. |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Confirm button props. |
+| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Cancel button props. |
 | `onConfirm` | `() => void \| Promise<void>` | — | Close after success; keep the dialog open and show the error on rejection. |
 | `onCancel` | `() => void` | — | Called on cancellation. |
 | `width` | `number \| string` | `420` | Dialog width, in pixels for numbers. |
@@ -95,3 +95,5 @@ import type { ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@ifhover/
 The default type has no status icon. Info, warning, success and danger show a bare semantic icon beside the content; danger uses a red exclamation mark. Success hides the cancel button unless `showCancel` is set.
 
 Confirm is an API-only prompt for brief decisions. Use [Modal](/en/components/modal) for forms, multiple steps or complex content.
+
+Confirm uses one content surface, muted explanation text and spacing between sections, with an outlined cancel button by default. Its backdrop and blur follow Modal, and primary actions follow the regional theme color.

@@ -16,7 +16,7 @@ export function ResultStates() {
         description="Remove unused content or adjust your storage limit."
       />
       <Result
-        status="error"
+        status="danger"
         size="sm"
         title="Publishing failed"
         description="Check your connection and try again."

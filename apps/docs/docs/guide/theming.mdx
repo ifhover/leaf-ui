@@ -15,11 +15,12 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 <ComponentExample title="颜色与圆角" preview={<ThemeBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/theming/basic.tsx"
+
 ```
 
 </ComponentExample>
 
-把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；悬停、按下和焦点颜色会自动生成。
+把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；按钮按下和其他交互状态的颜色会自动生成，按钮悬停保持原样。
 
 主色背景上的文字默认优先使用白色；白字与主色的对比度低于 `2.8:1` 时切换为黑色。例如蓝色 `#1d9bf0` 和橙色 `#ff6900` 使用白字，亮黄色 `#ffee00` 使用黑字。需要指定文字色时，可设置 `theme.tokens.onPrimaryColor`。
 
@@ -29,17 +30,18 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 下面这些参数都放在 `theme` 中，只写需要修改的项。
 
-| 参数 | 常见写法 | 用途 |
-| --- | --- | --- |
-| `primaryColor` | `'#7654c6'` | 设置主题色，相关交互颜色自动生成。 |
-| `borderRadius` | `8` | 调整基础圆角，`0` 为直角。 |
-| `appearance` | `'light'` / `'dark'` | 设置浅色或深色外观。 |
-| `controlHeight` | `40` | 调整单行控件的基础高度，小、大尺寸同步变化。 |
-| `fontSize` | `14` | 设置组件基础字号。 |
-| `fontFamily` | `'Inter, sans-serif'` | 设置字体；字体文件由应用加载。 |
-| `motion` | `false` | 关闭当前区域的动效，保留正常操作。 |
+| 参数            | 常见写法              | 用途                                                                   |
+| --------------- | --------------------- | ---------------------------------------------------------------------- |
+| `primaryColor`  | `'#7654c6'`           | 设置主题色，相关交互颜色自动生成。                                     |
+| `borderRadius`  | `8`                   | 调整基础圆角，`0` 为直角。                                             |
+| `appearance`    | `'light'` / `'dark'`  | 设置浅色或深色外观。                                                   |
+| `controlHeight` | `40`                  | 调整单行控件的基础高度，小、大尺寸同步变化。                           |
+| `fontSize`      | `14`                  | 设置组件基础字号。                                                     |
+| `lineHeight`    | `20`                  | 设置正文行高；数字默认为 px，`1`–`4` 保留旧倍率语义，也支持 CSS 长度。 |
+| `fontFamily`    | `'Inter, sans-serif'` | 设置字体；字体文件由应用加载。                                         |
+| `motion`        | `false`               | 关闭当前区域的动效，保留正常操作。                                     |
 
-未设置的字段继承外层配置。默认使用浅色外观、10px 基础圆角、36px 基础控件高度和 14px 字号。
+未设置的字段继承外层配置。默认使用浅色外观、10px 基础圆角、34px 基础控件高度、14px 字号和 20px 正文行高。
 
 完整参数见 [LeafTheme](/components/config-provider#leaftheme)。需要单独调整文字色、背景色或某个尺寸时，再查阅 [LeafThemeTokens](/api/theme-tokens#leafthemetokens)。
 
@@ -47,22 +49,23 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 下面的示例包含默认、插画、Windows XP、Material 和拟物五种风格的完整定义。将源码复制到自己的项目，把生成的 `LeafTheme` 对象传给 `ConfigProvider` 即可使用；主题定义保留在示例源码中，可以直接修改。
 
-| 风格 | 外观 |
-| --- | --- |
-| `default` | 组件库原始外观，不增加主题覆盖。 |
-| `illustration` | 高对比描边、鲜明配色与偏移硬阴影。 |
-| `windows-xp` | 小圆角、Tahoma 字体、斜面高光与渐变卡片标题。 |
-| `material` | 参考 MUI 的简洁轮廓、4px 圆角与层次阴影。 |
-| `skeuomorphic` | 柔和底面、双向浮雕阴影与按下时的内凹效果。 |
+| 风格           | 外观                                          |
+| -------------- | --------------------------------------------- |
+| `default`      | 组件库原始外观，不增加主题覆盖。              |
+| `illustration` | 高对比描边、鲜明配色与偏移硬阴影。            |
+| `windows-xp`   | 小圆角、Tahoma 字体、斜面高光与渐变卡片标题。 |
+| `material`     | 参考 MUI 的简洁轮廓、4px 圆角与层次阴影。     |
+| `skeuomorphic` | 柔和底面、双向浮雕阴影与按下时的内凹效果。    |
 
 <ComponentExample title="切换主题风格" preview={<ThemePresets />} fileName="presets.tsx" width={640}>
 
 ```tsx lineNumbers file="../../src/examples/theming/presets.tsx"
+
 ```
 
 </ComponentExample>
 
-默认风格不增加任何 token；`density` 使用默认值时也无需设置。悬停、按下、焦点和主色上的文字颜色由组件库自动生成，不需要在配置中逐项写出；示例仅按风格调整必要的阴影反馈。
+默认风格不增加任何 token；`density` 使用默认值时也无需设置。按下、焦点和主色上的文字颜色由组件库自动生成，不需要在配置中逐项写出；示例仅按风格调整必要的阴影反馈。
 
 自定义风格只定义差异：圆角、描边宽度、全局 `tokens.borderColor`、阴影，以及用 `color-mix()` 生成的染色表面。设置一次全局边框色，实色按钮、开关、卡片、表格、浮层等组件的外框都会生效，无需为每个组件重复配置。组件级覆盖优先，错误、选中等状态继续保留各自语义；原本无边框的组件保持自身结构。
 
@@ -84,7 +87,7 @@ Windows XP 和 Material 是使用 Leaf UI 主题能力制作的风格示例。Wi
 
 组件的文字、背景和边框会一起切换。没有指定 `primaryColor` 时，使用该外观的默认主题色。显式主色始终保留原值：黑色按钮在深色模式下仍使用黑底白字，并在需要时添加细微边界。
 
-主色文字、选中指示和焦点颜色分别派生。深色下，文字色以内容表面和辅助表面 `4.5:1` 的对比度为目标，选中指示以 `3:1` 为目标；只提高不足部分的亮度，不把实心按钮背景整体变亮。蓝色、橙色保持原色和白字。显式的文字色、焦点色与交互色 token 仍优先；CSS 颜色表达式在浏览器解析后参与派生，不修改传入的主题对象或颜色选择器的值。
+主色文字、选中指示和采用主色的焦点颜色分别派生；普通字段聚焦时加深中性边框，按钮的键盘焦点轮廓也使用中性色。深色下，文字色以内容表面和辅助表面 `4.5:1` 的对比度为目标，选中指示以 `3:1` 为目标；只提高不足部分的亮度，不把实心按钮背景整体变亮。蓝色、橙色保持原色和白字。显式的文字色、焦点色与交互色 token 仍优先；CSS 颜色表达式在浏览器解析后参与派生，不修改传入的主题对象或颜色选择器的值。
 
 ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动添加背景。业务页面的背景和文字也需要跟随外观时，可使用下文的 [CSS 变量](#在业务样式中使用主题)。
 
@@ -95,6 +98,7 @@ ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动
 <ComponentExample title="切换深色模式" preview={<ThemeAppearance />} fileName="appearance.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/theming/appearance.tsx"
+
 ```
 
 </ComponentExample>
@@ -126,6 +130,7 @@ export function AppTheme() {
 <ComponentExample title="局部主题" preview={<ThemeScoped />} fileName="scoped.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/theming/scoped.tsx"
+
 ```
 
 </ComponentExample>
@@ -142,7 +147,7 @@ export function AppTheme() {
 </ConfigProvider>
 ```
 
-`density` 与 `theme` 同级。默认值为 `'comfortable'`；`'compact'` 会同时收紧控件、表单和浮层的间距，基础控件高度从 36px 调整为 30px，字号保持不变。
+`density` 与 `theme` 同级。默认值为 `'comfortable'`；`'compact'` 会同时收紧控件、表单和浮层的间距，基础控件高度从 34px 调整为 30px，字号保持不变。
 
 需要指定高度时再设置 `theme.controlHeight`，它优先于密度预设。例如 `controlHeight: 40` 会生成 34px / 40px / 46px 三种控件高度。尺寸对比见 [ConfigProvider](/components/config-provider#基础高度)。
 
@@ -161,7 +166,7 @@ const theme = {
   primaryColor: '#7654c6',
   borderRadius: 8,
   tokens: {
-    successColor: '#20834a',
+    successColor: '#1e964f',
     borderRadiusLg: 18,
     motionDuration: 160,
   },
@@ -170,19 +175,21 @@ const theme = {
 
 将这个对象传给 `<ConfigProvider theme={theme}>`。这里的 `borderRadiusLg` 会覆盖自动生成的大圆角；`motionDuration` 的数字单位是毫秒。完整字段和说明见 [LeafThemeTokens](/api/theme-tokens#leafthemetokens)。
 
-如果使用很浅的主题色，可通过 `tokens.onPrimaryColor` 设置实色按钮上的文字色。自定义配色后，应检查正常、悬停和禁用状态的可读性。`motion: false` 可以关闭区域动效，系统的“减少动态效果”偏好始终优先。
+如果使用很浅的主题色，可通过 `tokens.onPrimaryColor` 设置实色按钮上的文字色。自定义配色后，应检查正常、按下和禁用状态的可读性。`motion: false` 可以关闭区域动效，系统的“减少动态效果”偏好始终优先。
 
 ### 只调整某类组件的样式
 
 `theme.components` 按组件名称设置样式。例如让按钮使用 4px 圆角，同时调整卡片内边距：
 
 ```tsx
-<ConfigProvider theme={{
-  components: {
-    Button: { borderRadius: 4 },
-    Card: { padding: 24 },
-  },
-}}>
+<ConfigProvider
+  theme={{
+    components: {
+      Button: { borderRadius: 4 },
+      Card: { padding: 24 },
+    },
+  }}
+>
   <App />
 </ConfigProvider>
 ```
@@ -198,23 +205,25 @@ const theme = {
 支持状态覆盖的组件还可用 `hover`、`active`、`focus`、`disabled` 调整颜色、背景、边框颜色和阴影：
 
 ```tsx
-<ConfigProvider theme={{
-  tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
-  components: {
-    Button: {
-      borderColor: '#252525',
-      hover: { shadow: '4px 4px 0 #252525' },
-      active: { shadow: '1px 1px 0 #252525' },
-      disabled: { shadow: 'none' },
+<ConfigProvider
+  theme={{
+    tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
+    components: {
+      Button: {
+        borderColor: '#252525',
+        hover: { shadow: '4px 4px 0 #252525' },
+        active: { shadow: '1px 1px 0 #252525' },
+        disabled: { shadow: 'none' },
+      },
+      Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
     },
-    Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
-  },
-}}>
+  }}
+>
   <App />
 </ConfigProvider>
 ```
 
-状态配置只修改外观，不改变组件的事件、尺寸、禁用或只读行为，也不移除键盘焦点轮廓。嵌套区域按状态内的字段合并，`undefined` 继续继承。完整字段与支持范围见 [主题变量](/api/theme-tokens#leafcomponenttokens)。
+状态配置只修改外观，不改变组件的事件、尺寸、禁用或只读行为，也不移除键盘焦点提示。嵌套区域按状态内的字段合并，`undefined` 继续继承。完整字段与支持范围见 [主题变量](/api/theme-tokens#leafcomponenttokens)。
 
 ### 在业务样式中使用主题
 
@@ -236,20 +245,20 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 }
 ```
 
-| 常用变量 | 用途 |
-| --- | --- |
-| `--leaf-color-primary` | 当前主题色。 |
-| `--leaf-color-primary-ink` | 主色文字，深色下按表面对比度提亮。 |
-| `--leaf-color-primary-indicator` | 选中、进度和轮廓的主色指示。 |
-| `--leaf-color-primary-focus` | 默认主色焦点轮廓。 |
-| `--leaf-color-primary-fill-border` | 实心主色背景的辅助边界，通常透明。 |
-| `--leaf-color-on-primary` | 实色主题背景上的文字色。 |
-| `--leaf-color-text` / `--leaf-color-text-muted` | 主要、次要文字色。 |
-| `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。 |
-| `--leaf-color-border` | 边框颜色。 |
-| `--leaf-border-width` | 外框宽度。 |
-| `--leaf-control-shadow` / `--leaf-surface-shadow` | 控件与内容表面阴影。 |
-| `--leaf-radius` | 基础圆角。 |
+| 常用变量                                              | 用途                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------ |
+| `--leaf-color-primary`                                | 当前主题色。                                                       |
+| `--leaf-color-primary-ink`                            | 主色文字，深色下按表面对比度提亮。                                 |
+| `--leaf-color-primary-indicator`                      | 选中、进度和轮廓的主色指示。                                       |
+| `--leaf-color-primary-focus`                          | 供采用主色焦点提示的组件使用；普通字段与按钮默认使用中性焦点提示。 |
+| `--leaf-color-primary-fill-border`                    | 实心主色背景的辅助边界，通常透明。                                 |
+| `--leaf-color-on-primary`                             | 实色主题背景上的文字色。                                           |
+| `--leaf-color-text` / `--leaf-color-text-muted`       | 主要、次要文字色。                                                 |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。                                               |
+| `--leaf-color-border`                                 | 边框颜色。                                                         |
+| `--leaf-border-width`                                 | 外框宽度。                                                         |
+| `--leaf-control-shadow` / `--leaf-surface-shadow`     | 控件与内容表面阴影。                                               |
+| `--leaf-radius`                                       | 基础圆角。                                                         |
 
 调整 Leaf UI 组件的主题仍通过 ConfigProvider，业务 CSS 用这些变量读取结果。仅修改某个基础 CSS 变量，不会重新生成整套交互颜色。
 

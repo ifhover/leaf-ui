@@ -1,0 +1,57 @@
+import { ColorPalette } from '../../../src/components/color-palette';
+
+# Colors
+
+Leaf UI organizes color with semantic variables. The default theme exposes 144 palette variables; core semantic colors and common roles appear first, with the complete set collapsed at the end.
+
+## Core semantic colors
+
+Primary, success, danger, warning and info communicate meaning, while foreground colors on solid fills keep separate entry points. The left half of each swatch is light and the right half is dark.
+
+<ColorPalette family="base" />
+
+## Semantic scales
+
+Each scale shows all derived swatches in a horizontally scrollable strip, followed by common variables.
+
+### Primary
+
+<ColorPalette family="primary" />
+
+### Success
+
+<ColorPalette family="success" />
+
+### Danger
+
+<ColorPalette family="danger" />
+
+### Warning
+
+<ColorPalette family="warning" />
+
+### Info
+
+<ColorPalette family="info" />
+
+## Neutral colors
+
+Backgrounds, text and borders are grouped separately. `--leaf-color-divider` is a CSS alias of `--leaf-color-border-surface-70` with its own entry point.
+
+<ColorPalette family="neutral" />
+
+## Configure colors
+
+Set the primary color through ConfigProvider and individual semantic colors through `theme.tokens`. Application CSS reads the generated `--leaf-color-*` variables.
+
+```tsx
+<ConfigProvider theme={{ primaryColor: brandColor }}>
+  <App />
+</ConfigProvider>
+```
+
+The `primary-soft` tokens have no default value; set `theme.tokens.primarySoftColor` and related fields explicitly when needed. Overriding only base CSS variables does not regenerate derived colors. See [ConfigProvider](/en/components/config-provider), [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens) and [Theming](/en/guide/theming).
+
+## Complete palette
+
+<ColorPalette family="all" />

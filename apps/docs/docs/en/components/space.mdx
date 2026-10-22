@@ -15,9 +15,9 @@ Keep consistent spacing between elements.
 
 </ComponentExample>
 
-## More examples
+## Vertical layout and separators
 
-<ComponentExample title="More examples" preview={<SpaceVertical />} fileName="advanced.tsx">
+<ComponentExample title="Vertical layout and separators" preview={<SpaceVertical />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/space/advanced.tsx"
 ```
@@ -40,8 +40,8 @@ import type { SpaceProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout or movement direction |
-| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | Size or spacing preset |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction of the items. |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | Gap between items; a tuple means [horizontal, vertical]. |
 | `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | Alignment |
 | `wrap` | `boolean` | `false` | Wrap as needed |
 | `split` | `ReactNode` | — | Separator between elements |

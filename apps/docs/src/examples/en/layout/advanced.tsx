@@ -20,13 +20,7 @@ export function LayoutResponsive() {
         collapsible
         breakpoint={575}
       >
-        <Menu
-          mode="inline"
-          collapsed={compact}
-          selectedKey={selected}
-          onSelect={setSelected}
-          items={items}
-        />
+        <Menu collapsed={compact} selectedKey={selected} onSelect={setSelected} items={items} />
       </Layout.Sider>
       <Layout.Content>
         <Card title={items.find((item) => item.key === selected)?.label}>

@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { CommandPaletteBasic, CommandPaletteFailure } from '../../../src/examples/command-palette/basic';
+import { CommandPaletteBasic } from '../../../src/examples/command-palette/basic';
+import { CommandPaletteFailure } from '../../../src/examples/command-palette/failure';
 
 # CommandPalette
 
@@ -16,9 +17,9 @@ Search and run actions quickly.
 
 ## Async actions
 
-<ComponentExample title="Async actions" preview={<CommandPaletteFailure english />} fileName="basic.tsx" width="fit-content">
+<ComponentExample title="Async actions" preview={<CommandPaletteFailure english />} fileName="failure.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/command-palette/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/command-palette/failure.tsx"
 ```
 
 </ComponentExample>
@@ -46,7 +47,7 @@ Search and run actions quickly.
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
 | `onSelect` | `(item: `[`CommandItem`](#commanditem)`) => void` | — | Called when an item is selected. |
 | `shortcut` | `string \| false` | `'k'` | Use Ctrl/Cmd with this key to open the palette; false disables it. |
-| `placeholder` | `string` | — | Configure placeholder. |
+| `placeholder` | `string` | — | Placeholder text for the search field. |
 | `loading` | `boolean` | — | Show a loading state. |
 | `emptyContent` | `ReactNode` | — | Content for an empty collection. |
 | `onSearch` | `(query: string) => void` | — | Called when the search text changes. |
@@ -60,4 +61,4 @@ Import the props and data types when creating reusable configuration.
 import type { CommandItem, CommandPaletteProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+The search field has a readable label, the list supports arrow keys and Enter, and Escape closes it; the overlay follows ConfigProvider themes and reduced motion.

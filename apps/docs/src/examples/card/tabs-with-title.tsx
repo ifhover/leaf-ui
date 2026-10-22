@@ -7,7 +7,6 @@ export function CardTabsWithTitle() {
   const formId = useId();
   return (
     <Card
-      divided
       title="项目设置"
       description="管理项目资料与团队成员。"
       extra={<Tag>{saved ? '已保存' : '草稿'}</Tag>}

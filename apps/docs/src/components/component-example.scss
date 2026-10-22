@@ -41,6 +41,11 @@
   max-width: 100%;
 }
 
+// Keep intrinsic count and status badges from stretching across the preview grid.
+:where(.leaf-component-example__preview-content) > .leaf-badge {
+  justify-self: center;
+}
+
 .leaf-component-example__code {
   border-top: 1px solid var(--leaf-site-divider);
   background: var(--leaf-example-code-bg);

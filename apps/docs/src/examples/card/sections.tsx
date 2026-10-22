@@ -14,18 +14,17 @@ export function CardSections({ english = false }: { english?: boolean }) {
         )}
       </Card>
       <Card
-        divided
         title={t('内容分区', 'Content sections')}
         footer={
           <Flex justify="end" gap="sm" wrap>
             <Button variant="outline">{t('取消', 'Cancel')}</Button>
-            <Button>{t('确认', 'Confirm')}</Button>
+            <Button variant="solid">{t('确认', 'Confirm')}</Button>
           </Flex>
         }
       >
         {t(
-          '设置 divided 后，标题、正文和底部操作使用分隔线划分。',
-          'Enable divided to separate the heading, body and footer actions.',
+          '标题、正文和底部操作通过留白自然衔接。',
+          'The heading, body and footer actions are grouped with spacing.',
         )}
       </Card>
     </Space>

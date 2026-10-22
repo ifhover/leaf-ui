@@ -1,14 +1,6 @@
 import { Button, Input, Tag } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
-import {
-  type ColumnDef,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getGroupedRowModel,
-  getSortedRowModel,
-  type PaginationState,
-  useReactTable,
-} from '@tanstack/react-table';
+import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import { type ColumnDef, getGroupedRowModel, type PaginationState } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
 import { type Member, members, useMemberColumns } from './data';
 
@@ -21,12 +13,11 @@ const groupedMembers = members.slice(0, 8);
 
 export function TableVirtual({ english = false }: { english?: boolean }) {
   const columns = useMemberColumns(english);
-  const table = useReactTable({
+  const table = useDataTable({
     data: manyMembers,
     columns,
-    getRowId: (member) => member.id,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    rowKey: 'id',
+    localPagination: false,
   });
   return (
     <DataTable
@@ -69,17 +60,19 @@ export function TableServer({ english = false }: { english?: boolean }) {
       clearTimeout(timer);
     };
   }, [pagination, request]);
-  const table = useReactTable({
+  const table = useDataTable({
     data,
     columns,
-    state: { pagination },
-    onPaginationChange: setPagination,
-    manualPagination: true,
-    manualSorting: true,
-    enableSorting: false,
-    rowCount: members.length,
-    getRowId: (member) => member.id,
-    getCoreRowModel: getCoreRowModel(),
+    rowKey: 'id',
+    localPagination: false,
+    options: {
+      state: { pagination },
+      onPaginationChange: setPagination,
+      manualPagination: true,
+      manualSorting: true,
+      enableSorting: false,
+      rowCount: members.length,
+    },
   });
   return (
     <DataTable
@@ -88,24 +81,22 @@ export function TableServer({ english = false }: { english?: boolean }) {
       loading={loading}
       error={error ? (english ? 'Unable to load members' : '成员加载失败') : undefined}
       onRetry={() => setRequest((value) => value + 1)}
-    >
-      <DataTable.Toolbar>
-        <Button
-          variant="outline"
-          disabled={loading}
-          onClick={() => setRequest((value) => value + 1)}
-        >
-          {english ? 'Refresh' : '刷新'}
-        </Button>
-        <Button variant="soft" disabled={loading} onClick={() => setError(true)}>
-          {english ? 'Simulate error' : '模拟失败'}
-        </Button>
-      </DataTable.Toolbar>
-      <DataTable.Content />
-      <DataTable.Footer>
-        <DataTable.Pagination pageSizeOptions={[5, 10, 20]} />
-      </DataTable.Footer>
-    </DataTable>
+      pagination={{ pageSizeOptions: [5, 10, 20] }}
+      toolbar={
+        <>
+          <Button
+            variant="outline"
+            disabled={loading}
+            onClick={() => setRequest((value) => value + 1)}
+          >
+            {english ? 'Refresh' : '刷新'}
+          </Button>
+          <Button  disabled={loading} onClick={() => setError(true)}>
+            {english ? 'Simulate error' : '模拟失败'}
+          </Button>
+        </>
+      }
+    />
   );
 }
 
@@ -128,14 +119,15 @@ export function TableGrouped({ english = false }: { english?: boolean }) {
     ],
     [english],
   );
-  const table = useReactTable({
+  const table = useDataTable({
     data: groupedMembers,
     columns,
-    getRowId: (member) => member.id,
-    getCoreRowModel: getCoreRowModel(),
-    getGroupedRowModel: getGroupedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    initialState: { grouping: ['team'], expanded: true },
+    rowKey: 'id',
+    localPagination: false,
+    options: {
+      getGroupedRowModel: getGroupedRowModel(),
+      initialState: { grouping: ['team'], expanded: true },
+    },
   });
   return (
     <DataTable
@@ -174,11 +166,11 @@ export function TableEditable({ english = false }: { english?: boolean }) {
     ],
     [english],
   );
-  const table = useReactTable({
+  const table = useDataTable({
     data,
     columns,
-    getRowId: (member) => member.id,
-    getCoreRowModel: getCoreRowModel(),
+    rowKey: 'id',
+    localPagination: false,
   });
   return (
     <DataTable

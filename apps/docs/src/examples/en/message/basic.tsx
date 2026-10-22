@@ -18,7 +18,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.info('An information message')}>
         Information
       </Button>
-      <Button danger variant="outline" onClick={() => message.error('Failed. Please try again.')}>
+      <Button danger variant="outline" onClick={() => message.danger('Failed. Please try again.')}>
         Error
       </Button>
       <Button variant="outline" onClick={() => message.success('Completed successfully')}>
@@ -27,7 +27,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.warning('Please check your input')}>
         Warning
       </Button>
-      <Button variant="soft" onClick={() => message.close()}>
+      <Button  onClick={() => message.close()}>
         Clear messages
       </Button>
     </Flex>

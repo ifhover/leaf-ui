@@ -8,6 +8,14 @@ export function DateRangePickerModes() {
       <FormField label="Month range">
         <DateRangePicker aria-label="Month range" picker="month" placeholder="Month range" />
       </FormField>
+      <FormField label="Quarter range">
+        <DateRangePicker
+          aria-label="Quarter range"
+          format="YYYY-[Q]Q"
+          picker="quarter"
+          placeholder="Quarter range"
+        />
+      </FormField>
       <FormField label="Week range">
         <DateRangePicker aria-label="Week range" picker="week" placeholder="Week range" />
       </FormField>

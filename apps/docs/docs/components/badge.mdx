@@ -1,5 +1,8 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/examples/badge/basic';
+import { BadgeBasic } from '../../src/examples/badge/basic';
+import { BadgeCounts } from '../../src/examples/badge/counts';
+import { BadgeDot } from '../../src/examples/badge/dot';
+import { BadgeStatuses } from '../../src/examples/badge/statuses';
 
 # Badge 角标
 
@@ -18,9 +21,9 @@ import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/exam
 
 超过 `max` 的数值展示为上限加号；使用 `showZero` 展示零值。
 
-<ComponentExample title="数值规则" preview={<BadgeCounts />} fileName="basic.tsx">
+<ComponentExample title="数值规则" preview={<BadgeCounts />} fileName="counts.tsx">
 
-```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```tsx lineNumbers file="../../src/examples/badge/counts.tsx"
 ```
 
 </ComponentExample>
@@ -29,9 +32,9 @@ import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/exam
 
 只提示有新内容，不展示具体数量。
 
-<ComponentExample title="红点提醒" preview={<BadgeDot />} fileName="basic.tsx">
+<ComponentExample title="红点提醒" preview={<BadgeDot />} fileName="dot.tsx">
 
-```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```tsx lineNumbers file="../../src/examples/badge/dot.tsx"
 ```
 
 </ComponentExample>
@@ -40,9 +43,9 @@ import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/exam
 
 用圆点和文字说明当前状态。
 
-<ComponentExample title="状态标记" preview={<BadgeStatuses />} fileName="basic.tsx">
+<ComponentExample title="状态标记" preview={<BadgeStatuses />} fileName="statuses.tsx">
 
-```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
+```tsx lineNumbers file="../../src/examples/badge/statuses.tsx"
 ```
 
 </ComponentExample>
@@ -51,12 +54,12 @@ import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../src/exam
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 设置后将角标附着在该内容右上方 |
+| `children` | `ReactNode` | — | 设置后将角标附着在该内容右上方；内容变宽时向外侧延伸 |
 | `count` | `number \| string` | — | 角标内容 |
 | `max` | `number` | `99` | 超过该值时展示 max+ |
 | `showZero` | `boolean` | `false` | 允许展示 0 |
 | `dot` | `boolean` | `false` | 使用圆点提醒 |
-| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'default'` | — | 使用对应颜色的状态圆点 |
+| `status` | `'success' \| 'warning' \| 'danger' \| 'info' \| 'default'` | — | 使用对应颜色的状态圆点；`error` 为兼容别名 |
 | `text` | `ReactNode` | — | 圆点旁的说明 |
 | `color` | `string` | — | 自定义角标颜色 |
 

@@ -79,7 +79,7 @@ export function Root() {
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | 创建或按 key 更新，返回 key |
-| `success / info / warning / error` | `(content: ReactNode, duration?: number) => string` | — | 快捷显示对应类型 |
+| `success / info / warning / danger` | `(content: ReactNode, duration?: number) => string` | — | 快捷显示对应类型；`error` 保留为兼容方法 |
 | `loading` | `(content: ReactNode) => string` | — | 持续加载消息，返回 key |
 | `close` | `(key?: string) => void` | — | 关闭指定消息，无 key 时关闭全部 |
 
@@ -89,7 +89,7 @@ export function Root() {
 | --- | --- | --- | --- |
 | `key` | `string` | 自动生成 | 相同 key 更新现有消息 |
 | `content` | `ReactNode` | 必填 | 消息内容 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | 消息类型 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
 | `duration` | `number` | `3` | 自动关闭秒数；0 不自动关闭；loading 默认 0 |
 | `closable` | `boolean` | `false` | 展示关闭按钮 |
 | `onClose` | `() => void` | — | 开始关闭时触发一次 |
@@ -100,7 +100,7 @@ export function Root() {
 | --- | --- | --- | --- |
 | `open` | `boolean` | 必填 | 受控显示状态 |
 | `content` | `ReactNode` | 必填 | 消息内容 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | 消息类型 |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
 | `duration` | `number` | `3` | 秒数；0 持续显示；loading 默认 0 |
 | `closable` | `boolean` | `false` | 关闭按钮 |
 | `onClose / afterClose` | `() => void` | — | 请求关闭 / 动画完成 |

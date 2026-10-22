@@ -1,12 +1,14 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
-import { TagWeight } from '../../../src/examples/en/tag/weight';
+import { TagIcons } from '../../../src/examples/en/tag/icons';
 
 # Tag
 
 Label content categories or statuses.
 
 ## Basic usage
+
+The example shows theme, success, info, warning, danger and custom colors in tinted and solid variants. Switch tabs to compare the three sizes.
 
 <ComponentExample title="Basic usage" preview={<TagBasic />} fileName="basic.tsx">
 
@@ -15,13 +17,13 @@ Label content categories or statuses.
 
 </ComponentExample>
 
-## Font weight
+## Icons
 
-Tags are bold by default. Set `bold={false}` for regular text. `CheckableTag` and `TagGroup` support the same prop.
+Pass a status dot or any custom icon to `icon`. The example shows both tinted and solid appearances; the dot follows the tag label color.
 
-<ComponentExample title="Font weight" preview={<TagWeight />} fileName="weight.tsx">
+<ComponentExample title="Dots and icons" preview={<TagIcons />} fileName="icons.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/tag/weight.tsx"
+```tsx lineNumbers file="../../../src/examples/en/tag/icons.tsx"
 ```
 
 </ComponentExample>
@@ -31,11 +33,10 @@ Tags are bold by default. Set `bold={false}` for regular text. `CheckableTag` an
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Tag content |
-| `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| string` | `'default'` | Semantic or custom color |
-| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, both borderless with rounded corners |
+| `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| string` | `'primary'` | Semantic or custom color; `default` and `error` are compatibility aliases |
+| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, borderless and using the small radius |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
-| `bold` | `boolean` | `true` | Use bold text; set to false for regular text |
-| `icon` | `ReactNode` | — | Leading icon |
+| `icon` | `ReactNode` | — | Leading dot or custom icon |
 | `closable` | `boolean` | `false` | Show a close button |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
 
@@ -49,7 +50,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 
 ## Usage notes
 
-Tags use borderless fills and rounded corners, with tinted and solid appearances. The radius follows the regional theme's base radius (10px by default); set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override. Bold text follows the theme's `headingWeight` (600 by default), while regular text uses 400. Set regional defaults separately with `ConfigProvider`'s `components.Tag.bold`, `components.CheckableTag.bold`, and `components.TagGroup.bold`; instance props take precedence.
+Tags use borderless fills and the small radius, with tinted and solid appearances. The default is 6px; set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override. Label weight is fixed at 500 and no weight prop is exposed. An unspecified color uses the theme color; `default` maps to the theme color and `error` normalizes to `danger`. Tinted labels follow the tag's own color, except warning uses the derived readable warning ink; solid labels use white, except warning uses `--leaf-color-on-warning` against the warning fill. Unchecked `CheckableTag` and `TagGroup` options use the tinted theme color, while selected options use the solid theme color.
 
 Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
 
@@ -60,8 +61,7 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `checked` | `boolean` | — | Controlled checked state |
 | `defaultChecked` | `boolean` | `false` | Initial checked state |
 | `onChange` | `(checked: boolean) => void` | — | Value change callback |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
-| `bold` | `boolean` | `true` | Use bold text; set to false for regular text |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size. |
 
 ## TagGroupProps API
 
@@ -72,8 +72,7 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: string[]) => void` | — | Value change callback |
 | `disabled` | `boolean` | — | Disable interactions |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
-| `bold` | `boolean` | `true` | Use bold text for tags in the group; set to false for regular text |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size. |
 | `name` | `string` | — | Form field name |
 | `form` | `string` | — | Associated form ID |
 | `required` | `boolean` | — | Required form validation |

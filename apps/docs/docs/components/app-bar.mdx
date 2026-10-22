@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { AppBarBasic, AppBarNavigation } from '../../src/examples/app-bar/basic';
+import { AppBarBasic } from '../../src/examples/app-bar/basic';
+import { AppBarNavigation } from '../../src/examples/app-bar/navigation';
 
 # AppBar 应用导航
 
@@ -16,9 +17,9 @@ import { AppBarBasic, AppBarNavigation } from '../../src/examples/app-bar/basic'
 
 ## 底部导航
 
-<ComponentExample title="底部导航" preview={<AppBarNavigation />} fileName="basic.tsx">
+<ComponentExample title="底部导航" preview={<AppBarNavigation />} fileName="navigation.tsx">
 
-```tsx lineNumbers file="../../src/examples/app-bar/basic.tsx"
+```tsx lineNumbers file="../../src/examples/app-bar/navigation.tsx"
 ```
 
 </ComponentExample>
@@ -65,4 +66,4 @@ import { AppBarBasic, AppBarNavigation } from '../../src/examples/app-bar/basic'
 import type { AppBarProps, ToolbarProps, BottomNavigationItem, BottomNavigationProps } from '@ifhover/leaf-ui';
 ```
 
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+工具栏仅展示图标时需提供 aria-label；Tab 支持键盘切换，并跟随 ConfigProvider 的主题和减少动画设置。

@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { AppBarBasic, AppBarNavigation } from '../../../src/examples/app-bar/basic';
+import { AppBarBasic } from '../../../src/examples/app-bar/basic';
+import { AppBarNavigation } from '../../../src/examples/app-bar/navigation';
 
 # AppBar
 
@@ -16,9 +17,9 @@ Organize navigation at the top and bottom of an application.
 
 ## Bottom navigation
 
-<ComponentExample title="Bottom navigation" preview={<AppBarNavigation english />} fileName="basic.tsx">
+<ComponentExample title="Bottom navigation" preview={<AppBarNavigation english />} fileName="navigation.tsx">
 
-```tsx lineNumbers file="../../../src/examples/app-bar/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/app-bar/navigation.tsx"
 ```
 
 </ComponentExample>
@@ -65,4 +66,4 @@ Import the props and data types when creating reusable configuration.
 import type { AppBarProps, ToolbarProps, BottomNavigationItem, BottomNavigationProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Provide an aria-label for icon-only toolbar actions. Tabs respond to the keyboard and follow ConfigProvider themes and reduced motion.

@@ -6,7 +6,13 @@ import path from 'node:path';
 import test from 'node:test';
 import { parse } from '@babel/parser';
 import { versionTarget } from '../src/components/version-path.ts';
-import { properties, readApiRows } from './api-model.mjs';
+import {
+  apiDefaultCell,
+  apiSectionMatch,
+  properties,
+  readApiRows,
+  removeDuplicateApiSections,
+} from './api-model.mjs';
 import { rehypeApiTypes } from './api-type-display.mjs';
 import {
   extractExampleMarkdown,
@@ -226,12 +232,86 @@ test('API tables retain data-type descriptions and split grouped defaults correc
   assert.equal(rows.get('filter').description, 'Custom filter');
 });
 
+test('API section lookup keeps the first table in document order and removes duplicates', () => {
+  const document = [
+    '# Demo',
+    '',
+    '## Types',
+    '',
+    '### DemoOption',
+    '',
+    '| Property | Type | Default | Description |',
+    '| --- | --- | --- | --- |',
+    '| `value` | `string` | Required | First table |',
+    '',
+    '## Usage',
+    '',
+    'Use the option type.',
+    '',
+    '## DemoOption',
+    '',
+    '| Property | Type | Default | Description |',
+    '| --- | --- | --- | --- |',
+    '| `value` | `string` | — | Duplicate table |',
+  ].join('\n');
+  const single =
+    '## DemoOption\n\n| Property | Type | Description |\n| --- | --- | --- |\n| `value` | `string` | Single table |';
+  assert.equal(
+    removeDuplicateApiSections(single, ['DemoOption']).match(/^## DemoOption$/gmu)?.length,
+    1,
+  );
+  assert.equal(apiSectionMatch(document, 'DemoOption').heading, 'DemoOption');
+  assert.match(apiSectionMatch(document, 'DemoOption').match[0], /First table/u);
+  const cleaned = removeDuplicateApiSections(document, ['DemoOption']);
+  assert.equal(cleaned.match(/^#{2,6} DemoOption\r?$/gmu)?.length, 1);
+  assert.match(cleaned, /First table/u);
+  assert.doesNotMatch(cleaned, /Duplicate table/u);
+});
+
+test('optional API values are not marked required directly from declarations', async () => {
+  const entry = path.resolve(import.meta.dirname, '../../../packages/react/src/index.ts');
+  for (const [name, property] of [
+    ['AutoCompleteProps', 'value'],
+    ['CascaderProps', 'value'],
+    ['SelectProps', 'value'],
+    ['SliderProps', 'value'],
+  ]) {
+    const value = (await properties(entry, name)).get(property);
+    assert.equal(value?.optional, true, `${name}.${property} should remain optional`);
+  }
+});
+
+test('API defaults distinguish required, explicit, previous and absent values', () => {
+  assert.equal(apiDefaultCell({ optional: false, english: true }), 'Required');
+  assert.equal(apiDefaultCell({ optional: false, english: false }), '必填');
+  assert.equal(apiDefaultCell({ optional: true, english: true }), '—');
+  assert.equal(
+    apiDefaultCell({ optional: true, english: true, previousDefault: '`previous`' }),
+    '`previous`',
+  );
+  assert.equal(
+    apiDefaultCell({ optional: false, english: true, override: '—' }),
+    '—',
+  );
+});
+
 test('API defaults use the declared parameter type for composed table roots', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
   assert.equal((await properties(adapter, 'DataTableProps')).get('size').defaultValue, "'md'");
   assert.equal(
     (await properties(adapter, 'DataTableProps')).get('pagination').defaultValue,
+    'true',
+  );
+  const props = await properties(adapter, 'DataTableProps');
+  assert.equal(props.get('table').type, 'TanStackTable<TData>');
+  assert.equal(props.get('toolbar').type, 'ReactNode');
+  assert.equal(
+    (await properties(adapter, 'DataTableInstanceProps')).get('size').defaultValue,
+    "'md'",
+  );
+  assert.equal(
+    (await properties(adapter, 'UseDataTableOptions')).get('pagination').defaultValue,
     'true',
   );
 });
@@ -250,6 +330,14 @@ test('AI discovery publishes DataTable as the only table component at the canoni
   assert.equal(api.find((item) => item.name === 'DataTableRowReorderInfo')?.kind, 'type');
   assert.equal(api.find((item) => item.name === 'DataTableRowProps')?.kind, 'type');
   assert.equal(api.find((item) => item.name === 'DataTableCellProps')?.kind, 'type');
+  for (const name of [
+    'useDataTable',
+    'UseDataTableOptions',
+    'DataTableInstanceProps',
+    'DataTableRowKey',
+    'DataTableColumnDef',
+  ])
+    assert.equal(api.find((item) => item.name === name)?.importPath, '@ifhover/leaf-ui/table');
 });
 
 test('AI discovery preserves native Table and adapter imports in historical snapshots', async () => {

@@ -58,7 +58,7 @@ export function VersionSwitcher() {
     <div className="leaf-docs-versions" ref={root}>
       <Button
         ref={trigger}
-        variant="soft"
+        
         size="sm"
         className="leaf-docs-versions__trigger"
         aria-label={english ? `Documentation version ${version}` : `文档版本 ${version}`}

@@ -1,4 +1,5 @@
 import { Capabilities } from '../../../src/examples/dropdown/capabilities';
+import { DropdownExtra } from '../../../src/examples/en/dropdown/extra';
 import { ExtensionDemo } from '../../../src/examples/en/dropdown/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DropdownBasic } from '../../../src/examples/en/dropdown/basic';
@@ -16,9 +17,20 @@ Group additional actions in a menu.
 
 </ComponentExample>
 
-## Extended features
+## Trailing content
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
+Without `popupWidth`, the popup starts at a 220px default width and expands naturally with its content. Use an item's `extra` slot for shortcuts, status labels or other custom content at the trailing edge. It remains part of the row's click target, so do not nest buttons or links inside it.
+
+<ComponentExample title="Trailing content" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/extra.tsx"
+```
+
+</ComponentExample>
+
+## Grouped, radio and checkbox menus
+
+<ComponentExample title="Grouped, radio and checkbox menus" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/dropdown/extensions.tsx"
 ```
@@ -51,8 +63,8 @@ Group additional actions in a menu.
 | `onOpenChange` | `(open: boolean) => void` | — | Open-state changes |
 | `onSelect` | `(key: string) => void` | — | Called when an enabled menu entry is selected |
 | `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | Popup placement |
-| `popupWidth` | `number \| string` | `—` | Popup width / maximum width |
-| `popupMaxWidth` | `number \| string` | `420` | Popup width / maximum width |
+| `popupWidth` | `number \| string` | `—` | Popup width; defaults to at least 220px when unset. |
+| `popupMaxWidth` | `number \| string` | `420` | Maximum popup width, still bounded by the viewport. |
 | `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | Trigger mode; Dropdown supports click, hover and context menu. |
 | `mouseEnterDelay` | `number` | `100` | Configure mouse enter delay. |
 | `mouseLeaveDelay` | `number` | `150` | Configure mouse leave delay. |
@@ -65,8 +77,9 @@ Group additional actions in a menu.
 | `key` | `string` | Required | Required. Unique key |
 | `label` | `ReactNode` | — | Content and icon |
 | `icon` | `ReactNode` | — | Content and icon |
+| `extra` | `ReactNode` | — | Trailing item content for shortcuts, status labels or other non-interactive information. |
 | `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | Menu entry or divider |
-| `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | Content, or child nodes for hierarchical records. |
+| `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | Menu entries. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `danger` | `boolean` | `false` | Disabled / danger action |
 | `checked` | `boolean` | — | Configure checked. |
@@ -74,7 +87,7 @@ Group additional actions in a menu.
 | `closeOnSelect` | `boolean` | — | Configure close on select. |
 | `onCheckedChange` | `(checked: boolean) => void` | — | Configure on checked change. |
 | `href` | `string` | — | Link destination. |
-| `target` | `string` | — | Target selector or element getter; omit to center the step. |
+| `target` | `string` | — | Link target attribute, such as _blank; opens in the current tab when omitted. |
 | `onClick` | `(event: MouseEvent<HTMLElement>) => void` | — | Runs when the item is selected |
 
 ## Types
@@ -87,4 +100,4 @@ import type { DropdownProps, DropdownItem } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-Press Down / Up on the trigger to open. Use arrow keys, Home, End or the first letter to navigate, Enter to select, and Escape to close and restore focus. Disabled entries and dividers are skipped.
+Press Down / Up on the trigger to open. Use arrow keys, Home, End or the first letter to navigate, Enter to select, and Escape to close and restore focus. Disabled entries and dividers are skipped. An item's `extra` shares the row's click target; keep interactive controls outside the menu item.

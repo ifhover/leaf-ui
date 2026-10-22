@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../../src/examples/scrollbar/basic';
+import { ScrollbarBasic } from '../../../src/examples/scrollbar/basic';
+import { ScrollbarHorizontal } from '../../../src/examples/scrollbar/horizontal';
+import { ScrollbarDynamic } from '../../../src/examples/scrollbar/dynamic';
 
 # Scrollbar
 
@@ -20,9 +22,9 @@ Scrollbars fade in when the pointer enters the region and fade out when it leave
 
 `orientation` controls the scrolling axes. Use `scrollbar="always"` to keep bars visible, or `hidden` to hide them without disabling scrolling. Drag a thumb or click its track to move through the content.
 
-<ComponentExample title="Project board" preview={<ScrollbarHorizontal english />} fileName="basic.tsx">
+<ComponentExample title="Project board" preview={<ScrollbarHorizontal english />} fileName="horizontal.tsx">
 
-```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/scrollbar/horizontal.tsx"
 ```
 
 </ComponentExample>
@@ -31,9 +33,9 @@ Scrollbars fade in when the pointer enters the region and fade out when it leave
 
 Thumbs update when content or container sizes change. The forwarded `ref` points to the scrolling viewport: call `scrollTo`, read `scrollTop`, or use it with BackTop. At a scroll boundary, or when content fits, the wheel continues scrolling the page.
 
-<ComponentExample title="Add content" preview={<ScrollbarDynamic english />} fileName="basic.tsx">
+<ComponentExample title="Add content" preview={<ScrollbarDynamic english />} fileName="dynamic.tsx">
 
-```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/scrollbar/dynamic.tsx"
 ```
 
 </ComponentExample>

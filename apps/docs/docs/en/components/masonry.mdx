@@ -15,9 +15,9 @@ Arrange cards and images of varying heights.
 
 </ComponentExample>
 
-## More examples
+## Masonry images
 
-<ComponentExample title="More examples" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
+<ComponentExample title="Masonry images" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/masonry/advanced.tsx"
 ```
@@ -41,4 +41,4 @@ import type { MasonryProps } from '@ifhover/leaf-ui';
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | Columns; unspecified breakpoints inherit smaller ones |
-| `gap` | `number \| string` | `16` | Gap; tuples use [vertical, horizontal] |
+| `gap` | `number \| string` | `16` | Column gap; numbers are px and CSS lengths are supported. |

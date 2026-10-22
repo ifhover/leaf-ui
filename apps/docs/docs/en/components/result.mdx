@@ -38,7 +38,7 @@ Present operation results, empty content and other states.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `status` | `'empty' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'empty'` | Result status |
+| `status` | `'empty' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'empty'` | Result status; `error` is a compatibility alias |
 | `title / description` | `ReactNode` | Localized title / — | Title / description; null hides them |
 | `icon` | `ReactNode` | Status icon | Custom icon; null hides it |
 | `extra` | `ReactNode` | — | Action buttons or links |
@@ -56,7 +56,7 @@ import type { EmptyProps, ResultProps } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-Use `status="empty"` for empty content. Success, warning, error and information have matching icons and colors. Customize `icon`, `title`, `description` and `extra` as needed.
+Use `status="empty"` for empty content. Success, warning, danger and information have matching icons and colors. Use `danger` in new code; `error` is still normalized to `danger`. Customize `icon`, `title`, `description` and `extra` as needed.
 
 The original `Empty` remains as a compatibility entry. Migrate to `Result`: rename `image` to `icon`, `description` to `title`, and move action buttons to `extra`.
 

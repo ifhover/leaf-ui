@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TooltipBasic } from '../../../src/examples/en/tooltip/basic';
+import { TooltipControlled } from '../../../src/examples/en/tooltip/controlled';
+import { TooltipDisabled } from '../../../src/examples/en/tooltip/disabled';
 
 # Tooltip
 
@@ -10,6 +12,28 @@ Add a brief explanation to a page element.
 <ComponentExample title="Basic usage" preview={<TooltipBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tooltip/basic.tsx"
+```
+
+</ComponentExample>
+
+## Controlled visibility
+
+`open` and `onOpenChange` let the parent own the visibility state; without `open`, `defaultOpen` sets the initial state.
+
+<ComponentExample title="Controlled visibility" preview={<TooltipControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/controlled.tsx"
+```
+
+</ComponentExample>
+
+## Disabled tooltip
+
+`disabled` turns the tooltip off while keeping the trigger element's events and ref intact.
+
+<ComponentExample title="Disabled tooltip" preview={<TooltipDisabled />} fileName="disabled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/disabled.tsx"
 ```
 
 </ComponentExample>

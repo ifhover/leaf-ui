@@ -2,7 +2,7 @@ import { Button, ConfigProvider, Form, FormField, Slider, Space, Text } from '@i
 import { useState } from 'react';
 
 export function ConfigProviderSizes() {
-  const [height, setHeight] = useState(36);
+  const [height, setHeight] = useState(34);
   return (
     <Space direction="vertical" align="stretch" size="lg">
       <Form>

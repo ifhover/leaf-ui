@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../src/examples/scrollbar/basic';
+import { ScrollbarBasic } from '../../src/examples/scrollbar/basic';
+import { ScrollbarHorizontal } from '../../src/examples/scrollbar/horizontal';
+import { ScrollbarDynamic } from '../../src/examples/scrollbar/dynamic';
 
 # Scrollbar 滚动条
 
@@ -20,9 +22,9 @@ import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../src
 
 `orientation` 控制可滚动的方向。`scrollbar="always"` 常显，`hidden` 仅隐藏滚动条，内容仍可滚动。拖动滑块或点击轨道可定位内容。
 
-<ComponentExample title="项目看板" preview={<ScrollbarHorizontal />} fileName="basic.tsx">
+<ComponentExample title="项目看板" preview={<ScrollbarHorizontal />} fileName="horizontal.tsx">
 
-```tsx lineNumbers file="../../src/examples/scrollbar/basic.tsx"
+```tsx lineNumbers file="../../src/examples/scrollbar/horizontal.tsx"
 ```
 
 </ComponentExample>
@@ -31,9 +33,9 @@ import { ScrollbarBasic, ScrollbarHorizontal, ScrollbarDynamic } from '../../src
 
 内容和容器尺寸变化后，滑块自动更新。`ref` 指向实际滚动容器，可调用 `scrollTo`、读取 `scrollTop`，也可传给 BackTop 等组件。到达边缘或没有溢出时，滚轮继续滚动页面。
 
-<ComponentExample title="增加内容" preview={<ScrollbarDynamic />} fileName="basic.tsx">
+<ComponentExample title="增加内容" preview={<ScrollbarDynamic />} fileName="dynamic.tsx">
 
-```tsx lineNumbers file="../../src/examples/scrollbar/basic.tsx"
+```tsx lineNumbers file="../../src/examples/scrollbar/dynamic.tsx"
 ```
 
 </ComponentExample>

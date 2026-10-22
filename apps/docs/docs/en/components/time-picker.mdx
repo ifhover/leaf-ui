@@ -7,27 +7,34 @@ import { TimePickerTwelveHours } from '../../../src/examples/en/time-picker/twel
 
 Choose a time.
 
-## Examples
+## Basic selection
 
 Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the display to a 12-hour clock with AM/PM, while values remain 24-hour. Midnight is 12 AM and noon is 12 PM. The initial draft is 09:00. Close without confirming to discard edits. Minute and second steps preserve an existing value outside the step.
 
 <ComponentExample title="Basic selection" preview={<TimePickerBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/time-picker/basic.tsx"
+
 ```
 
 </ComponentExample>
+
+## Controlled value and minute steps
 
 <ComponentExample title="Controlled value and minute steps" preview={<TimePickerControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/time-picker/controlled.tsx"
+
 ```
 
 </ComponentExample>
 
+## 12-hour clock and seconds
+
 <ComponentExample title="12-hour clock and seconds" preview={<TimePickerTwelveHours />} fileName="twelve-hours.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/time-picker/twelve-hours.tsx"
+
 ```
 
 </ComponentExample>
@@ -37,6 +44,7 @@ Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the d
 <ComponentExample title="Disabled times" preview={<Capabilities english />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/time-picker/capabilities.tsx"
+
 ```
 
 </ComponentExample>
@@ -54,6 +62,7 @@ Values use 24-hour HH:mm, or HH:mm:ss with showSeconds. use12Hours changes the d
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `allowClear` | `boolean` | `true` | Show a clear button |
 | `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
 | `open` | `boolean` | — | Control whether the panel is open. |
 | `defaultOpen` | `boolean` | — | Initial open state. |
 | `value` | `string \| null` | `null` | Controlled / initial HH:mm value; HH:mm:ss when seconds are enabled |
@@ -83,7 +92,7 @@ import type { TimePickerProps } from '@ifhover/leaf-ui';
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
 
-Type `HH:mm` or `HH:mm:ss`; 12-hour text accepts AM/PM or 上午/下午. Press Enter to submit, or adjust columns and click OK. Every mode requires confirmation. Now updates the draft and still requires OK. Escape or leaving the field discards changes. Other input attributes and aria-* target the input; className/style target the wrapper. ArrowDown moves focus to the selected hour.
+Type `HH:mm` or `HH:mm:ss`; 12-hour text accepts AM/PM or 上午/下午. Press Enter to submit, or adjust columns and click OK. Every mode requires confirmation. Now updates the draft and still requires OK. Escape or leaving the field discards changes. Other input attributes and aria-\* target the input; className/style target the wrapper. ArrowDown moves focus to the selected hour.
 
 ## TimeParts
 

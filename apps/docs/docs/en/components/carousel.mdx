@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { CarouselBasic, CarouselAutoplay } from '../../../src/examples/carousel/basic';
+import { CarouselBasic } from '../../../src/examples/carousel/basic';
+import { CarouselAutoplay } from '../../../src/examples/carousel/autoplay';
 
 # Carousel
 
@@ -16,9 +17,9 @@ Browse images or content one slide at a time.
 
 ## Autoplay
 
-<ComponentExample title="Autoplay" preview={<CarouselAutoplay english />} fileName="basic.tsx">
+<ComponentExample title="Autoplay" preview={<CarouselAutoplay english />} fileName="autoplay.tsx">
 
-```tsx lineNumbers file="../../../src/examples/carousel/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/carousel/autoplay.tsx"
 ```
 
 </ComponentExample>
@@ -52,4 +53,4 @@ Import the props and data types when creating reusable configuration.
 import type { CarouselHandle, CarouselProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Previous and next buttons carry readable names; the carousel is keyboard operable and follows ConfigProvider themes and reduced motion.

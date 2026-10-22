@@ -39,9 +39,9 @@ Use `description` to explain a field beside its label. Use `help` for guidance b
 
 </ComponentExample>
 
-## Extended features
+## Dynamic form lists
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
+<ComponentExample title="Dynamic form lists" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/extensions.tsx"
 ```
@@ -109,7 +109,7 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 | `defaultValue` | `readonly T[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: T[]) => void` | — | Value change callback |
 | `itemKey` | `(value: T) => string` | — | Return a stable identifier |
-| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Required. Content or child items |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Required. Render function for fields and row operations. |
 
 ## FormListField API
 
@@ -187,5 +187,5 @@ export function AccountForm() {
 | --- | --- | --- | --- |
 | `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | Required. Validate FormData with a cancellation signal; return field-keyed errors. |
 | `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | Submit after validation, respecting cancellation. |
-| `onError` | `(error: unknown) => void` | — | Called on failure; the palette remains open with error feedback. |
+| `onError` | `(error: unknown) => void` | — | Called when validation or submission throws. |
 | `focusError` | `boolean` | — | Focus the first invalid field. |

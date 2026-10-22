@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { StatisticBasic, StatisticCountdown } from '../../src/examples/statistic/basic';
+import { StatisticBasic } from '../../src/examples/statistic/basic';
+import { StatisticCountdown } from '../../src/examples/statistic/countdown';
 import { StatisticAnimation } from '../../src/examples/statistic/animation';
 
 # Statistic 统计数值
@@ -30,9 +31,9 @@ import { StatisticAnimation } from '../../src/examples/statistic/animation';
 
 ## 倒计时
 
-<ComponentExample title="倒计时" preview={<StatisticCountdown />} fileName="basic.tsx">
+<ComponentExample title="倒计时" preview={<StatisticCountdown />} fileName="countdown.tsx">
 
-```tsx lineNumbers file="../../src/examples/statistic/basic.tsx"
+```tsx lineNumbers file="../../src/examples/statistic/countdown.tsx"
 ```
 
 </ComponentExample>
@@ -75,4 +76,4 @@ import { StatisticAnimation } from '../../src/examples/statistic/animation';
 import type { StatisticProps, CountdownProps } from '@ifhover/leaf-ui';
 ```
 
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+数值更新通过 aria-live 播报，倒计时结束时提供可读提示。

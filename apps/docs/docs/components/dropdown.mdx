@@ -1,4 +1,5 @@
 import { Capabilities } from '../../src/examples/dropdown/capabilities';
+import { DropdownExtra } from '../../src/examples/dropdown/extra';
 import { ExtensionDemo } from '../../src/examples/dropdown/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { DropdownBasic } from '../../src/examples/dropdown/basic';
@@ -16,9 +17,20 @@ import { DropdownBasic } from '../../src/examples/dropdown/basic';
 
 </ComponentExample>
 
-## 扩展用法
+## 右侧内容
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
+未指定 `popupWidth` 时，浮层以 220px 为默认宽度，并根据内容自然增宽。通过条目的 `extra` 在右侧放置快捷键、状态标签或其他自定义内容；它仍属于整行点击区域，不要再嵌套按钮或链接。
+
+<ComponentExample title="右侧内容" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/extra.tsx"
+```
+
+</ComponentExample>
+
+## 分组、单选与复选菜单
+
+<ComponentExample title="分组、单选与复选菜单" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/dropdown/extensions.tsx"
 ```
@@ -51,8 +63,8 @@ import { DropdownBasic } from '../../src/examples/dropdown/basic';
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变更 |
 | `onSelect` | `(key: string) => void` | — | 选择可用菜单项 |
 | `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | 弹出方向 |
-| `popupWidth` | `number \| string` | `—` | 浮层宽度 / 最大宽度 |
-| `popupMaxWidth` | `number \| string` | `420` | 浮层宽度 / 最大宽度 |
+| `popupWidth` | `number \| string` | `—` | 浮层宽度；未设置时至少有 220px 默认宽度。 |
+| `popupMaxWidth` | `number \| string` | `420` | 浮层最大宽度，仍受视口限制。 |
 | `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | 触发方式；下拉菜单支持点击、悬停和右键。 |
 | `mouseEnterDelay` | `number` | `100` | 设置 mouseEnterDelay。 |
 | `mouseLeaveDelay` | `number` | `150` | 设置 mouseLeaveDelay。 |
@@ -65,8 +77,9 @@ import { DropdownBasic } from '../../src/examples/dropdown/basic';
 | `key` | `string` | 必填 | 必需。唯一标识 |
 | `label` | `ReactNode` | — | 文字与图标 |
 | `icon` | `ReactNode` | — | 文字与图标 |
+| `extra` | `ReactNode` | — | 条目右侧的附加内容；适合放快捷键、状态标签等非交互信息。 |
 | `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | 菜单项或分割线 |
-| `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | 子内容；嵌套数据类型表示子节点。 |
+| `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | 菜单项列表。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `danger` | `boolean` | `false` | 禁用 / 危险操作 |
 | `checked` | `boolean` | — | 设置 checked。 |
@@ -74,7 +87,7 @@ import { DropdownBasic } from '../../src/examples/dropdown/basic';
 | `closeOnSelect` | `boolean` | — | 设置 closeOnSelect。 |
 | `onCheckedChange` | `(checked: boolean) => void` | — | 设置 onCheckedChange。 |
 | `href` | `string` | — | 链接目标。 |
-| `target` | `string` | — | 目标的选择器或返回元素的函数；省略时居中。 |
+| `target` | `string` | — | 链接的 target 属性，例如 _blank；省略时在当前标签页打开。 |
 | `onClick` | `(event: MouseEvent<HTMLElement>) => void` | — | 点击此项时触发 |
 
 ## 类型
@@ -87,4 +100,4 @@ import type { DropdownProps, DropdownItem } from '@ifhover/leaf-ui';
 
 ## 使用说明
 
-按钮按 ↓ / ↑ 打开菜单，菜单中使用方向键、Home、End 或文字首字符定位；Enter 选择，Escape 关闭并恢复按钮焦点。disabled 菜单项与分割线会被跳过。
+按钮按 ↓ / ↑ 打开菜单，菜单中使用方向键、Home、End 或文字首字符定位；Enter 选择，Escape 关闭并恢复按钮焦点。disabled 菜单项与分割线会被跳过。条目的 `extra` 与主标签共享点击区域，可交互内容应放在菜单项之外。

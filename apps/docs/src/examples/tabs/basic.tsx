@@ -1,5 +1,5 @@
 import type { TabItem } from '@ifhover/leaf-ui';
-import { Input, Space, Tabs } from '@ifhover/leaf-ui';
+import { Input, Tabs } from '@ifhover/leaf-ui';
 import { ChartNoAxesColumn, Settings } from 'lucide-react';
 
 const items: readonly TabItem[] = [
@@ -17,21 +17,7 @@ const items: readonly TabItem[] = [
   },
   { key: 'history', label: '历史', disabled: true, children: null },
 ];
+
 export function TabsBasic() {
-  return (
-    <Space direction="vertical" align="stretch">
-      <Space direction="vertical" align="stretch" size="sm">
-        <span>线形标签</span>
-        <Tabs aria-label="项目信息" items={items} />
-      </Space>
-      <Space direction="vertical" align="stretch" size="sm">
-        <span>卡片标签</span>
-        <Tabs aria-label="卡片标签" items={items} type="card" />
-      </Space>
-      <Space direction="vertical" align="stretch" size="sm">
-        <span>纵向标签</span>
-        <Tabs aria-label="纵向标签" items={items} placement="left" />
-      </Space>
-    </Space>
-  );
+  return <Tabs aria-label="项目信息" items={items} />;
 }

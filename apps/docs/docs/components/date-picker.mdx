@@ -1,8 +1,12 @@
-import { Capabilities } from '../../src/examples/date-picker/capabilities';
+import { DisabledDates } from '../../src/examples/date-picker/disabled-dates';
 import { ExtensionDemo } from '../../src/examples/date-picker/extensions';
+import { Format } from '../../src/examples/date-picker/format';
+import { MaxCount } from '../../src/examples/date-picker/max-count';
+import { Multiple } from '../../src/examples/date-picker/multiple';
 import { ComponentExample } from '../../src/components/component-example';
 import { DatePickerBasic, DatePickerControlled } from '../../src/components/form-examples';
 import { DatePickerFooter } from '../../src/examples/date-picker/footer';
+import { DatePickerCard } from '../../src/examples/date-picker/card';
 
 # DatePicker 日期选择器
 
@@ -17,6 +21,19 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 <ComponentExample title="基础选择" preview={<DatePickerBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/date-picker/basic.tsx"
+
+```
+
+</ComponentExample>
+
+## 卡片面板
+
+日期与时间选择器共享 `panelVariant="card"`：弹层使用柔和画布，日历、时间列和快捷区以独立内容卡呈现。
+
+<ComponentExample title="卡片面板" preview={<DatePickerCard />} fileName="card.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-picker/card.tsx"
+
 ```
 
 </ComponentExample>
@@ -28,6 +45,7 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 <ComponentExample title="受控与日期限制" preview={<DatePickerControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/date-picker/controlled.tsx"
+
 ```
 
 </ComponentExample>
@@ -39,34 +57,72 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 <ComponentExample title="快捷日期" preview={<DatePickerFooter />} fileName="footer.tsx">
 
 ```tsx lineNumbers file="../../src/examples/date-picker/footer.tsx"
+
 ```
 
 </ComponentExample>
 
-## 扩展用法
+## 选择器粒度
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+`picker` 决定面板的粒度：年份、季度、月份或周。
+
+<ComponentExample title="选择器粒度" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/date-picker/extensions.tsx"
-```
 
-</ComponentExample>
-
-## 格式、预设与多日期
-
-<ComponentExample title="格式、预设与多日期" preview={<Capabilities />} fileName="capabilities.tsx">
-
-```tsx lineNumbers file="../../src/examples/date-picker/capabilities.tsx"
 ```
 
 </ComponentExample>
 
 ## 显示格式与提交值
 
-`format` 改变显示文字和 `onChange` 的字符串参数；FormData 保持日期或周期的稳定序列化格式。方括号可以转义固定文字，例如 `YYYY-[Q]Q`。使用函数格式化时，请同时提供 `parse`。Date 表示本地日历值，业务时区在应用的数据边界完成转换。周起点通过 ConfigProvider 的 `weekStartsOn` 设置。
+<ComponentExample title="自定义显示格式" preview={<Format />} fileName="format.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-picker/format.tsx"
+
+```
+
+</ComponentExample>
+
+`format` 只改变输入框显示和 `onChange` 的字符串参数；FormData 始终使用 `periodKey` 生成的规范值，不受自定义格式影响。方括号可以转义固定文字，例如 `YYYY-[Q]Q`。使用函数格式化时，请同时提供 `parse`。Date 表示本地日历值，业务时区在应用的数据边界完成转换。周起点通过 ConfigProvider 的 `weekStartsOn` 设置。
+
+## 禁用日期
+
+`disabledDate` 会对每个可见日期调用一次，返回 `true` 时该日期不可选，适合排除周末、假期或超出业务范围的日期。它只改变可选范围，不会清除已经选中的值。
+
+<ComponentExample title="仅工作日" preview={<DisabledDates />} fileName="disabled-dates.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-picker/disabled-dates.tsx"
+
+```
+
+</ComponentExample>
+
+## 多日期
+
+设置 `multiple` 后可以在同一个面板中依次选择多个日期，`onChange` 返回日期数组。
+
+<ComponentExample title="多个日期" preview={<Multiple />} fileName="multiple.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-picker/multiple.tsx"
+
+```
+
+</ComponentExample>
+
+## 数量限制
+
+`maxCount` 只在 `multiple` 模式下可用，用来限制可选日期的数量；达到上限后，其余日期不可选。
+
+<ComponentExample title="最多三个" preview={<MaxCount />} fileName="max-count.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-picker/max-count.tsx"
+
+```
+
+</ComponentExample>
 
 ## DatePicker API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
@@ -78,6 +134,7 @@ import { DatePickerFooter } from '../../src/examples/date-picker/footer';
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `allowClear` | `boolean` | `true` | 展示清除按钮 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
 | `multiple` | `false \| true` | — | 启用多选；value 和回调的类型随之变化。 |
@@ -119,7 +176,7 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 
 传入有效 Date 对象，且 `minDate` 不晚于 `maxDate`。组件按本地日期处理：可用 `new Date(2026, 9, 15)` 表示 2026 年 10 月 15 日，月份从 0 开始。选择结果为本地当天零点；避免用 UTC 字符串转换代替本地日期构造。
 
-设置 `name` 后，FormData 提交当前 picker 模式的字符串，清除后为空字符串。非受控组件支持表单 reset，受控组件需同步重置自己的状态。年、季度、月、周模式的 Date 值为对应周期的起始日期，日历从默认周一开始，可通过 ConfigProvider 的 weekStartsOn 修改。
+设置 `name` 后，FormData 提交当前 picker 模式的规范值，清除后为空字符串。非受控组件支持表单 reset，受控组件需同步重置自己的状态。年、季度、月、周模式的 Date 值为对应周期的起始日期，日历从默认周一开始，可通过 ConfigProvider 的 weekStartsOn 修改。
 
 ## 键盘与主题
 
@@ -131,10 +188,9 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 
 点击输入框保留输入焦点；↓ 将焦点移入日历，Escape 放弃未完成输入。
 
-各模式格式：`date → YYYY-MM-DD`、`year → YYYY`、`quarter → YYYY-QN`、`month → YYYY-MM`、`week → YYYY-Www`。显示、手动输入、onChange 字符串和 FormData 使用相同格式。
+各模式的规范值：`date → YYYY-MM-DD`、`year → YYYY`、`quarter → YYYY-QN`、`month → YYYY-MM`、`week → YYYY-Www`。未设置 `format` 时，这些值也用于输入框显示和 `onChange` 字符串；设置后 FormData 仍保持上述规范值。
 
 ## SingleDatePicker API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
@@ -146,6 +202,7 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 | `status` | `'error' \| 'warning'` | — | 设置 status。 |
 | `allowClear` | `boolean` | `true` | 展示清除操作。 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
 | `multiple` | `false` | — | 启用多选；value 和回调的类型随之变化。 |
@@ -168,7 +225,6 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 | `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
 
 ## MultipleDatePicker API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
@@ -180,6 +236,7 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 | `status` | `'error' \| 'warning'` | — | 设置 status。 |
 | `allowClear` | `boolean` | `true` | 展示清除操作。 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
 | `minDate` | `Date` | — | 最早可选的日期（含边界）。 |
@@ -195,16 +252,16 @@ import type { DatePickerProps, ControlSize, ControlStatus } from '@ifhover/leaf-
 | `panelValue` | `Date` | — | 受控的日历显示日期。 |
 | `onPanelChange` | `(date: Date) => void` | — | 日历显示的周期改变时调用。 |
 | `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
-| `multiple` | `true` | — | 必需。启用多选；value 和回调的类型随之变化。 |
+| `multiple` | `true` | 必填 | 启用多选；value 和回调的类型随之变化。 |
 | `value` | `readonly Date[]` | — | 受控值。 |
 | `defaultValue` | `readonly Date[]` | — | 初始值；非受控模式支持表单重置。 |
 | `maxCount` | `number` | — | 最多可选的数量。 |
 | `onChange` | `(value: Date[], dateStrings: string[]) => void` | — | 值发生变化时调用。 |
 
 ## DatePreset
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定且唯一的标识。 |
-| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
-| `value` | `T \| (() => T)` | — | 必需。受控值。 |
+| `label` | `ReactNode` | 必填 | 展示文字或内容。 |
+| `value` | `T \| (() => T)` | 必填 | 受控值。 |
+

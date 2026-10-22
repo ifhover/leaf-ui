@@ -47,8 +47,8 @@ export function Root() {
 | `showCancel` | `boolean` | success 为 false，其余 true | 是否展示取消按钮。 |
 | `confirmText` | `ReactNode` | 语言默认值 | 确认按钮文字。 |
 | `cancelText` | `ReactNode` | 语言默认值 | 取消按钮文字。 |
-| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 确认按钮属性。 |
-| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 取消按钮属性。 |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 确认按钮属性。 |
+| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 取消按钮属性。 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；等待 Promise 成功后关闭，失败时保留并显示错误。 |
 | `onCancel` | `() => void` | — | 取消时调用。 |
 | `width` | `number \| string` | `420` | 确认框宽度，数字为像素。 |
@@ -95,3 +95,5 @@ import type { ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@ifhover/
 default 不展示状态图标；info、warning、success、danger 展示对应图标。图标位于正文左侧，没有背景底座，危险提示使用红色感叹号。success 默认隐藏取消按钮，可通过 `showCancel` 调整。
 
 Confirm 用于简短的确认提示，只通过 API 调用。包含表单、多步骤或复杂内容的操作使用 [Modal](/components/modal)。
+
+确认框使用统一的内容表面、次要色说明文字和留白分区，取消按钮默认使用描边按钮。背景遮罩与虚化沿用 Modal，主操作颜色跟随当前区域的主题色。

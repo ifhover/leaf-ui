@@ -1,5 +1,5 @@
 import { CheckboxCards } from '../../src/examples/checkbox/surfaces';
-import { CheckboxList } from '../../src/examples/checkbox/surfaces';
+import { CheckboxList } from '../../src/examples/checkbox/list';
 import { ExtensionDemo } from '../../src/examples/checkbox/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../src/components/form-examples';
@@ -28,9 +28,9 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 
 </ComponentExample>
 
-## 扩展用法
+## 勾选数量限制
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="勾选数量限制" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/extensions.tsx"
 ```
@@ -52,9 +52,9 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 
 相关选项共用边框和行分隔线；状态标签放在右侧。
 
-<ComponentExample title="成组选项" preview={<CheckboxList />} fileName="surfaces.tsx">
+<ComponentExample title="成组选项" preview={<CheckboxList />} fileName="list.tsx">
 
-```tsx lineNumbers file="../../src/examples/checkbox/surfaces.tsx"
+```tsx lineNumbers file="../../src/examples/checkbox/list.tsx"
 ```
 
 </ComponentExample>
@@ -71,9 +71,9 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 | `indeterminate` | `boolean` | `false` | 半选状态 |
 | `checked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
 | `defaultChecked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 值发生变化时调用。 |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 event.target.checked 读取选中状态。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
-| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
+| `children` | `ReactNode` | — | 可点击的选项标签。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 复选框引用 |
 
 name、value、required、form 等原生属性可直接使用。只有已勾选且未禁用的复选框参与原生表单提交。没有文字标签时必须提供 aria-label。className 与 style 作用于标签容器。
@@ -101,12 +101,12 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 | `defaultValue` | `readonly string[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: string[]) => void` | — | 值变化回调 |
 | `legend` | `ReactNode` | — | 字段组名称 |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 复选框尺寸。 |
 | `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | 普通排列、卡片网格或带分隔线的成组列表。 |
 | `minCount` | `number` | `0` | 最少勾选数量 |
-| `maxCount` | `number` | `Infinity` | 最多勾选或展示数量 |
+| `maxCount` | `number` | `Infinity` | 最多可勾选的选项数。 |
 | `required` | `boolean` | — | 要求整体值非空，复合控件只校验一次。 |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向或移动方向 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 选项的排列方向。 |
 
 ## CheckboxOption API
 

@@ -15,9 +15,9 @@ Enter and paste verification codes.
 
 </ComponentExample>
 
-## More examples
+## Alphanumeric, masked and separated input
 
-<ComponentExample title="More examples" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
+<ComponentExample title="Alphanumeric, masked and separated input" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-otp/advanced.tsx"
 ```
@@ -45,8 +45,8 @@ import type { InputOTPProps } from '@ifhover/leaf-ui';
 | `defaultValue` | `string` | `''` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(value: string) => void` | — | Value change callback |
 | `onComplete` | `(value: string) => void` | — | Called when input is complete |
-| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | Display mode or allowed characters |
+| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | Accept digits or alphanumeric characters. |
 | `mask` | `boolean \| string` | `false` | Mask displayed characters |
 | `separator` | `(index: number) => ReactNode` | — | Separator by position |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input cell size. |
 | `status` | `'error' \| 'warning'` | — | Display state |

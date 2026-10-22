@@ -5,20 +5,45 @@ import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TabsBasic } from '../../../src/examples/en/tabs/basic';
 import { TabsSizes } from '../../../src/examples/en/tabs/sizes';
+import { TabsAppearances } from '../../../src/examples/en/tabs/appearances';
 
 # Tabs
 
 Switch between content views within the same region.
 
-Content and panel height update immediately without transition animations. The tab bar's selection indicator keeps its movement animation.
+Content and panel height update immediately without transition animations. Line tabs show a short rounded indicator beneath the selected label and move it to the next selection.
 
-The card-style tab bar fits its labels by default and scrolls within the bar when space is limited. `size` controls the entire 30 / 36 / 42 px bar, including its 3 px padding and border. Tabs use a 3 px gap, a muted background and a raised selected surface that is pure white in light mode and follows the theme's raised surface color in dark mode. Pressing a tab keeps its size. Set `block` for equal-width tabs; content panels use the available width.
+Line tabs use the body text color for the selected label and muted neutral text for the others, without drawing a full-width baseline. The short rounded indicator beneath the selected label uses the primary indicator color. The indicator sits on the tab's bottom edge, grows to 2 / 3 / 4 px by size and keeps a visible gap below the label because line tabs add 4 px of height. Card tabs use a light rounded selected surface, with unselected labels rendered in a lighter neutral color and no surrounding container. Segmented tabs add a muted rounded track and a white moving selection surface for compact view switching; the surface moves directly with the standard non-overshooting easing. `size` controls 32 / 38 / 44 px line tabs and 28 / 34 / 40 px card and segmented tabs. Set `block` for equal-width tabs; content panels use the available width. When labels overflow, outlined arrow buttons appear in the scrollable directions; they are visible only while the tab bar is hovered or keyboard-focused.
 
 ## Basic usage
+
+The basic example uses the default size and line appearance to demonstrate content switching.
 
 <ComponentExample title="Basic usage" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## Sizes
+
+Use the radio options to switch between small, default and large sizes.
+
+<ComponentExample title="Sizes" preview={<TabsSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/sizes.tsx"
+```
+
+</ComponentExample>
+
+## Appearances
+
+Use the radio options to switch between line, card and segmented appearances.
+
+<ComponentExample title="Appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/appearances.tsx"
 ```
 
 </ComponentExample>
@@ -34,17 +59,6 @@ Omit item `children` when controlling an existing view. Only the tab bar is rend
 
 </ComponentExample>
 
-## Sizes
-
-Compare small, default and large sizes for both line and card tabs.
-
-<ComponentExample title="Sizes" preview={<TabsSizes />} fileName="sizes.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/tabs/sizes.tsx"
-```
-
-</ComponentExample>
-
 ## Closable tabs
 
 Use the plus button to add a tab. Closing every tab hides the component; the example's add button can reopen it.
@@ -56,18 +70,18 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 
 </ComponentExample>
 
-## Extended features
+## Adding and closing tabs
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Adding and closing tabs" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## Bottom and right placement
+## Bottom placement
 
-<ComponentExample title="Bottom and right placement" preview={<Capabilities english />} fileName="capabilities.tsx">
+<ComponentExample title="Bottom placement" preview={<Capabilities english />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/tabs/capabilities.tsx"
 ```
@@ -82,9 +96,9 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 | `activeKey` | `string` | First enabled item | Controlled / initial active key |
 | `defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
 | `onChange` | `(key: string) => void` | — | Active key change |
-| `type` | `'line' \| 'card'` | `'line'` | Tab appearance |
-| `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tab bar placement |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size; the card style includes the tab bar padding and border |
+| `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | Tab appearance |
+| `placement` | `'top' \| 'bottom'` | `'top'` | Tab bar placement |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab height (32 / 38 / 44 px line, 28 / 34 / 40 px card and segmented) and font size |
 | `block` | `boolean` | `false` | Fill the available width with equal-width tabs |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
@@ -92,7 +106,7 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 | `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | Close request: remove the item in the application; preventDefault cancels selection changes |
 | `onAdd` | `() => void` | — | Add tab; enables add button |
 | `addLabel` | `string` | — | Accessible add button label |
-| `overflow` | `boolean` | `true` | Collect overflow tabs in a menu |
+| `overflow` | `boolean` | `true` | Show directional scroll buttons on overflow |
 | `sortable` | `boolean` | `false` | Enable sorting; use with onReorder |
 | `onReorder` | `(items: `[`TabItem`](#tabitem)`[]) => void` | — | Reordered tabs |
 

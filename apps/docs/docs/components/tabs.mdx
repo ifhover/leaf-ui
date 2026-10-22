@@ -5,20 +5,45 @@ import { TabsClosable } from '../../src/examples/tabs/closable';
 import { ComponentExample } from '../../src/components/component-example';
 import { TabsBasic } from '../../src/examples/tabs/basic';
 import { TabsSizes } from '../../src/examples/tabs/sizes';
+import { TabsAppearances } from '../../src/examples/tabs/appearances';
 
 # Tabs 标签页
 
 在同一区域切换不同内容。
 
-切换时正文和内容区域高度立即更新，不使用过渡动画；标签栏的选中指示线保留移动效果。
+切换时正文和内容区域高度立即更新，不使用过渡动画。线形标签仅在选中项下方显示短圆角指示条，切换时指示条会移动到新的选中项。
 
-卡片样式的标签栏默认随标签内容调整宽度，空间不足时在栏内滚动。`size` 控制整个标签栏的 30 / 36 / 42px 高度，包含 3px 内边距和边框；选项间距为 3px，采用灰底与浮起的选中块，选中块在浅色模式下为纯白色，深色模式下使用主题浮起表面色，按下保持原尺寸。设置 `block` 可让标签等宽铺满，正文区域仍使用可用宽度。
+线形标签使用正文色显示选中项、较淡的中性色显示未选中项，不绘制整条底边；选中项下方的短圆角指示条使用主题色。指示条贴着标签底边，高度随尺寸为 2 / 3 / 4px，标签在此基础上下方多留 4px，使文字与指示条之间保持可见的间距。卡片标签使用浅灰圆角选中底，未选中文字颜色进一步减淡，标签栏本身不再增加外层容器。分段标签增加浅灰圆角外轨，以白色移动滑块突出选中项，适合紧凑的视图切换；滑块使用不回弹的标准缓动直接移动到选中项。卡片与分段标签高度为 28 / 34 / 40px，线形标签为 32 / 38 / 44px。设置 `block` 可让标签等宽铺满，正文区域仍使用可用宽度。页签宽度溢出时，可按滚动方向显示描边箭头按钮；按钮仅在悬停标签栏或键盘聚焦时出现。
 
 ## 基础用法
+
+基础用法使用默认尺寸与线形标签展示内容切换。
 
 <ComponentExample title="基础用法" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/basic.tsx"
+```
+
+</ComponentExample>
+
+## 不同尺寸
+
+通过单选项切换小、默认和大尺寸。
+
+<ComponentExample title="不同尺寸" preview={<TabsSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
+```
+
+</ComponentExample>
+
+## 不同形态
+
+通过单选项在线形、卡片和分段形态之间切换。
+
+<ComponentExample title="不同形态" preview={<TabsAppearances />} fileName="appearances.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/appearances.tsx"
 ```
 
 </ComponentExample>
@@ -34,17 +59,6 @@ import { TabsSizes } from '../../src/examples/tabs/sizes';
 
 </ComponentExample>
 
-## 不同尺寸
-
-线形与卡片标签分别展示小、默认和大尺寸。
-
-<ComponentExample title="不同尺寸" preview={<TabsSizes />} fileName="sizes.tsx">
-
-```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
-```
-
-</ComponentExample>
-
 ## 可关闭标签页
 
 点击加号新增标签页。全部关闭后组件隐藏，可使用示例中的新增按钮重新打开。
@@ -56,18 +70,18 @@ import { TabsSizes } from '../../src/examples/tabs/sizes';
 
 </ComponentExample>
 
-## 扩展用法
+## 可增删的标签页
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="可增删的标签页" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## 底部与右侧
+## 底部标签
 
-<ComponentExample title="底部与右侧" preview={<Capabilities />} fileName="capabilities.tsx">
+<ComponentExample title="底部标签" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/capabilities.tsx"
 ```
@@ -82,9 +96,9 @@ import { TabsSizes } from '../../src/examples/tabs/sizes';
 | `activeKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
 | `defaultActiveKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
 | `onChange` | `(key: string) => void` | — | 激活项变化 |
-| `type` | `'line' \| 'card'` | `'line'` | 标签形态 |
-| `placement` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | 标签栏位置 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸；卡片样式包含标签栏的内边距和边框 |
+| `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | 标签形态 |
+| `placement` | `'top' \| 'bottom'` | `'top'` | 标签栏位置 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签高度（线形 32 / 38 / 44px，卡片与分段 28 / 34 / 40px）与字号 |
 | `block` | `boolean` | `false` | 标签等宽铺满可用宽度 |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活 / 回车或空格激活 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
@@ -92,7 +106,7 @@ import { TabsSizes } from '../../src/examples/tabs/sizes';
 | `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除 items 中的项；可阻止默认切换 |
 | `onAdd` | `() => void` | — | 添加页签，传入后显示添加按钮 |
 | `addLabel` | `string` | — | 添加按钮的可访问名称 |
-| `overflow` | `boolean` | `true` | 溢出页签收进更多菜单 |
+| `overflow` | `boolean` | `true` | 溢出时显示两侧滚动按钮 |
 | `sortable` | `boolean` | `false` | 启用排序，配合 onReorder 使用 |
 | `onReorder` | `(items: `[`TabItem`](#tabitem)`[]) => void` | — | 返回排序后的页签 |
 

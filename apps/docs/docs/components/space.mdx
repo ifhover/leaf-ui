@@ -15,9 +15,9 @@ import { SpaceVertical } from '../../src/examples/space/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 纵向排列与分隔符
 
-<ComponentExample title="更多用法" preview={<SpaceVertical />} fileName="advanced.tsx">
+<ComponentExample title="纵向排列与分隔符" preview={<SpaceVertical />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/space/advanced.tsx"
 ```
@@ -40,8 +40,8 @@ import type { SpaceProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向或移动方向 |
-| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | 尺寸或间距预设 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 子元素的排列方向。 |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | 子元素间距；数组为 [水平, 垂直]。 |
 | `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | 对齐方式 |
 | `wrap` | `boolean` | `false` | 空间不足时换行 |
 | `split` | `ReactNode` | — | 相邻元素分隔内容 |

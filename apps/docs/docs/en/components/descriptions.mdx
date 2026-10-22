@@ -15,9 +15,9 @@ Present object details as labels and values.
 
 </ComponentExample>
 
-## More examples
+## Vertical field layout
 
-<ComponentExample title="More examples" preview={<DescriptionsVertical />} fileName="advanced.tsx">
+<ComponentExample title="Vertical field layout" preview={<DescriptionsVertical />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/descriptions/advanced.tsx"
 ```
@@ -43,7 +43,7 @@ import type { DescriptionItem, DescriptionsProps } from '@ifhover/leaf-ui';
 | `key` | `string` | Required | Unique stable identifier |
 | `label` | `ReactNode` | Required | Display label |
 | `children` | `ReactNode` | Required | Content or child items |
-| `span` | `number` | — | Column span; Col span 0 hides a column |
+| `span` | `number` | — | Column span; the minimum is 1, so 0 cannot hide a column. |
 
 ## DescriptionsProps API
 
@@ -55,4 +55,4 @@ import type { DescriptionItem, DescriptionsProps } from '@ifhover/leaf-ui';
 | `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Columns; unspecified breakpoints inherit smaller ones |
 | `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrangement of labels and values |
 | `bordered` | `boolean` | `false` | Show container outline |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Spacing preset between fields; does not change font size. |

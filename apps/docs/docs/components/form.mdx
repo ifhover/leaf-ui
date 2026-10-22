@@ -39,9 +39,9 @@ import { FormSettings } from '../../src/examples/form/settings';
 
 </ComponentExample>
 
-## 扩展用法
+## 动态表单列表
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
+<ComponentExample title="动态表单列表" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/extensions.tsx"
 ```
@@ -109,7 +109,7 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 | `defaultValue` | `readonly T[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: T[]) => void` | — | 值变化回调 |
 | `itemKey` | `(value: T) => string` | — | 提取稳定的项目标识 |
-| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | 必填 | 必需。内容或下级项目 |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | 必填 | 必需。渲染列表项与操作的函数。 |
 
 ## FormListField API
 
@@ -187,5 +187,5 @@ export function AccountForm() {
 | --- | --- | --- | --- |
 | `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | 必需。接收 FormData 和取消信号，返回按字段名组织的错误。 |
 | `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | 校验通过后提交；应响应取消信号。 |
-| `onError` | `(error: unknown) => void` | — | 操作失败时调用；命令面板会保留并展示错误。 |
+| `onError` | `(error: unknown) => void` | — | 校验或提交过程中抛出异常时调用。 |
 | `focusError` | `boolean` | — | 出现错误时聚焦第一个字段。 |

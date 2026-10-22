@@ -15,9 +15,9 @@ import { ImageGallery } from '../../src/examples/image/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 图片画廊与预览
 
-<ComponentExample title="更多用法" preview={<ImageGallery />} fileName="advanced.tsx">
+<ComponentExample title="图片画廊与预览" preview={<ImageGallery />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/image/advanced.tsx"
 ```
@@ -40,7 +40,7 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 内容或下级项目 |
+| `children` | `ReactNode` | — | 叠加在图片上的内容。 |
 | `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | 按顺序展示的图片 |
 | `open` | `boolean` | — | 受控展示状态 |
 | `defaultOpen` | `boolean` | `false` | 初始展示状态 |

@@ -15,9 +15,9 @@ import { DescriptionsVertical } from '../../src/examples/descriptions/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 纵向字段布局
 
-<ComponentExample title="更多用法" preview={<DescriptionsVertical />} fileName="advanced.tsx">
+<ComponentExample title="纵向字段布局" preview={<DescriptionsVertical />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/descriptions/advanced.tsx"
 ```
@@ -43,7 +43,7 @@ import type { DescriptionItem, DescriptionsProps } from '@ifhover/leaf-ui';
 | `key` | `string` | 必填 | 唯一且稳定的标识 |
 | `label` | `ReactNode` | 必填 | 显示内容 |
 | `children` | `ReactNode` | 必填 | 内容或下级项目 |
-| `span` | `number` | — | 跨列数，Col 的 0 表示隐藏 |
+| `span` | `number` | — | 跨列数；最小为 1，不能靠 0 隐藏。 |
 
 ## DescriptionsProps API
 
@@ -55,4 +55,4 @@ import type { DescriptionItem, DescriptionsProps } from '@ifhover/leaf-ui';
 | `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | 列数；较大断点继承较小断点 |
 | `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | 标签与内容排列方式 |
 | `bordered` | `boolean` | `false` | 显示容器外框 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 字段与值的间距预设，不改变字号。 |

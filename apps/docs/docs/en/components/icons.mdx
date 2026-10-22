@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ButtonIcons } from '../../../src/examples/en/button/icons';
+import { InputIcons } from '../../../src/examples/en/button/input-icons';
 
 # Icons
 
@@ -31,6 +32,17 @@ Import only the icons you need. Icons follow the component's icon container size
 <ComponentExample title="Icon buttons" preview={<ButtonIcons />} fileName="icons.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## Input icons
+
+Input's `prefix` / `suffix` also accept `ReactNode`, which suits semantic icons such as search or mail. The icon is decorative, so the input still needs a name from a label or `aria-label`.
+
+<ComponentExample title="Input prefix and suffix icons" preview={<InputIcons />} fileName="input-icons.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/button/input-icons.tsx"
 ```
 
 </ComponentExample>

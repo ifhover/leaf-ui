@@ -1,5 +1,8 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../../src/examples/en/badge/basic';
+import { BadgeBasic } from '../../../src/examples/en/badge/basic';
+import { BadgeCounts } from '../../../src/examples/en/badge/counts';
+import { BadgeDot } from '../../../src/examples/en/badge/dot';
+import { BadgeStatuses } from '../../../src/examples/en/badge/statuses';
 
 # Badge
 
@@ -18,9 +21,9 @@ Show counts, unread notifications or brief statuses.
 
 Counts above `max` show the limit with a plus sign. Use `showZero` to display zero.
 
-<ComponentExample title="Count rules" preview={<BadgeCounts />} fileName="basic.tsx">
+<ComponentExample title="Count rules" preview={<BadgeCounts />} fileName="counts.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/counts.tsx"
 ```
 
 </ComponentExample>
@@ -29,9 +32,9 @@ Counts above `max` show the limit with a plus sign. Use `showZero` to display ze
 
 Indicate new content without displaying a count.
 
-<ComponentExample title="Dot reminders" preview={<BadgeDot />} fileName="basic.tsx">
+<ComponentExample title="Dot reminders" preview={<BadgeDot />} fileName="dot.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/dot.tsx"
 ```
 
 </ComponentExample>
@@ -40,9 +43,9 @@ Indicate new content without displaying a count.
 
 Describe the current status with a dot and text.
 
-<ComponentExample title="Status indicators" preview={<BadgeStatuses />} fileName="basic.tsx">
+<ComponentExample title="Status indicators" preview={<BadgeStatuses />} fileName="statuses.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/statuses.tsx"
 ```
 
 </ComponentExample>
@@ -51,12 +54,12 @@ Describe the current status with a dot and text.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Attach the indicator to this content |
+| `children` | `ReactNode` | — | Attach the indicator to the content's top-right corner and expand it outward when its content grows |
 | `count` | `number \| string` | — | Badge content |
 | `max` | `number` | `99` | Display max+ above this count |
 | `showZero` | `boolean` | `false` | Show a zero count |
 | `dot` | `boolean` | `false` | Use a notification dot |
-| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'default'` | — | Use a semantic status dot |
+| `status` | `'success' \| 'warning' \| 'danger' \| 'info' \| 'default'` | — | Use a semantic status dot; `error` is a compatibility alias |
 | `text` | `ReactNode` | — | Text beside the indicator |
 | `color` | `string` | — | Custom indicator color |
 

@@ -20,7 +20,7 @@ export function NotificationOptions() {
         variant="outline"
         danger
         onClick={() =>
-          notification.error({
+          notification.danger({
             key: 'sync',
             title: 'Sync failed',
             description: 'Check your connection and retry.',
@@ -31,7 +31,7 @@ export function NotificationOptions() {
         Persistent error
       </Button>
       <Button
-        variant="soft"
+        
         onClick={() => notification.open({ key: 'sync', title: 'Syncing again', duration: 2 })}
       >
         Update notification

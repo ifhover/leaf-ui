@@ -83,7 +83,7 @@ export function ComponentExample({
           <div>
             <Button
               size="sm"
-              variant="soft"
+              
               className="leaf-component-example__wrap"
               aria-label={t('切换代码换行', 'Toggle line wrapping')}
               title={t('切换代码换行', 'Toggle line wrapping')}

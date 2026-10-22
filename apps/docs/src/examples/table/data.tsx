@@ -1,19 +1,6 @@
-import { Avatar, Button, ConfigProvider, Tag } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  type PaginationState,
-  type RowSelectionState,
-  type SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
+import { Avatar, Button, Tag } from '@ifhover/leaf-ui';
+import { DataTable, type DataTableColumnDef, useDataTable } from '@ifhover/leaf-ui/table';
+import { useMemo } from 'react';
 
 export interface Member {
   id: string;
@@ -37,7 +24,7 @@ export const members: Member[] = Array.from({ length: 26 }, (_, index) => ({
 }));
 
 export function useMemberColumns(english = false) {
-  return useMemo<ColumnDef<Member>[]>(
+  return useMemo<DataTableColumnDef<Member>[]>(
     () => [
       {
         accessorKey: 'name',
@@ -48,7 +35,7 @@ export function useMemberColumns(english = false) {
         enableHiding: false,
         cell: ({ row }) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Avatar size={30}>{row.original.name.slice(0, 1)}</Avatar>
+            <Avatar size={24}>{row.original.name.slice(0, 1)}</Avatar>
             <strong>{row.original.name}</strong>
           </div>
         ),
@@ -94,26 +81,15 @@ export function useMemberColumns(english = false) {
 
 export function TableData({ english = false }: { english?: boolean }) {
   const columns = useMemberColumns(english);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 5 });
-  const table = useReactTable({
+  const table = useDataTable({
     data: members,
     columns,
-    getRowId: (member) => member.id,
-    state: { sorting, rowSelection, columnFilters, pagination },
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
-    enableRowSelection: (row) => row.original.active,
+    rowKey: 'id',
+    options: {
+      initialState: { pagination: { pageIndex: 0, pageSize: 5 } },
+      getRowCanExpand: () => true,
+      enableRowSelection: (row) => row.original.active,
+    },
   });
   return (
     <DataTable
@@ -127,62 +103,63 @@ export function TableData({ english = false }: { english?: boolean }) {
           : {row.original.team}
         </p>
       )}
-    >
-      <DataTable.Toolbar>
-        <DataTable.Search columnId="name" />
-        <span style={{ marginInlineStart: 'auto', color: 'var(--leaf-color-text-muted)' }}>
-          {Object.values(rowSelection).filter(Boolean).length} {english ? 'selected' : '项已选择'}
-        </span>
-        <DataTable.ColumnVisibility />
-      </DataTable.Toolbar>
-      <DataTable.Content />
-      <DataTable.Footer>
-        <DataTable.Pagination
-          pageSizeOptions={[5, 10, 20]}
-          showTotal={(total) => (english ? `${total} members` : `共 ${total} 位成员`)}
-        />
-      </DataTable.Footer>
-    </DataTable>
+      toolbar={
+        <>
+          <DataTable.Search columnId="name" />
+          <span style={{ marginInlineStart: 'auto', color: 'var(--leaf-color-text-muted)' }}>
+            {Object.values(table.getState().rowSelection).filter(Boolean).length}{' '}
+            {english ? 'selected' : '项已选择'}
+          </span>
+          <DataTable.ColumnVisibility />
+        </>
+      }
+      pagination={{
+        pageSizeOptions: [5, 10, 20],
+        showTotal: (total) => (english ? `${total} members` : `共 ${total} 位成员`),
+      }}
+    />
   );
 }
 
 export function TableColumns({ english = false }: { english?: boolean }) {
   const columns = useMemberColumns(english);
-  const table = useReactTable({
+  const table = useDataTable({
     data: members,
     columns,
-    getRowId: (member) => member.id,
-    getCoreRowModel: getCoreRowModel(),
-    columnResizeMode: 'onChange',
-    initialState: { columnPinning: { left: ['name'], right: ['active'] } },
+    rowKey: 'id',
+    localPagination: false,
+    options: {
+      enableSorting: false,
+      columnResizeMode: 'onChange',
+      initialState: { columnPinning: { left: ['name'], right: ['active'] } },
+    },
   });
   return (
-    <ConfigProvider density="compact">
-      <DataTable
-        table={table}
-        aria-label={english ? 'Pinned and resizable columns' : '固定列与列宽调整'}
-        stickyHeader
-        maxHeight={300}
-        resizable
-        pagination={false}
-      >
-        <DataTable.Toolbar>
-          <span style={{ color: 'var(--leaf-color-text-muted)' }}>
-            {english
-              ? 'Drag a header edge or focus it and use the arrow keys.'
-              : '拖动表头右侧边缘，或聚焦边缘后用方向键调整列宽。'}
-          </span>
-          <Button
-            style={{ marginInlineStart: 'auto' }}
-            size="sm"
-            variant="soft"
-            onClick={() => table.resetColumnSizing()}
-          >
-            {english ? 'Reset widths' : '重置列宽'}
-          </Button>
-        </DataTable.Toolbar>
-        <DataTable.Content />
-      </DataTable>
-    </ConfigProvider>
+    <DataTable
+      table={table}
+      aria-label={english ? 'Pinned and resizable columns' : '固定列与列宽调整'}
+      layout="custom"
+      stickyHeader
+      maxHeight={300}
+      resizable
+      pagination={false}
+    >
+      <DataTable.Toolbar>
+        <span style={{ color: 'var(--leaf-color-text-muted)' }}>
+          {english
+            ? 'Drag a header edge or focus it and use the arrow keys.'
+            : '拖动表头右侧边缘，或聚焦边缘后用方向键调整列宽。'}
+        </span>
+        <Button
+          style={{ marginInlineStart: 'auto' }}
+          size="sm"
+          
+          onClick={() => table.resetColumnSizing()}
+        >
+          {english ? 'Reset widths' : '重置列宽'}
+        </Button>
+      </DataTable.Toolbar>
+      <DataTable.Content />
+    </DataTable>
   );
 }

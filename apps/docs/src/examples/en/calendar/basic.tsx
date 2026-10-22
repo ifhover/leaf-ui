@@ -2,7 +2,7 @@ import { Calendar, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const events: Record<number, { label: string; color: string }> = {
-  8: { label: 'Review', color: '#20834a' },
+  8: { label: 'Review', color: '#1e964f' },
   15: { label: 'Release', color: '#1677ff' },
   22: { label: 'Design sync', color: '#7654c6' },
 };

@@ -1,11 +1,16 @@
+import { Cache } from '../../src/examples/cascader/cache';
+import { Intermediate } from '../../src/examples/cascader/intermediate';
+import { Lazy } from '../../src/examples/cascader/lazy';
+import { Multiple } from '../../src/examples/cascader/multiple';
+import { Popup } from '../../src/examples/cascader/popup';
+import { Search } from '../../src/examples/cascader/search';
 import { SingleLine } from '../../src/examples/cascader/single-line';
-import { Capabilities } from '../../src/examples/cascader/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { CascaderBasic, CascaderControlled } from '../../src/components/form-examples';
 
 # Cascader 级联选择
 
-用于逐级选择地区、分类等有层级关系的选项。
+用于逐级选择地区、分类等有层级关系的选项。切换一级选项时会立即更新下一级内容，不使用淡入或位移动画；切换到其他分支只清除尚未确认的后续选择，返回已选分支时会恢复其已提交的完整路径。
 
 ## 基础选择
 
@@ -20,7 +25,7 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 
 ## 受控路径
 
-`value` 是从根节点到末级节点的 value 数组，`onChange` 同时提供完整的选项对象路径。切换父项后会清除旧分支的后续选择。
+`value` 是从根节点到末级节点的 value 数组，`onChange` 同时提供完整的选项对象路径。切换父项会清除尚未确认的后续选择；返回已提交路径所属的一级分支时，下级选择会恢复。
 
 <ComponentExample title="三级地区" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
@@ -29,18 +34,68 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 
 </ComponentExample>
 
-示例使用的地区选项：
+## 搜索
 
-```ts title="options.ts" file="../../src/examples/cascader/options.ts"
+设置 `showSearch` 后，可以在浮层中输入关键字过滤选项；匹配结果按层级路径展示，选中一项后仍然确认完整路径。
+
+<ComponentExample title="搜索地区" preview={<Search />} fileName="search.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/cascader/search.tsx"
 ```
 
-## 搜索、多选与异步加载
+</ComponentExample>
 
-浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并显式设置最大宽度。浮层仍会在视口边缘避让。
+## 多选
 
-<ComponentExample title="搜索、多选与异步加载" preview={<Capabilities />} fileName="capabilities.tsx">
+设置 `multiple` 后可以选择多条路径，已选项以标签展示。标签的换行、折叠与数量限制见下方“单行多选”。
 
-```tsx lineNumbers file="../../src/examples/cascader/capabilities.tsx"
+<ComponentExample title="多选地区" preview={<Multiple />} fileName="multiple.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/cascader/multiple.tsx"
+```
+
+</ComponentExample>
+
+## 选择中间层
+
+默认只有末级选项可以确认。设置 `changeOnSelect` 后，点击任意一级都会确认到该层为止的路径，适合先选省份再逐步细分的场景。
+
+<ComponentExample title="选择任意一级" preview={<Intermediate />} fileName="intermediate.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/cascader/intermediate.tsx"
+```
+
+</ComponentExample>
+
+## 浮层宽度
+
+浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并限制最大宽度。浮层仍会在视口边缘避让。
+
+<ComponentExample title="按内容定宽" preview={<Popup />} fileName="popup.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/cascader/popup.tsx"
+```
+
+</ComponentExample>
+
+## 异步加载
+
+`loadData` 在展开尚未加载的节点时调用，返回该节点的子选项，组件会把结果写入选项树。它同时收到 `AbortSignal`，浮层关闭时可以据此取消请求。
+
+<ComponentExample title="展开时加载" preview={<Lazy />} fileName="lazy.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/cascader/lazy.tsx"
+```
+
+</ComponentExample>
+
+## 刷新缓存
+
+`cacheKey` 变化后，已经加载过的子节点会被视为过期，再次展开时重新请求。下面的示例用版本号作为 `cacheKey`，点击按钮即可重新加载。
+
+<ComponentExample title="显式刷新" preview={<Cache />} fileName="cache.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/cascader/cache.tsx"
 ```
 
 </ComponentExample>
@@ -57,17 +112,14 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 </ComponentExample>
 
 ## Cascader API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
-| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `options` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | 必填 | 必需。层级选项列表 |
+| `options` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | 必填 | 层级选项列表 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `placeholder` | `string` | `'请选择'` | 未选择时的提示文字 |
@@ -87,9 +139,11 @@ import { CascaderBasic, CascaderControlled } from '../../src/components/form-exa
 | `cacheKey` | `string \| number` | — | 数据版本改变时清空懒加载缓存，并取消旧请求。 |
 | `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
 | `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
 | `multiple` | `false \| true` | `false` | 启用多选；value 和回调的类型随之变化。 |
-| `value` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 受控路径 / 非受控初始路径 |
-| `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 受控路径 / 非受控初始路径 |
+| `value` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 受控路径；省略时使用内部非受控值。 |
+| `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | 非受控模式的初始路径；支持表单重置。 |
 | `onChange` | `((value: string[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => void) \| ((value: string[][], selectedOptions: `[`CascaderOption`](#cascaderoption)`[][]) => void)` | — | 末级选择完成或清除时触发 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `form` | `string` | — | 关联的原生表单 ID。 |
@@ -114,13 +168,14 @@ const options: CascaderOption[] = [
 ```
 
 ### CascaderOption
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 必填 | 选项值，同一层内应唯一 |
-| `label` | `string` | 必填 | 选项文字 |
-| `disabled` | `boolean` | `false` | 禁用该选项及其子级 |
-| `children` | [`readonly CascaderOption[]`](#cascaderoption) | — | 子选项；没有子选项时可确认选择 |
+| `value` | `string` | 必填 | 选项值；同一层内应唯一。 |
+| `label` | `ReactNode` | 必填 | 选项的显示内容。 |
+| `searchLabel` | `string` | — | 复杂 label 的搜索纯文本。 |
+| `isLeaf` | `boolean` | — | 明确指定是否为叶子节点；配合懒加载使用。 |
+| `disabled` | `boolean` | `false` | 禁用该选项及其所有子级。 |
+| `children` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | — | 子选项列表。 |
 
 ## 表单与键盘
 
@@ -129,24 +184,12 @@ const options: CascaderOption[] = [
 Enter、空格或 ↓ 打开面板，↑ / ↓ 在列内移动，Home / End 移至首尾，→ 展开子级，← 返回上一级，Enter 选择。Tab 在各列之间移动，离开面板时聚焦表单中的后续控件；Escape 收起并聚焦触发按钮。关闭时未确认的路径不会提交。
 
 面板沿用局部主题，较深层级可以横向滚动查看。为控件提供 label 或 aria-label。
-
-## CascaderOption
-
+### CascaderFieldNames
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 必需。受控值。 |
-| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
-| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
-| `isLeaf` | `boolean` | — | 明确指定是否为叶子节点，配合异步加载使用。 |
-| `disabled` | `boolean` | — | 禁用交互。 |
-| `children` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | — | 子内容；嵌套数据类型表示子节点。 |
+| `value` | `string` | — | 选项值在业务对象中的字段名。 |
+| `label` | `string` | — | 显示文字在业务对象中的字段名。 |
+| `children` | `string` | — | 子节点数组在业务对象中的字段名。 |
+| `disabled` | `string` | — | 禁用状态在业务对象中的字段名。 |
+| `isLeaf` | `string` | — | 叶子标记在业务对象中的字段名。 |
 
-## CascaderFieldNames
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `value` | `string` | — | 受控值。 |
-| `label` | `string` | — | 展示文字或内容。 |
-| `children` | `string` | — | 子内容；嵌套数据类型表示子节点。 |
-| `disabled` | `string` | — | 禁用交互。 |
-| `isLeaf` | `string` | — | 明确指定是否为叶子节点，配合异步加载使用。 |

@@ -50,3 +50,13 @@ import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
 ## 使用说明
 
 简单等间距排列可使用 Space；需要主轴对齐、反向排列或行内布局时使用 Flex；多列布局使用 Grid。Flex 不改变子元素的外观和尺寸。
+
+## 类型与交互
+
+组装可复用配置时，可导入对应的属性和数据类型。
+
+```ts
+import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
+```
+
+Flex 只负责布局，不改变 DOM 阅读顺序与键盘顺序。

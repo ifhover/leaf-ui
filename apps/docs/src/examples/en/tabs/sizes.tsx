@@ -1,34 +1,46 @@
-import { Grid, Space, Tabs, Text } from '@ifhover/leaf-ui';
+import type { TabItem } from '@ifhover/leaf-ui';
+import { Input, RadioGroup, Space, Tabs } from '@ifhover/leaf-ui';
+import { ChartNoAxesColumn, Settings } from 'lucide-react';
+import { useState } from 'react';
 
-const items = [
-  { key: 'overview', label: 'Overview', children: 'View recent project updates.' },
-  { key: 'members', label: 'Members', children: 'Manage project members and access.' },
+const items: readonly TabItem[] = [
+  {
+    key: 'overview',
+    label: 'Overview',
+    icon: <ChartNoAxesColumn />,
+    children: 'View project activity, members and recent updates.',
+  },
+  {
+    key: 'settings',
+    label: 'Settings',
+    icon: <Settings />,
+    children: <Input aria-label="Project name" placeholder="Type and switch; your draft is kept" />,
+  },
+  { key: 'history', label: 'History', disabled: true, children: null },
 ];
-const labels = { sm: 'Small', md: 'Default', lg: 'Large' };
-const variants = [
-  { type: 'line', label: 'Line tabs' },
-  { type: 'card', label: 'Card tabs' },
+
+type TabsSize = 'sm' | 'md' | 'lg';
+
+const sizes = [
+  { value: 'sm', label: 'Small' },
+  { value: 'md', label: 'Default' },
+  { value: 'lg', label: 'Large' },
 ] as const;
 
 export function TabsSizes() {
+  const [size, setSize] = useState<TabsSize>('md');
+  const sizeLabel = sizes.find((option) => option.value === size)?.label;
+
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={24}>
-      {variants.map(({ type, label }) => (
-        <Space key={type} direction="vertical" align="stretch" size="lg">
-          <Text strong>{label}</Text>
-          {(['sm', 'md', 'lg'] as const).map((size) => (
-            <Space key={size} direction="vertical" align="stretch" size="sm">
-              <span>{labels[size]}</span>
-              <Tabs
-                aria-label={`${label} · ${labels[size]}`}
-                items={items}
-                type={type}
-                size={size}
-              />
-            </Space>
-          ))}
-        </Space>
-      ))}
-    </Grid>
+    <Space direction="vertical" align="stretch" size="lg">
+      <RadioGroup
+        label="Tab size"
+        name="tabs-size"
+        value={size}
+        onChange={(event) => setSize(event.target.value as TabsSize)}
+        options={sizes}
+      />
+      <Tabs aria-label={`Project information · ${sizeLabel}`} items={items} size={size} />
+    </Space>
   );
 }

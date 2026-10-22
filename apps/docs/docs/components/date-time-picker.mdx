@@ -1,4 +1,8 @@
-import { Capabilities } from '../../src/examples/date-time-picker/capabilities';
+import { DisabledDates } from '../../src/examples/date-time-picker/disabled-dates';
+import { DisabledTimes } from '../../src/examples/date-time-picker/disabled-times';
+import { Format } from '../../src/examples/date-time-picker/format';
+import { Presets } from '../../src/examples/date-time-picker/presets';
+import { Seconds } from '../../src/examples/date-time-picker/seconds';
 import { ComponentExample } from '../../src/components/component-example';
 import { DateTimePickerBasic } from '../../src/examples/date-time-picker/basic';
 
@@ -11,22 +15,70 @@ import { DateTimePickerBasic } from '../../src/examples/date-time-picker/basic';
 <ComponentExample title="日期与时间" preview={<DateTimePickerBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/date-time-picker/basic.tsx"
-```
 
-</ComponentExample>
-
-## 自定义格式与营业时间
-
-<ComponentExample title="自定义格式与营业时间" preview={<Capabilities />} fileName="capabilities.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/date-time-picker/capabilities.tsx"
 ```
 
 </ComponentExample>
 
 ## 显示格式与提交值
 
+<ComponentExample title="自定义显示格式" preview={<Format />} fileName="format.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-time-picker/format.tsx"
+
+```
+
+</ComponentExample>
+
 `format` 改变显示文字和 `onChange` 的字符串参数；FormData 保持日期或周期的稳定序列化格式。方括号可以转义固定文字，例如 `YYYY-[Q]Q`。使用函数格式化时，请同时提供 `parse`。Date 表示本地日历值，业务时区在应用的数据边界完成转换。周起点通过 ConfigProvider 的 `weekStartsOn` 设置。
+
+## 显示秒
+
+`showSeconds` 在时间列中加入秒，通常与 `format` 里的 `ss` 一起使用，否则秒值不会出现在输入框。
+
+<ComponentExample title="精确到秒" preview={<Seconds />} fileName="seconds.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-time-picker/seconds.tsx"
+
+```
+
+</ComponentExample>
+
+## 禁用日期
+
+`disabledDate` 对每个可见日期调用一次，返回 `true` 时该日期不可选。
+
+<ComponentExample title="排除周日" preview={<DisabledDates />} fileName="disabled-dates.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-time-picker/disabled-dates.tsx"
+
+```
+
+</ComponentExample>
+
+## 禁用时间
+
+`disabledTime` 收到当前时间片段和日期，返回 `true` 时对应的小时或分钟不可选，适合营业时间、可预约时段等限制。
+
+<ComponentExample title="仅营业时间" preview={<DisabledTimes />} fileName="disabled-times.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-time-picker/disabled-times.tsx"
+
+```
+
+</ComponentExample>
+
+## 快捷预设
+
+`presets` 在面板下方提供常用时间，`value` 返回一个 `Date`，点击后立即填入。
+
+<ComponentExample title="明天十点" preview={<Presets />} fileName="presets.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/date-time-picker/presets.tsx"
+
+```
+
+</ComponentExample>
 
 ## DateTimePicker API
 
@@ -41,6 +93,7 @@ import { DateTimePickerBasic } from '../../src/examples/date-time-picker/basic';
 | `status` | `'error' \| 'warning'` | — | 校验状态 |
 | `allowClear` | `boolean` | `true` | 展示清除按钮 |
 | `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
 | `open` | `boolean` | — | 控制面板是否展开。 |
 | `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
 | `value` | `Date \| null` | `null` | 受控值 / 初始值 |
@@ -57,10 +110,10 @@ import { DateTimePickerBasic } from '../../src/examples/date-time-picker/basic';
 | `onChange` | `(value: Date \| null, dateString: string) => void` | — | 确认返回 Date 与本地日期时间字符串；清除返回 null |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
 | `disabledDate` | `(date: Date) => boolean` | — | 按业务规则禁用日期。 |
-| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, date: Date) => boolean` | — | 按业务规则禁用时间，输入和面板选择使用同一规则。 |
+| `disabledTime` | `(parts: `[`TimeParts`](time-picker#timeparts)`, date: Date) => boolean` | — | 按业务规则禁用时间，输入和面板选择使用同一规则。 |
 | `format` | `string \| ((date: Date) => string)` | — | 显示格式；日期支持 YYYY、MM、DD、HH、mm、ss、Q。 |
 | `parse` | `(text: string) => Date \| null` | — | 自定义文本解析，失败时返回 null。 |
-| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`[]` | — | 快捷选项；value 可以动态计算。 |
+| `presets` | `readonly `[`DatePreset`](date-picker#datepreset)`[]` | — | 快捷选项；value 可以动态计算。 |
 | `panelValue` | `Date` | — | 受控的日历显示日期。 |
 | `onPanelChange` | `(date: Date) => void` | — | 日历显示的周期改变时调用。 |
 | `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
@@ -84,4 +137,4 @@ import type { DateTimePickerProps } from '@ifhover/leaf-ui';
 
 可以输入 `YYYY-MM-DD HH:mm:ss`，关闭秒时使用 `YYYY-MM-DD HH:mm`。时间支持 24 小时制、AM/PM 和上午/下午。按 Enter 或点击确定提交草稿；Escape 或点击外部放弃调整。无效或越界输入不会提交。
 
-日期使用本地时区；12 小时制只影响展示，Date 与 FormData 保持 24 小时格式。原生 input 属性与 aria-* 透传至输入框，className / style 作用于外层。非受控组件支持表单 reset；受控时自行重置 value。
+日期使用本地时区；12 小时制只影响展示，Date 与 FormData 保持 24 小时格式。原生 input 属性与 aria-\* 透传至输入框，className / style 作用于外层。非受控组件支持表单 reset；受控时自行重置 value。

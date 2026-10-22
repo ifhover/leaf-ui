@@ -15,10 +15,6 @@ export function Capabilities({ english = false }) {
           items={items}
         />
       </Space>
-      <Space direction="vertical" align="stretch" size="sm">
-        <span>{english ? 'Right placement' : '右侧标签页'}</span>
-        <Tabs aria-label={english ? 'Right tabs' : '右侧标签页'} placement="right" items={items} />
-      </Space>
     </Space>
   );
 }

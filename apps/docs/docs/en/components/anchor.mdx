@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { AnchorBasic, AnchorAffix } from '../../../src/examples/anchor/basic';
+import { AnchorBasic } from '../../../src/examples/anchor/basic';
+import { AnchorAffix } from '../../../src/examples/anchor/affix';
 
 # Anchor
 
@@ -16,9 +17,9 @@ Navigate long pages and keep important actions visible.
 
 ## Custom scroll container
 
-<ComponentExample title="Custom scroll container" preview={<AnchorAffix english />} fileName="basic.tsx">
+<ComponentExample title="Custom scroll container" preview={<AnchorAffix english />} fileName="affix.tsx">
 
-```tsx lineNumbers file="../../../src/examples/anchor/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/anchor/affix.tsx"
 ```
 
 </ComponentExample>
@@ -30,7 +31,7 @@ Navigate long pages and keep important actions visible.
 | `key` | `string` | — | Required. Stable, unique identifier. |
 | `title` | `ReactNode` | — | Required. Title content. |
 | `href` | `string` | — | Required. Link destination. |
-| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Content, or child nodes for hierarchical records. |
+| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Anchor entries. |
 
 ## Anchor API
 
@@ -60,4 +61,4 @@ Import the props and data types when creating reusable configuration.
 import type { AnchorItem, AnchorProps, AffixProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+The current anchor is marked with aria-current="location"; links stay keyboard reachable and follow ConfigProvider themes and reduced motion.

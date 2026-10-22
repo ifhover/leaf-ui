@@ -1,6 +1,7 @@
 import { MentionsPopup } from '../../../src/examples/mentions/popup';
 import { ComponentExample } from '../../../src/components/component-example';
-import { MentionsBasic, MentionsPrefixes } from '../../../src/examples/mentions/basic';
+import { MentionsBasic } from '../../../src/examples/mentions/basic';
+import { MentionsPrefixes } from '../../../src/examples/mentions/prefixes';
 
 # Mentions
 
@@ -17,9 +18,9 @@ Insert people or references into text.
 
 ## Different prefixes
 
-<ComponentExample title="Different prefixes" preview={<MentionsPrefixes english />} fileName="basic.tsx">
+<ComponentExample title="Different prefixes" preview={<MentionsPrefixes english />} fileName="prefixes.tsx">
 
-```tsx lineNumbers file="../../../src/examples/mentions/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/mentions/prefixes.tsx"
 ```
 
 </ComponentExample>
@@ -48,14 +49,12 @@ The popup matches the field width by default (`popupWidth="trigger"`). Set `popu
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
 | `status` | `'error' \| 'warning'` | — | Configure status. |
-| `resize` | `'none' \| 'vertical' \| 'both'` | — | Configure resize. |
-| `autoSize` | `boolean \| `[`TextareaAutoSize`](../components/textarea#textareaautosize-api) | — | Configure auto size. |
-| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | Configure show count. |
+| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | Configure resize. |
+| `autoSize` | `boolean \| `[`TextareaAutoSize`](textarea#textareaautosize-api) | `false` | Configure auto size. |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Configure show count. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width: trigger matches the field, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum width; unset by default, still bounded by the viewport |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
@@ -70,6 +69,8 @@ The popup matches the field width by default (`popupWidth="trigger"`). Set `popu
 | `split` | `string` | `' '` | Separator appended after inserting a reference. |
 | `loading` | `boolean` | — | Show a loading state. |
 | `notFoundContent` | `ReactNode` | — | Content when no options match. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 
 ## Types and interaction
 
@@ -79,4 +80,4 @@ Import the props and data types when creating reusable configuration.
 import type { MentionOption, MentionsProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Suggestions support arrow keys and Enter; the input stays focusable and follows ConfigProvider themes and reduced motion.

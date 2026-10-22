@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { CommandPaletteBasic, CommandPaletteFailure } from '../../src/examples/command-palette/basic';
+import { CommandPaletteBasic } from '../../src/examples/command-palette/basic';
+import { CommandPaletteFailure } from '../../src/examples/command-palette/failure';
 
 # CommandPalette 命令面板
 
@@ -16,9 +17,9 @@ import { CommandPaletteBasic, CommandPaletteFailure } from '../../src/examples/c
 
 ## 异步操作
 
-<ComponentExample title="异步操作" preview={<CommandPaletteFailure />} fileName="basic.tsx" width="fit-content">
+<ComponentExample title="异步操作" preview={<CommandPaletteFailure />} fileName="failure.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../src/examples/command-palette/basic.tsx"
+```tsx lineNumbers file="../../src/examples/command-palette/failure.tsx"
 ```
 
 </ComponentExample>
@@ -46,7 +47,7 @@ import { CommandPaletteBasic, CommandPaletteFailure } from '../../src/examples/c
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起时调用。 |
 | `onSelect` | `(item: `[`CommandItem`](#commanditem)`) => void` | — | 条目被选择时调用。 |
 | `shortcut` | `string \| false` | `'k'` | 使用 Ctrl/Cmd 与该按键打开面板；false 禁用快捷键。 |
-| `placeholder` | `string` | — | 设置 placeholder。 |
+| `placeholder` | `string` | — | 搜索框占位文字。 |
 | `loading` | `boolean` | — | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 没有内容时的展示。 |
 | `onSearch` | `(query: string) => void` | — | 搜索文字改变时调用。 |
@@ -60,4 +61,4 @@ import { CommandPaletteBasic, CommandPaletteFailure } from '../../src/examples/c
 import type { CommandItem, CommandPaletteProps } from '@ifhover/leaf-ui';
 ```
 
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+搜索框带可读标签，列表支持方向键与 Enter；Escape 关闭，浮层跟随 ConfigProvider 的主题和减少动画设置。

@@ -4,13 +4,13 @@ import { Trash2 } from 'lucide-react';
 export function ButtonDanger() {
   return (
     <Space wrap>
-      <Button danger startIcon={<Trash2 />}>
+      <Button danger variant="solid" startIcon={<Trash2 />}>
         删除项目
       </Button>
       <Button danger variant="outline">
         撤销授权
       </Button>
-      <Button danger variant="soft">
+      <Button danger variant="link">
         清空
       </Button>
       <Button danger disabled>

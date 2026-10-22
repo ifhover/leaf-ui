@@ -3,6 +3,7 @@ import { Capabilities } from '../../src/examples/modal/capabilities';
 import { ModalFooter } from '../../src/examples/modal/footer';
 import { ComponentExample } from '../../src/components/component-example';
 import { ModalBasic } from '../../src/examples/modal/basic';
+import { ModalCard } from '../../src/examples/modal/card';
 
 # Modal 弹窗
 
@@ -13,16 +14,29 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 <ComponentExample title="编辑内容" preview={<ModalBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/basic.tsx"
+
 ```
 
 </ComponentExample>
 
+## 卡片外观
+
+`plain` 和 `card` 都使用同一层柔和画布。`variant="card"` 将正文放入独立的内嵌内容卡，内容卡距离 Modal 外框 6px 且不显示边框；标题使用 14px、600 字重和 22px 行高，并与内容文字起始边缘对齐。关闭按钮保持 24px 可点击区域，内部图标为 16px 并使用加深的正文色，位置向内容卡右边缘内收 8px；背景默认透明，悬停时显示更深一级的中性背景，并使用小圆角（默认 6px）。标题区使用 12px 顶部留白，标题区与内容卡之间使用 12px 的区域间距；内容卡到按钮的实际距离为 10px，footer 不再叠加顶部内边距，按钮到底边的留白为 10px，标题文字在文字列内向下偏移 2px；正文内边距独立控制内容与内容卡边缘的距离。
+
+<ComponentExample title="卡片外观" preview={<ModalCard />} fileName="card.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/modal/card.tsx"
+
+```
+
+</ComponentExample>
 
 ## 自定义底部
 
 <ComponentExample title="自定义底部" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/footer.tsx"
+
 ```
 
 </ComponentExample>
@@ -32,6 +46,7 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 <ComponentExample title="状态销毁与初始焦点" preview={<Capabilities />} fileName="capabilities.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/capabilities.tsx"
+
 ```
 
 </ComponentExample>
@@ -43,6 +58,7 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 <ComponentExample title="图标与说明" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/description.tsx"
+
 ```
 
 </ComponentExample>
@@ -51,40 +67,41 @@ import { ModalBasic } from '../../src/examples/modal/basic';
 
 ## Modal API
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
-| `open` | `boolean` | 必填 | 必需。是否显示弹窗 |
-| `title` | `ReactNode` | — | 标题 / 内容 |
-| `description` | `ReactNode` | — | 补充说明。 |
-| `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
-| `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮 |
-| `confirmText` | `ReactNode` | 语言默认值 | 按钮文字 |
-| `cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
-| `confirmLoading` | `boolean` | `false` | 确认加载状态 |
-| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 定制默认按钮属性 |
-| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | 定制默认按钮属性 |
-| `onConfirm` | `() => void \| Promise<void>` | — | 由应用控制 open；Promise 拒绝时显示错误 |
-| `onCancel` | `() => void` | — | 取消或关闭请求，未指定时使用 onClose |
-| `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
-| `closable` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
-| `maskClosable` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
-| `keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩关闭 / Escape 关闭 |
-| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
-| `afterClose` | `() => void` | — | 关闭动画完成后触发 |
-| `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
-| `destroyOnClose` | `boolean` | `false` | 关闭过渡完成后卸载内容；默认保留。 |
-| `preserve` | `boolean` | — | 显式控制关闭后是否保留内容，优先于 destroyOnClose。 |
-| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 自定义挂载或滚动容器。 |
+| 属性                 | 类型                                                                                   | 默认值      | 说明                                                    |
+| -------------------- | -------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------- |
+| `initialFocus`       | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)`                        | —           | 指定打开后的初始焦点。                                  |
+| `returnFocus`        | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)`             | —           | 关闭后返回原焦点；也可指定目标或设为 false。            |
+| `open`               | `boolean`                                                                              | 必填        | 必需。是否显示弹窗                                      |
+| `variant`            | `'plain' \| 'card'`                                                                    | `'plain'`   | 弹窗外壳；两种外观都使用柔和画布，card 增加内嵌内容卡。 |
+| `title`              | `ReactNode`                                                                            | —           | 标题 / 内容                                             |
+| `description`        | `ReactNode`                                                                            | —           | 补充说明。                                              |
+| `icon`               | `ReactNode`                                                                            | —           | 标题左侧的装饰图标。                                    |
+| `divided`            | `boolean`                                                                              | `false`     | 用浅分隔线划分标题、内容和底部操作区。                  |
+| `footer`             | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮                 |
+| `confirmText`        | `ReactNode`                                                                            | 语言默认值  | 按钮文字                                                |
+| `cancelText`         | `ReactNode`                                                                            | 语言默认值  | 按钮文字                                                |
+| `confirmLoading`     | `boolean`                                                                              | `false`     | 确认加载状态                                            |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api)                                                     | —           | 定制默认按钮属性                                        |
+| `cancelButtonProps`  | [`ButtonProps`](button#button-api)                                                     | —           | 定制默认按钮属性                                        |
+| `onConfirm`          | `() => void \| Promise<void>`                                                          | —           | 由应用控制 open；Promise 拒绝时显示错误                 |
+| `onCancel`           | `() => void`                                                                           | —           | 取消或关闭请求，未指定时使用 onClose                    |
+| `width`              | `number \| string`                                                                     | `480`       | 弹窗宽度，数字为像素                                    |
+| `closable`           | `boolean`                                                                              | `true`      | 关闭按钮 / 点击遮罩关闭 / Escape 关闭                   |
+| `maskClosable`       | `boolean`                                                                              | `true`      | 关闭按钮 / 点击遮罩关闭 / Escape 关闭                   |
+| `keyboard`           | `boolean`                                                                              | `true`      | 关闭按钮 / 点击遮罩关闭 / Escape 关闭                   |
+| `onClose`            | `() => void`                                                                           | —           | 请求关闭，由应用更新 open                               |
+| `afterClose`         | `() => void`                                                                           | —           | 关闭动画完成后触发                                      |
+| `forceRender`        | `boolean`                                                                              | `false`     | 打开前也挂载内容，关闭时保持隐藏。                      |
+| `destroyOnClose`     | `boolean`                                                                              | `false`     | 关闭过渡完成后卸载内容；默认保留。                      |
+| `preserve`           | `boolean`                                                                              | —           | 显式控制关闭后是否保留内容，优先于 destroyOnClose。     |
+| `container`          | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)`                   | —           | 自定义挂载或滚动容器。                                  |
 
 ## ModalFooterActions
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `confirmButton` | `ReactNode` | — | 必需。默认确认按钮，保留加载状态 |
-| `cancelButton` | `ReactNode` | — | 必需。默认取消按钮 |
+| 属性            | 类型        | 默认值 | 说明                             |
+| --------------- | ----------- | ------ | -------------------------------- |
+| `confirmButton` | `ReactNode` | —      | 必需。默认确认按钮，保留加载状态 |
+| `cancelButton`  | `ReactNode` | —      | 必需。默认取消按钮               |
 
 ## 类型
 
@@ -100,15 +117,15 @@ import type { ModalProps, ModalFooterActions } from '@ifhover/leaf-ui';
 
 footer 可放确认、取消等操作；也可以在内容中使用 Form。弹窗中的选择器浮层沿用区域主题。
 
-默认底部按取消、确定顺序靠右排列。传入 onConfirm 时，完成操作后自行更新 open；未传入时确定调用 onClose。Promise 执行期间显示加载状态并避免重复操作。提交表单可在 onConfirm 中调用 form.requestSubmit()，或通过 confirmButtonProps 设置 type="submit" 与 form ID，保留表单校验。footer 函数可扩展默认按钮，`footer={null}` 隐藏底部。
+默认底部按取消、确定顺序靠右排列，取消按钮使用描边外观。传入 onConfirm 时，完成操作后自行更新 open；未传入时确定调用 onClose。Promise 执行期间显示加载状态并避免重复操作。提交表单可在 onConfirm 中调用 form.requestSubmit()，或通过 confirmButtonProps 设置 type="submit" 与 form ID，保留表单校验。footer 函数可扩展默认按钮，`footer={null}` 隐藏底部。
 
 ## DialogFocusOptions
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
+| 属性           | 类型                                                                       | 默认值 | 说明                                         |
+| -------------- | -------------------------------------------------------------------------- | ------ | -------------------------------------------- |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)`            | —      | 指定打开后的初始焦点。                       |
+| `returnFocus`  | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | —      | 关闭后返回原焦点；也可指定目标或设为 false。 |
 
 ## 外观与丰富内容
 
-`description` 为标题提供补充说明，`icon` 放在标题左侧。默认 `divided` 使用浅分隔线和淡灰操作区；`divided={false}` 使用留白分区。`footer` 函数可在左侧加入状态文字，使用 `Space` 把按钮放在同一组，窄屏时整组换行并靠右排列。
+`description` 为标题提供补充说明，`icon` 放在标题左侧。默认弹窗使用柔和画布与留白分区，标题和 footer 左右对齐；`divided` 可启用浅分隔线和淡灰操作区。背景使用柔和遮罩与虚化，随区域的深浅外观变化，可通过 `ConfigProvider` 的 `maskBlur={false}` 关闭虚化。`footer` 函数可在左侧加入状态文字，使用 `Space` 把按钮放在同一组，窄屏时整组换行并靠右排列。

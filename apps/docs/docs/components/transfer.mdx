@@ -15,9 +15,9 @@ import { TransferVirtual } from '../../src/examples/transfer/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 虚拟列表
 
-<ComponentExample title="更多用法" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
+<ComponentExample title="虚拟列表" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/transfer/advanced.tsx"
 ```
@@ -40,7 +40,7 @@ import type { TransferChangeInfo, TransferItem, TransferProps } from '@ifhover/l
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `'left' \| 'right'` | 必填 | 排列方向或移动方向 |
+| `direction` | `'left' \| 'right'` | 必填 | 移动方向：'left' 移到左栏，'right' 移到右栏。 |
 | `movedKeys` | `string[]` | 必填 | 本次移动标识 |
 
 ## TransferItem API

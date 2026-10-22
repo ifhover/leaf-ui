@@ -1,7 +1,7 @@
 import { componentCatalog } from './component-catalog';
 
 const colors: Record<string, string> = {
-  '#20834a': 'var(--leaf-color-primary)',
+  '#1e964f': 'var(--leaf-color-primary)',
   '#eaf4ed': 'var(--leaf-color-primary-surface-9)',
   '#e8f4ec': 'var(--leaf-color-primary-surface-9)',
   '#edf6ee': 'var(--leaf-color-primary-surface-9)',
@@ -29,14 +29,14 @@ const colors: Record<string, string> = {
   '#f4f7f5': 'var(--leaf-color-surface-muted)',
   '#f5f7f6': 'var(--leaf-color-surface-muted)',
   '#f0f4f1': 'var(--leaf-color-surface-muted)',
-  '#c83c3c': 'var(--leaf-color-danger)',
-  '#e8adad': 'var(--leaf-color-danger-border-30)',
-  '#fff1f1': 'var(--leaf-color-danger-surface-9)',
+  '#dd3f2e': 'var(--leaf-color-danger)',
+  '#e0b1ab': 'var(--leaf-color-danger-border-30)',
+  '#fceeec': 'var(--leaf-color-danger-surface-9)',
   '#1677ff': 'var(--leaf-color-info)',
   '#edf5ff': 'var(--leaf-color-info-surface-9)',
   '#eff5ff': 'var(--leaf-color-info-surface-9)',
   '#e8effb': 'var(--leaf-color-info-surface-9)',
-  '#faad14': 'var(--leaf-color-warning)',
+  '#d38b11': 'var(--leaf-color-warning)',
   '#ffc53d': 'var(--leaf-color-warning)',
   '#8d671c': 'var(--leaf-color-warning-text-80)',
   '#fff6e9': 'var(--leaf-color-warning-surface-9)',
@@ -82,7 +82,7 @@ function prepareThumbnail(source: string, slug: string) {
           return paint;
         }
         // Success glyphs carry meaning independently of the selected site color.
-        if (color === '#20834a' && attr === 'stroke' && (slug === 'alert' || slug === 'result')) {
+        if (color === '#1e964f' && attr === 'stroke' && (slug === 'alert' || slug === 'result')) {
           return `${attr}="var(--leaf-color-success)"`;
         }
         const shade = shades[color];

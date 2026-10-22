@@ -1,7 +1,14 @@
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { properties, readApiRows, typeExpression } from './api-model.mjs';
+import {
+  apiDefaultCell,
+  apiSectionMatch,
+  properties,
+  readApiRows,
+  removeDuplicateApiSections,
+  typeExpression,
+} from './api-model.mjs';
 import { additions, documentationPage, updatedPages } from './component-metadata.mjs';
 import { publicApi } from './export-ai-docs.mjs';
 
@@ -9,6 +16,8 @@ const repository = path.resolve(import.meta.dirname, '../../..');
 const selectedPage = process.argv
   .find((argument) => argument.startsWith('--page='))
   ?.slice('--page='.length);
+const pageSelected = (page) =>
+  !selectedPage || page === selectedPage || page.endsWith(`/${selectedPage}`);
 const baselineRef = process.argv
   .find((argument) => argument.startsWith('--from-ref='))
   ?.slice('--from-ref='.length);
@@ -85,6 +94,10 @@ const descriptions = {
   popupRender: [
     '包装或补充面板内容，保留传入的内容以维持交互。',
     'Wrap or extend popup content; retain the supplied content to preserve interaction.',
+  ],
+  panelVariant: [
+    '面板外观；card 在柔和画布上以内嵌内容卡呈现。',
+    'Panel appearance; card places the content on an inset surface above a muted canvas.',
   ],
   getPopupContainer: [
     '返回浮层的挂载容器，也可返回 ShadowRoot。',
@@ -455,8 +468,227 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
+const layoutDescription = [
+  '显式选择内置布局或完全自定义组合。省略时保留旧行为：传入 children 会替换自动布局；children={false} 才继续使用自动布局。',
+  'Explicitly choose the built-in layout or a fully custom composition. When omitted, legacy behavior applies: children replace the automatic layout; only children={false} keeps the automatic layout.',
+];
+const childrenDescription = [
+  'layout="custom" 时的完整组合；省略 layout 时传入 children 会替换自动布局并触发开发提示。只是被工具栏或内容使用的嵌套数据不应放在这里。',
+  'The complete composition for layout="custom". With layout omitted, children replace the automatic layout and emit a development warning. Do not place nested row data here.',
+];
+const columnDividersDescription = [
+  '仅增加列分隔线；外框、圆角和向下静止阴影始终启用。',
+  'Add column dividers only; the outer frame, radius and downward resting shadow are always enabled.',
+];
+const localPaginationDescription = [
+  '是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。',
+  'Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows.',
+];
+const selectionModeDescription = [
+  '单选只保留最近请求的一个 key；多选保留全部已选 key。',
+  'Single keeps only the most recently requested key; multiple keeps every selected key.',
+];
+const selectedRowKeysDescription = [
+  '受控的已选业务行 key，数组顺序决定单选模式保留哪一项。',
+  'Controlled selected business row keys; array order determines which key single mode retains.',
+];
+const selectedResultKeysDescription = [
+  '当前已选业务行 key；受控时来自 selectedRowKeys，非受控时来自内部状态。',
+  'Current selected business row keys; sourced from selectedRowKeys when controlled, otherwise from internal state.',
+];
+const defaultSelectedRowKeysDescription = [
+  '非受控模式的初始已选业务行 key。',
+  'Initial selected business row keys for uncontrolled usage.',
+];
+const onSelectedRowKeysChangeDescription = [
+  '选择变化时返回规范化、去重后的字符串 key。',
+  'Called with normalized, unique string keys whenever selection changes.',
+];
+const specificDefaults = {
+  'AutoCompleteProps.value': "`''`",
+  'CascaderProps.value': '`[]`',
+  'RadioProps.value': '—',
+  'SelectProps.value': "`''`",
+  'SliderProps.value': '—',
+  'DataTableSearchProps.allowClear': '`true`',
+  'DataTableSearchProps.size': 'DataTable size',
+  'DataTablePaginationProps.showSizeChanger': '`true`',
+  'DataTablePaginationProps.size': 'DataTable size',
+  'UseDataTableSelectionOptions.mode': '`multiple`',
+  'UseDataTableSelectionOptions.defaultSelectedRowKeys': '`[]`',
+};
+const removedProperties = new Set(['CascaderProps.children']);
+const specificTypes = {
+  'UseDataTableSelectionOptions.selectedRowKeys': 'readonly DataTableRowSelectionKey[]',
+  'UseDataTableSelectionOptions.defaultSelectedRowKeys': 'readonly DataTableRowSelectionKey[]',
+};
 const specific = {
+  'AutoCompleteProps.value': [
+    '受控文本；省略时使用内部非受控值。',
+    'Controlled text; the internal uncontrolled value is used when omitted.',
+  ],
+  'AutoCompleteProps.defaultValue': [
+    '非受控模式的初始文本；支持表单重置。',
+    'Initial text for uncontrolled usage; native form reset is supported.',
+  ],
+  'AutoCompleteOption.value': [
+    '唯一建议值；选择后写入输入框。',
+    'Unique suggestion value; inserted into the input on selection.',
+  ],
+  'AutoCompleteOption.label': [
+    '建议的显示文字；默认也用于本地过滤。',
+    'Visible suggestion label, also used by the default local filter.',
+  ],
+  'AutoCompleteOption.searchLabel': [
+    '复杂 label 的搜索纯文本；省略时使用可读文字或 value。',
+    'Plain search text for a rich label; readable text or value is used when omitted.',
+  ],
+  'AutoCompleteOption.disabled': ['禁用该建议。', 'Disable the suggestion.'],
+  'AutoCompleteOptionGroup.label': ['建议分组的标题。', 'Suggestion group heading.'],
+  'AutoCompleteOptionGroup.options': ['该分组内的建议。', 'Suggestions in this group.'],
+  'CascaderProps.value': [
+    '受控路径；省略时使用内部非受控值。',
+    'Controlled path; the internal uncontrolled value is used when omitted.',
+  ],
+  'CascaderProps.defaultValue': [
+    '非受控模式的初始路径；支持表单重置。',
+    'Initial path for uncontrolled usage; native form reset is supported.',
+  ],
+  'CascaderOption.value': [
+    '选项值；同一层内应唯一。',
+    'Option value; unique within the same level.',
+  ],
+  'CascaderOption.label': ['选项的显示内容。', 'Visible option content.'],
+  'CascaderOption.searchLabel': [
+    '复杂 label 的搜索纯文本。',
+    'Plain text used to search a rich label.',
+  ],
+  'CascaderOption.isLeaf': [
+    '明确指定是否为叶子节点；配合懒加载使用。',
+    'Identify a leaf node explicitly, including in lazy data.',
+  ],
+  'CascaderOption.disabled': [
+    '禁用该选项及其所有子级。',
+    'Disable this option and all descendants.',
+  ],
+  'CascaderOption.children': ['子选项列表。', 'Child options.'],
+  'CascaderFieldNames.value': [
+    '选项值在业务对象中的字段名。',
+    'Business-object field containing the option value.',
+  ],
+  'CascaderFieldNames.label': [
+    '显示文字在业务对象中的字段名。',
+    'Business-object field containing the visible label.',
+  ],
+  'CascaderFieldNames.children': [
+    '子节点数组在业务对象中的字段名。',
+    'Business-object field containing the child-node array.',
+  ],
+  'CascaderFieldNames.disabled': [
+    '禁用状态在业务对象中的字段名。',
+    'Business-object field containing the disabled state.',
+  ],
+  'CascaderFieldNames.isLeaf': [
+    '叶子标记在业务对象中的字段名。',
+    'Business-object field containing the leaf marker.',
+  ],
+  'RadioOption.label': ['选项的显示内容。', 'Visible option content.'],
+  'RadioOption.description': ['选项下方的补充说明。', 'Supporting text below the option.'],
+  'RadioOption.icon': ['选项前的图标内容。', 'Leading icon content for the option.'],
+  'RadioOption.extra': [
+    '选项尾部的非交互状态文字或标签。',
+    'Trailing non-interactive status text or tag.',
+  ],
+  'RadioOption.value': ['选项值；同一组内应唯一。', 'Option value; unique within the group.'],
+  'RadioOption.disabled': ['禁用该选项。', 'Disable the option.'],
+  'RadioProps.value': [
+    '该单选框在表单中提交的值，不是选中状态；选中状态使用 checked。',
+    'The value submitted by this radio, not its checked state; use checked for selection.',
+  ],
+  'RadioGroupProps.value': [
+    '受控的选中项 value；省略时使用内部非受控值。',
+    'Controlled selected value; the internal uncontrolled value is used when omitted.',
+  ],
+  'RadioGroupProps.defaultValue': [
+    '非受控模式的初始选中值；支持表单重置。',
+    'Initial selected value for uncontrolled usage; native form reset is supported.',
+  ],
+  'SelectProps.value': [
+    '受控值；省略时使用内部非受控值。',
+    'Controlled value; the internal uncontrolled value is used when omitted.',
+  ],
+  'SelectProps.defaultValue': [
+    '非受控模式的初始值；支持表单重置。',
+    'Initial value for uncontrolled usage; native form reset is supported.',
+  ],
+  'SelectOption.value': [
+    '唯一选项值；不能使用空字符串。',
+    'Unique option value; empty strings are reserved.',
+  ],
+  'SelectOption.label': [
+    '选项内容，可以是文字或 React 节点。',
+    'Option content, as text or a React node.',
+  ],
+  'SelectOption.disabled': ['禁用该选项。', 'Disable the option.'],
+  'SelectOption.searchLabel': [
+    '复杂 label 的搜索纯文本；省略时使用可读文字或 value。',
+    'Plain search text for a rich label; readable text or value is used when omitted.',
+  ],
+  'SliderMark.value': ['刻度数值。', 'Mark value.'],
+  'SliderMark.label': ['刻度显示内容。', 'Visible mark label.'],
+  'SliderProps.value': ['受控数值。', 'Controlled value.'],
+  'SliderProps.defaultValue': [
+    '非受控模式的初始数值；区间模式使用二元数组。',
+    'Initial value for uncontrolled usage; range mode uses a two-number tuple.',
+  ],
+  'UploadProps.fileList': [
+    '受控文件列表；省略时使用内部非受控列表。',
+    'Controlled file list; the internal uncontrolled list is used when omitted.',
+  ],
+  'UploadProps.defaultFileList': [
+    '非受控模式的初始文件列表；支持表单重置。',
+    'Initial file list for uncontrolled usage; native form reset is supported.',
+  ],
+  'UploadFile.uid': [
+    '稳定且唯一的文件标识；上传和取消操作按 uid 定位文件。',
+    'Stable, unique file identity used to target upload and cancellation.',
+  ],
+  'UploadFile.url': ['文件地址；可用于下载或图片预览。', 'File URL for download or image preview.'],
+  'UploadFile.name': ['文件名，不是 FormData 字段名。', 'File name, not the FormData field name.'],
+  'UploadFile.size': ['文件大小，单位为字节。', 'File size in bytes.'],
+  'UploadFile.type': [
+    'MIME 类型；缺少时根据文件扩展名识别。',
+    'MIME type; inferred from the extension when omitted.',
+  ],
+  'UploadFile.status': ['当前上传状态。', 'Current upload status.'],
+  'UploadFile.percent': ['上传进度，范围为 0–100。', 'Upload progress from 0 to 100.'],
+  'UploadFile.error': ['失败说明。', 'Failure message.'],
+  'UploadFile.originFile': ['浏览器选择的原始 File。', 'Original browser File.'],
+  'UploadFile.response': ['服务端返回的原始数据。', 'Raw server response.'],
+  'UploadHandle.upload': [
+    '开始上传指定 uid 的文件；省略 uid 时上传全部待处理文件。',
+    'Start the file with the given uid, or all pending files when uid is omitted.',
+  ],
+  'UploadHandle.abort': [
+    '取消指定 uid 的上传；省略 uid 时取消全部上传。',
+    'Abort the upload with the given uid, or all uploads when uid is omitted.',
+  ],
+  'UploadHandle.focus': ['聚焦上传控件。', 'Focus the upload control.'],
   'CardTitleProps.children': ['标题内容。', 'Heading content.'],
+  'CardTitleProps.description': ['标题下方的补充说明。', 'Supporting text beneath the heading.'],
+  'CardTitleProps.extra': ['标题右侧的附加操作。', 'Trailing heading actions.'],
+  'CardTitleProps.containerProps': [
+    '标题区域外层容器的原生属性；heading 自身的属性、事件与 ref 仍直接应用于实际标题元素。',
+    'Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element.',
+  ],
+  'CardProps.variant': [
+    '卡片外观；inset 在柔和灰色外层中嵌入白色内容卡。',
+    'Card appearance; inset nests a white content surface inside a muted canvas.',
+  ],
+  'DropdownItem.extra': [
+    '条目右侧的附加内容；适合放快捷键、状态标签等非交互信息。',
+    'Trailing item content for shortcuts, status labels or other non-interactive information.',
+  ],
   ...Object.fromEntries(
     [
       'SelectProps',
@@ -488,6 +720,10 @@ const specific = {
   'AlertProps.variant': [
     'soft 使用状态底色；neutral 使用中性底色并保留语义图标颜色。',
     'Soft uses a semantic surface; neutral uses a neutral surface with a semantic icon.',
+  ],
+  'ModalProps.variant': [
+    '弹窗外壳；两种外观都使用柔和画布，card 增加内嵌内容卡。',
+    'Dialog shell; both use a muted canvas, and card adds an inset content surface.',
   ],
   'ModalProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
   'DrawerProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
@@ -529,9 +765,41 @@ const specific = {
     '由 useReactTable 创建的实例，唯一的数据与状态来源。',
     'Instance created by useReactTable; the sole data and state owner.',
   ],
+  'DataTableInstanceProps.table': [
+    '实例模式唯一的数据与状态来源；不再传入 data、columns、rowKey 或 options。',
+    'The only data and state owner in instance mode; do not also pass data, columns, rowKey or options.',
+  ],
+  'DataTableProps.toolbar': [
+    '自动布局中的工具栏内容；仍由 DataTable 渲染 Content 和分页器。显式自定义布局请直接组合对应的公共部件。',
+    'Toolbar content in the automatic layout; DataTable still renders Content and pagination. Compose public parts directly for a custom layout.',
+  ],
+  'DataTableProps.pagination': [
+    '默认布局的分页器开关或展示参数；快捷模式设为 false 时同时关闭本地数据截断。',
+    'Automatic pagination visibility or presentation options; false also disables local slicing in data mode.',
+  ],
+  'DataTableProps.layout': layoutDescription,
+  'DataTablePresentationProps.layout': layoutDescription,
+  'DataTableProps.children': childrenDescription,
+  'DataTablePresentationProps.children': childrenDescription,
+  'DataTableProps.columnDividers': columnDividersDescription,
+  'DataTablePresentationProps.columnDividers': columnDividersDescription,
   'DataTableProps.bordered': [
-    '展示外框和列分隔线；无边框时表头底部为 1px 分割线。',
-    'Show the outer frame and column dividers. Borderless headers have a 1px bottom divider.',
+    '已弃用，请改用 columnDividers；columnDividers 显式传入时优先。',
+    'Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence.',
+  ],
+  'DataTablePresentationProps.bordered': [
+    '已弃用，请改用 columnDividers；columnDividers 显式传入时优先。',
+    'Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence.',
+  ],
+  'DataTableProps.localPagination': localPaginationDescription,
+  'UseDataTableOptions.localPagination': localPaginationDescription,
+  'UseDataTableOptions.pagination': [
+    '已弃用，请改用 localPagination。不传 localPagination 时作为兼容别名；false 会关闭本地数据切分。',
+    'Deprecated; use localPagination instead. Acts as a compatibility alias when localPagination is omitted; false disables local slicing.',
+  ],
+  'DataTablePresentationProps.toolbar': [
+    '自动布局中的工具栏内容；自定义布局需要自行渲染 DataTable.Toolbar。',
+    'Toolbar content for the automatic layout; custom layouts render DataTable.Toolbar themselves.',
   ],
   'DataTableProps.striped': [
     '展示交替行背景并隐藏行间分割线；关闭时显示行间细线。',
@@ -561,6 +829,10 @@ const specific = {
     '默认跟随 DataTable 的尺寸。',
     'Inherit DataTable size by default.',
   ],
+  'DataTableSearchProps.allowClear': [
+    '默认展示清除操作；传入 false 可关闭。',
+    'Shown by default; pass false to remove the clear action.',
+  ],
   'DataTableSearchProps.status': ['输入框的校验状态。', 'Input validation status.'],
   'DataTableSearchProps.prefix': [
     '前置内容；默认是搜索图标。',
@@ -573,8 +845,8 @@ const specific = {
   ],
   'DataTableSearchProps.onPressEnter': ['按 Enter 时调用。', 'Called on Enter.'],
   'DataTablePaginationProps.showSizeChanger': [
-    '展示每页条数选择器。',
-    'Show the page-size selector.',
+    '展示每页条数选择器；DataTable 默认开启，可显式传入 false 关闭。',
+    'Show the page-size selector; enabled by default in DataTable and can be disabled with false.',
   ],
   'DataTablePaginationProps.pageSizeOptions': ['可选择的每页条数。', 'Available page sizes.'],
   'DataTablePaginationProps.showQuickJumper': [
@@ -608,12 +880,25 @@ const specific = {
   ],
   'DataTableDataProps.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
   'DataTableDataProps.rowKey': [
-    '稳定唯一的标识字段，或返回字符串标识的函数。',
-    'A stable unique key field or a function returning a string identifier.',
+    '非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。',
+    'A required string/number identity field, or a function returning a string/number identity.',
   ],
   'DataTableDataProps.options': [
     '定制 TanStack 的状态、回调和服务端配置。',
     'Customize TanStack state, callbacks and server configuration.',
+  ],
+  'UseDataTableOptions.data': [
+    '展示的数据，更新时使用新数组。',
+    'Data to display; provide a new array when updating.',
+  ],
+  'UseDataTableOptions.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
+  'UseDataTableOptions.rowKey': [
+    '每行稳定且唯一的字符串或数字标识。',
+    'A stable, unique string/number identity for every row.',
+  ],
+  'UseDataTableOptions.options': [
+    '定制 TanStack 的状态、回调、行模型和服务端配置。',
+    'Customize native TanStack state, callbacks, row models and server settings.',
   ],
   'DataTableRowReorderInfo.rows': [
     '当前页重排后的行；通过 row.original 取得业务数据。',
@@ -637,9 +922,39 @@ const specific = {
   ],
   'DataTableRowProps.selected': ['设置行的选中样式。', 'Apply the selected row appearance.'],
   'DataTableCellProps.align': ['单元格内容对齐。', 'Cell content alignment.'],
-  'DataTableCellProps.pinned': ['固定在逻辑起始或结束侧。', 'Pin to the logical start or end.'],
-  'DataTableCellProps.pinOffset': ['距离该侧的像素数。', 'Pixel offset from that side.'],
-  'DataTableCellProps.pinEdge': ['展示固定列边缘的淡阴影。', 'Show a subtle pinned-edge shadow.'],
+  'DataTableSelectionOptions.state': [
+    '传给 useDataTable options 的受控 rowSelection 状态。',
+    'Controlled rowSelection state for useDataTable options.',
+  ],
+  'DataTableSelectionOptions.onRowSelectionChange': [
+    'TanStack 原生选择变更回调，内部会规范化业务 key。',
+    'Native TanStack selection callback; business keys are normalized internally.',
+  ],
+  'DataTableSelectionOptions.enableMultiRowSelection': [
+    '由 mode 决定；单选为 false，多选为 true。',
+    'Derived from mode: false for single and true for multiple.',
+  ],
+  'UseDataTableSelectionOptions.mode': selectionModeDescription,
+  'UseDataTableSelectionOptions.selectedRowKeys': selectedRowKeysDescription,
+  'UseDataTableSelectionOptions.defaultSelectedRowKeys': defaultSelectedRowKeysDescription,
+  'UseDataTableSelectionOptions.onSelectedRowKeysChange': onSelectedRowKeysChangeDescription,
+  'UseDataTableSelectionResult.selectedRowKeys': selectedResultKeysDescription,
+  'UseDataTableSelectionResult.rowSelection': [
+    '由业务 key 派生的 TanStack 原生 rowSelection 映射。',
+    'Native TanStack rowSelection map derived from business keys.',
+  ],
+  'UseDataTableSelectionResult.onRowSelectionChange': [
+    '可直接传给 useDataTable 或原生 useReactTable。',
+    'Pass directly to useDataTable or native useReactTable.',
+  ],
+  'UseDataTableSelectionResult.selectionOptions': [
+    '可直接展开到 useDataTable options 的完整选择配置。',
+    'Complete selection options ready to spread into useDataTable options.',
+  ],
+  'UseDataTableSelectionResult.clearSelection': [
+    '清空受控或非受控选择，并触发变更回调。',
+    'Clear controlled or uncontrolled selection and notify the change callback.',
+  ],
   'LeafTheme.motion': [
     '启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。',
     'Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it.',
@@ -781,10 +1096,10 @@ for (const english of [false, true]) {
       );
     } catch {}
     for (const name of names) {
-      if (sectionMatch(document, name)) documentedTypes.add(`${english}/${name}`);
+      if (apiSectionMatch(document, name)) documentedTypes.add(`${english}/${name}`);
       headings.set(
         `${english}/${name}`,
-        sectionMatch(document, name)?.heading ??
+        apiSectionMatch(document, name)?.heading ??
           (name.endsWith('Props') ? `${name.replace(/Props$/u, '')} API` : name),
       );
     }
@@ -797,14 +1112,15 @@ function code(value) {
   const fence = value.includes('`') ? '``' : '`';
   return `${fence}${value.includes('`') ? ' ' : ''}${value.replaceAll('|', '\\|')}${value.includes('`') ? ' ' : ''}${fence}`;
 }
-function typeCell(value, page, english) {
+function typeCell(value, page, english, preserveAliases = false) {
   let text = value.replace(
     /\bPlacement\b/gu,
     "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
   );
-  for (const [name, expression] of expressions)
-    if (expression && expression.length < 230 && !expression.includes('{'))
-      text = text.replace(new RegExp(`\\b${name}\\b`, 'gu'), expression);
+  if (!preserveAliases)
+    for (const [name, expression] of expressions)
+      if (expression && expression.length < 230 && !expression.includes('{'))
+        text = text.replace(new RegExp(`\\b${name}\\b`, 'gu'), expression);
   const pieces = [];
   let position = 0;
   for (const match of text.matchAll(/\b[A-Za-z_]\w*\b/gu)) {
@@ -823,23 +1139,6 @@ function typeCell(value, page, english) {
   if (position < text.length) pieces.push(code(text.slice(position)));
   return pieces.join('') || code(text);
 }
-function escapePattern(value) {
-  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-}
-function sectionMatch(document, name) {
-  const headings = [`${name.replace(/Props$/u, '')} API`, `${name} API`, name];
-  for (const heading of headings) {
-    for (let level = 2; level <= 6; level++) {
-      const expression = new RegExp(
-        `(^#{${level}} ${escapePattern(heading)}\\r?\\n)([\\s\\S]*?)(?=^#{1,${level}} |$(?![\\s\\S]))`,
-        'mu',
-      );
-      const match = document.match(expression);
-      if (match) return { match, heading, expression };
-    }
-  }
-  return null;
-}
 const contractDescriptions = new Set([
   'disabled',
   'readOnly',
@@ -847,8 +1146,10 @@ const contractDescriptions = new Set([
   'required',
   'cacheKey',
 ]);
+let matchedSelectedPage = false;
 for (const [page, names] of byPage) {
-  if (selectedPage && page !== selectedPage) continue;
+  if (!pageSelected(page)) continue;
+  matchedSelectedPage = true;
   const slug = page.split('/').at(-1);
   const addition = additions.find((item) => item[2] === slug);
   if (!addition && !updatedPages.has(slug) && !updatedPages.has(page)) continue;
@@ -878,6 +1179,7 @@ for (const [page, names] of byPage) {
       const prefix = english ? '../../../src' : '../../src';
       document = `import { ComponentExample } from '${prefix}/components/component-example';\nimport { ${basic}, ${advanced} } from '${prefix}/examples/${slug}/basic';\n\n# ${name}${english ? '' : ` ${zh}`}\n\n${english ? enDescription : description}\n\n## ${english ? 'Basic usage' : '基础用法'}\n\n<ComponentExample title="${english ? 'Basic usage' : '基础用法'}" preview={<${basic}${english ? ' english' : ''} />} fileName="basic.tsx">\n\n\`\`\`tsx lineNumbers file="${prefix}/examples/${slug}/basic.tsx"\n\`\`\`\n\n</ComponentExample>\n\n## ${english ? enAdvancedTitle : advancedTitle}\n\n<ComponentExample title="${english ? enAdvancedTitle : advancedTitle}" preview={<${advanced}${english ? ' english' : ''} />} fileName="basic.tsx">\n\n\`\`\`tsx lineNumbers file="${prefix}/examples/${slug}/basic.tsx"\n\`\`\`\n\n</ComponentExample>\n`;
     }
+    document = removeDuplicateApiSections(document, names);
     let original = document;
     try {
       if (baselineRef)
@@ -890,18 +1192,25 @@ for (const [page, names] of byPage) {
     for (const name of names) {
       const props = schema.get(name);
       if (!props?.size) continue;
-      const section = sectionMatch(document, name);
-      const old = readApiRows(sectionMatch(original, name)?.match[2] ?? section?.match[2] ?? '');
+      const section = apiSectionMatch(document, name);
+      const old = readApiRows(apiSectionMatch(original, name)?.match[2] ?? section?.match[2] ?? '');
       const hasDefault =
+        name !== 'UploadHandle' &&
         !/^\| (?:属性 \| 类型 \| 说明|Property \| Type \| Description) \|\r?$/mu.test(
           section?.match[2] ?? '',
         );
       const rows = [
-        `| ${english ? 'Property | Type' : '属性 | 类型'} | ${hasDefault ? `${english ? 'Default' : '默认值'} | ` : ''}${english ? 'Description' : '说明'} |`,
+        `| ${name === 'UploadHandle' ? (english ? 'Method' : '方法') : english ? 'Property' : '属性'} | ${english ? 'Type' : '类型'} | ${hasDefault ? `${english ? 'Default' : '默认值'} | ` : ''}${english ? 'Description' : '说明'} |`,
         hasDefault ? '| --- | --- | --- | --- |' : '| --- | --- | --- |',
       ];
       for (const [property, value] of props) {
         if (value.type === 'never') continue;
+        if (
+          name === 'DataTableProps' &&
+          ['table', 'data', 'columns', 'rowKey', 'options'].includes(property)
+        )
+          continue;
+        if (name === 'DataTableInstanceProps' && property !== 'table') continue;
         if (
           name === 'DataTableDataProps' &&
           !['data', 'columns', 'rowKey', 'options'].includes(property)
@@ -924,13 +1233,29 @@ for (const [page, names] of byPage) {
                 ? `Configure ${property.replace(/([a-z])([A-Z])/gu, '$1 $2').toLowerCase()}.`
                 : `设置 ${property}。`))
         ).replace(/^(?:Required\.\s*|必需。)+/u, '');
+        const defaultOverride = specificDefaults[`${name}.${property}`];
+        const typeOverride = specificTypes[`${name}.${property}`];
+        const resolvedDefault = apiDefaultCell({
+          defaultValue: value.defaultValue ? code(value.defaultValue) : undefined,
+          optional: value.optional,
+          english,
+          override: defaultOverride,
+          previousDefault: !addition ? previous?.defaultValue : undefined,
+        });
+        const requiredPrefix =
+          !hasDefault && name !== 'UploadHandle' && !value.optional
+            ? english
+              ? 'Required. '
+              : '必需。'
+            : '';
         rows.push(
-          `| ${code(property)} | ${typeCell(value.type, page, english)} | ${hasDefault ? `${value.defaultValue ? code(value.defaultValue) : ((!addition ? previous?.defaultValue : undefined) ?? '—')} | ` : ''}${!value.optional ? (english ? 'Required. ' : '必需。') : ''}${description} |`,
+          `| ${code(property)} | ${typeCell(typeOverride ?? value.type, page, english, Boolean(typeOverride))} | ${hasDefault ? `${resolvedDefault} | ` : ''}${requiredPrefix}${description} |`,
         );
       }
       for (const [property, value] of old)
         if (
           !props.has(property) &&
+          !removedProperties.has(`${name}.${property}`) &&
           [
             'name',
             'form',
@@ -953,22 +1278,37 @@ for (const [page, names] of byPage) {
             'id',
             'aria-label',
           ].includes(property)
-        )
+        ) {
+          const defaultOverride = specificDefaults[`${name}.${property}`];
+          const resolvedDefault = apiDefaultCell({
+            defaultValue: value.defaultValue,
+            optional: true,
+            english,
+            override: defaultOverride,
+          });
+          const description = (
+            specific[`${name}.${property}`]?.[english ? 1 : 0] ??
+            descriptions[property]?.[english ? 1 : 0] ??
+            value.description
+          ).replace(/^(?:Required\.\s*|必需。)+/u, '');
           rows.push(
-            `| ${code(property)} | ${value.type} | ${hasDefault ? `${value.defaultValue} | ` : ''}${descriptions[property]?.[english ? 1 : 0] ?? value.description} |`,
+            `| ${code(property)} | ${value.type} | ${hasDefault ? `${resolvedDefault} | ` : ''}${description} |`,
           );
+        }
       const table = rows.join('\n');
       if (section) {
-        document = document.replace(
-          section.expression,
-          (_all, heading, body) =>
-            heading +
-            (body.match(/^(?:\|[^\n]*(?:\n|$))+/mu)
-              ? body.replace(/^(?:\|[^\n]*(?:\n|$))+/mu, `${table}\n`)
-              : `\n${table}\n\n${body}`),
-        );
-      } else
-        document += `\n## ${name.endsWith('Props') ? `${name.replace(/Props$/u, '')} API` : name}\n\n${table}\n`;
+        document = document.replace(section.expression, (_all, heading, body) => {
+          const existingTable = body.match(/^(?:\|[^\n]*(?:\n|$))+/mu)?.[0];
+          if (!existingTable) return `${heading}\n${table}\n\n${body.trimStart()}`;
+          const remainder = body.slice(existingTable.length).replace(/^(?:[ \t]*\r?\n)+/u, '');
+          return `${heading}${table}\n\n${remainder}`;
+        });
+      } else {
+        const generatedHeading = name.endsWith('Props')
+          ? `${name.replace(/Props$/u, '')} API`
+          : name;
+        document = `${document.trimEnd()}\n\n## ${generatedHeading}\n\n${table}\n`;
+      }
     }
     if (addition && !document.includes(english ? '## Types and interaction' : '## 类型与交互'))
       document += `\n## ${english ? 'Types and interaction' : '类型与交互'}\n\n${english ? 'Import the props and data types when creating reusable configuration.' : '组装可复用配置时，可导入对应的属性和数据类型。'}\n\n\`\`\`ts\nimport type { ${names.join(', ')} } from '@ifhover/leaf-ui';\n\`\`\`\n\n${english ? 'Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.' : '为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。'}\n`;
@@ -976,4 +1316,6 @@ for (const [page, names] of byPage) {
     await writeFile(file, document);
   }
 }
+if (selectedPage && !matchedSelectedPage)
+  throw new Error(`No component documentation page matched --page=${selectedPage}.`);
 console.log('Synced bilingual public APIs from TypeScript declarations.');

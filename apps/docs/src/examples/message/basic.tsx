@@ -12,7 +12,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.info('一条消息提示')}>
         提示
       </Button>
-      <Button danger variant="outline" onClick={() => message.error('操作失败，请重试')}>
+      <Button danger variant="outline" onClick={() => message.danger('操作失败，请重试')}>
         错误
       </Button>
       <Button variant="outline" onClick={() => message.success('操作成功')}>
@@ -21,7 +21,7 @@ export function MessageBasic() {
       <Button variant="outline" onClick={() => message.warning('请检查输入内容')}>
         警告
       </Button>
-      <Button variant="soft" onClick={() => message.close()}>
+      <Button  onClick={() => message.close()}>
         清空消息
       </Button>
     </Flex>

@@ -15,9 +15,9 @@ import { InfiniteScrollRetry } from '../../src/examples/infinite-scroll/advanced
 
 </ComponentExample>
 
-## 更多用法
+## 失败重试
 
-<ComponentExample title="更多用法" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+<ComponentExample title="失败重试" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/infinite-scroll/advanced.tsx"
 ```
@@ -43,7 +43,7 @@ import type { InfiniteScrollProps } from '@ifhover/leaf-ui';
 | `dataLength` | `number` | 必填 | 已加载数量，变化后允许下一次请求 |
 | `hasMore` | `boolean` | 必填 | 还有后续数据 |
 | `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | 必填 | 加载更多，signal 用于取消请求 |
-| `target` | `() => HTMLElement \| null` | — | 滚动目标或链接打开方式 |
+| `target` | `() => HTMLElement \| null` | — | 返回滚动容器的函数；省略时使用页面滚动。 |
 | `threshold` | `number` | `200` | 距离末尾触发加载的像素距离 |
 | `loader` | `ReactNode` | — | 加载占位内容 |
 | `endMessage` | `ReactNode` | — | 全部加载后的内容 |

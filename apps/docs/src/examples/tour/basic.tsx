@@ -13,7 +13,7 @@ export function TourBasic({ english = false }: { english?: boolean }) {
           {english ? 'Settings' : '工作区设置'}
         </Button>
         <Button
-          variant="soft"
+          
           onClick={() => {
             setCurrent(0);
             setOpen(true);
@@ -47,27 +47,5 @@ export function TourBasic({ english = false }: { english?: boolean }) {
         ]}
       />
     </Card>
-  );
-}
-export function TourCentered({ english = false }: { english?: boolean }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        {english ? 'Show welcome' : '查看欢迎说明'}
-      </Button>
-      <Tour
-        open={open}
-        onClose={() => setOpen(false)}
-        steps={[
-          {
-            title: english ? 'Welcome to Leaf' : '欢迎来到 Leaf',
-            description: english
-              ? 'A step without a target is displayed in the center.'
-              : '未指定目标的说明会显示在页面中央。',
-          },
-        ]}
-      />
-    </>
   );
 }

@@ -7,7 +7,6 @@ export function CardTabsWithTitle() {
   const formId = useId();
   return (
     <Card
-      divided
       title="Project settings"
       description="Manage project details and team members."
       extra={<Tag>{saved ? 'Saved' : 'Draft'}</Tag>}

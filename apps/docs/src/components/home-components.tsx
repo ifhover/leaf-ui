@@ -255,7 +255,7 @@ export function ComponentShowcase() {
               : t('没有收到验证码？', 'Didn’t get a code?')}
             <Button
               size="sm"
-              variant="soft"
+              
               onClick={() =>
                 message.success(t('示例验证码是 432100', 'The example code is 432100'))
               }
@@ -300,7 +300,7 @@ export function ComponentShowcase() {
               <small>{t('把灵感变成作品', 'Ideas into experiences')}</small>
             </p>
             <Button
-              variant="soft"
+              
               size="sm"
               aria-label={t('加入设计伙伴', 'Join Design circle')}
               startIcon={<ArrowRight size={16} />}
@@ -316,7 +316,7 @@ export function ComponentShowcase() {
               <small>{t('一步步，做点不同', 'Make something different')}</small>
             </p>
             <Button
-              variant="soft"
+              
               size="sm"
               aria-label={t('加入独立创造者', 'Join Indie makers')}
               startIcon={<ArrowRight size={16} />}
@@ -342,7 +342,7 @@ export function ComponentShowcase() {
             <Button variant="outline" size="sm" loading={saving} onClick={save}>
               {t('保存更改', 'Save changes')}
             </Button>
-            <Button variant="soft" size="sm" disabled={saving} onClick={() => setDirty(false)}>
+            <Button  size="sm" disabled={saving} onClick={() => setDirty(false)}>
               {t('暂时放下', 'Discard')}
             </Button>
           </div>

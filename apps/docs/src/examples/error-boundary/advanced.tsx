@@ -17,7 +17,7 @@ export function ErrorBoundaryCustom() {
           <Alert
             title="此区块不可用"
             description={
-              <Button size="sm" variant="soft" onClick={reset}>
+              <Button size="sm"  onClick={reset}>
                 再次尝试
               </Button>
             }

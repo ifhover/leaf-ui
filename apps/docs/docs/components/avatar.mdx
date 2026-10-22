@@ -35,9 +35,9 @@ import { AvatarFallback } from '../../src/examples/avatar/fallback';
 
 </ComponentExample>
 
-## 扩展用法
+## 头像组折叠
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="头像组折叠" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/avatar/extensions.tsx"
 ```
@@ -79,7 +79,7 @@ import type { AvatarGroupProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `maxCount` | `number` | `Infinity` | 最多勾选或展示数量 |
-| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | 尺寸或间距预设 |
+| `maxCount` | `number` | `Infinity` | 最多展示的头像数，超出部分折叠为 +N。 |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | 头像尺寸预设；数字为像素值。 |
 | `shape` | `'circle' \| 'square'` | — | 裁剪形状 |
 | `maxContent` | `(hiddenCount: number) => ReactNode` | — | 自定义溢出人数 |

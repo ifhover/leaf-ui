@@ -9,7 +9,13 @@ import {
   Space,
   useConfirm,
 } from '@ifhover/leaf-ui';
-import mars from '../../config-provider/zh-CN-x-mars.json';
+
+const mars = {
+  common: { confirm: '確萣', cancel: '筭ㄋ' },
+  select: { placeholder: '挑①個唄', empty: '暫蒔木洧選項' },
+  datePicker: { placeholder: '選個ㄖ剘' },
+  pagination: { total: '共 {total} 條數據' },
+};
 
 const translations = { 'zh-CN-x-mars': mars };
 

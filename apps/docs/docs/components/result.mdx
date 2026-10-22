@@ -38,7 +38,7 @@ import { ResultCustom } from '../../src/examples/result/custom';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `status` | `'empty' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'empty'` | 结果状态 |
+| `status` | `'empty' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'empty'` | 结果状态；`error` 为兼容别名 |
 | `title / description` | `ReactNode` | 语言默认标题 / — | 标题 / 说明，null 隐藏 |
 | `icon` | `ReactNode` | 状态图标 | 自定义图标；null 隐藏 |
 | `extra` | `ReactNode` | — | 底部按钮或链接 |
@@ -56,7 +56,7 @@ import type { EmptyProps, ResultProps } from '@ifhover/leaf-ui';
 
 ## 使用说明
 
-空数据使用 `status="empty"`，成功、警告、错误与信息状态有对应图标和颜色。传入 `icon`、`title`、`description` 和 `extra` 可自定义内容。
+空数据使用 `status="empty"`，成功、警告、危险与信息状态有对应图标和颜色。创建时请使用 `danger`；`error` 仍会归一化为 `danger`。传入 `icon`、`title`、`description` 和 `extra` 可自定义内容。
 
 原来的 `Empty` 仍保留兼容入口，建议迁移为 `Result`：`image` 改为 `icon`，`description` 改为 `title`，原本的操作按钮移到 `extra`。
 

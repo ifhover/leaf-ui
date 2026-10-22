@@ -15,9 +15,9 @@ Load more content when reaching the end of a list.
 
 </ComponentExample>
 
-## More examples
+## Retry after failure
 
-<ComponentExample title="More examples" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+<ComponentExample title="Retry after failure" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/infinite-scroll/advanced.tsx"
 ```
@@ -43,7 +43,7 @@ import type { InfiniteScrollProps } from '@ifhover/leaf-ui';
 | `dataLength` | `number` | Required | Loaded count; changes allow the next request |
 | `hasMore` | `boolean` | Required | More data remains |
 | `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | Required | Load more; signal aborts the request |
-| `target` | `() => HTMLElement \| null` | — | Scroll target or link target |
+| `target` | `() => HTMLElement \| null` | — | Returns the scroll container; defaults to the page scroller. |
 | `threshold` | `number` | `200` | Pixels from the end that trigger loading |
 | `loader` | `ReactNode` | — | Loading placeholder |
 | `endMessage` | `ReactNode` | — | Content after all items are loaded |

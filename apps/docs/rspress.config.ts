@@ -15,6 +15,7 @@ const guideSidebar = [
     items: [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
       { text: '安装&快速开始', link: '/guide/getting-started' },
+      { text: '颜色', link: '/guide/colors' },
       { text: '服务端渲染', tag: 'SSR', link: '/guide/ssr' },
       { text: 'AI 与 Skills', link: '/guide/ai' },
       { text: '浏览器兼容性', link: '/guide/compatibility' },
@@ -187,6 +188,7 @@ const englishLabels: Record<string, string> = {
   开始使用: 'Getting started',
   '认识 Leaf UI': 'Introduction',
   '安装&快速开始': 'Installation & quick start',
+  颜色: 'Colors',
   服务端渲染: 'Server-side rendering',
   'AI 与 Skills': 'AI & Skills',
   个性化: 'Personalization',

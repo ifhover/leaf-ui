@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { StatisticBasic, StatisticCountdown } from '../../../src/examples/statistic/basic';
+import { StatisticBasic } from '../../../src/examples/statistic/basic';
+import { StatisticCountdown } from '../../../src/examples/statistic/countdown';
 import { StatisticAnimation } from '../../../src/examples/statistic/animation';
 
 # Statistic
@@ -30,9 +31,9 @@ Set `animation={false}` or `duration={0}` to display the target immediately. Ani
 
 ## Countdown
 
-<ComponentExample title="Countdown" preview={<StatisticCountdown english />} fileName="basic.tsx">
+<ComponentExample title="Countdown" preview={<StatisticCountdown english />} fileName="countdown.tsx">
 
-```tsx lineNumbers file="../../../src/examples/statistic/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/statistic/countdown.tsx"
 ```
 
 </ComponentExample>
@@ -75,4 +76,4 @@ Import the props and data types when creating reusable configuration.
 import type { StatisticProps, CountdownProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Value updates are announced through aria-live, and countdown completion provides readable feedback.

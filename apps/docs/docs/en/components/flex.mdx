@@ -50,3 +50,13 @@ import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
 ## Usage notes
 
 Use Space for simple equal spacing, Flex for main-axis alignment, reversed flow or inline layout, and Grid for columns. Flex preserves the appearance and size of its children.
+
+## Types and interaction
+
+Import the props and data types when creating reusable configuration.
+
+```ts
+import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
+```
+
+Flex only controls layout and does not change DOM reading or keyboard order.

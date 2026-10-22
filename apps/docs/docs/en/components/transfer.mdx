@@ -15,9 +15,9 @@ Select and move items between two lists.
 
 </ComponentExample>
 
-## More examples
+## Virtual list
 
-<ComponentExample title="More examples" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
+<ComponentExample title="Virtual list" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/transfer/advanced.tsx"
 ```
@@ -40,7 +40,7 @@ import type { TransferChangeInfo, TransferItem, TransferProps } from '@ifhover/l
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `direction` | `'left' \| 'right'` | Required | Layout or movement direction |
+| `direction` | `'left' \| 'right'` | Required | Move direction: 'left' moves to the left list, 'right' to the right list. |
 | `movedKeys` | `string[]` | Required | Moved keys |
 
 ## TransferItem API

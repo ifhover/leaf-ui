@@ -6,7 +6,7 @@ import { InputPassword } from '../../src/examples/input/password';
 
 # Input 输入框
 
-用于输入单行文本，如姓名、邮箱或搜索关键词。
+用于输入单行文本，如姓名、邮箱或搜索关键词。悬停不改变边框；聚焦时只加深现有的中性边框，并保留统一的颜色过渡，不添加主题色外圈。错误与警告状态保留语义色。
 
 ## 基础输入
 
@@ -72,9 +72,9 @@ onPressEnter 在按下 Enter 时触发；输入法正在组合文字或事件已
 
 </ComponentExample>
 
-## 扩展用法
+## 搜索框与输入组合
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="搜索框与输入组合" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input/extensions.tsx"
 ```
@@ -126,7 +126,7 @@ import type { InputSearchProps, InputGroupProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框尺寸。 |
 | `status` | `'error' \| 'warning'` | — | 显示状态 |
 | `prefix` | `ReactNode` | — | 前置内容 |
 | `suffix` | `ReactNode` | — | 后置内容 |

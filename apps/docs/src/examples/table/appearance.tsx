@@ -9,13 +9,16 @@ const people = [
 ];
 
 export function TableAppearance({ english = false }: { english?: boolean }) {
-  const [bordered, setBordered] = useState(false);
+  const [columnDividers, setColumnDividers] = useState(false);
   const [striped, setStriped] = useState(true);
   return (
     <Space direction="vertical" align="stretch">
       <Space wrap>
-        <Checkbox checked={bordered} onChange={(event) => setBordered(event.target.checked)}>
-          {english ? 'Borders' : '边框'}
+        <Checkbox
+          checked={columnDividers}
+          onChange={(event) => setColumnDividers(event.target.checked)}
+        >
+          {english ? 'Column dividers' : '列分隔线'}
         </Checkbox>
         <Checkbox checked={striped} onChange={(event) => setStriped(event.target.checked)}>
           {english ? 'Striped rows' : '斑马纹'}
@@ -30,7 +33,7 @@ export function TableAppearance({ english = false }: { english?: boolean }) {
         rowKey="name"
         pagination={false}
         aria-label={english ? 'Table appearance' : '表格外观'}
-        bordered={bordered}
+        columnDividers={columnDividers}
         striped={striped}
       />
     </Space>

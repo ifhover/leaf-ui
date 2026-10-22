@@ -97,7 +97,7 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
 
 export function ThemePresets() {
   const [preset, setPreset] = useState<ThemeStyle>('illustration');
-  const [color, setColor] = useState('#20834a');
+  const [color, setColor] = useState('#1e964f');
   return (
     <ConfigProvider theme={createExampleTheme(preset, color)}>
       <Space direction="vertical" style={{ width: '100%' }}>

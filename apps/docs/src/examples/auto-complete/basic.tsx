@@ -16,18 +16,23 @@ export function AutoCompleteBasic() {
       <FormField label="项目名称">
         <AutoComplete
           aria-label="项目名称"
-          placeholder="输入 Leaf 或自由填写"
-          options={options}
-          value={value}
           onChange={setValue}
           onSelect={setSelected}
+          options={options}
+          placeholder="输入 Leaf 或自由填写"
+          value={value}
         />
       </FormField>
       <Text tone="muted">
         输入：{value || '空'} · 最近选中：{selected || '无'}
       </Text>
-      <FormField label="禁用建议">
-        <AutoComplete aria-label="禁用建议" options={options} disabled defaultValue="Leaf Garden" />
+      <FormField label="禁用整个控件">
+        <AutoComplete
+          aria-label="禁用整个控件"
+          defaultValue="Leaf Garden"
+          disabled
+          options={options}
+        />
       </FormField>
     </Form>
   );

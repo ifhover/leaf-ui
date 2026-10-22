@@ -55,10 +55,10 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `value` | `string` | `'#20834a'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
-| `defaultValue` | `string` | `'#20834a'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
-| `onChange` | `(color: string) => void` | — | 实时变化 / 一次调色操作结束；清除时返回空字符串 |
-| `onChangeComplete` | `(color: string) => void` | — | 实时变化 / 一次调色操作结束；清除时返回空字符串 |
+| `value` | `string` | `'#1e964f'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
+| `defaultValue` | `string` | `'#1e964f'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
+| `onChange` | `(color: string) => void` | — | 调色过程中实时触发；清除时返回空字符串。 |
+| `onChangeComplete` | `(color: string) => void` | — | 一次调色操作结束时触发；清除时返回空字符串。 |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 颜色文字格式；渐变模式应用于每个色标。 |
 | `defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 初始颜色文字格式。 |
 | `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | 颜色文字格式变化时调用。 |

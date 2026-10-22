@@ -2,13 +2,15 @@
 
 日常定制优先设置 ConfigProvider 的 `theme.primaryColor`、`theme.borderRadius` 和 `theme.controlHeight`，其他样式会自动派生，见[定制主题](/guide/theming)。
 
+默认浅色基础色统一来自 `colors.ts`：主题与成功为 `#1e964f`，危险为 `#dd3f2e`，警告为 `#d38b11`，信息为 `#1677ff`。组件样式和静态色板都消费同一组 `--leaf-color-*` 变量，不要在组件内重复声明语义色。
+
 ## LeafThemeTokens
 
-需要单独调整某个派生值时，再通过 `theme.tokens` 覆盖。所有字段均可选，嵌套区域继承未设置的字段。长度为数字时按 px 处理，动效时长为数字时按 ms 处理。
+需要单独调整某个派生值时，再通过 `theme.tokens` 覆盖。所有字段均可选，嵌套区域继承未设置的字段。长度为数字时按 px 处理，动效时长为数字时按 ms 处理；`lineHeight` 的数字大于 0 且不超过 4 时保留旧倍率语义。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `onPrimaryColor` | `string` | 按主题生成 | 主题背景上的文字色；默认自动选择可读的黑色或白色 |
+| `onPrimaryColor` | `string` | 按主题生成 | 主题背景上的文字色；默认自动选择可读的黑色或白色。 |
 | `dangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
 | `onDangerColor` | `string` | 按外观生成 | 危险色 / 危险背景上的文字色 |
 | `successColor` | `string` | 按外观生成 | 成功 / 警告 / 信息颜色 |
@@ -58,7 +60,7 @@
 | `shadowXs` | `string` | — | 最轻的表面阴影。 |
 | `shadowMd` | `string` | — | 设置 shadowMd。 |
 | `shadowLg` | `string` | — | 设置 shadowLg。 |
-| `lineHeight` | `number` | — | 正文行高。 |
+| `lineHeight` | `number \| string` | `20` | 正文行高；数字默认为 px，`1`–`4` 保留旧倍率语义，字符串按 CSS 长度处理。 |
 
 ## 类型导入
 
@@ -79,49 +81,61 @@ const tokens = {
 
 交互状态使用 `hover`、`active`、`focus`、`disabled`，字段类型见 [LeafComponentStateTokens](#leafcomponentstatetokens)。组件参数的默认值仍通过 ConfigProvider 的 `components` 设置。
 
-| 覆盖范围 | 配置键与作用区域 |
-| --- | --- |
-| 四种交互状态 | `Button`、`Input`、`InputNumber`、`Textarea`、`Select`、`AutoComplete`、`Cascader`、`TreeSelect`、`ColorPicker`、`DatePicker`。 |
-| 选择控件 | `Checkbox`、`Radio` 设置原生选择控件的外观与标签文字色；`Switch` 设置轨道与标签文字色；`Tabs` 设置标签按钮。 |
-| 内容和反馈表面 | Card、Alert、Table、Modal、Drawer、Confirm、Message 等支持基础描边与阴影，不消费四种交互状态。 |
-| 浮层 | `Floating` 设置共享浮层；Select、AutoComplete、Cascader、TreeSelect、ColorPicker、DatePicker、TimePicker、Dropdown、Mentions、Popover 可覆盖所属浮层的背景、文字色、边框与阴影。 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `borderRadius` | `string \| number` | — | 圆角；数字表示像素。 |
+| `borderWidth` | `string \| number` | — | 此组件的边框宽度；数字为 px。 |
+| `controlHeight` | `string \| number` | — | 控件高度；数字表示像素。 |
+| `padding` | `string \| number` | — | 内容内边距。 |
+| `gap` | `string \| number` | — | 子项之间的间距。 |
+| `fontSize` | `string \| number` | — | 字号；数字表示像素。 |
+| `color` | `string` | — | 颜色或语义色。 |
+| `background` | `string` | — | 组件表面背景。 |
+| `borderColor` | `string` | — | 外层边框与分区分隔线颜色。 |
+| `headerBackground` | `string` | — | 标题区域背景。 |
+| `footerBackground` | `string` | — | 底部操作区域背景。 |
+| `shadow` | `string` | — | CSS box-shadow 的值。 |
+| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 悬停状态覆盖；嵌套区域逐字段合并。 |
+| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 按下状态覆盖；嵌套区域逐字段合并。 |
+| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 键盘聚焦状态覆盖；保留可见焦点轮廓。 |
+| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 禁用状态覆盖；不改变禁用行为。 |
 
 日期、时间、范围选择器复用 `DatePicker` 的输入外壳状态；例如 TimePicker 的输入聚焦样式通过 `DatePicker.focus` 配置，所属面板的外观通过 `TimePicker` 配置。`InputOTP` 不支持完整的四种状态覆盖。状态用于表中指定的控件区域，不会递归修改组件内部的所有子节点。
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `borderRadius` | `string \| number` | 圆角；数字表示像素。 |
-| `borderWidth` | `string \| number` | 此组件的边框宽度；数字为 px。 |
-| `controlHeight` | `string \| number` | 控件高度；数字表示像素。 |
-| `padding` | `string \| number` | 内容内边距。 |
-| `gap` | `string \| number` | 子项之间的间距。 |
-| `fontSize` | `string \| number` | 字号；数字表示像素。 |
-| `color` | `string` | 颜色或语义色。 |
-| `background` | `string` | 组件表面背景。 |
-| `borderColor` | `string` | 外层边框与分区分隔线颜色。 |
-| `headerBackground` | `string` | 标题区域背景。 |
-| `footerBackground` | `string` | 底部操作区域背景。 |
-| `shadow` | `string` | CSS box-shadow 的值。 |
-| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 悬停状态覆盖；嵌套区域逐字段合并。 |
-| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 按下状态覆盖；嵌套区域逐字段合并。 |
-| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 键盘聚焦状态覆盖；保留可见焦点轮廓。 |
-| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 禁用状态覆盖；不改变禁用行为。 |
+| 属性               | 类型                                                    | 说明                                 |
+| ------------------ | ------------------------------------------------------- | ------------------------------------ |
+| `borderRadius`     | `string \| number`                                      | 圆角；数字表示像素。                 |
+| `borderWidth`      | `string \| number`                                      | 此组件的边框宽度；数字为 px。        |
+| `controlHeight`    | `string \| number`                                      | 控件高度；数字表示像素。             |
+| `padding`          | `string \| number`                                      | 内容内边距。                         |
+| `gap`              | `string \| number`                                      | 子项之间的间距。                     |
+| `fontSize`         | `string \| number`                                      | 字号；数字表示像素。                 |
+| `color`            | `string`                                                | 颜色或语义色。                       |
+| `background`       | `string`                                                | 组件表面背景。                       |
+| `borderColor`      | `string`                                                | 外层边框与分区分隔线颜色。           |
+| `headerBackground` | `string`                                                | 标题区域背景。                       |
+| `footerBackground` | `string`                                                | 底部操作区域背景。                   |
+| `shadow`           | `string`                                                | CSS box-shadow 的值。                |
+| `hover`            | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 悬停状态覆盖；嵌套区域逐字段合并。   |
+| `active`           | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 按下状态覆盖；嵌套区域逐字段合并。   |
+| `focus`            | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 键盘聚焦状态覆盖；保留可见焦点提示。 |
+| `disabled`         | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | 禁用状态覆盖；不改变禁用行为。       |
 
 ## LeafComponentStateTokens
 
-状态只覆盖明确设置的外观字段。嵌套主题按字段继承，不修改父配置；`undefined` 不覆盖已有值。禁用状态优先于悬停、按下和聚焦，原生禁用行为与键盘焦点轮廓继续生效。
+状态只覆盖明确设置的外观字段。嵌套主题按字段继承，不修改父配置；`undefined` 不覆盖已有值。禁用状态优先于悬停、按下和聚焦，原生禁用行为与键盘焦点提示继续生效。
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `color` | `string` | 当前状态的文字颜色。 |
-| `background` | `string` | 当前状态的背景。 |
-| `borderColor` | `string` | 当前状态的边框颜色。 |
-| `shadow` | `string` | 当前状态的 CSS box-shadow。 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `color` | `string` | — | 当前状态的文字颜色。 |
+| `background` | `string` | — | 当前状态的背景。 |
+| `borderColor` | `string` | — | 当前状态的边框颜色。 |
+| `shadow` | `string` | — | 当前状态的 CSS box-shadow。 |
 
 ## LeafThemeStyle
 
 带 `--leaf-*` 自定义属性的 React 样式类型。业务 CSS 读取变量的示例见 [定制主题](/guide/theming#在业务样式中使用主题)。
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | 可复用的 CSS 自定义属性。 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | 可复用的 CSS 自定义属性。 |

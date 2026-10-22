@@ -18,11 +18,11 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 放在应用入口时作用于整个应用；嵌套使用时只调整当前区域。
 
-| 想调整什么 | 使用的配置 |
-| --- | --- |
-| 内置文本与自定义语言 | `locale`、`translations` |
-| 主题色、外观、尺寸与间距 | `theme`、`density` |
-| 统一组件参数 | `components` |
+| 想调整什么               | 使用的配置               |
+| ------------------------ | ------------------------ |
+| 内置文本与自定义语言     | `locale`、`translations` |
+| 主题色、外观、尺寸与间距 | `theme`、`density`       |
+| 统一组件参数             | `components`             |
 
 ## 多语言
 
@@ -32,13 +32,13 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 以下语言已内置，无需额外导入语言包。未配置 `locale` 时，默认使用简体中文。
 
-| 语言 | `locale` |
-| --- | --- |
-| 简体中文 | `zh-CN` |
-| 繁體中文 | `zh-TW` |
-| English | `en-US` |
-| 日本語 | `ja-JP` |
-| 한국어 | `ko-KR` |
+| 语言     | `locale` |
+| -------- | -------- |
+| 简体中文 | `zh-CN`  |
+| 繁體中文 | `zh-TW`  |
+| English  | `en-US`  |
+| 日本語   | `ja-JP`  |
+| 한국어   | `ko-KR`  |
 
 其他语言需要[提供翻译资源](#补充自己的语言)。仅传入其他语言代码不会自动翻译内置文本；未找到的词条最终回退到英文。
 
@@ -49,6 +49,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="切换内置语言" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/locale.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,14 +69,12 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="自定义火星文" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/translations.tsx"
+
 ```
 
 </ComponentExample>
 
-示例中的 `zh-CN-x-mars.json`：
-
-```json file="../../src/examples/config-provider/zh-CN-x-mars.json"
-```
+示例把翻译对象直接写在组件文件中，也可以从 JSON 文件导入后传给 `translations`。
 
 `locale={['zh-CN-x-mars', 'en-US']}` 按顺序查找每个缺失词条，最后由内置英文兜底。第一项始终控制当前语言、日期与数字的区域格式；字符串等价于单项数组，空数组无效。不会自动添加 `zh-CN-x-mars → zh-CN` 或 `fr-CA → fr` 等回退。
 
@@ -90,6 +89,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="区域主题" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -101,6 +101,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="舒适与紧凑" preview={<ConfigProviderDensity />} fileName="density.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/density.tsx"
+
 ```
 
 </ComponentExample>
@@ -112,6 +113,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="基础高度" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/sizes.tsx"
+
 ```
 
 </ComponentExample>
@@ -131,6 +133,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="常用参数，一处配置" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/defaults.tsx"
+
 ```
 
 </ComponentExample>
@@ -142,6 +145,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="打开弹窗，试试点击遮罩" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/config-provider/modal-defaults.tsx"
+
 ```
 
 </ComponentExample>
@@ -153,6 +157,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="继承与覆盖" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx">
 
 ```tsx lineNumbers file="../../src/examples/config-provider/inheritance.tsx"
+
 ```
 
 </ComponentExample>
@@ -164,6 +169,7 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 <ComponentExample title="清除继承" preview={<ConfigProviderReset />} fileName="reset.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/reset.tsx"
+
 ```
 
 </ComponentExample>
@@ -205,16 +211,16 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#20834a'` | 主题色，悬停和按下等状态自动生成；深色默认采用较浅的绿色 |
+| `primaryColor` | `string` | `'#1e964f'` | 主题色，悬停和按下等状态自动生成；深色默认采用较浅的绿色 |
 | `borderRadius` | `number \| string` | `10` | 基础圆角；数字为 px，小 / 中 / 大圆角按 0.6 / 1.2 / 1.6 倍生成 |
-| `controlHeight` | `number \| string` | `36` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
+| `controlHeight` | `number \| string` | `34` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
 | `fontSize` | `number \| string` | `14` | 基础字号；小字号减 1px，大字号加 2px |
 | `fontFamily` | `string` | 系统无衬线字体 | 字体族 |
 | `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
 | `motion` | `boolean` | `true` | 启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。 |
 | `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | 可选的高级覆盖，不必配置全部字段 |
 | `spacing` | `number` | — | 基础间距，其他间距按比例派生。 |
-| `lineHeight` | `number` | — | 正文行高。 |
+| `lineHeight` | `number \| string` | `20` | 正文行高。数字默认为 px；大于 0 且不超过 4 的数字保留旧倍率语义，字符串按 CSS 长度处理。 |
 | `headingWeight` | `number` | — | Typography 文档标题的字重；组件标题使用 `tokens.fontWeight`。 |
 | `elevation` | `'none' \| 'soft' \| 'medium'` | — | 整体阴影强度。 |
 | `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | useBreakpoint 使用的响应式断点。 |

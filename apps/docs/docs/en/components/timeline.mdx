@@ -15,9 +15,9 @@ Present events and progress in sequence.
 
 </ComponentExample>
 
-## More examples
+## Alternating layout
 
-<ComponentExample title="More examples" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
+<ComponentExample title="Alternating layout" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/timeline/advanced.tsx"
 ```
@@ -42,15 +42,15 @@ import type { TimelineItem, TimelineProps } from '@ifhover/leaf-ui';
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique stable identifier |
 | `label` | `ReactNode` | — | Display label |
-| `children` | `ReactNode` | Required | Content or child items |
+| `children` | `ReactNode` | Required | Timeline content. |
 | `dot` | `ReactNode` | — | Custom timeline dot |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| (string & {})` | — | Color |
+| `color` | `'primary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| (string & {})` | — | Color; `error` is a compatibility alias |
 
 ## TimelineProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `items` | [`readonly TimelineItem[]`](#timelineitem-api) | Required | Items; keep keys unique and stable |
-| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Display mode or allowed characters |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Timeline layout: left, right or alternating. |
 | `reverse` | `boolean` | `false` | Reverse order |
 | `pending` | `ReactNode` | — | Pending content |

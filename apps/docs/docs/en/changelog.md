@@ -20,14 +20,14 @@ Features, improvements and fixes included in each npm release.
 
 - Standalone `CardTitle` / `CardTitleProps` reuses Card title styling outside a card. `size` controls visual size and `level` selects the semantic h1–h6 heading level, with native attributes, refs and scoped defaults through `ConfigProvider.components.CardTitle`. Internal Card titles continue to follow the card size.
 - Statistic adds `animation`, `initialValue` and `duration`, counting from 0 over 1000ms by default and continuing subsequent updates from the currently displayed value. It supports custom formatters, starts after loading, and respects scoped motion speed and reduced-motion preferences. Server rendering outputs the target value, which is also available to assistive technology during animation. Countdown continues to update immediately.
-- Tag, CheckableTag and TagGroup add `bold`, with instance props and scoped defaults. Tags use the theme's `headingWeight` by default; set `bold={false}` for regular weight.
+- Tag, CheckableTag and TagGroup now use a fixed weight of 500 and no longer expose a `bold` prop or scoped weight defaults. Tags default to the theme color; tinted labels follow the tag color and solid labels stay white.
 
 ### Improved and fixed
 
 - Ordinary grouped DataTable rows expand and collapse with a height transition, retaining child controls and their state while maintaining striping across visible rows. Virtual tables, large tables and disabled motion switch immediately.
 - Refined DataTable appearance: borderless tables now use stripes by default, with no outer corner rounding or tinted header and a 2px header divider. Bordered tables have a rounded frame and column separators. Striped tables omit row divider lines, and both plain and striped rows use subtle primary-color hover feedback.
 - Menu applies selection and `aria-current` only to navigable leaf items, while parent items retain separate expansion feedback. Horizontal, sidebar and collapsed menus share consistent hover and pressed feedback, with adjusted submenu indentation, text hierarchy and row heights.
-- Card titles use the theme heading weight, and Tag corners follow the scoped base radius. Card Tabs use a white selected surface in light mode and retain a raised surface in dark mode.
+- Card titles use the theme heading weight, and Tag corners use the scoped small radius. Card Tabs use a white selected surface in light mode and retain a raised surface in dark mode.
 - Synchronized bilingual component guides, examples, scoped-default references, package entries and AI API exports. Table documentation now consistently uses DataTable.
 
 ### Migration
@@ -36,7 +36,7 @@ Features, improvements and fixes included in each npm release.
 - Public composable `Table`, `TableBody`, `TableCaption`, `TableCell`, `TableColumnHeader`, `TableEmpty`, `TableError`, `TableFooter`, `TableHeader`, `TableLoading`, `TableRow` and their types are removed. Use DataTable with `data + columns + rowKey`, or supply your own TanStack Table instance. Native table elements remain an option for static tables.
 - `@ifhover/leaf-ui/table` now exports DataTable, its compound parts and types. Install `@tanstack/react-table@^8.21.3` before use. The existing `@ifhover/leaf-ui/table/tanstack` entry remains available. DataTable is not exported from the package root, and `@ifhover/leaf-ui/table/style.css` now supplies DataTable styles.
 - Replace `TableRowProps` / `TableCellProps` with `DataTableRowProps` / `DataTableCellProps` from the table subpath for `getRowProps` / `getCellProps`. All `Table*` defaults are removed from `ConfigProvider.components`; use `components.DataTable` for presentation defaults and the corresponding callbacks for row and cell attributes.
-- DataTable changes the `striped` default from `false` to `true`; set `striped={false}` to disable stripes and show row dividers. Statistic animates numeric values by default; set `animation={false}` or `duration={0}` to display the target immediately. Tags are bold by default and use the base radius (10px by default); set `bold={false}` for regular weight and configure corners explicitly through `theme.components.Tag.borderRadius` when needed.
+- DataTable changes the `striped` default from `false` to `true`; set `striped={false}` to disable stripes and show row dividers. Statistic animates numeric values by default; set `animation={false}` or `duration={0}` to display the target immediately. Tags use the theme color by default with the small radius; weight props and the gray default appearance were removed.
 
 ## 0.7.0 - 2026-10-19
 

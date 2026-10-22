@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ButtonIcons } from '../../src/examples/button/icons';
+import { InputIcons } from '../../src/examples/button/input-icons';
 
 # 使用图标
 
@@ -31,6 +32,17 @@ pnpm add lucide-react
 <ComponentExample title="图标使用" preview={<ButtonIcons />} fileName="icons.tsx">
 
 ```tsx lineNumbers file="../../src/examples/button/icons.tsx"
+```
+
+</ComponentExample>
+
+## 输入框图标
+
+Input 的 `prefix` / `suffix` 同样接受 `ReactNode`，适合放搜索、邮箱等语义图标；图标只是装饰，仍需通过 `aria-label` 或标签提供输入框名称。
+
+<ComponentExample title="输入框前后图标" preview={<InputIcons />} fileName="input-icons.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/button/input-icons.tsx"
 ```
 
 </ComponentExample>

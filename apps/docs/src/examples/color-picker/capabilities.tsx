@@ -13,7 +13,7 @@ export function Capabilities({ english = false }) {
         <ColorPicker
           mode="gradient"
           showText
-          defaultValue="linear-gradient(90deg, #20834a 0%, #83cf9e 100%)"
+          defaultValue="linear-gradient(90deg, #1e964f 0%, #83cf9e 100%)"
         />
       </Flex>
     </Space>

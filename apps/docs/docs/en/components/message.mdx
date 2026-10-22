@@ -79,7 +79,7 @@ export function Root() {
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | Create or update by key; returns the key |
-| `success / info / warning / error` | `(content: ReactNode, duration?: number) => string` | — | Show feedback of the specified type |
+| `success / info / warning / danger` | `(content: ReactNode, duration?: number) => string` | — | Show feedback of the specified type; `error` remains as a compatibility method |
 | `loading` | `(content: ReactNode) => string` | — | Persistent loading message; returns the key |
 | `close` | `(key?: string) => void` | — | Close one message, or all when key is omitted |
 
@@ -89,7 +89,7 @@ export function Root() {
 | --- | --- | --- | --- |
 | `key` | `string` | Generated | Use the same key to update a message |
 | `content` | `ReactNode` | Required | Message content |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | Message type; `error` is a compatibility alias |
 | `duration` | `number` | `3` | Seconds before dismissal; 0 persists, loading defaults to 0 |
 | `closable` | `boolean` | `false` | Show a close button |
 | `onClose` | `() => void` | — | Called once when dismissal starts |
@@ -100,7 +100,7 @@ export function Root() {
 | --- | --- | --- | --- |
 | `open` | `boolean` | Required | Controlled visibility |
 | `content` | `ReactNode` | Required | Message content |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | Message type; `error` is a compatibility alias |
 | `duration` | `number` | `3` | Duration in seconds; 0 persists, loading defaults to 0 |
 | `closable` | `boolean` | `false` | Close button |
 | `onClose / afterClose` | `() => void` | — | Requests closure / closing animation completed |

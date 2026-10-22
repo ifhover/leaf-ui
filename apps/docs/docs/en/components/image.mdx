@@ -15,9 +15,9 @@ Display images and explore galleries.
 
 </ComponentExample>
 
-## More examples
+## Gallery and preview
 
-<ComponentExample title="More examples" preview={<ImageGallery />} fileName="advanced.tsx">
+<ComponentExample title="Gallery and preview" preview={<ImageGallery />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/image/advanced.tsx"
 ```
@@ -40,7 +40,7 @@ import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, Image
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Content or child items |
+| `children` | `ReactNode` | — | Content overlaid on the image. |
 | `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | Images in display order |
 | `open` | `boolean` | — | Controlled visibility |
 | `defaultOpen` | `boolean` | `false` | Initial visibility |

@@ -6,9 +6,9 @@ import { InputPassword } from '../../../src/examples/en/input/password';
 
 # Input
 
-Enter a single line of text.
+Enter a single line of text. Hover leaves the border unchanged. Focus deepens the existing neutral border with the shared color transition and no theme-colored outer ring. Error and warning states retain semantic colors.
 
-## Examples
+## Basic input
 
 Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix are decorative content. Standard name, required, type, form and aria-* properties are forwarded to the input; className and style apply to the container.
 
@@ -19,19 +19,25 @@ Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix 
 
 </ComponentExample>
 
-<ComponentExample title="Interactive example" preview={<InputStates />} fileName="states.tsx" width={360}>
+## Validation and disabled states
+
+<ComponentExample title="Validation and disabled states" preview={<InputStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input/states.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Interactive example" preview={<InputControlled />} fileName="controlled.tsx" width={360}>
+## Controlled input and Enter
+
+<ComponentExample title="Controlled input and Enter" preview={<InputControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input/controlled.tsx"
 ```
 
 </ComponentExample>
+
+## Control sizes
 
 <ComponentExample title="Control sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
 
@@ -60,9 +66,9 @@ Use type="password" to mask input and show a visibility toggle. Customize the ic
 
 </ComponentExample>
 
-## Extended features
+## Search and input groups
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Search and input groups" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/input/extensions.tsx"
 ```
@@ -112,7 +118,7 @@ import type { InputSearchProps, InputGroupProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size. |
 | `status` | `'error' \| 'warning'` | — | Display state |
 | `prefix` | `ReactNode` | — | Content before the input |
 | `suffix` | `ReactNode` | — | Content after the input |

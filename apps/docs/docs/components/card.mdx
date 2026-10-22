@@ -1,6 +1,7 @@
 import { CardSections } from '../../src/examples/card/sections';
 import { ComponentExample } from '../../src/components/component-example';
 import { CardBasic } from '../../src/examples/card/basic';
+import { CardInset } from '../../src/examples/card/inset';
 import { CardSizes } from '../../src/examples/card/sizes';
 import { CardStandaloneTitle } from '../../src/examples/card/standalone-title';
 import { CardTabs } from '../../src/examples/card/tabs';
@@ -34,11 +35,22 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 </ComponentExample>
 
+## 内嵌内容卡片
+
+设置 `variant="inset"` 后，卡片使用柔和灰色外层，标题与状态保留在外层，正文、封面、标签页和底部操作收进一张白色内嵌卡片。内嵌表面与外层保持 6px 间距，内边距和圆角会自动补偿，使正文与标题的内容边缘对齐。
+
+<ComponentExample title="内嵌内容卡片" preview={<CardInset />} fileName="inset.tsx" width={520}>
+
+```tsx lineNumbers file="../../src/examples/card/inset.tsx"
+```
+
+</ComponentExample>
+
 ## 独立标题
 
-`CardTitle` 可在卡片外复用相同的标题样式，无需包裹 `Card`。`size` 控制视觉尺寸：默认基础字号为 14px 时，`sm`、`md`、`lg` 分别为 14px、15px、16px。`level` 单独决定语义标题层级，默认为 `3`，不影响字号。
+`CardTitle` 可在卡片外复用相同的标题样式，无需包裹 `Card`。它的默认标题层级与 Card 一致，均为 `<h3>`，通常直接使用即可；`size` 控制视觉尺寸：默认基础字号为 14px 时，`sm`、`md`、`lg` 分别为 13px、14px、16px。`description` 放在标题下方，`extra` 位于右侧，与 Card 标题区域一致。
 
-下面的三个内容区都使用二级标题，分别展示小、默认和大尺寸。可从 `@ifhover/leaf-ui` 或 `@ifhover/leaf-ui/card` 导入 `CardTitle`。
+下面的三个内容区分别展示小、默认和大尺寸，并演示说明与右侧操作。可从 `@ifhover/leaf-ui` 或 `@ifhover/leaf-ui/card` 导入 `CardTitle`。
 
 <ComponentExample title="独立标题" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
 
@@ -49,7 +61,7 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 ## 内容分区
 
-默认以留白组织内容；设置 `divided` 可划分标题、正文与底部操作区。
+标题、正文与底部操作区通过留白自然分组，不绘制内部边框。
 
 <ComponentExample title="内容分区" preview={<CardSections />} fileName="sections.tsx" width={560}>
 
@@ -71,7 +83,7 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 ## 标题与标签页
 
-有 `title` 或 `description` 时，标签栏位于标题区域下方，两者之间没有分割线，分割线只展示在标签栏下方。`tabs.activeKey` / `tabs.onChange` 控制当前标签，默认保留已访问页面的输入内容；`divided` 继续控制底部操作区的分隔线和背景。
+有 `title` 或 `description` 时，标签栏位于标题区域下方，两者之间没有分割线，分割线只展示在标签栏下方。`tabs.activeKey` / `tabs.onChange` 控制当前标签，默认保留已访问页面的输入内容。
 
 <ComponentExample title="标题与标签页" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx" width={520}>
 
@@ -81,7 +93,6 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 </ComponentExample>
 
 ## Card API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | 卡片标题。 |
@@ -92,19 +103,21 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 | `footer` | `ReactNode` | — | 底部内容或操作。 |
 | `loading` | `boolean` | `false` | 使用骨架屏替换正文 |
 | `bordered` | `boolean` | `true` | 显示外轮廓 |
-| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
+| `variant` | `'default' \| 'inset'` | `'default'` | 卡片外观；inset 在柔和灰色外层中嵌入白色内容卡。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 卡片尺寸，影响内边距、标题字号、标题栏高度及内嵌 Tabs 的默认尺寸。 |
 
 ## CardTitle API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标题的视觉尺寸，与 Card 对应尺寸的标题一致。 |
-| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | 渲染为对应的 h1–h6 元素，不改变视觉尺寸。 |
-| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
+| `description` | `ReactNode` | — | 标题下方的补充说明。 |
+| `extra` | `ReactNode` | — | 标题右侧的附加操作。 |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | 可选语义层级；默认与 Card 标题相同为 h3，不改变视觉尺寸。 |
+| `containerProps` | `Omit<HTMLAttributes<HTMLDivElement>, 'children'>` | — | 标题区域外层容器的原生属性；heading 自身的属性、事件与 ref 仍直接应用于实际标题元素。 |
+| `children` | `ReactNode` | — | 标题内容。 |
 | `ref` | `Ref<HTMLHeadingElement>` | — | 标题元素引用。 |
 
-支持原生标题元素的属性，包括 `id`、`className`、`style`、`aria-*` 和事件。默认参数可通过 `ConfigProvider` 的 `components.CardTitle` 设置，仅影响直接使用的 `CardTitle`；Card 内部标题继续跟随 Card 的尺寸。
+支持原生标题元素的属性，包括 `id`、`className`、`style`、`aria-*` 和事件。`description` 与 `extra` 只扩展标题区域，标题本身仍是 `HTMLHeadingElement`，`ref` 指向实际的 heading。默认参数可通过 `ConfigProvider` 的 `components.CardTitle` 设置，仅影响直接使用的 `CardTitle`；Card 内部标题继续跟随 Card 的尺寸。
 
 ## 类型
 
@@ -120,28 +133,27 @@ extra 和 footer 可以放置按钮或链接。需要点击操作时请使用明
 
 `tabs` 复用 Tabs 的配置和交互，固定使用顶部线形标签。`tabs.items[].children` 是对应页面内容；Card 的 `children` 可放置在所有页面下方的公共说明。`loading` 替换正文为骨架屏，标题、标签栏和操作保持可用。标签默认跟随卡片的 `size`，可用 `tabs.size` 单独调整；标签数组为空时恢复普通卡片。
 
-可在 `tabs` 中设置禁用、图标、手动键盘激活、保留或销毁页面、溢出菜单以及增删、排序回调。`tabs.extra` 始终属于标签栏；有标题时 Card 的 `extra` 仍位于标题右侧。
+可在 `tabs` 中设置禁用、图标、手动键盘激活、保留或销毁页面、溢出滚动按钮以及增删、排序回调。`tabs.extra` 始终属于标签栏；有标题时 Card 的 `extra` 仍位于标题右侧。
 
 ## 外观与丰富内容
 
-`description` 显示标题下的补充说明。普通卡片默认不显示内部边框，标签页卡片始终在标签栏下方展示分割线；设置 `divided` 可增加底部的分隔线与淡灰背景，操作区与 Modal、Drawer 使用一致的纵向留白。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景和边框。
+`description` 显示标题下的补充说明。卡片默认带一层向下的轻量阴影和比普通分隔线更淡的外框。普通卡片的内部不显示边框，标题、正文和底部操作通过留白衔接；标签页卡片始终在标签栏下方展示分割线。`variant="inset"` 使用灰色画布和白色内容卡形成内外两层，并跟随主题的明暗外观。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景、边框和阴影。
 
 ## CardTabs API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | 必填 | 必需。标签与页面列表；为空时恢复普通卡片。 |
+| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | 必填 | 标签与页面列表；为空时恢复普通卡片。 |
 | `activeKey` | `string` | 首个可用项 | 受控的激活项。 |
 | `defaultActiveKey` | `string` | 首个可用项 | 初始激活项。 |
 | `onChange` | `(key: string) => void` | — | 激活项变化时调用。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | Card 的 `size` | 标签尺寸，可单独覆盖。 |
-| `block` | `boolean` | — | 设置 block。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸，可单独覆盖。 |
+| `block` | `boolean` | `false` | 让标签等分铺满可用宽度。 |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活，或回车 / 空格激活。 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容；默认保留已访问页面。 |
 | `extra` | `ReactNode` | — | 标签栏右侧的附加内容。 |
 | `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除对应项；可阻止默认切换。 |
 | `onAdd` | `() => void` | — | 添加页签，传入后显示添加按钮。 |
 | `addLabel` | `string` | 当前语言的提示 | 添加按钮的可访问名称。 |
-| `overflow` | `boolean` | `true` | 溢出页签收进更多菜单。 |
+| `overflow` | `boolean` | `true` | 溢出时显示两侧滚动按钮。 |
 | `sortable` | `boolean` | `false` | 启用排序，配合 `onReorder` 使用。 |
 | `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | 返回排序后的原始页签，由应用更新列表。 |

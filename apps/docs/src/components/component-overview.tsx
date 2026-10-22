@@ -51,7 +51,7 @@ export function ComponentOverview() {
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: Only repository-owned static SVG markup is inlined.
                     dangerouslySetInnerHTML={{
                       __html: (componentThumbnails[component.slug] ?? '').replace(
-                        '>#20834A<',
+                        '>#1e964f<',
                         `>${color.toUpperCase()}<`,
                       ),
                     }}

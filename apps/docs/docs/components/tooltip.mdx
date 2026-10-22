@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TooltipBasic } from '../../src/examples/tooltip/basic';
+import { TooltipControlled } from '../../src/examples/tooltip/controlled';
+import { TooltipDisabled } from '../../src/examples/tooltip/disabled';
 
 # Tooltip 文字提示
 
@@ -10,6 +12,28 @@ import { TooltipBasic } from '../../src/examples/tooltip/basic';
 <ComponentExample title="基础用法" preview={<TooltipBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tooltip/basic.tsx"
+```
+
+</ComponentExample>
+
+## 受控展开
+
+`open` 与 `onOpenChange` 让展开状态由外部管理；不传 `open` 时使用 `defaultOpen` 作为初始状态。
+
+<ComponentExample title="受控展开" preview={<TooltipControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/tooltip/controlled.tsx"
+```
+
+</ComponentExample>
+
+## 禁用提示
+
+`disabled` 关闭提示，同时保留触发元素原有的事件与 ref。
+
+<ComponentExample title="禁用提示" preview={<TooltipDisabled />} fileName="disabled.tsx">
+
+```tsx lineNumbers file="../../src/examples/tooltip/disabled.tsx"
 ```
 
 </ComponentExample>

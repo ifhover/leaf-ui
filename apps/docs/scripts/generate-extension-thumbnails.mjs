@@ -34,7 +34,7 @@ const panel = (label) =>
   t(72, 45, label) +
   line(72, 58, 138) +
   line(72, 74, 110) +
-  r(144, 100, 80, 23, '#20834a', 'none') +
+  r(144, 100, 80, 23, '#1e964f', 'none') +
   t(158, 116, 'Continue', 10, 'white');
 const images = {
   layout:
@@ -50,8 +50,8 @@ const images = {
   space: [0, 1, 2]
     .map(
       (i) =>
-        r(30 + i * 85, 57, 70, 34, i === 0 ? '#20834a' : '#eaf4ed') +
-        t(40 + i * 85, 79, ['Save', 'Draft', 'Cancel'][i], 11, i === 0 ? 'white' : '#20834a'),
+        r(30 + i * 85, 57, 70, 34, i === 0 ? '#1e964f' : '#eaf4ed') +
+        t(40 + i * 85, 79, ['Save', 'Draft', 'Cancel'][i], 11, i === 0 ? 'white' : '#1e964f'),
     )
     .join(''),
   'scroll-area':
@@ -77,7 +77,7 @@ const images = {
     r(50, 20, 200, 120) +
     r(62, 48, 176, 26, '#eaf4ed', 'none') +
     t(76, 38, 'Workspace') +
-    t(76, 66, 'Dashboard', 11, '#20834a') +
+    t(76, 66, 'Dashboard', 11, '#1e964f') +
     t(76, 94, 'Projects') +
     t(76, 122, 'Settings'),
   'back-top':
@@ -85,7 +85,7 @@ const images = {
     line(30, 55, 190) +
     line(30, 75, 230) +
     line(30, 95, 200) +
-    r(226, 106, 34, 34, '#20834a', 'none') +
+    r(226, 106, 34, 34, '#1e964f', 'none') +
     t(237, 131, '↑', 23, 'white'),
   descriptions:
     r(25, 25, 250, 108) +
@@ -93,7 +93,7 @@ const images = {
     t(42, 76, 'Name', 10, '#718078') +
     t(145, 76, 'Leaf UI') +
     t(42, 103, 'Status', 10, '#718078') +
-    t(145, 103, 'Published', 11, '#20834a'),
+    t(145, 103, 'Published', 11, '#1e964f'),
   image:
     r(40, 24, 220, 104, '#d9eddf', 'none') +
     '<path d="M40 128L110 56L165 111L210 71L260 128Z" fill="#81b58f"/><circle cx="210" cy="48" r="13" fill="#fff3b9"/>' +
@@ -119,7 +119,7 @@ const images = {
         (i) =>
           '<circle cx="61" cy="' +
           (35 + i * 40) +
-          '" r="5" fill="#20834a"/>' +
+          '" r="5" fill="#1e964f"/>' +
           t(83, 39 + i * 40, ['Created', 'Reviewed', 'Published'][i]) +
           line(83, 47 + i * 40, 120),
       )
@@ -142,7 +142,7 @@ const images = {
           [0, 1, 2]
             .map(
               (i) =>
-                r(x + 10, 57 + i * 23, 12, 12, i === 0 ? '#20834a' : '#fff') +
+                r(x + 10, 57 + i * 23, 12, 12, i === 0 ? '#1e964f' : '#fff') +
                 line(x + 31, 61 + i * 23, 45),
             )
             .join(''),
@@ -153,7 +153,7 @@ const images = {
   'input-otp': [0, 1, 2, 3, 4, 5]
     .map(
       (i) =>
-        r(32 + i * 40, 53, 32, 40, i === 3 ? '#eaf4ed' : '#fff', i === 3 ? '#20834a' : '#e5e5e8') +
+        r(32 + i * 40, 53, 32, 40, i === 3 ? '#eaf4ed' : '#fff', i === 3 ? '#1e964f' : '#e5e5e8') +
         t(43 + i * 40, 80, i < 3 ? String(i + 2) : ' ', 18),
     )
     .join(''),
@@ -166,26 +166,26 @@ const images = {
   notification:
     r(65, 30, 207, 98) +
     r(79, 46, 20, 20, '#eaf4ed', 'none') +
-    t(85, 61, '✓', 13, '#20834a') +
+    t(85, 61, '✓', 13, '#1e964f') +
     t(112, 61, 'Upload complete', 12) +
     line(112, 77, 135) +
     line(112, 90, 112) +
-    t(112, 112, 'View file', 10, '#20834a'),
+    t(112, 112, 'View file', 10, '#1e964f'),
   popconfirm: panel('Remove this item?'),
   'error-boundary': panel('Unable to display content'),
   'loading-bar':
     r(28, 25, 244, 3, '#e9efeb', 'none') +
-    r(28, 25, 169, 3, '#20834a', 'none') +
+    r(28, 25, 169, 3, '#1e964f', 'none') +
     line(40, 58, 100) +
     line(40, 79, 215) +
     line(40, 100, 190),
   'infinite-scroll':
     r(50, 20, 200, 112) +
     [0, 1, 2].map((i) => line(67, 38 + i * 23, 155)).join('') +
-    t(113, 116, 'Loading…', 11, '#20834a'),
+    t(113, 116, 'Loading…', 11, '#1e964f'),
   upload:
     r(38, 26, 224, 106, '#f4f7f5') +
-    '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#20834a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#1e964f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
     t(108, 117, 'Upload files', 11),
   'file-list':
     r(28, 22, 244, 112) +
@@ -193,7 +193,7 @@ const images = {
       .map((i) => {
         const y = 35 + i * 54;
         return (
-          r(42, y, 30, 30, i ? '#eff5ff' : '#fff1f1') +
+          r(42, y, 30, 30, i ? '#eff5ff' : '#fceeec') +
           t(83, y + 10, i ? 'Project notes.md' : 'Project report.pdf', 11) +
           t(83, y + 28, i ? 'MD · 4 KB' : 'PDF · 2.4 MB', 9, '#718078') +
           '<g transform="translate(240 ' +

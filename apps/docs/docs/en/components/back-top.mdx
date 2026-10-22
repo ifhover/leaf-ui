@@ -15,9 +15,9 @@ Return to the top of a page or scroll container.
 
 </ComponentExample>
 
-## More examples
+## Custom scroll container
 
-<ComponentExample title="More examples" preview={<BackTopCustom />} fileName="advanced.tsx">
+<ComponentExample title="Custom scroll container" preview={<BackTopCustom />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/back-top/advanced.tsx"
 ```
@@ -40,6 +40,6 @@ import type { BackTopProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `target` | `() => HTMLElement \| Window \| null` | — | Scroll target or link target |
+| `target` | `() => HTMLElement \| Window \| null` | — | Returns the scroll container; listens to the page when omitted. |
 | `visibilityHeight` | `number` | `400` | Show after this scroll distance |
 | `behavior` | `ScrollBehavior` | `'smooth'` | Scroll behavior |

@@ -13,7 +13,7 @@ export function TooltipBasic() {
         </Tooltip>
       ))}
       <Tooltip content="This setting applies to all projects">
-        <Button variant="soft" startIcon={<Info />} aria-label="Settings information" />
+        <Button  startIcon={<Info />} aria-label="Settings information" />
       </Tooltip>
     </Flex>
   );

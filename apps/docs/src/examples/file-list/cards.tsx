@@ -1,5 +1,9 @@
 import { FileList } from '@ifhover/leaf-ui';
-import { withBase } from '@rspress/core/runtime';
+
+const landscape = (background: string) =>
+  `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640"><rect width="960" height="640" fill="${background}"/><circle cx="480" cy="180" r="72" fill="#fff" opacity=".5"/><path d="M0 520L340 250L660 560L960 330V640H0Z" fill="#315242" opacity=".55"/></svg>`,
+  )}`;
 
 export function FileListCards() {
   return (
@@ -7,9 +11,9 @@ export function FileListCards() {
       <FileList
         listType="picture-card"
         items={[
-          { uid: 'lake', url: withBase('/media/landscape-1.svg'), name: '夏日风景.svg', size: 414 },
-          { uid: 'trail', url: withBase('/media/landscape-2.svg'), name: '山间小径.svg' },
-          { uid: 'cover', url: withBase('/media/landscape-3.svg'), name: '首页封面最终稿.svg' },
+          { uid: 'lake', url: landscape('#b9d3bf'), name: '夏日风景.svg' },
+          { uid: 'trail', url: landscape('#dae2eb'), name: '山间小径.svg' },
+          { uid: 'cover', url: landscape('#e1d9ca'), name: '首页封面最终稿.svg' },
         ]}
       />
     </div>

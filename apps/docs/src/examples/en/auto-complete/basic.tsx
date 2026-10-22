@@ -16,22 +16,22 @@ export function AutoCompleteBasic() {
       <FormField label="Project name">
         <AutoComplete
           aria-label="Project name"
-          placeholder="Type Leaf or enter any text"
-          options={options}
-          value={value}
           onChange={setValue}
           onSelect={setSelected}
+          options={options}
+          placeholder="Type Leaf or enter any text"
+          value={value}
         />
       </FormField>
       <Text tone="muted">
-        Input:{value || 'Empty'} · Last selection:{selected || 'None'}
+        Input: {value || 'Empty'} · Last selection: {selected || 'None'}
       </Text>
-      <FormField label="Disabled suggestions">
+      <FormField label="Disabled control">
         <AutoComplete
-          aria-label="Disabled suggestions"
-          options={options}
-          disabled
+          aria-label="Disabled control"
           defaultValue="Leaf Garden"
+          disabled
+          options={options}
         />
       </FormField>
     </Form>

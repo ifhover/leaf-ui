@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TypographyBasic, TypographyActions } from '../../../src/examples/typography/basic';
+import { TypographyBasic } from '../../../src/examples/typography/basic';
+import { TypographyActions } from '../../../src/examples/typography/actions';
 
 # Typography
 
@@ -16,9 +17,9 @@ Organize headings, body text and links.
 
 ## Copy and edit
 
-<ComponentExample title="Copy and edit" preview={<TypographyActions english />} fileName="basic.tsx">
+<ComponentExample title="Copy and edit" preview={<TypographyActions english />} fileName="actions.tsx">
 
-```tsx lineNumbers file="../../../src/examples/typography/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/typography/actions.tsx"
 ```
 
 </ComponentExample>
@@ -80,4 +81,4 @@ Import the props and data types when creating reusable configuration.
 import type { TypographyProps, TextProps, ParagraphProps, TitleProps, LinkProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Headings and text keep semantic DOM structure; link focus styles follow ConfigProvider themes.

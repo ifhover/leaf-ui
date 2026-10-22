@@ -35,9 +35,9 @@ Display an avatar for a user, team or object.
 
 </ComponentExample>
 
-## Extended features
+## Avatar group overflow
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Avatar group overflow" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/extensions.tsx"
 ```
@@ -79,7 +79,7 @@ import type { AvatarGroupProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
-| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | Size or spacing preset |
+| `maxCount` | `number` | `Infinity` | Maximum visible avatars; the rest collapse into +N. |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | Avatar size preset; a number is treated as pixels. |
 | `shape` | `'circle' \| 'square'` | — | Crop shape |
 | `maxContent` | `(hiddenCount: number) => ReactNode` | — | Custom overflow count content |

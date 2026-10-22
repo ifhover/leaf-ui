@@ -55,10 +55,10 @@ Click the swatch, color value or any empty area of the control to open the picke
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `value` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
-| `defaultValue` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
-| `onChange` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
-| `onChangeComplete` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
+| `value` | `string` | `'#1e964f'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
+| `defaultValue` | `string` | `'#1e964f'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
+| `onChange` | `(color: string) => void` | — | Fires continuously while adjusting; clearing returns an empty string. |
+| `onChangeComplete` | `(color: string) => void` | — | Fires once when an adjustment ends; clearing returns an empty string. |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Color text format, applied to each stop in gradient mode. |
 | `defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Initial color text format. |
 | `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | Called when the color text format changes. |

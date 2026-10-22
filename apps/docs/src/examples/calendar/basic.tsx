@@ -2,7 +2,7 @@ import { Calendar, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const events: Record<number, { label: string; color: string }> = {
-  8: { label: '项目评审', color: '#20834a' },
+  8: { label: '项目评审', color: '#1e964f' },
   15: { label: '发布', color: '#1677ff' },
   22: { label: '设计同步', color: '#7654c6' },
 };

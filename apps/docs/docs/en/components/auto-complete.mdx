@@ -6,9 +6,9 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../../src/components/e
 
 Suggest values while allowing free-text input.
 
-## Examples
+## Basic input
 
-Use options for suggestions and onChange for typed or selected text. onSelect fires only when choosing a suggestion; onSearch fires only for typing. Set filterOption=false for server-generated suggestions. Handle debouncing and request order in your application.
+Set suggestions with `options`; by default they match case-insensitively on the displayed text. `onChange` fires for typing and selection, `onSelect` only for choosing a suggestion. `disabled` on an option blocks that single suggestion (see `Archived Garden` in the example); `disabled` on AutoComplete disables the whole input.
 
 <ComponentExample title="Input and suggestions" preview={<AutoCompleteBasic />} fileName="basic.tsx" width={360}>
 
@@ -16,6 +16,10 @@ Use options for suggestions and onChange for typed or selected text. onSelect fi
 ```
 
 </ComponentExample>
+
+## Dynamic suggestions
+
+`onSearch` receives the typed text. When suggestions come from your own code or a server, set `filterOption={false}` to show the provided results as-is. Handle debouncing and request order in your application.
 
 <ComponentExample title="Dynamic email suggestions" preview={<AutoCompleteSearch />} fileName="search.tsx" width={360}>
 
@@ -36,12 +40,11 @@ The popup matches the field width by default (`popupWidth="trigger"`). Set `popu
 </ComponentExample>
 
 ## AutoComplete API
-
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | Required | Required. Suggestion options |
-| `value` | `string` | Required | Unique suggestion value; inserted into the input on selection |
-| `defaultValue` | `string` | `''` | Controlled text / uncontrolled initial text |
+| `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | Required | Suggestion options |
+| `value` | `string` | `''` | Controlled text; the internal uncontrolled value is used when omitted. |
+| `defaultValue` | `string` | `''` | Initial text for uncontrolled usage; native form reset is supported. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `filterOption` | `false \| ((query: string, option: `[`AutoCompleteOption`](#autocompleteoption)`) => boolean)` | Substring match | false disables local filtering; a function customizes matching |
@@ -59,9 +62,9 @@ The popup matches the field width by default (`popupWidth="trigger"`). Set `popu
 | `virtual` | `boolean` | — | Enable virtual scrolling; enabled by default for large option sets. |
 | `listHeight` | `number` | `248` | Height of the visible list. |
 | `optionHeight` | `number` | `32` | Estimated virtual row height; follows the regional height and density. Actual rows are measured. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 | `popupPlacement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Placement relative to the trigger. |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width: trigger matches the field, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum width; unset by default, still bounded by the viewport |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupStyle']` | — | Custom popup styles. |
 | `popupRender` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupRender']` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
@@ -69,13 +72,20 @@ The popup matches the field width by default (`popupWidth="trigger"`). Set `popu
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
-### AutoCompleteOption
 
+### AutoCompleteOption
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Unique suggestion value; inserted into the input on selection |
-| `label` | `string` | — | Suggestion label, also used by the default filter |
-| `disabled` | `boolean` | `false` | Disable the suggestion |
+| `value` | `string` | Required | Unique suggestion value; inserted into the input on selection. |
+| `label` | `ReactNode` | — | Visible suggestion label, also used by the default local filter. |
+| `searchLabel` | `string` | — | Plain search text for a rich label; readable text or value is used when omitted. |
+| `disabled` | `boolean` | `false` | Disable the suggestion. |
+
+## AutoCompleteOptionGroup
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | `ReactNode` | Required | Suggestion group heading. |
+| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | Required | Suggestions in this group. |
 
 ## Types
 
@@ -88,19 +98,3 @@ import type { AutoCompleteProps, AutoCompleteOption } from '@ifhover/leaf-ui';
 ## Forms and localization
 
 Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## AutoCompleteOption
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string` | — | Required. Controlled value. |
-| `label` | `ReactNode` | — | Visible label or content. |
-| `searchLabel` | `string` | — | Plain text used for searching. |
-| `disabled` | `boolean` | — | Disable interaction. |
-
-## AutoCompleteOptionGroup
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `label` | `ReactNode` | — | Required. Visible label or content. |
-| `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | — | Required. Available options. |

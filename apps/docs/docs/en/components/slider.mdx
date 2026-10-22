@@ -25,7 +25,6 @@ Choose a number or range by sliding.
 </ComponentExample>
 
 ## Slider API
-
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `min` | `number` | `0` | Bounds and step |
@@ -37,8 +36,8 @@ Choose a number or range by sliding.
 | `onChangeComplete` | `(value: number \| readonly [number, number]) => void` | — | After a drag or keyboard change completes |
 | `tooltip` | `boolean \| { formatter?: (value: number) => ReactNode }` | `false` | Show a thumb tooltip, optionally with custom formatting. |
 | `range` | `false \| true` | `false` | Range selection |
-| `value` | `number \| readonly [number, number]` | Required | Mark position |
-| `defaultValue` | `number \| readonly [number, number]` | `[min, max]` | Controlled / initial value; tuple for ranges |
+| `value` | `number \| readonly [number, number]` | — | Controlled value. |
+| `defaultValue` | `number \| readonly [number, number]` | `[min, max]` | Initial value for uncontrolled usage; range mode uses a two-number tuple. |
 | `onChange` | `((value: number) => void) \| ((value: [number, number]) => void)` | — | Value changes; callback follows range mode |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
@@ -46,11 +45,10 @@ Choose a number or range by sliding.
 | `form` | `string` | — | ID of the associated native form. |
 
 ### SliderMark
-
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `number` | Required | Mark position |
-| `label` | `ReactNode` | — | Mark label |
+| `value` | `number` | Required | Mark value. |
+| `label` | `ReactNode` | — | Visible mark label. |
 
 ## Types
 
@@ -63,10 +61,3 @@ import type { SliderProps, SliderMark } from '@ifhover/leaf-ui';
 ## Usage notes
 
 Arrows change the value, Home / End go to bounds, and Shift + arrows or PageUp / PageDown move ten steps. Range thumbs do not cross. Range mode submits two values under the same name; read them with FormData.getAll. Native form reset is supported.
-
-## SliderMark
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `number` | — | Required. Controlled value. |
-| `label` | `ReactNode` | — | Visible label or content. |

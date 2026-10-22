@@ -1,4 +1,5 @@
-import { ExtensionDemo } from '../../src/examples/button/extensions';
+import { ButtonGroupDemo } from '../../src/examples/button/button-group';
+import { SplitButtonDemo } from '../../src/examples/button/split-button';
 import { ComponentExample } from '../../src/components/component-example';
 import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
 
@@ -8,9 +9,9 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 基础用法
 
-`solid` 适合主要操作，`outline` 使用内容底色、正文色和细边框，`soft` 为柔和按钮，使用中性浅底，适合次要操作；设置 `danger` 后使用淡红色背景和红色文字。柔和按钮的底色随深浅主题变化，悬停和按下时逐渐加深。`link` 使用主题色文字，无内边距、边框和固定控件高度。页面跳转使用 Link 组件。
+`variant` 控制按钮外观。默认使用 `outline`，适合一般操作；主要操作使用 `solid`，行内操作使用 `link`。
 
-主按钮和描边按钮点击时，外缘波纹快速扩散后缓慢淡出，按钮与文字保持稳定；柔和按钮和链接按钮不展示波纹。主按钮悬停时提亮、按下时加深；描边按钮保持底色，通过文字和边框变色反馈。危险操作使用红色，波纹跟随主题；关闭动效或启用系统减少动态效果后不展示波纹。
+描边按钮带有一层轻微阴影，悬停时外观不变；按下时仅将边框加深为对应的交互色，文字、背景和阴影保持不变，松开后边框恢复。`danger` 使用可读的危险文字色，按下时边框从危险基色加深为更深的危险交互色。禁用和加载时不响应，显式组件状态配置优先于默认反馈。
 
 <ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -19,11 +20,9 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 </ComponentExample>
 
-组件样式会自动加载，接入步骤见[快速开始](/guide/getting-started)。
-
 ## 危险操作
 
-为删除、清空、撤销等操作使用 danger。所有样式、图标和加载状态都会使用独立的红色语义主题。
+设置 `danger` 表示删除、清空、撤销等危险操作，可搭配任意外观。
 
 <ComponentExample title="危险操作" preview={<ButtonDanger />} fileName="danger.tsx">
 
@@ -34,7 +33,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 尺寸
 
-提供小、中、大三种尺寸，适配不同密度的操作区。外观可通过[主题变量](/guide/theming)定制。
+提供 `sm`、`md`、`lg` 三种尺寸。
 
 <ComponentExample title="按钮尺寸" preview={<ButtonSizes />} fileName="sizes.tsx">
 
@@ -45,7 +44,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 禁用与加载
 
-加载时会显示旋转指示器，自动禁用按钮，并设置 `aria-busy`。原有文字保留，帮助用户理解正在进行的操作。
+`disabled` 禁用按钮；`loading` 显示加载指示器、阻止重复点击，并保留原有文字。
 
 <ComponentExample title="禁用与加载" preview={<ButtonStates />} fileName="states.tsx">
 
@@ -54,9 +53,9 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 </ComponentExample>
 
-## 实际交互
+## 异步操作
 
-通过应用状态控制 `loading`。下面的示例会在 1.2 秒后完成保存；实际使用时，把计时器替换成你的异步业务操作。
+通过应用状态控制 `loading`。示例会在 1.2 秒后完成保存，实际使用时替换为你的异步操作。
 
 <ComponentExample title="异步保存" preview={<ButtonLoading />} fileName="loading.tsx">
 
@@ -67,7 +66,7 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 图标
 
-示例使用 `lucide-react` 的按需导入图标。`startIcon` 和 `endIcon` 接受 React 节点。图标容器默认对辅助技术隐藏，按钮文字提供名称；只有图标时请设置 `aria-label`。
+使用 `startIcon` 和 `endIcon` 添加图标。图标默认对辅助技术隐藏；只有图标时请设置 `aria-label`。
 
 <ComponentExample title="图标按钮" preview={<ButtonIcons />} fileName="icons.tsx">
 
@@ -87,20 +86,32 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 </ComponentExample>
 
-## 扩展用法
+## 按钮组
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+`ButtonGroup` 把相邻操作拼成一组，只在两端保留圆角。
 
-```tsx lineNumbers file="../../src/examples/button/extensions.tsx"
+<ComponentExample title="相邻操作" preview={<ButtonGroupDemo />} fileName="button-group.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/button-group.tsx"
+```
+
+</ComponentExample>
+
+## 分裂按钮
+
+`SplitButton` 把主要操作与操作菜单放在一起，适合“保存”这类有多种保存方式的动作。
+
+<ComponentExample title="主要操作与更多操作" preview={<SplitButtonDemo />} fileName="split-button.tsx">
+
+```tsx lineNumbers file="../../src/examples/button/split-button.tsx"
 ```
 
 </ComponentExample>
 
 ## Button API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | 视觉样式 |
+| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
 | `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
@@ -144,24 +155,22 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 ```
 
 ## ButtonGroupProps API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 按钮尺寸 |
 | `disabled` | `boolean` | — | 禁用交互。 |
 | `attached` | `boolean` | `true` | 连接相邻按钮 |
 
 ## SplitButtonProps API
-
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | 按钮样式 |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
-| `danger` | `boolean` | — | 危险操作颜色 |
-| `loading` | `boolean` | — | 加载状态 |
-| `fullWidth` | `boolean` | — | 占满宽度 |
+| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | 按钮样式 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸。 |
+| `danger` | `boolean` | `false` | 危险操作颜色 |
+| `loading` | `boolean` | `false` | 加载状态 |
+| `fullWidth` | `boolean` | `false` | 占满宽度 |
 | `startIcon` | `ReactNode` | — | 前置图标 |
 | `endIcon` | `ReactNode` | — | 后置图标 |
-| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
+| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
 | `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
 | `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |

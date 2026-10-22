@@ -15,9 +15,9 @@ Present text and links as QR codes.
 
 </ComponentExample>
 
-## More examples
+## Status and refresh
 
-<ComponentExample title="More examples" preview={<QRCodeStatus />} fileName="advanced.tsx" width={360}>
+<ComponentExample title="Status and refresh" preview={<QRCodeStatus />} fileName="advanced.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/qr-code/advanced.tsx"
 ```
@@ -41,7 +41,7 @@ import type { QRCodeProps } from '@ifhover/leaf-ui';
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `string` | Required | Controlled value |
-| `size` | `number` | `160` | Size or spacing preset |
+| `size` | `number` | `160` | QR code width in pixels. |
 | `color` | `string` | `'var(--leaf-color-text)'` | Color |
 | `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | Background color |
 | `level` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | QR error correction level |

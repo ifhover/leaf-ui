@@ -48,11 +48,11 @@ Parents and children are checked independently.
 
 </ComponentExample>
 
-## Extended features
+## Node dragging and lazy loading
 
 Drag a handle to the upper, middle or lower part of a target row to place a node before, inside or after it. With the keyboard, Space picks up or drops, Up/Down chooses a target, Left/Right places before/after it, and Escape cancels. Update `data` with the new tree returned by `onDrop`.
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Node dragging and lazy loading" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tree/extensions.tsx"
 ```
@@ -78,9 +78,9 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 | `selectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
 | `defaultSelectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
 | `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | Selection changes |
-| `multiple` | `boolean` | `false` | Multiple selection / allow selection |
-| `selectable` | `boolean` | `true` | Multiple selection / allow selection |
-| `checkable` | `boolean` | `false` | Show checkboxes / disable linked checks |
+| `multiple` | `boolean` | `false` | Whether multiple selection is allowed. |
+| `selectable` | `boolean` | `true` | Whether row selection is enabled. |
+| `checkable` | `boolean` | `false` | Whether checkboxes are shown. |
 | `checkStrictly` | `boolean` | `false` | Show checkboxes / disable linked checks |
 | `checkedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
 | `defaultCheckedKeys` | `readonly string[]` | `[]` | Controlled / initial checked keys |
@@ -102,7 +102,7 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 | `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | Loading failed; expand again to retry |
 | `virtual` | `boolean` | `false` | Render visible nodes only; enable for large trees. |
 | `height` | `number` | `320` | Height, numbers are in pixels |
-| `itemHeight` | `number` | `42` | Estimated virtual row height including spacing; follows the regional height and density. Actual rows are measured. |
+| `itemHeight` | `number` | `34` | Estimated virtual row height following the regional height and density. Actual rows are measured. |
 | `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | Enable node drag handles |
 | `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | Restrict drop positions |
 | `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | Drop result; update data in the caller |
@@ -116,8 +116,8 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 | `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | Child nodes using this same structure |
 | `icon` | `ReactNode` | — | Custom icon |
 | `disabled` | `boolean` | — | Disable interaction. |
-| `selectable` | `boolean` | — | Allow selection / display a checkbox; enabled by default |
-| `checkable` | `boolean` | — | Allow selection / display a checkbox; enabled by default |
+| `selectable` | `boolean` | — | Whether this node can be selected; enabled by default. |
+| `checkable` | `boolean` | — | Whether this node shows a checkbox; follows Tree by default. |
 | `disableCheckbox` | `boolean` | — | Disable checks and stop check propagation |
 | `searchLabel` | `string` | — | Search and accessible text for non-text titles |
 | `isLeaf` | `boolean` | — | false allows asynchronously loaded children |
@@ -156,12 +156,11 @@ import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo
 
 ## Usage notes
 
-Each node needs a unique, stable `key`. Example data:
-
-```ts lineNumbers file="../../../src/examples/en/tree/data.ts"
-```
+Each node needs a unique, stable `key`. The full node data is included in the basic example.
 
 Checking a parent checks enabled children; disabled nodes are unaffected. Partially checked children create a mixed parent. `checkStrictly` keeps checks independent. In multiple mode, clicking toggles selection; Shift selects a range of visible nodes.
+
+Selected rows use the same neutral moving highlight and checkmark as Select. The highlight follows the pointer or keyboard target, returns to the selected row when the pointer leaves the tree, and rows have no extra vertical gaps.
 
 Use up/down to move, right/left to expand/collapse, Home/End to jump, Enter to select and Space to check. Typing locates nodes. Search temporarily reveals matching paths; clearing it restores the original expansion.
 

@@ -14,7 +14,7 @@ export function ModalFooter() {
         onClose={() => setOpen(false)}
         footer={({ cancelButton, confirmButton }) => (
           <>
-            <Button variant="soft" style={{ marginRight: 'auto' }} onClick={() => setExtra(!extra)}>
+            <Button  style={{ marginRight: 'auto' }} onClick={() => setExtra(!extra)}>
               查看详情
             </Button>
             {cancelButton}

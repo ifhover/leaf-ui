@@ -15,9 +15,9 @@ import { MasonryImages } from '../../src/examples/masonry/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 瀑布流图片
 
-<ComponentExample title="更多用法" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
+<ComponentExample title="瀑布流图片" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/masonry/advanced.tsx"
 ```
@@ -41,4 +41,4 @@ import type { MasonryProps } from '@ifhover/leaf-ui';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | 列数；较大断点继承较小断点 |
-| `gap` | `number \| string` | `16` | 间距；数组为 [纵向, 横向] |
+| `gap` | `number \| string` | `16` | 列间距；数字为 px，支持 CSS 长度。 |

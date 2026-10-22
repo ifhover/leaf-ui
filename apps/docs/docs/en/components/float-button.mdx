@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { FloatButtonBasic, FloatButtonActions } from '../../../src/examples/float-button/basic';
+import { FloatButtonBasic } from '../../../src/examples/float-button/basic';
+import { FloatButtonActions } from '../../../src/examples/float-button/actions';
 
 # FloatButton
 
@@ -16,9 +17,9 @@ Keep quick actions within reach.
 
 ## Action group
 
-<ComponentExample title="Action group" preview={<FloatButtonActions english />} fileName="basic.tsx">
+<ComponentExample title="Action group" preview={<FloatButtonActions english />} fileName="actions.tsx">
 
-```tsx lineNumbers file="../../../src/examples/float-button/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/float-button/actions.tsx"
 ```
 
 </ComponentExample>
@@ -27,14 +28,14 @@ Keep quick actions within reach.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | Configure variant. |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Presentation size. |
-| `danger` | `boolean` | — | Configure danger. |
-| `loading` | `boolean` | — | Show a loading state. |
-| `fullWidth` | `boolean` | — | Configure full width. |
+| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | Configure variant. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `danger` | `boolean` | `false` | Configure danger. |
+| `loading` | `boolean` | `false` | Show a loading state. |
+| `fullWidth` | `boolean` | `false` | Configure full width. |
 | `startIcon` | `ReactNode` | — | Configure start icon. |
 | `endIcon` | `ReactNode` | — | Configure end icon. |
-| `tooltip` | `ReactNode` | — | Show a thumb tooltip, optionally with custom formatting. |
+| `tooltip` | `ReactNode` | — | Tooltip content shown on hover or focus. |
 | `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
 
 ## FloatButtonAction
@@ -68,4 +69,4 @@ Import the props and data types when creating reusable configuration.
 import type { FloatButtonProps, FloatButtonAction, FloatButtonGroupProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Provide an aria-label for icon-only buttons. The expanded group is keyboard operable and follows ConfigProvider themes and reduced motion.

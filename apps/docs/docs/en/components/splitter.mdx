@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { SplitterBasic, SplitterVertical } from '../../../src/examples/splitter/basic';
+import { SplitterBasic } from '../../../src/examples/splitter/basic';
+import { SplitterVertical } from '../../../src/examples/splitter/vertical';
 
 # Splitter
 
@@ -16,9 +17,9 @@ Resize panels in a workspace.
 
 ## Vertical panels
 
-<ComponentExample title="Vertical panels" preview={<SplitterVertical english />} fileName="basic.tsx" width="100%">
+<ComponentExample title="Vertical panels" preview={<SplitterVertical english />} fileName="vertical.tsx" width="100%">
 
-```tsx lineNumbers file="../../../src/examples/splitter/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/splitter/vertical.tsx"
 ```
 
 </ComponentExample>
@@ -28,7 +29,7 @@ Resize panels in a workspace.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Required. Stable, unique identifier. |
-| `children` | `ReactNode` | — | Required. Content, or child nodes for hierarchical records. |
+| `children` | `ReactNode` | — | Required. Panel content. |
 | `min` | `number` | — | Minimum panel percentage. |
 | `max` | `number` | — | Maximum panel percentage. |
 | `collapsible` | `boolean` | — | Allow collapsing and restoring a panel. |
@@ -53,4 +54,4 @@ Import the props and data types when creating reusable configuration.
 import type { SplitterPanel, SplitterProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+Dividers use role="separator" and expose aria-valuenow; arrow keys resize panels, and the layout follows ConfigProvider themes and reduced motion.

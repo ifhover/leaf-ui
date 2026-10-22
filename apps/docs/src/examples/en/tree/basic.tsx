@@ -1,6 +1,26 @@
-import { Space, Text, Tree } from '@ifhover/leaf-ui';
+import { Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
-import { treeData } from './data';
+
+const treeData: readonly TreeNode[] = [
+  {
+    key: 'design',
+    title: 'Design resources',
+    children: [
+      { key: 'components', title: 'Component guidelines' },
+      { key: 'colors', title: 'Brand colors' },
+      { key: 'archive', title: 'Archived resources (disabled)', disabled: true },
+    ],
+  },
+  {
+    key: 'engineering',
+    title: 'Engineering',
+    children: [
+      { key: 'web', title: 'Website' },
+      { key: 'mobile', title: 'Mobile app' },
+    ],
+  },
+];
+
 export function TreeBasic() {
   const [selected, setSelected] = useState<readonly string[]>([]);
   return (

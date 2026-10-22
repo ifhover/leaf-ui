@@ -15,9 +15,9 @@ Provide a fallback when content fails to render.
 
 </ComponentExample>
 
-## More examples
+## Custom fallback content
 
-<ComponentExample title="More examples" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx" width={360}>
+<ComponentExample title="Custom fallback content" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/error-boundary/advanced.tsx"
 ```
@@ -47,8 +47,8 @@ import type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from '@ifhover/le
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Content or child items |
-| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | Loading error content |
+| `children` | `ReactNode` | — | Subtree whose render errors are caught. |
+| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | Content shown when a child throws while rendering. |
 | `resetKeys` | `readonly unknown[]` | — | Reset errors when these values change |
 | `onError` | `(error: Error, info: ErrorInfo) => void` | — | Error callback |
 | `onReset` | `() => void` | — | Reset callback |

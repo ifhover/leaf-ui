@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TourBasic, TourCentered } from '../../../src/examples/tour/basic';
+import { TourBasic } from '../../../src/examples/tour/basic';
+import { TourCentered } from '../../../src/examples/tour/centered';
 
 # Tour
 
@@ -16,9 +17,9 @@ Introduce features in a sequence of steps.
 
 ## Welcome step
 
-<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="basic.tsx" width="fit-content">
+<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="centered.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/tour/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/tour/centered.tsx"
 ```
 
 </ComponentExample>
@@ -31,7 +32,7 @@ Introduce features in a sequence of steps.
 | `title` | `ReactNode` | — | Required. Title content. |
 | `description` | `ReactNode` | — | Additional description. |
 | `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or element getter; omit to center the step. |
-| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Layout or display placement. |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Popup placement relative to the target. |
 
 ## Tour API
 
@@ -57,4 +58,4 @@ Import the props and data types when creating reusable configuration.
 import type { TourStep, TourProps } from '@ifhover/leaf-ui';
 ```
 
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.
+The tour uses role="dialog"; Escape closes it, focus stays inside the overlay, and it follows ConfigProvider themes and reduced motion.

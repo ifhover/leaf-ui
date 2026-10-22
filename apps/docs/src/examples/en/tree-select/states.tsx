@@ -1,5 +1,27 @@
-import { Form, FormField, TreeSelect } from '@ifhover/leaf-ui';
-import { treeOptions } from './options';
+import { Form, FormField, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+
+const treeOptions: readonly TreeSelectOption[] = [
+  {
+    value: 'design',
+    label: 'Design',
+    selectable: false,
+    children: [
+      { value: 'visual', label: 'Visual design' },
+      { value: 'product', label: 'Product design' },
+      { value: 'archive', label: 'Archived team', disabled: true },
+    ],
+  },
+  {
+    value: 'engineering',
+    label: 'Engineering',
+    selectable: false,
+    children: [
+      { value: 'web', label: 'Frontend' },
+      { value: 'server', label: 'Backend' },
+    ],
+  },
+];
+
 export function TreeSelectStates() {
   return (
     <Form layout="vertical">

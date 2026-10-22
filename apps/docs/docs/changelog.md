@@ -20,14 +20,14 @@ footer: false
 
 - 新增独立的 `CardTitle` / `CardTitleProps`，可在卡片外复用 Card 的标题样式。`size` 控制视觉尺寸，`level` 控制 h1–h6 语义层级；支持原生属性、ref 和 `ConfigProvider.components.CardTitle` 区域默认参数。Card 内部标题继续跟随卡片尺寸。
 - Statistic 新增 `animation`、`initialValue` 和 `duration`，默认从 0 开始进行 1000ms 数值动画，后续变化从当前显示值继续。支持自定义格式、加载结束后启动、区域动效速度与减少动态效果偏好；服务端输出目标值，辅助技术在动画期间读取目标值。Countdown 保持即时更新。
-- Tag、CheckableTag 和 TagGroup 新增 `bold`，支持实例配置与区域默认参数，默认使用主题 `headingWeight` 加粗，设置 `bold={false}` 使用常规字重。
+- Tag、CheckableTag 和 TagGroup 的字重固定为 500，不再提供 `bold` 参数或区域字重默认值。Tag 默认使用主题色，浅底文字跟随标签自身颜色，实色文字固定为白色。
 
 ### 改进与修复
 
 - DataTable 普通分组行展开与收起使用高度过渡，保留子行控件及其状态，并维护可见行的斑马纹位置。虚拟表格、大型表格及关闭动效时直接切换。
 - 调整 DataTable 外观：默认无边框并开启斑马纹；无边框模式去除外框圆角和表头灰底，保留 2px 表头分割线；有边框模式显示圆角外框和列分隔线。斑马纹模式隐藏行间细线，普通行与条纹行悬停时均使用轻微主色反馈。
 - Menu 仅为可导航的叶子项显示选中状态和 `aria-current`；父级菜单保持独立的展开反馈。统一横向、侧栏与折叠菜单的悬停和按下反馈，调整子菜单缩进、文字层级与行高。
-- Card 标题默认使用主题标题字重；Tag 圆角跟随区域基础圆角。卡片式 Tabs 的浅色选中面使用白色，深色继续使用抬升表面。
+- Card 标题默认使用主题标题字重；Tag 圆角使用区域小圆角。卡片式 Tabs 的浅色选中面使用白色，深色继续使用抬升表面。
 - 同步中英文组件说明、示例、区域默认参数参考、包入口和 AI API 导出，表格文档统一使用 DataTable。
 
 ### 迁移说明
@@ -36,7 +36,7 @@ footer: false
 - 移除公开的组合式 `Table`、`TableBody`、`TableCaption`、`TableCell`、`TableColumnHeader`、`TableEmpty`、`TableError`、`TableFooter`、`TableHeader`、`TableLoading`、`TableRow` 及其类型。使用 DataTable 的 `data + columns + rowKey` 模式，或传入自己的 TanStack Table 实例；仅需静态表格时可使用原生表格元素。
 - `@ifhover/leaf-ui/table` 现在导出 DataTable 及其组合部件和类型；使用前安装 `@tanstack/react-table@^8.21.3`。原有 `@ifhover/leaf-ui/table/tanstack` 入口继续可用。DataTable 不从根入口导出；`@ifhover/leaf-ui/table/style.css` 现在提供 DataTable 样式。
 - 将 `TableRowProps` / `TableCellProps` 替换为从表格子路径导入的 `DataTableRowProps` / `DataTableCellProps`，分别用于 `getRowProps` / `getCellProps`。移除 `ConfigProvider.components` 中的全部 `Table*` 默认参数；表格展示参数改用 `components.DataTable`，行与单元格属性通过相应回调设置。
-- DataTable 的 `striped` 默认值由 `false` 改为 `true`；设置 `striped={false}` 关闭斑马纹并显示行间细线。Statistic 默认执行数值动画，设置 `animation={false}` 或 `duration={0}` 立即展示目标值。Tag 默认加粗且采用基础圆角（默认 10px）；设置 `bold={false}` 使用常规字重，圆角可通过 `theme.components.Tag.borderRadius` 显式配置。
+- DataTable 的 `striped` 默认值由 `false` 改为 `true`；设置 `striped={false}` 关闭斑马纹并显示行间细线。Statistic 默认执行数值动画，设置 `animation={false}` 或 `duration={0}` 立即展示目标值。Tag 采用主题色默认外观和小圆角；移除了字重参数与灰色默认样式。
 
 ## 0.7.0 - 2026-10-19
 

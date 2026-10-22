@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
+import { TourBasic } from '../../src/examples/tour/basic';
+import { TourCentered } from '../../src/examples/tour/centered';
 
 # Tour 引导
 
@@ -16,9 +17,9 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 
 ## 欢迎说明
 
-<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="basic.tsx" width="fit-content">
+<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="centered.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
+```tsx lineNumbers file="../../src/examples/tour/centered.tsx"
 ```
 
 </ComponentExample>
@@ -31,7 +32,7 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 | `title` | `ReactNode` | — | 必需。标题内容。 |
 | `description` | `ReactNode` | — | 补充说明。 |
 | `target` | `string \| (() => HTMLElement \| null)` | — | 目标的选择器或返回元素的函数；省略时居中。 |
-| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 布局或展示位置。 |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 相对目标的浮层位置。 |
 
 ## Tour API
 
@@ -57,4 +58,4 @@ import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
 import type { TourStep, TourProps } from '@ifhover/leaf-ui';
 ```
 
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+引导层使用 role="dialog"；Escape 关闭，焦点保留在浮层内，并跟随 ConfigProvider 的主题和减少动画设置。

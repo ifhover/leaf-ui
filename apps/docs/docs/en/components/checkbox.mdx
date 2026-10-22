@@ -1,5 +1,5 @@
 import { CheckboxCards } from '../../../src/examples/checkbox/surfaces';
-import { CheckboxList } from '../../../src/examples/checkbox/surfaces';
+import { CheckboxList } from '../../../src/examples/checkbox/list';
 import { ExtensionDemo } from '../../../src/examples/en/checkbox/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
@@ -8,16 +8,18 @@ import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form
 
 Select one or more options.
 
-## Examples
+## Basic usage
 
 Read event.target.checked in onChange. Use indeterminate to represent a partially selected group; it does not change the submitted value. Native name, value, required and form attributes are supported.
 
-<ComponentExample title="Interactive example" preview={<CheckboxBasic />} fileName="basic.tsx">
+<ComponentExample title="Basic usage" preview={<CheckboxBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/basic.tsx"
 ```
 
 </ComponentExample>
+
+## Select all and indeterminate
 
 <ComponentExample title="Select all and indeterminate" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width={360}>
 
@@ -26,9 +28,9 @@ Read event.target.checked in onChange. Use indeterminate to represent a partiall
 
 </ComponentExample>
 
-## Extended features
+## Selection count limits
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="Selection count limits" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/extensions.tsx"
 ```
@@ -50,9 +52,9 @@ Make the whole card clickable for choices with icons and descriptions.
 
 Related options share borders and row dividers, with supplementary status on the right.
 
-<ComponentExample title="Grouped choices" preview={<CheckboxList english />} fileName="surfaces.tsx">
+<ComponentExample title="Grouped choices" preview={<CheckboxList english />} fileName="list.tsx">
 
-```tsx lineNumbers file="../../../src/examples/checkbox/surfaces.tsx"
+```tsx lineNumbers file="../../../src/examples/checkbox/list.tsx"
 ```
 
 </ComponentExample>
@@ -69,9 +71,9 @@ Related options share borders and row dividers, with supplementary status on the
 | `indeterminate` | `boolean` | `false` | Partially checked state |
 | `checked` | `boolean` | — | Controlled checked state / initial checked state |
 | `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Called when the value changes. |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read the selection from event.target.checked. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
-| `children` | `ReactNode` | — | Content, or child nodes for hierarchical records. |
+| `children` | `ReactNode` | — | Clickable choice label. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
 ## Types
@@ -101,12 +103,12 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 | `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: string[]) => void` | — | Value change callback |
 | `legend` | `ReactNode` | — | Field group title |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Checkbox size. |
 | `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | Plain choices, a card grid or a list with shared borders and dividers. |
 | `minCount` | `number` | `0` | Minimum selection count |
-| `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
+| `maxCount` | `number` | `Infinity` | Maximum number of checked options. |
 | `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout or movement direction |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction of the options. |
 
 ## CheckboxOption API
 

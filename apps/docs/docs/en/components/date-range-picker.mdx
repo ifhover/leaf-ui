@@ -1,4 +1,6 @@
-import { Capabilities } from '../../../src/examples/date-range-picker/capabilities';
+import { DisabledDates } from '../../../src/examples/date-range-picker/disabled-dates';
+import { OpenEnd } from '../../../src/examples/date-range-picker/open-end';
+import { Presets } from '../../../src/examples/date-range-picker/presets';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DateRangePickerBasic } from '../../../src/examples/en/date-range-picker/basic';
 import { DateRangePickerModes } from '../../../src/examples/en/date-range-picker/modes';
@@ -12,6 +14,7 @@ Select start and end dates or times to define a range.
 <ComponentExample title="Controlled range" preview={<DateRangePickerBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/date-range-picker/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -21,15 +24,43 @@ Select start and end dates or times to define a range.
 <ComponentExample title="Picker modes" preview={<DateRangePickerModes />} fileName="modes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-range-picker/modes.tsx"
+
 ```
 
 </ComponentExample>
 
-## Quarters, presets and open endpoints
+## Open endpoints
 
-<ComponentExample title="Quarters, presets and open endpoints" preview={<Capabilities english />} fileName="capabilities.tsx">
+`allowEmpty` controls the start and end independently. The example requires a start date and leaves the end open, which suits a period that is still running.
 
-```tsx lineNumbers file="../../../src/examples/date-range-picker/capabilities.tsx"
+<ComponentExample title="Open end date" preview={<OpenEnd english />} fileName="open-end.tsx" width={420}>
+
+```tsx lineNumbers file="../../../src/examples/date-range-picker/open-end.tsx"
+
+```
+
+</ComponentExample>
+
+## Disabled dates
+
+`disabledDate` is called for every visible date; returning `true` prevents it from being used as either endpoint, and existing ranges are kept.
+
+<ComponentExample title="Sundays excluded" preview={<DisabledDates english />} fileName="disabled-dates.tsx" width={420}>
+
+```tsx lineNumbers file="../../../src/examples/date-range-picker/disabled-dates.tsx"
+
+```
+
+</ComponentExample>
+
+## Range shortcuts
+
+`presets` adds common ranges below the panel. `value` returns `[start, end]` and is applied as soon as the preset is chosen.
+
+<ComponentExample title="Recent 7 days" preview={<Presets english />} fileName="presets.tsx" width={420}>
+
+```tsx lineNumbers file="../../../src/examples/date-range-picker/presets.tsx"
+
 ```
 
 </ComponentExample>
@@ -51,6 +82,7 @@ Select start and end dates or times to define a range.
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
 | `allowClear` | `boolean` | `true` | Show the clear button |
 | `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
 | `open` | `boolean` | — | Control whether the panel is open. |
 | `defaultOpen` | `boolean` | — | Initial open state. |
 | `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | Selection granularity |
@@ -62,10 +94,10 @@ Select start and end dates or times to define a range.
 | `secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
 | `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | Disable dates using business rules. |
-| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `disabledTime` | `(parts: `[`TimeParts`](time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | Disable times; typing and panel selection use the same rules. |
 | `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
 | `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
-| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | Presets; value may be computed on demand. |
+| `presets` | `readonly `[`DatePreset`](date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | Presets; value may be computed on demand. |
 | `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | Changes during selection, including the current start/end position. |
 | `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
 | `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
@@ -82,10 +114,10 @@ Select start and end dates or times to define a range.
 
 ## DateRange
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `0` | `Date` | Required | Start, no later than the end |
-| `1` | `Date` | Required | End |
+| Property | Type   | Default  | Description                  |
+| -------- | ------ | -------- | ---------------------------- |
+| `0`      | `Date` | Required | Start, no later than the end |
+| `1`      | `Date` | Required | End                          |
 
 ## Types
 
@@ -105,6 +137,6 @@ For date-time ranges, use the top-right time button in each calendar to set that
 
 With an existing complete range, changing either endpoint's time immediately updates the valid range without reselecting dates.
 
-Type endpoints separated by ` ~ ` and press Enter or move focus away. Formats are `YYYY`, `YYYY-MM`, `YYYY-Www`, `YYYY-MM-DD` and `YYYY-MM-DD HH:mm:ss` (omit seconds when showSeconds is false). Invalid or out-of-bounds input is not submitted. Escape discards unfinished input.
+Type endpoints separated by `~` and press Enter or move focus away. Formats are `YYYY`, `YYYY-MM`, `YYYY-Www`, `YYYY-MM-DD` and `YYYY-MM-DD HH:mm:ss` (omit seconds when showSeconds is false). Invalid or out-of-bounds input is not submitted. Escape discards unfinished input.
 
 FormData uses `start/end` with canonical formats. Uncontrolled fields follow form reset; reset controlled values in application state.

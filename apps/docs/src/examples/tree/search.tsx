@@ -1,7 +1,23 @@
-import { Input, Space, Tree } from '@ifhover/leaf-ui';
+import { Input, Space, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { treeData } from './data';
+
+const treeData: readonly TreeNode[] = [
+  {
+    key: 'design',
+    title: '设计资源',
+    children: [
+      { key: 'components', title: '组件规范' },
+      { key: 'colors', title: '品牌颜色' },
+    ],
+  },
+  {
+    key: 'engineering',
+    title: '研发项目',
+    children: [{ key: 'web', title: '网站' }],
+  },
+];
+
 export function TreeSearch() {
   const [query, setQuery] = useState('');
   return (

@@ -2,13 +2,15 @@
 
 Prefer ConfigProvider's `theme.primaryColor`, `theme.borderRadius` and `theme.controlHeight` for everyday customization. Related styles derive automatically; see [theming](/en/guide/theming).
 
+Default light base colors come from `colors.ts`: primary and success use `#1e964f`, danger uses `#dd3f2e`, warning uses `#d38b11`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
+
 ## LeafThemeTokens
 
-Pass advanced overrides through `theme.tokens` only when a derived value needs to change independently. Every field is optional, and nested providers inherit unspecified fields. Numeric lengths use pixels; numeric durations use milliseconds.
+Pass advanced overrides through `theme.tokens` only when a derived value needs to change independently. Every field is optional, and nested providers inherit unspecified fields. Numeric lengths use pixels; numeric durations use milliseconds. For `lineHeight`, numbers greater than 0 and up to 4 keep the legacy multiplier meaning.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `onPrimaryColor` | `string` | Theme | Text on primary backgrounds; defaults to readable black or white. |
+| `onPrimaryColor` | `string` | Theme | Primary background text color, chosen automatically for contrast. |
 | `dangerColor` | `string` | Appearance | Danger background / foreground |
 | `onDangerColor` | `string` | Appearance | Danger background / foreground |
 | `successColor` | `string` | Appearance | Success / warning / information |
@@ -58,7 +60,7 @@ Pass advanced overrides through `theme.tokens` only when a derived value needs t
 | `shadowXs` | `string` | — | The lightest surface shadow. |
 | `shadowMd` | `string` | — | Configure shadow md. |
 | `shadowLg` | `string` | — | Configure shadow lg. |
-| `lineHeight` | `number` | — | Body line height. |
+| `lineHeight` | `number \| string` | `20` | Body line height; numbers are pixels, `1`–`4` keep the legacy multiplier meaning, and strings are CSS lengths. |
 
 ## Type import
 
@@ -75,51 +77,63 @@ Pass this object to `<ConfigProvider theme={{ tokens }}>`.
 
 ## LeafComponentTokens
 
-| Support scope | Keys and affected regions |
-| --- | --- |
-| Four interaction states | `Button`, `Input`, `InputNumber`, `Textarea`, `Select`, `AutoComplete`, `Cascader`, `TreeSelect`, `ColorPicker`, `DatePicker`. |
-| Choice controls | `Checkbox` and `Radio` paint the native control and label text; `Switch` paints the track and label text; `Tabs` paints tab actions. |
-| Content and feedback surfaces | Card, Alert, Table, Modal, Drawer, Confirm, Message and other surfaces consume base borders and shadows, without the four interaction states. |
-| Popups | `Floating` sets shared popup paint. Select, AutoComplete, Cascader, TreeSelect, ColorPicker, DatePicker, TimePicker, Dropdown, Mentions and Popover can override their own panel background, text color, border and shadow. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `borderRadius` | `string \| number` | — | Corner radius; numbers are pixels. |
+| `borderWidth` | `string \| number` | — | Border width for this component; numbers are px. |
+| `controlHeight` | `string \| number` | — | Control height; numbers are pixels. |
+| `padding` | `string \| number` | — | Content padding. |
+| `gap` | `string \| number` | — | Space between children. |
+| `fontSize` | `string \| number` | — | Font size; numbers are pixels. |
+| `color` | `string` | — | Color or semantic color. |
+| `background` | `string` | — | Component surface background. |
+| `borderColor` | `string` | Outer borders and section dividers. | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
+| `headerBackground` | `string` | — | Header background. |
+| `footerBackground` | `string` | — | Footer background. |
+| `shadow` | `string` | — | CSS box-shadow value. |
+| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Hover overrides, merged field by field in nested scopes. |
+| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Pressed overrides, merged field by field in nested scopes. |
+| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Keyboard focus overrides; the visible focus outline remains. |
+| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Disabled appearance overrides; disabled behavior is unchanged. |
 
 Date, time and range pickers share the `DatePicker` field shell states. For example, use `DatePicker.focus` for a TimePicker's focused field and `TimePicker` for its panel paint. `InputOTP` does not support all four state overrides. States affect the control regions listed here, without recursively restyling all child nodes.
 
 Style fields for `theme.components` overrides by component name. Check each component's documentation for the fields it supports.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `borderRadius` | `string \| number` | Corner radius; numbers are pixels. |
-| `borderWidth` | `string \| number` | Border width for this component; numbers are px. |
-| `controlHeight` | `string \| number` | Control height; numbers are pixels. |
-| `padding` | `string \| number` | Content padding. |
-| `gap` | `string \| number` | Space between children. |
-| `fontSize` | `string \| number` | Font size; numbers are pixels. |
-| `color` | `string` | Color or semantic color. |
-| `background` | `string` | Component surface background. |
-| `borderColor` | `string` | Outer borders and section dividers. | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
-| `headerBackground` | `string` | Header background. |
-| `footerBackground` | `string` | Footer background. |
-| `shadow` | `string` | CSS box-shadow value. |
-| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Hover overrides, merged field by field in nested scopes. |
-| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Pressed overrides, merged field by field in nested scopes. |
-| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Keyboard focus overrides; the visible focus outline remains. |
-| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Disabled appearance overrides; disabled behavior is unchanged. |
+| Property           | Type                                                    | Description                                                    |
+| ------------------ | ------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `borderRadius`     | `string \| number`                                      | Corner radius; numbers are pixels.                             |
+| `borderWidth`      | `string \| number`                                      | Border width for this component; numbers are px.               |
+| `controlHeight`    | `string \| number`                                      | Control height; numbers are pixels.                            |
+| `padding`          | `string \| number`                                      | Content padding.                                               |
+| `gap`              | `string \| number`                                      | Space between children.                                        |
+| `fontSize`         | `string \| number`                                      | Font size; numbers are pixels.                                 |
+| `color`            | `string`                                                | Color or semantic color.                                       |
+| `background`       | `string`                                                | Component surface background.                                  |
+| `borderColor`      | `string`                                                | Outer borders and section dividers.                            | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
+| `headerBackground` | `string`                                                | Header background.                                             |
+| `footerBackground` | `string`                                                | Footer background.                                             |
+| `shadow`           | `string`                                                | CSS box-shadow value.                                          |
+| `hover`            | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Hover overrides, merged field by field in nested scopes.       |
+| `active`           | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Pressed overrides, merged field by field in nested scopes.     |
+| `focus`            | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Keyboard focus overrides; visible focus feedback remains.      |
+| `disabled`         | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Disabled appearance overrides; disabled behavior is unchanged. |
 
 ## LeafComponentStateTokens
 
-States override only explicitly supplied appearance fields. Nested themes inherit each field without mutating the parent; `undefined` does not replace existing values. Disabled appearance takes precedence over hover, active and focus states. Native disabled behavior and keyboard focus outlines remain available.
+States override only explicitly supplied appearance fields. Nested themes inherit each field without mutating the parent; `undefined` does not replace existing values. Disabled appearance takes precedence over hover, active and focus states. Native disabled behavior and visible keyboard focus feedback remains available.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `color` | `string` | Text color in this state. |
-| `background` | `string` | Background in this state. |
-| `borderColor` | `string` | Border color in this state. | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
-| `shadow` | `string` | CSS box-shadow in this state. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `string` | — | Text color in this state. |
+| `background` | `string` | — | Background in this state. |
+| `borderColor` | `string` | Border color in this state. | Border color in this state. |
+| `shadow` | `string` | — | CSS box-shadow in this state. |
 
 ## LeafThemeStyle
 
 A React style type with `--leaf-*` custom properties. See [Theming](/en/guide/theming#use-the-theme-in-application-css) for consuming variables in application CSS.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | Reusable CSS custom property. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | Reusable CSS custom property. |

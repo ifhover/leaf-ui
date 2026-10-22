@@ -1,0 +1,57 @@
+import { ColorPalette } from '../../src/components/color-palette';
+
+# 颜色
+
+Leaf UI 使用语义变量组织颜色。默认主题提供 144 个调色板变量；下面先展示核心语义色和常用角色，完整变量在页末折叠。
+
+## 核心语义色
+
+主题、成功、危险、警告和信息色表达含义，实色背景上的前景色保持独立入口。每张色卡左侧是浅色，右侧是深色。
+
+<ColorPalette family="base" />
+
+## 语义色阶
+
+每个色系先展示完整派生色带，再列出常用变量。色带可在容器内横向滚动。
+
+### 主题色
+
+<ColorPalette family="primary" />
+
+### 成功色
+
+<ColorPalette family="success" />
+
+### 危险色
+
+<ColorPalette family="danger" />
+
+### 警告色
+
+<ColorPalette family="warning" />
+
+### 信息色
+
+<ColorPalette family="info" />
+
+## 中性色
+
+背景、文字和边框分组展示。`--leaf-color-divider` 是 `--leaf-color-border-surface-70` 的 CSS 别名，并保留独立入口。
+
+<ColorPalette family="neutral" />
+
+## 配置颜色
+
+通过 ConfigProvider 设置主题色，单个语义色使用 `theme.tokens`。业务 CSS 读取生成后的 `--leaf-color-*` 变量。
+
+```tsx
+<ConfigProvider theme={{ primaryColor: brandColor }}>
+  <App />
+</ConfigProvider>
+```
+
+`primary-soft` 系列没有默认值；需要时通过 `theme.tokens.primarySoftColor` 等字段显式设置。只覆盖基础 CSS 变量不会重新生成派生色。完整字段见 [ConfigProvider](/components/config-provider)、[LeafThemeTokens](/api/theme-tokens#leafthemetokens) 和[定制主题](/guide/theming)。
+
+## 完整色板
+
+<ColorPalette family="all" />

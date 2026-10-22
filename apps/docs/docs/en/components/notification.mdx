@@ -15,9 +15,9 @@ Present notifications and actions in a page corner.
 
 </ComponentExample>
 
-## More examples
+## Placement, duration and updates
 
-<ComponentExample title="More examples" preview={<NotificationOptions />} fileName="advanced.tsx">
+<ComponentExample title="Placement, duration and updates" preview={<NotificationOptions />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/notification/advanced.tsx"
 ```
@@ -44,7 +44,7 @@ import type { NotificationApi, NotificationOptions, NotificationProps, Notificat
 | `success` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show success |
 | `info` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show information |
 | `warning` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show warning |
-| `error` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show an error notification |
+| `danger` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show a danger notification; `error` remains as a compatibility method |
 | `close` | `(key?: string) => void` | Required | Close a key, or all when omitted |
 
 ## NotificationOptions API
@@ -54,7 +54,7 @@ import type { NotificationApi, NotificationOptions, NotificationProps, Notificat
 | `key` | `string` | — | Unique stable identifier |
 | `title` | `ReactNode` | Required | Title content |
 | `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | Notification status style; `error` is a compatibility alias. |
 | `icon` | `ReactNode` | — | Custom icon |
 | `actions` | `ReactNode` | — | Notification actions |
 | `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |
@@ -68,7 +68,7 @@ import type { NotificationApi, NotificationOptions, NotificationProps, Notificat
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | Required | Title content |
 | `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | Notification status style; `error` is a compatibility alias. |
 | `icon` | `ReactNode` | — | Custom icon |
 | `actions` | `ReactNode` | — | Notification actions |
 | `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |

@@ -61,6 +61,8 @@ import type { CalendarProps } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-Use `fullscreen={false}` for a compact calendar. Place non-interactive text or icons in `cellRender`; avoid nested buttons. A disabled selection stays readable and cannot be selected again.
+The full calendar uses an editorial, borderless grid: a large month heading, a lighter year, and trailing Today and navigation controls form the header. Date, month and year views use open 7-, 4- and 3-column layouts. Selection fills the whole date cell with a quiet primary tint and marks the numeral with a solid circular label; Today uses primary-colored text and a small dot instead of an outline.
+
+Use `fullscreen={false}` for a compact calendar with a 32px borderless date grid. `cellRender` content sits below the numeral and truncates to one line; use non-interactive text or icons and avoid nested buttons. A disabled selection stays readable and cannot be selected again.
 
 Use arrow keys to move dates, Home/End to jump within a row and PageUp/PageDown to switch months. Provide consistent initial dates for SSR; see [server-side rendering](/en/guide/ssr).

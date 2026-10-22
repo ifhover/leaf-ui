@@ -16,7 +16,7 @@ export function ResultStates() {
         description="清理不需要的内容，或调整空间配额。"
       />
       <Result
-        status="error"
+        status="danger"
         size="sm"
         title="发布未完成"
         description="请检查连接后重试。"

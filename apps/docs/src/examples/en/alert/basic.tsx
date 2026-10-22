@@ -12,7 +12,7 @@ export function AlertBasic() {
       <Alert
         title="Save failed"
         description="Try again later or contact your team administrator."
-        type="error"
+        type="danger"
       />
     </Space>
   );

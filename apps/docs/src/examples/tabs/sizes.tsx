@@ -1,34 +1,46 @@
-import { Grid, Space, Tabs, Text } from '@ifhover/leaf-ui';
+import type { TabItem } from '@ifhover/leaf-ui';
+import { Input, RadioGroup, Space, Tabs } from '@ifhover/leaf-ui';
+import { ChartNoAxesColumn, Settings } from 'lucide-react';
+import { useState } from 'react';
 
-const items = [
-  { key: 'overview', label: '概览', children: '查看项目的最近更新。' },
-  { key: 'members', label: '成员', children: '管理项目成员和访问权限。' },
+const items: readonly TabItem[] = [
+  {
+    key: 'overview',
+    label: '概览',
+    icon: <ChartNoAxesColumn />,
+    children: '查看项目活动、成员和最近更新。',
+  },
+  {
+    key: 'settings',
+    label: '设置',
+    icon: <Settings />,
+    children: <Input aria-label="项目名称" placeholder="输入内容后切换，内容会保留" />,
+  },
+  { key: 'history', label: '历史', disabled: true, children: null },
 ];
-const labels = { sm: '小尺寸', md: '默认尺寸', lg: '大尺寸' };
-const variants = [
-  { type: 'line', label: '线形标签' },
-  { type: 'card', label: '卡片标签' },
+
+type TabsSize = 'sm' | 'md' | 'lg';
+
+const sizes = [
+  { value: 'sm', label: '小尺寸' },
+  { value: 'md', label: '默认尺寸' },
+  { value: 'lg', label: '大尺寸' },
 ] as const;
 
 export function TabsSizes() {
+  const [size, setSize] = useState<TabsSize>('md');
+  const sizeLabel = sizes.find((option) => option.value === size)?.label;
+
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={24}>
-      {variants.map(({ type, label }) => (
-        <Space key={type} direction="vertical" align="stretch" size="lg">
-          <Text strong>{label}</Text>
-          {(['sm', 'md', 'lg'] as const).map((size) => (
-            <Space key={size} direction="vertical" align="stretch" size="sm">
-              <span>{labels[size]}</span>
-              <Tabs
-                aria-label={`${label} · ${labels[size]}`}
-                items={items}
-                type={type}
-                size={size}
-              />
-            </Space>
-          ))}
-        </Space>
-      ))}
-    </Grid>
+    <Space direction="vertical" align="stretch" size="lg">
+      <RadioGroup
+        label="标签尺寸"
+        name="tabs-size"
+        value={size}
+        onChange={(event) => setSize(event.target.value as TabsSize)}
+        options={sizes}
+      />
+      <Tabs aria-label={`项目信息 · ${sizeLabel}`} items={items} size={size} />
+    </Space>
   );
 }

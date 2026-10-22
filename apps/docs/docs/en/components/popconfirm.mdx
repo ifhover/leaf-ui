@@ -15,9 +15,9 @@ Confirm important actions near their triggers.
 
 </ComponentExample>
 
-## More examples
+## Asynchronous confirmation
 
-<ComponentExample title="More examples" preview={<PopconfirmAsync />} fileName="advanced.tsx" width="fit-content">
+<ComponentExample title="Asynchronous confirmation" preview={<PopconfirmAsync />} fileName="advanced.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popconfirm/advanced.tsx"
 ```
@@ -45,22 +45,22 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Required. Content or child items |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Required. Element that triggers the confirmation. |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Placement |
 | `open` | `boolean` | — | Controlled visibility |
 | `defaultOpen` | `boolean` | `false` | Initial visibility |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
-| `disabled` | `boolean` | — | Disable interaction. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `enterDelay` | `number` | `100` | Pointer opening delay in milliseconds |
 | `leaveDelay` | `number` | `100` | Pointer closing delay in milliseconds |
-| `width` | `number \| string` | — | Width, numbers are in pixels |
-| `maxWidth` | `number \| string` | — | Maximum popup width |
+| `width` | `number \| string` | `'max-content'` | Width, numbers are in pixels |
+| `maxWidth` | `number \| string` | `320` | Maximum popup width |
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |
 | `aria-label` | `string` | — | Accessible name when no visible label is provided |
 | `title` | `ReactNode` | Required | Required. Title content |
 | `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'default'` | `'warning'` | Visual or item type |
+| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'default'` | `'warning'` | Confirmation status style; `error` is a compatibility alias. |
 | `icon` | `ReactNode` | — | Custom icon |
 | `confirmText` | `ReactNode` | — | Confirm button content |
 | `cancelText` | `ReactNode` | — | Cancel button content |
@@ -75,8 +75,8 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | Button appearance |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | Button appearance |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size. |
 | `danger` | `boolean` | `false` | Danger colors |
 | `loading` | `boolean` | `false` | Loading state |
 | `fullWidth` | `boolean` | `false` | Fill available width |

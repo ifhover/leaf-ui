@@ -48,11 +48,11 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 </ComponentExample>
 
-## 扩展用法
+## 节点拖拽与懒加载
 
 通过手柄拖动节点，移到目标行的上方、中央或下方，分别放在目标之前、内部或之后。键盘操作时，空格开始或放置，上下选择目标，左/右选择前方/后方，Escape 取消。`onDrop` 提供新数据，由调用方更新 `data`。
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample title="节点拖拽与懒加载" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tree/extensions.tsx"
 ```
@@ -78,9 +78,9 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `selectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
 | `defaultSelectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
 | `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | 选择变化 |
-| `multiple` | `boolean` | `false` | 多选 / 允许选择 |
-| `selectable` | `boolean` | `true` | 多选 / 允许选择 |
-| `checkable` | `boolean` | `false` | 展示复选框 / 禁止父子联动 |
+| `multiple` | `boolean` | `false` | 是否支持多选。 |
+| `selectable` | `boolean` | `true` | 是否启用行选择。 |
+| `checkable` | `boolean` | `false` | 是否展示复选框。 |
 | `checkStrictly` | `boolean` | `false` | 展示复选框 / 禁止父子联动 |
 | `checkedKeys` | `readonly string[]` | `[]` | 受控 / 初始勾选节点 |
 | `defaultCheckedKeys` | `readonly string[]` | `[]` | 受控 / 初始勾选节点 |
@@ -102,7 +102,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `onLoadError` | `(error: unknown, node: `[`TreeNode`](#treenode)`) => void` | — | 加载失败，再次展开可重试 |
 | `virtual` | `boolean` | `false` | 仅渲染可视节点；大量节点时建议启用。 |
 | `height` | `number` | `320` | 高度，数字按像素计算 |
-| `itemHeight` | `number` | `42` | 跟随区域控件高度和密度的预估行高，包含行间距；实际行会被测量。 |
+| `itemHeight` | `number` | `34` | 跟随区域控件高度和密度的预估行高；实际行会被测量。 |
 | `draggable` | `boolean \| ((node: `[`TreeNode`](#treenode)`) => boolean)` | `false` | 允许通过手柄移动节点 |
 | `allowDrop` | `(info: Omit<`[`TreeDropInfo`](#treedropinfo-api)`, 'data'>) => boolean` | — | 限制放置位置 |
 | `onDrop` | `(info: `[`TreeDropInfo`](#treedropinfo-api)`) => void` | — | 移动结果，调用方更新 data |
@@ -116,8 +116,8 @@ import { TreeSearch } from '../../src/examples/tree/search';
 | `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | 子节点；使用同一结构 |
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `disabled` | `boolean` | — | 禁用交互。 |
-| `selectable` | `boolean` | — | 该节点能否选择 / 是否展示复选框，默认可用 |
-| `checkable` | `boolean` | — | 该节点能否选择 / 是否展示复选框，默认可用 |
+| `selectable` | `boolean` | — | 该节点是否可选，默认可用。 |
+| `checkable` | `boolean` | — | 该节点是否展示复选框，默认跟随 Tree。 |
 | `disableCheckbox` | `boolean` | — | 禁止勾选并阻断父子勾选联动 |
 | `searchLabel` | `string` | — | 标题为节点时提供用于搜索和读屏的文字 |
 | `isLeaf` | `boolean` | — | false 允许异步加载子项 |
@@ -156,12 +156,11 @@ import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo
 
 ## 使用说明
 
-每个节点的 `key` 应唯一且稳定。示例数据结构：
-
-```ts lineNumbers file="../../src/examples/tree/data.ts"
-```
+每个节点的 `key` 应唯一且稳定，完整节点数据已包含在基础示例中。
 
 勾选父节点会勾选可用子节点，禁用节点不会被联动修改。子节点部分选中时父节点呈半选；`checkStrictly` 让各节点独立勾选。多选时点击切换选择，Shift 可连续选择可见节点。
+
+选中行与 Select 使用同一套中性移动高亮和勾选标记：高亮跟随悬停或键盘目标，离开树后回到已选项，行之间不保留额外垂直空隙。
 
 方向键上下移动，左右展开或收起，Home / End 跳至首尾，Enter 选择，空格勾选。输入文字可快速定位节点。搜索时会暂时展开匹配路径，清空后恢复原展开状态。
 

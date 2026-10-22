@@ -15,9 +15,9 @@ import { BackTopCustom } from '../../src/examples/back-top/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 自定义滚动容器
 
-<ComponentExample title="更多用法" preview={<BackTopCustom />} fileName="advanced.tsx">
+<ComponentExample title="自定义滚动容器" preview={<BackTopCustom />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/back-top/advanced.tsx"
 ```
@@ -40,6 +40,6 @@ import type { BackTopProps } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `target` | `() => HTMLElement \| Window \| null` | — | 滚动目标或链接打开方式 |
+| `target` | `() => HTMLElement \| Window \| null` | — | 返回滚动容器的函数；省略时监听页面滚动。 |
 | `visibilityHeight` | `number` | `400` | 超过此滚动距离后显示 |
 | `behavior` | `ScrollBehavior` | `'smooth'` | 返回顶部的滚动方式 |

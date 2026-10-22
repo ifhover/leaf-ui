@@ -20,7 +20,7 @@ export function NotificationOptions() {
         variant="outline"
         danger
         onClick={() =>
-          notification.error({
+          notification.danger({
             key: 'sync',
             title: '同步失败',
             description: '请检查连接后重试。',
@@ -31,7 +31,7 @@ export function NotificationOptions() {
         持续错误通知
       </Button>
       <Button
-        variant="soft"
+        
         onClick={() => notification.open({ key: 'sync', title: '重新同步中', duration: 2 })}
       >
         更新同一通知

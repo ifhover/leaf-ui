@@ -15,9 +15,9 @@ import { InputOTPOptions } from '../../src/examples/input-otp/advanced';
 
 </ComponentExample>
 
-## 更多用法
+## 字母数字、掩码与分隔符
 
-<ComponentExample title="更多用法" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
+<ComponentExample title="字母数字、掩码与分隔符" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-otp/advanced.tsx"
 ```
@@ -45,8 +45,8 @@ import type { InputOTPProps } from '@ifhover/leaf-ui';
 | `defaultValue` | `string` | `''` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(value: string) => void` | — | 值变化回调 |
 | `onComplete` | `(value: string) => void` | — | 完整输入后触发 |
-| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | 展示模式或允许的字符 |
+| `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | 允许输入数字或字母数字。 |
 | `mask` | `boolean \| string` | `false` | 隐藏字符，可自定义替代字符 |
 | `separator` | `(index: number) => ReactNode` | — | 按位置插入分隔内容 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入格尺寸。 |
 | `status` | `'error' \| 'warning'` | — | 显示状态 |
