@@ -45,7 +45,7 @@ async function importLeafResources() {
   };
   const buttons = [];
   for (const [index, mode] of ['comfortable', 'compact'].entries()) {
-    for (const [row, variant] of ['solid', 'soft', 'outline', 'ghost'].entries()) {
+    for (const [row, variant] of ['solid', 'outline', 'ghost'].entries()) {
       for (const [col, state] of ['default', 'hover', 'pressed', 'disabled'].entries()) {
         const component = figma.createComponent();
         component.name = `Variant=${variant}, State=${state}, Density=${mode}`;
@@ -63,25 +63,31 @@ async function importLeafResources() {
         component.setBoundVariable('height', dimensions['control-height']);
         const background =
           variant === 'solid'
-            ? ['hover', 'pressed'].includes(state)
-              ? 'primary-white-97-5'
+            ? state === 'pressed'
+              ? 'primary-active'
               : 'primary'
-            : variant === 'soft'
-              ? `primary-alpha-${state === 'hover' ? 18 : state === 'pressed' ? 25 : 11}`
-              : variant === 'outline'
-                ? `surface-muted-border-${['hover', 'pressed'].includes(state) ? 75 : 65}`
-                : state === 'hover'
-                  ? 'surface-muted'
-                  : state === 'pressed'
-                    ? 'border'
-                    : null;
+            : variant === 'outline'
+              ? 'surface'
+              : state === 'pressed'
+                ? 'border'
+                : null;
         component.fills = background ? [paint(background)] : [];
-        component.appendChild(
-          label(
-            'Button',
-            variant === 'solid' ? 'on-primary' : variant === 'soft' ? 'primary' : 'text',
-          ),
-        );
+        if (variant === 'outline') {
+          component.strokes = [paint(state === 'pressed' ? 'primary-active' : 'border')];
+          component.strokeWeight = 1;
+          component.effects = [
+            {
+              type: 'DROP_SHADOW',
+              color: { r: 0, g: 0, b: 0, a: 0.06 },
+              offset: { x: 0, y: 1 },
+              radius: 1,
+              spread: 0,
+              visible: true,
+              blendMode: 'NORMAL',
+            },
+          ];
+        }
+        component.appendChild(label('Button', variant === 'solid' ? 'on-primary' : 'text'));
         if (state === 'disabled') component.opacity = 0.45;
         component.x = col * 164;
         component.y = (index * 4 + row) * 68;

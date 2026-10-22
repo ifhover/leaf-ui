@@ -86,7 +86,7 @@ pnpm --dir packages/react pack
 
 ## 样式与图标
 
-组件库与文档站主题使用 SCSS，通过 @rsbuild/plugin-sass 构建；文档示例优先使用 Flex、Space、Grid、FormField 和 Text，不依赖 Tailwind CSS；示例规则见 [文档站协作约定](apps/docs/AGENTS.md)。站点界面现有的 Tailwind CSS 入口由 PostCSS 编译。公共尺寸和样式 mixin 在 packages/react/src/styles；36px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。
+组件库与文档站主题使用 SCSS，通过 @rsbuild/plugin-sass 构建；文档示例优先使用 Flex、Space、Grid、FormField 和 Text，不依赖 Tailwind CSS；示例规则见 [文档站协作约定](apps/docs/AGENTS.md)。站点界面现有的 Tailwind CSS 入口由 PostCSS 编译。公共尺寸和样式 mixin 在 packages/react/src/styles；34px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。
 
 ## 质量验收
 

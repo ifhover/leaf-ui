@@ -78,7 +78,7 @@ Final gzip KiB JS / CSS: Button 2.19 / 3.49, common forms 51.56 / 6.49, whole li
 
 ## Accent palette follow-up (2026-10-07)
 
-The preceding palette correction gave home scenes, the theme playground and its color popup six shared presets: the library's theme green `#20834a`, cyan `#007c99`, blue `#1265f5`, violet `#9b3df0`, orange `#cf4500` and black `#18181b`. These accents retained their original color in both appearances and used white foregrounds on filled surfaces. Switch thumbs remain white independently of the theme's foreground token, with forced-colors overrides preserved. Subtle buttons, accent text/icons and workspace menu/category text use a readable ink color within the docs preview scopes. The playground normalizes HEX / RGB / HSL input to HEX and exports the same primary color and explicit white foreground shown in its preview.
+The preceding palette correction gave home scenes, the theme playground and its color popup six shared presets: the library's theme green `#1e964f`, cyan `#007c99`, blue `#1265f5`, violet `#9b3df0`, orange `#cf4500` and black `#18181b`. These accents retained their original color in both appearances and used white foregrounds on filled surfaces. Switch thumbs remain white independently of the theme's foreground token, with forced-colors overrides preserved. Subtle buttons, accent text/icons and workspace menu/category text use a readable ink color within the docs preview scopes. The playground normalizes HEX / RGB / HSL input to HEX and exports the same primary color and explicit white foreground shown in its preview.
 
 Hover no longer overrides selected color presets or gradient stops, focused/open field borders, selected floating options, current pagination and breadcrumb links, selected tags, bottom navigation or transfer rows. Shared field and popup rules carry these fixes through the related input, selection and date/time components. Existing selection rules for tabs, segmented controls, trees, menus and calendars were also reviewed.
 
@@ -86,7 +86,7 @@ Verification for the final palette and selection fixes: `pnpm check` passed 50 f
 
 ## Preset order follow-up (2026-10-07)
 
-The shared presets now follow the user's exact order and colors: theme green `#20834a`, black `#18181b`, orange `#ff6900`, blue `#1d9bf0`, red `#cf0b2d`. The default remains theme green. The showroom, theme playground and ColorPicker popup all consume this five-color list, retaining white filled-button labels and white Switch thumbs.
+The shared presets now follow the user's exact order and colors: theme green `#1e964f`, black `#18181b`, orange `#ff6900`, blue `#1d9bf0`, red `#cf0b2d`. The default remains theme green. The showroom, theme playground and ColorPicker popup all consume this five-color list, retaining white filled-button labels and white Switch thumbs.
 
 Biome and documentation type checking passed. Live preview checks confirmed the order in all three selectors and the exact primary color plus white foregrounds through all five presets. This palette-only follow-up preserves the preceding selection and hover fixes.
 

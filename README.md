@@ -9,8 +9,8 @@
   <p>一个以绿色为起点的 React UI 组件库，让界面保留你的个性。</p>
 
   <p>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm 版本" /></a>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm 月下载量" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm 版本" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm 月下载量" /></a>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18%20%7C%2019-149eca?style=flat-square&amp;logo=react&amp;logoColor=white" alt="React 18 和 19" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=flat-square&amp;logo=typescript&amp;logoColor=white" alt="TypeScript 类型支持" /></a>
     <a href="https://github.com/ifhover/leaf-ui/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/ifhover/leaf-ui/quality.yml?branch=main&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white&amp;label=CI" alt="组件质量检查状态" /></a>
@@ -93,7 +93,7 @@ import App from './App';
 
 export default function Root() {
   return (
-    <ConfigProvider locale="zh-CN" theme={{ primaryColor: '#20834a', borderRadius: 8 }}>
+    <ConfigProvider locale="zh-CN" theme={{ primaryColor: '#1e964f', borderRadius: 8 }}>
       <App />
     </ConfigProvider>
   );

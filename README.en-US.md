@@ -9,8 +9,8 @@
   <p>A React UI library with a green starting point and room for your own identity.</p>
 
   <p>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm version" /></a>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm monthly downloads" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm monthly downloads" /></a>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18%20%7C%2019-149eca?style=flat-square&amp;logo=react&amp;logoColor=white" alt="React 18 and 19" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=flat-square&amp;logo=typescript&amp;logoColor=white" alt="TypeScript support" /></a>
     <a href="https://github.com/ifhover/leaf-ui/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/ifhover/leaf-ui/quality.yml?branch=main&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white&amp;label=CI" alt="Component quality check status" /></a>
@@ -93,7 +93,7 @@ import App from './App';
 
 export default function Root() {
   return (
-    <ConfigProvider locale="en-US" theme={{ primaryColor: '#20834a', borderRadius: 8 }}>
+    <ConfigProvider locale="en-US" theme={{ primaryColor: '#1e964f', borderRadius: 8 }}>
       <App />
     </ConfigProvider>
   );

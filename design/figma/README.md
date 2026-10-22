@@ -5,7 +5,7 @@ Run `pnpm design:export` from the repository root to regenerate all assets from 
 - `apps/docs/docs/public/design/leaf.tokens.json`: DTCG color, dimension, number and duration tokens. Select one appearance and one density set.
 - `leaf.tokens-studio.json`: the legacy `type`/`value` shape for Tokens Studio. Enable Light or Dark plus Comfortable or Compact, not both appearances simultaneously.
 - Four `leaf-*-foundations.svg` / `leaf-*-components.svg` sheets: named groups, editable vector paths and text. Drag these into Figma; install Inter or choose a replacement font.
-- This local plugin creates native color variables with Light/Dark modes, dimension variables with Comfortable/Compact modes, and editable Button/Input component sets. Components bind fill colors and heights to variables. Button variants cover solid/soft/outline/ghost and default/hover/pressed/disabled, with both densities.
+- This local plugin creates native color variables with Light/Dark modes, dimension variables with Comfortable/Compact modes, and editable Button/Input component sets. Components bind fill colors and heights to variables. Button variants cover solid/outline/ghost and default/hover/pressed/disabled, with both densities. Outline is the runtime default; its resting chart includes a subtle downward shadow, hover keeps the resting paint, and pressed only deepens the semantic border.
 
 In Figma desktop: **Plugins → Development → Import plugin from manifest**, select `manifest.json`, then run **Leaf UI Resources**. The downloadable ZIP contains `manifest.json`, `code.js` and this README. Each run creates a page and collections; use Figma Undo if you do not want the imported resources. No network access is requested.
 
