@@ -79,17 +79,8 @@
     justify-content: center;
     min-width: 28px;
     min-height: 28px;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-    &:hover {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-option-hover);
-    }
-    &:active {
-      transform: scale(0.88);
-    }
+
+    @include mixins.text-action;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -105,12 +96,8 @@
   border: 0;
   padding: 2px;
   border-radius: 4px;
-  background: transparent;
-  color: var(--leaf-color-text-muted);
-  cursor: pointer;
-  &:focus-visible {
-    outline: 2px solid var(--leaf-feedback-color);
-  }
+
+  @include mixins.text-action;
 }
 .leaf-confirm {
   @include mixins.danger-soft-feedback-family;

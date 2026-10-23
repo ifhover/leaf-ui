@@ -9,10 +9,14 @@
   --leaf-button-color: var(--leaf-color-primary);
   --leaf-button-ink: var(--leaf-color-primary-ink, var(--leaf-button-color));
   --leaf-button-ink-active: var(--leaf-color-primary-ink-active, var(--leaf-button-active));
-  --leaf-button-fill-border: var(--leaf-color-primary-fill-border, transparent);
   --leaf-button-on-color: var(--leaf-color-on-primary);
   --leaf-focus-color: var(--leaf-color-text-muted);
   --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
+  --leaf-button-active-color: var(--leaf-button-rest-color);
+  --leaf-button-active-background: var(--leaf-button-rest-background);
+  --leaf-button-active-border: var(--leaf-button-rest-border);
+  --leaf-button-hover-border: var(--leaf-button-base-border);
+  --leaf-button-active-shadow: var(--leaf-button-base-shadow);
   box-sizing: border-box;
   display: inline-flex;
   position: relative;
@@ -36,12 +40,7 @@
   cursor: pointer;
   user-select: none;
   appearance: none;
-  transition:
-    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    color var(--leaf-motion-color) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-color) var(--leaf-motion-easing);
+  @include mixins.action-transition;
   @include mixins.control-size;
 
   &:focus-visible {
@@ -62,8 +61,8 @@
     gap: inherit;
     min-width: 0;
     transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__loading {
     position: absolute;
@@ -75,7 +74,7 @@
     pointer-events: none;
     transition:
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &[data-loading] &__content {
     opacity: 0;
@@ -97,25 +96,8 @@
     --leaf-button-color: var(--leaf-color-danger);
     --leaf-button-ink: var(--leaf-color-danger-ink);
     --leaf-button-ink-active: var(--leaf-color-danger-ink);
-    --leaf-button-fill-border: transparent;
     --leaf-button-on-color: var(--leaf-color-on-danger);
     --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
-  }
-
-  // Borderless actions are private controls used by composite components.
-  &--ghost {
-    color: var(--leaf-color-text);
-    background: transparent;
-    &:active:not(:disabled) {
-      background: var(--leaf-color-border);
-    }
-  }
-  &--danger#{&}--ghost {
-    color: var(--leaf-color-danger-ink);
-    &:active:not(:disabled) {
-      color: var(--leaf-color-danger-ink);
-      background: var(--leaf-danger-soft-active-background);
-    }
   }
 
   &--icon-only {
@@ -152,58 +134,67 @@
   }
 }
 
-// All public appearances consume the same paint API; private composite actions stay quiet.
+// Public and composite actions share the same paint API.
 .leaf-button {
   &:is(&--solid) {
     --leaf-button-rest-color: var(--leaf-button-on-color);
     --leaf-button-rest-background: var(--leaf-button-color);
-    --leaf-button-rest-border: var(--leaf-button-fill-border);
+    --leaf-button-rest-border: transparent;
     --leaf-button-rest-shadow: none;
-    --leaf-button-hover-color: var(--leaf-button-rest-color);
-    --leaf-button-hover-background: var(--leaf-button-rest-background);
-    --leaf-button-hover-border: var(--leaf-button-rest-border);
-    --leaf-button-active-color: var(--leaf-button-rest-color);
+
     --leaf-button-active-background: var(--leaf-button-active);
-    --leaf-button-active-border: var(--leaf-button-rest-border);
   }
   &:is(&--outline) {
     --leaf-button-rest-color: var(--leaf-color-text);
     --leaf-button-rest-background: var(--leaf-color-surface);
     --leaf-button-rest-border: var(--leaf-color-border);
     --leaf-button-rest-shadow: var(--leaf-shadow-xs);
-    --leaf-button-hover-color: var(--leaf-button-rest-color);
-    --leaf-button-hover-background: var(--leaf-button-rest-background);
-    --leaf-button-hover-border: var(--leaf-button-rest-border);
-    --leaf-button-active-color: var(--leaf-button-rest-color);
-    --leaf-button-active-background: var(--leaf-button-rest-background);
-    --leaf-button-active-border: var(--leaf-button-active);
+
+    --leaf-button-hover-border: var(
+      --leaf-component-button-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+    );
+    --leaf-button-active-color: var(--leaf-button-base-color);
+    --leaf-button-active-background: #{mixins.subtle-action-background(
+        var(--leaf-button-base-background)
+      )};
+    --leaf-button-active-border: var(--leaf-button-base-border);
+    &:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible)) {
+      --leaf-button-active-border: var(--leaf-button-hover-border);
+    }
     &.leaf-button--danger {
       --leaf-button-rest-color: var(--leaf-color-danger-ink);
       --leaf-button-rest-border: var(--leaf-button-color);
-      --leaf-button-hover-color: var(--leaf-button-rest-color);
-      --leaf-button-hover-background: var(--leaf-button-rest-background);
-      --leaf-button-hover-border: var(--leaf-button-rest-border);
-      --leaf-button-active-color: var(--leaf-button-rest-color);
-      --leaf-button-active-background: var(--leaf-button-rest-background);
-      --leaf-button-active-border: var(--leaf-button-active);
+
+      --leaf-button-hover-border: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-button-ink))
+      );
     }
   }
   &:is(&--link) {
-    --leaf-button-rest-color: var(--leaf-button-ink);
+    --leaf-button-rest-color: var(--leaf-button-color);
     --leaf-button-rest-background: transparent;
     --leaf-button-rest-border: transparent;
     --leaf-button-rest-shadow: none;
-    --leaf-button-hover-color: var(--leaf-button-rest-color);
-    --leaf-button-hover-background: transparent;
-    --leaf-button-hover-border: transparent;
+
     --leaf-button-active-color: var(--leaf-button-ink-active);
     --leaf-button-active-background: transparent;
     --leaf-button-active-border: transparent;
-    &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
-      text-decoration: underline;
+  }
+  &:is(&--text) {
+    @include mixins.text-action-family;
+    --leaf-button-rest-color: var(--leaf-text-action-color);
+    --leaf-button-rest-background: transparent;
+    --leaf-button-rest-border: transparent;
+    --leaf-button-rest-shadow: none;
+    --leaf-button-hover-background: var(--leaf-text-action-background);
+    --leaf-button-active-background: var(--leaf-text-action-active-background);
+    &.leaf-button--danger {
+      --leaf-button-rest-color: var(--leaf-color-danger-ink);
     }
   }
-  &:is(&--solid, &--outline, &--link) {
+  &:is(&--solid, &--outline, &--text, &--link) {
     --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
     --leaf-button-base-background: var(
       --leaf-component-button-background,
@@ -235,12 +226,9 @@
       @include mixins.state-paint(
         button,
         hover,
-        var(--leaf-button-hover-color),
-        var(--leaf-button-hover-background),
-        var(
-          --leaf-component-button-border-color,
-          var(--leaf-frame-border-color, var(--leaf-button-hover-border))
-        ),
+        var(--leaf-button-base-color),
+        var(--leaf-button-hover-background, var(--leaf-button-base-background)),
+        var(--leaf-button-hover-border),
         var(--leaf-button-base-shadow)
       );
     }
@@ -254,7 +242,7 @@
           --leaf-component-button-border-color,
           var(--leaf-frame-border-color, var(--leaf-button-active-border))
         ),
-        var(--leaf-button-base-shadow)
+        var(--leaf-button-active-shadow)
       );
     }
     &:disabled {
@@ -292,7 +280,7 @@
     .leaf-button--solid,
     .leaf-button--outline,
     .leaf-button--link,
-    .leaf-button--ghost
+    .leaf-button--text
   ) {
     border-color: ButtonText;
     &:disabled {

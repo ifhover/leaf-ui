@@ -1,12 +1,46 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRef } from 'react';
+import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Form, FormField } from '../form/form';
 import { Checkbox } from './checkbox';
 import { CheckboxGroup } from './group';
 
 describe('rich checkbox choices', () => {
+  it('reports every controlled selection and allows clearing the last choice with Space', async () => {
+    const change = vi.fn();
+    function Example() {
+      const [value, setValue] = useState<string[]>([]);
+      return (
+        <CheckboxGroup
+          options={['Mail', 'Drive', 'Chat']}
+          value={value}
+          onChange={(next) => {
+            change(next);
+            setValue(next);
+          }}
+        />
+      );
+    }
+    render(<Example />);
+    for (const name of ['Mail', 'Drive', 'Chat', 'Mail', 'Drive']) {
+      await userEvent.click(screen.getByRole('checkbox', { name }));
+    }
+    screen.getByRole('checkbox', { name: 'Chat' }).focus();
+    await userEvent.keyboard(' ');
+    expect(change.mock.calls.map(([value]) => value)).toEqual([
+      ['Mail'],
+      ['Mail', 'Drive'],
+      ['Mail', 'Drive', 'Chat'],
+      ['Drive', 'Chat'],
+      ['Chat'],
+      [],
+    ]);
+    for (const checkbox of screen.getAllByRole('checkbox')) {
+      expect(checkbox).not.toBeChecked();
+    }
+  });
+
   it('clicks the whole card, separates its accessible name and description, and retains the native ref', async () => {
     const ref = createRef<HTMLInputElement>();
     const change = vi.fn();
@@ -51,8 +85,8 @@ describe('rich checkbox choices', () => {
     );
   });
 
-  it.each(['card', 'list'] as const)(
-    'preserves required groups, values, limits and native reset in the %s variant',
+  it.each(['plain', 'card', 'list'] as const)(
+    'allows selecting all or clearing all and preserves required validation and native reset in the %s variant',
     async (variant) => {
       const { container } = render(
         <form>
@@ -61,7 +95,6 @@ describe('rich checkbox choices', () => {
             name="services"
             variant={variant}
             required
-            maxCount={2}
             defaultValue={['mail']}
             options={[
               { value: 'mail', label: 'Mail', description: 'Messages' },
@@ -77,10 +110,16 @@ describe('rich checkbox choices', () => {
       expect(new FormData(form).getAll('services')).toEqual(['mail']);
       await userEvent.click(group.getByText('Files'));
       await userEvent.click(group.getByText('Discussions'));
-      expect(group.getByRole('checkbox', { name: 'Chat' })).not.toBeChecked();
-      expect(new FormData(form).getAll('services')).toEqual(['mail', 'drive']);
+      expect(group.getByRole('checkbox', { name: 'Chat' })).toBeChecked();
+      expect(new FormData(form).getAll('services')).toEqual(['mail', 'drive', 'chat']);
+      for (const name of ['Mail', 'Drive', 'Chat']) {
+        expect(group.getByRole('checkbox', { name })).not.toHaveAttribute('aria-disabled');
+        await userEvent.click(group.getByRole('checkbox', { name }));
+      }
+      expect(new FormData(form).getAll('services')).toEqual([]);
+      expect(form.checkValidity()).toBe(false);
       fireEvent.reset(form);
-      expect(group.getByRole('checkbox', { name: 'Mail' })).toBeChecked();
+      await waitFor(() => expect(group.getByRole('checkbox', { name: 'Mail' })).toBeChecked());
       await waitFor(() => expect(group.getByRole('checkbox', { name: 'Drive' })).not.toBeChecked());
       expect(group.getByRole('checkbox', { name: 'Blocked' })).toBeDisabled();
       expect(form.checkValidity()).toBe(true);

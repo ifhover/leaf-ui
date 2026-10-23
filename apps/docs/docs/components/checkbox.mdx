@@ -1,6 +1,5 @@
 import { CheckboxCards } from '../../src/examples/checkbox/surfaces';
 import { CheckboxList } from '../../src/examples/checkbox/list';
-import { ExtensionDemo } from '../../src/examples/checkbox/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../src/components/form-examples';
 
@@ -24,15 +23,6 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 <ComponentExample title="全选与半选" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/checkbox/check-all.tsx"
-```
-
-</ComponentExample>
-
-## 勾选数量限制
-
-<ComponentExample title="勾选数量限制" preview={<ExtensionDemo />} fileName="extensions.tsx">
-
-```tsx lineNumbers file="../../src/examples/checkbox/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -96,15 +86,13 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | 必填 | 必需。可用选项 |
+| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | 必填 | 可用选项 |
 | `value` | `readonly string[]` | — | 受控值 |
 | `defaultValue` | `readonly string[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: string[]) => void` | — | 值变化回调 |
 | `legend` | `ReactNode` | — | 字段组名称 |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 复选框尺寸。 |
 | `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | 普通排列、卡片网格或带分隔线的成组列表。 |
-| `minCount` | `number` | `0` | 最少勾选数量 |
-| `maxCount` | `number` | `Infinity` | 最多可勾选的选项数。 |
 | `required` | `boolean` | — | 要求整体值非空，复合控件只校验一次。 |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 选项的排列方向。 |
 
@@ -112,8 +100,8 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 必填 | 必需。受控值 |
-| `label` | `ReactNode` | 必填 | 必需。显示内容 |
+| `value` | `string` | 必填 | 受控值 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
 | `description` | `ReactNode` | — | 补充说明。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |

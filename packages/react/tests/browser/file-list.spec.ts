@@ -56,7 +56,9 @@ for (const [name, query, width] of [
       .evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().bottom));
     if (width > 480) expect(Math.max(...actionEdges) - Math.min(...actionEdges)).toBeLessThan(1);
     await page.screenshot({
-      path: `.quality/file-list-${testInfo.project.name}-${name.replaceAll(' ', '-')}.png`,
+      path: test
+        .info()
+        .outputPath(`file-list-${testInfo.project.name}-${name.replaceAll(' ', '-')}.png`),
       fullPage: true,
       animations: 'disabled',
     });

@@ -155,7 +155,7 @@ function FileRow({
       {canPreview && (
         <ButtonControl
           className="leaf-file-list__action"
-          variant="ghost"
+          variant="text"
           size="sm"
           disabled={disabled}
           startIcon={<Eye size={16} />}
@@ -169,7 +169,7 @@ function FileRow({
         (onDownload ? (
           <ButtonControl
             className="leaf-file-list__action"
-            variant="ghost"
+            variant="text"
             size="sm"
             disabled={disabled}
             startIcon={<Download size={16} />}
@@ -196,7 +196,8 @@ function FileRow({
       {removable && onRemove && (
         <ButtonControl
           className="leaf-file-list__action leaf-file-list__remove"
-          variant="ghost"
+          danger
+          variant="text"
           size="sm"
           disabled={disabled}
           loading={removing}

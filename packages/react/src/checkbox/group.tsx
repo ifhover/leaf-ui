@@ -22,8 +22,6 @@ export interface CheckboxGroupProps
   legend?: ReactNode;
   size?: ControlSize;
   variant?: 'plain' | 'card' | 'list';
-  minCount?: number;
-  maxCount?: number;
   required?: boolean;
   direction?: 'horizontal' | 'vertical';
 }
@@ -36,8 +34,6 @@ export function CheckboxGroup(rawProps: CheckboxGroupProps) {
     legend,
     size,
     variant = 'plain',
-    minCount = 0,
-    maxCount = Infinity,
     direction = 'horizontal',
     name,
     form,
@@ -73,9 +69,6 @@ export function CheckboxGroup(rawProps: CheckboxGroupProps) {
         <div className="leaf-checkbox-group__options">
           {items.map((item, index) => {
             const checked = current.includes(item.value);
-            const limited = checked
-              ? current.length <= Math.max(0, minCount)
-              : current.length >= Math.max(0, maxCount);
             return (
               <Checkbox
                 key={item.value}
@@ -91,12 +84,7 @@ export function CheckboxGroup(rawProps: CheckboxGroupProps) {
                 value={item.value}
                 checked={checked}
                 disabled={disabled || item.disabled}
-                aria-disabled={limited || undefined}
                 onChange={(event) => {
-                  if (limited) {
-                    event.currentTarget.checked = checked;
-                    return;
-                  }
                   const next = event.target.checked
                     ? [...current, item.value]
                     : current.filter((key) => key !== item.value);
@@ -111,7 +99,7 @@ export function CheckboxGroup(rawProps: CheckboxGroupProps) {
         </div>
       </FieldScope>
       <FormValue
-        value={current.length >= Math.max(1, minCount) ? 'selected' : ''}
+        value={current.length > 0 ? 'selected' : ''}
         required={required ?? field?.required}
         form={form}
         disabled={disabled}

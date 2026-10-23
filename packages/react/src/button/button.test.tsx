@@ -33,7 +33,7 @@ describe('Button', () => {
     expect(button).not.toHaveAttribute('danger');
     await userEvent.click(button);
     expect(onClick).toHaveBeenCalledOnce();
-    for (const variant of ['solid', 'outline', 'link'] as const) {
+    for (const variant of ['solid', 'outline', 'text', 'link'] as const) {
       rerender(
         <Button danger variant={variant}>
           删除项目
@@ -118,7 +118,7 @@ describe('Button', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it.each(['solid', 'outline', 'link'] as const)(
+  it.each(['solid', 'outline', 'text', 'link'] as const)(
     'keeps %s actions free of decorative wave nodes during repeated activation',
     async (variant) => {
       const onClick = vi.fn();

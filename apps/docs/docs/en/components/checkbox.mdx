@@ -1,6 +1,5 @@
 import { CheckboxCards } from '../../../src/examples/checkbox/surfaces';
 import { CheckboxList } from '../../../src/examples/checkbox/list';
-import { ExtensionDemo } from '../../../src/examples/en/checkbox/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
 
@@ -24,15 +23,6 @@ Read event.target.checked in onChange. Use indeterminate to represent a partiall
 <ComponentExample title="Select all and indeterminate" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/check-all.tsx"
-```
-
-</ComponentExample>
-
-## Selection count limits
-
-<ComponentExample title="Selection count limits" preview={<ExtensionDemo />} fileName="extensions.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/checkbox/extensions.tsx"
 ```
 
 </ComponentExample>
@@ -98,15 +88,13 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | Required | Required. Available options |
+| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | Required | Available options |
 | `value` | `readonly string[]` | — | Controlled value |
 | `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: string[]) => void` | — | Value change callback |
 | `legend` | `ReactNode` | — | Field group title |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Checkbox size. |
 | `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | Plain choices, a card grid or a list with shared borders and dividers. |
-| `minCount` | `number` | `0` | Minimum selection count |
-| `maxCount` | `number` | `Infinity` | Maximum number of checked options. |
 | `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction of the options. |
 
@@ -114,8 +102,8 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Required. Controlled value |
-| `label` | `ReactNode` | Required | Required. Display label |
+| `value` | `string` | Required | Controlled value |
+| `label` | `ReactNode` | Required | Display label |
 | `description` | `ReactNode` | — | Additional description. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |

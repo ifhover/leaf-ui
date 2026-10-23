@@ -1,9 +1,128 @@
-import { readability } from '@ctrl/tinycolor';
+import { readability, TinyColor } from '@ctrl/tinycolor';
 import { expect as baseExpect, type Locator, type Page, test } from '@playwright/test';
 
 test.use({ reducedMotion: 'no-preference' });
 test.setTimeout(120_000);
 const expect = baseExpect.configure({ timeout: 15_000 });
+
+test('all appearances and danger actions share reversible paint transitions', async ({ page }) => {
+  await page.goto('/?fixture=motion');
+  const motion = (button: Locator) =>
+    button.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        properties: style.transitionProperty,
+        duration: style.transitionDuration,
+        easing: style.transitionTimingFunction,
+        padding: style.padding,
+        height: style.minHeight,
+        radius: style.borderRadius,
+      };
+    });
+  const baseline = await motion(page.getByTestId('press-solid'));
+  for (const variant of ['solid', 'outline', 'text', 'link']) {
+    const normal = page.getByTestId(`press-${variant}`);
+    const danger = page.getByTestId(
+      variant === 'solid' ? 'press-danger' : `press-danger-${variant}`,
+    );
+    const normalMotion = await motion(normal);
+    expect(await motion(danger)).toEqual(normalMotion);
+    expect(normalMotion.properties).toBe(baseline.properties);
+    expect(normalMotion.duration).toBe(baseline.duration);
+    expect(normalMotion.easing).toBe(baseline.easing);
+    for (const button of [normal, danger]) {
+      await button.hover();
+      await button.evaluate(async (node) => {
+        await Promise.all(node.getAnimations().map((animation) => animation.finished));
+      });
+      await page.mouse.down();
+      await expect(button).toHaveCSS('text-decoration-line', 'none');
+      if (variant !== 'link') {
+        const transition = await button.evaluate((node) => {
+          const animation = node
+            .getAnimations()
+            .find(
+              (item) =>
+                item instanceof CSSTransition && item.transitionProperty === 'background-color',
+            );
+          if (!animation?.effect) return null;
+          animation.pause();
+          const duration = Number(animation.effect.getTiming().duration);
+          animation.currentTime = 0;
+          const start = getComputedStyle(node).backgroundColor;
+          animation.currentTime = duration / 2;
+          const middle = getComputedStyle(node).backgroundColor;
+          animation.finish();
+          return { duration, start, middle, end: getComputedStyle(node).backgroundColor };
+        });
+        expect(transition).not.toBeNull();
+        expect(transition?.duration).toBeGreaterThan(0);
+        expect(transition?.middle).not.toBe(transition?.start);
+        expect(transition?.middle).not.toBe(transition?.end);
+      }
+      await page.mouse.up();
+      expect(await motion(button)).toEqual(normalMotion);
+    }
+  }
+});
+
+for (const mode of ['light', 'dark']) {
+  test(`text actions share neutral feedback and links use theme color (${mode})`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=motion&theme=${mode}`);
+    const button = page.getByTestId('press-text');
+    const outline = page.getByTestId('press-outline');
+    const geometry = (target: Locator) =>
+      target.evaluate((node) => {
+        const style = getComputedStyle(node);
+        return { height: node.getBoundingClientRect().height, padding: style.padding };
+      });
+    expect(await geometry(button)).toEqual(await geometry(outline));
+    await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const feedback = await button.evaluate((node) => {
+      const probe = document.createElement('span');
+      node.append(probe);
+      const resolve = (color: string) => {
+        probe.style.color = color;
+        return getComputedStyle(probe).color;
+      };
+      const hover = resolve('color-mix(in srgb, var(--leaf-color-option-hover) 50%, transparent)');
+      const active = resolve('var(--leaf-color-option-hover)');
+      probe.remove();
+      return { hover, active };
+    });
+    expect(feedback.hover).not.toBe(feedback.active);
+    await button.hover();
+    await expect(button).toHaveCSS('background-color', feedback.hover);
+    await page.mouse.down();
+    await expect(button).toHaveCSS('background-color', feedback.active);
+    await page.mouse.up();
+    await expect(button).toHaveCSS('background-color', feedback.hover);
+    for (const selector of ['.leaf-input__clear', '.leaf-picker-clear']) {
+      const clear = page.getByTestId('text-actions').locator(selector);
+      await clear.hover();
+      await expect(clear).toHaveCSS('background-color', feedback.hover);
+      await expect(clear).toHaveCSS('scale', 'none');
+      const before = await clear.boundingBox();
+      await page.mouse.down();
+      await expect(clear).toHaveCSS('background-color', feedback.active);
+      expect(await clear.boundingBox()).toEqual(before);
+      await page.mouse.up();
+    }
+    const link = page.getByTestId('press-link');
+    const primary = await link.evaluate((node) => {
+      const probe = document.createElement('span');
+      probe.style.color = 'var(--leaf-color-primary)';
+      node.append(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    });
+    await expect(link).toHaveCSS('color', primary);
+    await page.screenshot({ path: test.info().outputPath(`text-actions-${mode}.png`) });
+  });
+}
 
 test('link buttons use content geometry and color feedback without a wave', async ({ page }) => {
   await page.goto('/?fixture=motion');
@@ -91,6 +210,7 @@ for (const theme of ['light', 'dark']) {
               .getAnimations({ subtree: true })
               .filter(
                 (animation) =>
+                  !(animation instanceof CSSTransition) &&
                   animation.effect instanceof KeyframeEffect &&
                   animation.effect.getKeyframes().some((frame) => 'boxShadow' in frame),
               ).length,
@@ -113,6 +233,13 @@ const appearance = (button: Locator) =>
     context.fillStyle = style.backgroundColor;
     context.fillRect(0, 0, 1, 1);
     const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data;
+    const resolveRgb = (value: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = value;
+      context.fillRect(0, 0, 1, 1);
+      const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data;
+      return { r, g, b };
+    };
     const probe = document.createElement('span');
     const resolveColor = (value: string) => {
       probe.style.color = value;
@@ -124,8 +251,14 @@ const appearance = (button: Locator) =>
     return {
       accent: resolveColor('var(--leaf-button-color)'),
       dangerText: resolveColor('var(--leaf-color-danger-ink)'),
+      hoverBorder: resolveColor('var(--leaf-button-hover-border)'),
+      activeBorder: resolveColor('var(--leaf-button-active-border)'),
+      activeColor: resolveColor('var(--leaf-button-active-color)'),
+      activeBackground: resolveColor('var(--leaf-button-active-background)'),
       text: resolveColor('var(--leaf-color-text)'),
       color: style.color,
+      colorRgb: resolveRgb(style.color),
+      borderRgb: resolveRgb(style.borderTopColor),
       background: style.backgroundColor,
       backgroundRgb: { r, g, b },
       border: style.borderTopColor,
@@ -136,7 +269,7 @@ const appearance = (button: Locator) =>
   });
 
 for (const theme of ['light', 'dark']) {
-  test(`outline buttons keep their resting paint on hover and deepen only the border on press (${theme})`, async ({
+  test(`outline buttons deepen the hover border and only tint the background slightly gray on press (${theme})`, async ({
     page,
   }) => {
     await page.goto(`/?fixture=motion&theme=${theme}`);
@@ -161,22 +294,44 @@ for (const theme of ['light', 'dark']) {
       }
       expect(initial.hover).not.toBe(initial.active);
 
+      const transitions = await button.evaluate((node) => {
+        const style = getComputedStyle(node);
+        return { properties: style.transitionProperty, durations: style.transitionDuration };
+      });
+      expect(transitions.properties).toContain('border-color');
+      expect(transitions.properties).toContain('box-shadow');
+      expect(transitions.properties.split(',').map((value) => value.trim())).toContain('color');
+      expect(transitions.durations.split(',').every((value) => Number.parseFloat(value) > 0)).toBe(
+        true,
+      );
       await button.hover();
-      expect(await appearance(button)).toEqual(initial);
+      await expect.poll(async () => (await appearance(button)).border).toBe(initial.hoverBorder);
+      const hovered = await appearance(button);
+      expect(hovered.border).not.toBe(initial.border);
+      expect(hovered.color).toBe(initial.color);
+      expect(hovered.background).toBe(initial.background);
+      expect(hovered.shadow).toBe(initial.shadow);
       expect(await measure(button)).toEqual(before);
 
       await page.mouse.down();
-      await expect.poll(async () => (await appearance(button)).border).toBe(initial.active);
+      await expect(button).toHaveCSS('background-color', initial.activeBackground);
       const pressed = await appearance(button);
       expect(pressed.color).toBe(initial.color);
-      expect(pressed.background).toBe(initial.background);
+      expect(pressed.border).toBe(hovered.border);
       expect(pressed.shadow).toBe(initial.shadow);
-      expect(pressed.border).toBe(initial.active);
+      expect(pressed.background).not.toBe(initial.background);
+      const gray = new TinyColor(pressed.backgroundRgb).toRgb();
+      expect(gray.r).toBe(gray.g);
+      expect(gray.g).toBe(gray.b);
+      const restingGray = new TinyColor(initial.backgroundRgb).toRgb();
+      expect(Math.abs(gray.r - restingGray.r)).toBeLessThanOrEqual(20);
       expect(await measure(button)).toEqual(before);
 
       await page.mouse.up();
-      await expect.poll(async () => (await appearance(button)).border).toBe(initial.border);
+      await expect(button).toHaveCSS('background-color', initial.background);
+      expect((await appearance(button)).border).toBe(hovered.border);
       await page.mouse.move(0, 0);
+      await expect.poll(async () => (await appearance(button)).border).toBe(initial.border);
       expect(await appearance(button)).toEqual(initial);
       await expect(button.locator('.leaf-button__wave')).toHaveCount(0);
     }
@@ -201,7 +356,7 @@ for (const theme of ['light', 'dark']) {
       await button.scrollIntoViewIfNeeded();
       await page.mouse.move(0, 0);
       const original = await appearance(button);
-      expect(readability(original.color, original.backgroundRgb)).toBeGreaterThanOrEqual(4.5);
+      expect(original.color).toBe('rgb(255, 255, 255)');
       expect(original.hover).not.toBe(original.active);
       await button.hover();
       expect(await appearance(button)).toEqual(original);
@@ -211,7 +366,9 @@ for (const theme of ['light', 'dark']) {
       const pressed = await appearance(button);
       expect(pressed.color).toBe(original.color);
       expect(pressed.shadow).toBe(original.shadow);
-      expect(readability(pressed.color, pressed.backgroundRgb)).toBeGreaterThanOrEqual(4.5);
+      expect(new TinyColor(pressed.backgroundRgb).getLuminance()).toBeLessThan(
+        new TinyColor(original.backgroundRgb).getLuminance(),
+      );
       expect(await measure(button)).toEqual(before);
       await page.mouse.up();
       await page.mouse.move(0, 0);
@@ -242,9 +399,10 @@ test('explicit component outline states override the default paint', async ({ pa
   await page.mouse.down();
   await expect(button).toHaveCSS('border-top-color', 'rgb(118, 84, 198)');
   await expect(button).toHaveCSS('color', 'rgb(18, 105, 95)');
-  await expect(button).toHaveCSS('background-color', original.background);
-  await expect(button).toHaveCSS('box-shadow', original.shadow);
+  await expect(button).toHaveCSS('background-color', original.activeBackground);
+  await expect(button).toHaveCSS('box-shadow', 'rgba(0, 0, 0, 0.2) 0px 2px 4px 0px');
   await page.mouse.up();
+  await expect(button).toHaveCSS('box-shadow', original.shadow);
 });
 
 for (const theme of ['light', 'dark']) {
@@ -259,16 +417,20 @@ for (const theme of ['light', 'dark']) {
     await page.keyboard.press('Shift+Tab');
     await expect(button).toBeFocused();
     await expect(button).toHaveCSS('outline-style', 'solid');
+    await button.evaluate((node) =>
+      Promise.all(node.getAnimations().map((animation) => animation.finished)),
+    );
     const focusColor = await button.evaluate((node) => getComputedStyle(node).outlineColor);
     const original = await appearance(button);
     expect(focusColor).not.toBe(original.active);
     await page.keyboard.down('Space');
-    await expect.poll(async () => (await appearance(button)).border).toBe(original.active);
+    await expect.poll(async () => (await appearance(button)).border).toBe(original.activeBorder);
     const pressed = await appearance(button);
-    expect(pressed.color).toBe(original.color);
-    expect(pressed.background).toBe(original.background);
+    await expect(button).toHaveCSS('color', original.activeColor);
+    await expect(button).toHaveCSS('background-color', original.activeBackground);
     expect(pressed.shadow).toBe(original.shadow);
     await page.keyboard.up('Space');
+    await expect(button).toHaveCSS('background-color', original.background);
     await expect.poll(async () => (await appearance(button)).border).toBe(original.border);
     await page.keyboard.press('Enter');
     await expect(button).toBeFocused();
@@ -318,6 +480,7 @@ test('motion preferences and portal inheritance retain undecorated native action
   page,
 }) => {
   await page.goto('/?fixture=motion');
+  await expect(page.getByTestId('press-off')).toHaveCSS('transition-duration', /^0s(?:, 0s)*$/);
   for (const id of ['press-off', 'press-resumed']) {
     const button = page.getByTestId(id);
     await button.click();
@@ -334,6 +497,15 @@ test('motion preferences and portal inheritance retain undecorated native action
   await button.click();
   await expect(button).toHaveCSS('transition-duration', '0s');
   await expect(button.locator('.leaf-button__wave')).toHaveCount(0);
+  const outline = page.getByTestId('press-outline');
+  await expect(outline).toHaveCSS('transition-duration', '0s');
+  await outline.hover();
+  const hovered = await appearance(outline);
+  await page.mouse.down();
+  await expect(outline).toHaveCSS('background-color', hovered.activeBackground);
+  await expect(outline).toHaveCSS('box-shadow', hovered.shadow);
+  await page.mouse.up();
+  await expect(outline).toHaveCSS('background-color', hovered.background);
 });
 
 test('forced colors retains clear keyboard focus', async ({ page, browserName }) => {

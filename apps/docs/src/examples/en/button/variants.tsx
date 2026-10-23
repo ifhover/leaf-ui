@@ -5,6 +5,7 @@ export function ButtonVariants() {
     <Space wrap>
       <Button>Outline</Button>
       <Button variant="solid">Primary</Button>
+      <Button variant="text">Text</Button>
       <Button variant="link">Link</Button>
     </Space>
   );

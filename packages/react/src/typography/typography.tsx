@@ -121,7 +121,7 @@ function TextContent({
       )}
       {copyable && (
         <ButtonControl
-          variant="ghost"
+          variant="text"
           size="sm"
           startIcon={copied ? <Check size={14} /> : <Copy size={14} />}
           aria-label={t('typography.copyText')}
@@ -139,7 +139,7 @@ function TextContent({
       )}
       {editable && (
         <ButtonControl
-          variant="ghost"
+          variant="text"
           size="sm"
           startIcon={<Pencil size={14} />}
           aria-label={t('typography.editText')}

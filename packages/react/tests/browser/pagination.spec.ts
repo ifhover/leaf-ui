@@ -25,10 +25,13 @@ for (const appearance of ['light', 'dark']) {
       'rgba(0, 0, 0, 0)',
     );
     const marker = outline.locator('.leaf-pagination__indicator');
-    await expect(marker).toHaveCSS('border-color', await color(outline, '--leaf-color-primary'));
+    await expect(marker).toHaveCSS(
+      'border-color',
+      await color(outline, '--leaf-color-primary-indicator'),
+    );
     await expect(marker).toHaveCSS(
       'background-color',
-      await color(outline, '--leaf-color-primary-surface-8'),
+      await color(outline, '--leaf-color-primary-soft'),
     );
     const current = outline.getByRole('button', { name: 'Page 2', exact: true });
     const currentColor = await current.evaluate((node) => getComputedStyle(node).color);
@@ -75,7 +78,7 @@ for (const appearance of ['light', 'dark']) {
       await color(ghost, '--leaf-color-surface-muted'),
     );
     await page.screenshot({
-      path: `.quality/pagination-${appearance}-${info.project.name}.png`,
+      path: test.info().outputPath(`pagination-${appearance}-${info.project.name}.png`),
       fullPage: true,
     });
   });

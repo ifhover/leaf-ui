@@ -11,7 +11,9 @@ Trigger an action, such as saving, submitting or deleting.
 
 `variant` controls the button appearance. The default is `outline` for ordinary actions; use `solid` for a primary action and `link` for inline actions.
 
-Outline buttons keep a subtle resting shadow and do not change on hover. While pressed, only the border deepens to the corresponding interaction color; the text, background and shadow stay unchanged, and releasing restores the border. `danger` uses readable danger ink and deepens the border from the danger base to a stronger danger interaction color while pressed. Disabled and loading buttons do not respond. Explicit component state settings override this default feedback.
+Outline buttons deepen their border on hover. Pressing only adds a subtle neutral gray background, restored on release, without changing text, border, shadow or position. Feedback transitions smoothly. All appearances share the same transition duration and easing for hover, press and recovery. `danger` changes only the semantic palette, not sizing, decoration or motion. Disabled and loading buttons do not respond; explicit component state settings take precedence.
+
+Text buttons (`variant="text"`) keep normal button height and padding, with a transparent resting background and light gray hover feedback and a deeper gray background while pressed. Link buttons use the theme base color.
 
 <ComponentExample title="Variants" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -109,9 +111,10 @@ Use `startIcon` and `endIcon` to add icons. Icons are hidden from assistive tech
 </ComponentExample>
 
 ## Button API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | Visual style |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Visual style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `danger` | `boolean` | `false` | Danger colors; works with every variant |
 | `loading` | `boolean` | `false` | Show loading and disable interaction |
@@ -141,6 +144,7 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 ```
 
 ## ButtonGroupProps API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | Button size. |
@@ -148,9 +152,10 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 | `attached` | `boolean` | `true` | Join adjacent buttons |
 
 ## SplitButtonProps API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | Button appearance |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Button appearance |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size. |
 | `danger` | `boolean` | `false` | Danger colors |
 | `loading` | `boolean` | `false` | Loading state |

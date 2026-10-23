@@ -109,7 +109,7 @@ for (const [theme, compact, rtl, lang] of [
     });
     expect(violations).toEqual([]);
     await page.screenshot({
-      path: `.quality/form-settings-${variant}-${testInfo.project.name}.png`,
+      path: test.info().outputPath(`form-settings-${variant}-${testInfo.project.name}.png`),
       fullPage: true,
     });
 
@@ -129,7 +129,7 @@ for (const [theme, compact, rtl, lang] of [
     expect((await rect(textarea)).width).toBeCloseTo(narrowForm.width, 0);
     await expectGroupSpacing(grouped, compact ? 16 : 24);
     await page.screenshot({
-      path: `.quality/form-settings-mobile-${variant}-${testInfo.project.name}.png`,
+      path: test.info().outputPath(`form-settings-mobile-${variant}-${testInfo.project.name}.png`),
       fullPage: true,
     });
   });

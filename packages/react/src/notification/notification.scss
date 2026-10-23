@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-notification-region {
   --leaf-notification-enter-x: 18px;
   --leaf-notification-enter-y: 0px;
@@ -128,23 +130,8 @@
     padding: 3px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover {
-      background: var(--leaf-color-surface-muted);
-      color: var(--leaf-color-text);
-    }
-    &:active {
-      scale: 0.9;
-    }
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
+
+    @include mixins.text-action;
   }
   @each $type in info, success, warning, danger, error {
     &--#{$type} {

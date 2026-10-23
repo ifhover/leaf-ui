@@ -195,28 +195,8 @@
     padding: 0;
     border: 1px solid transparent;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
     text-decoration: none;
     vertical-align: middle;
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled):not([aria-disabled='true']) {
-      color: var(--leaf-color-primary-ink);
-      border-color: var(--leaf-accent-soft-border);
-      background: var(--leaf-accent-soft-background);
-    }
-    &:active:not(:disabled):not([aria-disabled='true']) {
-      color: var(--leaf-color-primary-ink-active, var(--leaf-color-primary-active));
-      border-color: var(--leaf-accent-soft-border);
-      background: var(--leaf-accent-soft-background);
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
     &[aria-disabled='true'] {
       opacity: 0.45;
       cursor: not-allowed;
@@ -225,19 +205,8 @@
       cursor: default;
     }
   }
-  &__actions &__remove {
-    &:hover:not(:disabled):not([aria-disabled='true']) {
-      @include mixins.status-ink-family(danger);
-      color: var(--leaf-status-ink);
-      border-color: transparent;
-      background: var(--leaf-danger-soft-background);
-    }
-    &:active:not(:disabled):not([aria-disabled='true']) {
-      @include mixins.status-ink-family(danger);
-      color: var(--leaf-status-ink);
-      border-color: transparent;
-      background: var(--leaf-danger-soft-active-background);
-    }
+  a#{&}__action {
+    @include mixins.text-action;
   }
   &__status {
     grid-column: 2;

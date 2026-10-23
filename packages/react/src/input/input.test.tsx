@@ -6,6 +6,18 @@ import { ConfigProvider } from '../config-provider';
 import { Input } from './input';
 
 describe('Input', () => {
+  it.each([true, (value: string) => `${value.length} characters`] as const)(
+    'renders the clear button before the count with showCount=%s',
+    (showCount) => {
+      const { container } = render(
+        <Input defaultValue="Leaf" allowClear showCount={showCount} suffix="kg" />,
+      );
+      const count = container.querySelector('.leaf-input__count');
+      const clear = screen.getByRole('button', { name: '清除输入' });
+      expect(clear.nextElementSibling).toBe(count);
+      expect(count?.nextElementSibling).toHaveTextContent('kg');
+    },
+  );
   it('clears through onChange, updates count and restores uncontrolled form defaults', async () => {
     const clear = vi.fn();
     const change = vi.fn();

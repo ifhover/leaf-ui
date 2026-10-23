@@ -194,22 +194,8 @@
     padding: 4px;
     border: 0;
     border-radius: var(--leaf-radius);
-    color: var(--leaf-color-text-muted);
-    background: transparent;
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-option-hover);
-    }
-    &:active {
-      background: var(--leaf-color-option-hover);
-    }
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
+
+    @include mixins.text-action;
   }
 }
 @media (prefers-reduced-motion: reduce) {

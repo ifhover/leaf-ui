@@ -102,26 +102,20 @@ describe('Extended inputs and form integration', () => {
     expect(change).toHaveBeenLastCalledWith('123', '123');
     expect(screen.getByRole('textbox')).toHaveValue('12');
   });
-  it('enforces CheckboxGroup limits while retaining checked values in native submission', async () => {
+  it('submits only currently checked CheckboxGroup values without limiting selections', async () => {
     const { container } = render(
       <form>
-        <CheckboxGroup
-          name="choice"
-          options={['A', 'B', 'C']}
-          defaultValue={['A']}
-          minCount={1}
-          maxCount={2}
-        />
+        <CheckboxGroup name="choice" options={['A', 'B', 'C']} defaultValue={['A']} />
       </form>,
     );
     await userEvent.click(screen.getByRole('checkbox', { name: 'A' }));
-    expect(screen.getByRole('checkbox', { name: 'A' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'A' })).not.toBeChecked();
     await userEvent.click(screen.getByRole('checkbox', { name: 'B' }));
     await userEvent.click(screen.getByRole('checkbox', { name: 'C' }));
-    expect(screen.getByRole('checkbox', { name: 'C' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'C' })).toBeChecked();
     expect(
       new FormData(container.querySelector('form') as HTMLFormElement).getAll('choice'),
-    ).toEqual(['A', 'B']);
+    ).toEqual(['B', 'C']);
   });
   it('searches once with Enter and respects a prevented Enter event', async () => {
     const search = vi.fn();

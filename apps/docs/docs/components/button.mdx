@@ -9,9 +9,11 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 
 ## 基础用法
 
-`variant` 控制按钮外观。默认使用 `outline`，适合一般操作；主要操作使用 `solid`，行内操作使用 `link`。
+`variant` 控制按钮外观。默认使用 `outline`，适合一般操作；主要操作使用 `solid`，文字操作使用 `text`，行内操作使用 `link`。
 
-描边按钮带有一层轻微阴影，悬停时外观不变；按下时仅将边框加深为对应的交互色，文字、背景和阴影保持不变，松开后边框恢复。`danger` 使用可读的危险文字色，按下时边框从危险基色加深为更深的危险交互色。禁用和加载时不响应，显式组件状态配置优先于默认反馈。
+描边按钮悬停时边框加深，按下时仅将背景轻微变灰，松开后恢复；文字、边框、阴影和位置不随按下变化，交互均带有平滑过渡。所有外观的悬停、按下和恢复使用一致的过渡时长与曲线；`danger` 仅替换危险语义色，不改变尺寸、装饰或动效。禁用和加载时不响应，显式组件状态配置优先。
+
+文字按钮与普通按钮高度、内边距一致，默认透明，悬停时显示浅灰背景，按下时背景加深；链接按钮使用主题原色。
 
 <ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
 
@@ -109,9 +111,10 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 </ComponentExample>
 
 ## Button API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | 视觉样式 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
 | `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
@@ -155,6 +158,7 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 ```
 
 ## ButtonGroupProps API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 按钮尺寸 |
@@ -162,9 +166,10 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 | `attached` | `boolean` | `true` | 连接相邻按钮 |
 
 ## SplitButtonProps API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | 按钮样式 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 按钮样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸。 |
 | `danger` | `boolean` | `false` | 危险操作颜色 |
 | `loading` | `boolean` | `false` | 加载状态 |

@@ -85,7 +85,7 @@ export function QRCode(rawProps: QRCodeProps) {
         )}
       </div>
       {downloadable && (
-        <ButtonControl size="sm" variant="ghost" startIcon={<Download />} onClick={download}>
+        <ButtonControl size="sm" variant="text" startIcon={<Download />} onClick={download}>
           {t('common.download')}
         </ButtonControl>
       )}
