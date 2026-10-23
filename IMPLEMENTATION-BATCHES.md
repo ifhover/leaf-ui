@@ -1,5 +1,7 @@
 # Leaf UI improvement batches
 
+> Status: historical implementation record for the dated batches below, not a current task list or acceptance guarantee. Follow [AGENTS.md](AGENTS.md) for current development rules and [QUALITY.md](packages/react/QUALITY.md#当前验收规则) for current verification.
+
 Requested scope (2026-10-07): complete the following batches sequentially. Preserve existing work and public APIs. Automatic screenshot comparison, Table/DataGrid, and real framework integration projects/templates are deferred.
 
 | Batch | Deliverable | Status |

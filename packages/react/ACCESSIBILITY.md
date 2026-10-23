@@ -1,5 +1,7 @@
 # Accessibility and compatibility acceptance — 2026-10-07
 
+> Status: dated acceptance evidence, not current verification policy or a current all-component pass. Sample paths and behavior below describe that run and may have changed. Follow [QUALITY.md](QUALITY.md#当前验收规则) for current checks and honest reporting of outstanding manual coverage.
+
 This records executed coverage, not a certification of every component or every browser version. The interactive documentation sample is `apps/docs/src/examples/scenarios/accessibility.tsx`; browser acceptance imports that same sample. `tests/browser/quality.spec.ts` exercises it without screenshot baseline comparisons.
 
 | Executed check | Result / boundary |

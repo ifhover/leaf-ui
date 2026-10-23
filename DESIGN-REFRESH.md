@@ -1,5 +1,7 @@
 # Leaf UI design and motion refresh
 
+> Status: historical design and motion plan. Its sizes, APIs and implementation choices describe that stage only. Current rules: [visual standard](DESIGN-STANDARDS.md), [component development](packages/react/DEVELOPMENT.md), [color system](COLOR-SYSTEM.md) and [quality acceptance](packages/react/QUALITY.md#当前验收规则).
+
 Reference direction: Arc UI's neutral surfaces and precise proportions, beUI's continuous selection and shape transitions, and Beautiful UI's information hierarchy and sequenced content.
 
 ## Shared contracts

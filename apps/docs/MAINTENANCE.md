@@ -39,11 +39,17 @@ pnpm preview
 
 正文规则排除 `.rp-not-doc`。站点排版与组件 token 分开，不能覆盖预览或首页中组件的默认圆角、阴影、内边距与状态。搜索和主题按钮使用 Leaf UI Button；外观切换保留 Rspress ThemeContext、存储和键盘操作。
 
+## 主题配置与颜色页面
+
 `DocsThemeProvider` 通过外层 ConfigProvider 同步站点和示例主题色。`ThemeColorSwitcher` 使用 ColorPicker，配色存储在 `leaf-ui-docs-primary-color`，支持刷新、语言切换与同源标签页同步；静态 HTML 和初次渲染使用默认值，挂载后恢复存储。存储不可用时仍可切换。Rspress 搜索 portal 只同步根元素的站点强调色，组件色板由 ConfigProvider 生成；局部主题保持独立。
 
 首页、认识 Leaf UI 和快速开始共用 `PackageInstall`。包管理器偏好存储在 `leaf-ui-docs-package-manager`，支持刷新、页面与语言切换、同页实例和同源标签页同步；存储不可用时仍可切换。品牌图标使用 `data-no-zoom` 排除文档图片放大。指南的四种命令保留在 MDX 子内容中，Markdown 导出完整输出这些命令。
 
-配色入口和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。颜色选择、存储与实心主色背景保留原色；深色下的主色文字、选中指示、焦点和必要边界由组件库分别派生。主题指南示例使用 `src/examples/theming/presets.tsx` 中的完整主题定义，包含默认、插画、Windows XP、Material（MUI 风格）与拟物，移除卡通入口。中英文示例包含全部生成逻辑，组件包不内置风格预设。首页不展示主题定制模块。默认风格没有额外主题 token，省略默认密度和动效。自定义风格只写差异；基础表面继续由库生成，染色背景和统一描边使用 color-mix，阴影复用全局描边色。自动派生的交互色和主色文字不写进示例，主色文字对比由库统一处理；Switch 滑块保持白色。Windows XP 的斜面与渐变、Material 的层次阴影、拟物的双向光照与按下内凹由普通主题 token 表达；组件级差异只涉及 Card 标题渐变、Button 阴影反馈。XP / Material 字体使用本地字体与系统回退，不额外加载第三方资源。主题编辑器将 HEX / RGB / HSL 归一为 HEX。
+配色入口和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。颜色选择、存储与实心主色背景保留原色；输入色不会被改写。主题指南示例使用 `src/examples/theming/presets.tsx` 中的完整主题定义，包含默认、插画、Windows XP、Material（MUI 风格）与拟物，移除卡通入口。中英文示例包含全部生成逻辑，组件包不内置风格预设。首页不展示主题定制模块。默认风格没有额外主题 token，省略默认密度和动效。自定义风格只写差异；基础表面继续由库生成，染色背景和统一描边使用 color-mix，阴影复用全局描边色。自动派生的语义色与状态不在示例重复配置，前景与实底角色遵守颜色规范。Windows XP 的斜面与渐变、Material 的层次阴影、拟物的双向光照与按下内凹由普通主题 token 表达；组件级差异只涉及 Card 标题渐变、Button 阴影反馈。XP / Material 字体使用本地字体与系统回退，不额外加载第三方资源。主题编辑器将 HEX / RGB / HSL 归一为 HEX。
+
+颜色定义、派生、变量准入和生成物同步统一遵守 [颜色系统规范](../../COLOR-SYSTEM.md)，本文件只维护站点实现和使用者页面范围，不重复算法。存储事件与 Rspress 外观状态转为 JS ConfigProvider 配置；它们不是监听 DOM 颜色后重新派生。
+
+颜色页只展示五组语义色带（每组基色与 7 档派生色）、中性色 9 档色阶，以及通过 ConfigProvider 配置六组基色与白字 / 黑字的可运行示例。不再展示用途映射、场景矩阵或高级参考。中性色基色可通过 neutralColor 修改。实色前景默认白色，各 on*Color 可手动改黑；颜色生成不监听 DOM，不在 hydration 后解析数值，更新统一来自 JS 配置。
 
 组件和站点主题使用 SCSS，由 `pluginSass` 编译。Tailwind 4 入口 `theme/tailwind.css` 只服务现有站点界面，不是组件示例的前置依赖；PostCSS 接入 `@tailwindcss/postcss`，扫描 `src`、`docs`、`theme`，不加载 Preflight，不使用全局 `!important`。组件行内布局通过公共参数调整。不要把 Tailwind 依赖加入组件包。
 
@@ -89,6 +95,6 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 ## 开发预览
 
-开发分支可使用独立 `/dev/<name>/` 地址，展示开发状态、分支/提交和目标版本，使用独立资源、搜索与 base。稳定版本列表只记录 npm 正式版本；开发包使用 SemVer 预发布号和 `dev` 标签。
+开发预览的分支、地址、版本标记、记录与清理要求统一见 [开发流程](../../DEVELOPMENT-WORKFLOW.md#开发版在线文档)，不在此维护第二份发布规则。
 
 当前 Pages 与 `build:versions` 没有自动开发预览部署/清理；配置 base 之外还需独立部署步骤。记录 URL、分支、提交、部署位置和清理方式。合并或放弃后删除预览、资源、入口与活动清单，保留清理证据；正式历史快照继续可访问。

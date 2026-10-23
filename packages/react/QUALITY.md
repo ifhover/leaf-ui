@@ -1,5 +1,174 @@
 # 组件质量验收
 
+## 当前验收规则
+
+本节规定本次工作应做什么检查。下方日期记录仅证明当时的环境与执行结果；旧尺寸、API、颜色算法、数量和预算不覆盖现行规范。组件规则见 [DEVELOPMENT.md](DEVELOPMENT.md)，视觉见 [设计标准](../../DESIGN-STANDARDS.md)，颜色专项见 [颜色系统规范](../../COLOR-SYSTEM.md#自动约束与验收)。
+
+### 按影响选择检查
+
+| 改动范围 | 验收要求 |
+| --- | --- |
+| 仅仓库维护 Markdown | 检查引用路径、标题锚点、命令与当前源码的一致性，执行 `git diff --check`；不因修改维护说明而宣称运行了组件或浏览器验收 |
+| 组件行为、API、类型、导出或依赖 | 执行相关单元 / 类型 / 产物检查；发布前完整 `pnpm check`、`pnpm build`，按影响补兼容矩阵与体积检查 |
+| 组件颜色、主题或共享配方 | 按颜色规范同步源、测试与生成物；运行颜色专项及相关真实浏览器契约，共享修改覆盖各类消费者 |
+| 使用文档的纯文案、链接或说明 | 检查相关链接、结构与源码一致性；影响 API / AI 导出时运行相关文档测试，不运行无关组件浏览器或库构建 |
+| 文档 TSX 示例、站点主题或布局 | 相关格式、文档类型与结构测试；最终态文档构建一次，视觉变化验证受影响的真实页面，不用组件 fixture 代替文档容器验收 |
+| 设计资源 / Figma 导出 | 导出后做资源结构和脚本语法检查；未实际运行 Figma 时明确保留人工验收项 |
+
+报告列出命令、实际通过 / 失败数量、未执行范围和已知问题。不得把历史通过记录当作本次证据，也不得修改期望、关闭检查或扩充基线来掩盖缺陷。固定白色 `on-*` 是已确认的颜色契约，但不保证所有基色满足 4.5:1；保留 axe 对比度检查并如实报告失败组合，不自动改黑或改暗基色换取通过。
+
+### 测试边界与日常执行
+
+- 单元测试保护公开行为、原生语义、状态和算法；颜色扫描器集中负责固定色、配方、数字档和例外预算。不要另建重复的局部扫描器、例外清单，或断言局部变量名、注释、声明顺序及 SCSS 循环写法。静态样式契约优先检查 Sass 编译后的声明，最终级联、交互与几何由浏览器验证。
+- 回归必须覆盖缺陷发生的层：组件使用组件 fixture，文档容器与示例组合使用真实文档页。将需要长期保护的临时页面检查整理成小型持久测试，不为每次任务新建运行框架。
+- 小任务运行相关文件和检查；共享样式按消费者类别扩展覆盖，合并 / 发布保留完整检查。主题、尺寸、RTL、窄屏、减少动画按影响选择，不为无关改动机械展开全部维度的笛卡尔积。
+- 同一最终态不重复运行已包含在聚合命令中的检查。后续只改文档时，重跑文档相关检查，不重跑未受影响的组件单测或库构建；构建后再改源码时，相关生产页面证据必须重新构建后取得。失败重跑仅作诊断，保留首次结果，不以多次分散通过拼成一次全绿。
+- 行为与整页 axe 审计使用独立测试；独立审计标记 `@a11y`，默认命令及 CI 仍执行。定向行为诊断可用 `--grep-invert @a11y`，但必须报告排除了审计；完整无障碍验收不能使用该过滤。既有对比度失败独立跟踪，不关闭规则、不自动转为跳过。
+- 非动效测试等待实际状态、定位或有限动画完成，不固定 sleep。逐帧回归可保留有说明的采样时间窗；不要用关闭 trace 或放宽断言替代排障。
+- 日常任务结果保留在任务回复、PR 和运行报告中，不要求每个微调向本文件追加历史条目。下方历史记录原样保留；仅在需要长期保存的阶段性验收或发布时补充有明确源码版本的记录。
+
+### 浏览器运行与报告隔离
+
+组件浏览器使用 `packages/react/playwright.config.ts`；每次调用自动创建独立的 `.quality/browser/<run>/`，构建、结果、HTML、JSON 和截图均隔离。可以用 `LEAF_TEST_RUN` 指定唯一运行名；并行调用还必须分别设置 `LEAF_TEST_PORT`，默认组件端口为 4178、文档端口为 4190。服务器不复用，端口占用时明确失败，不连接未知页面或停止其他任务的服务。
+
+PowerShell 定向示例（运行名不要与其他活动调用重复）：
+
+```powershell
+$env:LEAF_TEST_PORT = '4193'
+$env:LEAF_TEST_RUN = 'button-review'
+pnpm --filter @ifhover/leaf-ui test:browser button.spec.ts --project=chromium
+Remove-Item Env:LEAF_TEST_PORT, Env:LEAF_TEST_RUN
+```
+
+真实文档回归先对最终源码执行一次 `pnpm build:docs`，再运行 `pnpm test:docs:browser`；后者只启动生产预览，不隐式再次构建，也不能用旧产物冒充当前源码。测试位于 `tests/docs/`，包含 Badge 基础 / 红点的双语、浅深、宽窄屏容器几何，以及源码展开、收起和复制；CI 复用同一任务中 `pnpm build` 的文档产物。
+
+### 检查入口
+
+在仓库根目录执行：
+
+```bash
+pnpm check
+pnpm build
+pnpm --filter @ifhover/leaf-ui measure:bundle
+pnpm --filter @ifhover/leaf-ui exec playwright install
+pnpm --filter @ifhover/leaf-ui test:browser
+```
+
+`pnpm check` 包含发布记录规则、颜色契约、Biome / SCSS 格式、组件与文档类型、单元行为、版本文档、Skill 查询和测试工具自身的测试。`pnpm build` 验证模块、类型、独立样式、服务端渲染与双语文档构建。文档 API 生成与语言资源维护见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+
+GitHub 的 Component quality 工作流在 PR、main 推送及手动触发时运行：普通检查和生产构建，复用构建产物执行真实文档回归；锁定工作区的 React 19 类型与单元测试由普通检查覆盖，额外任务验证 React 18；Chromium / Firefox / WebKit 保留完整组件浏览器测试。浏览器任务使用独立的 Vite 生产构建与 preview，防止 HMR 在运行中改变测试页面。
+
+### 行为与兼容范围
+
+- 复合字段的整体 required、唯一 id、标签关联、FormData / reset；表单禁用与业务只读的全部提交路径。
+- 远程选中标签保留，懒加载缓存版本切换与过期请求取消；异步校验、Schema 接管和服务端错误聚焦。
+- 日期显示 / 解析与标准表单值分离；非法日期、业务禁用时间的输入 / 点击 / 键盘一致性；精确十进制字符串运算。
+- 嵌套弹层的 Escape、Tab、初始 / 返回焦点、ShadowRoot 的事件路径、方向与区域主题。
+- Drawer / Splitter 的指针和键盘调整；轮播滑动、inactive slide 的 inert；模拟 PointerEvent 触控和 composition 输入序列。
+- 倒计时、异步命令、上传及取消请求的卸载清理；SSR 确定初值和公开 ESM / CommonJS 入口。
+
+真实浏览器中的 axe 检查启用颜色对比度；jsdom 中不检查无法可靠计算的颜色。自动化没有替代实际 NVDA / VoiceOver 验收，也不能等同于真实设备的输入法和手势测试。重要发布仍需人工验证阅读顺序、提示播报、焦点可见性和触屏体验。
+
+### 主题与视觉
+
+浏览器固定页面检查 light / dark、三种尺寸、禁用 / 错误、375px 窄屏、RTL、减少动画与组件 token。断言覆盖控件高度、方向、布局溢出、色块尺寸与过渡时长，并在报告中附完整截图。
+
+这些是视觉契约断言与截图审查，尚未建立逐像素黄金截图比对。视觉改动需要检查生成截图，不能把截图生成成功视为设计验收。
+
+动效验收使用 `tests/browser/motion.spec.ts`：实测选中指示条、快速二次重排、加载按钮宽度与名称、关闭/嵌套恢复/系统减少动画、浮层主题以及弹窗内容高度与输入状态。使用当前 `tests/browser` fixture 和对应文档示例复现；[DESIGN-REFRESH.md](../../DESIGN-REFRESH.md) 仅是历史覆盖记录，不是当前尺寸或状态规则。
+
+### 万级数据与体积
+
+10,000 项 Select / Tree 检查搜索、末节点键盘定位与选中回显，打开时 DOM 项目少于 60；VirtualList 检查可变高度的测量、数据排序后焦点与滚动位置保留。耗时附在 `large-data-timings` 中，供同类设备对比，不作为所有应用的性能保证。
+
+生产体积使用 esbuild、tree shaking 与 gzip level 9；包含组件和运行依赖，React / ReactDOM 外置。当前预算以 `scripts/measure-bundle.mjs` 的可执行断言为准，不从下方历史测量抄录。Button 独立入口不得带入无关引擎，根入口和普通表单不得带入可选 TanStack Table 引擎。调整预算必须附构建报告和原因。
+
+体积报告位于 `.quality/bundle-report.json`；浏览器报告位于 `.quality/browser/<run>/report.json`、`html/` 与 `results/`，CI 同时保存 artifacts。截图通过 Playwright 的每用例输出路径保存，避免并行或重试覆盖；生成产物不提交 Git。
+
+## 历史验收记录
+
+以下记录保留执行日期、范围和未完成项，不是新增实现的规范模板。
+
+## 实底按钮不自动补对比边框（2026-10-23，0.9.0 开发分支）
+
+按用户要求减少自动干预，Button solid 默认使用透明边框，不再消费 primary-fill-border，也不根据白色等基色与表面的对比增加深色描边。显式全局 / 组件 / 状态边框和系统 forced-colors 保留；日期选中、Radio 等控件的指示边界不变。颜色与设计规范及双语主题指南同步说明角色边界，审计报告从扫描器重新生成，没有新增全局变量或放宽基线。
+
+完整 `pnpm check`、`pnpm build` 通过，单测仍为 71 文件 / 541 项，颜色契约 55 项。Chromium / WebKit 定向 **12/12 通过**，覆盖白色主色在浅深主题下的普通 / hover / 按下 / 禁用 / loading、黑色主色、实底按下、显式组件与 active 边框，以及原有选中指示边界。初次验收发现新 fixture 错把 active 配置嵌入不支持的 states 属性；修正为现有公共 active 字段后重跑全部定向用例通过，没有更改产品断言。日志见 `.quality/solid-button-border-check-final.log`、`.quality/solid-button-border-build-final.log`、`.quality/solid-button-border-browser-final.log` 与同名 JSON。
+
+另在生产文档预览的“修改基色”示例中实际将 primary 改为 #ffffff，确认背景保持白色、边框透明，默认白字不被自动改写，手动黑字切换生效；已查看 `.quality/solid-button-white-docs.png`。本次未重跑全库浏览器、axe、Firefox、真实读屏或 Figma；前次完整回归的固定白字对比度失败仍为已知限制，不能以定向通过替代全库无障碍验收。未提交、推送或发布。
+
+## 原色明暗派生与共享底板（2026-10-23，0.9.0 开发分支）
+
+本条接续下一条 JS 配置精简记录，替代其中语义 `100`–`900` 和颜色页 54 个色块的阶段性方案。五个语义 family 保留原色，分别只生成 `light-3/7/9`、`dark-1/3/7/9` 七档 sRGB 混白 / 黑色；neutral 独立保留九档。语义数字档与 Tailwind 旧数字映射不再兼容输出。普通表面 ink 和指示先尝试原色，只有不足时才选共享派生色；实底仍使用原基色，on-* 继续固定默认白色，显式覆盖优先。
+
+分段 Tabs / ColorPicker 格式轨道、内嵌 Card 外底、Modal 与卡片式日期面板直接共用 surface-muted，避免二次混色改变指定值；选中滑块和内部内容仍使用 surface。新增共享底板浏览器 fixture 覆盖精确 `rgb(244, 243, 239)`、JS 更新、嵌套主题、Portal 和显式组件覆盖。
+
+每模式实际生成颜色由 119 项降至 109 项，全局登记由 120 项降至 110 项；35 个语义派生色加中性九档共 44 个色块。扫描覆盖 327 个源码文件、10 条光学 recipe、9 个字段消费者，登记债务与无 fallback 风险均为 0，保留 surface-alpha-80 的已有 fallback 警告。组件直接选语义明暗档会失败，不通过宽松扩充基线放行。
+
+完整 `pnpm check`、`pnpm build` 通过：71 个单测文件 / 541 项、13 项发布规则、34 项文档 / Tailwind、9 项 Skill、55 项颜色契约，以及 Biome、SCSS 和工作区类型。最终示例调整后另行通过 `pnpm build:docs`。日志为 `.quality/semantic-shades-check-final.log`、`.quality/semantic-shades-unit.log`、`.quality/semantic-shades-build.log` 和 `.quality/semantic-shades-docs-build-final.log`。设计资源连续导出两次、9 个产物哈希一致，资源校验和脚本语法检查通过；双语主题变量 API 连续生成两次内容相同。
+
+Chromium 对 Button、Card、共享底板、日期 / 时间面板、语义色、Tag 和主题预设定向回归 **78/78 通过**。对应 WebKit 为 **75 通过、2 跳过、1 失败**；两项跳过分别为不支持的 forced-colors 和仅 Chromium 保存的共享底板截图。失败是深色 danger-outline 按下边框组跑实际值 `rgb(230, 114, 102)` 与期望 `rgb(245, 197, 192)` 不同，单独复跑 **1/1 通过**，未复现，未改断言或放宽产品契约；保留组跑失败，不宣称该组全绿。报告为 `.quality/semantic-shades-chromium-targeted.json`、`.quality/semantic-shades-webkit-targeted.json` 与 `.quality/semantic-shades-webkit-outline-dark-rerun.json`。已查看共享底板宽 / 窄屏和深色截图；显式指定与主题亮暗冲突的底板仅验证精确绘制，不代表自定义组合符合可读性要求。
+
+随后完整 Chromium 为 **366/372 通过，6 项失败**，3.5 分钟。失败项仍是 component-defaults 浅 / 深、Menu 中 / 英、surfaces 和 Table 的 axe color-contrast 检查，没有关闭对比度规则或跳过失败用例；默认绿色 `#1e964f` 配白字约 3.79:1，低于普通文字的 4.5:1。保持用户确认的原色与固定白字契约，手动黑字入口可用，但不把产品选择描述为无障碍通过。完整日志与报告为 `.quality/semantic-shades-chromium-full.log` 和同名 JSON。
+
+颜色页生产预览在 Chromium 检查中英文、浅深主题和 1440 / 390px 共 **8/8 组通过**。每组检查六行 / 44 个色块、键盘激活、六种基色及共享底板的七个实际 JS 更新、原色实底、白字 / 黑字切换、Card / Tabs 精确底板、无页面异常和整页横向溢出。实际切换站点语言与外观，示例按说明固定浅色。已查看中文桌面浅色与英文手机深色最终截图，证据为 `.quality/semantic-shades-docs-visual.json` 及同前缀 PNG。
+
+未执行实际 Figma 导入、真实读屏、真机触控、Firefox 或完整 WebKit；不宣称固定白字的任意基色均满足文字对比度。本轮不新增逐像素黄金截图，保留 0.9.0 分支、组件版本 0.8.1，未提交、推送、发布或部署。
+
+## JS 颜色配置与变量精简（2026-10-23，0.9.0 开发分支）
+
+本条替代后文历史记录中的 DOM 颜色解析、自动黑白实底前景、完整百分比兼容矩阵和颜色页高级参考约定。保留基色、共享色阶与用途角色；每模式实际生成颜色变量由 225 项降至 119 项，静态全局登记由 226 项降至 120 项，光学 recipe 由 118 条降至 10 条。退役的公开百分比变量及替代方向见 [COLOR-MIGRATION.md](COLOR-MIGRATION.md)，不是像素等价的兼容别名。
+
+ConfigProvider、Tag、Badge 不再通过探针、canvas、computed color 或 MutationObserver 解析颜色。JS 主题配置更新负责重新派生；CSS 表达式在 SSR / 客户端保持表达式，由浏览器原生绘制，不再根据 color-scheme 字符串猜测外观。增加 neutralColor 及三种缺失的 on*Color 配置入口。所有实底 on-* 默认白色，显式黑色或其他字色优先；普通表面 / 浅底 ink 的对比选档独立保留。自定义 Tag 同样使用当前 neutral、实际 surface 和显式前景配置。
+
+修复实底按下反向变亮、黑色主色在暗面上的描边按下边界消失、具体 surface 与中性角色映射不一致、indicator 覆盖未传播及基色来源错误。扫描器补齐现代固定颜色、命名颜色及引号内双斜线处理；共享 tokens.scss 的 8 处光学阴影进入精确例外预算，不再整体免检。静态检查覆盖 326 个源码文件、9 个字段家族消费者，未分类债务和无 fallback 风险均为 0；surface-alpha-80 的历史 fallback 警告仍保留。
+
+中英文颜色页只保留六条色带、具体基色值和变量名，以及六个带可见标签的 ConfigProvider 可编辑基色控件和白字 / 黑字示例。移除用途场景和高级参考；同步主题 / 配置 / API 说明及设计资源。API 同步器修复表格起始偏移错误，保留前后说明、避免重复和残缺表格，LF / CRLF 与重复执行均有回归；双语主题变量页连续生成两次内容哈希相同。
+
+`pnpm check` 通过：71 个单测文件 / 539 项、13 项发布规则、34 项文档 / Tailwind、9 项 Skill、53 项颜色契约；Biome、SCSS 格式与工作区类型检查通过。完整 `pnpm build`、后续双语文档重建、设计 JSON / SVG / Figma 资源校验通过。日志为 `.quality/color-simplification-check-final.log`、`.quality/color-simplification-build-final.log`、`.quality/color-simplification-docs-build-final.log` 与 `.quality/color-simplification-design-final.log`。
+
+完整 Chromium 回归为 **357/363 通过，6 项失败**，不是全绿。六项均为 component-defaults（浅 / 深）、Menu（中 / 英）、surfaces 和 Table 的 axe color-contrast 检查；默认绿色 #1e964f 配固定白字约为 3.79:1，低于普通文字的 4.5:1 门槛。按产品要求保留白字，没有关闭 axe、跳过这些用例或改暗默认基色。记录为 `.quality/color-simplification-chromium-final.log` 和同名 JSON。初跑的旧数值解析及自动黑字断言已修正，额外 quality / theme-presets 回归 18/18 通过，见 `.quality/color-simplification-browser-retest.log`。
+
+随后修正自定义 Tag 的 neutral / 实际表面继承，再对 Button、语义颜色、Tag、深色主色和警告色运行 Chromium / WebKit 定向矩阵，**73 项通过、1 项跳过**（WebKit 不支持的 forced-colors），包含 JS 基色更新、手动黑字、按下亮度方向、描边可见性、表达式、软底可读性与显式覆盖。不是完整 WebKit 全库回归；记录为 `.quality/color-simplification-targeted-final.log` 和同名 JSON。
+
+颜色页 Chromium 实测中英文、浅深主题、1440 / 390px 共 **8/8 组**：每组验证 54 个色块、6 个准确基色、键盘选档、六种基色的实际 JS 更新、黑字切换、无整页横向溢出和页面异常。通过实际语言 / 外观切换进入对应状态，不用系统媒体偏好冒充站点深色。已查看最终中文桌面浅色和英文手机深色截图；记录为 `.quality/color-simplification-docs.json`、同前缀日志及 PNG。
+
+未重跑 Firefox、完整 WebKit、React 18 全套、真实读屏、真机触控或 Figma 实际导入；没有新增逐像素截图基线。本轮保留在 0.9.0 分支，组件版本仍为 0.8.1；未提交、推送、npm 发布或文档部署。
+
+## 共享色阶与用途映射（2026-10-23，0.9.0 开发分支）
+
+五种语义基色和 neutral 共用六条固定 OKLCH 明度的 `100`–`900` 色带，浅深模式不再各定义一套品牌 / 状态基色。输入原色独立保留，不强制成为 500；文字、表面、边框和 `soft` / `border` / `ink` 等角色统一选档。实底内容仍按实际基色选择黑 / 白，显式覆盖优先。旧比例变量继续兼容，光晕、遮罩、媒体及表格局部公式保留精确例外；组件不得绕过角色自行选择数字档或复制近似颜色。
+
+共享配方与自定义 Tag 均消费同一角色生成器。Checkbox、Radio、Switch、Calendar / DatePicker 选中日和 Steps 完成图标使用原 primary 实底配 `on-primary`；必要的可见边界单独使用 indicator，DatePicker 保留透明边框与原有几何。Table 的 `primarySoftColor` 只覆盖选中表面，拖拽 / 展开等普通动作保持中性反馈。按钮按下色和文字反馈从现有色阶选择，未为了统一色阶取消交互反馈或降低对比门槛。
+
+补齐 opaque HWB 输入的 SSR 表达式和浏览器解析；解析结果绑定颜色输入签名，避免旧主题结果覆盖新主题首个 layout commit。自定义 Tag 仅解析 primary 家族并缓存同步计算，不再为每个实例重复生成五个语义家族。`sources` 明确记录用途角色来源，不伪称所有色阶都有来源记录。
+
+颜色页改为六条可点击 / 键盘选择的色带、浅深并排的用途示意，以及默认折叠的高级参考；原色、所选档位、用途来源和兼容变量分开显示。字段示意使用真实共享 surface / border / text-muted，不展示虚构的彩色字段背景。兼容表使用完整 `deriveColors` 数据，现代分区使用 `resolveColorRoles`，有直接验证实际表格数据路径的回归测试。中英文主题指南、规范、Tailwind 3 / 4、静态 palette、DTCG / Tokens Studio、SVG 和 Figma 插件资源均同步。
+
+`pnpm check` 通过：72 个单测文件 / 538 项、13 项发布规则、35 项文档与 Tailwind、9 项 Skill、50 项颜色契约；Biome、SCSS 格式和工作区类型检查通过。静态检查覆盖 327 个源码文件、226 个全局定义 / 可选入口、118 个兼容 recipe 和 9 个字段家族消费者；未分类债务和无 fallback 风险均为 0，`surface-alpha-80` 的兼容 fallback 警告仍保留。日志为 `.quality/shared-scale-check-final.log`。
+
+`pnpm build` 与设计资源校验通过，含 81 份独立组件样式 / 浏览器入口、83 个公开 JS 子路径、ESM / CommonJS SSR、Rspack / Vite 样式裁剪及 200 份双语 AI 文档。设计校验逐项比较所有默认颜色与实际运行时结果，不再锁定过时的深色主色值。记录为 `.quality/shared-scale-build.log`。
+
+完整 Chromium 最终一次运行 **362/362 通过**，包含共享色阶、实际外观切换、组件与状态覆盖、表达式动态更新、HWB、自定义黑色实底选择控件与日期 / 步骤标签、Tag close 对比、字段一致性及全库交互回归。初跑 330/360 的旧断言、错误 fixture 输入及真实按下反馈 / 日期边界问题已分别修复；日志 `.quality/shared-scale-chromium.log` 与最终 `.quality/shared-scale-chromium-final.log` 均保留，不以分次通过冒充完整全绿。最终 JSON 为 `.quality/shared-scale-chromium-final.json`。
+
+颜色页 Chromium 覆盖中英文、浅深主题、1440 / 390px 共 **8/8 组**：每组检查 54 个色阶、6 次键盘选档、54 条用途映射、225 个无重复变量和 450 个参考色块与运行时一致；无整页横向溢出或页面异常。另实测将主色改为 `#ff6900` 后切换外观，确认原色和色阶跨模式不变。已查看最终中文桌面浅色与英文手机深色首屏截图，记录为 `.quality/shared-scale-docs-visual.json`、`.quality/shared-scale-docs-visual.log` 及同前缀 PNG。
+
+WebKit 针对语义、字段、跨家族、深色主色与警告色契约最终一次运行 **35/35 通过**，不是完整全库矩阵；记录为 `.quality/shared-scale-webkit.log` 与 `.quality/shared-scale-webkit.json`。Firefox 重新实测仍在启动阶段返回 `browserType.launch: spawn UNKNOWN`，未取得通过结果，记录为 `.quality/shared-scale-firefox.log`。
+
+本轮未运行完整 WebKit、React 18 全套、真实读屏、真机触控或 Figma 实际导入；没有新增逐像素截图基线比较。内容保留在 `0.9.0` 开发分支，组件包版本仍为 `0.8.1`；未提交、推送、npm 发布或文档部署。
+
+## 实底前景收敛与颜色页简化（2026-10-23，0.9.0 开发分支）
+
+五种 `on-*` 继续保留独立语义，但默认浅深主题统一引用共享黑色，不再为不同语义分别定义深绿、深红或近黑前景；自定义实色仍通过同一选择规则使用对比更高的黑 / 白。既有浅深基色、`*-ink` 可读彩色文字、显式前景与组件覆盖优先级保持不变。没有新增全局变量或配置字段，运行时每模式仍为 150 个色板变量；模式相同值允许共享，不为减少色差机械改变已有基色。
+
+颜色页从 10 张独立色卡改为 5 张实底 / 文字图标搭配卡，浅深模式明确标注，相同前景标注共用。默认只展示常用语义与中性角色；完整派生色带和完整变量表默认折叠。完整表逐项对应运行时变量；分隔线别名仅作为常用中性角色展示，不重复计入色板总数。中英文颜色 / 主题指南、强制用色规范、生成的 SCSS、设计 JSON / SVG / Figma 资源已同步。
+
+验证：`pnpm check` 通过，包括 70 个单测文件 / 513 项用例、32 项文档测试和 43 项颜色守卫；组件库构建与包产物检查、双语文档构建、设计资源检查通过。完整 Chromium **355/355** 通过，新增实际 Button / Tag / Badge / Switch 消费前景的浅深模式断言，日志为 `.quality/foreground-neutral-chromium.log`。静态守卫保留既有 `surface-alpha-80` fallback 警告，不把它报告为已消除。
+
+颜色页 Chromium 覆盖中英文、浅深主题、1440 / 390px 共 8 组：5 张核心卡、10 个真实模式搭配均与设计导出匹配，完整 150 个变量无遗漏 / 重复，300 个色块与显示值一致，默认折叠、键盘展开、无整页横向溢出、无页面异常。最终记录为 `.quality/foreground-docs-visual.json` 与同前缀截图；已查看中文桌面浅色和英文手机深色截图。WebKit 针对语义颜色和跨家族配方单次复核 **15/15** 通过，包含浅深实色控件前景消费、文本对比与显式覆盖隔离，日志为 `.quality/foreground-neutral-webkit.log`。
+
+本轮没有重跑 Firefox、完整 WebKit、React 18 全套、真实读屏、真机触控或 Figma 实际导入；不新增逐像素截图基线。没有升版、推送、npm 发布或正式文档部署。
+
 ## 全库颜色家族迁移与验收（2026-10-23，0.9.0 开发分支）
 
 本轮覆盖 81 个公共组件导出的源码用色责任（Table 与 TanStack 入口合并计数），清单见 [COLOR-MIGRATION.md](COLOR-MIGRATION.md)。字段、选项、状态标签、品牌 / 危险浅色反馈、分段轨道、画布、遮罩、日历与强调光晕使用有限共享配方；本身已有语义角色或继承组合的组件不再增加专属 token。Menu 外观、评分色、媒体背景、加载光泽和局部遮片保留有理由的精确例外。81 项源码责任审查不等于 81 项逐像素浏览器验收。
@@ -1001,44 +1170,9 @@ Chromium / WebKit 的按钮专项共 22 个实例，21 个经定向复测通过�
 
 本地按钮文档实际点击体验完成，确认白底描边按钮变色、外缘波纹和 40px 稳定高度；截图在根目录 `.quality/button-antd-preview.png`。中英按钮说明、设计指南与仓库设计标准同步。Firefox、本轮真机触控和读屏未复测。改动留在 codex/table 开发分支，未提交、发布 npm 或部署稳定站点。
 
-## 检查入口
+## 体积测量与预算调整记录（历史）
 
-在仓库根目录执行：
-
-```bash
-pnpm check
-pnpm build
-pnpm --filter @ifhover/leaf-ui measure:bundle
-pnpm --filter @ifhover/leaf-ui exec playwright install
-pnpm --filter @ifhover/leaf-ui test:browser
-```
-
-`pnpm check` 包含发布记录规则、Biome / SCSS 格式、组件与文档类型、单元行为、版本文档和 Skill 查询测试。`pnpm build` 验证模块、类型、独立样式、服务端渲染与双语文档构建。文档 API 生成与语言资源维护见 [DEVELOPMENT.md](DEVELOPMENT.md)。
-
-GitHub 的 Component quality 工作流在 PR、main 推送及手动触发时运行：普通检查和生产构建；React 18 / 19 的类型与单元测试；Chromium / Firefox / WebKit 的浏览器测试。浏览器任务使用独立的 Vite 生产构建与 preview，防止 HMR 在运行中改变测试页面。
-
-## 行为与兼容范围
-
-- 复合字段的整体 required、唯一 id、标签关联、FormData / reset；表单禁用与业务只读的全部提交路径。
-- 远程选中标签保留，懒加载缓存版本切换与过期请求取消；异步校验、Schema 接管和服务端错误聚焦。
-- 日期显示 / 解析与标准表单值分离；非法日期、业务禁用时间的输入 / 点击 / 键盘一致性；精确十进制字符串运算。
-- 嵌套弹层的 Escape、Tab、初始 / 返回焦点、ShadowRoot 的事件路径、方向与区域主题。
-- Drawer / Splitter 的指针和键盘调整；轮播滑动、inactive slide 的 inert；模拟 PointerEvent 触控和 composition 输入序列。
-- 倒计时、异步命令、上传及取消请求的卸载清理；SSR 确定初值和公开 ESM / CommonJS 入口。
-
-真实浏览器中的 axe 检查启用颜色对比度；jsdom 中不检查无法可靠计算的颜色。自动化没有替代实际 NVDA / VoiceOver 验收，也不能等同于真实设备的输入法和手势测试。重要发布仍需人工验证阅读顺序、提示播报、焦点可见性和触屏体验。
-
-## 主题与视觉
-
-浏览器固定页面检查 light / dark、三种尺寸、禁用 / 错误、375px 窄屏、RTL、减少动画与组件 token。断言覆盖控件高度、方向、布局溢出、色块尺寸与过渡时长，并在报告中附完整截图。
-
-这些是视觉契约断言与截图审查，尚未建立逐像素黄金截图比对。视觉改动需要检查生成截图，不能把截图生成成功视为设计验收。
-
-动效验收使用 `tests/browser/motion.spec.ts`：实测选中指示条、快速二次重排、加载按钮宽度与名称、关闭/嵌套恢复/系统减少动画、浮层主题以及弹窗内容高度与输入状态。可操作产品示例位于文档首页；视觉与覆盖清单见 [DESIGN-REFRESH.md](../../DESIGN-REFRESH.md)。
-
-## 万级数据与体积
-
-10,000 项 Select / Tree 检查搜索、末节点键盘定位与选中回显，打开时 DOM 项目少于 60；VirtualList 检查可变高度的测量、数据排序后焦点与滚动位置保留。耗时附在 `large-data-timings` 中，供同类设备对比，不作为所有应用的性能保证。
+以下为当时测量及预算变更背景，当前上限以脚本为准。
 
 生产体积使用 esbuild、压缩、tree shaking 与 gzip level 9。包含组件库和运行依赖；React / ReactDOM 外置。2026-10-06 设计与动效调整前的本机基线约为：
 

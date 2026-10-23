@@ -1,5 +1,7 @@
 # 2026-10 component audit implementation
 
+> Status: historical audit implementation record, not the current component specification. Follow [component development](DEVELOPMENT.md), [visual standards](../../DESIGN-STANDARDS.md) and [current quality requirements](QUALITY.md#当前验收规则); completion marks below apply only to the recorded scope.
+
 Scope: implement the 2026-10-05 audit, excluding Table / DataGrid and table scenarios. Keep native forms, static SCSS, the 34px control baseline and scoped ConfigProvider services.
 
 ## Work and acceptance

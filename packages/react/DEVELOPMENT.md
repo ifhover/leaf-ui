@@ -28,19 +28,23 @@ pnpm dev
 
 **默认单行控件高度是 34px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 28 / 40px）。不要在每个组件中重复建立不同的尺寸基准。
 
-公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。颜色遵守 [颜色系统规范](../../COLOR-SYSTEM.md)：组件优先使用共享语义角色与家族配方，派生公式集中维护并保证局部主题继承，不为组件自行增加近似比例色。
+公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。颜色遵守 [颜色系统规范](../../COLOR-SYSTEM.md)：组件优先使用共享用途角色，家族 recipe 只负责复用实现；派生公式集中维护并保证局部主题继承，不为组件自行增加近似比例色或颜色层。
 
-对外主题配置统一经过 ConfigProvider 的 theme：常用配置只有 primaryColor、borderRadius、controlHeight、fontSize、fontFamily、appearance 和 motion；高级覆盖放在 LeafThemeTokens。src/theme.ts 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致。新增 token 需维护映射、类型和中英 API；保持派生尺寸只需设置基础值，业务 CSS 只消费变量。
+### 颜色与主题接入
 
-主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前主色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色在 SSR 中保留表达式，浏览器中解析后参与对比度和交互色计算。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
+新增组件按 [新增组件的用色流程](../../COLOR-SYSTEM.md#新增组件的用色流程) 先确定绘制家族和状态角色；修改存量组件按 [修改已有组件的用色流程](../../COLOR-SYSTEM.md#修改已有组件的用色流程) 追溯来源、检查共享消费者。变量选择、定义归属、生成物、覆盖、准入和退役以 [颜色系统规范](../../COLOR-SYSTEM.md) 为唯一规则源，此处不重复选阶算法。
 
-Input 与 Select 聚焦或展开时共用主题色边框变体，无外圈；其他字段使用共享中性聚焦配方。普通状态的字段边框相同，校验状态保留语义色，显式组件状态覆盖优先。共享浮层的持久选中项默认使用灰底、正文色与勾选标记；导航和动作组件的语义覆盖按各自规则保留。Button 不添加点击波纹，默认使用描边外观；描边按钮带有一层轻微静止阴影，悬停时外观不变，按下时仅将边框加深为区域主题的 active 色，文字、背景和阴影保持不变；危险外观使用可读的危险文字色，静止边框使用危险基色，按下时边框加深为危险 active 色。显式组件状态覆盖优先；其他按钮外观悬停保持原样，按下时变色；危险链接按下保留可读文字色并显示下划线；键盘焦点使用中性轮廓，强制颜色模式保留可见焦点。
+对外主题配置统一经过 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`。`src/theme.ts` 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致；业务 CSS 只消费结果。不要在组件中增加 DOM 颜色监听或自动前景判断，不为每个状态公开新变量。新增配置必须同步实际消费、类型、中英 API 与测试。
+
+主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前映射角色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置，也不能把语义原色重新定义为 500；语义色按需派生 light-N / dark-N，中性色独立保留九档。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色保留表达式，语义明暗派生保留 sRGB color-mix，中性色阶无法解析时输出 relative OKLCH；服务端和客户端均不读 DOM 推断颜色或外观，不在 hydration 后替换数值。主题只通过 ConfigProvider 的 JS 配置更新。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
+
+字段聚焦、普通选项、Button 各外观和语义状态的具体视觉契约由 [设计标准](../../DESIGN-STANDARDS.md) 与 [颜色家族契约](../../COLOR-SYSTEM.md#视觉家族契约) 维护。复用家族时保留这些差异和显式状态覆盖，不因为统一实现而扩大交互变化范围。
 
 使用 leaf- 类名前缀。提供减少动态效果和强制颜色模式下的必要样式。组件样式不重置应用的全局元素。
 
 ## 交互动效
 
-视觉与动效调整的覆盖记录见 [DESIGN-REFRESH.md](../../DESIGN-REFRESH.md)。基础时间为 200ms，快速与布局过渡从当前区域的 `--leaf-motion-duration` 派生。悬停、选中、展开和状态变化使用不同的反馈；拖动、输入与虚拟窗口位置保持即时响应。
+视觉与动效以 [设计标准](../../DESIGN-STANDARDS.md) 为准，[DESIGN-REFRESH.md](../../DESIGN-REFRESH.md) 仅保留历史覆盖记录。基础时间为 200ms，快速与布局过渡从当前区域的 `--leaf-motion-duration` 派生。悬停、选中、展开和状态变化使用不同的反馈；拖动、输入与虚拟窗口位置保持即时响应。
 
 CSS keyframe 使用 `animation: var(--leaf-motion-animation, leaf-name …)`；`motion: false` 将它设为 none，内层 `motion: true` 用 initial 恢复 fallback。不要用父区域的后代选择器强行关闭嵌套区域。系统减少动态效果始终优先，浮层同步全部 `--leaf-*` 变量。
 
@@ -92,7 +96,7 @@ DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格
 
 每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
 
-开发分支将 Button 的公开 `ghost` 与 `soft` 外观移除，只保留 `solid`、`outline` 和 `link`，并以 `outline` 作为默认外观；次要操作直接使用默认描边按钮。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件仍由私有 ButtonControl 渲染，不开放到 Button 的公共 API。这项兼容性变化需纳入下次正式发布的迁移说明。
+开发分支将 Button 的公开 `ghost` 与 `soft` 外观移除，提供 `solid`、`outline`、`text` 和 `link`，并以 `outline` 作为默认外观；次要操作直接使用默认描边按钮。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件使用同一 `text` 外观；原生紧凑动作复用共享 text-action 配方，仅保留所属组件的尺寸与定位。这项兼容性变化需纳入下次正式发布的迁移说明。
 
 ## 扩展组件的实现
 
@@ -192,7 +196,7 @@ useFormValidation 不维护另一套字段数据仓库；接收原生 FormData�
 
 主题的 spacing、lineHeight、headingWeight、elevation、breakpoints 与 components 在 src/theme.ts 合并并产生内联变量。断点辅助函数 useBreakpoint 消费 breakpoints；Grid 的静态响应式 SCSS 使用固定阈值。新增组件级样式需消费对应 token，不能只生成未使用的变量。
 
-中文、英文与繁体中文资源和生成流程位于 config-provider；新增文本时运行：
+语言资源位于 `src/locales`，语言与合并规则见前文 [翻译资源](#翻译资源)；新增文本时运行：
 
 ```bash
 node packages/react/scripts/generate-locale.mjs
@@ -203,14 +207,14 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 
 ## 自动化质量检查
 
-颜色角色、共享配方和新增变量准入以 [颜色系统规范](../../COLOR-SYSTEM.md) 为准。`pnpm check:colors` 阻止未经登记的颜色增长，`pnpm test:colors` 验证检查器；浏览器 `field-color-contract.spec.ts` 比较 Input / Select 最终用色。存量债务在 `COLOR-AUDIT.md`，不得通过扩充基线绕过审查。
+颜色专项检查与同步范围见 [颜色系统规范](../../COLOR-SYSTEM.md#自动约束与验收)。[COLOR-AUDIT.md](COLOR-AUDIT.md) 是生成报告，不是颜色规则或允许新增债务的依据。
 
-验证范围、命令、兼容矩阵与体积基线见 [QUALITY.md](QUALITY.md)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
+验证范围、命令、兼容矩阵与体积要求见 [QUALITY.md 的当前规则](QUALITY.md#当前验收规则)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
 
 ## 设计资源与验收支持
 
-`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
+`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-scale.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
 
-`DESIGN-STANDARDS.md` defines state and geometry rules. `ACCESSIBILITY.md` records executed browser coverage and pending device/screen-reader acceptance. The public documentation includes a bilingual visual and interaction guide; detailed acceptance evidence stays in the repository. Automatic screenshot baseline comparison remains deferred.
+[设计资源说明](../../design/figma/README.md) 维护导出和 Figma 导入流程；[设计标准](../../DESIGN-STANDARDS.md) 定义状态与几何规则。[ACCESSIBILITY.md](ACCESSIBILITY.md) 仅记录对应日期的覆盖和未完成的设备 / 读屏验收，当前验收以 QUALITY 为准。公共文档保留双语视觉与交互指南，详细证据留在仓库。逐像素黄金截图比较尚未建立。
 
 开发分支移除独立 Segmented 及其类型、子路径和样式入口；统一使用 Tabs。迁移时将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 保持等宽铺满。只切换视图时可省略 `TabItem.children`，不会产生空面板或内容留白。卡片标签使用无外层容器的浅灰圆角选中底，间距为 4px，未选中文字使用更淡的中性色；需要灰色外轨和白色移动滑块时使用 `type="segmented"`，其圆角由外轨圆角减去实际内边距与边框派生，滑块使用不回弹的标准缓动直接移动。线形标签仅在选中项下方显示居中的短圆角指示条。Tabs 只保留顶部与底部布局，不再支持左右纵向标签；溢出时以悬停或键盘聚焦后显示的两侧描边箭头代替更多菜单。Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。这项兼容性变化需纳入下一次正式发布的迁移说明。

@@ -32,13 +32,25 @@ jobs:
           name: production-bundles
           path: packages/react/.quality
           include-hidden-files: true
+      - run: pnpm --filter @ifhover/leaf-ui exec playwright install --with-deps chromium
+      - run: pnpm test:docs:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docs-browser
+          include-hidden-files: true
+          path: |
+            packages/react/.quality/browser/*/html
+            packages/react/.quality/browser/*/results
+            packages/react/.quality/browser/*/report.json
 
   react-compatibility:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        react: ['18', '19']
+        # The checks job already covers the locked React 19 workspace.
+        react: ['18']
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -74,6 +86,6 @@ jobs:
           name: browser-${{ matrix.browser }}
           include-hidden-files: true
           path: |
-            packages/react/playwright-report
-            packages/react/test-results
-            packages/react/.quality/browser.json
+            packages/react/.quality/browser/*/html
+            packages/react/.quality/browser/*/results
+            packages/react/.quality/browser/*/report.json
