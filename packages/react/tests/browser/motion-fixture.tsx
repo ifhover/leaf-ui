@@ -45,15 +45,29 @@ export function MotionFixture() {
   return (
     <div className="motion-fixture">
       <h1>Motion acceptance</h1>
+      <div data-testid="text-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+        <Input aria-label="Text action input" allowClear defaultValue="Clear me" />
+        <Select
+          aria-label="Text action select"
+          allowClear
+          defaultValue="one"
+          options={[{ value: 'one', label: 'One' }]}
+        />
+      </div>
       <Button onClick={() => setEnabled(!enabled)}>Toggle motion</Button>
       <ConfigProvider
         data-testid="motion-scope"
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
         <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-          {(['solid', 'outline', 'link'] as const).map((variant) => (
+          {(['solid', 'outline', 'text', 'link'] as const).map((variant) => (
             <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
               {variant}
+            </Button>
+          ))}
+          {(['text', 'link'] as const).map((variant) => (
+            <Button key={variant} danger variant={variant} data-testid={`press-danger-${variant}`}>
+              Danger {variant}
             </Button>
           ))}
           <ButtonGroup attached>
@@ -79,7 +93,11 @@ export function MotionFixture() {
               components: {
                 Button: {
                   hover: { borderColor: '#a31010' },
-                  active: { color: '#12695f', borderColor: '#7654c6' },
+                  active: {
+                    color: '#12695f',
+                    borderColor: '#7654c6',
+                    shadow: '0 2px 4px rgb(0 0 0 / 0.2)',
+                  },
                 },
               },
             }}

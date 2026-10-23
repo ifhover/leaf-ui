@@ -82,20 +82,8 @@
     margin-inline-end: 4px;
     border: 0;
     border-radius: 4px;
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-    &:hover {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-surface-muted);
-    }
-    &:active {
-      transform: scale(0.9);
-    }
+
+    @include mixins.text-action;
   }
   &__panel {
     box-sizing: border-box;
@@ -390,4 +378,9 @@
 
 .leaf-color-picker__panel {
   @include mixins.floating-paint(color-picker);
+}
+
+.leaf-floating.leaf-color-picker__panel,
+.leaf-floating.leaf-color-picker__gradient {
+  @include mixins.field-popup(color-picker);
 }

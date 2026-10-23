@@ -1,5 +1,4 @@
 @use '../styles/mixins' as mixins;
-@use '../styles/geometry' as geometry;
 @use '../shared/selection';
 .leaf-tree-select {
   @include mixins.field('tree-select');
@@ -69,19 +68,8 @@
     padding: 0;
     border: 0;
     border-radius: 3px;
-    color: var(--leaf-color-text-muted);
-    background: transparent;
-    cursor: pointer;
-    transition:
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted);
-      color: var(--leaf-color-text);
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
+
+    @include mixins.text-action;
   }
   &__clear {
     inset-inline-end: 30px;
@@ -108,16 +96,10 @@
     );
   }
   &__panel {
-    @include geometry.inset-corners(
-      --leaf-tree-select-option-radius,
-      var(--leaf-surface-radius),
-      var(--leaf-surface-padding-top),
-      var(--leaf-surface-padding-right),
-      var(--leaf-surface-padding-bottom),
-      var(--leaf-surface-padding-left),
-      var(--leaf-surface-border)
-    );
-    --leaf-tree-option-radius: var(--leaf-tree-select-option-radius);
+    --leaf-tree-option-radius: var(--leaf-floating-option-radius);
+    .leaf-tree {
+      color: var(--leaf-component-tree-color, inherit);
+    }
     .leaf-tree__toggle {
       flex-basis: 24px;
       width: 24px;
@@ -130,7 +112,7 @@
       min-height: var(--leaf-current-control-height);
       padding-block: min(3px, max(0px, calc((var(--leaf-current-control-height) - 24px) / 2)));
       margin-block: 0;
-      border-radius: var(--leaf-tree-select-option-radius);
+      border-radius: var(--leaf-tree-option-radius);
       white-space: nowrap;
     }
   }
@@ -166,6 +148,7 @@
   --leaf-current-font-size: var(--leaf-font-size-lg);
 }
 
-.leaf-tree-select__panel {
+.leaf-floating.leaf-tree-select__panel {
   @include mixins.floating-paint(tree-select);
+  @include mixins.field-popup(tree-select);
 }

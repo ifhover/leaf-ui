@@ -1,15 +1,5 @@
-import { expect, type Locator, test } from '@playwright/test';
-
-async function backgroundColor(locator: Locator) {
-  return locator.evaluate((node) => {
-    const context = document.createElement('canvas').getContext('2d');
-    if (!context) throw new Error('Canvas context unavailable');
-    context.fillStyle = getComputedStyle(node).backgroundColor;
-    context.fillRect(0, 0, 1, 1);
-    const [red = 0, green = 0, blue = 0, alpha = 0] = context.getImageData(0, 0, 1, 1).data;
-    return [red, green, blue, alpha];
-  });
-}
+import { expect, test } from '@playwright/test';
+import { colorChannels as backgroundColor, colorChannels as tokenColor } from './helpers/paint';
 
 test('card dialog uses a muted canvas, an inset content surface and aligned sections', async ({
   page,
@@ -21,9 +11,11 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
   await expect(dialog).toHaveClass(/leaf-modal--card/);
 
-  expect(await backgroundColor(dialog)).toEqual([249, 249, 249, 255]);
+  expect(await backgroundColor(dialog)).toEqual(
+    await tokenColor(dialog, '--leaf-color-surface-muted'),
+  );
   const body = dialog.locator('.leaf-modal__body');
-  expect(await backgroundColor(body)).toEqual([255, 255, 255, 255]);
+  expect(await backgroundColor(body)).toEqual(await tokenColor(body, '--leaf-color-surface'));
 
   const metrics = await dialog.evaluate((node) => {
     const box = (selector: string) =>
@@ -100,7 +92,7 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
     0,
   );
   expect(metrics.titleFontSize).toBe('14px');
-  expect(metrics.titleFontWeight).toBe('600');
+  expect(metrics.titleFontWeight).toBe('700');
   expect(metrics.titleLineHeight).toBe('22px');
   expect(metrics.closeIcon?.width).toBeCloseTo(16, 0);
   expect(metrics.closeIcon?.height).toBeCloseTo(16, 0);
@@ -116,7 +108,7 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
     0,
   );
   const closeButton = dialog.locator('.leaf-modal__close');
-  await expect(closeButton).toHaveCSS('border-radius', '6px');
+  await expect(closeButton).toHaveCSS('border-radius', '4px');
   const restingBackground = await backgroundColor(closeButton);
   expect(restingBackground).toEqual([0, 0, 0, 0]);
   const hoverBackground = await closeButton.evaluate((node) => {
@@ -159,12 +151,12 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
   await page.mouse.wheel(0, 280);
   await expect.poll(() => viewport.evaluate((node) => node.scrollTop)).toBeGreaterThan(80);
   expect(await body.boundingBox()).toEqual(bodyBox);
-  expect(await backgroundColor(body)).toEqual([255, 255, 255, 255]);
+  expect(await backgroundColor(body)).toEqual(await tokenColor(body, '--leaf-color-surface'));
   await viewport.evaluate((node) => {
     node.scrollTop = 0;
   });
   await dialog.screenshot({
-    path: `.quality/picker-card-dialog-${testInfo.project.name}.png`,
+    path: test.info().outputPath(`picker-card-dialog-${testInfo.project.name}.png`),
   });
 });
 
@@ -176,7 +168,9 @@ test('plain dialog shares the canvas and aligns header and footer insets', async
   await page.getByRole('button', { name: 'Open plain dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Plain dialog', exact: true });
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
-  expect(await backgroundColor(dialog)).toEqual([249, 249, 249, 255]);
+  expect(await backgroundColor(dialog)).toEqual(
+    await tokenColor(dialog, '--leaf-color-surface-muted'),
+  );
 
   const metrics = await dialog.evaluate((node) => {
     const box = (selector: string) =>
@@ -222,7 +216,7 @@ test('plain dialog shares the canvas and aligns header and footer insets', async
     0,
   );
   await dialog.screenshot({
-    path: `.quality/picker-plain-dialog-${testInfo.project.name}.png`,
+    path: test.info().outputPath(`picker-plain-dialog-${testInfo.project.name}.png`),
   });
 });
 
@@ -269,10 +263,14 @@ test('all date and time pickers share the card panel preset and footer alignment
     const panel = page.locator(item.panel).last();
     await expect(panel).toBeVisible();
     await expect(panel).toHaveClass(/leaf-picker-panel--card/);
-    expect(await backgroundColor(panel)).toEqual([249, 249, 249, 255]);
+    expect(await backgroundColor(panel)).toEqual(
+      await tokenColor(panel, '--leaf-color-surface-muted'),
+    );
 
     const surface = panel.locator(item.surface);
-    expect(await backgroundColor(surface)).toEqual([255, 255, 255, 255]);
+    expect(await backgroundColor(surface)).toEqual(
+      await tokenColor(surface, '--leaf-picker-card-surface'),
+    );
     const geometry = await panel.evaluate((node, surfaceSelector) => {
       const panelBox = node.getBoundingClientRect();
       const surfaceBox = node.querySelector<HTMLElement>(surfaceSelector)?.getBoundingClientRect();
@@ -296,7 +294,7 @@ test('all date and time pickers share the card panel preset and footer alignment
       expect(geometry.footerRight).toBeCloseTo(geometry.surfaceRight ?? 0, 0);
     }
     await panel.screenshot({
-      path: `.quality/picker-${slug}-${testInfo.project.name}.png`,
+      path: test.info().outputPath(`picker-${slug}-${testInfo.project.name}.png`),
     });
     await page.keyboard.press('Escape');
     await expect(panel).toBeHidden();
@@ -317,10 +315,12 @@ test('card picker panels stay contained in dark RTL layouts', async ({ page }, t
     expect(bounds?.y ?? -1).toBeGreaterThanOrEqual(0);
     expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(375);
     expect((bounds?.y ?? 0) + (bounds?.height ?? 0)).toBeLessThanOrEqual(812);
-    expect(await backgroundColor(panel.locator(item.surface))).toEqual([28, 28, 28, 255]);
-    expect(await backgroundColor(panel)).not.toEqual([28, 28, 28, 255]);
+    const surface = panel.locator(item.surface);
+    const surfaceColor = await tokenColor(surface, '--leaf-picker-card-surface');
+    expect(await backgroundColor(surface)).toEqual(surfaceColor);
+    expect(await backgroundColor(panel)).not.toEqual(surfaceColor);
     await panel.screenshot({
-      path: `.quality/picker-${slug}-dark-rtl-${testInfo.project.name}.png`,
+      path: test.info().outputPath(`picker-${slug}-dark-rtl-${testInfo.project.name}.png`),
     });
     const viewport = panel.locator('.leaf-floating__viewport');
     const scrollMetrics = await viewport.evaluate((node) => ({

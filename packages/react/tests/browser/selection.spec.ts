@@ -51,6 +51,91 @@ for (const appearance of ['light', 'dark']) {
       await page.goto(`/?fixture=selection&theme=${appearance}`);
     });
 
+    for (const custom of [false, true]) {
+      test(`Select and trees share row-local feedback${custom ? ' with nested overrides' : ''}`, async ({
+        page,
+      }, testInfo) => {
+        if (custom) await page.setViewportSize({ width: 390, height: 900 });
+        await page.goto(`/?fixture=selection&theme=${appearance}${custom ? '&custom' : ''}`);
+        const menu = page.getByRole('navigation', { name: 'Palette reference' });
+        const menuSelected = menu.getByRole('menuitem', { name: 'Menu Alice' });
+        const menuCandidate = menu.getByRole('menuitem', { name: 'Menu Bob' });
+        expect((await menuFeedback(menuSelected)).background).toBe('rgba(0, 0, 0, 0.08)');
+        await page.getByRole('combobox', { name: 'Selected person', exact: true }).click();
+        const reference = page.locator('.leaf-select__panel');
+        const fullInk = (await paint(reference.getByRole('option', { name: 'Alice', exact: true })))
+          .color;
+        const ordinaryInk = (
+          await paint(reference.getByRole('option', { name: 'Bob', exact: true }))
+        ).color;
+        expect(ordinaryInk).not.toBe((await paint(menuCandidate)).color);
+        await page.keyboard.press('Escape');
+        const tree = page.getByRole('tree', { name: 'Selected tree', exact: true });
+        const treeSelected = tree.locator('.leaf-tree__row[data-selected]');
+        const treeCandidate = tree.locator('.leaf-tree__row').last();
+        await expect(treeSelected).toHaveCSS('color', fullInk);
+        await expect(treeCandidate).toHaveCSS('color', ordinaryInk);
+        await expect(tree.locator('.leaf-tree__highlight')).toHaveCount(0);
+        await treeCandidate.hover();
+        await expect(treeCandidate).toHaveCSS('color', fullInk);
+        await expect
+          .poll(() => menuFeedback(treeCandidate))
+          .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
+        await expect
+          .poll(() => menuFeedback(treeSelected))
+          .toEqual({ background: 'rgba(0, 0, 0, 0)', opacity: 1 });
+        await expect(treeSelected.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '1');
+        for (const [label, panelSelector, selectedSelector, candidateSelector] of [
+          [
+            'Selected person',
+            '.leaf-select__panel',
+            '[role="option"][aria-selected="true"]',
+            '[role="option"][aria-posinset="2"]',
+          ],
+          [
+            'Selected tree person',
+            '.leaf-tree-select__panel',
+            '.leaf-tree__row[data-selected]',
+            '.leaf-tree__row:not([data-selected])',
+          ],
+        ] as const) {
+          const input = page.getByRole('combobox', { name: label, exact: true });
+          await input.click();
+          const panel = page.locator(panelSelector);
+          const selected = panel.locator(selectedSelector);
+          const candidate = panel.locator(candidateSelector);
+          await expect(selected).toHaveCSS('color', fullInk);
+          await expect(candidate).toHaveCSS('color', ordinaryInk);
+          await expect(
+            panel.locator('.leaf-floating__highlight, .leaf-tree__highlight'),
+          ).toHaveCount(0);
+          await candidate.hover();
+          await expect(candidate).toHaveCSS('color', fullInk);
+          await expect
+            .poll(() => menuFeedback(candidate))
+            .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
+          await expect
+            .poll(() => menuFeedback(selected))
+            .toEqual({ background: 'rgba(0, 0, 0, 0)', opacity: 1 });
+          await page.mouse.down();
+          await expect(candidate).toHaveCSS('color', fullInk);
+          await page.mouse.move(0, 0);
+          await page.mouse.up();
+          await selected.hover();
+          await expect(selected).toHaveCSS('color', fullInk);
+          if (panelSelector === '.leaf-select__panel') {
+            const disabled = panel.getByRole('option', { name: 'Disabled', exact: true });
+            await expect(disabled).toHaveCSS(
+              'color',
+              await tokenColor(panel, '--leaf-color-text-muted'),
+            );
+          }
+          await page.screenshot({ path: testInfo.outputPath(`${label.replaceAll(' ', '-')}.png`) });
+          await input.press('Escape');
+        }
+      });
+    }
+
     test('focused inputs and open selects use the theme border without a halo', async ({
       page,
     }) => {
@@ -100,7 +185,7 @@ for (const appearance of ['light', 'dark']) {
       await expect(selected).toHaveAttribute('aria-pressed', 'true');
     });
 
-    test('selected popup options keep one moving highlight and a persistent check', async ({
+    test('selected popup options keep soft row-local feedback and a persistent check', async ({
       page,
     }) => {
       const select = page.getByRole('combobox', { name: 'Selected person' });
@@ -112,14 +197,19 @@ for (const appearance of ['light', 'dark']) {
       );
       await expect(trigger).toHaveCSS('outline-style', 'none');
       const panel = page.locator('.leaf-select__panel');
-      const marker = panel.locator('.leaf-floating__highlight');
+      await expect(panel.locator('.leaf-floating__highlight')).toHaveCount(0);
+      await expect(panel).toHaveCSS(
+        'border-radius',
+        await trigger.evaluate((node) => getComputedStyle(node).borderRadius),
+      );
       const selected = page.getByRole('option', { name: 'Alice', exact: true });
       const next = page.getByRole('option', { name: 'Bob', exact: true });
-      const neutral = await tokenColor(panel, '--leaf-color-option-hover');
+      await expect(next).toHaveCSS('transition-duration', '0s');
+      const neutral = 'rgba(0, 0, 0, 0.04)';
       await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expect(selected).toHaveCSS('color', await tokenColor(selected, '--leaf-color-text'));
       await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
-      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect.poll(() => menuFeedback(selected)).toEqual({ background: neutral, opacity: 1 });
       await page.mouse.move(0, 0);
       const before = await paint(selected);
       await selected.hover();
@@ -131,17 +221,14 @@ for (const appearance of ['light', 'dark']) {
       await expect(select).toHaveAttribute('aria-expanded', 'false');
       await select.click();
       await next.hover();
-      await expect(marker).toHaveCSS('background-color', neutral);
+      await expect.poll(() => menuFeedback(next)).toEqual({ background: neutral, opacity: 1 });
+      await expect
+        .poll(async () => (await menuFeedback(selected)).background)
+        .toBe('rgba(0, 0, 0, 0)');
       await expect(next).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
       await page.mouse.move(0, 0);
-      await expect
-        .poll(async () => {
-          const mark = await marker.boundingBox();
-          const row = await selected.boundingBox();
-          return mark && row ? Math.abs(mark.y - row.y) : Infinity;
-        })
-        .toBeLessThan(1);
+      await expect.poll(async () => (await menuFeedback(selected)).background).toBe(neutral);
       await select.press('ArrowDown');
       await select.press('Enter');
       await expect(select).toHaveValue('Bob');
@@ -193,26 +280,35 @@ for (const appearance of ['light', 'dark']) {
       const panel = page.locator('.leaf-dropdown');
       const selected = panel.getByRole('menuitemcheckbox', { name: 'Saved filter' });
       const candidate = panel.getByRole('menuitemcheckbox', { name: 'Available filter' });
-      const neutral = await tokenColor(panel, '--leaf-color-option-hover');
+      const neutral = 'rgba(0, 0, 0, 0.04)';
       await expect(selected).toBeFocused();
-      await expect.poll(async () => (await menuFeedback(selected)).background).toBe(neutral);
+      await expect
+        .poll(async () => (await menuFeedback(selected)).background)
+        .toBe('rgba(0, 0, 0, 0)');
+      await expect(selected.locator('.leaf-dropdown__check')).toHaveCount(1);
       await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await candidate.hover();
       await expect.poll(async () => (await menuFeedback(candidate)).background).toBe(neutral);
       await expect.poll(async () => (await menuFeedback(candidate)).opacity).toBe(1);
       await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-      await expect.poll(async () => (await menuFeedback(selected)).background).toBe(neutral);
+      await expect
+        .poll(async () => (await menuFeedback(selected)).background)
+        .toBe('rgba(0, 0, 0, 0)');
       await panel.getByRole('menuitem', { name: 'Disabled filter' }).hover();
       await expect
         .poll(
           async () =>
-            (await menuFeedback(panel.getByRole('menuitem', { name: 'Disabled filter' }))).opacity,
+            (await menuFeedback(panel.getByRole('menuitem', { name: 'Disabled filter' })))
+              .background,
         )
-        .toBe(0);
+        .toBe('rgba(0, 0, 0, 0)');
       await page.keyboard.press('Home');
       await page.keyboard.press('ArrowDown');
       await expect(candidate).toBeFocused();
       await expect.poll(async () => (await menuFeedback(candidate)).background).toBe(neutral);
+      await expect
+        .poll(async () => (await menuFeedback(selected)).background)
+        .toBe('rgba(0, 0, 0, 0)');
       await candidate.hover();
       await page.mouse.down();
       try {
@@ -227,12 +323,12 @@ for (const appearance of ['light', 'dark']) {
       await danger.hover();
       await expect
         .poll(async () => (await menuFeedback(danger)).background)
-        .toBe(await tokenColor(panel, '--leaf-color-danger-surface-6'));
+        .toBe(await tokenColor(panel, '--leaf-color-danger-soft'));
       await page.mouse.down();
       try {
         await expect
           .poll(async () => (await menuFeedback(danger)).background)
-          .toBe(await tokenColor(panel, '--leaf-color-danger-surface-8'));
+          .toBe(await tokenColor(panel, '--leaf-color-danger-soft-active'));
       } finally {
         await page.mouse.move(0, 0);
         await page.mouse.up();
@@ -248,12 +344,11 @@ for (const appearance of ['light', 'dark']) {
       await select.click();
       const selectPanel = page.locator('.leaf-select__panel');
       const neutral = await tokenColor(selectPanel, '--leaf-color-option-hover');
-      const primary = await tokenColor(selectPanel, '--leaf-color-primary-surface-8');
+      const primary = await tokenColor(selectPanel, '--leaf-color-primary-soft');
       await selectPanel.getByRole('option', { name: 'Bob', exact: true }).hover();
-      await expect(selectPanel.locator('.leaf-floating__highlight')).toHaveCSS(
-        'background-color',
-        neutral,
-      );
+      await expect
+        .poll(() => menuFeedback(selectPanel.getByRole('option', { name: 'Bob', exact: true })))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await select.press('Escape');
 
       const autocomplete = page.getByRole('combobox', { name: 'Radius autocomplete' });
@@ -262,19 +357,18 @@ for (const appearance of ['light', 'dark']) {
       const suggestions = page.locator('.leaf-autocomplete__panel');
       const suggestion = suggestions.getByRole('option', { name: 'Bob', exact: true });
       await suggestion.hover();
-      await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCSS(
-        'background-color',
-        neutral,
-      );
+      await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCount(0);
+      await expect
+        .poll(() => menuFeedback(suggestion))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await expect(suggestion).toHaveCSS(
         'color',
         await tokenColor(suggestions, '--leaf-color-text'),
       );
       await autocomplete.press('ArrowUp');
-      await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCSS(
-        'background-color',
-        neutral,
-      );
+      await expect
+        .poll(() => menuFeedback(suggestions.getByRole('option').first()))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await autocomplete.press('Escape');
 
       const mentions = page.getByRole('combobox', { name: 'Radius mentions' });
@@ -282,36 +376,43 @@ for (const appearance of ['light', 'dark']) {
       const mentionsPanel = page.locator('.leaf-mentions__panel');
       const mention = mentionsPanel.getByRole('option', { name: 'Bob', exact: true });
       await mention.hover();
-      await expect(mention).toHaveCSS('background-color', neutral);
+      await expect
+        .poll(() => menuFeedback(mention))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await mentions.press('ArrowUp');
-      await expect(mentionsPanel.locator('[aria-selected="true"]')).toHaveCSS(
-        'background-color',
-        neutral,
-      );
+      await expect
+        .poll(() => menuFeedback(mentionsPanel.locator('[aria-selected="true"]')))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await mentions.press('Escape');
 
       await page.getByRole('combobox', { name: 'Radius cascader' }).click();
       const cascader = page.locator('.leaf-cascader__panel');
       const engineering = cascader.getByRole('option', { name: 'Engineering', exact: true });
       await engineering.hover();
-      await expect(engineering).toHaveCSS('background-color', neutral);
+      await expect
+        .poll(() => menuFeedback(engineering))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await expect(cascader.getByRole('option', { name: 'Design', exact: true })).toHaveCSS(
         'background-color',
-        neutral,
+        'rgba(0, 0, 0, 0)',
       );
       await engineering.press('Home');
       await page.keyboard.press('ArrowDown');
       await expect(engineering).toBeFocused();
-      await expect(engineering).toHaveCSS('background-color', neutral);
+      await expect
+        .poll(() => menuFeedback(engineering))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await page.keyboard.press('Escape');
 
       await page.getByRole('combobox', { name: 'Radius tree', exact: true }).click();
       const tree = page.locator('.leaf-tree-select__panel');
       const bob = tree.getByRole('treeitem', { name: 'Bob', exact: true });
-      const treeMarker = tree.locator('.leaf-tree__highlight');
+      await expect(tree.locator('.leaf-tree__highlight')).toHaveCount(0);
       const alice = tree.getByRole('treeitem', { name: 'Alice', exact: true });
       await bob.locator('.leaf-tree__title').hover();
-      await expect(treeMarker).toHaveCSS('background-color', neutral);
+      await expect
+        .poll(() => menuFeedback(bob.locator('.leaf-tree__row')))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
       await expect(bob.locator('.leaf-tree__row')).toHaveCSS(
         'background-color',
         'rgba(0, 0, 0, 0)',
@@ -339,13 +440,13 @@ for (const appearance of ['light', 'dark']) {
       const menuText = await team.evaluate((node) => getComputedStyle(node).color);
       // Menu deliberately uses its own translucent feedback over the navigation canvas.
       const menuNeutral = await tokenColor(menu, '--leaf-menu-hover-background');
-      const menuFeedback = () =>
+      const menuBackground = () =>
         team.evaluate((node) => getComputedStyle(node, '::before').backgroundColor);
       await team.hover();
-      await expect.poll(menuFeedback).toBe(menuNeutral);
+      await expect.poll(menuBackground).toBe(menuNeutral);
       await expect(team).toHaveCSS('color', menuText);
       await team.focus();
-      await expect.poll(menuFeedback).toBe(menuNeutral);
+      await expect.poll(menuBackground).toBe(menuNeutral);
       await expect(team).toHaveCSS('color', menuText);
     });
   });

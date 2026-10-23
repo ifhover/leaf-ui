@@ -356,7 +356,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                           onChange={(time) => updateTime(index, time)}
                         />
                         <ButtonControl
-                          variant="ghost"
+                          variant="text"
                           size="sm"
                           onClick={() => updateTime(index, getTime(new Date()))}
                         >
@@ -418,7 +418,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                   <ButtonControl
                     // biome-ignore lint/suspicious/noArrayIndexKey: Presets retain their declared order and do not contain local state.
                     key={index}
-                    variant="ghost"
+                    variant="text"
                     size="sm"
                     onClick={() => {
                       const range =
@@ -441,7 +441,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                       <ButtonControl
                         key={`empty-${index}`}
                         size="sm"
-                        variant="ghost"
+                        variant="text"
                         disabled={!draft[1 - index]}
                         onClick={() => {
                           const next: OpenDateRange =

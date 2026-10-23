@@ -142,7 +142,7 @@ export const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps
             </div>
             <div className="leaf-picker-footer">
               <ButtonControl
-                variant="ghost"
+                variant="text"
                 size="sm"
                 onClick={() => {
                   const now = new Date();

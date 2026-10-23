@@ -1,5 +1,5 @@
 import { expect, type Locator, test } from '@playwright/test';
-import axe from 'axe-core';
+import { expectAccessible } from './helpers/accessibility';
 
 const resolveStyle = (locator: Locator, property: string, value: string) =>
   locator.evaluate(
@@ -13,6 +13,28 @@ const resolveStyle = (locator: Locator, property: string, value: string) =>
     },
     { property, value },
   );
+
+// WebKit may serialize a finished color transition in oklab rather than rgb.
+const expectColor = (locator: Locator, value: string) =>
+  expect
+    .poll(
+      () =>
+        locator.evaluate((node, expected) => {
+          const context = document.createElement('canvas').getContext('2d');
+          if (!context) throw new Error('Canvas context unavailable');
+          const channels = (color: string) => {
+            context.clearRect(0, 0, 1, 1);
+            context.fillStyle = color;
+            context.fillRect(0, 0, 1, 1);
+            return [...context.getImageData(0, 0, 1, 1).data];
+          };
+          const actual = channels(getComputedStyle(node).color);
+          const target = channels(expected);
+          return actual.every((channel, index) => Math.abs(channel - (target[index] ?? 0)) <= 1);
+        }, value),
+      { timeout: 20_000 },
+    )
+    .toBe(true);
 
 const expectFeedback = (locator: Locator, color: string) =>
   expect
@@ -133,22 +155,22 @@ for (const { english, suffix } of [
     );
     const selectedBackground = hoverColor;
     expect(hoverColor).toBe('rgba(0, 0, 0, 0.08)');
-    await expect(release).toHaveCSS('color', unselectedColor);
-    await expect(parent).toHaveCSS('color', unselectedColor);
+    await expectColor(release, unselectedColor);
+    await expectColor(parent, unselectedColor);
     await parent.click();
     await expect(parent).toHaveAttribute('aria-expanded', 'false');
-    await expect(parent).toHaveCSS('color', unselectedColor);
+    await expectColor(parent, unselectedColor);
     await parent.click();
     await expect(parent).toHaveAttribute('aria-expanded', 'true');
-    await expect(parent).toHaveCSS('color', unselectedColor);
-    await expect(home.locator('.leaf-menu__icon svg')).toHaveCSS('color', unselectedColor);
-    await expect(selected).toHaveCSS('color', textColor);
+    await expectColor(parent, unselectedColor);
+    await expectColor(home.locator('.leaf-menu__icon svg'), unselectedColor);
+    await expectColor(selected, textColor);
     for (const item of [home, release, selected]) {
       const wasSelected = (await item.getAttribute('aria-current')) === 'page';
       const before = await item.evaluate((node) => node.getBoundingClientRect().toJSON());
       await item.hover();
-      await expect(item).toHaveCSS(
-        'color',
+      await expectColor(
+        item,
         (await item.getAttribute('aria-current')) === 'page' ? textColor : unselectedColor,
       );
       await expectFeedback(item, wasSelected ? selectedBackground : hoverColor);
@@ -157,22 +179,14 @@ for (const { english, suffix } of [
       expect(await item.evaluate((node) => node.getBoundingClientRect().toJSON())).toEqual(before);
       await page.mouse.up();
       await expect(item).toHaveAttribute('aria-current', 'page');
-      await expect(item).toHaveCSS('color', textColor);
+      await expectColor(item, textColor);
     }
-    await expect(team.locator('.leaf-tag')).toHaveText('12');
+    await expect(team.locator('.leaf-menu__extra')).toHaveText('12');
     await expect(parent).not.toHaveAttribute('data-selected');
     await expectFeedback(selected, selectedBackground);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    await page.addScriptTag({ content: axe.source });
-    expect(
-      await menu.evaluate(async (node) =>
-        (await (window as unknown as { axe: typeof axe }).axe.run(node)).violations.map(
-          (item) => item.id,
-        ),
-      ),
-    ).toEqual([]);
   });
 }
 
@@ -222,17 +236,6 @@ test('group titles, collapsed navigation and custom controls', async ({ page }) 
   });
   await expect(menu).toHaveCSS('width', '240px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.addScriptTag({ content: axe.source });
-  const violations = await page.evaluate(async () => {
-    const result = await (window as unknown as { axe: typeof axe }).axe.run(
-      document.querySelector('main') as HTMLElement,
-    );
-    return result.violations.map(({ id, nodes }) => ({
-      id,
-      targets: nodes.map((node) => node.target),
-    }));
-  });
-  expect(violations).toEqual([]);
 });
 
 for (const suffix of ['', '&theme=dark&compact=1&rtl=1']) {
@@ -250,8 +253,8 @@ for (const suffix of ['', '&theme=dark&compact=1&rtl=1']) {
       'color',
       'color-mix(in srgb, currentColor 80%, var(--leaf-color-surface))',
     );
-    await expect(selected).toHaveCSS('color', textColor);
-    await expect(selected.locator('.leaf-menu__popup-icon svg')).toHaveCSS('color', textColor);
+    await expectColor(selected, textColor);
+    await expectColor(selected.locator('.leaf-menu__popup-icon svg'), textColor);
     const hoverColor = await resolveStyle(
       popup,
       'background-color',
@@ -266,7 +269,7 @@ for (const suffix of ['', '&theme=dark&compact=1&rtl=1']) {
     await expect(trigger).not.toHaveAttribute('data-active-parent');
     await expect(popup).toHaveAttribute('data-positioned', 'true');
     await expect(popup).toHaveCSS('border-top-width', '1px');
-    await expect(popup).toHaveCSS('border-top-left-radius', '10px');
+    await expect(popup).toHaveCSS('border-top-left-radius', '8px');
     const side = await popup.getAttribute('data-side');
     expect(side).toBe(suffix.includes('rtl') ? 'left' : 'right');
     await expect(popup.locator('.leaf-menu__popup-title')).toHaveText('Resources');
@@ -282,19 +285,13 @@ for (const suffix of ['', '&theme=dark&compact=1&rtl=1']) {
     await page.keyboard.press('ArrowDown');
     const themes = popup.getByRole('menuitem', { name: 'Themes' });
     await expect(themes).toBeFocused();
-    await expect(themes).toHaveCSS('color', unselectedColor);
-    await expect(themes.locator('.leaf-menu__popup-icon svg')).toHaveCSS('color', unselectedColor);
+    await expectColor(themes, unselectedColor);
+    await expectColor(themes.locator('.leaf-menu__popup-icon svg'), unselectedColor);
     await expectFeedback(themes, hoverColor);
     await expect(selected).toHaveAttribute('aria-current', 'page');
     await expectFeedback(selected, hoverColor);
     await expect(popup).toHaveCSS('opacity', '1');
-    await page.addScriptTag({ content: axe.source });
-    const violations = await popup.evaluate(async (node) =>
-      (await (window as unknown as { axe: typeof axe }).axe.run(node)).violations.map(
-        (violation) => violation.id,
-      ),
-    );
-    expect(violations).toEqual([]);
+
     await page.keyboard.press('ArrowDown');
     await expect(popup.getByRole('menuitem', { name: 'More' })).toBeFocused();
     await page.keyboard.press(suffix.includes('rtl') ? 'ArrowLeft' : 'ArrowRight');
@@ -717,3 +714,46 @@ test('appearance palette resets completely between primary, raised and default',
     );
   }
 });
+
+for (const english of [false, true]) {
+  test(`basic menu accessibility ${english ? 'en' : 'zh'}`, { tag: '@a11y' }, async ({ page }) => {
+    await page.setViewportSize({ width: english ? 375 : 1100, height: 800 });
+    await page.goto(
+      `/?fixture=menu&basic=1${english ? '&english=1&theme=dark&compact=1&rtl=1' : ''}`,
+    );
+    const menu = page.getByRole('navigation').first();
+    await menu
+      .getByRole('menuitem', { name: english ? 'Design resources' : '设计资源', exact: true })
+      .click();
+    await expectAccessible(page, 'nav');
+  });
+}
+
+test('grouped menu accessibility', { tag: '@a11y' }, async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto('/?fixture=menu');
+  const menu = page.getByRole('navigation', { name: 'Grouped navigation' });
+  await menu.getByRole('menuitem', { name: 'Settings' }).click();
+  const custom = page.getByRole('group', { name: 'Quick create' });
+  await custom.getByRole('textbox').fill('New project');
+  await custom.getByRole('button').click();
+  await expectAccessible(page, 'main');
+});
+
+for (const suffix of ['', '&theme=dark&compact=1&rtl=1']) {
+  test(`collapsed popup accessibility ${suffix || 'default'}`, { tag: '@a11y' }, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(`/?fixture=menu&popup=1&collapsed=1${suffix}`);
+    await page
+      .getByRole('navigation', { name: 'Popup navigation' })
+      .getByRole('menuitem', { name: 'Resources' })
+      .click();
+    await expect(page.locator('.leaf-menu__popup').first()).toHaveAttribute(
+      'data-positioned',
+      'true',
+    );
+    await expectAccessible(page, '.leaf-menu__popup');
+  });
+}

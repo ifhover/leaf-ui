@@ -84,8 +84,8 @@ Click the swatch, color value or any empty area of the control to open the picke
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | Required. Group heading |
-| `colors` | `readonly string[]` | — | Required. Color values in the group |
+| `label` | `ReactNode` | Required | Group heading |
+| `colors` | `readonly string[]` | Required | Color values in the group |
 
 ## Types
 
@@ -105,13 +105,13 @@ Use arrow keys in the color plane, with Shift for larger steps. Left/right adjus
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `angle` | `number` | — | Required. Gradient angle in degrees. |
-| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | — | Required. Color stops in the gradient. |
+| `angle` | `number` | Required | Gradient angle in degrees. |
+| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | Required | Color stops in the gradient. |
 
 ## ColorGradientStop
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
-| `color` | `string` | — | Required. Color or semantic tone. |
-| `offset` | `number` | — | Required. Offset; color stops use a percentage from 0 to 100. |
+| `color` | `string` | Required | Color or semantic tone. |
+| `offset` | `number` | Required | Offset; color stops use a percentage from 0 to 100. |

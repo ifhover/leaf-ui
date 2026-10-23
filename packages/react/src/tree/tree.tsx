@@ -19,7 +19,6 @@ import { estimateControlHeight } from '../density';
 import { ResultControl as Result } from '../result/result';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
-import { useFloatingHighlight } from '../shared/floating-highlight';
 import { inertProps } from '../shared/inert';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { TreeDragRow, TreeDragScope } from './drag';
@@ -259,22 +258,9 @@ export function TreeControl({
     [records, treeId],
   );
   const visibleKeys = new Set(visible.map((node) => node.key));
-  const selectedKey = selected.find((key) => visibleKeys.has(key));
   const hoveredKey = hovered && visibleKeys.has(hovered) ? hovered : undefined;
   const focusedKey = focusWithin && focusKey && visibleKeys.has(focusKey) ? focusKey : undefined;
-  const highlightKey =
-    hoveredKey ?? focusedKey ?? selectedKey ?? (highlightFirst ? visible[0]?.key : undefined);
-  const highlight = useFloatingHighlight(
-    true,
-    root,
-    highlightKey ? itemIds.get(highlightKey) : undefined,
-    `${selected.join('\u0000')}:${hoveredKey ?? ''}:${focusedKey ?? ''}:${visible.length}:${
-      visible[0]?.key ?? ''
-    }:${visible.at(-1)?.key ?? ''}:${virtualizer.range?.startIndex ?? -1}:${
-      virtualizer.range?.endIndex ?? -1
-    }`,
-    '.leaf-tree__row',
-  );
+  const highlightKey = hoveredKey ?? focusedKey ?? (highlightFirst ? focusKey : undefined);
   const focus = (key?: string) => {
     if (key) {
       setActive(key);
@@ -459,6 +445,7 @@ export function TreeControl({
             id={itemIds.get(node.key)}
             data-selected={selected.includes(node.key) || undefined}
             data-disabled={inactive || undefined}
+            data-highlighted={highlightKey === node.key || undefined}
             style={{ paddingInlineStart: `${(level - 1) * 20 + 4}px` }}
             onPointerEnter={() => {
               if (!inactive) setHovered(node.key);
@@ -571,15 +558,6 @@ export function TreeControl({
       scrollbarTabIndex={-1}
       className={classes('leaf-tree', showLine && 'leaf-tree--lines', className)}
     >
-      {visible.length > 0 && (
-        <div
-          className="leaf-tree__highlight"
-          aria-hidden="true"
-          data-ready={Boolean(highlight)}
-          data-selected={highlightKey ? selected.includes(highlightKey) : undefined}
-          style={highlight}
-        />
-      )}
       {visible.length ? (
         virtual ? (
           <div style={{ position: 'relative', height: virtualizer.getTotalSize() }}>

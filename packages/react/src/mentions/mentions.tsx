@@ -160,6 +160,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         }}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={input}
         panelRef={panel}

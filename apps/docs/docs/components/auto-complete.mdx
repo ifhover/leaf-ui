@@ -42,6 +42,7 @@ import { AutoCompleteBasic, AutoCompleteSearch } from '../../src/components/form
 </ComponentExample>
 
 ## AutoComplete API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `options` | `readonly (`[`AutoCompleteOption`](#autocompleteoption)` \| `[`AutoCompleteOptionGroup`](#autocompleteoptiongroup)`)[]` | 必填 | 建议列表 |
@@ -91,6 +92,7 @@ const options: AutoCompleteOption[] = [
 ```
 
 ### AutoCompleteOption
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string` | 必填 | 唯一建议值；选择后写入输入框。 |
@@ -104,8 +106,8 @@ const options: AutoCompleteOption[] = [
 
 输入框可以直接参与 FormData、原生必填校验和表单 reset。建议面板默认跟随输入框宽度并继承局部主题；为输入框提供 label 或 aria-label。
 ## AutoCompleteOptionGroup
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `label` | `ReactNode` | 必填 | 建议分组的标题。 |
 | `options` | `readonly `[`AutoCompleteOption`](#autocompleteoption)`[]` | 必填 | 该分组内的建议。 |
-

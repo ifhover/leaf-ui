@@ -24,7 +24,6 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
-import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
 
@@ -173,12 +172,6 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   };
   useFloatingDismiss(expanded, () => setOpen(false), inputRef, panelRef);
   useActiveOption(expanded, visibleOptions[active] ? `${listId}-${active}` : undefined, panelRef);
-  const highlight = useFloatingHighlight(
-    expanded,
-    panelRef,
-    visibleOptions[active] ? `${listId}-${active}` : undefined,
-    `${text}:${visibleOptions[active]?.value}:${visibleOptions.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
-  );
 
   const select = (option: AutoCompleteOption) => {
     if (option.disabled || readOnly || disabled) return;
@@ -278,6 +271,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         />
       )}
       <FloatingPanel
+        resetSurfaceGeometry
         open={expanded}
         triggerRef={rootRef}
         panelRef={panelRef}
@@ -288,7 +282,6 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         maxWidth={popupMaxWidth}
         {...(hasSuggestions ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
-        data-hover-motion=""
         data-selection="candidate"
         placement={popupPlacement}
         style={
@@ -302,7 +295,6 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         render={popupRender}
       >
         {!hasSuggestions && <div {...listboxProps} />}
-        <FloatingHighlight style={highlight} />
         {loading && !visibleOptions.length ? (
           <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>
         ) : errorContent ? (

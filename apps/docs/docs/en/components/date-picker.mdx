@@ -123,6 +123,7 @@ Set `multiple` to pick several dates in one panel; `onChange` receives an array 
 </ComponentExample>
 
 ## DatePicker API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
@@ -181,6 +182,7 @@ Clicking the field keeps typing focus; ArrowDown moves into the calendar, and Es
 Canonical picker values: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YYYY-QN`, `month → YYYY-MM`, `week → YYYY-Www`. Without an explicit `format`, these values also drive the input display and onChange string. A custom `format` does not change FormData.
 
 ## SingleDatePicker API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
@@ -215,6 +217,7 @@ Canonical picker values: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YY
 | `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
 
 ## MultipleDatePicker API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
@@ -249,9 +252,9 @@ Canonical picker values: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YY
 | `onChange` | `(value: Date[], dateStrings: string[]) => void` | — | Called when the value changes. |
 
 ## DatePreset
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
 | `label` | `ReactNode` | Required | Visible label or content. |
 | `value` | `T \| (() => T)` | Required | Controlled value. |
-

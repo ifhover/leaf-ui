@@ -136,7 +136,7 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
                   <ButtonControl
                     key={preset.key ?? String(preset.label)}
                     size="sm"
-                    variant="ghost"
+                    variant="text"
                     onClick={() => {
                       const date =
                         typeof preset.value === 'function' ? preset.value() : preset.value;
@@ -156,7 +156,7 @@ const SingleDatePicker = forwardRef<HTMLInputElement, SingleDatePickerProps>(
                 <div className="leaf-picker-footer__extra">
                   {showToday && (
                     <ButtonControl
-                      variant="ghost"
+                      variant="text"
                       size="sm"
                       disabled={
                         !withinPeriod(today, picker, minDate, maxDate) ||

@@ -406,7 +406,7 @@ function MenuPanel({
     <>
       <FloatingPanel
         sideFallback={Boolean(navigation)}
-        resetSurfaceGeometry={Boolean(navigation)}
+        resetSurfaceGeometry
         open={open}
         triggerRef={trigger}
         panelRef={panel}

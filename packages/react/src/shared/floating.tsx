@@ -243,8 +243,8 @@ export function FloatingPanel({
       setInheritedMotion(motionAncestor?.getAttribute('data-leaf-motion') ?? undefined);
       const variables = readThemeVariables(trigger);
       if (resetSurfaceGeometry) {
-        // Navigation triggers define their own inset surface. The popup solves
-        // its geometry independently while keeping scoped theme paint/shadows.
+        // Popups solve their own corners, not the enclosing card/field's inset
+        // geometry. Keep scoped component theme inputs and paint/shadows.
         for (const key of Object.keys(variables)) {
           if (
             /^--leaf-surface-(?:radius$|border$|padding(?:-|$)|inner-)/.test(key) ||

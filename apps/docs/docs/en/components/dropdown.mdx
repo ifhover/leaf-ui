@@ -6,7 +6,7 @@ import { DropdownBasic } from '../../../src/examples/en/dropdown/basic';
 
 # Dropdown
 
-Group additional actions in a menu.
+Group additional actions in a menu with the same option feedback as Select.
 
 ## Action menu
 
@@ -55,8 +55,8 @@ Without `popupWidth`, the popup starts at a 220px default width and expands natu
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | Required | Required. Menu entries |
-| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | Required | Required. A single Leaf Button or native button |
+| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | Required | Menu entries |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | Required | A single Leaf Button or native button |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `open` | `boolean` | `false` | Controlled / initial open state |
 | `defaultOpen` | `boolean` | `false` | Controlled / initial open state |
@@ -74,7 +74,7 @@ Without `popupWidth`, the popup starts at a 220px default width and expands natu
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Required. Unique key |
+| `key` | `string` | Required | Unique key |
 | `label` | `ReactNode` | — | Content and icon |
 | `icon` | `ReactNode` | — | Content and icon |
 | `extra` | `ReactNode` | — | Trailing item content for shortcuts, status labels or other non-interactive information. |

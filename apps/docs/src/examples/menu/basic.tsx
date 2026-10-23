@@ -1,4 +1,4 @@
-import { Flex, Menu, type MenuProps, Switch, Tabs, Tag } from '@ifhover/leaf-ui';
+import { Badge, Flex, Menu, type MenuProps, Switch, Tabs } from '@ifhover/leaf-ui';
 import { FolderKanban, House, Settings, Users } from 'lucide-react';
 import { useState } from 'react';
 
@@ -51,11 +51,7 @@ export function MenuBasic() {
               {
                 key: 'release',
                 label: '发布管理',
-                extra: (
-                  <Tag size="sm" variant="solid" color="#1e964f">
-                    新
-                  </Tag>
-                ),
+                extra: <Badge count="新" />,
               },
             ],
           },
@@ -63,11 +59,7 @@ export function MenuBasic() {
             key: 'team',
             label: '团队成员',
             icon: <Users />,
-            extra: (
-              <Tag size="sm" variant="solid" color="#1e964f">
-                12
-              </Tag>
-            ),
+            extra: <Badge count={12} />,
           },
           { key: 'settings', label: '设置', icon: <Settings /> },
         ]}

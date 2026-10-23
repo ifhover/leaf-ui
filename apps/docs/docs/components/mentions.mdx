@@ -40,7 +40,7 @@ import { MentionsPrefixes } from '../../src/examples/mentions/prefixes';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 必需。受控值。 |
+| `value` | `string` | 必填 | 受控值。 |
 | `label` | `ReactNode` | — | 展示文字或内容。 |
 | `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
 | `disabled` | `boolean` | — | 禁用交互。 |
@@ -64,7 +64,7 @@ import { MentionsPrefixes } from '../../src/examples/mentions/prefixes';
 | `onChange` | `(value: string) => void` | — | 值发生变化时调用。 |
 | `onSearch` | `(query: string, prefix: string) => void` | — | 搜索文字改变时调用。 |
 | `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | 条目被选择时调用。 |
-| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | — | 必需。可供选择的选项。 |
+| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | 必填 | 可供选择的选项。 |
 | `prefixes` | `readonly string[]` | — | 可触发建议的文本前缀。 |
 | `split` | `string` | `' '` | 插入引用后追加的分隔文字。 |
 | `loading` | `boolean` | — | 展示加载状态。 |

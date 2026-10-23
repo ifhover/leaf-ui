@@ -441,6 +441,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         triggerRef={triggerRef}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         placement={popupPlacement}
         container={getPopupContainer}
         render={popupRender}

@@ -26,7 +26,6 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
-import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import { SelectionContent } from '../shared/selection-content';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -277,12 +276,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   };
   useFloatingDismiss(open, close, input, panel, root);
   useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined, panel);
-  const highlight = useFloatingHighlight(
-    open,
-    panel,
-    highlighted >= 0 ? `${panelId}-${highlighted}` : undefined,
-    `${searchQuery}:${filtered[highlighted]?.value}:${rows.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
-  );
   useEffect(() => {
     if (!open) setQuery(null);
   }, [open]);
@@ -644,6 +637,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
           />
         ))}
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         placement={popupPlacement}
         container={getPopupContainer}
@@ -669,10 +663,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
       >
         {/* Feedback is announced beside an empty listbox, never as a selectable option. */}
         {!filtered.length && <div {...listboxProps} />}
-        <FloatingHighlight
-          style={highlight}
-          selected={values.includes(filtered[highlighted]?.value ?? '')}
-        />
         {(popupRender ?? ((content: ReactNode) => content))(
           loading && !filtered.length ? (
             <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>

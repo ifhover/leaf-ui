@@ -84,8 +84,8 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 必需。分组标题 |
-| `colors` | `readonly string[]` | — | 必需。该组的颜色值 |
+| `label` | `ReactNode` | 必填 | 分组标题 |
+| `colors` | `readonly string[]` | 必填 | 该组的颜色值 |
 
 ## 类型
 
@@ -105,13 +105,13 @@ import type { ColorPickerProps, ColorPreset } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `angle` | `number` | — | 必需。渐变角度，单位为度。 |
-| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | — | 必需。渐变中的色标。 |
+| `angle` | `number` | 必填 | 渐变角度，单位为度。 |
+| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | 必填 | 渐变中的色标。 |
 
 ## ColorGradientStop
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定且唯一的标识。 |
-| `color` | `string` | — | 必需。颜色或语义色。 |
-| `offset` | `number` | — | 必需。偏移量；色标为 0–100 的百分比。 |
+| `color` | `string` | 必填 | 颜色或语义色。 |
+| `offset` | `number` | 必填 | 偏移量；色标为 0–100 的百分比。 |

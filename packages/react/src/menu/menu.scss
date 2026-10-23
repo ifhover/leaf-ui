@@ -3,11 +3,11 @@
 
 // Each appearance supplies a complete state palette; row geometry stays shared.
 @mixin appearance($variant) {
-  --leaf-menu-unselected-color: color-mix(in srgb, currentColor 80%, var(--leaf-color-surface));
+  --leaf-menu-unselected-color: #{mixins.neutral-option-color()};
   --leaf-menu-canvas: var(--leaf-color-surface);
   --leaf-menu-hover-color: var(--leaf-menu-unselected-color);
   --leaf-menu-hover-opacity: 1;
-  --leaf-menu-neutral-background: rgb(0 0 0 / 8%);
+  --leaf-menu-neutral-background: #{mixins.neutral-option-background()};
   --leaf-menu-hover-background: var(--leaf-menu-neutral-background);
   --leaf-menu-selected-color: currentColor;
   --leaf-menu-selected-background: var(--leaf-menu-neutral-background);

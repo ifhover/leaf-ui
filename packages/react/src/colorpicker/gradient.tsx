@@ -222,6 +222,7 @@ export function GradientColorPicker({
         />
       </span>
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={trigger}
         panelRef={panel}
@@ -252,7 +253,7 @@ export function GradientColorPicker({
             ))}
             <ButtonControl
               size="sm"
-              variant="ghost"
+              variant="text"
               aria-label={t('colorPicker.addColorStop')}
               startIcon={<Plus size={14} />}
               disabled={model.stops.length >= 10}
@@ -272,7 +273,7 @@ export function GradientColorPicker({
             />
             <ButtonControl
               size="sm"
-              variant="ghost"
+              variant="text"
               aria-label={t('colorPicker.removeColorStop')}
               startIcon={<X size={14} />}
               disabled={model.stops.length <= 2}

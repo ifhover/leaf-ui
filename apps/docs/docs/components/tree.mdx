@@ -74,7 +74,7 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `data` | `readonly `[`TreeNode`](#treenode)`[]` | 必填 | 必需。树节点 |
+| `data` | `readonly `[`TreeNode`](#treenode)`[]` | 必填 | 树节点 |
 | `selectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
 | `defaultSelectedKeys` | `readonly string[]` | `[]` | 受控 / 初始选中节点 |
 | `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | 选择变化 |
@@ -111,8 +111,8 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | — | 必需。唯一标识，必填 |
-| `title` | `ReactNode` | — | 必需。节点内容，必填 |
+| `key` | `string` | 必填 | 唯一标识，必填 |
+| `title` | `ReactNode` | 必填 | 节点内容，必填 |
 | `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | 子节点；使用同一结构 |
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `disabled` | `boolean` | — | 禁用交互。 |
@@ -126,25 +126,25 @@ import { TreeSearch } from '../../src/examples/tree/search';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
-| `selected` | `boolean` | — | 必需。操作后是否选中 |
-| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | 必需。全部选中节点 |
+| `node` | [`TreeNode`](#treenode) | 必填 | 本次操作节点 |
+| `selected` | `boolean` | 必填 | 操作后是否选中 |
+| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | 必填 | 全部选中节点 |
 
 ## TreeCheckInfo
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
-| `checked` | `boolean` | — | 必需。操作后是否勾选 |
-| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | 必需。完整勾选节点 |
-| `halfCheckedKeys` | `readonly string[]` | — | 必需。半选节点标识 |
+| `node` | [`TreeNode`](#treenode) | 必填 | 本次操作节点 |
+| `checked` | `boolean` | 必填 | 操作后是否勾选 |
+| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | 必填 | 完整勾选节点 |
+| `halfCheckedKeys` | `readonly string[]` | 必填 | 半选节点标识 |
 
 ## TreeExpandInfo
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | 必需。本次操作节点 |
-| `expanded` | `boolean` | — | 必需。操作后是否展开 |
+| `node` | [`TreeNode`](#treenode) | 必填 | 本次操作节点 |
+| `expanded` | `boolean` | 必填 | 操作后是否展开 |
 
 ## 类型
 
@@ -160,7 +160,7 @@ import type { TreeProps, TreeNode, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo
 
 勾选父节点会勾选可用子节点，禁用节点不会被联动修改。子节点部分选中时父节点呈半选；`checkStrictly` 让各节点独立勾选。多选时点击切换选择，Shift 可连续选择可见节点。
 
-选中行与 Select 使用同一套中性移动高亮和勾选标记：高亮跟随悬停或键盘目标，离开树后回到已选项，行之间不保留额外垂直空隙。
+选项与 Select 使用一致的浅色悬停和键盘反馈，选中值保留勾选标记，行之间没有额外空隙。
 
 方向键上下移动，左右展开或收起，Home / End 跳至首尾，Enter 选择，空格勾选。输入文字可快速定位节点。搜索时会暂时展开匹配路径，清空后恢复原展开状态。
 
@@ -174,10 +174,10 @@ import type { TreeDropInfo } from '@ifhover/leaf-ui';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | 必填 | 必需。操作节点 |
-| `target` | [`TreeNode`](#treenode) | 必填 | 必需。接收拖放的目标节点。 |
-| `position` | `'before' \| 'inside' \| 'after'` | 必填 | 必需。放在目标节点之前、内部或之后。 |
-| `data` | [`TreeNode`](#treenode)`[]` | 必填 | 必需。层级数据 |
+| `node` | [`TreeNode`](#treenode) | 必填 | 操作节点 |
+| `target` | [`TreeNode`](#treenode) | 必填 | 接收拖放的目标节点。 |
+| `position` | `'before' \| 'inside' \| 'after'` | 必填 | 放在目标节点之前、内部或之后。 |
+| `data` | [`TreeNode`](#treenode)`[]` | 必填 | 层级数据 |
 
 ## moveTreeNode
 

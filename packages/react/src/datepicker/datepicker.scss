@@ -89,27 +89,11 @@
     padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    color: var(--leaf-color-text-muted);
-    background: transparent;
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-surface-muted);
-    }
-    &:active:not(:disabled) {
-      scale: 0.9;
-    }
     &:disabled {
-      cursor: not-allowed;
       opacity: 0.4;
     }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
+
+    @include mixins.text-action;
   }
   &__day {
     display: inline-flex;
@@ -153,8 +137,10 @@
     &--selected,
     &--selected:hover:not(:disabled) {
       color: var(--leaf-color-on-primary);
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      box-shadow: var(--leaf-shadow-xs);
+      background: var(--leaf-color-primary);
+      box-shadow:
+        inset 0 0 0 1px var(--leaf-color-primary-fill-border, transparent),
+        var(--leaf-shadow-xs);
     }
     &--selected:disabled {
       color: var(--leaf-color-text-muted);
@@ -192,4 +178,8 @@
 
 .leaf-date-picker__panel {
   @include mixins.floating-paint(date-picker);
+}
+
+.leaf-floating.leaf-picker-panel {
+  @include mixins.field-popup(date-picker);
 }

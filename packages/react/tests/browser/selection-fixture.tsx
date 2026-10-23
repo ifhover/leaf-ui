@@ -8,6 +8,7 @@ import {
   Dropdown,
   Input,
   InputNumber,
+  Menu,
   Pagination,
   Select,
   Switch,
@@ -19,10 +20,35 @@ import {
 } from '@ifhover/leaf-ui';
 
 export function SelectionFixture() {
+  const custom = new URLSearchParams(location.search).has('custom');
   return (
-    <ConfigProvider theme={{ primaryColor: '#1265f5', motion: false }}>
+    <ConfigProvider
+      theme={{
+        primaryColor: '#1265f5',
+        motion: false,
+        ...(custom
+          ? {
+              tokens: { textColor: '#234568', surfaceColor: '#f3eadc' },
+              components: {
+                Menu: { color: '#305a43' },
+                Select: { color: '#305a43' },
+                Tree: { color: '#305a43' },
+                TreeSelect: { color: '#305a43' },
+              },
+            }
+          : {}),
+      }}
+    >
       <h1>Selection and focus</h1>
       <div style={{ display: 'grid', gap: 16, maxWidth: 500 }}>
+        <Menu
+          aria-label="Palette reference"
+          selectedKey="alice"
+          items={[
+            { key: 'alice', label: 'Menu Alice' },
+            { key: 'bob', label: 'Menu Bob' },
+          ]}
+        />
         <Input aria-label="Focused input" />
         <Textarea aria-label="Focused textarea" />
         <InputNumber aria-label="Focused number" />

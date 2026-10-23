@@ -1,5 +1,6 @@
 import { expect, type Locator, test } from '@playwright/test';
 import axe from 'axe-core';
+import { settleAnimations } from './helpers/motion';
 
 function controlRoot(control: Locator) {
   return control.locator(
@@ -225,7 +226,7 @@ for (const appearance of ['light', 'dark']) {
         'data-positioned',
         'true',
       );
-      await page.waitForTimeout(350);
+      await settleAnimations(page.locator('.leaf-cascader__panel'));
       const gap = await page.locator('.leaf-cascader__panel').evaluate((panel) => {
         const search = panel.querySelector('.leaf-cascader__search')?.getBoundingClientRect();
         const column = panel.querySelector('.leaf-cascader__columns')?.getBoundingClientRect();

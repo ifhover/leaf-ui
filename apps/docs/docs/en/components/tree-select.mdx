@@ -142,7 +142,7 @@ Reopening preserves the expanded branches. Click a category that cannot be selec
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | Required | Required. Hierarchical options |
+| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | Required | Hierarchical options |
 | `checkStrictly` | `boolean` | `false` | Check parents and children independently |
 | `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | Display and output children, consolidated parents or all checked nodes |
 | `showSearch` | `boolean` | `true` | Filter nodes by typing |
@@ -186,8 +186,8 @@ Reopening preserves the expanded branches. Click a category that cannot be selec
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | — | Required. Unique value, required |
-| `label` | `ReactNode` | — | Required. Display label, required |
+| `value` | `string` | Required | Unique value, required |
+| `label` | `ReactNode` | Required | Display label, required |
 | `children` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | — | Child options using the same structure |
 | `disabled` | `boolean` | — | Disable interaction. |
 | `selectable` | `boolean` | — | Set false to make a category non-selectable |
@@ -210,6 +210,6 @@ Option values must be unique and stable. The full option data is included in the
 
 `TreeSelectValue` is `string | readonly string[] | null` and can be used for controlled state. Checkbox mode submits checked leaves by default; `showCheckedStrategy` controls both display and callback values. Disabled existing selections are preserved by clear and linked checks.
 
-Selected rows use the same neutral moving highlight and checkmark as Select. The highlight starts on the selected or first available row, follows the pointer or keyboard target, returns to the selected row when the pointer leaves the tree, and rows have no extra vertical gaps.
+Options share Select's pale hover and keyboard feedback, starting on the selected or first available row while preserving selection checks.
 
 ArrowDown enters the tree, Enter selects, Space checks and Escape closes. With an empty search in multiple mode, Backspace removes the last enabled selection. FormData submits repeated values under one field name; use `getAll(name)` to read them. Uncontrolled fields respond to form reset.

@@ -246,19 +246,6 @@ $include-field-styles: true !default;
     background: transparent;
   }
 }
-// Suggestion listboxes announce the active candidate with aria-selected; it is not a saved value.
-.leaf-floating[data-selection='candidate'] .leaf-floating__option[aria-selected='true'] {
-  color: inherit;
-  font-weight: inherit;
-  background: transparent;
-  &:not(:disabled):not([aria-disabled='true']) {
-    background: var(--leaf-color-option-hover);
-  }
-}
-.leaf-floating[data-selection='candidate'][data-hover-motion]
-  .leaf-floating__option[aria-selected='true']:not(:disabled):not([aria-disabled='true']) {
-  background: transparent;
-}
 @media (prefers-reduced-motion: reduce) {
   .leaf-floating__highlight {
     transition: none;

@@ -74,7 +74,7 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `data` | `readonly `[`TreeNode`](#treenode)`[]` | Required | Required. Tree nodes |
+| `data` | `readonly `[`TreeNode`](#treenode)`[]` | Required | Tree nodes |
 | `selectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
 | `defaultSelectedKeys` | `readonly string[]` | `[]` | Controlled / initial selected keys |
 | `onSelect` | `(keys: string[], info: `[`TreeSelectInfo`](#treeselectinfo)`) => void` | — | Selection changes |
@@ -111,8 +111,8 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Unique key, required |
-| `title` | `ReactNode` | — | Required. Node content, required |
+| `key` | `string` | Required | Unique key, required |
+| `title` | `ReactNode` | Required | Node content, required |
 | `children` | `readonly `[`TreeNode`](#treenode)`[]` | — | Child nodes using this same structure |
 | `icon` | `ReactNode` | — | Custom icon |
 | `disabled` | `boolean` | — | Disable interaction. |
@@ -126,25 +126,25 @@ Update `cacheKey` to refresh lazy caches for the same node keys. Changing `data`
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
-| `selected` | `boolean` | — | Required. Whether the node is now selected |
-| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | Required. All selected nodes |
+| `node` | [`TreeNode`](#treenode) | Required | Operated node |
+| `selected` | `boolean` | Required | Whether the node is now selected |
+| `selectedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | Required | All selected nodes |
 
 ## TreeCheckInfo
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
-| `checked` | `boolean` | — | Required. Whether the node is now checked |
-| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | — | Required. All fully checked nodes |
-| `halfCheckedKeys` | `readonly string[]` | — | Required. Partially checked keys |
+| `node` | [`TreeNode`](#treenode) | Required | Operated node |
+| `checked` | `boolean` | Required | Whether the node is now checked |
+| `checkedNodes` | `readonly `[`TreeNode`](#treenode)`[]` | Required | All fully checked nodes |
+| `halfCheckedKeys` | `readonly string[]` | Required | Partially checked keys |
 
 ## TreeExpandInfo
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | — | Required. Operated node |
-| `expanded` | `boolean` | — | Required. Whether the node is now expanded |
+| `node` | [`TreeNode`](#treenode) | Required | Operated node |
+| `expanded` | `boolean` | Required | Whether the node is now expanded |
 
 ## Types
 
@@ -160,7 +160,7 @@ Each node needs a unique, stable `key`. The full node data is included in the ba
 
 Checking a parent checks enabled children; disabled nodes are unaffected. Partially checked children create a mixed parent. `checkStrictly` keeps checks independent. In multiple mode, clicking toggles selection; Shift selects a range of visible nodes.
 
-Selected rows use the same neutral moving highlight and checkmark as Select. The highlight follows the pointer or keyboard target, returns to the selected row when the pointer leaves the tree, and rows have no extra vertical gaps.
+Options share Select's pale hover and keyboard feedback, with persistent selection checks and no extra gaps between rows.
 
 Use up/down to move, right/left to expand/collapse, Home/End to jump, Enter to select and Space to check. Typing locates nodes. Search temporarily reveals matching paths; clearing it restores the original expansion.
 
@@ -174,10 +174,10 @@ import type { TreeDropInfo } from '@ifhover/leaf-ui';
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `node` | [`TreeNode`](#treenode) | Required | Required. Operated node |
-| `target` | [`TreeNode`](#treenode) | Required | Required. Target node receiving the drop. |
-| `position` | `'before' \| 'inside' \| 'after'` | Required | Required. Place before, inside or after the target node. |
-| `data` | [`TreeNode`](#treenode)`[]` | Required | Required. Hierarchical data |
+| `node` | [`TreeNode`](#treenode) | Required | Operated node |
+| `target` | [`TreeNode`](#treenode) | Required | Target node receiving the drop. |
+| `position` | `'before' \| 'inside' \| 'after'` | Required | Place before, inside or after the target node. |
+| `data` | [`TreeNode`](#treenode)`[]` | Required | Hierarchical data |
 
 ## moveTreeNode
 

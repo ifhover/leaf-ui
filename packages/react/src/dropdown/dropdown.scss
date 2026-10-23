@@ -1,10 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-dropdown {
   @include mixins.danger-soft-feedback-family;
-  --leaf-surface-radius: var(
-    --leaf-component-dropdown-radius,
-    var(--leaf-component-floating-radius, var(--leaf-radius-lg))
-  );
+  @include mixins.field-popup(dropdown);
   --leaf-surface-padding: var(
     --leaf-component-dropdown-padding,
     var(--leaf-component-floating-padding, 6px)
@@ -17,7 +14,7 @@
   }
   display: flex;
   flex-direction: column;
-  gap: var(--leaf-component-dropdown-gap, 2px);
+  gap: var(--leaf-component-dropdown-gap, 0px);
   &__divider {
     width: 100%;
     margin: 5px 4px;
@@ -28,78 +25,28 @@
   &__danger {
     color: var(--leaf-color-danger-ink);
   }
-  .leaf-floating__option {
-    position: relative;
-    isolation: isolate;
+  &:not(.leaf-menu__popup) .leaf-floating__option {
+    @include mixins.choice-option;
+    @include mixins.choice-option-size(var(--leaf-control-height));
     z-index: 1;
-    gap: 8px;
+    gap: var(--leaf-component-dropdown-gap, 12px);
     justify-content: flex-start;
-    min-height: var(--leaf-density-option-height);
     font-size: var(--leaf-font-size);
-    background: transparent;
-    transition:
-      color var(--leaf-motion-color) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-color) var(--leaf-motion-easing);
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 5% 1.5%;
-      z-index: -1;
-      border-radius: inherit;
-      background: var(--leaf-color-option-hover);
-      opacity: 0;
-      pointer-events: none;
-      transition:
-        opacity var(--leaf-motion-fast) linear,
-        inset var(--leaf-motion-fast) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-color) var(--leaf-motion-easing);
-    }
-    &.leaf-dropdown__danger::before {
-      background: var(--leaf-danger-soft-background);
-    }
-    // Keep shared option fills from painting a second layer over the pseudo-element.
-    &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']):not(
-        [aria-selected='true']
-      ):not([aria-checked='true']) {
-      background: transparent;
-    }
     &[aria-expanded='true'] {
       color: var(--leaf-color-text);
-    }
-    &[aria-checked='true'] {
-      color: inherit;
-      background: transparent;
-      &::before {
-        background: var(--leaf-color-option-hover);
-        opacity: 1;
-        inset: 0;
-      }
-      &.leaf-dropdown__danger {
-        color: var(--leaf-color-danger-ink);
-        &::before {
-          background: var(--leaf-danger-soft-active-background);
-        }
-      }
     }
     &.leaf-dropdown__danger {
       color: var(--leaf-color-danger-ink);
     }
-    &.leaf-dropdown__danger:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(
-        :disabled
-      ):not([aria-disabled='true']) {
-      color: var(--leaf-color-danger-ink);
-    }
-    &:not([aria-checked='true']):is(:hover, :focus-visible, :active):not(:disabled):not(
+    &.leaf-dropdown__danger:is(:hover, :focus-visible, :active):not(:disabled):not(
         [aria-disabled='true']
       ) {
+      color: var(--leaf-color-danger-ink);
       &::before {
-        opacity: 1;
-        inset: 0;
+        background: var(--leaf-danger-soft-background);
       }
     }
-    &.leaf-dropdown__danger:not([aria-checked='true']):active:not(:disabled):not(
-        [aria-disabled='true']
-      )::before {
+    &.leaf-dropdown__danger:active:not(:disabled):not([aria-disabled='true'])::before {
       background: var(--leaf-danger-soft-active-background);
     }
   }

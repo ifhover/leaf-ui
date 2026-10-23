@@ -477,6 +477,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
           ))}
         </div>
         <FloatingPanel
+          resetSurfaceGeometry
           placement={popupPlacement}
           container={getPopupContainer}
           render={popupRender}

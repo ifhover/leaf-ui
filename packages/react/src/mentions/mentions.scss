@@ -1,5 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-mentions__panel .leaf-floating__option {
+  @include mixins.choice-option(true);
+  @include mixins.choice-option-size;
   gap: 9px;
 }
 .leaf-mentions__prefix {
@@ -32,6 +34,7 @@
   }
 }
 
-.leaf-mentions__panel {
+.leaf-floating.leaf-mentions__panel {
   @include mixins.floating-paint(mentions);
+  @include mixins.field-popup(textarea);
 }

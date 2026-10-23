@@ -276,6 +276,7 @@ export function SolidColorPicker({
         />
       </span>
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={trigger}
         panelRef={panel}

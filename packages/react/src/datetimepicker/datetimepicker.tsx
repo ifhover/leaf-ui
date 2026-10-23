@@ -248,7 +248,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                   <ButtonControl
                     key={preset.key ?? String(preset.label)}
                     size="sm"
-                    variant="ghost"
+                    variant="text"
                     onClick={() => {
                       const date =
                         typeof preset.value === 'function' ? preset.value() : preset.value;
@@ -267,7 +267,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
               <div className="leaf-picker-footer__extra">
                 {showToday && (
                   <ButtonControl
-                    variant="ghost"
+                    variant="text"
                     size="sm"
                     disabled={!inBounds(today)}
                     onClick={() => {
@@ -281,7 +281,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                 )}
                 {view === 'time' && (
                   <ButtonControl
-                    variant="ghost"
+                    variant="text"
                     size="sm"
                     onClick={() => {
                       setDraft(normalize(new Date()));

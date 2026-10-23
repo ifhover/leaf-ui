@@ -297,12 +297,14 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         triggerRef={input}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={root}
         panelRef={panel}
         id={panelId}
         className={classes(
           'leaf-floating',
+          'leaf-picker-panel',
           panelVariant === 'card' && 'leaf-picker-panel--card',
           panelClassName,
           popupClassName,

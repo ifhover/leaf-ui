@@ -14,24 +14,13 @@
     padding: 5px 6px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: inherit;
     font: inherit;
     font-size: var(--leaf-font-size);
     font-weight: var(--leaf-font-weight);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted);
-    }
     &:disabled {
-      cursor: default;
     }
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
+
+    @include mixins.text-action;
   }
   &__weekdays,
   &__cells {
@@ -116,9 +105,6 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 4px;
-  }
-  .leaf-button--ghost {
-    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   }
 }
 .leaf-floating.leaf-picker-panel--card {

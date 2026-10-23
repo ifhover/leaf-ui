@@ -115,7 +115,7 @@ export const TimePicker = forwardRef<HTMLInputElement, TimePickerProps>(function
           />
           <div className="leaf-picker-footer">
             <ButtonControl
-              variant="ghost"
+              variant="text"
               size="sm"
               onClick={() => {
                 const now = new Date();
