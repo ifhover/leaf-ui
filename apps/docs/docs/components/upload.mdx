@@ -96,6 +96,7 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 
 
 ## UploadProps API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | 受控文件列表；省略时使用内部非受控列表。 |
@@ -130,6 +131,7 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | 文件列表的展示形式。 |
 
 ## UploadFile API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `uid` | `string` | 必填 | 稳定且唯一的文件标识；上传和取消操作按 uid 定位文件。 |
@@ -144,12 +146,14 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `response` | `unknown` | — | 服务端返回的原始数据。 |
 
 ## UploadChangeInfo API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `file` | [`UploadFile`](#uploadfile-api) | — | 本次发生变化的文件。 |
 | `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | 必填 | 变化原因。 |
 
 ## UploadRejection API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `file` | `File` | 必填 | 被拒绝的文件。 |
@@ -157,6 +161,7 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `message` | `string` | 必填 | 面向用户的拒绝说明。 |
 
 ## UploadRequest API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `file` | `File` | 必填 | 待上传文件。 |
@@ -164,6 +169,7 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `onProgress` | `(percent: number) => void` | 必填 | 报告上传进度。 |
 
 ## UploadResult API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `url` | `string` | — | 上传后的文件地址。 |
@@ -185,6 +191,7 @@ import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, Upload
 | `originFile` | `File` | — | 浏览器选择的原始文件。 |
 
 ## UploadHandle
+
 | 方法 | 类型 | 说明 |
 | --- | --- | --- |
 | `upload` | `(uid?: string) => void` | 开始上传指定 uid 的文件；省略 uid 时上传全部待处理文件。 |

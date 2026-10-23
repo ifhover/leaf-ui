@@ -28,7 +28,7 @@ import { FloatButtonActions } from '../../src/examples/float-button/actions';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | 设置 variant。 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 设置 variant。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
 | `danger` | `boolean` | `false` | 设置 danger。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
@@ -42,8 +42,8 @@ import { FloatButtonActions } from '../../src/examples/float-button/actions';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | — | 必需。稳定且唯一的标识。 |
-| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
+| `key` | `string` | 必填 | 稳定且唯一的标识。 |
+| `label` | `ReactNode` | 必填 | 展示文字或内容。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `onClick` | `() => void` | — | 点击时调用。 |
 | `disabled` | `boolean` | — | 禁用交互。 |
@@ -52,7 +52,7 @@ import { FloatButtonActions } from '../../src/examples/float-button/actions';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | — | 必需。条目操作区。 |
+| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | 必填 | 条目操作区。 |
 | `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
 | `expandable` | `boolean` | `true` | 提供展开操作组的按钮。 |
 | `icon` | `ReactNode` | — | 图标内容。 |

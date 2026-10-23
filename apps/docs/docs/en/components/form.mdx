@@ -104,30 +104,30 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `name` | `string` | Required | Required. Form field name |
+| `name` | `string` | Required | Form field name |
 | `value` | `readonly T[]` | — | Controlled value |
 | `defaultValue` | `readonly T[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: T[]) => void` | — | Value change callback |
 | `itemKey` | `(value: T) => string` | — | Return a stable identifier |
-| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Required. Render function for fields and row operations. |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Render function for fields and row operations. |
 
 ## FormListField API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | Required | Required. Unique stable identifier |
-| `index` | `number` | Required | Required. Current index, starting at zero |
-| `name` | `string` | Required | Required. Form field name |
-| `value` | `T` | Required | Required. Controlled value |
+| `key` | `string` | Required | Unique stable identifier |
+| `index` | `number` | Required | Current index, starting at zero |
+| `name` | `string` | Required | Form field name |
+| `value` | `T` | Required | Controlled value |
 
 ## FormListOperations API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `add` | `(value: T, index?: number) => void` | Required | Required. Insert a field; omitted index appends |
-| `remove` | `(index: number \| readonly number[]) => void` | Required | Required. Remove one or multiple indices |
-| `move` | `(from: number, to: number) => void` | Required | Required. Move fields preserving stable keys |
-| `update` | `(index: number, value: T) => void` | Required | Required. Update field value |
+| `add` | `(value: T, index?: number) => void` | Required | Insert a field; omitted index appends |
+| `remove` | `(index: number \| readonly number[]) => void` | Required | Remove one or multiple indices |
+| `move` | `(from: number, to: number) => void` | Required | Move fields preserving stable keys |
+| `update` | `(index: number, value: T) => void` | Required | Update field value |
 
 ## FormErrorSummaryProps API
 
@@ -140,8 +140,8 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `fieldId` | `string` | Required | Required. Input id focused when error is clicked |
-| `message` | `ReactNode` | Required | Required. Error content |
+| `fieldId` | `string` | Required | Input id focused when error is clicked |
+| `message` | `ReactNode` | Required | Error content |
 | `label` | `ReactNode` | — | Display label |
 
 ## React Hook Form integration
@@ -173,19 +173,19 @@ export function AccountForm() {
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `errors` | `Record<string, string>` | — | Required. Field-keyed errors for FormField. |
-| `pending` | `boolean` | — | Required. Whether validation or submission is pending. |
-| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | — | Required. Set server or business errors. |
-| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | — | Required. Bind to Form.onSubmit. |
-| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | — | Required. Bind to Form.onReset to cancel requests and clear errors. |
-| `cancel` | `() => void` | — | Required. Cancel the current request. |
-| `clearErrors` | `(name?: string) => void` | — | Required. Clear one or all errors and cancel stale requests. |
+| `errors` | `Record<string, string>` | Required | Field-keyed errors for FormField. |
+| `pending` | `boolean` | Required | Whether validation or submission is pending. |
+| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | Required | Set server or business errors. |
+| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | Required | Bind to Form.onSubmit. |
+| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | Required | Bind to Form.onReset to cancel requests and clear errors. |
+| `cancel` | `() => void` | Required | Cancel the current request. |
+| `clearErrors` | `(name?: string) => void` | Required | Clear one or all errors and cancel stale requests. |
 
 ## FormValidationOptions
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | Required. Validate FormData with a cancellation signal; return field-keyed errors. |
+| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | Required | Validate FormData with a cancellation signal; return field-keyed errors. |
 | `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | Submit after validation, respecting cancellation. |
 | `onError` | `(error: unknown) => void` | — | Called when validation or submission throws. |
 | `focusError` | `boolean` | — | Focus the first invalid field. |

@@ -1,13 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import axe from 'axe-core';
-
-async function violations(page: Page) {
-  await page.addScriptTag({ content: axe.source });
-  return page.evaluate(
-    async () =>
-      (await (window as unknown as { axe: typeof axe }).axe.run(document.body)).violations,
-  );
-}
+import { expectAccessible } from './helpers/accessibility';
 
 test.use({ viewport: { width: 1100, height: 1000 } });
 test.setTimeout(120_000);
@@ -101,7 +93,9 @@ test('dialog sections align icons, descriptions and actions, and preserve rich c
   );
   await dialog.getByText('Read and organize messages', { exact: true }).click();
   await expect(dialog.getByRole('checkbox', { name: 'Mail', exact: true })).not.toBeChecked();
-  await dialog.screenshot({ path: `.quality/surface-modal-${testInfo.project.name}.png` });
+  await dialog.screenshot({
+    path: test.info().outputPath(`surface-modal-${testInfo.project.name}.png`),
+  });
   await dialog.getByRole('button', { name: 'Save access', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect(trigger).toBeFocused();
@@ -141,7 +135,9 @@ test('API confirmations keep a compact footer and a bare semantic icon in the bo
   await expect(dialog.locator('.leaf-modal__header .leaf-modal__icon')).toHaveCount(0);
   await expect(dialog.locator('.leaf-confirm__icon .lucide-circle-alert')).toHaveCount(1);
   await expect(confirm).toBeEnabled();
-  await dialog.screenshot({ path: `.quality/surface-confirm-${testInfo.project.name}.png` });
+  await dialog.screenshot({
+    path: test.info().outputPath(`surface-confirm-${testInfo.project.name}.png`),
+  });
   await confirm.click();
   await expect(dialog).toBeHidden();
   await expect(page.getByText('Project deleted.')).toBeVisible();
@@ -160,7 +156,9 @@ test('drawer and cards share section styling while spacing-only surfaces stay av
     'background-color',
     'rgb(245, 245, 245)',
   );
-  await drawer.screenshot({ path: `.quality/surface-drawer-${testInfo.project.name}.png` });
+  await drawer.screenshot({
+    path: test.info().outputPath(`surface-drawer-${testInfo.project.name}.png`),
+  });
   await drawer.press('Escape');
   await expect(drawer).toBeHidden();
   await page.getByRole('button', { name: 'Spacing only', exact: true }).click();
@@ -197,7 +195,7 @@ test('theme settings reach portalled section surfaces and dense choices', async 
   await page.getByRole('button', { name: 'Configure access', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Register agent', exact: true });
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
-  await expect(dialog).toHaveCSS('border-radius', '6.4px');
+  await expect(dialog).toHaveCSS('border-radius', '8px');
   await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-left', '18px');
   const footer = dialog.locator('.leaf-modal__footer');
   const color = await footer.evaluate((element) => getComputedStyle(element).backgroundColor);
@@ -251,16 +249,14 @@ test('long modal content scrolls through Scrollbar without moving the heading or
   expect((await header.boundingBox())?.y).toBeCloseTo(before.header?.y ?? 0, 0);
   expect((await footer.boundingBox())?.y).toBeCloseTo(before.footer?.y ?? 0, 0);
   await dialog.screenshot({
-    path: `.quality/refinement-modal-scroll-${testInfo.project.name}.png`,
+    path: test.info().outputPath(`refinement-modal-scroll-${testInfo.project.name}.png`),
   });
   await dialog.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(page.getByRole('button', { name: 'Configure access', exact: true })).toBeFocused();
 });
 
-test('mobile, dark and RTL surfaces remain contained, readable and accessible', async ({
-  page,
-}, testInfo) => {
+test('mobile, dark and RTL surfaces remain contained and readable', async ({ page }, testInfo) => {
   for (const { theme, rtl } of [
     { theme: 'light', rtl: false },
     { theme: 'dark', rtl: true },
@@ -270,7 +266,6 @@ test('mobile, dark and RTL surfaces remain contained, readable and accessible', 
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
-    expect(await violations(page)).toEqual([]);
     await page.getByRole('button', { name: 'Configure access', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Register agent', exact: true });
     await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
@@ -293,9 +288,8 @@ test('mobile, dark and RTL surfaces remain contained, readable and accessible', 
     expect(status).not.toBeNull();
     expect(cancel?.y).toBeCloseTo(save?.y ?? 0, 0);
     expect((status?.y ?? 0) + (status?.height ?? 0)).toBeLessThanOrEqual((save?.y ?? 0) + 1);
-    expect(await violations(page)).toEqual([]);
     await dialog.screenshot({
-      path: `.quality/surface-mobile-${theme}-${testInfo.project.name}.png`,
+      path: test.info().outputPath(`surface-mobile-${theme}-${testInfo.project.name}.png`),
     });
     await dialog.press('Escape');
     await expect(dialog).toBeHidden();
@@ -305,7 +299,6 @@ test('mobile, dark and RTL surfaces remain contained, readable and accessible', 
       exact: true,
     });
     await expect(confirm).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
-    expect(await violations(page)).toEqual([]);
     await confirm.press('Escape');
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -316,3 +309,25 @@ test('mobile, dark and RTL surfaces remain contained, readable and accessible', 
     '0s',
   );
 });
+
+for (const [theme, rtl] of [
+  ['light', false],
+  ['dark', true],
+] as const) {
+  test(`mobile surfaces accessibility in ${theme}`, { tag: '@a11y' }, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(`/?fixture=surfaces&theme=${theme}${rtl ? '&rtl=1' : ''}`);
+    await expectAccessible(page);
+    await page.getByRole('button', { name: 'Configure access', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Register agent', exact: true });
+    await expect(dialog).toBeVisible();
+    await expectAccessible(page);
+    await dialog.press('Escape');
+    await expect(dialog).toBeHidden();
+    await page.getByRole('button', { name: 'Delete project', exact: true }).click();
+    await expect(
+      page.getByRole('alertdialog', { name: 'Delete project', exact: true }),
+    ).toBeVisible();
+    await expectAccessible(page);
+  });
+}

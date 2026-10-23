@@ -7,6 +7,7 @@ import {
   properties,
   readApiRows,
   removeDuplicateApiSections,
+  replaceApiTable,
   typeExpression,
 } from './api-model.mjs';
 import { additions, documentationPage, updatedPages } from './component-metadata.mjs';
@@ -477,8 +478,16 @@ const childrenDescription = [
   'The complete composition for layout="custom". With layout omitted, children replace the automatic layout and emit a development warning. Do not place nested row data here.',
 ];
 const columnDividersDescription = [
-  '仅增加列分隔线；外框、圆角和向下静止阴影始终启用。',
-  'Add column dividers only; the outer frame, radius and downward resting shadow are always enabled.',
+  '增加表体和表尾的列分隔线；表头默认保留上下留空的短分隔线。',
+  'Add body and footer column dividers; headers always keep short, vertically inset separators.',
+];
+const tableStripedDescription = [
+  '从第二行开始展示交替行背景，第一行保留内容底色，并隐藏行间分割线；关闭时显示行间细线。',
+  'Alternate backgrounds from the second row, keeping the first row on the content surface, and hide row dividers. Disable to show fine row dividers.',
+];
+const tableHeightDescription = [
+  '表格视口最大高度，表头始终固定，仅内层卡片中的内容滚动；虚拟模式未指定时使用 400。',
+  'Maximum table viewport height. Headers always stay fixed while content scrolls inside the inner card; virtual mode defaults to 400 when omitted.',
 ];
 const localPaginationDescription = [
   '是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。',
@@ -505,6 +514,12 @@ const onSelectedRowKeysChangeDescription = [
   'Called with normalized, unique string keys whenever selection changes.',
 ];
 const specificDefaults = {
+  'LeafThemeTokens.onPrimaryColor': '`#ffffff`',
+  'LeafThemeTokens.onSuccessColor': '`#ffffff`',
+  'LeafThemeTokens.onDangerColor': '`#ffffff`',
+  'LeafThemeTokens.onWarningColor': '`#ffffff`',
+  'LeafThemeTokens.onInfoColor': '`#ffffff`',
+  'LeafThemeTokens.neutralColor': '`#707070`',
   'AutoCompleteProps.value': "`''`",
   'CascaderProps.value': '`[]`',
   'RadioProps.value': '—',
@@ -678,8 +693,20 @@ const specific = {
     'Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element.',
   ],
   'CardProps.variant': [
-    '卡片外观；inset 在柔和灰色外层中嵌入白色内容卡。',
-    'Card appearance; inset nests a white content surface inside a muted canvas.',
+    '卡片外观；layered 将内容卡与外层标题、底部操作分层展示。',
+    'Card appearance; layered separates the content surface from the heading and footer on a muted canvas.',
+  ],
+  'CardProps.description': [
+    '标题下方的补充说明，仅默认外观支持；layered 不展示。',
+    'Supporting text below the title; only supported by the default appearance, not layered.',
+  ],
+  'CardProps.footer': [
+    '底部内容或操作；layered 展示在内容卡下方的外层区域。',
+    'Footer content or actions; layered places them on the canvas below the content card.',
+  ],
+  'CardProps.selected': [
+    '选中外观：主色边框且无阴影，即使 bordered=false 仍显示边框；仅改变外观，交互由按钮或选择控件提供。',
+    'Selected appearance: primary border and no shadow, even when bordered=false; visual only, with interaction provided by buttons or selection controls.',
   ],
   'DropdownItem.extra': [
     '条目右侧的附加内容；适合放快捷键、状态标签等非交互信息。',
@@ -797,18 +824,10 @@ const specific = {
     '自动布局中的工具栏内容；自定义布局需要自行渲染 DataTable.Toolbar。',
     'Toolbar content for the automatic layout; custom layouts render DataTable.Toolbar themselves.',
   ],
-  'DataTableProps.striped': [
-    '展示交替行背景并隐藏行间分割线；关闭时显示行间细线。',
-    'Alternate row backgrounds and hide row dividers. Disable to show fine dividers between rows.',
-  ],
-  'DataTableProps.stickyHeader': [
-    '表头保持在滚动区域顶部。',
-    'Keep headers at the top of the scroll region.',
-  ],
-  'DataTableProps.maxHeight': [
-    '滚动区域最大高度；虚拟模式未指定时使用 400。',
-    'Maximum scroll height; virtual mode defaults to 400 when omitted.',
-  ],
+  'DataTableProps.striped': tableStripedDescription,
+  'DataTablePresentationProps.striped': tableStripedDescription,
+  'DataTableProps.maxHeight': tableHeightDescription,
+  'DataTablePresentationProps.maxHeight': tableHeightDescription,
   'DataTableProps.minWidth': [
     '表格最小宽度；默认根据可见列宽计算。',
     'Minimum table width; defaults to visible column sizes.',
@@ -967,7 +986,14 @@ const specific = {
     '选择与形状变化的轻微弹性曲线。',
     'A mild spring curve for selection and shape changes.',
   ],
-  'LeafThemeTokens.subtleTextColor': ['更轻的辅助文字色。', 'Subtle supporting text color.'],
+  'LeafThemeTokens.subtleTextColor': [
+    '辅助文字；默认与 mutedTextColor 同值，可独立覆盖。',
+    'Auxiliary text; shares the muted default and can be overridden separately.',
+  ],
+  'LeafThemeTokens.mutedSurfaceColor': [
+    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与 DataTable 外底、Modal 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
+    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, the outer canvases of layered Card and DataTable, Modal and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
+  ],
   'LeafThemeTokens.raisedSurfaceColor': [
     '浮层与抬升表面色。',
     'Raised and floating surface color.',
@@ -1011,8 +1037,8 @@ const specific = {
     'Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence.',
   ],
   'LeafThemeTokens.onPrimaryColor': [
-    '主题背景上的文字色；默认自动选择可读的黑色或白色。',
-    'Primary background text color, chosen automatically for contrast.',
+    '主题实底上的字色；默认白色，可手动设为 #000000。',
+    'Text on primary solid fills; defaults to white and can be set to #000000.',
   ],
   'LeafComponentStateTokens.color': ['当前状态的文字颜色。', 'Text color in this state.'],
   'LeafComponentStateTokens.background': ['当前状态的背景。', 'Background in this state.'],
@@ -1293,12 +1319,9 @@ for (const [page, names] of byPage) {
         }
       const table = rows.join('\n');
       if (section) {
-        document = document.replace(section.expression, (_all, heading, body) => {
-          const existingTable = body.match(/^(?:\|[^\n]*(?:\n|$))+/mu)?.[0];
-          if (!existingTable) return `${heading}\n${table}\n\n${body.trimStart()}`;
-          const remainder = body.slice(existingTable.length).replace(/^(?:[ \t]*\r?\n)+/u, '');
-          return `${heading}${table}\n\n${remainder}`;
-        });
+        document = document.replace(section.expression, (_all, heading, body) =>
+          replaceApiTable(heading, body, table),
+        );
       } else {
         const generatedHeading = name.endsWith('Props')
           ? `${name.replace(/Props$/u, '')} API`
@@ -1309,7 +1332,7 @@ for (const [page, names] of byPage) {
     if (addition && !document.includes(english ? '## Types and interaction' : '## 类型与交互'))
       document += `\n## ${english ? 'Types and interaction' : '类型与交互'}\n\n${english ? 'Import the props and data types when creating reusable configuration.' : '组装可复用配置时，可导入对应的属性和数据类型。'}\n\n\`\`\`ts\nimport type { ${names.join(', ')} } from '@ifhover/leaf-ui';\n\`\`\`\n\n${english ? 'Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.' : '为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。'}\n`;
     await mkdir(path.dirname(file), { recursive: true });
-    await writeFile(file, document);
+    await writeFile(file, `${document.trimEnd()}\n`);
   }
 }
 if (selectedPage && !matchedSelectedPage)

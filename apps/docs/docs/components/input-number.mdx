@@ -100,7 +100,7 @@ import type { InputNumberProps } from '@ifhover/leaf-ui';
 | `parser` | `(text: string) => number \| string` | — | 把显示文字还原为数值。 |
 | `grouping` | `boolean` | — | 启用本地化数字分组。 |
 | `locale` | `string` | — | 语言或数字格式的区域标识。 |
-| `stringMode` | `true` | — | 必需。使用字符串处理高精度数值、步长和边界。 |
+| `stringMode` | `true` | 必填 | 使用字符串处理高精度数值、步长和边界。 |
 | `value` | `string \| null` | — | 受控值。 |
 | `defaultValue` | `string \| null` | `null` | 初始值；非受控模式支持表单重置。 |
 | `onChange` | `(value: string \| null) => void` | — | 值发生变化时调用。 |

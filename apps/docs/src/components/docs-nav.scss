@@ -62,7 +62,7 @@
 
     > :first-child {
       font-size: 19px;
-      font-weight: 600;
+      font-weight: 700;
       line-height: 1.2;
       letter-spacing: -0.04em;
     }
@@ -314,7 +314,7 @@
     white-space: normal;
 
     &[aria-current='page'] {
-      background: var(--leaf-color-primary-alpha-8);
+      background: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
     }
   }
 

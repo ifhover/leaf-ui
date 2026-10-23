@@ -76,6 +76,15 @@ export function removeDuplicateApiSections(document, names) {
   }
   return result;
 }
+
+/** Replace only the matched table, including its actual offset after blank lines or prose. */
+export function replaceApiTable(heading, body, table) {
+  const existing = /^(?:\|[^\n]*(?:\n|$))+/mu.exec(body);
+  if (!existing) return `${heading}\n${table}\n\n${body.trimStart()}`;
+  const prefix = body.slice(0, existing.index).trim();
+  const remainder = body.slice(existing.index + existing[0].length).trimStart();
+  return `${heading}\n${prefix ? `${prefix}\n\n` : ''}${table}\n\n${remainder}`;
+}
 async function modulePath(base, relative) {
   const target = path.resolve(path.dirname(base), relative);
   for (const candidate of [target, `${target}.ts`, `${target}.tsx`, `${target}/index.ts`]) {

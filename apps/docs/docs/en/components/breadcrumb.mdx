@@ -28,7 +28,7 @@ Show the current page within a navigation hierarchy.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | Required | Required. Path items |
+| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | Required | Path items |
 | `separator` | `ReactNode` | ChevronRight | Separator |
 | `maxItems` | `number` | — | Maximum items before collapsing a path. |
 | `itemsBeforeCollapse` | `number` | `1` | Leading items retained after collapse. |
@@ -41,11 +41,11 @@ Show the current page within a navigation hierarchy.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable identifier |
-| `title` | `ReactNode` | Required | Required. Page title |
+| `title` | `ReactNode` | Required | Page title |
 | `icon` | `ReactNode` | — | Leading icon |
 | `menu` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | — | Dropdown items for a breadcrumb. |
 | `href` | `string` | — | Link destination. |
-| `target` | `string` | — | Link target attribute, such as _blank; opens in the current tab when omitted. |
+| `target` | `string` | — | Target selector or element getter; omit to center the step. |
 
 ## Types
 

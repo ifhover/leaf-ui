@@ -28,7 +28,7 @@ Keep quick actions within reach.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'link'` | `'outline'` | Configure variant. |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Configure variant. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
 | `danger` | `boolean` | `false` | Configure danger. |
 | `loading` | `boolean` | `false` | Show a loading state. |
@@ -42,8 +42,8 @@ Keep quick actions within reach.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `label` | `ReactNode` | Required | Visible label or content. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `onClick` | `() => void` | — | Called on click. |
 | `disabled` | `boolean` | — | Disable interaction. |
@@ -52,7 +52,7 @@ Keep quick actions within reach.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | — | Required. Actions for the item. |
+| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | Required | Actions for the item. |
 | `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
 | `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
 | `icon` | `ReactNode` | — | Icon content. |

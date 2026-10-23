@@ -41,8 +41,8 @@ Organize navigation at the top and bottom of an application.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `label` | `ReactNode` | Required | Visible label or content. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `disabled` | `boolean` | — | Disable interaction. |
 | `href` | `string` | — | Link destination. |
@@ -51,7 +51,7 @@ Organize navigation at the top and bottom of an application.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`BottomNavigationItem`](#bottomnavigationitem)`[]` | — | Required. Items to display. |
+| `items` | `readonly `[`BottomNavigationItem`](#bottomnavigationitem)`[]` | Required | Items to display. |
 | `value` | `string` | — | Controlled value. |
 | `defaultValue` | `string` | `''` | Initial value; uncontrolled fields support native form reset. |
 | `onChange` | `(value: string) => void` | — | Called when the value changes. |

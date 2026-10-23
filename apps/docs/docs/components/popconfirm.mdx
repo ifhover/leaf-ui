@@ -45,7 +45,7 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 必需。触发确认浮层的元素。 |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发确认浮层的元素。 |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 显示位置 |
 | `open` | `boolean` | — | 受控展示状态 |
 | `defaultOpen` | `boolean` | `false` | 初始展示状态 |
@@ -58,9 +58,9 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `className` | `string` | — | 容器类名 |
 | `style` | `CSSProperties` | — | 容器内联样式 |
 | `aria-label` | `string` | — | 无可见标题时的可访问名称 |
-| `title` | `ReactNode` | 必填 | 必需。标题内容 |
+| `title` | `ReactNode` | 必填 | 标题内容 |
 | `description` | `ReactNode` | — | 补充说明 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'default'` | `'warning'` | 确认框的状态样式；`error` 为兼容别名。 |
+| `type` | `FeedbackType \| 'error' \| 'default'` | `'warning'` | 确认框的状态样式；`error` 为兼容别名。 |
 | `icon` | `ReactNode` | — | 自定义图标 |
 | `confirmText` | `ReactNode` | — | 确认按钮内容 |
 | `cancelText` | `ReactNode` | — | 取消按钮内容 |

@@ -28,8 +28,8 @@ Resize panels in a workspace.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `children` | `ReactNode` | — | Required. Panel content. |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `children` | `ReactNode` | Required | Panel content. |
 | `min` | `number` | — | Minimum panel percentage. |
 | `max` | `number` | — | Maximum panel percentage. |
 | `collapsible` | `boolean` | — | Allow collapsing and restoring a panel. |
@@ -39,7 +39,7 @@ Resize panels in a workspace.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | — | Required. Workspace panels. |
+| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | Required | Workspace panels. |
 | `sizes` | `readonly number[]` | — | Controlled panel proportions, normalized to 100. |
 | `defaultSizes` | `readonly number[]` | — | Initial panel proportions. |
 | `onResize` | `(sizes: number[]) => void` | — | Called while resizing. |

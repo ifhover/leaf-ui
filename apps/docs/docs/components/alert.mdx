@@ -30,9 +30,9 @@ import { AlertBasic } from '../../src/examples/alert/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | 必填 | 必需。提示内容 |
+| `title` | `ReactNode` | 必填 | 提示内容 |
 | `description` | `ReactNode` | — | 补充说明 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | 提示类型；`error` 为兼容别名 |
+| `type` | `FeedbackType \| 'error'` | `'info'` | 提示类型；`error` 为兼容别名 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `showIcon` | `boolean` | `true` | 展示语义图标 |
 | `closable` | `boolean` | `false` | 允许关闭当前提示 |

@@ -45,7 +45,7 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Required. Element that triggers the confirmation. |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Element that triggers the confirmation. |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Placement |
 | `open` | `boolean` | — | Controlled visibility |
 | `defaultOpen` | `boolean` | `false` | Initial visibility |
@@ -58,9 +58,9 @@ import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |
 | `aria-label` | `string` | — | Accessible name when no visible label is provided |
-| `title` | `ReactNode` | Required | Required. Title content |
+| `title` | `ReactNode` | Required | Title content |
 | `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'default'` | `'warning'` | Confirmation status style; `error` is a compatibility alias. |
+| `type` | `FeedbackType \| 'error' \| 'default'` | `'warning'` | Confirmation status style; `error` is a compatibility alias. |
 | `icon` | `ReactNode` | — | Custom icon |
 | `confirmText` | `ReactNode` | — | Confirm button content |
 | `cancelText` | `ReactNode` | — | Cancel button content |

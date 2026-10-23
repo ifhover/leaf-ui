@@ -28,8 +28,8 @@ Search and run actions quickly.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `label` | `ReactNode` | — | Required. Visible label or content. |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `label` | `ReactNode` | Required | Visible label or content. |
 | `keywords` | `string` | — | Additional search keywords. |
 | `group` | `ReactNode` | — | Group heading. |
 | `icon` | `ReactNode` | — | Icon content. |
@@ -41,7 +41,7 @@ Search and run actions quickly.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`CommandItem`](#commanditem)`[]` | — | Required. Items to display. |
+| `items` | `readonly `[`CommandItem`](#commanditem)`[]` | Required | Items to display. |
 | `open` | `boolean` | — | Control whether the panel is open. |
 | `defaultOpen` | `boolean` | `false` | Initial open state. |
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |

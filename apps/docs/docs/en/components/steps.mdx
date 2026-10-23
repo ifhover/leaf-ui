@@ -28,7 +28,7 @@ Show the progress and current step of a task.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`StepItem`](#stepitem)`[]` | Required | Required. Step items |
+| `items` | `readonly `[`StepItem`](#stepitem)`[]` | Required | Step items |
 | `current` | `number` | `0` | Current step index, starting at 0 |
 | `status` | `'process' \| 'finish' \| 'error'` | `'process'` | Current step status |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction |
@@ -43,7 +43,7 @@ Show the progress and current step of a task.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable identifier |
-| `title` | `ReactNode` | Required | Required. Step title |
+| `title` | `ReactNode` | Required | Step title |
 | `description` | `ReactNode` | — | Supporting description |
 | `icon` | `ReactNode` | — | Custom icon |
 | `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | Override the item status |

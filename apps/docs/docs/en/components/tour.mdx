@@ -29,7 +29,7 @@ Introduce features in a sequence of steps.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
-| `title` | `ReactNode` | — | Required. Title content. |
+| `title` | `ReactNode` | Required | Title content. |
 | `description` | `ReactNode` | — | Additional description. |
 | `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or element getter; omit to center the step. |
 | `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Popup placement relative to the target. |
@@ -38,8 +38,8 @@ Introduce features in a sequence of steps.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `open` | `boolean` | — | Required. Control whether the panel is open. |
-| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | — | Required. Steps in the guided tour. |
+| `open` | `boolean` | Required | Control whether the panel is open. |
+| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | Required | Steps in the guided tour. |
 | `current` | `number` | — | Controlled current step index. |
 | `defaultCurrent` | `number` | `0` | Initial step index. |
 | `onChange` | `(current: number) => void` | — | Called when the value changes. |

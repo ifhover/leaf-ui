@@ -29,7 +29,7 @@ import { TourCentered } from '../../src/examples/tour/centered';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定且唯一的标识。 |
-| `title` | `ReactNode` | — | 必需。标题内容。 |
+| `title` | `ReactNode` | 必填 | 标题内容。 |
 | `description` | `ReactNode` | — | 补充说明。 |
 | `target` | `string \| (() => HTMLElement \| null)` | — | 目标的选择器或返回元素的函数；省略时居中。 |
 | `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 相对目标的浮层位置。 |
@@ -38,8 +38,8 @@ import { TourCentered } from '../../src/examples/tour/centered';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `open` | `boolean` | — | 必需。控制面板是否展开。 |
-| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | — | 必需。引导的步骤列表。 |
+| `open` | `boolean` | 必填 | 控制面板是否展开。 |
+| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | 必填 | 引导的步骤列表。 |
 | `current` | `number` | — | 受控的当前步骤索引。 |
 | `defaultCurrent` | `number` | `0` | 初始步骤索引。 |
 | `onChange` | `(current: number) => void` | — | 值发生变化时调用。 |

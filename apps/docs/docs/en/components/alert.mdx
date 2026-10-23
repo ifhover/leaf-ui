@@ -30,9 +30,9 @@ Present supporting information on a neutral surface with semantic icon colors.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `ReactNode` | Required | Required. Main content |
+| `title` | `ReactNode` | Required | Main content |
 | `description` | `ReactNode` | — | Additional details |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | Feedback type; `error` is a compatibility alias |
+| `type` | `FeedbackType \| 'error'` | `'info'` | Feedback type; `error` is a compatibility alias |
 | `icon` | `ReactNode` | — | Icon content. |
 | `showIcon` | `boolean` | `true` | Show the feedback icon |
 | `closable` | `boolean` | `false` | Allow dismissal |

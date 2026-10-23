@@ -28,7 +28,7 @@ import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | 必填 | 必需。路径列表 |
+| `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | 必填 | 路径列表 |
 | `separator` | `ReactNode` | ChevronRight | 分隔内容 |
 | `maxItems` | `number` | — | 路径折叠前最多展示的项数。 |
 | `itemsBeforeCollapse` | `number` | `1` | 折叠后保留的起始项数。 |
@@ -41,11 +41,11 @@ import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定标识 |
-| `title` | `ReactNode` | 必填 | 必需。页面名称 |
+| `title` | `ReactNode` | 必填 | 页面名称 |
 | `icon` | `ReactNode` | — | 前置图标 |
 | `menu` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | — | 该路径项的下拉菜单。 |
 | `href` | `string` | — | 链接目标。 |
-| `target` | `string` | — | 链接的 target 属性，例如 _blank；省略时在当前标签页打开。 |
+| `target` | `string` | — | 目标的选择器或返回元素的函数；省略时居中。 |
 
 ## 类型
 

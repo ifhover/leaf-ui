@@ -1,7 +1,18 @@
 import path from 'node:path';
-import { expect, test } from '@playwright/test';
+import { TinyColor } from '@ctrl/tinycolor';
+import { expect, type Locator, test } from '@playwright/test';
 
 test.setTimeout(120_000);
+
+async function tokenColor(locator: Locator, token: string) {
+  return new TinyColor(
+    await locator.evaluate(
+      (element, name) => getComputedStyle(element).getPropertyValue(name),
+      token,
+    ),
+  ).toRgbString();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/?fixture=accessibility');
   await page.getByTestId('acceptance-workbench').waitFor({ state: 'visible', timeout: 30_000 });
@@ -40,7 +51,7 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
   await page.getByRole('button', { name: 'Open dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Edit details' });
   await expect(dialog.locator('.leaf-input')).toHaveCSS('height', '30px');
-  await expect(dialog).toHaveCSS('color', 'rgb(237, 237, 237)');
+  await expect(dialog).toHaveCSS('color', await tokenColor(dialog, '--leaf-color-text'));
   await expect(dialog.locator('..')).toHaveAttribute('data-blur', 'off');
   await dialog.getByRole('combobox', { name: 'Dialog owner' }).click();
   await expect(page.getByRole('option', { name: 'Alex', exact: true })).toHaveCSS(
@@ -50,44 +61,83 @@ test('density, theme and blur propagate to popup content', async ({ page }) => {
 });
 
 test('themes produce concrete colors in both appearances', async ({ page }) => {
+  const scope = page.getByTestId('acceptance-workbench');
+  const expectedAlpha = async () =>
+    new TinyColor(
+      await scope.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-color-primary').trim(),
+      ),
+    )
+      .setAlpha(0.12)
+      .toRgbString();
   const result = await page.evaluate(() => {
-    const scope = document.querySelector<HTMLElement>('[data-testid="acceptance-workbench"]');
-    if (!scope) throw new Error('Missing scope');
-    return getComputedStyle(scope).getPropertyValue('--leaf-color-primary-alpha-12');
+    const node = document.querySelector<HTMLElement>('[data-testid="acceptance-workbench"]');
+    if (!node) throw new Error('Missing scope');
+    return getComputedStyle(node).getPropertyValue('--leaf-color-primary-alpha-12').trim();
   });
-  expect(result.trim()).toBe('rgba(30, 150, 79, 0.12)');
+  expect(result).toBe(await expectedAlpha());
   await page.getByRole('switch', { name: 'Dark', exact: true }).check();
   await expect
-    .poll(() =>
-      page
-        .getByTestId('acceptance-workbench')
-        .evaluate((node) =>
-          getComputedStyle(node).getPropertyValue('--leaf-color-primary-alpha-12').trim(),
-        ),
-    )
-    .toBe('rgba(131, 207, 158, 0.12)');
+    .poll(async () => {
+      const actual = await scope.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-color-primary-alpha-12').trim(),
+      );
+      return actual === (await expectedAlpha());
+    })
+    .toBe(true);
 });
 
-test('CSS variable palette and custom Tag update when ancestor colors change', async ({ page }) => {
+test('CSS expressions stay browser-native without a DOM color resolution pass', async ({
+  page,
+}) => {
   await page.goto('/?fixture=colors');
   const scope = page.getByTestId('variable-theme');
   const palette = (key: string) =>
-    scope.evaluate((node, token) => getComputedStyle(node).getPropertyValue(token).trim(), key);
+    scope.evaluate((node, token) => {
+      const probe = document.createElement('span');
+      probe.style.backgroundColor = `var(${token})`;
+      node.append(probe);
+      const value = getComputedStyle(probe).backgroundColor;
+      const canvas = document.createElement('canvas').getContext('2d');
+      if (!canvas) throw new Error('Canvas is required for color normalization');
+      canvas.fillStyle = value;
+      canvas.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = canvas.getImageData(0, 0, 1, 1).data;
+      probe.remove();
+      return `rgba(${r}, ${g}, ${b}, ${((a ?? 0) / 255).toFixed(2)})`;
+    }, key);
+  const tagMatchesSoft = () =>
+    page.getByTestId('variable-tag').evaluate((tag) => {
+      const probe = document.createElement('span');
+      probe.style.backgroundColor = 'var(--leaf-color-primary-soft)';
+      tag.append(probe);
+      const canvas = document.createElement('canvas').getContext('2d');
+      if (!canvas) throw new Error('Canvas is required for color normalization');
+      const normalize = (node: Element) => {
+        canvas.clearRect(0, 0, 1, 1);
+        canvas.fillStyle = getComputedStyle(node).backgroundColor;
+        canvas.fillRect(0, 0, 1, 1);
+        return [...canvas.getImageData(0, 0, 1, 1).data].join(',');
+      };
+      const matches = normalize(tag) === normalize(probe);
+      probe.remove();
+      return matches;
+    });
   await expect
     .poll(() => palette('--leaf-color-primary-alpha-12'), { timeout: 20_000 })
     .toBe('rgba(255, 0, 0, 0.12)');
-  await expect(page.getByTestId('variable-tag')).toHaveCSS(
-    'background-color',
-    'rgb(255, 235, 235)',
-  );
+  const initialSoft = await palette('--leaf-color-primary-soft');
+  await expect.poll(tagMatchesSoft).toBe(true);
   await page.getByRole('button', { name: 'Change custom palette' }).click();
   await expect
     .poll(() => palette('--leaf-color-primary-alpha-12'), { timeout: 20_000 })
     .toBe('rgba(0, 0, 255, 0.12)');
+  const changedSoft = await palette('--leaf-color-primary-soft');
+  expect(changedSoft).not.toBe(initialSoft);
   await expect
-    .poll(() => palette('--leaf-color-surface-raised'), { timeout: 20_000 })
-    .toBe('rgba(1, 1, 1, 1)');
-  await expect(page.getByTestId('variable-tag')).toHaveCSS('background-color', 'rgb(0, 0, 20)');
+    .poll(() => palette('--leaf-color-surface'), { timeout: 20_000 })
+    .toBe('rgba(0, 0, 0, 1.00)');
+  await expect.poll(tagMatchesSoft).toBe(true);
 });
 
 test('reflow at 320 CSS px keeps actions and overlays reachable', async ({ page }) => {

@@ -28,11 +28,12 @@ export function RefinementsFixture() {
         <TreeSelect aria-label="Empty tree select" options={people} />
         <Tree
           aria-label="Animated tree"
-          data={people.map(({ value, label }) => ({
+          data={people.map(({ value, label, disabled }) => ({
             key: value,
             title: label,
+            disabled,
           }))}
-          defaultSelectedKeys={['alice']}
+          defaultSelectedKeys={[params.has('disabled-selection') ? 'disabled' : 'alice']}
         />
         <Select
           aria-label="Custom option height select"

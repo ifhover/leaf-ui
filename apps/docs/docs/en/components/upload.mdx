@@ -96,6 +96,7 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 
 
 ## UploadProps API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Controlled file list; the internal uncontrolled list is used when omitted. |
@@ -130,6 +131,7 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
 
 ## UploadFile API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `uid` | `string` | Required | Stable, unique file identity used to target upload and cancellation. |
@@ -144,12 +146,14 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `response` | `unknown` | — | Raw server response. |
 
 ## UploadChangeInfo API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `file` | [`UploadFile`](#uploadfile-api) | — | File affected by this change. |
 | `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | Required | Reason for the change. |
 
 ## UploadRejection API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `file` | `File` | Required | Rejected file. |
@@ -157,6 +161,7 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `message` | `string` | Required | User-readable rejection message. |
 
 ## UploadRequest API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `file` | `File` | Required | File to upload. |
@@ -164,6 +169,7 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `onProgress` | `(percent: number) => void` | Required | Report upload progress. |
 
 ## UploadResult API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `url` | `string` | — | Uploaded file URL. |
@@ -185,6 +191,7 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `originFile` | `File` | — | Original browser File. |
 
 ## UploadHandle
+
 | Method | Type | Description |
 | --- | --- | --- |
 | `upload` | `(uid?: string) => void` | Start the file with the given uid, or all pending files when uid is omitted. |

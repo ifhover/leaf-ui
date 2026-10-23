@@ -28,16 +28,16 @@ Navigate long pages and keep important actions visible.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `title` | `ReactNode` | — | Required. Title content. |
-| `href` | `string` | — | Required. Link destination. |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `title` | `ReactNode` | Required | Title content. |
+| `href` | `string` | Required | Link destination. |
 | `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Anchor entries. |
 
 ## Anchor API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Required. Items to display. |
+| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | Required | Items to display. |
 | `container` | `() => HTMLElement \| Window` | — | Custom portal or scroll container. |
 | `offset` | `number` | `12` | Scroll-target distance from the container top in pixels. |
 | `activeKey` | `string` | — | Controlled active section. |

@@ -18,22 +18,19 @@ const bundle = await build({
   platform: 'node',
   format: 'esm',
 });
-const { defaultColors, deriveColors, densityTokens } = await import(
+const { deriveColors, densityTokens } = await import(
   `data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`
 );
 const { TinyColor } = await import('@ctrl/tinycolor');
 const palettes = Object.fromEntries(
   ['light', 'dark'].map((mode) => [
     mode,
-    {
-      ...defaultColors[mode],
-      ...Object.fromEntries(
-        Object.entries(deriveColors(mode)).map(([key, value]) => [
-          key.slice('--leaf-color-'.length),
-          value,
-        ]),
-      ),
-    },
+    Object.fromEntries(
+      Object.entries(deriveColors(mode)).map(([key, value]) => [
+        key.slice('--leaf-color-'.length),
+        value,
+      ]),
+    ),
   ]),
 );
 const colorValue = (value) => {
@@ -81,15 +78,30 @@ for (const [mode, density] of Object.entries(densityTokens)) {
   };
 }
 tokens.foundation = {
-  radiusSm: { $type: 'dimension', $value: { value: 6, unit: 'px' } },
-  radius: { $type: 'dimension', $value: { value: 10, unit: 'px' } },
+  radiusSm: { $type: 'dimension', $value: { value: 4, unit: 'px' } },
+  radius: { $type: 'dimension', $value: { value: 8, unit: 'px' } },
   radiusMd: { $type: 'dimension', $value: { value: 12, unit: 'px' } },
   radiusLg: { $type: 'dimension', $value: { value: 16, unit: 'px' } },
+  fontWeightNormal: { $type: 'fontWeight', $value: 400 },
+  fontWeightMedium: { $type: 'fontWeight', $value: 500 },
+  fontWeightStrong: { $type: 'fontWeight', $value: 700 },
   fontSizeSm: { $type: 'dimension', $value: { value: 13, unit: 'px' } },
   fontSize: { $type: 'dimension', $value: { value: 14, unit: 'px' } },
   lineHeight: { $type: 'dimension', $value: { value: 20, unit: 'px' } },
   motionDuration: { $type: 'duration', $value: { value: 200, unit: 'ms' } },
 };
+studio.foundation = Object.fromEntries(
+  Object.entries(tokens.foundation).map(([key, token]) => [
+    key,
+    {
+      type: token.$type,
+      value:
+        typeof token.$value === 'object'
+          ? `${token.$value.value}${token.$value.unit}`
+          : token.$value,
+    },
+  ]),
+);
 await fs.writeFile(
   path.join(publicPath, 'leaf.tokens.json'),
   `${JSON.stringify(tokens, null, 2).replace(/"components": \[\s*([\d.]+),\s*([\d.]+),\s*([\d.]+)\s*\]/gu, '"components": [$1, $2, $3]')}\n`,
@@ -102,56 +114,98 @@ const escapeXml = (value) =>
   String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 const text = (x, y, value, size = 14, color = 'text', weight = 400) =>
   `<text x="${x}" y="${y}" fill="${escapeXml(color)}" font-size="${size}" font-weight="${weight}">${escapeXml(value)}</text>`;
-const rect = (x, y, w, h, fill, radius = 10, stroke = 'none', filter = '') =>
+const rect = (x, y, w, h, fill, radius = 8, stroke = 'none', filter = '') =>
   `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${radius}" fill="${escapeXml(fill)}" stroke="${escapeXml(stroke)}"${filter ? ` filter="${escapeXml(filter)}"` : ''}/>`;
 const controlHeight = densityTokens.comfortable['control-height'];
+const foundationColorKeys = [
+  'primary',
+  'success',
+  'danger',
+  'warning',
+  'info',
+  'neutral',
+  'on-primary',
+  'on-success',
+  'on-danger',
+  'on-warning',
+  'on-info',
+  'text',
+  'text-muted',
+  'surface',
+  'surface-muted',
+  'border',
+];
 for (const [mode, p] of Object.entries(palettes)) {
-  let foundation = text(32, 50, `Leaf UI / ${mode} foundations`, 28, p.text, 600);
-  const colors = Object.entries(defaultColors[mode]);
+  let foundation = text(32, 50, `Leaf UI / ${mode} foundations`, 28, p.text, 700);
+  const colors = foundationColorKeys.map((key) => [key, p[key]]);
   for (const [index, [key, value]] of colors.entries()) {
     const x = 32 + (index % 4) * 200,
       y = 82 + Math.floor(index / 4) * 138;
     foundation += `<g id="color-${key}">${rect(x, y, 172, 68, value, 12, p.border)}${text(x, y + 94, key, 14, p.text, 500)}${text(x, y + 116, value, 12, p['text-muted'])}</g>`;
   }
+  const typeY = 82 + Math.ceil(colors.length / 4) * 138 + 22;
   foundation +=
-    text(32, 542, 'Typography · Inter / system sans-serif', 20, p.text, 600) +
-    text(32, 580, 'Heading 24 / 600', 24, p.text, 600) +
-    text(32, 614, 'Body 14 / 20 · Semantic colors and stable geometry', 14, p.text) +
-    text(32, 650, `Comfortable: ${controlHeight}px controls / 8px spacing`, 14, p['text-muted']) +
+    text(32, typeY, 'Typography · Inter / system sans-serif', 20, p.text, 700) +
+    text(32, typeY + 38, 'Heading 24 / 700', 24, p.text, 700) +
+    text(32, typeY + 72, 'Body 14 / 20 / 400 · Labels 500 · Strong 700', 14, p.text) +
     text(
       32,
-      680,
+      typeY + 108,
+      `Comfortable: ${controlHeight}px controls / 8px spacing`,
+      14,
+      p['text-muted'],
+    ) +
+    text(
+      32,
+      typeY + 138,
       `Compact: ${densityTokens.compact['control-height']}px controls / 6px spacing`,
       14,
       p['text-muted'],
     );
-  let components = `<defs><filter id="button-outline-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="0.8" flood-color="#000000" flood-opacity="0.06"/></filter></defs>${text(32, 50, `Leaf UI / ${mode} component states`, 28, p.text, 600)}`;
+  let components = `<defs><filter id="button-outline-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="1" stdDeviation="0.8" flood-color="#000000" flood-opacity="0.06"/></filter></defs>${text(32, 50, `Leaf UI / ${mode} component states`, 28, p.text, 700)}`;
   const states = ['Default', 'Hover', 'Pressed', 'Disabled'];
-  for (const [row, variant] of ['solid', 'outline'].entries()) {
+  for (const [row, variant] of ['solid', 'outline', 'text', 'link'].entries()) {
     const y = 94 + row * 84;
     components += text(32, y + 24, variant, 14, p['text-muted']);
     for (const [col, state] of states.entries()) {
       const x = 160 + col * 160;
       const bg =
-        variant === 'solid' ? (state === 'Pressed' ? p['primary-active'] : p.primary) : p.surface;
+        variant === 'solid'
+          ? state === 'Pressed'
+            ? p['primary-active']
+            : p.primary
+          : variant === 'text' || variant === 'link'
+            ? variant === 'text' && (state === 'Hover' || state === 'Pressed')
+              ? p['option-hover']
+              : 'none'
+            : state === 'Pressed'
+              ? new TinyColor(p.surface).mix(p['surface-muted'], 50).toRgbString()
+              : p.surface;
       const border =
-        variant === 'outline' ? (state === 'Pressed' ? p['primary-active'] : p.border) : undefined;
-      const color = variant === 'solid' ? p['on-primary'] : p.text;
+        variant === 'outline'
+          ? state === 'Hover' || state === 'Pressed'
+            ? p['border-hover']
+            : p.border
+          : undefined;
+      const color = variant === 'solid' ? p['on-primary'] : variant === 'link' ? p.primary : p.text;
       const shadow = variant === 'outline' ? 'url(#button-outline-shadow)' : '';
-      components += `<g id="button-${variant}-${state.toLowerCase()}" opacity="${state === 'Disabled' ? 0.45 : 1}">${rect(x, y, 136, controlHeight, bg, 10, border, shadow)}${text(x + 24, y + controlHeight / 2 + 5, state, 14, color, 500)}</g>`;
+      components += `<g id="button-${variant}-${state.toLowerCase()}" opacity="${state === 'Disabled' ? 0.45 : 1}">${rect(x, y, 136, controlHeight, bg, 8, border, shadow)}${text(x + 24, y + controlHeight / 2 + 5, state, 14, color, 500)}</g>`;
     }
   }
-  components += text(32, 450, 'Fields / default · focus · error', 20, p.text, 600);
+  components += text(32, 450, 'Fields / default · focus · error', 20, p.text, 700);
   for (const [index, state] of ['Default', 'Focus', 'Error'].entries()) {
     const x = 32 + index * 264;
-    components += `<g id="input-${state.toLowerCase()}">${rect(x, 487, 240, controlHeight, p.surface, 10, state === 'Error' ? p.danger : state === 'Focus' ? new TinyColor(p.border).mix(p.text, 45).toHexString() : p.border)}${text(x + 10, 487 + controlHeight / 2 + 5, state, 14, p.text)}</g>`;
+    components += `<g id="input-${state.toLowerCase()}">${rect(x, 487, 240, controlHeight, p.surface, 8, state === 'Error' ? p.danger : state === 'Focus' ? p.primary : p.border)}${text(x + 10, 487 + controlHeight / 2 + 5, state, 14, p.text)}</g>`;
   }
-  components += `<g id="alert-info">${rect(32, 557, 784, 72, p['surface-muted'], 16, p['border-surface-70'])}${text(59, 596, 'i', 18, p.info, 600)}${text(90, 584, 'Keep the team informed', 14, p.text, 500)}${text(90, 608, 'Readable spacing and a semantic status icon.', 14, p['text-muted'])}</g>`;
-  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 16, p.border)}${rect(392, 681, 64, 64, p['surface-muted'], 32)}<path d="M410 713 L420 723 L439 702" fill="none" stroke="${p.success}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${text(332, 778, 'Project saved', 24, p.text, 600)}${text(278, 812, 'Your changes are ready for the team.', 14, p['text-muted'])}</g>`;
-  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p.surface, 16, p.border)}${text(56, 910, 'Dialog heading', 16, p.text, 600)}${rect(56, 940, 736, controlHeight, p.surface, 10, p.border)}${text(66, 940 + controlHeight / 2 + 5, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(680, 997, 112, controlHeight, p.primary, 10)}${text(710, 997 + controlHeight / 2 + 5, 'Save', 14, p['on-primary'], 500)}</g>`;
+  components += `<g id="alert-info">${rect(32, 557, 784, 72, p['surface-muted'], 12, p.border)}${text(59, 596, 'i', 18, p.info, 700)}${text(90, 584, 'Keep the team informed', 14, p.text, 500)}${text(90, 608, 'Readable spacing and a semantic status icon.', 14, p['text-muted'])}</g>`;
+  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 12, p.border)}${rect(392, 681, 64, 64, p['surface-muted'], 32)}<path d="M410 713 L420 723 L439 702" fill="none" stroke="${p.success}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${text(332, 778, 'Project saved', 24, p.text, 700)}${text(278, 812, 'Your changes are ready for the team.', 14, p['text-muted'])}</g>`;
+  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p.surface, 16, p.border)}${text(56, 910, 'Dialog heading', 16, p.text, 700)}${rect(56, 940, 736, controlHeight, p.surface, 8, p.border)}${text(66, 940 + controlHeight / 2 + 5, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(680, 997, 112, controlHeight, p.primary, 8)}${text(710, 997 + controlHeight / 2 + 5, 'Save', 14, p['on-primary'], 500)}</g>`;
   const svg = (height, content) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="848" height="${height}" viewBox="0 0 848 ${height}" font-family="Inter, Arial, sans-serif"><title>Leaf UI ${mode} design resources</title>${rect(0, 0, 848, height, p.surface, 0)}${content}</svg>\n`;
-  await fs.writeFile(path.join(publicPath, `leaf-${mode}-foundations.svg`), svg(724, foundation));
+  await fs.writeFile(
+    path.join(publicPath, `leaf-${mode}-foundations.svg`),
+    svg(typeY + 176, foundation),
+  );
   await fs.writeFile(path.join(publicPath, `leaf-${mode}-components.svg`), svg(1080, components));
 }
 await fs.writeFile(

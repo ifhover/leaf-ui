@@ -12,6 +12,7 @@ import {
   properties,
   readApiRows,
   removeDuplicateApiSections,
+  replaceApiTable,
 } from './api-model.mjs';
 import { rehypeApiTypes } from './api-type-display.mjs';
 import {
@@ -266,6 +267,49 @@ test('API section lookup keeps the first table in document order and removes dup
   assert.equal(cleaned.match(/^#{2,6} DemoOption\r?$/gmu)?.length, 1);
   assert.match(cleaned, /First table/u);
   assert.doesNotMatch(cleaned, /Duplicate table/u);
+});
+
+test('API table replacement respects its offset and is idempotent with LF and CRLF', () => {
+  const table = '| Property | Description |\n| --- | --- |\n| `value` | New value |';
+  for (const newline of ['\n', '\r\n']) {
+    const heading = `## DemoOption${newline}`;
+    const body = [
+      '',
+      'Intro paragraph.',
+      '',
+      '| Property | Description |',
+      '| --- | --- |',
+      '| `value` | Old value |',
+      '',
+      'Trailing paragraph.',
+    ].join(newline);
+    const first = replaceApiTable(heading, body, table);
+    assert.match(first, /Intro paragraph\./u);
+    assert.match(first, /Trailing paragraph\./u);
+    assert.doesNotMatch(first, /Old value/u);
+    assert.equal(first.match(/\| `value` \|/gu)?.length, 1);
+    assert.equal(replaceApiTable(heading, first.slice(heading.length), table), first);
+  }
+});
+
+test('theme-token reference has one table and no duplicate properties for every public type', async () => {
+  for (const locale of ['', 'en/']) {
+    const document = await readFile(
+      new URL(`../docs/${locale}api/theme-tokens.mdx`, import.meta.url),
+      'utf8',
+    );
+    for (const name of [
+      'LeafThemeTokens',
+      'LeafComponentTokens',
+      'LeafComponentStateTokens',
+      'LeafThemeStyle',
+    ]) {
+      const body = apiSectionMatch(document, name)?.match[2] ?? '';
+      assert.equal([...body.matchAll(/^\| (?:Property|属性) \|/gmu)].length, 1, `${locale}${name}`);
+      const properties = [...body.matchAll(/^\| `([^`]+)` \|/gmu)].map((match) => match[1]);
+      assert.equal(properties.length, new Set(properties).size, `${locale}${name}`);
+    }
+  }
 });
 
 test('optional API values are not marked required directly from declarations', async () => {
