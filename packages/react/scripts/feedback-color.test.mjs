@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
+import { compiledStyles } from './compiled-styles.mjs';
 
 const PACKAGE_ROOT = path.resolve(import.meta.dirname, '..');
 const FEEDBACK_FILES = [
@@ -29,19 +30,6 @@ async function feedbackSources() {
     FEEDBACK_FILES.map(async (file) => [file, await readSource(file)]),
   );
   return new Map(entries);
-}
-
-function block(source, selector) {
-  const start = source.indexOf(selector);
-  assert.notEqual(start, -1, `Expected ${selector} in source`);
-  const open = source.indexOf('{', start);
-  let depth = 0;
-  for (let index = open; index < source.length; index++) {
-    if (source[index] === '{') depth++;
-    if (source[index] === '}') depth--;
-    if (depth === 0) return source.slice(open + 1, index);
-  }
-  assert.fail(`Unclosed block for ${selector}`);
 }
 
 async function allStyleSources(directory = path.join(PACKAGE_ROOT, 'src')) {
@@ -83,48 +71,29 @@ test('each local feedback property is consumed in its owning component styles', 
   }
 });
 
-test('feedback components retain their semantic color assignments', async () => {
-  const [alert, notification, popconfirm, message] = await Promise.all(
-    FEEDBACK_FILES.map(readSource),
-  );
-
-  for (const type of ['info', 'success', 'warning']) {
-    const icon = block(popconfirm, `&--${type} {`);
-    assert.match(icon, new RegExp(`color: var\\(--leaf-color-${type}\\)`, 'u'));
+test('compiled feedback components retain semantic assignments and the danger alias', async () => {
+  for (const [file, prefix, property] of [
+    ['alert/alert.scss', '.leaf-alert--', '--leaf-feedback-color'],
+    ['notification/notification.scss', '.leaf-notification--', '--leaf-notification-color'],
+    ['message/message.scss', '.leaf-message--', '--leaf-feedback-color'],
+    ['popconfirm/popconfirm.scss', '.leaf-popconfirm__icon--', 'color'],
+  ]) {
+    const rule = await compiledStyles(file);
+    for (const tone of ['info', 'success', 'warning', 'danger', 'error']) {
+      assert.equal(
+        rule(file.startsWith('alert/') && tone === 'success' ? '.leaf-alert' : `${prefix}${tone}`)[
+          property
+        ],
+        `var(--leaf-color-${tone === 'error' ? 'danger' : tone})`,
+      );
+    }
   }
-  const dangerIcon = block(popconfirm, '&--danger,');
-  assert.match(dangerIcon, /color: var\(--leaf-color-danger\)/u);
-  assert.match(popconfirm, /&--error\s*\{(?=[\s\S]*?color: var\(--leaf-color-danger\))/u);
-
-  assert.match(alert, /--leaf-feedback-color: var\(--leaf-color-success\)/u);
-  assert.match(alert, /--leaf-feedback-color: var\(--leaf-color-info\)/u);
-  assert.match(alert, /--leaf-feedback-color: var\(--leaf-color-warning\)/u);
-  assert.match(alert, /--leaf-feedback-color: var\(--leaf-color-danger\)/u);
-  assert.match(
-    notification,
-    /@each \$type in info, success, warning, danger, error\s*\{[\s\S]*?--leaf-notification-color: var\(--leaf-color-#\{if\(sass\(\$type == error\): danger; else: \$type\)\}\)/u,
-  );
-  assert.match(
-    message,
-    /@each \$type in info, success, warning, danger, error\s*\{[\s\S]*?--leaf-feedback-color: var\(--leaf-color-#\{if\(sass\(\$type == error\): danger; else: \$type\)\}\)/u,
-  );
 });
 
-test('alert close uses the shared neutral option hover', async () => {
-  const source = await readSource('alert/alert.scss');
-  const close = block(source, '&__close {');
-  assert.match(close, /&:hover\s*\{[\s\S]*?background:\s*var\(--leaf-color-option-hover\);/u);
-  assert.doesNotMatch(source, /--leaf-color-border-surface-35/u);
-});
-
-test('confirm error uses the shared danger option family and readable danger ink', async () => {
-  const source = await readSource('alert/alert.scss');
-  const confirm = block(source, '.leaf-confirm {');
-  const error = block(source, '.leaf-confirm-error {');
-
-  assert.match(source, /@use '\.\.\/styles\/mixins' as mixins;/u);
-  assert.match(confirm, /@include mixins\.danger-soft-feedback-family;/u);
-  assert.match(error, /color:\s*var\(--leaf-color-danger-ink\);/u);
-  assert.match(error, /background:\s*var\(--leaf-danger-soft-background\);/u);
-  assert.doesNotMatch(source, /--leaf-color-danger-alpha-7/u);
+test('compiled alert close and confirm error use their intended feedback roles', async () => {
+  const rule = await compiledStyles('alert/alert.scss');
+  assert.equal(rule('.leaf-alert__close:hover').background, 'var(--leaf-color-option-hover)');
+  const error = rule('.leaf-confirm-error');
+  assert.equal(error.color, 'var(--leaf-color-danger-ink)');
+  assert.equal(error.background, 'var(--leaf-danger-soft-background)');
 });

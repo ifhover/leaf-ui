@@ -34,6 +34,32 @@ const { preset, tokens } = await import(
   `data:text/javascript;base64,${Buffer.from(outputFiles[0].text).toString('base64')}`
 );
 const cssTheme = renderTailwindTheme(tokens);
+test('Tailwind exposes semantic shades, neutral steps and semantic usage roles', () => {
+  const semanticShades = ['light-3', 'light-7', 'light-9', 'dark-1', 'dark-3', 'dark-7', 'dark-9'];
+  const neutralSteps = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+  for (const family of ['primary', 'success', 'danger', 'warning', 'info']) {
+    for (const shade of semanticShades)
+      assert.equal(
+        tokens.colors[`leaf-${family}-${shade}`],
+        `var(--leaf-color-${family}-${shade})`,
+      );
+    for (const step of neutralSteps)
+      assert.equal(tokens.colors[`leaf-${family}-${step}`], undefined);
+    for (const role of ['soft', 'soft-hover', 'soft-active', 'ink', 'border'])
+      assert.equal(tokens.colors[`leaf-${family}-${role}`], `var(--leaf-color-${family}-${role})`);
+    assert.equal(tokens.colors[`leaf-on-${family}`], `var(--leaf-color-on-${family})`);
+  }
+  for (const step of neutralSteps)
+    assert.equal(tokens.colors[`leaf-neutral-${step}`], `var(--leaf-color-neutral-${step})`);
+  for (const shade of semanticShades)
+    assert.equal(tokens.colors[`leaf-neutral-${shade}`], undefined);
+  assert.equal(
+    Object.keys(tokens.colors).filter((name) =>
+      /^leaf-(?:primary|success|danger|warning|info)-\d+$/u.test(name),
+    ).length,
+    0,
+  );
+});
 const utilityPrefixes = {
   colors: 'bg',
   borderRadius: 'rounded',
@@ -82,6 +108,13 @@ const examples = await Promise.all(
 const guideClasses = examples.flatMap((source) =>
   [...source.matchAll(/className="([^"]+)"/g)].flatMap((match) => match[1].split(/\s+/)),
 );
+for (const guide of guides) {
+  assert.match(guide, /leaf-primary-light-9/u);
+  assert.doesNotMatch(
+    guide,
+    /leaf-(?:primary|success|danger|warning|info)-(?:100|200|300|400|500|600|700|800|900)\b/u,
+  );
+}
 const commonClasses = [...new Set([...tokenClasses, ...extraClasses, ...guideClasses])];
 
 function ruleFor(root, className) {

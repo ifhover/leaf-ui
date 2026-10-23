@@ -162,7 +162,7 @@ function ExpandedComponentDefaults() {
       DatePicker: { size: 'sm', allowClear: true, popupClassName: 'regional-date-panel' },
       Card: { size: 'sm' },
       Tabs: { size: 'lg', closable: true },
-      Tag: { variant: updated ? 'soft' : 'solid', color: 'success' },
+      Tag: { variant: updated ? 'soft' : 'outline', color: 'success' },
       Confirm: { confirmText: updated ? 'Proceed now' : 'Proceed', cancelText: 'Back' },
       Message: { duration: 30, type: 'warning', closable: true },
       Notification: { duration: 30, placement: 'bottom-left' },

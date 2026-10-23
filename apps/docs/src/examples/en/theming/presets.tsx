@@ -48,7 +48,7 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
       components: {
         Card: {
           headerBackground:
-            'linear-gradient(180deg, var(--leaf-color-primary-surface-28), var(--leaf-color-primary-surface-8) 48%, var(--leaf-color-primary-surface-14))',
+            'linear-gradient(180deg, color-mix(in srgb, var(--leaf-color-primary) 28%, var(--leaf-color-surface)), color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface)) 48%, color-mix(in srgb, var(--leaf-color-primary) 14%, var(--leaf-color-surface)))',
         },
         Button: {
           active: { shadow: 'inset 1px 2px 3px rgb(0 0 0 / 0.25)' },

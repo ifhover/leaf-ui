@@ -1,11 +1,11 @@
 import { Flex, Space, Tag, Text } from '@ifhover/leaf-ui';
 import { Sparkles } from 'lucide-react';
 
-type TagVariant = 'soft' | 'solid';
+type TagVariant = 'soft' | 'outline';
 
 const variants = [
   { value: 'soft', label: 'Tinted' },
-  { value: 'solid', label: 'Solid' },
+  { value: 'outline', label: 'Outlined' },
 ] as const;
 const statuses = [
   { color: 'success', label: 'Published' },
@@ -14,30 +14,19 @@ const statuses = [
   { color: 'info', label: 'Info' },
 ] as const;
 
-function TagDot() {
-  return (
-    <span
-      style={{
-        display: 'block',
-        width: 8,
-        height: 8,
-        borderRadius: '50%',
-        background: 'currentColor',
-      }}
-    />
-  );
-}
-
 function TagGallery({ variant, label }: { variant: TagVariant; label: string }) {
   return (
     <Space direction="vertical" align="stretch" size="sm">
       <Text strong>{label}</Text>
       <Flex gap="sm" wrap>
         {statuses.map((status) => (
-          <Tag key={status.color} color={status.color} icon={<TagDot />} variant={variant}>
+          <Tag key={status.color} color={status.color} variant={variant}>
             {status.label}
           </Tag>
         ))}
+        <Tag dot={false} variant={variant}>
+          No dot
+        </Tag>
         <Tag color="primary" icon={<Sparkles />} variant={variant}>
           Custom icon
         </Tag>

@@ -212,7 +212,7 @@ Common theme options. Unspecified fields inherit from the outer region.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `primaryColor` | `string` | `'#1e964f'` | Primary color with derived interaction states; dark appearance defaults to a lighter green |
-| `borderRadius` | `number \| string` | `10` | Base radius; small / medium / large radii use × 0.6 / 1.2 / 1.6 |
+| `borderRadius` | `number \| string` | `8` | Base radius; small / medium / large radii use × 0.5 / 1.5 / 2 |
 | `controlHeight` | `number \| string` | `34` | Base height; small / large heights use − / + 6px |
 | `fontSize` | `number \| string` | `14` | Base font; small font − 1px, large font + 2px |
 | `fontFamily` | `string` | System sans-serif | Font family |
@@ -221,7 +221,7 @@ Common theme options. Unspecified fields inherit from the outer region.
 | `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | Optional advanced overrides |
 | `spacing` | `number` | — | Base spacing; other spacing values are derived. |
 | `lineHeight` | `number \| string` | `20` | Body line height. Numbers are pixels, except numbers greater than 0 and up to 4 which keep the legacy multiplier meaning; strings are CSS lengths. |
-| `headingWeight` | `number` | — | Weight of Typography document headings; component titles use `tokens.fontWeight`. |
+| `headingWeight` | `400 \| 500 \| 700` | — | Card and Typography heading weight, default 700; other component labels use `tokens.fontWeight`, default 500. |
 | `elevation` | `'none' \| 'soft' \| 'medium'` | — | Overall shadow strength. |
 | `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Responsive thresholds used by useBreakpoint. |
 | `components` | `Record<string, `[`LeafComponentTokens`](../api/theme-tokens#leafcomponenttokens)`>` | — | Override local styles by component name. |

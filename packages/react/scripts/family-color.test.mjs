@@ -30,7 +30,18 @@ test('family recipes compile supported semantic variants', async () => {
     .field-warning { @include colors.field-status(warning); }
   `);
   assert.match(result.css, /--leaf-accent-soft-background:/u);
+  assert.match(result.css, /--leaf-accent-soft-background: var\(--leaf-color-primary-soft\)/u);
+  assert.match(result.css, /--leaf-danger-soft-background: var\(--leaf-color-danger-soft\)/u);
+  assert.match(
+    result.css,
+    /--leaf-calendar-selected-background: var\(--leaf-color-primary-soft\)/u,
+  );
   assert.match(result.css, /--leaf-status-label-foreground: var\(--leaf-color-on-info\)/u);
+  assert.match(result.css, /--leaf-status-label-background: var\(--leaf-color-success-soft\)/u);
+  assert.match(
+    result.css,
+    /--leaf-status-label-close-background: color-mix\(in srgb, currentColor 10%, transparent\)/u,
+  );
   assert.match(result.css, /--leaf-field-color: var\(--leaf-color-danger\)/u);
 });
 
@@ -46,27 +57,6 @@ test('recipes reject invented visual variants instead of silently picking a colo
       compile(`@use 'mixins' as colors; .test { @include colors.${expression}; }`),
       /Unknown/u,
     );
-  }
-});
-
-test('panel, segmented and halo consumers select recipes without choosing numeric shades', async () => {
-  const consumers = {
-    'modal/modal.scss': ['panel-canvas-family', 'overlay-family'],
-    'drawer/drawer.scss': ['overlay-family'],
-    'tour/tour.scss': ['overlay-family'],
-    'tabs/tabs.scss': ['segmented-surface-family'],
-    'colorpicker/colorpicker.scss': ['segmented-surface-family', 'field-status'],
-    'shared/calendar.scss': ['panel-canvas-family', 'calendar-selection-family'],
-    'calendar/calendar.scss': ['calendar-selection-family'],
-    'inputotp/inputotp.scss': ['accent-halo-family'],
-    'slider/slider.scss': ['accent-halo-family'],
-  };
-  for (const [file, families] of Object.entries(consumers)) {
-    const source = await fs.readFile(path.join(root, 'src', file), 'utf8');
-    for (const family of families)
-      assert.ok(source.includes(`mixins.${family}`), `${file}: ${family}`);
-    assert.doesNotMatch(source, /var\(--leaf-color-[\w-]+-\d+(?:\.\d+)?[,)\s]/u, file);
-    assert.doesNotMatch(source, /color-mix\(/u, file);
   }
 });
 

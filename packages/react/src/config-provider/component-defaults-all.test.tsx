@@ -143,7 +143,7 @@ describe('component defaults rollout', () => {
             Message: { duration, type: 'warning' },
             Notification: { duration, placement: 'bottom-left' },
             Confirm: { confirmText: 'Proceed', showCancel: false },
-            Tag: { variant: 'solid' },
+            Tag: { variant: 'outline' },
             Input: { size: 'sm' },
             LoadingBar: { height: 5, position: 'bottom' },
           }}
@@ -156,7 +156,7 @@ describe('component defaults rollout', () => {
     fireEvent.click(screen.getByText('Message request'));
     fireEvent.click(screen.getByText('Notification request'));
     expect(screen.getByText('Message content tag').closest('.leaf-tag')).toHaveClass(
-      'leaf-tag--solid',
+      'leaf-tag--outline',
     );
     expect(document.querySelector('.leaf-notification-region--bottom-left')).toHaveTextContent(
       'Scoped notification',
@@ -288,7 +288,7 @@ describe('component defaults rollout', () => {
           Badge: { dot: true },
           Card: { size: 'sm', bordered: true },
           Progress: { showInfo: false, active: false },
-          Tag: { variant: 'solid', closable: true },
+          Tag: { variant: 'outline', closable: true },
         }}
       >
         <Alert title="Scoped warning" />
@@ -308,7 +308,7 @@ describe('component defaults rollout', () => {
     expect(container.querySelector('.leaf-card')).toHaveClass('leaf-card--sm');
     expect(container.querySelector('.leaf-card')).not.toHaveClass('leaf-card--bordered');
     expect(screen.getByRole('progressbar')).not.toHaveAttribute('data-active');
-    expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--solid');
+    expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--outline');
     expect(container.querySelector('.leaf-tag__close')).toBeNull();
   });
 

@@ -44,6 +44,7 @@ test('tag typography, radius and variant ink', async ({ page }) => {
       };
       return {
         boldClass: node.classList.contains('leaf-tag--bold'),
+        outline: node.classList.contains('leaf-tag--outline'),
         foreground: normalize(style.color),
         background: normalize(style.backgroundColor),
         radius: style.borderTopLeftRadius,
@@ -53,7 +54,7 @@ test('tag typography, radius and variant ink', async ({ page }) => {
   );
   for (const value of values) {
     expect(value.boldClass).toBe(false);
-    expect(value.radius).toBe('6px');
+    expect(value.radius).toBe(value.outline ? '999px' : '4px');
     expect(value.weight).toBe('500');
     expect(readability(value.foreground, value.background)).toBeGreaterThanOrEqual(4.5);
   }
@@ -69,7 +70,7 @@ test('tag typography, radius and variant ink', async ({ page }) => {
       })
       .toBeGreaterThanOrEqual(4.5);
 
-  await expect(page.getByTestId('tag-danger')).toHaveCSS('background-color', 'rgb(221, 63, 46)');
+  await expect(page.getByTestId('tag-danger')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   expect(
     await fixture.evaluate((node) =>
       getComputedStyle(node).getPropertyValue('--leaf-color-danger').trim(),
@@ -77,10 +78,13 @@ test('tag typography, radius and variant ink', async ({ page }) => {
   ).toBe('#dd3f2e');
 });
 
-test('dark danger keeps the dark-mode semantic token', async ({ page }) => {
+test('dark danger keeps the shared semantic base color', async ({ page }) => {
   await page.goto('/?fixture=tags&theme=dark');
-  await expect(page.getByTestId('tag-danger')).toHaveCSS('background-color', 'rgb(239, 133, 133)');
-  for (const testId of ['tag-danger', 'tag-danger-soft'])
+  await expect(page.getByTestId('tag-danger').locator('.leaf-tag__dot')).toHaveCSS(
+    'background-color',
+    'rgb(221, 63, 46)',
+  );
+  for (const testId of ['tag-danger-soft'])
     await expect
       .poll(async () => {
         const colors = await tagContrast(page.getByTestId(testId));
@@ -91,13 +95,13 @@ test('dark danger keeps the dark-mode semantic token', async ({ page }) => {
     await page
       .getByTestId('tag-fixture')
       .evaluate((node) => getComputedStyle(node).getPropertyValue('--leaf-color-danger').trim()),
-  ).toBe('#ef8585');
+  ).toBe('#dd3f2e');
 });
 
-test('checkable tags use tinted and solid theme states', async ({ page }) => {
+test('checkable tags use outlined and tinted theme states', async ({ page }) => {
   await page.goto('/?fixture=tags&theme=light');
   const checkable = page.getByTestId('tag-checkable');
-  await expect(checkable).toHaveClass(/leaf-tag--soft/);
+  await expect(checkable).toHaveClass(/leaf-tag--outline/);
   await expect(checkable).toHaveAttribute('data-color', 'primary');
   await expect
     .poll(async () => {
@@ -106,21 +110,15 @@ test('checkable tags use tinted and solid theme states', async ({ page }) => {
     })
     .toBeGreaterThanOrEqual(4.5);
   await checkable.click();
-  await expect(checkable).toHaveClass(/leaf-tag--solid/);
+  await expect(checkable).toHaveClass(/leaf-tag--soft/);
   await expect(checkable).toHaveAttribute('aria-pressed', 'true');
-  await expect
-    .poll(async () => {
-      const colors = await tagContrast(checkable);
-      return readability(colors.foreground, colors.background);
-    })
-    .toBeGreaterThanOrEqual(4.5);
 
   const group = page.getByTestId('tag-group');
   const active = group.getByRole('button', { name: 'Active' });
   const paused = group.getByRole('button', { name: 'Paused' });
-  await expect(active).toHaveClass(/leaf-tag--solid/);
-  await expect(paused).toHaveClass(/leaf-tag--soft/);
-  for (const tag of [active, paused])
+  await expect(active).toHaveClass(/leaf-tag--soft/);
+  await expect(paused).toHaveClass(/leaf-tag--outline/);
+  for (const tag of [paused])
     await expect
       .poll(async () => {
         const colors = await tagContrast(tag);
@@ -128,3 +126,36 @@ test('checkable tags use tinted and solid theme states', async ({ page }) => {
       })
       .toBeGreaterThanOrEqual(4.5);
 });
+
+for (const theme of ['light', 'dark']) {
+  test(`outlined tags keep neutral paint and small semantic dots in ${theme}`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 375, height: 700 });
+    await page.goto(`/?fixture=tags&theme=${theme}&dir=rtl`);
+    const tag = page.getByTestId('tag-danger');
+    const dot = tag.locator('.leaf-tag__dot');
+    await expect(dot).toHaveCSS('width', '6px');
+    await expect(dot).toHaveCSS('height', '6px');
+    await expect(dot).toHaveCSS('background-color', 'rgb(221, 63, 46)');
+    await expect(tag).toHaveCSS('border-top-width', '1px');
+    const paint = await tag.evaluate((node) => {
+      const style = getComputedStyle(node);
+      const probe = document.createElement('span');
+      node.appendChild(probe);
+      probe.style.color = 'var(--leaf-color-text)';
+      probe.style.backgroundColor = 'var(--leaf-color-surface)';
+      probe.style.border = '1px solid var(--leaf-color-border)';
+      const expected = getComputedStyle(probe);
+      const result = {
+        foreground: style.color === expected.color,
+        background: style.backgroundColor === expected.backgroundColor,
+        border: style.borderTopColor === expected.borderTopColor,
+      };
+      probe.remove();
+      return result;
+    });
+    expect(paint).toEqual({ foreground: true, background: true, border: true });
+    await page.screenshot({ path: testInfo.outputPath(`tags-${theme}.png`) });
+  });
+}

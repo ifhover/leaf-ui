@@ -13,7 +13,7 @@ const colors = [
 ] as const;
 const variants = [
   { value: 'soft', label: 'Tinted' },
-  { value: 'solid', label: 'Solid' },
+  { value: 'outline', label: 'Outlined' },
 ] as const;
 
 function TagGallery({ size }: { size: TagSize }) {

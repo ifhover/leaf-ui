@@ -1,101 +1,61 @@
 import { readability, TinyColor } from '@ctrl/tinycolor';
 import { colorRecipes } from './color-recipes';
+import {
+  type ColorScale,
+  type ColorScaleStep,
+  colorScaleChromaFactors,
+  colorScaleLightness,
+  colorScaleSteps,
+  generateColorScale,
+} from './color-scale';
+import { type ColorShades, semanticColorShadeSteps } from './color-shades';
+
+const solidForeground = { black: '#000000', white: '#ffffff' } as const;
+export const semanticColorFamilies = ['primary', 'success', 'danger', 'warning', 'info'] as const;
+const semanticSeeds = {
+  primary: '#1e964f',
+  success: '#1e964f',
+  danger: '#dd3f2e',
+  warning: '#d38b11',
+  info: '#1677ff',
+};
+export const colorSeeds = { ...semanticSeeds, neutral: '#707070' };
+
+export const neutralColorScale = generateColorScale('#707070') as ColorScale;
 
 export const defaultColors = {
   light: {
-    primary: '#1e964f',
-    'on-primary': '#000000',
-    danger: '#dd3f2e',
-    'on-danger': '#000000',
-    warning: '#d38b11',
-    'on-warning': '#202024',
-    info: '#1677ff',
-    'on-info': '#000000',
-    success: '#1e964f',
-    'on-success': '#000000',
-    text: '#202020',
-    'text-muted': '#707070',
-    surface: '#ffffff',
-    'surface-muted': '#f5f5f5',
-    border: '#e2e2e2',
+    ...semanticSeeds,
+    neutral: colorSeeds.neutral,
+    'on-primary': solidForeground.white,
+    'on-danger': solidForeground.white,
+    'on-warning': solidForeground.white,
+    'on-info': solidForeground.white,
+    'on-success': solidForeground.white,
+    text: neutralColorScale[900],
+    'text-muted': neutralColorScale[600],
+    surface: solidForeground.white,
+    'surface-muted': neutralColorScale[100],
+    border: neutralColorScale[200],
   },
   dark: {
-    primary: '#83cf9e',
-    'on-primary': '#11271a',
-    danger: '#ef8585',
-    'on-danger': '#381818',
-    warning: '#ffc53d',
-    'on-warning': '#202024',
-    info: '#69b1ff',
-    'on-info': '#11271a',
-    success: '#83cf9e',
-    'on-success': '#11271a',
-    text: '#ededed',
-    'text-muted': '#aaaaaa',
-    surface: '#1c1c1c',
-    'surface-muted': '#272727',
-    border: '#3b3b3b',
+    ...semanticSeeds,
+    neutral: colorSeeds.neutral,
+    'on-primary': solidForeground.white,
+    'on-danger': solidForeground.white,
+    'on-warning': solidForeground.white,
+    'on-info': solidForeground.white,
+    'on-success': solidForeground.white,
+    text: neutralColorScale[100],
+    'text-muted': neutralColorScale[400],
+    surface: neutralColorScale[900],
+    'surface-muted': neutralColorScale[800],
+    border: neutralColorScale[800],
   },
 };
 
-/** Choose the higher-contrast black or white label unless the caller supplies another value. */
-export function primaryForeground(color: string) {
-  if (cssColorExpression(color) || !new TinyColor(color).isValid) return undefined;
-  return readability(color, '#000000') >= readability(color, '#ffffff') ? '#000000' : '#ffffff';
-}
-
 const cssColorExpression = (color: string) =>
-  /^(?:var|color-mix|light-dark|oklch|oklab|lab|lch|color)\(/i.test(color);
-
-/** Derive visible ink/indicators without altering the brand fill or supplied theme. */
-export function readableColor(
-  color: string,
-  backgrounds: string[],
-  minimum = 4.5,
-  appearance: 'light' | 'dark' = 'light',
-) {
-  if ([color, ...backgrounds].some((value) => cssColorExpression(value))) return color;
-  const primary = new TinyColor(color);
-  const surfaces = backgrounds.map((value) => new TinyColor(value));
-  if ([primary, ...surfaces].some((value) => !value.isValid || value.getAlpha() !== 1))
-    return color;
-  const contrasts = (candidate: string) =>
-    backgrounds.every((background) => readability(candidate, background) >= minimum);
-  if (contrasts(color)) return color;
-  const { h, s, l } = primary.toHsl();
-  const endpoints = appearance === 'dark' ? ['#ffffff', '#000000'] : ['#000000', '#ffffff'];
-  for (const endpoint of endpoints) {
-    if (!contrasts(endpoint)) continue;
-    const endpointLightness = endpoint === '#000000' ? 0 : 1;
-    if (endpointLightness < l) {
-      let low = endpointLightness;
-      let high = l;
-      let result = endpoint;
-      for (let step = 0; step < 16; step++) {
-        const lightness = (low + high) / 2;
-        const candidate = new TinyColor({ h, s, l: lightness }).toHexString();
-        if (contrasts(candidate)) {
-          result = candidate;
-          low = lightness;
-        } else high = lightness;
-      }
-      return result;
-    }
-    let low = l;
-    let high = endpointLightness;
-    let result = endpoint;
-    for (let step = 0; step < 16; step++) {
-      const lightness = (low + high) / 2;
-      const candidate = new TinyColor({ h, s, l: lightness }).toHexString();
-      if (contrasts(candidate)) {
-        result = candidate;
-        high = lightness;
-      } else low = lightness;
-    }
-    return result;
-  }
-  return color;
-}
+  /^(?:var|color-mix|light-dark|oklch|oklab|lab|lch|color|hwb)\(/i.test(color);
 
 /** sRGB mixing with premultiplied alpha, matching CSS transparent-color semantics. */
 export function mixColors(
@@ -121,137 +81,233 @@ export function mixColors(
   return `rgba(${channel('r')}, ${channel('g')}, ${channel('b')}, ${Number(alpha.toFixed(4))})`;
 }
 
-/** Derive once per theme; keep readable solid-button labels when changing shade. */
-function interactionColor(color: string, foreground: string, toward: string, amounts: number[]) {
-  if (
-    cssColorExpression(color) ||
-    cssColorExpression(foreground) ||
-    !new TinyColor(color).isValid ||
-    !new TinyColor(foreground).isValid
-  )
-    return undefined;
-  // Keep distinct interaction shades without sacrificing normal-text AA.
-  const minimumContrast = 4.5;
-  for (const amount of amounts) {
-    const candidate = mixColors(color, toward, 100 - amount);
-    if (candidate && readability(candidate, foreground) >= minimumContrast) return candidate;
-  }
-  return color;
+type ColorVariables = Record<`--leaf-${string}`, string>;
+type RoleChoice = { value: string; source: string };
+
+const colorVariable = (name: string): `--leaf-${string}` => `--leaf-color-${name}`;
+const concreteOpaque = (value: string) => {
+  const parsed = new TinyColor(value);
+  return !cssColorExpression(value) && parsed.isValid && parsed.getAlpha() === 1;
+};
+
+function scaleForColor(color: string): ColorScale {
+  const generated = generateColorScale(color);
+  if (generated) return generated;
+  // CSS expressions stay browser-native; no DOM reads or hydration color probes are needed.
+  return Object.fromEntries(
+    colorScaleSteps.map((step) => [
+      step,
+      `oklch(from ${color} ${colorScaleLightness[step]} calc(c * ${colorScaleChromaFactors[step]}) h)`,
+    ]),
+  ) as ColorScale;
 }
 
-/** Keep CSS expressions reactive in SSR; resolve contrast-sensitive values after hydration. */
-export function deriveColors(appearance: 'light' | 'dark', overrides: Record<string, string> = {}) {
+/** Generate only the shared semantic shades; neutral lightness scales are independent. */
+export function generateColorShades(color: string): ColorShades {
+  return Object.fromEntries(
+    semanticColorShadeSteps.map((step) => {
+      const [direction, amount] = step.split('-');
+      return [
+        step,
+        mixColors(
+          color,
+          direction === 'light' ? solidForeground.white : solidForeground.black,
+          100 - Number(amount) * 10,
+        ) ?? color,
+      ];
+    }),
+  ) as ColorShades;
+}
+
+function chooseReadableColor(
+  family: string,
+  shades: ColorShades,
+  seed: string,
+  source: string,
+  darkSurface: boolean,
+  backgrounds: string[],
+  minimum: number,
+): RoleChoice {
+  const ordered = [...semanticColorShadeSteps].sort((a, b) => {
+    const preferred = darkSurface ? 'light' : 'dark';
+    const priority = (step: string) =>
+      (step.startsWith(preferred) ? 0 : 100) + Number(step.split('-')[1]);
+    return priority(a) - priority(b);
+  });
+  const choice = (step: (typeof semanticColorShadeSteps)[number]) => ({
+    value: shades[step],
+    source: colorVariable(`${family}-${step}`),
+  });
+  // Expressions remain browser-native. Do not guess a different brand color during SSR.
+  if (!backgrounds.every(concreteOpaque) || !concreteOpaque(seed)) return { value: seed, source };
+  const matches = (value: string) =>
+    backgrounds.every((background) => readability(value, background) >= minimum);
+  if (matches(seed)) return { value: seed, source };
+  for (const step of ordered) if (matches(shades[step])) return choice(step);
+  for (const [source, value] of Object.entries(solidForeground))
+    if (matches(value)) return { value, source };
+  // Conflicting explicit surfaces can make a single accessible ink impossible.
+  const score = (value: string) => Math.min(...backgrounds.map((bg) => readability(value, bg)));
+  return [{ value: seed, source }, ...ordered.map(choice)].reduce((best, candidate) =>
+    score(candidate.value) > score(best.value) ? candidate : best,
+  );
+}
+
+/** Bases and their shades stay fixed across appearances; only role mappings switch. */
+export function resolveColorRoles(
+  appearance: 'light' | 'dark',
+  overrides: Record<string, string> = {},
+  families: readonly (typeof semanticColorFamilies)[number][] = semanticColorFamilies,
+): { values: ColorVariables; sources: Record<string, string> } {
   const colors: Record<string, string> = { ...defaultColors[appearance], ...overrides };
-  const backgrounds = [colors.surface ?? '', colors['surface-muted'] ?? ''];
-  const visible = (color: string, minimum: number) =>
-    readableColor(color, backgrounds, minimum, appearance);
-  const primary = colors.primary ?? '';
-  const indicator = visible(primary, 3);
-  const dim = indicator !== primary;
-  const hasPrimary = Boolean(overrides.primary);
-  if (hasPrimary && !overrides['on-primary'])
-    colors['on-primary'] =
-      primaryForeground(colors.primary ?? '') ?? defaultColors[appearance]['on-primary'];
-  const hasDanger = Boolean(overrides.danger);
-  if (hasDanger && !overrides['on-danger'])
-    colors['on-danger'] =
-      primaryForeground(colors.danger ?? '') ?? defaultColors[appearance]['on-danger'];
-  for (const status of ['success', 'warning', 'info'] as const) {
-    if (!overrides[status] || overrides[`on-${status}`]) continue;
-    colors[`on-${status}`] =
-      primaryForeground(colors[status] ?? '') ?? defaultColors[appearance][`on-${status}`];
+  const values: ColorVariables = {};
+  const sources: Record<string, string> = {};
+  const dark = appearance === 'dark';
+  const assign = (name: string, value: string, source: string) => {
+    const key = colorVariable(name);
+    values[key] = overrides[name] ?? value;
+    sources[key] = overrides[name] !== undefined ? 'override' : source;
+  };
+  const neutral = overrides.neutral ? scaleForColor(overrides.neutral) : neutralColorScale;
+  assign('neutral', colors.neutral ?? colorSeeds.neutral, 'seed');
+  for (const step of colorScaleSteps) values[colorVariable(`neutral-${step}`)] = neutral[step];
+  const surfaceOverride = overrides.surface;
+  const darkSurface =
+    surfaceOverride && concreteOpaque(surfaceOverride)
+      ? new TinyColor(surfaceOverride).getLuminance() < 0.18
+      : dark;
+  const neutralRoleSteps: Record<string, ColorScaleStep | 'white'> = {
+    text: darkSurface ? 100 : 900,
+    'text-muted': darkSurface ? 400 : 600,
+    'text-subtle': darkSurface ? 400 : 600,
+    surface: dark ? 900 : 'white',
+    'surface-muted': darkSurface ? 800 : 100,
+    'surface-raised': darkSurface ? 800 : 'white',
+    border: darkSurface ? 800 : 200,
+    'border-hover': darkSurface ? 700 : 300,
+    divider: darkSurface ? 800 : 200,
+    'option-hover': darkSurface ? 700 : 200,
+  };
+  for (const [name, step] of Object.entries(neutralRoleSteps))
+    assign(
+      name,
+      step === 'white' ? solidForeground.white : neutral[step],
+      step === 'white' ? 'white' : colorVariable(`neutral-${step}`),
+    );
+
+  const surface = values['--leaf-color-surface'] ?? colors.surface ?? '';
+  const muted = values['--leaf-color-surface-muted'] ?? colors['surface-muted'] ?? '';
+  const softStep = darkSurface ? 'dark-9' : 'light-9';
+  const softHoverStep = darkSurface ? 'dark-7' : 'light-7';
+
+  for (const family of families) {
+    const seed = colors[family] ?? semanticSeeds[family];
+    const shades = generateColorShades(seed);
+    assign(family, seed, 'seed');
+    for (const step of semanticColorShadeSteps)
+      values[colorVariable(`${family}-${step}`)] = shades[step];
+    assign(`${family}-soft`, shades[softStep], colorVariable(`${family}-${softStep}`));
+    assign(
+      `${family}-soft-hover`,
+      shades[softHoverStep],
+      colorVariable(`${family}-${softHoverStep}`),
+    );
+    assign(
+      `${family}-soft-active`,
+      shades[softHoverStep],
+      colorVariable(`${family}-${softHoverStep}`),
+    );
+    assign(`${family}-border`, shades[softHoverStep], colorVariable(`${family}-${softHoverStep}`));
+    const ink = chooseReadableColor(
+      family,
+      shades,
+      seed,
+      colorVariable(family),
+      darkSurface,
+      [surface, muted, values[colorVariable(`${family}-soft`)] ?? surface],
+      4.5,
+    );
+    assign(`${family}-ink`, ink.value, ink.source);
+    assign(`on-${family}`, solidForeground.white, 'white');
+
+    if (family === 'primary') {
+      const indicator = chooseReadableColor(
+        family,
+        shades,
+        seed,
+        colorVariable(family),
+        darkSurface,
+        [surface, muted],
+        3,
+      );
+      assign('primary-indicator', indicator.value, indicator.source);
+      const indicatorValue = values[colorVariable('primary-indicator')] ?? indicator.value;
+      assign('primary-focus', indicatorValue, colorVariable('primary-indicator'));
+      assign(
+        'primary-fill-border',
+        indicatorValue === seed ? 'transparent' : indicatorValue,
+        indicatorValue === seed ? 'transparent' : colorVariable('primary-indicator'),
+      );
+    }
+
+    if (family === 'primary' || family === 'danger') {
+      for (const state of ['active', 'hover'] as const) {
+        const value =
+          state === 'active'
+            ? shades['dark-1']
+            : (mixColors(seed, solidForeground.white, 90) ?? seed);
+        assign(
+          `${family}-${state}`,
+          value,
+          state === 'active' ? colorVariable(`${family}-dark-1`) : `mix(${family}, white, 90%)`,
+        );
+        if (family === 'primary') {
+          const inkValue = values[colorVariable('primary-ink')] ?? ink.value;
+          const stateBase =
+            state === 'active'
+              ? (mixColors(
+                  inkValue,
+                  darkSurface ? solidForeground.white : solidForeground.black,
+                  90,
+                ) ?? inkValue)
+              : inkValue;
+          const stateInk = chooseReadableColor(
+            family,
+            shades,
+            stateBase,
+            state === 'active'
+              ? `mix(primary-ink, ${darkSurface ? 'white' : 'black'}, 90%)`
+              : colorVariable('primary-ink'),
+            darkSurface,
+            [surface, muted],
+            4.5,
+          );
+          assign(`primary-ink-${state}`, stateInk.value, stateInk.source);
+        }
+      }
+    }
   }
-  colors['text-subtle'] ??= mixColors(colors['text-muted'], colors.surface, 92) ?? '#68686f';
-  colors['surface-raised'] ??= mixColors(colors.surface, colors.text, 98) ?? '#ffffff';
-  colors['border-hover'] ??= mixColors(colors.border, colors['text-muted'], 65) ?? '#e5e5e8';
-  const result: Record<`--leaf-${string}`, string> = {};
-  result['--leaf-color-primary-indicator'] = indicator;
-  result['--leaf-color-primary-fill-border'] = dim
-    ? (mixColors(primary, colors.text, 80) ?? 'transparent')
-    : 'transparent';
-  result['--leaf-color-primary-focus'] = dim
-    ? indicator
-    : (mixColors(primary, 'transparent', 42) ?? 'transparent');
-  if (hasPrimary) {
-    result['--leaf-color-primary'] = colors.primary ?? '';
-  }
-  if (hasDanger) {
-    result['--leaf-color-danger'] = colors.danger ?? '';
-  }
-  for (const status of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
-    result[`--leaf-color-on-${status}`] =
-      colors[`on-${status}`] ?? defaultColors[appearance][`on-${status}`];
-  }
+  return { values, sources };
+}
+
+/** Emit shared roles and only the optical recipes with actual consumers. */
+export function deriveColors(appearance: 'light' | 'dark', overrides: Record<string, string> = {}) {
+  const modern = resolveColorRoles(appearance, overrides);
+  const colors: Record<string, string> = Object.fromEntries(
+    Object.entries(modern.values).map(([key, value]) => [key.slice('--leaf-color-'.length), value]),
+  );
+  const result: ColorVariables = {};
   for (const [key, [first, second, ratio]] of Object.entries(colorRecipes)) {
     const other =
       second === 'alpha'
         ? 'transparent'
         : second === 'white'
-          ? '#fff'
+          ? solidForeground.white
           : second === 'black'
-            ? '#000'
+            ? solidForeground.black
             : colors[second];
-    const source = dim && first === 'primary' && second === 'surface' ? indicator : colors[first];
-    const value = mixColors(source, other, ratio);
+    const value = mixColors(colors[first], other, ratio);
     if (value) result[key as `--leaf-${string}`] = value;
   }
-  for (const status of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
-    const statusBackgrounds = [
-      colors.surface,
-      colors['surface-muted'],
-      result[`--leaf-color-${status}-surface-8`],
-    ].filter((color): color is string => Boolean(color));
-    result[`--leaf-color-${status}-ink`] = readableColor(
-      colors[status] ?? '',
-      statusBackgrounds,
-      4.5,
-      appearance,
-    );
-  }
-  for (const key of ['text-subtle', 'surface-raised', 'border-hover'])
-    result[`--leaf-color-${key}`] = colors[key] ?? '';
-  // Bright warning glyphs and fills need a separate, readable text color.
-  const warning = colors.warning;
-  const text = colors.text;
-  if (
-    warning &&
-    text &&
-    !cssColorExpression(warning) &&
-    !cssColorExpression(text) &&
-    new TinyColor(warning).isValid &&
-    new TinyColor(text).isValid
-  ) {
-    const backgrounds = [
-      colors.surface,
-      colors['surface-muted'],
-      result['--leaf-color-warning-surface-8'],
-    ].filter((color): color is string => Boolean(color));
-    for (let weight = 80; weight >= 0; weight -= 10) {
-      const ink = mixColors(warning, text, weight);
-      if (ink && backgrounds.every((background) => readability(ink, background) >= 4.5)) {
-        result['--leaf-color-warning-text-80'] = ink;
-        break;
-      }
-    }
-  }
-  for (const key of ['primary', 'danger']) {
-    const color = colors[key];
-    const foreground = colors[`on-${key}`];
-    if (!color || !foreground) continue;
-    const hover =
-      colors[`${key}-hover`] ?? interactionColor(color, foreground, '#fff', [10, 8, 6, 4, 2.5, 1]);
-    const active =
-      colors[`${key}-active`] ??
-      interactionColor(color, foreground, '#000', [15, 12, 10, 8, 6, 4, 2.5, 1]);
-    if (hover) result[`--leaf-color-${key}-hover`] = hover;
-    if (active) result[`--leaf-color-${key}-active`] = active;
-    if (key === 'primary') {
-      if (hover)
-        result['--leaf-color-primary-ink-hover'] = colors['primary-hover'] ?? visible(hover, 4.5);
-      if (active)
-        result['--leaf-color-primary-ink-active'] =
-          colors['primary-active'] ?? visible(active, 4.5);
-    }
-  }
-  return result;
+  return { ...result, ...modern.values };
 }

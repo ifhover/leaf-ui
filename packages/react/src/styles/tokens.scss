@@ -16,10 +16,10 @@
   --leaf-z-index-popup: 1000;
   --leaf-z-index-modal: 1100;
   --leaf-z-index-message: 1200;
-  --leaf-radius: 10px;
-  --leaf-radius-sm: calc(var(--leaf-radius) * 0.6);
-  --leaf-radius-md: calc(var(--leaf-radius) * 1.2);
-  --leaf-radius-lg: calc(var(--leaf-radius) * 1.6);
+  --leaf-radius: 8px;
+  --leaf-radius-sm: calc(var(--leaf-radius) * 0.5);
+  --leaf-radius-md: calc(var(--leaf-radius) * 1.5);
+  --leaf-radius-lg: calc(var(--leaf-radius) * 2);
   --leaf-choice-radius: calc(var(--leaf-radius) * 0.5);
   --leaf-font-family:
     Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
@@ -50,11 +50,15 @@
   --leaf-line-height: 20px;
   --leaf-line-height-sm: 18px;
   --leaf-line-height-lg: 22px;
-  --leaf-heading-weight: 600;
-  --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.02);
+  --leaf-heading-weight: 700;
+  --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.06);
   --leaf-shadow-sm: 0 2px 6px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
   --leaf-shadow-md: 0 6px 20px rgb(0 0 0 / 0.07), 0 2px 5px rgb(0 0 0 / 0.04);
   --leaf-shadow-lg: 0 12px 32px rgb(0 0 0 / 0.1), 0 3px 8px rgb(0 0 0 / 0.06);
+}
+
+[data-leaf-scope] {
+  font-weight: 400;
 }
 
 // Resolve derived values again in each region so nested themes remain independent.
@@ -71,10 +75,6 @@
   --leaf-motion-fast: calc(var(--leaf-motion-duration) * 0.6);
   --leaf-motion-slow: calc(var(--leaf-motion-duration) * 1.6);
   --leaf-motion-color: var(--leaf-motion-duration);
-  --leaf-color-text-subtle: var(--leaf-color-text-muted-surface-92);
-  --leaf-color-surface-raised: var(--leaf-color-surface-text-98);
-  --leaf-color-border-hover: var(--leaf-color-border-text-muted-65);
-  --leaf-color-divider: var(--leaf-color-border-surface-70);
 }
 
 @keyframes leaf-content-in {

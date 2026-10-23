@@ -2,16 +2,16 @@ import { readability } from '@ctrl/tinycolor';
 import { expect, test } from '@playwright/test';
 
 for (const mode of ['light', 'dark'] as const) {
-  test(`warning colors stay consistent and labels readable in ${mode} and custom scopes`, async ({
+  test(`warning colors stay consistent and soft ink readable in ${mode} and custom scopes`, async ({
     page,
   }) => {
     await page.goto(`/?fixture=warning&theme=${mode}`);
-    const expected = mode === 'light' ? 'rgb(211, 139, 17)' : 'rgb(255, 197, 61)';
+    const expected = 'rgb(211, 139, 17)';
     for (const selector of ['.leaf-alert__icon', '.leaf-result__icon'])
       await expect(page.locator(selector)).toHaveCSS('color', expected);
     await expect(page.locator('.leaf-input')).toHaveCSS('border-color', expected);
     await expect(page.locator('.leaf-badge__indicator')).toHaveCSS('background-color', expected);
-    for (const variant of ['soft', 'solid']) {
+    for (const variant of ['soft']) {
       const colors = await page.locator(`.leaf-tag--${variant}`).evaluate((node) => {
         const style = getComputedStyle(node);
         return {
@@ -21,6 +21,10 @@ for (const mode of ['light', 'dark'] as const) {
       });
       expect(readability(colors.foreground, colors.background)).toBeGreaterThanOrEqual(4.5);
     }
+    await expect(page.locator('.leaf-tag--outline .leaf-tag__dot')).toHaveCSS(
+      'background-color',
+      expected,
+    );
     await page.getByRole('button', { name: 'Message warning', exact: true }).click();
     await expect(page.locator('.leaf-message__icon')).toHaveCSS('color', expected);
     await page.getByRole('button', { name: 'Notification warning', exact: true }).click();

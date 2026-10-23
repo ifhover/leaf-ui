@@ -2,11 +2,12 @@ import { ComponentExample } from '../../src/components/component-example';
 import { BadgeBasic } from '../../src/examples/badge/basic';
 import { BadgeCounts } from '../../src/examples/badge/counts';
 import { BadgeDot } from '../../src/examples/badge/dot';
-import { BadgeStatuses } from '../../src/examples/badge/statuses';
+import { BadgeInside } from '../../src/examples/badge/inside';
+import { BadgeStandalone } from '../../src/examples/badge/standalone';
 
 # Badge 角标
 
-展示数量、未读提醒或简短状态。
+展示数量或未读提醒。
 
 ## 基础用法
 
@@ -39,13 +40,24 @@ import { BadgeStatuses } from '../../src/examples/badge/statuses';
 
 </ComponentExample>
 
-## 状态标记
+## 内置角标
 
-用圆点和文字说明当前状态。
+使用 `placement="inside"` 将带白色外圈的提醒放在按钮等内容的右上角内部，并为角标预留足够空间，避免遮挡内容；RTL 下位置镜像。
 
-<ComponentExample title="状态标记" preview={<BadgeStatuses />} fileName="statuses.tsx">
+<ComponentExample title="内置角标" preview={<BadgeInside />} fileName="inside.tsx">
 
-```tsx lineNumbers file="../../src/examples/badge/statuses.tsx"
+```tsx lineNumbers file="../../src/examples/badge/inside.tsx"
+```
+
+</ComponentExample>
+
+## 独立使用
+
+不传入 `children` 时独立展示角标，数量角标使用较小的圆角。
+
+<ComponentExample title="独立使用" preview={<BadgeStandalone />} fileName="standalone.tsx">
+
+```tsx lineNumbers file="../../src/examples/badge/standalone.tsx"
 ```
 
 </ComponentExample>
@@ -54,13 +66,12 @@ import { BadgeStatuses } from '../../src/examples/badge/statuses';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 设置后将角标附着在该内容右上方；内容变宽时向外侧延伸 |
+| `children` | `ReactNode` | — | 设置后将角标附着在该内容上 |
 | `count` | `number \| string` | — | 角标内容 |
 | `max` | `number` | `99` | 超过该值时展示 max+ |
 | `showZero` | `boolean` | `false` | 允许展示 0 |
 | `dot` | `boolean` | `false` | 使用圆点提醒 |
-| `status` | `'success' \| 'warning' \| 'danger' \| 'info' \| 'default'` | — | 使用对应颜色的状态圆点；`error` 为兼容别名 |
-| `text` | `ReactNode` | — | 圆点旁的说明 |
+| `placement` | `'outside' \| 'inside'` | `'outside'` | 附着角标的位置：默认外置，inside 放在右上角内部；RTL 下镜像，独立使用时无效 |
 | `color` | `string` | — | 自定义角标颜色 |
 
 ## 类型
@@ -73,4 +84,4 @@ import type { BadgeProps } from '@ifhover/leaf-ui';
 
 ## 使用说明
 
-独立使用时可展示数量或状态。附着在按钮等内容上时，为圆点提醒提供 aria-label，以说明提醒的含义。
+独立使用时可展示数量或简短文字。附着在按钮等内容上时，为圆点提醒提供 aria-label，以说明提醒的含义。

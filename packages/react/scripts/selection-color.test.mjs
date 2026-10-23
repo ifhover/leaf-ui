@@ -1,144 +1,86 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { compiledStyles } from './compiled-styles.mjs';
 
-const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
-const SOURCE_ROOT = path.resolve(SCRIPT_DIR, '..', 'src');
-
-const FAMILY_CONSUMERS = {
-  'dropdown/dropdown.scss': {
-    family: 'danger-soft-feedback-family',
-    variables: ['--leaf-danger-soft-background', '--leaf-danger-soft-active-background'],
-    forbiddenTokens: ['var(--leaf-color-danger-surface-6)', 'var(--leaf-color-danger-surface-8)'],
-  },
-  'menu/menu.scss': {
-    family: 'danger-soft-feedback-family',
-    variables: ['--leaf-danger-soft-background', '--leaf-danger-soft-active-background'],
-    forbiddenTokens: ['var(--leaf-color-danger-surface-6)', 'var(--leaf-color-danger-surface-8)'],
-  },
-  'pagination/pagination.scss': {
-    family: 'accent-soft-feedback-family',
-    variables: ['--leaf-accent-soft-background', '--leaf-accent-soft-border'],
-    forbiddenTokens: ['var(--leaf-color-primary-surface-8)', 'var(--leaf-color-primary-border-24)'],
-  },
-  'transfer/transfer.scss': {
-    family: 'accent-soft-feedback-family',
-    variables: ['--leaf-accent-soft-background'],
-    forbiddenTokens: ['var(--leaf-color-primary-surface-8)'],
-  },
-  'upload/upload.scss': {
-    family: 'accent-soft-feedback-family',
-    variables: ['--leaf-accent-soft-background', '--leaf-accent-soft-border'],
-    forbiddenTokens: [
-      'var(--leaf-color-primary-surface-7)',
-      'var(--leaf-color-primary-surface-8)',
-      'var(--leaf-color-primary-alpha-10)',
-    ],
-  },
-  'splitter/splitter.scss': {
-    family: 'accent-soft-feedback-family',
-    variables: ['--leaf-accent-soft-border'],
-    forbiddenTokens: ['var(--leaf-color-primary-surface-28)'],
-  },
-  'tree/tree.scss': {
-    family: 'accent-soft-feedback-family',
-    variables: ['--leaf-accent-soft-background'],
-    forbiddenTokens: [
-      'var(--leaf-color-primary-alpha-12)',
-      'var(--leaf-color-border-alpha-55)',
-      '#0002',
-    ],
-  },
-};
-
-const COMPANION_FAMILY_CONSUMERS = {
-  'upload/upload.scss': {
-    family: 'accent-halo-family',
-    variables: ['--leaf-accent-halo-color'],
-  },
-};
-
-// Menu's three appearances are a deliberate visual exception. Only numeric-token
-// budgets already present in that design may remain.
-const RATIO_TOKEN_BUDGET = {
-  'menu/menu.scss': {
-    '--leaf-color-primary-alpha-10': 1,
-    '--leaf-color-primary-alpha-4': 1,
-  },
-};
-
-const RATIO_TOKEN = /var\(\s*(--leaf-color-[a-z0-9-]+-\d+(?:\.\d+)?)\s*[,)]/giu;
-
-function countMatches(source, expression) {
-  return [...source.matchAll(expression)].length;
-}
-
-function ratioTokenUsage(source) {
-  const usage = {};
-  for (const match of source.matchAll(RATIO_TOKEN)) {
-    usage[match[1]] = (usage[match[1]] ?? 0) + 1;
-  }
-  return usage;
-}
-
-test('migrated component roots consume shared option and selection families', async () => {
-  const contracts = Object.entries(FAMILY_CONSUMERS).map(([file, contract]) => [file, contract]);
-  contracts.push(...Object.entries(COMPANION_FAMILY_CONSUMERS));
-
-  for (const [file, contract] of contracts) {
-    const source = await fs.readFile(path.join(SOURCE_ROOT, ...file.split('/')), 'utf8');
-    assert.match(
-      source,
-      new RegExp(`@include\\s+(?:mixins\\.)?${contract.family}\\s*;`, 'u'),
-      `${file} must include mixins.${contract.family} at its component root`,
+test('compiled option and selection consumers expose their shared family roles', async () => {
+  for (const [component, family, property, value] of [
+    ['dropdown', 'danger-soft', 'background', 'danger-soft'],
+    ['menu', 'danger-soft', 'active-background', 'danger-soft-active'],
+    ['pagination', 'accent-soft', 'border', 'primary-border'],
+    ['transfer', 'accent-soft', 'background', 'primary-soft'],
+    ['upload', 'accent-soft', 'border', 'primary-border'],
+    ['splitter', 'accent-soft', 'border', 'primary-border'],
+    ['tree', 'accent-soft', 'background', 'primary-soft'],
+  ]) {
+    const rule = await compiledStyles(`${component}/${component}.scss`);
+    assert.equal(
+      rule(`.leaf-${component}`)[`--leaf-${family}-${property}`],
+      `var(--leaf-color-${value})`,
     );
-    for (const variable of contract.variables) {
-      assert.match(
-        source,
-        new RegExp(`var\\(${variable}\\)`, 'u'),
-        `${file} must consume ${variable}`,
-      );
-    }
-    for (const token of contract.forbiddenTokens ?? []) {
-      assert.equal(
-        source.includes(token),
-        false,
-        `${file} must not bypass the family with ${token}`,
-      );
-    }
   }
+});
 
-  const inputNumber = await fs.readFile(
-    path.join(SOURCE_ROOT, 'inputnumber', 'inputnumber.scss'),
-    'utf8',
-  );
-  assert.doesNotMatch(inputNumber, /--leaf-color-primary-surface-10/u);
+test('compiled solid selections retain base fills, foregrounds and visible boundaries', async () => {
+  for (const [file, selector, border] of [
+    [
+      'calendar/calendar.scss',
+      '.leaf-calendar-view .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label',
+      'box-shadow',
+    ],
+    ['datepicker/datepicker.scss', '.leaf-date-picker__day--selected', 'box-shadow'],
+    ['steps/steps.scss', '[data-status=finish] .leaf-steps__icon', 'border-color'],
+  ]) {
+    const rule = await compiledStyles(file);
+    const selected = rule(selector);
+    assert.equal(selected.background, 'var(--leaf-color-primary)');
+    assert.equal(selected.color, 'var(--leaf-color-on-primary)');
+    assert.ok(selected[border].includes('--leaf-color-primary-'), `${file}: selected boundary`);
+  }
+});
+
+test('compiled tree drag preview keeps the medium shadow role', async () => {
+  const rule = await compiledStyles('tree/tree.scss');
+  assert.equal(rule('.leaf-tree__drag-preview')['box-shadow'], 'var(--leaf-shadow-md)');
+});
+
+test('default Menu retains its own neutral palette while choice rows share Select feedback', async () => {
+  const menu = await compiledStyles('menu/menu.scss');
+  const palette = menu('.leaf-menu');
   assert.equal(
-    countMatches(inputNumber, /background:\s*var\(--leaf-color-option-hover\)/gu) >= 3,
-    true,
-    'InputNumber step controls must use the ordinary option feedback role',
+    palette['--leaf-menu-unselected-color'],
+    'color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))',
   );
-});
-
-test('migrated families do not add numeric color ratios', async () => {
-  const files = new Set([...Object.keys(FAMILY_CONSUMERS), 'inputnumber/inputnumber.scss']);
-
-  for (const file of files) {
-    const source = await fs.readFile(path.join(SOURCE_ROOT, ...file.split('/')), 'utf8');
-    const actual = ratioTokenUsage(source);
-    const allowed = RATIO_TOKEN_BUDGET[file] ?? {};
-    for (const [token, count] of Object.entries(actual)) {
-      assert.ok(
-        count <= (allowed[token] ?? 0),
-        `${file} added ${token} (${count} occurrence${count === 1 ? '' : 's'})`,
-      );
-    }
+  assert.equal(palette['--leaf-menu-neutral-background'], 'rgba(0,0,0,0.08)');
+  for (const [file, selector] of [
+    ['select/select.scss', '.leaf-select__panel .leaf-floating__option'],
+    ['tree/tree.scss', '.leaf-tree__row'],
+    ['autocomplete/autocomplete.scss', '.leaf-autocomplete__panel .leaf-floating__option'],
+    ['mentions/mentions.scss', '.leaf-mentions__panel .leaf-floating__option'],
+    ['cascader/cascader.scss', '.leaf-cascader__column .leaf-floating__option'],
+    ['dropdown/dropdown.scss', '.leaf-dropdown:not(.leaf-menu__popup) .leaf-floating__option'],
+  ]) {
+    const rule = await compiledStyles(file);
+    assert.equal(
+      rule(selector).color,
+      'color-mix(in srgb,currentColor 70%,var(--leaf-color-surface))',
+      file,
+    );
+    const layer = rule(`${selector}::before`);
+    assert.equal(layer.background, 'transparent', file);
+    assert.equal(layer.inset, '0px', file);
+    assert.equal(
+      layer.transition,
+      'background-color var(--leaf-motion-color)var(--leaf-motion-easing)',
+      file,
+    );
+    const active = rule(
+      `${selector}:is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled])::before`,
+    );
+    assert.equal(active.background, 'color-mix(in srgb,rgba(0,0,0,0.08),transparent)', file);
+    assert.equal(
+      rule(`${selector}:is([aria-selected=true], [aria-checked=true], [data-selected])`).color,
+      'inherit',
+      file,
+    );
   }
-});
-
-test('Tree keeps its drag preview on the existing medium shadow role', async () => {
-  const tree = await fs.readFile(path.join(SOURCE_ROOT, 'tree', 'tree.scss'), 'utf8');
-  assert.match(tree, /\.leaf-tree__drag-preview\s*\{[^}]*box-shadow:\s*var\(--leaf-shadow-md\);/su);
 });

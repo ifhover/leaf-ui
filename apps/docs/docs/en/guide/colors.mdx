@@ -1,57 +1,29 @@
-import { ColorPalette, PaletteVariableCount } from '../../../src/components/color-palette';
+import { ColorPalette } from '../../../src/components/color-palette';
+import { ComponentExample } from '../../../src/components/component-example';
+import { ThemeColors } from '../../../src/examples/en/theming/colors';
 
 # Colors
 
-Leaf UI organizes color with semantic variables. The default theme exposes <PaletteVariableCount /> palette variables; core semantic colors and common roles appear first, with the complete set collapsed at the end.
+Each of the five semantic colors generates seven derived shades, while neutral keeps its nine-step scale. Light and dark modes share both.
 
-## Core semantic colors
+## Global Color Variables
 
-Primary, success, danger, warning and info communicate meaning, while foreground colors on solid fills keep separate entry points. `-ink` variables provide readable text, and `on-*` variables provide content on solid fills. The left half of each swatch is light and the right half is dark.
+Each row shows an independently preserved base color and its derived band. The five semantic colors provide 35 derived swatches and neutral provides nine, for 44 in total. Select a swatch to see its value and CSS variable.
 
-<ColorPalette family="base" />
+<ColorPalette />
 
-## Semantic scales
+## Change Base Colors
 
-Each scale shows all derived swatches in a horizontally scrollable strip, followed by common variables.
+Configure the primary base with `theme.primaryColor`, and the other five with `theme.tokens`. Update these JS values through ConfigProvider to regenerate the scales; changing DOM styles does not trigger JS theme recalculation.
 
-### Primary
+The example uses the light appearance and sets `tokens.mutedSurfaceColor` to `rgb(244,243,239)`. The Tabs track and the outer canvas of a layered Card share this surface, while inner Card content keeps the content surface. Explicit component overrides take precedence.
 
-<ColorPalette family="primary" />
+All `on*Color` values default to white. Set the corresponding value to `#000000` for black text and choose suitable foreground/background pairs for your application.
 
-### Success
+<ComponentExample title="Base colors and text" preview={<ThemeColors />} fileName="colors.tsx" width="100%">
 
-<ColorPalette family="success" />
+```tsx lineNumbers file="../../../src/examples/en/theming/colors.tsx"
 
-### Danger
-
-<ColorPalette family="danger" />
-
-### Warning
-
-<ColorPalette family="warning" />
-
-### Info
-
-<ColorPalette family="info" />
-
-## Neutral colors
-
-Backgrounds, text and borders are grouped separately. `--leaf-color-divider` is a CSS alias of `--leaf-color-border-surface-70` with its own entry point.
-
-<ColorPalette family="neutral" />
-
-## Configure colors
-
-Set the primary color through ConfigProvider and individual semantic colors through `theme.tokens`. Application CSS reads the generated `--leaf-color-*` variables.
-
-```tsx
-<ConfigProvider theme={{ primaryColor: brandColor }}>
-  <App />
-</ConfigProvider>
 ```
 
-The `primary-soft` tokens have no default value; set `theme.tokens.primarySoftColor` and related fields explicitly when needed. Overriding only base CSS variables does not regenerate derived colors. See [ConfigProvider](/en/components/config-provider), [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens) and [Theming](/en/guide/theming).
-
-## Complete palette
-
-<ColorPalette family="all" />
+</ComponentExample>

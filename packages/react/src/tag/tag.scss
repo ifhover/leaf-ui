@@ -6,7 +6,6 @@
   --leaf-tag-color-surface-8: var(--leaf-status-label-background);
   --leaf-tag-color-alpha-10: var(--leaf-status-label-feedback-background);
   --leaf-tag-ink: var(--leaf-status-ink);
-  --leaf-tag-solid-ink: var(--leaf-status-label-foreground);
   --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
   --leaf-tag-paint-background: var(
     --leaf-component-tag-background,
@@ -34,8 +33,8 @@
   align-items: center;
   gap: 5px;
   max-width: var(--leaf-tag-width, 100%);
-  padding: 3px 10px;
-  border: 0;
+  padding: 2px 9px;
+  border: 1px solid transparent;
   border-radius: var(--leaf-component-tag-radius, var(--leaf-radius-sm));
   color: var(--leaf-tag-paint-color);
   background: var(--leaf-tag-paint-background);
@@ -57,25 +56,36 @@
     overflow: hidden;
     pointer-events: none;
   }
-  > span:not(.leaf-tag__icon) {
+  > span:not(.leaf-tag__icon):not(.leaf-tag__dot) {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   &--sm {
-    padding: 1px 8px;
+    padding: 0 7px;
   }
   &--lg {
-    padding: 4px 13px;
+    padding: 3px 12px;
     font-size: var(--leaf-font-size);
     line-height: var(--leaf-line-height);
   }
-  &--solid {
-    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-solid-ink));
-    --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-tag-color));
+  &--outline {
+    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-color-text));
+    --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-color-surface));
+    border-color: var(--leaf-component-tag-border-color, var(--leaf-color-border));
+    border-radius: var(--leaf-component-tag-radius, 999px);
+  }
+  &__dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--leaf-tag-color);
   }
   &__icon {
     display: inline-flex;
+    flex: none;
+    color: var(--leaf-tag-color);
     svg {
       width: 13px;
       height: 13px;

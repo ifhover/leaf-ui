@@ -8,7 +8,7 @@ Label content categories or statuses.
 
 ## Basic usage
 
-The example shows theme, success, info, warning, danger and custom colors in tinted and solid variants. Switch tabs to compare the three sizes.
+The example shows theme, success, info, warning, danger and custom colors in tinted and outlined variants. Switch tabs to compare the three sizes.
 
 <ComponentExample title="Basic usage" preview={<TagBasic />} fileName="basic.tsx">
 
@@ -19,7 +19,7 @@ The example shows theme, success, info, warning, danger and custom colors in tin
 
 ## Icons
 
-Pass a status dot or any custom icon to `icon`. The example shows both tinted and solid appearances; the dot follows the tag label color.
+A small status dot appears by default. Use `dot={false}` to hide it or `icon` to replace it with a custom icon.
 
 <ComponentExample title="Dots and icons" preview={<TagIcons />} fileName="icons.tsx">
 
@@ -34,9 +34,10 @@ Pass a status dot or any custom icon to `icon`. The example shows both tinted an
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Tag content |
 | `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| string` | `'primary'` | Semantic or custom color; `default` and `error` are compatibility aliases |
-| `variant` | `'soft' \| 'solid'` | `'soft'` | Tinted or solid appearance, borderless and using the small radius |
+| `variant` | `'soft' \| 'outline'` | `'soft'` | Tinted fill or neutral outlined surface |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
-| `icon` | `ReactNode` | — | Leading dot or custom icon |
+| `dot` | `boolean` | `true` | Show the built-in status dot when no custom icon is provided |
+| `icon` | `ReactNode` | — | Custom icon replacing the built-in dot |
 | `closable` | `boolean` | `false` | Show a close button |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
 
@@ -50,7 +51,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 
 ## Usage notes
 
-Tags use borderless fills and the small radius, with tinted and solid appearances. The default is 6px; set `ConfigProvider`'s `theme.components.Tag.borderRadius` for a component override. Label weight is fixed at 500 and no weight prop is exposed. An unspecified color uses the theme color; `default` maps to the theme color and `error` normalizes to `danger`. Tinted labels follow the tag's own color, except warning uses the derived readable warning ink; solid labels use white, except warning uses `--leaf-color-on-warning` against the warning fill. Unchecked `CheckableTag` and `TagGroup` options use the tinted theme color, while selected options use the solid theme color.
+Use `soft` for tinted labels or `outline` for a pill-shaped neutral surface with a border and semantic dot; dark mode follows the regional surface. Checkable tags use outline when unchecked and soft when checked.
 
 Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
 

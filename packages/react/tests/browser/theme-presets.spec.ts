@@ -74,7 +74,7 @@ test('steps stay transparent, avatars have one surface edge, and hovered rows re
       const header = table.getByRole('columnheader');
       const cell = table.getByRole('cell');
       await cell.hover();
-      await expect(header).toHaveCSS('border-bottom-width', '1px');
+      await expect(header).toHaveCSS('border-bottom-width', '0px');
       await expect
         .poll(async () => {
           const head = await header.evaluate((node) => getComputedStyle(node).backgroundColor);
@@ -98,7 +98,7 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         '.leaf-input:not(:has([aria-label="Explicit frame override"]))',
         '.leaf-switch__track',
         '.leaf-checkbox__input',
-        '.leaf-table',
+        '.leaf-table__panel',
         '.leaf-collapse',
         '.leaf-alert',
         '.leaf-pagination > button',
@@ -125,17 +125,30 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
       await expect(page.getByRole('button', { name: 'Solid action', exact: true })).toHaveCSS(
         'color',
-        'rgb(0, 0, 0)',
+        'rgb(255, 255, 255)',
       );
       await expect
         .poll(async () => (await readFrames()).every((frame) => frame.width === '2px'))
         .toBe(true);
       const frames = await readFrames();
-      const primary = color === 'orange' ? [255, 105, 0] : [29, 155, 240];
-      const text = dark ? [237, 237, 237] : [32, 32, 32];
-      const expected = primary.map((channel, index) =>
-        Math.round(channel * 0.12 + (text[index] ?? 0) * 0.88),
-      );
+      const expected = await page.evaluate(() => {
+        const scope = document.querySelector<HTMLElement>('.theme-presets-fixture');
+        if (!scope) throw new Error('Missing themed scope');
+        const canvas = document.createElement('canvas').getContext('2d');
+        if (!canvas) throw new Error('Canvas unavailable');
+        const channels = (value: string) => {
+          canvas.clearRect(0, 0, 1, 1);
+          canvas.fillStyle = value;
+          canvas.fillRect(0, 0, 1, 1);
+          return [...canvas.getImageData(0, 0, 1, 1).data].slice(0, 3);
+        };
+        const style = getComputedStyle(scope);
+        const primary = channels(style.getPropertyValue('--leaf-color-primary'));
+        const text = channels(style.getPropertyValue('--leaf-color-text'));
+        return primary.map((channel, index) =>
+          Math.round(channel * 0.12 + (text[index] ?? 0) * 0.88),
+        );
+      });
       for (const frame of frames) {
         expect(frame.color.slice(0, 3), frame.selector).toEqual(expected);
       }
@@ -178,23 +191,27 @@ test('one global frame color and CSS palette style controls, surfaces and portal
         .filter({ has: page.getByLabel('Invalid theme name', { exact: true }) });
       await expect(error).toHaveCSS(
         'border-top-color',
-        dark ? 'rgb(239, 133, 133)' : 'rgb(221, 63, 46)',
+        new TinyColor(
+          await error.evaluate((node) =>
+            getComputedStyle(node).getPropertyValue('--leaf-color-danger').trim(),
+          ),
+        ).toRgbString(),
       );
     }
     await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
   }
 });
 
-test('CSS variable primary colors get readable labels and update their derived palette', async ({
+test('CSS variable primary colors retain white labels and browser-native derived colors', async ({
   page,
 }) => {
   await page.goto('/?fixture=theme-presets&global&css-primary');
   const solid = page.getByRole('button', { name: 'Solid action', exact: true });
-  await expect(solid).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await expect(solid).toHaveCSS('color', 'rgb(255, 255, 255)');
   await expect(solid).toHaveCSS('background-color', 'rgb(255, 105, 0)');
   await page.getByRole('button', { name: 'Toggle palette', exact: true }).click();
   await expect(solid).toHaveCSS('background-color', 'rgb(29, 155, 240)');
-  await expect(solid).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await expect(solid).toHaveCSS('color', 'rgb(255, 255, 255)');
 });
 
 test('presets theme controls and portals and retain values when switched', async ({ page }) => {
@@ -286,12 +303,7 @@ test('thicker borders retain nested popup corner geometry and compact control he
   const panel = page.locator('.leaf-select__panel');
   const expected = await panel.evaluate((node) => {
     const style = getComputedStyle(node);
-    return Math.max(
-      0,
-      Number.parseFloat(style.borderTopLeftRadius) -
-        Number.parseFloat(style.paddingLeft) -
-        Number.parseFloat(style.borderLeftWidth),
-    );
+    return Math.max(0, Number.parseFloat(style.borderTopLeftRadius) - 2);
   });
   await expect(panel.getByRole('option').first()).toHaveCSS(
     'border-top-left-radius',

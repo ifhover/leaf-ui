@@ -1,4 +1,4 @@
-import { type HTMLAttributes, useContext, useMemo, useRef } from 'react';
+import { type HTMLAttributes, useContext, useMemo } from 'react';
 import { ConfirmScope } from '../confirm/provider';
 import { type LeafDensity, leafDensityVariables } from '../density';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
@@ -13,7 +13,6 @@ import {
   mergeComponentDefaults,
 } from './component-defaults';
 import { ConfigContext, type LeafDirection, type LeafLocale, useLeafConfig } from './context';
-import { useColorVariables } from './use-color-variables';
 
 export type { LeafDensity } from '../density';
 export type { LeafTranslation, LeafTranslations } from '../locales/types';
@@ -108,13 +107,10 @@ export function ConfigProvider({
     density,
   ]);
   const variables = useMemo(() => leafThemeVariables(merged.theme), [merged.theme]);
-  const root = useRef<HTMLDivElement>(null);
-  const resolved = useColorVariables(root, merged.theme);
   return (
     <ConfigContext.Provider value={merged}>
       <div
         {...props}
-        ref={root}
         lang={merged.locale}
         dir={merged.direction}
         data-leaf-scope=""
@@ -123,7 +119,7 @@ export function ConfigProvider({
           merged.theme.motion === undefined ? undefined : merged.theme.motion ? 'on' : 'off'
         }
         data-leaf-theme={merged.theme.appearance}
-        style={{ ...leafDensityVariables(merged.density), ...variables, ...resolved, ...style }}
+        style={{ ...leafDensityVariables(merged.density), ...variables, ...style }}
       >
         <ComponentDefaultsContext.Provider value={mergedComponents}>
           <MessageScope>

@@ -1,19 +1,6 @@
 import { readability } from '@ctrl/tinycolor';
-import { expect, type Locator, test } from '@playwright/test';
-
-async function paint(locator: Locator, property = 'backgroundColor', pseudo: string | null = null) {
-  return locator.evaluate(
-    (node, { name, pseudoElement }) => {
-      const context = document.createElement('canvas').getContext('2d');
-      if (!context) throw new Error('Missing canvas context');
-      // Normalize color(srgb ...), hex and rgb browser serializations equally.
-      context.fillStyle =
-        (getComputedStyle(node, pseudoElement) as unknown as Record<string, string>)[name] ?? '';
-      return context.fillStyle;
-    },
-    { name: property, pseudoElement: pseudo },
-  );
-}
+import { expect, test } from '@playwright/test';
+import { paintColor as paint } from './helpers/paint';
 
 for (const theme of ['light', 'dark']) {
   for (const name of ['Default', 'Nested']) {
@@ -25,9 +12,9 @@ for (const theme of ['light', 'dark']) {
       const trackColor = await paint(tabTrack);
       const pillColor = await paint(tabPill);
       const handle = section.getByRole('separator', { name: 'Resize panel 1' });
-      const restingHandle = await paint(handle);
+      const restingHandle = await handle.evaluate((node) => getComputedStyle(node).backgroundColor);
       await handle.hover();
-      await expect.poll(() => paint(handle)).not.toBe(restingHandle);
+      await expect(handle).not.toHaveCSS('background-color', restingHandle);
       await handle.focus();
       await expect(handle).toHaveCSS('outline-style', 'solid');
       expect(

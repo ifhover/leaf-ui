@@ -144,7 +144,7 @@
   .leaf-date-picker__day[aria-current='date']:not(.leaf-date-picker__day--selected)
     .leaf-calendar__cell-label {
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    font-weight: 600;
+    font-weight: 700;
   }
   .leaf-date-picker__day[aria-current='date'] .leaf-calendar__cell-label::after {
     content: '';
@@ -158,9 +158,10 @@
     transform: translateX(-50%);
   }
   .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label {
-    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    background: var(--leaf-color-primary);
     color: var(--leaf-color-on-primary);
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
   }
   .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label::after {
     background: var(--leaf-color-on-primary);

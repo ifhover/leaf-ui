@@ -1,57 +1,29 @@
-import { ColorPalette, PaletteVariableCount } from '../../src/components/color-palette';
+import { ColorPalette } from '../../src/components/color-palette';
+import { ComponentExample } from '../../src/components/component-example';
+import { ThemeColors } from '../../src/examples/theming/colors';
 
 # 颜色
 
-Leaf UI 使用语义变量组织颜色。默认主题提供 <PaletteVariableCount /> 个调色板变量；下面先展示核心语义色和常用角色，完整变量在页末折叠。
+五个语义色各生成 7 档派生色，中性色保留 9 档色阶，浅色与深色模式共用。
 
-## 核心语义色
+## 全局颜色变量
 
-主题、成功、危险、警告和信息色表达含义，实色背景上的前景色保持独立入口。`-ink` 变量用于可读文字，`on-*` 变量用于实色背景上的内容。每张色卡左侧是浅色，右侧是深色。
+每组展示独立保留的基色及其派生色带。五个语义色共 35 个派生色块，加上中性色的 9 档共 44 个。点击色块查看色值与 CSS 变量。
 
-<ColorPalette family="base" />
+<ColorPalette />
 
-## 语义色阶
+## 修改基色
 
-每个色系先展示完整派生色带，再列出常用变量。色带可在容器内横向滚动。
+通过 ConfigProvider 的 `theme.primaryColor` 修改主题基色，其他五组通过 `theme.tokens` 修改。更新这些 JS 配置即可重新生成色阶；修改 DOM 样式不会触发 JS 主题重算。
 
-### 主题色
+示例固定为浅色外观，并把 `tokens.mutedSurfaceColor` 设为 `rgb(244,243,239)`。Tabs 轨道和 Card 的内嵌外层画布共用这份底板，卡片内部内容仍使用内容表面；组件显式覆盖优先。
 
-<ColorPalette family="primary" />
+所有 `on*Color` 默认白色，需要黑字时将对应字段设为 `#000000`。请根据实际背景选择合适的字色。
 
-### 成功色
+<ComponentExample title="基色与字色" preview={<ThemeColors />} fileName="colors.tsx" width="100%">
 
-<ColorPalette family="success" />
+```tsx lineNumbers file="../../src/examples/theming/colors.tsx"
 
-### 危险色
-
-<ColorPalette family="danger" />
-
-### 警告色
-
-<ColorPalette family="warning" />
-
-### 信息色
-
-<ColorPalette family="info" />
-
-## 中性色
-
-背景、文字和边框分组展示。`--leaf-color-divider` 是 `--leaf-color-border-surface-70` 的 CSS 别名，并保留独立入口。
-
-<ColorPalette family="neutral" />
-
-## 配置颜色
-
-通过 ConfigProvider 设置主题色，单个语义色使用 `theme.tokens`。业务 CSS 读取生成后的 `--leaf-color-*` 变量。
-
-```tsx
-<ConfigProvider theme={{ primaryColor: brandColor }}>
-  <App />
-</ConfigProvider>
 ```
 
-`primary-soft` 系列没有默认值；需要时通过 `theme.tokens.primarySoftColor` 等字段显式设置。只覆盖基础 CSS 变量不会重新生成派生色。完整字段见 [ConfigProvider](/components/config-provider)、[LeafThemeTokens](/api/theme-tokens#leafthemetokens) 和[定制主题](/guide/theming)。
-
-## 完整色板
-
-<ColorPalette family="all" />
+</ComponentExample>

@@ -13,7 +13,7 @@ const colors = [
 ] as const;
 const variants = [
   { value: 'soft', label: '浅底' },
-  { value: 'solid', label: '实色' },
+  { value: 'outline', label: '描边' },
 ] as const;
 
 function TagGallery({ size }: { size: TagSize }) {

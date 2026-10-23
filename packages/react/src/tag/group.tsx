@@ -30,7 +30,7 @@ export function CheckableTag(rawProps: CheckableTagProps) {
       type={props.type ?? 'button'}
       className={classes(
         'leaf-tag',
-        `leaf-tag--${current ? 'solid' : 'soft'}`,
+        `leaf-tag--${current ? 'soft' : 'outline'}`,
         `leaf-tag--${size}`,
         'leaf-checkable-tag',
         className,
@@ -96,7 +96,7 @@ export function TagGroup(rawProps: TagGroupProps) {
             type="button"
             className={classes(
               'leaf-tag',
-              `leaf-tag--${selected ? 'solid' : 'soft'}`,
+              `leaf-tag--${selected ? 'soft' : 'outline'}`,
               `leaf-tag--${size ?? 'md'}`,
               'leaf-checkable-tag',
             )}

@@ -1,6 +1,35 @@
+import { semanticColorShadeSteps } from './color-shades';
+
+const semanticScaleColors = Object.fromEntries(
+  ['primary', 'success', 'danger', 'warning', 'info'].flatMap((family) =>
+    semanticColorShadeSteps.map((shade) => [
+      `leaf-${family}-${shade}`,
+      `var(--leaf-color-${family}-${shade})`,
+    ]),
+  ),
+);
+const neutralScaleColors = Object.fromEntries(
+  [100, 200, 300, 400, 500, 600, 700, 800, 900].map((step) => [
+    `leaf-neutral-${step}`,
+    `var(--leaf-color-neutral-${step})`,
+  ]),
+);
+const semanticRoles = Object.fromEntries(
+  ['primary', 'success', 'danger', 'warning', 'info'].flatMap((family) => [
+    [`leaf-on-${family}`, `var(--leaf-color-on-${family})`],
+    ...['soft', 'soft-hover', 'soft-active', 'ink', 'border'].map((role) => [
+      `leaf-${family}-${role}`,
+      `var(--leaf-color-${family}-${role})`,
+    ]),
+  ]),
+);
+
 /** Shared by the Tailwind 3 preset and the generated Tailwind 4 CSS theme. */
 export const leafTailwindTokens = {
   colors: {
+    ...semanticScaleColors,
+    ...neutralScaleColors,
+    ...semanticRoles,
     'leaf-primary': 'var(--leaf-color-primary)',
     'leaf-primary-hover': 'var(--leaf-color-primary-hover)',
     'leaf-primary-active': 'var(--leaf-color-primary-active)',
@@ -24,7 +53,7 @@ export const leafTailwindTokens = {
     'leaf-divider': 'var(--leaf-color-divider)',
     'leaf-option-hover': 'var(--leaf-color-option-hover)',
     'leaf-focus':
-      'var(--leaf-color-focus, var(--leaf-color-primary-focus, var(--leaf-color-primary-alpha-42)))',
+      'var(--leaf-color-focus, var(--leaf-color-primary-focus, var(--leaf-color-text-muted)))',
   },
   borderRadius: {
     leaf: 'var(--leaf-radius)',

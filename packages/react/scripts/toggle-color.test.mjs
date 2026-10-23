@@ -1,42 +1,34 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { test } from 'node:test';
+import { compiledStyles } from './compiled-styles.mjs';
 
-const sourcePath = path.resolve(import.meta.dirname, '..', 'src', 'switch', 'switch.scss');
-const source = await fs.readFile(sourcePath, 'utf8');
-const normalized = source.replace(/\s+/gu, ' ');
-
-test('switch colors use shared semantic roles without local derivations', () => {
-  assert.doesNotMatch(source, /#[0-9a-f]{3,8}\b/iu);
-  assert.doesNotMatch(source, /\b(?:rgba?|hsla?)\s*\(/iu);
-  assert.doesNotMatch(source, /color-mix\s*\(/iu);
-  assert.doesNotMatch(source, /var\(\s*--leaf-color-[\w-]+-\d+(?:\.\d+)?\s*[,)]/iu);
-  assert.match(normalized, /&__thumb \{[\s\S]*?background: var\(--leaf-color-text-muted\);/u);
-  assert.match(normalized, /&__thumb \{[\s\S]*?color: var\(--leaf-color-surface\);/u);
-  assert.match(
-    normalized,
-    /&__input:checked \+ &__track &__thumb \{ color: var\(--leaf-color-primary-indicator\); background: var\(--leaf-color-on-primary\);/u,
-  );
+test('compiled switch pairs the checked primary fill with its explicit foreground', async () => {
+  const rule = await compiledStyles('switch/switch.scss');
+  const resting = rule('.leaf-switch__thumb');
+  assert.equal(resting.background, 'var(--leaf-color-text-muted)');
+  assert.equal(resting.color, 'var(--leaf-color-surface)');
+  const checked = rule('.leaf-switch__input:checked + .leaf-switch__track .leaf-switch__thumb');
+  assert.equal(checked.background, 'var(--leaf-color-on-primary)');
+  assert.equal(checked.color, 'var(--leaf-color-primary)');
+  assert.equal(rule('.leaf-switch__spinner').color, 'var(--leaf-color-primary)');
+  const track = rule('.leaf-switch__input:checked + .leaf-switch__track');
+  assert.equal(track['--leaf-switch-track-background'], 'var(--leaf-color-primary)');
+  assert.ok(track['--leaf-switch-track-border'].includes('var(--leaf-color-primary-indicator,'));
 });
 
-test('switch hover and press keep the track paint while explicit states remain', () => {
-  for (const state of ['hover', 'active']) {
-    assert.match(
-      normalized,
-      new RegExp(
-        `@include mixins\\.state-paint\\( switch, ${state}, inherit, var\\(--leaf-switch-track-background\\),`,
-        'u',
-      ),
-    );
+test('compiled switch states retain the resting track as fallback', async () => {
+  const rule = await compiledStyles('switch/switch.scss');
+  for (const [state, selector] of [
+    [
+      'hover',
+      '.leaf-switch:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) .leaf-switch__track',
+    ],
+    ['active', '.leaf-switch:active:not([data-disabled]) .leaf-switch__track'],
+    ['focus', '.leaf-switch__input:focus-visible:not(:disabled) + .leaf-switch__track'],
+    ['disabled', '.leaf-switch[data-disabled] .leaf-switch__track'],
+  ]) {
+    const paint = rule(selector);
+    assert.ok(paint.background.includes(`--leaf-component-switch-${state}-background`));
+    assert.ok(paint.background.includes('var(--leaf-switch-track-background)'));
   }
-
-  for (const state of ['focus', 'disabled']) {
-    assert.match(normalized, new RegExp(`@include mixins\\.state-paint\\( switch, ${state},`, 'u'));
-  }
-
-  assert.match(
-    normalized,
-    /&__input:checked \+ &__track \{[\s\S]*?--leaf-switch-track-background: var\(--leaf-color-primary-indicator, var\(--leaf-color-primary\)\);/u,
-  );
 });

@@ -2,11 +2,12 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { BadgeBasic } from '../../../src/examples/en/badge/basic';
 import { BadgeCounts } from '../../../src/examples/en/badge/counts';
 import { BadgeDot } from '../../../src/examples/en/badge/dot';
-import { BadgeStatuses } from '../../../src/examples/en/badge/statuses';
+import { BadgeInside } from '../../../src/examples/en/badge/inside';
+import { BadgeStandalone } from '../../../src/examples/en/badge/standalone';
 
 # Badge
 
-Show counts, unread notifications or brief statuses.
+Show counts or unread notifications.
 
 ## Basic usage
 
@@ -39,13 +40,24 @@ Indicate new content without displaying a count.
 
 </ComponentExample>
 
-## Status indicators
+## Inside placement
 
-Describe the current status with a dot and text.
+Use `placement="inside"` to keep the indicator with a white ring inside the top-right corner of a button or other content. Leave enough room to avoid covering content; placement mirrors in RTL.
 
-<ComponentExample title="Status indicators" preview={<BadgeStatuses />} fileName="statuses.tsx">
+<ComponentExample title="Inside placement" preview={<BadgeInside />} fileName="inside.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/statuses.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/inside.tsx"
+```
+
+</ComponentExample>
+
+## Standalone
+
+Omit `children` to display a standalone badge. Standalone count badges use smaller corners.
+
+<ComponentExample title="Standalone" preview={<BadgeStandalone />} fileName="standalone.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/standalone.tsx"
 ```
 
 </ComponentExample>
@@ -54,13 +66,12 @@ Describe the current status with a dot and text.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Attach the indicator to the content's top-right corner and expand it outward when its content grows |
+| `children` | `ReactNode` | — | Attach the indicator to this content |
 | `count` | `number \| string` | — | Badge content |
 | `max` | `number` | `99` | Display max+ above this count |
 | `showZero` | `boolean` | `false` | Show a zero count |
 | `dot` | `boolean` | `false` | Use a notification dot |
-| `status` | `'success' \| 'warning' \| 'danger' \| 'info' \| 'default'` | — | Use a semantic status dot; `error` is a compatibility alias |
-| `text` | `ReactNode` | — | Text beside the indicator |
+| `placement` | `'outside' \| 'inside'` | `'outside'` | Attached indicator position: outside by default, or inside the top-right corner; mirrored in RTL and ignored without children |
 | `color` | `string` | — | Custom indicator color |
 
 ## Types
@@ -73,4 +84,4 @@ import type { BadgeProps } from '@ifhover/leaf-ui';
 
 ## Usage notes
 
-Use alone for counts or status text. When attaching a notification dot to another control, provide aria-label to explain the notification.
+Use alone for counts or short text. When attaching a notification dot to another control, provide aria-label to explain the notification.

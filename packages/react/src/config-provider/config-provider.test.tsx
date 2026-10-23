@@ -3,11 +3,44 @@ import userEvent from '@testing-library/user-event';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { defaultColors } from '../colors';
 import { Button, DatePicker, Drawer, Input, Modal, Pagination, Select, TimePicker } from '../index';
 import { useText } from '../shared/use-text';
 import { ConfigProvider, type ConfigProviderProps, useLeafConfig } from './config-provider';
 
 describe('ConfigProvider', () => {
+  it('derives colors only from JS theme updates without DOM color reads or observers', () => {
+    const computed = vi.spyOn(window, 'getComputedStyle');
+    const observer = vi.spyOn(window, 'MutationObserver');
+    try {
+      const view = render(
+        <ConfigProvider data-testid="colors" theme={{ primaryColor: 'var(--brand)' }} />,
+      );
+      const scope = view.getByTestId('colors');
+      expect(scope.style.getPropertyValue('--leaf-color-surface')).toBe('#ffffff');
+      expect(scope.style.getPropertyValue('--leaf-color-on-primary')).toBe('#ffffff');
+      scope.style.setProperty('--brand', '#000000');
+      expect(scope.style.getPropertyValue('--leaf-color-primary')).toBe('var(--brand)');
+      view.rerender(
+        <ConfigProvider
+          data-testid="colors"
+          theme={{
+            appearance: 'dark',
+            primaryColor: '#ff6900',
+            tokens: { neutralColor: '#64748b', onPrimaryColor: '#000000' },
+          }}
+        />,
+      );
+      expect(scope.style.getPropertyValue('--leaf-color-primary')).toBe('#ff6900');
+      expect(scope.style.getPropertyValue('--leaf-color-neutral')).toBe('#64748b');
+      expect(scope.style.getPropertyValue('--leaf-color-on-primary')).toBe('#000000');
+      expect(computed).not.toHaveBeenCalled();
+      expect(observer).not.toHaveBeenCalled();
+    } finally {
+      computed.mockRestore();
+      observer.mockRestore();
+    }
+  });
   it('exposes language selection and component defaults without dictionary override props', () => {
     expectTypeOf<ConfigProviderProps>().not.toHaveProperty('messages');
     expectTypeOf<ConfigProviderProps>().not.toHaveProperty('textMessages');
@@ -148,7 +181,7 @@ describe('ConfigProvider', () => {
       </ConfigProvider>,
     );
     expect(scope.style.getPropertyValue('--leaf-control-height-sm')).toBe('');
-    expect(scope.style.getPropertyValue('--leaf-color-info')).toBe('');
+    expect(scope.style.getPropertyValue('--leaf-color-info')).toBe(defaultColors.dark.info);
     expect(scope.style.getPropertyValue('--leaf-motion-duration')).toBe('0ms');
     expect(scope).toHaveAttribute('data-leaf-theme', 'dark');
   });
@@ -165,7 +198,7 @@ describe('ConfigProvider', () => {
             borderRadiusLg: 24,
             controlHeightLg: '3rem',
             fontSizeSm: 13,
-            fontWeight: 600,
+            fontWeight: 700,
             motionDuration: 250,
             popupZIndex: 1400,
           },
@@ -182,7 +215,7 @@ describe('ConfigProvider', () => {
     expect(scope.style.getPropertyValue('--leaf-radius-lg')).toBe('24px');
     expect(scope.style.getPropertyValue('--leaf-control-height-lg')).toBe('3rem');
     expect(scope.style.getPropertyValue('--leaf-font-size-sm')).toBe('13px');
-    expect(scope.style.getPropertyValue('--leaf-font-weight')).toBe('600');
+    expect(scope.style.getPropertyValue('--leaf-font-weight')).toBe('700');
     expect(scope.style.getPropertyValue('--leaf-z-index-popup')).toBe('1400');
     expect(screen.getByTestId('still').style.getPropertyValue('--leaf-motion-play-state')).toBe(
       'paused',

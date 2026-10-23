@@ -1,19 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Badge } from './badge/badge';
 import { Popconfirm } from './popconfirm/popconfirm';
 import { Result } from './result/result';
 import { Tag } from './tag/tag';
 import { Timeline } from './timeline/timeline';
 
 describe('feedback status naming', () => {
-  it('emits danger for Badge while accepting error', () => {
-    const { rerender } = render(<Badge status="danger" text="Stopped" />);
-    expect(document.querySelector('.leaf-badge')).toHaveAttribute('data-status', 'danger');
-    rerender(<Badge status="error" text="Stopped" />);
-    expect(document.querySelector('.leaf-badge')).toHaveAttribute('data-status', 'danger');
-  });
-
   it('emits danger for Tag while accepting error', () => {
     const { rerender } = render(<Tag color="danger">Stopped</Tag>);
     expect(document.querySelector('.leaf-tag')).toHaveAttribute('data-color', 'danger');

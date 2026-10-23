@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import axe from 'axe-core';
+import { expectAccessible } from './helpers/accessibility';
 
 for (const appearance of ['light', 'dark']) {
   test(`default scopes, size overrides and forced disabled in ${appearance}`, async ({
@@ -21,17 +21,14 @@ for (const appearance of ['light', 'dark']) {
       page.getByRole('textbox', { name: 'Disabled search', exact: true }),
     ).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Disabled find' })).toBeDisabled();
-    await page.addScriptTag({ content: axe.source });
-    const violations = await page.evaluate(async () =>
-      (await (window as unknown as { axe: typeof axe }).axe.run(document.body)).violations.map(
-        (item) => item.id,
-      ),
-    );
-    expect(violations).toEqual([]);
     await page.screenshot({
-      path: `.quality/component-defaults-${appearance}-${info.project.name}.png`,
+      path: test.info().outputPath(`component-defaults-${appearance}-${info.project.name}.png`),
       fullPage: true,
     });
+  });
+  test(`default scopes accessibility in ${appearance}`, { tag: '@a11y' }, async ({ page }) => {
+    await page.goto(`/?fixture=component-defaults&theme=${appearance}`);
+    await expectAccessible(page);
   });
 }
 
@@ -218,7 +215,7 @@ test('service requests keep options but content follows the calling region', asy
   const region = page.getByRole('region', { name: 'Expanded defaults' });
   await region.getByRole('button', { name: 'Regional message', exact: true }).click();
   await expect(page.locator('.leaf-tag').filter({ hasText: 'Message content' })).toHaveClass(
-    /leaf-tag--solid/u,
+    /leaf-tag--outline/u,
   );
   await expect(page.locator('.leaf-message').filter({ hasText: 'Message content' })).toHaveClass(
     /leaf-message--warning/u,
@@ -230,7 +227,7 @@ test('service requests keep options but content follows the calling region', asy
   await region.getByRole('button', { name: 'Regional confirm request' }).click();
   const dialog = page.getByRole('alertdialog', { name: 'Regional confirm' });
   await expect(dialog.getByRole('button', { name: 'Proceed', exact: true })).toBeVisible();
-  await expect(dialog.locator('.leaf-tag')).toHaveClass(/leaf-tag--solid/u);
+  await expect(dialog.locator('.leaf-tag')).toHaveClass(/leaf-tag--outline/u);
   await region
     .getByRole('button', { name: 'Change expanded defaults' })
     .evaluate((node: HTMLButtonElement) => node.click());

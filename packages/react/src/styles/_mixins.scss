@@ -1,3 +1,131 @@
+// Default Menu, Select and tree rows share paint without sharing layout or motion.
+@function neutral-option-background() {
+  @return rgb(0 0 0 / 8%);
+}
+
+@function neutral-option-color($strength: 80%) {
+  @return color-mix(in srgb, currentColor #{$strength}, var(--leaf-color-surface));
+}
+
+@function choice-option-background() {
+  @return color-mix(in srgb, #{neutral-option-background()} 50%, transparent);
+}
+
+// Choice rows fade their own feedback; saved values are marked separately by checks.
+@mixin choice-option($candidate: false) {
+  position: relative;
+  isolation: isolate;
+  color: neutral-option-color(70%);
+  background: transparent;
+  transition: color var(--leaf-motion-color) var(--leaf-motion-easing);
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    box-sizing: border-box;
+    border-radius: inherit;
+    background: transparent;
+    pointer-events: none;
+    transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
+  }
+  &:is([aria-selected='true'], [aria-checked='true'], [data-selected]) {
+    color: inherit;
+    background: transparent;
+  }
+  &:is(:hover, :focus-visible, :active, [data-highlighted='true']):not(:disabled):not(
+      [aria-disabled='true']
+    ):not([data-disabled]) {
+    color: inherit;
+    background: transparent;
+    &::before {
+      background: choice-option-background();
+    }
+  }
+  @if $candidate {
+    &[aria-selected='true']:not(:disabled):not([aria-disabled='true']) {
+      &::before {
+        background: choice-option-background();
+      }
+    }
+  }
+  &:is(:disabled, [aria-disabled='true'], [data-disabled]) {
+    color: var(--leaf-color-text-muted);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &::before {
+      transition: none;
+    }
+  }
+}
+
+@mixin choice-option-size($height: var(--leaf-current-control-height, var(--leaf-control-height))) {
+  min-height: $height;
+  margin: 0;
+  padding-block: min(
+    var(--leaf-density-option-padding),
+    max(0px, calc((#{$height} - var(--leaf-line-height-sm)) / 2))
+  );
+}
+
+// Form popups use the same theme slot as their field, not the generic dialog radius.
+@mixin field-popup($component) {
+  --leaf-surface-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius));
+  --leaf-floating-option-radius: max(0px, calc(var(--leaf-surface-radius) - 2px));
+}
+
+// Keep pressed surfaces subtle in both appearances without adding a semantic tint.
+@function subtle-action-background($surface) {
+  @return color-mix(in srgb, #{$surface}, var(--leaf-color-surface-muted));
+}
+
+// Button appearances and compact actions use one reversible paint transition.
+@mixin action-transition {
+  transition:
+    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    color var(--leaf-motion-color) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
+    opacity var(--leaf-motion-color) var(--leaf-motion-easing);
+}
+
+@mixin text-action-family {
+  --leaf-text-action-color: var(--leaf-color-text);
+  --leaf-text-action-background: color-mix(
+    in srgb,
+    var(--leaf-color-option-hover) 50%,
+    transparent
+  );
+  --leaf-text-action-active-background: var(--leaf-color-option-hover);
+}
+
+// Compact native actions share Text Button feedback; owners retain their geometry.
+@mixin text-action {
+  @include text-action-family;
+  color: var(--leaf-text-action-color);
+  background: transparent;
+  cursor: pointer;
+  @include action-transition;
+  &:hover:not(:disabled) {
+    color: var(--leaf-text-action-color);
+    background: var(--leaf-text-action-background);
+  }
+  &:active:not(:disabled) {
+    color: var(--leaf-text-action-color);
+    background: var(--leaf-text-action-active-background);
+  }
+  &:focus-visible {
+    @include focus-ring;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
 // Shared compact spacing for action footers, with explicit component padding taking precedence.
 @mixin action-footer-padding($component) {
   padding-block: var(--leaf-component-#{$component}-padding-top, calc(var(--leaf-spacing) * 1.5))
@@ -28,7 +156,7 @@
 @mixin resting-surface-shadow($component) {
   box-shadow: var(
     --leaf-component-#{$component}-shadow,
-    var(--leaf-surface-shadow, 0 3px 7px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04))
+    var(--leaf-surface-shadow, var(--leaf-shadow-xs))
   );
 }
 
@@ -39,13 +167,13 @@
 
 // Branded soft cues for selections and actions, never ordinary neutral option feedback.
 @mixin accent-soft-feedback-family {
-  --leaf-accent-soft-background: var(--leaf-color-primary-surface-8);
-  --leaf-accent-soft-border: var(--leaf-color-primary-border-24);
+  --leaf-accent-soft-background: var(--leaf-color-primary-soft);
+  --leaf-accent-soft-border: var(--leaf-color-primary-border);
 }
 
 @mixin danger-soft-feedback-family {
-  --leaf-danger-soft-background: var(--leaf-color-danger-surface-6);
-  --leaf-danger-soft-active-background: var(--leaf-color-danger-surface-8);
+  --leaf-danger-soft-background: var(--leaf-color-danger-soft);
+  --leaf-danger-soft-active-background: var(--leaf-color-danger-soft-active);
 }
 
 // Base status colors paint indicators; text uses their contrast-aware ink roles.
@@ -70,19 +198,19 @@
   --leaf-status-label-base: var(--leaf-color-#{$tone});
   @if $tone == primary {
     --leaf-status-label-foreground: var(--leaf-color-on-primary);
-    --leaf-status-label-background: var(--leaf-color-primary-surface-8);
+    --leaf-status-label-background: var(--leaf-color-primary-soft);
   } @else if $tone == success {
     --leaf-status-label-foreground: var(--leaf-color-on-success);
-    --leaf-status-label-background: var(--leaf-color-success-surface-8);
+    --leaf-status-label-background: var(--leaf-color-success-soft);
   } @else if $tone == warning {
     --leaf-status-label-foreground: var(--leaf-color-on-warning);
-    --leaf-status-label-background: var(--leaf-color-warning-surface-8);
+    --leaf-status-label-background: var(--leaf-color-warning-soft);
   } @else if $tone == danger {
     --leaf-status-label-foreground: var(--leaf-color-on-danger);
-    --leaf-status-label-background: var(--leaf-color-danger-surface-8);
+    --leaf-status-label-background: var(--leaf-color-danger-soft);
   } @else if $tone == info {
     --leaf-status-label-foreground: var(--leaf-color-on-info);
-    --leaf-status-label-background: var(--leaf-color-info-surface-8);
+    --leaf-status-label-background: var(--leaf-color-info-soft);
   }
   --leaf-status-label-close-background: color-mix(in srgb, currentColor 10%, transparent);
   --leaf-status-label-feedback-background: var(--leaf-status-label-close-background);
@@ -90,20 +218,12 @@
 
 // Modal and inset picker panels share the same muted canvas.
 @mixin panel-canvas-family {
-  --leaf-panel-canvas-background: color-mix(
-    in srgb,
-    var(--leaf-color-surface-muted) 60%,
-    var(--leaf-color-surface)
-  );
+  --leaf-panel-canvas-background: var(--leaf-color-surface-muted);
 }
 
 @mixin segmented-surface-family {
   --leaf-segmented-border: var(--leaf-color-divider);
-  --leaf-segmented-background: color-mix(
-    in srgb,
-    var(--leaf-color-surface-muted) 75%,
-    var(--leaf-color-border)
-  );
+  --leaf-segmented-background: var(--leaf-color-surface-muted);
   --leaf-segmented-selected-background: var(--leaf-color-surface);
   --leaf-segmented-muted-color: var(--leaf-color-text-muted);
 }
@@ -120,11 +240,11 @@
   }
 }
 
-// Transparent range spans are distinct from opaque, persistent selections.
+// Calendar ranges and selected days share the opaque primary-soft family.
 @mixin calendar-selection-family {
-  --leaf-calendar-range-background: var(--leaf-color-primary-alpha-12);
-  --leaf-calendar-selected-background: var(--leaf-color-primary-surface-5);
-  --leaf-calendar-selected-hover-background: var(--leaf-color-primary-surface-8);
+  --leaf-calendar-range-background: var(--leaf-color-primary-soft);
+  --leaf-calendar-selected-background: var(--leaf-color-primary-soft);
+  --leaf-calendar-selected-hover-background: var(--leaf-color-primary-soft-hover);
 }
 
 // Halo intensity is shared by discrete inputs, draggable handles and drop targets.
@@ -139,11 +259,13 @@
 @mixin table-family($component: table) {
   --leaf-table-surface: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
   --leaf-table-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
-  --leaf-table-header-background: var(--leaf-table-surface);
-  --leaf-table-header-color: color-mix(
-    in srgb,
-    var(--leaf-table-text) 80%,
-    var(--leaf-table-surface)
+  --leaf-table-header-background: var(
+    --leaf-component-#{$component}-background,
+    var(--leaf-color-surface-muted)
+  );
+  --leaf-table-header-color: var(
+    --leaf-component-#{$component}-color,
+    var(--leaf-color-text-muted)
   );
   --leaf-table-hover-background: color-mix(
     in srgb,
@@ -155,14 +277,8 @@
     var(--leaf-table-text) 2%,
     var(--leaf-table-surface)
   );
-  --leaf-table-selected-background: var(
-    --leaf-color-primary-soft,
-    var(--leaf-color-primary-surface-8)
-  );
-  --leaf-table-action-hover-background: var(
-    --leaf-color-primary-soft,
-    var(--leaf-color-option-hover)
-  );
+  --leaf-table-selected-background: var(--leaf-color-primary-soft);
+  --leaf-table-action-hover-background: var(--leaf-color-option-hover);
   // Retain the historical optional compatibility variable; its default is local to this family.
   --leaf-table-overlay-background: var(
     --leaf-color-surface-alpha-80,
@@ -267,11 +383,11 @@
   @if $status == error {
     --leaf-field-color: var(--leaf-color-danger);
 
-    --leaf-field-color-border-30: var(--leaf-color-danger-border-30);
+    --leaf-field-color-border-30: var(--leaf-color-danger-border);
   } @else if $status == warning {
     --leaf-field-color: var(--leaf-color-warning);
 
-    --leaf-field-color-border-30: var(--leaf-color-warning-border-30);
+    --leaf-field-color-border-30: var(--leaf-color-warning-border);
   } @else {
     @error "Unknown field validation status: #{$status}.";
   }
@@ -406,7 +522,7 @@
         --leaf-frame-border-color,
         var(--leaf-color-primary-indicator, var(--leaf-color-primary))
       );
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      background: var(--leaf-color-primary);
     }
 
     &:focus-visible {
@@ -450,7 +566,7 @@
     box-shadow: var(--leaf-choice-shadow);
     &:checked,
     &:indeterminate {
-      --leaf-choice-background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      --leaf-choice-background: var(--leaf-color-primary);
       --leaf-choice-border: var(
         --leaf-frame-border-color,
         var(--leaf-color-primary-indicator, var(--leaf-color-primary))

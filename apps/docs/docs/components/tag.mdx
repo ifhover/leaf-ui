@@ -8,7 +8,7 @@ import { TagIcons } from '../../src/examples/tag/icons';
 
 ## 基础用法
 
-示例在浅底与实色两组中展示主题、成功、信息、警告、危险和自定义颜色，切换标签页可比较三种尺寸。
+示例在浅底与描边两组中展示主题、成功、信息、警告、危险和自定义颜色，切换标签页可比较三种尺寸。
 
 <ComponentExample title="基础用法" preview={<TagBasic />} fileName="basic.tsx">
 
@@ -19,7 +19,7 @@ import { TagIcons } from '../../src/examples/tag/icons';
 
 ## 图标
 
-通过 `icon` 传入状态圆点或任意自定义图标。示例同时展示浅底与实色形态，圆点会跟随标签文字颜色。
+默认显示小圆点，设置 `dot={false}` 可隐藏，也可通过 `icon` 替换为自定义图标。
 
 <ComponentExample title="圆点与图标" preview={<TagIcons />} fileName="icons.tsx">
 
@@ -34,9 +34,10 @@ import { TagIcons } from '../../src/examples/tag/icons';
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | 标签内容 |
 | `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| string` | `'primary'` | 语义颜色或自定义颜色；`default` 和 `error` 为兼容别名 |
-| `variant` | `'soft' \| 'solid'` | `'soft'` | 浅底或实色形态，均为无边框且使用小圆角 |
+| `variant` | `'soft' \| 'outline'` | `'soft'` | 浅底或中性背景描边形态 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸 |
-| `icon` | `ReactNode` | — | 前置圆点或自定义图标 |
+| `dot` | `boolean` | `true` | 无自定义图标时显示内置状态圆点 |
+| `icon` | `ReactNode` | — | 替换内置圆点的自定义图标 |
 | `closable` | `boolean` | `false` | 展示关闭按钮 |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | 关闭时触发 |
 
@@ -50,7 +51,7 @@ import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifh
 
 ## 使用说明
 
-标签使用无边框的小圆角，仅提供浅底与实色形态。圆角默认取区域主题的小圆角（默认 6px），也可通过 `ConfigProvider` 的 `theme.components.Tag.borderRadius` 单独设置。标签字重固定为 500，不再提供字重参数。未指定颜色时使用主题色；`default` 映射到主题色，`error` 归一化为 `danger`。浅底形态的文字跟随标签自身颜色，警告色使用派生的可读警告文字色；实色形态使用白色文字，警告色使用 `--leaf-color-on-warning` 对比色。`CheckableTag` 和 `TagGroup` 的未选项使用浅底主题色，已选项使用实色主题色。
+使用 `soft` 展示浅底标签，使用 `outline` 展示白底灰边、深色文字与语义圆点的胶囊标签；深色模式跟随区域表面。可选标签未选时使用描边，选中时使用浅底。
 
 调用 event.preventDefault() 可阻止默认移除。在动态列表中，也可以通过 onClose 更新应用状态并移除对应项。
 

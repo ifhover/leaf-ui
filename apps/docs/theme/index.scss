@@ -78,10 +78,10 @@ html.rp-dark {
   --leaf-site-accent: var(--leaf-color-primary-ink);
   --rp-c-brand: var(--leaf-site-accent);
   --rp-c-brand-light: var(--leaf-color-primary-ink-hover);
-  --rp-c-brand-lighter: var(--leaf-color-primary-surface-8);
-  --rp-c-brand-dark: var(--leaf-color-primary-text-80);
-  --rp-c-brand-darker: var(--leaf-color-primary-text-55);
-  --rp-c-brand-tint: var(--leaf-color-primary-alpha-8);
+  --rp-c-brand-lighter: var(--leaf-color-primary-soft);
+  --rp-c-brand-dark: var(--leaf-color-primary-ink);
+  --rp-c-brand-darker: var(--leaf-color-primary-ink);
+  --rp-c-brand-tint: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
 }
 .rp-codeblock__content:has(> .leaf-docs-code-actions) {
   display: flex;
@@ -133,7 +133,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   h1#{$prose} {
     margin-bottom: 12px;
     font-size: 30px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.3;
     letter-spacing: -0.02em;
   }
@@ -148,7 +148,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
     padding-top: 0;
     border-top: 0;
     font-size: 22px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.4;
     letter-spacing: -0.015em;
     &::before {
@@ -159,7 +159,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
     margin-top: 32px;
     margin-bottom: 10px;
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.5;
   }
   p#{$prose},
@@ -331,7 +331,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   flex-direction: column;
   gap: 14px;
   margin: 22px 0 18px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.2;
 }
@@ -385,7 +385,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   h2 {
     margin: 14px 0 8px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
   }
   p {
     margin: 0;
@@ -415,7 +415,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   h2 {
     margin: 8px 0;
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: -0.02em;
   }
   p {

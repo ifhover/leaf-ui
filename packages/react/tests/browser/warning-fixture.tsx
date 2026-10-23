@@ -24,10 +24,10 @@ function WarningFeedback() {
       <Input aria-label="Warning field" status="warning" />
       <Space>
         <Tag color="warning">Warning label</Tag>
-        <Tag color="warning" variant="solid">
+        <Tag color="warning" variant="outline">
           Solid warning
         </Tag>
-        <Badge status="warning" text="Warning badge" />
+        <Badge dot color="var(--leaf-color-warning)" aria-label="Warning badge" />
       </Space>
       <Space>
         <Button

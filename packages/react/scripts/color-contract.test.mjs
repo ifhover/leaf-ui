@@ -107,6 +107,44 @@ test('rejects a new file with a hardcoded color', async (t) => {
   assert.match(result.errors.join('\n'), /new-component\/new-component\.scss.*hardcodedColors/u);
 });
 
+test('global optical definitions require reviewed colors even though they do not count as reuse', async (t) => {
+  const { scan, result } = await fixture(t, {
+    'styles/tokens.scss': ':root { --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.06); }',
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join('\n'), /styles\/tokens\.scss.*hardcodedColors/u);
+  assert.equal(scan.findings['styles/tokens.scss'].hardcodedColors[0].count, 1);
+});
+
+test('detects modern and named colors without swallowing declarations after quoted slashes', async (t) => {
+  for (const value of [
+    'red',
+    'rebeccapurple',
+    'oklch(0.7 0.1 130)',
+    'oklab(0.6 0.1 0.1)',
+    'lab(50% 10 10)',
+    'lch(50% 20 130)',
+    'hwb(120 0% 0%)',
+    'color(display-p3 1 0 0)',
+    '#f00',
+  ]) {
+    const { result } = await fixture(t, {
+      'sample/sample.scss': `.sample { content: "//"; color: ${value}; }`,
+    });
+    assert.equal(result.ok, false, value);
+    assert.match(result.errors.join('\n'), /hardcodedColors/u);
+  }
+});
+
+test('ignores comments but not escaped quotes inside strings', async (t) => {
+  const { result } = await fixture(t, {
+    'sample/sample.scss': String.raw`.sample { content: "escaped \" // text"; /* color: red; */ color: #f00; }`,
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join('\n'), /#f00/u);
+  assert.doesNotMatch(result.errors.join('\n'), /"red"/u);
+});
+
 test('rejects a near-identical HEX replacement', async (t) => {
   const { result } = await fixture(
     t,

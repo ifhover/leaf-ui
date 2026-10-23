@@ -86,11 +86,11 @@
       --leaf-component-switch-border-color,
       var(--leaf-frame-border-color, var(--leaf-color-primary-indicator, var(--leaf-color-primary)))
     );
-    --leaf-switch-track-background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    --leaf-switch-track-background: var(--leaf-color-primary);
     background: var(--leaf-switch-track-background);
   }
   &__input:checked + &__track &__thumb {
-    color: var(--leaf-color-primary-indicator);
+    color: var(--leaf-color-primary);
     background: var(--leaf-color-on-primary);
     transform: translateX(
       calc((var(--leaf-switch-width) - var(--leaf-switch-height)) * var(--leaf-switch-direction))
@@ -145,6 +145,7 @@
   &__spinner {
     width: 10px;
     height: 10px;
+    color: var(--leaf-color-primary);
     animation: var(
       --leaf-motion-animation,
       leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite

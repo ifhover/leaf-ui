@@ -113,7 +113,7 @@
     font-weight: var(--leaf-font-weight);
   }
   [data-status='finish'] &__icon {
-    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    background: var(--leaf-color-primary);
     border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     color: var(--leaf-color-on-primary);
   }

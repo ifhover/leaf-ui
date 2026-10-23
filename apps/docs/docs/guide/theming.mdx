@@ -22,7 +22,9 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 把示例中的 Button 换成你的应用内容即可。按钮、输入框、选择器及浮层会一起使用这份主题；按钮按下和其他交互状态的颜色会自动生成，按钮悬停保持原样。
 
-实色背景上的文字自动选用可读前景色；需要指定文字色时，可设置 `theme.tokens.onPrimaryColor`。
+`primaryColor` 是基色输入，组件库会保留原色，并生成 `light-3`、`light-7`、`light-9`、`dark-1`、`dark-3`、`dark-7`、`dark-9` 七档语义色。浅色和深色使用同一组基色与语义色，只切换中性角色以及 `soft`、`border`、`ink` 等用途；中性色仍使用 `100`–`900` 色阶。
+
+实色背景上的文字默认白色，需要黑字时设置 `theme.tokens.onPrimaryColor: '#000000'`。颜色通过 ConfigProvider 的 JS 配置更新，修改 DOM 样式不会触发 JS 色板重算。
 
 `borderRadius` 是圆角的基准值。卡片、弹窗等会按各自的层级生成圆角，因此不必逐个组件设置。数字表示像素，也支持 `'0.5rem'` 等 CSS 长度。
 
@@ -32,7 +34,7 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 | 参数            | 常见写法              | 用途                                                                   |
 | --------------- | --------------------- | ---------------------------------------------------------------------- |
-| `primaryColor`  | `'#7654c6'`           | 设置主题色，相关交互颜色自动生成。                                     |
+| `primaryColor`  | `'#7654c6'`           | 设置主题基色并生成七档语义色；原色不会被改写。                         |
 | `borderRadius`  | `8`                   | 调整基础圆角，`0` 为直角。                                             |
 | `appearance`    | `'light'` / `'dark'`  | 设置浅色或深色外观。                                                   |
 | `controlHeight` | `40`                  | 调整单行控件的基础高度，小、大尺寸同步变化。                           |
@@ -85,9 +87,9 @@ Windows XP 和 Material 是使用 Leaf UI 主题能力制作的风格示例。Wi
 </ConfigProvider>
 ```
 
-组件的文字、背景和边框会一起切换。没有指定 `primaryColor` 时，使用该外观的默认主题色。显式主色始终保留原值：黑色按钮在深色模式下仍使用黑底白字，并在需要时添加细微边界。
+组件的文字、背景和边框会一起切换。没有指定 `primaryColor` 时，浅色和深色使用同组默认语义基色。显式主色始终保留原值：黑色按钮在深色模式下仍使用黑底白字，并在需要时添加细微边界。两种外观共享五个语义色带与中性色阶，只改变中性角色和 `soft`、`border`、`ink` 等映射档位。
 
-主色与状态文字使用独立的可读文字色，实色背景保持原值。Input / Select 聚焦使用主题色边框，其他字段保留中性聚焦；显式文字色、焦点色与交互色配置优先。CSS 颜色表达式在浏览器解析后参与派生。
+主色与状态文字使用映射后的可读 `ink`，实色背景保持原值。Input / Select 聚焦使用主题色边框，其他字段保留中性聚焦；显式文字色、焦点色与交互色配置优先。CSS 颜色表达式在浏览器解析后参与派生。
 
 ConfigProvider 负责区域内组件的样式，不会给页面的 `body` 自动添加背景。业务页面的背景和文字也需要跟随外观时，可使用下文的 [CSS 变量](#在业务样式中使用主题)。
 
@@ -248,18 +250,24 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 | 常用变量                                              | 用途                                                               |
 | ----------------------------------------------------- | ------------------------------------------------------------------ |
 | `--leaf-color-primary`                                | 当前主题色。                                                       |
-| `--leaf-color-primary-ink`                            | 可读的主题文字，与主色基色分开。                                   |
-| `--leaf-color-success-ink` / `warning-ink` / `danger-ink` / `info-ink` | 各状态的可读文字，与状态基色分开。               |
+| `--leaf-color-<family>-{light-3,light-7,light-9,dark-1,dark-3,dark-7,dark-9}` | 五个语义 family 的七档共享色；`<family>` 为 primary、success、danger、warning 或 info。 |
+| `--leaf-color-neutral-{100..900}`                     | 中性色九档色阶，浅色与深色使用同一组值。                           |
+| `--leaf-color-<family>-soft` / `-soft-hover` / `-soft-active` | 各语义的柔和背景及反馈底色。                                       |
+| `--leaf-color-<family>-border`                        | 各语义由色阶映射的边界色。                                         |
+| `--leaf-color-<family>-ink`                           | 各语义在普通表面上的可读文字色。                                   |
 | `--leaf-color-primary-indicator`                      | 选中、进度和轮廓的主色指示。                                       |
 | `--leaf-color-primary-focus`                          | 供采用主色焦点提示的组件使用；普通字段与按钮默认使用中性焦点提示。 |
-| `--leaf-color-primary-fill-border`                    | 实心主色背景的辅助边界，通常透明。                                 |
+| `--leaf-color-primary-fill-border`                    | 日期选中等主色区域的辅助边界；实底按钮不使用此角色。                 |
 | `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | 各实色背景上的内容色。                             |
 | `--leaf-color-text` / `--leaf-color-text-muted`       | 主要、次要文字色。                                                 |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。                                               |
 | `--leaf-color-border`                                 | 边框颜色。                                                         |
+| `--leaf-color-option-hover`                           | 普通选项、菜单和候选行的中性反馈底色。                             |
 | `--leaf-border-width`                                 | 外框宽度。                                                         |
 | `--leaf-control-shadow` / `--leaf-surface-shadow`     | 控件与内容表面阴影。                                               |
 | `--leaf-radius`                                       | 基础圆角。                                                         |
+
+`--leaf-color-primary-soft` 及同类 `*-soft` 角色始终由语义色映射生成；`primarySoftColor` 等配置只用于显式覆盖。`ink` 优先使用达到 4.5:1 的原色，否则选择可读的派生色；主色指示优先使用达到 3:1 的原色，否则选择可读的派生色。业务代码优先使用用途角色，不直接拼装色阶。
 
 调整 Leaf UI 组件的主题仍通过 ConfigProvider，业务 CSS 用这些变量读取结果。仅修改某个基础 CSS 变量，不会重新生成整套交互颜色。
 
@@ -269,6 +277,6 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 
 服务端和客户端首次渲染应使用相同的外观。需要记住用户选择时，可由服务端读取 Cookie 并传入初始值；使用系统外观时，挂载后再更新。
 
-主题色优先传入具体的 HEX、RGB 或 HSL 颜色。`var(--brand-color)` 需要在浏览器挂载后解析，不能保证服务端首屏就得到对应的派生颜色。
+主题色优先传入具体的 HEX、RGB 或 HSL 颜色。CSS 颜色表达式会在首屏保留响应式结果，挂载后再解析为数值色阶；服务端无法直接解析的表达式不能保证首屏就是最终数值。
 
 安装见 [安装&快速开始](/guide/getting-started)，Next.js 等框架的接入见 [服务端渲染](/guide/ssr)，支持范围见 [浏览器兼容性](/guide/compatibility)。

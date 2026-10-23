@@ -14,7 +14,7 @@ export function TagFixture() {
         <Tag color="danger" data-testid="tag-danger-soft">
           Danger soft
         </Tag>
-        <Tag color="danger" variant="solid" data-testid="tag-danger">
+        <Tag color="danger" variant="outline" data-testid="tag-danger">
           Danger
         </Tag>
         <Tag color="#7654c6" data-testid="tag-custom">

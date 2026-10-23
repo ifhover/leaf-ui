@@ -22,7 +22,9 @@ Wrap your application in ConfigProvider. This example uses a purple primary colo
 
 Replace Button with your application content. Buttons, fields, selectors and popups share the theme. Hover, pressed and focus colors derive automatically.
 
-Text on solid fills uses a readable foreground automatically. Set `theme.tokens.onPrimaryColor` to choose an explicit text color.
+`primaryColor` is a base input. The library keeps the supplied color and generates seven semantic shades: `light-3`, `light-7`, `light-9`, `dark-1`, `dark-3`, `dark-7` and `dark-9`. Light and dark modes share the bases and semantic shades, switching only neutral roles and the `soft`, `border` and `ink` mappings; neutral keeps its `100`–`900` scale.
+
+Text on solid fills defaults to white. Set `theme.tokens.onPrimaryColor` to `#000000` for black text. Change colors through ConfigProvider JS configuration; DOM style changes do not trigger JS palette recalculation.
 
 `borderRadius` sets the base radius. Cards, dialogs and other surfaces derive radii for their own level, so you do not need to configure each component. Numbers represent pixels; CSS lengths such as `'0.5rem'` also work.
 
@@ -32,7 +34,7 @@ These fields all belong inside `theme`. Set only what you want to change.
 
 | Setting         | Example               | Purpose                                                                                                                      |
 | --------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `primaryColor`  | `'#7654c6'`           | Set the primary color and derive related interaction colors.                                                                 |
+| `primaryColor`  | `'#7654c6'`           | Set the primary base and generate seven semantic shades; the color is not rewritten.                                          |
 | `borderRadius`  | `8`                   | Set the base radius; use `0` for square corners.                                                                             |
 | `appearance`    | `'light'` / `'dark'`  | Choose light or dark appearance.                                                                                             |
 | `controlHeight` | `40`                  | Set the base single-line control height; small and large sizes follow.                                                       |
@@ -85,9 +87,9 @@ Set `appearance: 'dark'`. Use `'light'` to switch back:
 </ConfigProvider>
 ```
 
-Component text, backgrounds and borders change together. When `primaryColor` is omitted, the appearance supplies its default primary color. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed.
+Component text, backgrounds and borders change together. When `primaryColor` is omitted, light and dark modes share the same default semantic bases. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed. Both appearances share the five semantic bands and the neutral scale; only neutral roles and mapped `soft`, `border` and `ink` steps switch.
 
-Primary and status labels use separate readable ink colors while solid fills retain their original colors. Input and Select use a primary focus border; other fields retain neutral focus. Explicit foreground, focus and interaction settings take precedence. CSS color expressions participate after browser resolution.
+Primary and status labels use mapped readable ink while solid fills retain their original colors. Input and Select use a primary focus border; other fields retain neutral focus. Explicit foreground, focus and interaction settings take precedence. CSS color expressions participate after browser resolution.
 
 ConfigProvider styles the components in its region. It does not add a background to the page's `body`. To update your own page backgrounds and text, use the [CSS variables](#use-the-theme-in-application-css) below.
 
@@ -248,18 +250,24 @@ ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own cont
 | Common variable                                       | Purpose                                                                                                                |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `--leaf-color-primary`                                | Current primary color.                                                                                                 |
-| `--leaf-color-primary-ink`                            | Readable primary text, separate from the primary base color.                                                           |
-| `--leaf-color-success-ink` / `warning-ink` / `danger-ink` / `info-ink` | Readable text for each state, separate from its base color.                          |
+| `--leaf-color-<family>-{light-3,light-7,light-9,dark-1,dark-3,dark-7,dark-9}` | Seven shared semantic shades; `<family>` is primary, success, danger, warning or info. |
+| `--leaf-color-neutral-{100..900}`                     | The nine-step neutral scale, shared by light and dark modes.                     |
+| `--leaf-color-<family>-soft` / `-soft-hover` / `-soft-active` | Soft semantic surfaces and feedback fills.                                                |
+| `--leaf-color-<family>-border`                        | Scale-mapped semantic borders.                                                             |
+| `--leaf-color-<family>-ink`                           | Readable semantic text on ordinary surfaces.                                               |
 | `--leaf-color-primary-indicator`                      | Primary selected, progress and outline indicators.                                                                     |
 | `--leaf-color-primary-focus`                          | Available to components using primary focus indicators; ordinary fields and buttons default to neutral focus feedback. |
-| `--leaf-color-primary-fill-border`                    | Subtle solid primary boundary, normally transparent.                                                                   |
+| `--leaf-color-primary-fill-border`                    | Supporting boundary for primary selections such as dates; solid buttons do not use this role.                            |
 | `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | Content colors on solid fills.                                           |
 | `--leaf-color-text` / `--leaf-color-text-muted`       | Primary and secondary text.                                                                                            |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | Content and supporting backgrounds.                                                                                    |
 | `--leaf-color-border`                                 | Border color.                                                                                                          |
+| `--leaf-color-option-hover`                           | Neutral feedback fill for options, menus and candidate rows.                                                           |
 | `--leaf-border-width`                                 | Outer border width.                                                                                                    |
 | `--leaf-control-shadow` / `--leaf-surface-shadow`     | Control and content surface shadows.                                                                                   |
 | `--leaf-radius`                                       | Base radius.                                                                                                           |
+
+`--leaf-color-primary-soft` and the other `*-soft` roles are always derived from the semantic shades; settings such as `primarySoftColor` provide explicit overrides only. `ink` uses the base color when it reaches 4.5:1, otherwise a readable derived shade; the primary indicator similarly prefers the base at 3:1 and falls back to a readable shade. Prefer purpose roles over constructing shade values in application code.
 
 Configure Leaf UI component themes through ConfigProvider and read the results from application CSS. Changing a single base CSS variable does not regenerate the full set of interaction colors.
 
@@ -269,6 +277,6 @@ For Tailwind CSS, import the package configuration to reuse the theme through ut
 
 Use the same appearance for the server and the client's initial render. To remember a user's choice, read a cookie on the server and supply that initial value. System appearance updates after mounting.
 
-Prefer concrete HEX, RGB or HSL colors. A color such as `var(--brand-color)` resolves after mounting in the browser and cannot guarantee matching derived colors in the server's first frame.
+Prefer concrete HEX, RGB or HSL colors. CSS color expressions keep a reactive result in the first HTML and resolve to numeric scales after mounting; expressions the server cannot resolve may not show their final numeric values in the first frame.
 
 See [Installation & quick start](/en/guide/getting-started) for setup, [server-side rendering](/en/guide/ssr) for frameworks such as Next.js, and [Browser compatibility](/en/guide/compatibility) for support targets.

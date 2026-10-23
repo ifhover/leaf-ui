@@ -43,11 +43,11 @@ function DarkPrimaryColors() {
       <ConfigProvider
         data-testid="dark-primary-theme"
         theme={{
-          primaryColor: 'var(--dark-accent)',
+          primaryColor: primary,
           appearance: dark ? 'dark' : 'light',
           tokens: {
-            surfaceColor: 'light-dark(#fff, #1c1c20)',
-            mutedSurfaceColor: 'light-dark(#f6f6f7, #25252b)',
+            surfaceColor: dark ? '#1c1c20' : '#ffffff',
+            mutedSurfaceColor: dark ? '#25252b' : '#f6f6f7',
           },
         }}
       >

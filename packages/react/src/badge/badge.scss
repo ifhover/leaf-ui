@@ -6,27 +6,6 @@
   &:dir(rtl) {
     --leaf-badge-direction: -1;
   }
-  &[data-status='success'] {
-    --leaf-badge-color: var(--leaf-color-success);
-    --leaf-badge-on-color: var(--leaf-color-on-success);
-  }
-  &[data-status='warning'] {
-    --leaf-badge-color: var(--leaf-color-warning);
-    --leaf-badge-on-color: var(--leaf-color-on-warning);
-  }
-  &[data-status='danger'],
-  &[data-status='error'] {
-    --leaf-badge-color: var(--leaf-color-danger);
-    --leaf-badge-on-color: var(--leaf-color-on-danger);
-  }
-  &[data-status='info'] {
-    --leaf-badge-color: var(--leaf-color-info);
-    --leaf-badge-on-color: var(--leaf-color-on-info);
-  }
-  &[data-status='default'] {
-    --leaf-badge-color: var(--leaf-color-text-muted);
-    --leaf-badge-on-color: var(--leaf-color-surface);
-  }
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -51,7 +30,11 @@
     font-variant-numeric: tabular-nums;
     transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
+  &--standalone &__indicator {
+    border-radius: var(--leaf-radius-sm);
+  }
   &__indicator--dot {
+    border-radius: 100px;
     width: 8px;
     height: 8px;
     min-width: 8px;
@@ -67,8 +50,13 @@
     box-shadow: 0 0 0 2px var(--leaf-color-surface);
     pointer-events: none;
   }
-  &__text {
-    color: var(--leaf-color-text);
+  &--attached[data-placement='inside'] > &__indicator {
+    top: 6px;
+    inset-inline-start: auto;
+    inset-inline-end: 6px;
+    transform: none;
+    // A fixed white separator keeps the inset indicator distinct from its target.
+    box-shadow: 0 0 0 2px #fff;
   }
   &__count {
     display: inline-block;
