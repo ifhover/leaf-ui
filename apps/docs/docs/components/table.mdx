@@ -52,7 +52,7 @@ import type { DataTableProps, DataTableColumnMeta } from '@ifhover/leaf-ui/table
 
 ## 外框、列分隔线与斑马纹
 
-DataTable 默认始终展示基础圆角的外框和向下偏移的静止阴影，外框使用与 Card 相同的减淡分隔线颜色；表头保持与表格相同的表面，底部保留 1px 分割线。`striped` 默认开启，`columnDividers` 只增加列分隔线，不再控制外框；旧 `bordered` 仍兼容但已弃用。表头文字加粗并略淡于正文，排序图标紧跟文字。斑马纹从第一行开始使用淡色背景，开启时不显示行间分割线，设置 `striped={false}` 后显示行间细线。普通行与条纹行悬停时使用相同的不透明主色混合背景；选中行使用主题浅色背景，并优先于悬停样式。
+DataTable 默认采用分层卡片外观：表头位于灰色外层，表格内容位于带圆角、细边框和轻薄阴影的内层卡片。表头始终固定，不能关闭；设置 `maxHeight` 或在受限高度的 flex 容器中使用时，只有内层卡片中的内容滚动，边框和表头保持原位。`striped` 默认开启，`columnDividers` 只增加表体和表尾的列分隔线，不再控制外框；旧 `bordered` 仍兼容但已弃用。表头使用小号灰色文字，列之间默认展示上下留空的短分隔线，排序图标紧跟文字。第一行保留内容底色（浅色主题下为白色），斑马纹从第二行开始使用淡色背景，开启时不显示行间分割线，设置 `striped={false}` 后显示行间细线。普通行与条纹行悬停时使用相同的不透明主色混合背景；选中行使用主题浅色背景，并优先于悬停样式。
 
 <ComponentExample title="切换表格外观" preview={<TableAppearance />} fileName="appearance.tsx" width="100%">
 
@@ -99,7 +99,7 @@ DataTable 默认始终展示基础圆角的外框和向下偏移的静止阴影�
 
 通过 `columnPinning` 控制固定列，`columnOrder` 控制列顺序，列的 `size`、`minSize` 和 `maxSize` 控制宽度。`left` / `right` 在 Leaf UI 中对应逻辑起始 / 结束侧，跟随 RTL 方向。RTL 场景同时给 TanStack 配置 `columnResizeDirection: 'rtl'`。固定列阴影只在被遮挡的内容确实位于该方向时显示，滚动到对应逻辑边界后自动隐藏；`getCellProps` 返回的 `style` 不能覆盖内部固定定位。
 
-表格默认填满所在容器，列所需宽度超过容器时才在内部横向滚动。表头默认固定；设置 `maxHeight` 后，超出的行在表体内滚动。悬浮滚动条使用 [Scrollbar](./scrollbar)，纵向条从表头下方开始；未溢出或到达滚动边界时，滚轮继续滚动页面。
+表格默认填满所在容器，列所需宽度超过容器时才在内部横向滚动。表头始终固定，不能关闭；设置 `maxHeight` 后，超出的行在内层卡片中滚动。悬浮滚动条使用 [Scrollbar](./scrollbar)，纵向条从表头下方开始；内容未纵向溢出时，滚轮继续滚动页面，溢出后则在表格内部滚动，到达边界也不会带动页面。
 
 列宽手柄可拖动，也可聚焦后用左右方向键调整；Shift 增大步长，Home / End 跳到边界，双击恢复初始宽度。建议给可调整列设置合理的最大宽度。`ConfigProvider` 的 `density` 和 `theme.components.Table` 控制整个区域的密度、圆角、内边距、字号、颜色、背景和阴影。
 
@@ -192,11 +192,10 @@ DataTable 默认始终展示基础圆角的外框和向下偏移的静止阴影�
 | `toolbar` | `ReactNode` | — | 自动布局中的工具栏内容；仍由 DataTable 渲染 Content 和分页器。显式自定义布局请直接组合对应的公共部件。 |
 | `caption` | `ReactNode` | — | 表格说明。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `columnDividers` | `boolean` | — | 仅增加列分隔线；外框、圆角和向下静止阴影始终启用。 |
+| `columnDividers` | `boolean` | — | 增加表体和表尾的列分隔线；表头默认保留上下留空的短分隔线。 |
 | `bordered` | `boolean` | `false` | 已弃用，请改用 columnDividers；columnDividers 显式传入时优先。 |
-| `striped` | `boolean` | `true` | 展示交替行背景并隐藏行间分割线；关闭时显示行间细线。 |
-| `stickyHeader` | `boolean` | `true` | 表头保持在滚动区域顶部。 |
-| `maxHeight` | `CSSProperties['maxHeight']` | — | 滚动区域最大高度；虚拟模式未指定时使用 400。 |
+| `striped` | `boolean` | `true` | 从第二行开始展示交替行背景，第一行保留内容底色，并隐藏行间分割线；关闭时显示行间细线。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，仅内层卡片中的内容滚动；虚拟模式未指定时使用 400。 |
 | `minWidth` | `CSSProperties['minWidth']` | — | 表格最小宽度；默认根据可见列宽计算。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 空数据内容。 |
@@ -271,7 +270,6 @@ DataTable 默认始终展示基础圆角的外框和向下偏移的静止阴影�
 | `size` | `'sm' \| 'md' \| 'lg'` | DataTable size | 默认跟随 DataTable 的尺寸。 |
 | `variant` | `'outline' \| 'ghost'` | `'outline'` | 分页按钮样式：描边 / 无边框。 |
 | `hasNextPage` | `boolean` | — | 未知总数时控制下一页是否可用。 |
-
 
 沿用 Pagination 的展示参数，`total`、`current`、`pageSize` 和 `onChange` 由实例管理；`showSizeChanger` 默认开启。未知总数模式只提供上一页和下一页。
 
@@ -366,13 +364,12 @@ const table = useDataTable({
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `data` | `readonly TData[]` | — | 必需。展示的数据，更新时使用新数组。 |
-| `columns` | `readonly ColumnDef<TData>[]` | — | 必需。TanStack 的原生列定义。 |
-| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | — | 必需。每行稳定且唯一的字符串或数字标识。 |
+| `data` | `readonly TData[]` | 必填 | 展示的数据，更新时使用新数组。 |
+| `columns` | `readonly ColumnDef<TData>[]` | 必填 | TanStack 的原生列定义。 |
+| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | 必填 | 每行稳定且唯一的字符串或数字标识。 |
 | `localPagination` | `boolean` | — | 是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。 |
 | `pagination` | `boolean` | `true` | 已弃用，请改用 localPagination。不传 localPagination 时作为兼容别名；false 会关闭本地数据切分。 |
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调、行模型和服务端配置。 |
-
 
 Hook 的配置参数；`pagination` 只控制本地截断，分页器的外观由 DataTable 配置。
 
@@ -380,8 +377,7 @@ Hook 的配置参数；`pagination` 只控制本地截断，分页器的外观�
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `table` | `TanStackTable<TData>` | — | 必需。实例模式唯一的数据与状态来源；不再传入 data、columns、rowKey 或 options。 |
-
+| `table` | `TanStackTable<TData>` | 必填 | 实例模式唯一的数据与状态来源；不再传入 data、columns、rowKey 或 options。 |
 
 实例模式的专属参数，其余参数见 [DataTable API](#datatable-api)。实例可由 `useDataTable` 或原生 `useReactTable` 创建。
 
@@ -391,20 +387,20 @@ Hook 的配置参数；`pagination` 只控制本地截断，分页器的外观�
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `data` | `readonly TData[]` | — | 必需。展示的数据，更新时使用新数组。 |
-| `columns` | `readonly ColumnDef<TData>[]` | — | 必需。TanStack 的原生列定义。 |
-| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | — | 必需。非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。 |
+| `data` | `readonly TData[]` | 必填 | 展示的数据，更新时使用新数组。 |
+| `columns` | `readonly ColumnDef<TData>[]` | 必填 | TanStack 的原生列定义。 |
+| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | 必填 | 非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。 |
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调和服务端配置。 |
 
 ## DataTableRowReorderInfo
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `rows` | `readonly Row<TData>[]` | — | 必需。当前页重排后的行；通过 row.original 取得业务数据。 |
-| `fromIndex` | `number` | — | 必需。原始当前页索引，从 0 开始。 |
-| `toIndex` | `number` | — | 必需。目标当前页索引，从 0 开始。 |
-| `activeRow` | `Row<TData>` | — | 必需。正在移动的行，包含稳定 row.id。 |
-| `overRow` | `Row<TData>` | — | 必需。放置目标行，包含稳定 row.id。 |
+| `rows` | `readonly Row<TData>[]` | 必填 | 当前页重排后的行；通过 row.original 取得业务数据。 |
+| `fromIndex` | `number` | 必填 | 原始当前页索引，从 0 开始。 |
+| `toIndex` | `number` | 必填 | 目标当前页索引，从 0 开始。 |
+| `activeRow` | `Row<TData>` | 必填 | 正在移动的行，包含稳定 row.id。 |
+| `overRow` | `Row<TData>` | 必填 | 放置目标行，包含稳定 row.id。 |
 
 ## DataTablePresentation API
 
@@ -417,11 +413,10 @@ ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参�
 | `toolbar` | `ReactNode` | — | 自动布局中的工具栏内容；自定义布局需要自行渲染 DataTable.Toolbar。 |
 | `caption` | `ReactNode` | — | 设置 caption。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | — | 展示尺寸。 |
-| `columnDividers` | `boolean` | — | 仅增加列分隔线；外框、圆角和向下静止阴影始终启用。 |
+| `columnDividers` | `boolean` | — | 增加表体和表尾的列分隔线；表头默认保留上下留空的短分隔线。 |
 | `bordered` | `boolean` | — | 已弃用，请改用 columnDividers；columnDividers 显式传入时优先。 |
-| `striped` | `boolean` | — | 设置 striped。 |
-| `stickyHeader` | `boolean` | — | 设置 stickyHeader。 |
-| `maxHeight` | `CSSProperties['maxHeight']` | — | 设置 maxHeight。 |
+| `striped` | `boolean` | — | 从第二行开始展示交替行背景，第一行保留内容底色，并隐藏行间分割线；关闭时显示行间细线。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，仅内层卡片中的内容滚动；虚拟模式未指定时使用 400。 |
 | `minWidth` | `CSSProperties['minWidth']` | — | 设置 minWidth。 |
 | `loading` | `boolean` | — | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 没有内容时的展示。 |
@@ -445,9 +440,9 @@ ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参�
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `{ rowSelection: RowSelectionState }` | — | 必需。传给 useDataTable options 的受控 rowSelection 状态。 |
-| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | — | 必需。TanStack 原生选择变更回调，内部会规范化业务 key。 |
-| `enableMultiRowSelection` | `boolean` | — | 必需。由 mode 决定；单选为 false，多选为 true。 |
+| `state` | `{ rowSelection: RowSelectionState }` | 必填 | 传给 useDataTable options 的受控 rowSelection 状态。 |
+| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | 必填 | TanStack 原生选择变更回调，内部会规范化业务 key。 |
+| `enableMultiRowSelection` | `boolean` | 必填 | 由 mode 决定；单选为 false，多选为 true。 |
 
 ## UseDataTableSelectionOptions
 
@@ -462,8 +457,8 @@ ConfigProvider 的 `components.DataTable` 使用这些与行类型无关的参�
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `selectedRowKeys` | `string[]` | — | 必需。当前已选业务行 key；受控时来自 selectedRowKeys，非受控时来自内部状态。 |
-| `rowSelection` | `RowSelectionState` | — | 必需。由业务 key 派生的 TanStack 原生 rowSelection 映射。 |
-| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | — | 必需。可直接传给 useDataTable 或原生 useReactTable。 |
-| `selectionOptions` | [`DataTableSelectionOptions`](#datatableselectionoptions) | — | 必需。可直接展开到 useDataTable options 的完整选择配置。 |
-| `clearSelection` | `() => void` | — | 必需。清空受控或非受控选择，并触发变更回调。 |
+| `selectedRowKeys` | `string[]` | 必填 | 当前已选业务行 key；受控时来自 selectedRowKeys，非受控时来自内部状态。 |
+| `rowSelection` | `RowSelectionState` | 必填 | 由业务 key 派生的 TanStack 原生 rowSelection 映射。 |
+| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | 必填 | 可直接传给 useDataTable 或原生 useReactTable。 |
+| `selectionOptions` | [`DataTableSelectionOptions`](#datatableselectionoptions) | 必填 | 可直接展开到 useDataTable options 的完整选择配置。 |
+| `clearSelection` | `() => void` | 必填 | 清空受控或非受控选择，并触发变更回调。 |

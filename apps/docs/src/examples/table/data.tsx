@@ -139,7 +139,6 @@ export function TableColumns({ english = false }: { english?: boolean }) {
       table={table}
       aria-label={english ? 'Pinned and resizable columns' : '固定列与列宽调整'}
       layout="custom"
-      stickyHeader
       maxHeight={300}
       resizable
       pagination={false}

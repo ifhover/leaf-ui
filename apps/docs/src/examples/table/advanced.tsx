@@ -24,7 +24,6 @@ export function TableVirtual({ english = false }: { english?: boolean }) {
       table={table}
       aria-label={english ? '10000 members' : '10000 位成员'}
       virtual={{ estimateRowHeight: 55, overscan: 6 }}
-      stickyHeader
       maxHeight={320}
       pagination={false}
     />

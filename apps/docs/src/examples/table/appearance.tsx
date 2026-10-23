@@ -18,7 +18,7 @@ export function TableAppearance({ english = false }: { english?: boolean }) {
           checked={columnDividers}
           onChange={(event) => setColumnDividers(event.target.checked)}
         >
-          {english ? 'Column dividers' : '列分隔线'}
+          {english ? 'Body column dividers' : '表体列分隔线'}
         </Checkbox>
         <Checkbox checked={striped} onChange={(event) => setStriped(event.target.checked)}>
           {english ? 'Striped rows' : '斑马纹'}

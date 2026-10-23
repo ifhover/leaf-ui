@@ -25,7 +25,6 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
   columnDividers?: boolean;
   striped?: boolean;
-  stickyHeader?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
   minWidth?: CSSProperties['minWidth'];
   tableLayout?: CSSProperties['tableLayout'];
@@ -63,7 +62,6 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
     size = 'md',
     columnDividers = false,
     striped = true,
-    stickyHeader = true,
     maxHeight,
     minWidth,
     tableLayout,
@@ -83,6 +81,8 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
   const viewport = useRef<HTMLDivElement>(null);
   const viewportRef = useMergedRef(viewport, scrollRef);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const [captionHeight, setCaptionHeight] = useState(0);
+  const [verticalOverflow, setVerticalOverflow] = useState(false);
   const [scrollEdges, setScrollEdges] = useState({ start: true, end: true });
   useEffect(() => {
     const node = viewport.current;
@@ -96,6 +96,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
         start: maximum <= 1 || offset <= 1,
         end: maximum <= 1 || offset >= maximum - 1,
       };
+      setVerticalOverflow(node.scrollHeight > node.clientHeight + 1);
       setScrollEdges((previous) =>
         previous.start === next.start && previous.end === next.end ? previous : next,
       );
@@ -103,8 +104,35 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
     const schedule = () => {
       if (frame === undefined) frame = requestAnimationFrame(update);
     };
+    const containWheel = (event: WheelEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        Math.abs(event.deltaY) <= Math.abs(event.deltaX)
+      )
+        return;
+      const maximum = node.scrollHeight - node.clientHeight;
+      if (maximum <= 1 || (event.deltaY < 0 ? node.scrollTop > 0 : node.scrollTop < maximum - 1))
+        return;
+      for (const target of event.composedPath()) {
+        if (target === node) break;
+        if (!(target instanceof Element)) continue;
+        const nestedMaximum = target.scrollHeight - target.clientHeight;
+        if (
+          nestedMaximum > 1 &&
+          /^(auto|scroll|overlay)$/.test(getComputedStyle(target).overflowY) &&
+          (event.deltaY < 0 ? target.scrollTop > 0 : target.scrollTop < nestedMaximum - 1)
+        )
+          return;
+      }
+      event.preventDefault();
+    };
     update();
     node.addEventListener('scroll', schedule, { passive: true });
+    // Older WebKit cannot contain wheel chaining with CSS; keep native scrolling elsewhere.
+    if (typeof CSS === 'undefined' || !CSS.supports?.('overscroll-behavior-y', 'contain'))
+      node.addEventListener('wheel', containWheel, { passive: false });
     const observer =
       typeof ResizeObserver === 'undefined'
         ? undefined
@@ -116,6 +144,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
     window.addEventListener('resize', schedule);
     return () => {
       node.removeEventListener('scroll', schedule);
+      node.removeEventListener('wheel', containWheel);
       observer?.disconnect();
       window.removeEventListener('resize', schedule);
       if (frame !== undefined) cancelAnimationFrame(frame);
@@ -123,21 +152,24 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
   }, []);
   useEffect(() => {
     const table = element.current;
-    if (!table || !stickyHeader) {
-      setHeaderHeight(0);
-      return;
-    }
-    const measure = () => setHeaderHeight(table.tHead?.getBoundingClientRect().height ?? 0);
+    if (!table) return;
+    const measure = () => {
+      const caption = table.caption?.getBoundingClientRect().height ?? 0;
+      setCaptionHeight(caption);
+      setHeaderHeight(caption + (table.tHead?.getBoundingClientRect().height ?? 0));
+    };
     measure();
     const observer =
       typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
     observer?.observe(table);
     if (table.tHead) observer?.observe(table.tHead);
+    if (table.caption) observer?.observe(table.caption);
     const mutation =
       typeof MutationObserver === 'undefined'
         ? undefined
         : new MutationObserver(() => {
             if (table.tHead) observer?.observe(table.tHead);
+            if (table.caption) observer?.observe(table.caption);
             measure();
           });
     mutation?.observe(table, { childList: true });
@@ -145,7 +177,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
       observer?.disconnect();
       mutation?.disconnect();
     };
-  }, [stickyHeader]);
+  }, []);
   return (
     <div
       className={classes(
@@ -153,14 +185,22 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
         `leaf-table--${size}`,
         columnDividers && 'leaf-table--column-dividers',
         striped && 'leaf-table--striped',
-        stickyHeader && 'leaf-table--sticky',
         className,
       )}
-      style={style}
+      style={
+        {
+          ...style,
+          '--leaf-table-header-height': `${headerHeight}px`,
+          '--leaf-table-caption-height': `${captionHeight}px`,
+        } as CSSProperties
+      }
       data-loading={loading || undefined}
       data-scroll-start={scrollEdges.start || undefined}
       data-scroll-end={scrollEdges.end || undefined}
+      data-vertical-overflow={verticalOverflow || undefined}
     >
+      {/* A stationary frame clips the scrolling rows without splitting the native table. */}
+      <div className="leaf-table__panel" aria-hidden="true" />
       <Scrollbar
         ref={viewportRef}
         className="leaf-table__scroll-area"

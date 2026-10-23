@@ -94,7 +94,6 @@ function VirtualTable() {
           aria-label="Large table"
           maxHeight={320}
           virtual
-          stickyHeader
           pagination={false}
           renderExpandedRow={(row) => (
             <div style={{ height: Number(row.id) % 2 === 0 ? 160 : 72 }}>
@@ -107,7 +106,41 @@ function VirtualTable() {
   );
 }
 
+function LayeredTableFixture() {
+  const [longHeading, setLongHeading] = useState(false);
+  const details: ColumnDef<RecordRow>[] = [
+    { accessorKey: 'name', header: 'Name', size: 220 },
+    { accessorKey: 'description', header: 'Description', size: 420 },
+  ];
+  const columns: ColumnDef<RecordRow>[] = [
+    {
+      header: longHeading ? 'People and their current project information' : 'People',
+      columns: longHeading ? [{ header: 'Assignment', columns: details }] : details,
+    },
+  ];
+  // A legacy JavaScript option must not disable the fixed header.
+  const legacyOptions = { stickyHeader: false };
+  return (
+    <section aria-label="Layered table demo">
+      <h1>Layered table</h1>
+      <DataTable
+        {...legacyOptions}
+        data={records.slice(0, 100)}
+        columns={columns}
+        rowKey="id"
+        aria-label="Layered records"
+        caption="Project records"
+        style={{ height: 280 }}
+        pagination={false}
+        toolbar={<Button onClick={() => setLongHeading((value) => !value)}>Change heading</Button>}
+      />
+      <p style={{ marginTop: 800 }}>Page scroll target</p>
+    </section>
+  );
+}
+
 export function TableFixture() {
+  if (new URLSearchParams(location.search).has('layered')) return <LayeredTableFixture />;
   return (
     <div style={{ display: 'grid', gap: 32, maxWidth: 1000, minWidth: 0 }}>
       <h1>Table acceptance</h1>

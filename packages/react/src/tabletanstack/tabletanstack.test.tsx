@@ -16,7 +16,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
 import { renderToString } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
 import { useDataTableSelection } from './selection';
@@ -113,6 +113,24 @@ const bodyNames = () =>
   );
 
 describe('DataTable TanStack adapter', () => {
+  it('does not expose or forward the obsolete fixed-header switch', () => {
+    expectTypeOf<DataTableInstanceProps<Person>>().not.toHaveProperty('stickyHeader');
+    const legacyOptions = { stickyHeader: false };
+    render(
+      <DataTable
+        {...legacyOptions}
+        data={data}
+        columns={[{ accessorKey: 'name', header: 'Name' }]}
+        rowKey="id"
+        aria-label="Fixed headers"
+      />,
+    );
+    const table = screen.getByRole('table', { name: 'Fixed headers' });
+    expect(table).not.toHaveAttribute('stickyHeader');
+    expect(table.closest('.leaf-data-table')).not.toHaveAttribute('stickyHeader');
+    expect(table.closest('.leaf-table')?.querySelector('.leaf-table__panel')).toBeInTheDocument();
+  });
+
   it('creates a single engine for the data/columns convenience mode', async () => {
     render(
       <ConfigProvider locale="en-US">
@@ -546,15 +564,26 @@ describe('DataTable TanStack adapter', () => {
       <input aria-label={`Note ${row.original.name}`} defaultValue="Draft" />
     );
     let instance: TanStackTable<Person> | undefined;
+    const submit = vi.fn((event) => event.preventDefault());
     render(
-      <Harness
-        renderExpandedRow={renderDetail}
-        onState={(table) => {
-          instance = table;
-        }}
-      />,
+      <ConfigProvider
+        components={{ Button: { variant: 'solid', size: 'lg', loading: true, type: 'submit' } }}
+      >
+        <form onSubmit={submit}>
+          <Harness
+            renderExpandedRow={renderDetail}
+            onState={(table) => {
+              instance = table;
+            }}
+          />
+        </form>
+      </ConfigProvider>,
     );
     const opener = screen.getByRole('button', { name: 'Expand row: Alice' });
+    expect(opener).toHaveClass('leaf-button', 'leaf-button--text', 'leaf-button--sm');
+    expect(opener).toHaveClass('leaf-button--icon-only');
+    expect(opener).toHaveAttribute('type', 'button');
+    expect(opener).toBeEnabled();
     const target = opener.getAttribute('aria-controls');
     expect(document.getElementById(target ?? '')).toHaveAttribute('hidden');
     await userEvent.click(opener);
@@ -565,6 +594,7 @@ describe('DataTable TanStack adapter', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Expand row: Alice' }));
     expect(screen.getByRole('textbox', { name: 'Note Alice' })).toBe(note);
     expect(note).toHaveValue('Draft saved');
+    expect(submit).not.toHaveBeenCalled();
   });
 
   it('expands hierarchical rows through the supplied row model', async () => {
@@ -663,7 +693,7 @@ describe('DataTable TanStack adapter', () => {
     );
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass(
-      'leaf-button--ghost',
+      'leaf-button--text',
       'leaf-button--sm',
     );
   });
@@ -1069,13 +1099,14 @@ describe('DataTable TanStack adapter', () => {
 
   it('blocks sort, selection, pagination and search during refresh without replacing rows', () => {
     render(
-      <Harness loading selection="multiple">
+      <Harness loading selection="multiple" renderExpandedRow={() => 'Details'}>
         <DataTable.Search />
         <DataTable.Content />
         <DataTable.Pagination />
       </Harness>,
     );
     expect(screen.getByRole('button', { name: 'Name: Sort ascending' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Expand row: Alice' })).toBeDisabled();
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();

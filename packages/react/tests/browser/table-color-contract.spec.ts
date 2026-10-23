@@ -96,6 +96,26 @@ function tableRoot(tableLocator: Locator) {
   );
 }
 
+async function expectLayeredHeader(tableLocator: Locator) {
+  const root = tableRoot(tableLocator);
+  const header = tableLocator.locator('thead th').last();
+  const canvas = parseColor(
+    await resolveColor(
+      root,
+      'var(--leaf-component-table-background, var(--leaf-color-surface-muted))',
+    ),
+  );
+  await expectColor(root, canvas);
+  await expectColor(header, canvas);
+  await expectColor(
+    header,
+    parseColor(
+      await resolveColor(root, 'var(--leaf-component-table-color, var(--leaf-color-text-muted))'),
+    ),
+    'color',
+  );
+}
+
 function bodyRow(tableLocator: Locator, rowId: string) {
   return tableLocator.locator(`tbody tr[data-row-id="${rowId}"]`);
 }
@@ -127,29 +147,31 @@ for (const appearance of ['light', 'dark'] as const) {
       const defaultTable = table(page, 'Default table color contract');
       const defaultRoot = tableRoot(defaultTable);
       const primary = parseColor(await resolveColor(defaultRoot, 'var(--leaf-color-primary)'));
-      const surface = parseColor(await cssValue(defaultRoot, 'background-color'));
+      const primarySoft = parseColor(
+        await resolveColor(defaultRoot, 'var(--leaf-color-primary-soft)'),
+      );
+      const surface = parseColor(await resolveColor(defaultRoot, 'var(--leaf-table-surface)'));
       const text = parseColor(await cssValue(defaultRoot, 'color'));
-      const header = defaultTable.locator('thead th').last();
-
-      await expectColor(header, surface);
-      await expectColor(header, mix(text, surface, 0.8), 'color');
-      await expectColor(rowCell(defaultTable, 'alpha'), mix(text, surface, 0.02));
-      await expectColor(rowCell(defaultTable, 'bravo'), surface);
+      await expectLayeredHeader(defaultTable);
+      await expectColor(rowCell(defaultTable, 'alpha'), surface);
+      await expectColor(rowCell(defaultTable, 'bravo'), mix(text, surface, 0.02));
 
       await defaultTable.getByRole('checkbox', { name: /Select row: alpha/i }).check();
       const selected = defaultTable.locator('tbody tr[data-selected]');
       await expect(selected).toHaveCount(1);
       const selectedCell = selected.locator('td').last();
-      await expectColor(selectedCell, mix(primary, surface, 0.08));
+      await expectColor(selectedCell, primarySoft);
       await selectedCell.hover();
-      await expectColor(selectedCell, mix(primary, surface, 0.08));
+      await expectColor(selectedCell, primarySoft);
 
       await rowCell(defaultTable, 'charlie').hover();
       await expectColor(rowCell(defaultTable, 'charlie'), mix(primary, surface, 0.03));
 
       const loadingTable = table(page, 'Default loading table color contract');
       const loadingRoot = tableRoot(loadingTable);
-      const loadingSurface = parseColor(await cssValue(loadingRoot, 'background-color'));
+      const loadingSurface = parseColor(
+        await resolveColor(loadingRoot, 'var(--leaf-table-surface)'),
+      );
       await expectColor(
         loadingRoot.locator('.leaf-table__overlay'),
         withAlpha(loadingSurface, 0.8),
@@ -185,9 +207,9 @@ for (const appearance of ['light', 'dark'] as const) {
 
       const actionTable = table(page, 'Default action table color contract');
       const actionRoot = tableRoot(actionTable);
-      const actionSurface = parseColor(await cssValue(actionRoot, 'background-color'));
-      const actionText = parseColor(await cssValue(actionRoot, 'color'));
-      const optionHover = mix(actionText, actionSurface, 0.09);
+      const optionHover = parseColor(
+        await resolveColor(actionRoot, 'var(--leaf-color-option-hover)'),
+      );
       const dragHandle = actionTable.getByRole('button', {
         name: 'Reorder row: Alpha',
         exact: true,
@@ -196,39 +218,46 @@ for (const appearance of ['light', 'dark'] as const) {
       await expectColor(dragHandle, optionHover);
       const expand = actionTable.getByRole('button', { name: 'Expand row: Alpha', exact: true });
       await expand.hover();
-      await expectColor(expand, optionHover);
+      await expectColor(expand, withAlpha(optionHover, 0.5));
       await expand.click();
       await expect(actionTable.locator('[data-detail-row="alpha"]')).toBeVisible();
     });
 
-    test('primarySoftColor explicitly overrides table selection and small actions without leaking', async ({
+    test('primarySoftColor overrides selection while small actions remain neutral and isolated', async ({
       page,
     }) => {
       const explicitTable = table(page, 'Explicit primarySoft table color contract');
+      const explicitRoot = tableRoot(explicitTable);
       const primarySoft = parseColor('#ff2d95');
+      const explicitOptionHover = parseColor(
+        await resolveColor(explicitRoot, 'var(--leaf-color-option-hover)'),
+      );
       await explicitTable.getByRole('checkbox', { name: /Select row: alpha/i }).check();
       await expectColor(explicitTable.locator('tbody tr[data-selected] td').last(), primarySoft);
+      expect(colorDistance(explicitOptionHover, primarySoft)).toBeGreaterThan(20);
 
       const dragHandle = explicitTable.getByRole('button', {
         name: 'Reorder row: Alpha',
         exact: true,
       });
       await dragHandle.hover();
-      await expectColor(dragHandle, primarySoft);
+      await expectColor(dragHandle, explicitOptionHover);
       const expand = explicitTable.getByRole('button', { name: 'Expand row: Alpha', exact: true });
       await expand.hover();
-      await expectColor(expand, primarySoft);
+      await expectColor(expand, withAlpha(explicitOptionHover, 0.5));
 
       const defaultAction = table(page, 'Default action table color contract');
       const defaultRoot = tableRoot(defaultAction);
-      const surface = parseColor(await cssValue(defaultRoot, 'background-color'));
-      const text = parseColor(await cssValue(defaultRoot, 'color'));
+      const defaultOptionHover = parseColor(
+        await resolveColor(defaultRoot, 'var(--leaf-color-option-hover)'),
+      );
+      expect(colorDistance(defaultOptionHover, explicitOptionHover)).toBeLessThanOrEqual(1.5);
       const defaultDrag = defaultAction.getByRole('button', {
         name: 'Reorder row: Alpha',
         exact: true,
       });
       await defaultDrag.hover();
-      await expectColor(defaultDrag, mix(text, surface, 0.09));
+      await expectColor(defaultDrag, defaultOptionHover);
     });
 
     test('local theme and custom table surface stay isolated from outer tables', async ({
@@ -241,50 +270,42 @@ for (const appearance of ['light', 'dark'] as const) {
       const local = table(page, 'Local theme table color contract');
       const localRoot = tableRoot(local);
       const localPrimary = parseColor(await resolveColor(localRoot, 'var(--leaf-color-primary)'));
-      const localSurface = parseColor(await cssValue(localRoot, 'background-color'));
+      const localSurface = parseColor(await resolveColor(localRoot, 'var(--leaf-table-surface)'));
       const localText = parseColor(await cssValue(localRoot, 'color'));
       expect(colorDistance(localPrimary, rootPrimary)).toBeGreaterThan(20);
 
       for (const current of [before, table(page, 'Outer table after local theme')]) {
         const root = tableRoot(current);
         const primary = parseColor(await resolveColor(root, 'var(--leaf-color-primary)'));
-        const surface = parseColor(await cssValue(root, 'background-color'));
+        const surface = parseColor(await resolveColor(root, 'var(--leaf-table-surface)'));
         const text = parseColor(await cssValue(root, 'color'));
-        await expectColor(current.locator('thead th').last(), surface);
-        await expectColor(current.locator('thead th').last(), mix(text, surface, 0.8), 'color');
-        await expectColor(rowCell(current, 'alpha'), mix(text, surface, 0.02));
+        await expectLayeredHeader(current);
+        await expectColor(rowCell(current, 'alpha'), surface);
+        await expectColor(rowCell(current, 'bravo'), mix(text, surface, 0.02));
         await rowCell(current, 'charlie').hover();
         await expectColor(rowCell(current, 'charlie'), mix(primary, surface, 0.03));
       }
 
-      await expectColor(local.locator('thead th').last(), localSurface);
-      await expectColor(
-        local.locator('thead th').last(),
-        mix(localText, localSurface, 0.8),
-        'color',
-      );
-      await expectColor(rowCell(local, 'alpha'), mix(localText, localSurface, 0.02));
+      await expectLayeredHeader(local);
+      await expectColor(rowCell(local, 'alpha'), localSurface);
+      await expectColor(rowCell(local, 'bravo'), mix(localText, localSurface, 0.02));
       await local.getByRole('checkbox', { name: /Select row: alpha/i }).check();
       await expectColor(
         local.locator('tbody tr[data-selected] td').last(),
-        mix(localPrimary, localSurface, 0.08),
+        parseColor(await resolveColor(localRoot, 'var(--leaf-color-primary-soft)')),
       );
       await rowCell(local, 'charlie').hover();
       await expectColor(rowCell(local, 'charlie'), mix(localPrimary, localSurface, 0.03));
 
       const custom = table(page, 'Custom surface table color contract');
       const customRoot = tableRoot(custom);
-      const customSurface = parseColor(await cssValue(customRoot, 'background-color'));
+      const customSurface = parseColor(await resolveColor(customRoot, 'var(--leaf-table-surface)'));
       const customText = parseColor(await cssValue(customRoot, 'color'));
       expect(colorDistance(customSurface, parseColor('#fafafa'))).toBeLessThanOrEqual(1);
       expect(colorDistance(customText, parseColor('#333333'))).toBeLessThanOrEqual(1);
-      await expectColor(custom.locator('thead th').last(), customSurface);
-      await expectColor(
-        custom.locator('thead th').last(),
-        mix(customText, customSurface, 0.8),
-        'color',
-      );
-      await expectColor(rowCell(custom, 'alpha'), mix(customText, customSurface, 0.02));
+      await expectLayeredHeader(custom);
+      await expectColor(rowCell(custom, 'alpha'), customSurface);
+      await expectColor(rowCell(custom, 'bravo'), mix(customText, customSurface, 0.02));
       await rowCell(custom, 'charlie').hover();
       await expectColor(rowCell(custom, 'charlie'), mix(localPrimary, customSurface, 0.03));
     });

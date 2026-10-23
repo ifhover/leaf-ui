@@ -30,12 +30,12 @@ export interface DataTablePresentationProps
   toolbar?: ReactNode;
   caption?: ReactNode;
   size?: ControlSize;
-  /** Adds column dividers; the outer frame and resting shadow are always shown. */
+  /** Adds body/footer column dividers; short header separators are always shown. */
   columnDividers?: boolean;
   /** @deprecated Use `columnDividers` instead. */
   bordered?: boolean;
   striped?: boolean;
-  stickyHeader?: boolean;
+  /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];
   minWidth?: CSSProperties['minWidth'];
   loading?: boolean;

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import axe from 'axe-core';
+import { expectDataRowStripes, expectShortHeaderSeparators } from './helpers/table-appearance';
 
 const colorChannels = (color: string) => {
   const srgb = color.match(/^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)$/);
@@ -38,7 +39,9 @@ for (const theme of ['light', 'dark']) {
       ).toBeChecked();
       await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
       await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(10);
-      const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-data-table")][1]');
+      const root = table.locator(
+        'xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " leaf-data-table ")][1]',
+      );
       await root.getByRole('button', { name: 'Next page', exact: true }).click();
       await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(4);
       await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
@@ -64,7 +67,7 @@ for (const theme of ['light', 'dark']) {
       ]) {
         const selectedTable = selections.getByRole('table', { name: label, exact: true });
         const root = selectedTable.locator(
-          'xpath=ancestor::div[contains(@class, "leaf-data-table")][1]',
+          'xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " leaf-data-table ")][1]',
         );
         await selectedTable.getByRole('checkbox', { name: rowLabel, exact: true }).check();
         await root.getByRole('textbox', { name: searchName }).fill('Alex');
@@ -92,9 +95,11 @@ for (const theme of ['light', 'dark']) {
         const table = page.getByRole('table', { name, exact: true });
         const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--md")][1]');
         await expect(root).toHaveCSS('border-top-width', '1px');
-        await expect(root).toHaveCSS('border-radius', '10px');
-        const shadow = await root.evaluate((node) => getComputedStyle(node).boxShadow);
-        expect(shadow).toContain('0px 3px 7px');
+        await expect(root).toHaveCSS('border-radius', '12px');
+        await expect(root).toHaveCSS('box-shadow', 'none');
+        const panel = root.locator('.leaf-table__panel');
+        const shadow = await panel.evaluate((node) => getComputedStyle(node, '::before').boxShadow);
+        expect(shadow).toContain('0px 2px 6px');
         expect(shadow).toContain('0px 1px 2px');
         const colors = await root.evaluate((node) => {
           const divider = document.createElement('div');
@@ -102,17 +107,23 @@ for (const theme of ['light', 'dark']) {
           document.body.append(divider);
           const dividerColor = getComputedStyle(divider).backgroundColor;
           divider.remove();
-          const style = getComputedStyle(node);
+          const style = getComputedStyle(node.querySelector('.leaf-table__panel') ?? node);
+          const surface = document.createElement('div');
+          surface.style.backgroundColor = 'var(--leaf-table-surface)';
+          node.append(surface);
+          const surfaceColor = getComputedStyle(surface).backgroundColor;
+          surface.remove();
           return {
             border: style.borderTopColor,
             divider: dividerColor,
-            surface: style.backgroundColor,
+            surface: surfaceColor,
           };
         });
         const frameDistance = colorDistance(colors.border, colors.surface);
         expect(frameDistance).toBeGreaterThan(0);
         expect(frameDistance).toBeLessThan(colorDistance(colors.divider, colors.surface));
-        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
+        await expectShortHeaderSeparators(table);
+        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '0px');
         await expect(table.locator('thead th').first()).toHaveCSS(
           'background-color',
           await root.evaluate((node) => getComputedStyle(node).backgroundColor),
@@ -122,6 +133,7 @@ for (const theme of ['light', 'dark']) {
           '0px',
         );
         const cells = table.locator('tbody tr > td:first-child');
+        await expect(cells.first()).toHaveCSS('background-color', colors.surface);
         await expect(cells.first()).toHaveCSS('border-bottom-width', '0px');
         const backgrounds = await cells.evaluateAll((nodes) =>
           nodes.map((node) => getComputedStyle(node).backgroundColor),
@@ -135,17 +147,18 @@ for (const theme of ['light', 'dark']) {
       const root = demo.locator('.leaf-table');
       for (const bordered of [false, true]) {
         await demo
-          .getByRole('checkbox', { name: 'Column dividers', exact: true })
+          .getByRole('checkbox', { name: 'Body column dividers', exact: true })
           .setChecked(bordered);
+        await expectShortHeaderSeparators(table);
         for (const striped of [false, true]) {
           await demo.getByRole('checkbox', { name: 'Striped rows' }).setChecked(striped);
           await page.mouse.move(0, 0);
           await expect(root).toHaveCSS('border-top-width', '1px');
-          await expect(root).toHaveCSS('border-radius', '10px');
-          await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
+          await expect(root).toHaveCSS('border-radius', '12px');
+          await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '0px');
           const cells = table.locator('tbody tr > td:first-child');
           const header = table.locator('thead th').first();
-          await expect(header).toHaveCSS('font-weight', '600');
+          await expect(header).toHaveCSS('font-weight', '500');
           await expect(header).toHaveCSS(
             'background-color',
             await root.evaluate((node) => getComputedStyle(node).backgroundColor),
@@ -164,11 +177,18 @@ for (const theme of ['light', 'dark']) {
               return colors[0] === colors[1];
             })
             .toBe(!striped);
-          const surface = await root.evaluate((node) => getComputedStyle(node).backgroundColor);
-          await expect(cells.nth(1)).toHaveCSS('background-color', surface);
+          const surface = await root.evaluate((node) => {
+            const probe = document.createElement('div');
+            probe.style.backgroundColor = 'var(--leaf-table-surface)';
+            node.append(probe);
+            const color = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return color;
+          });
+          await expect(cells.first()).toHaveCSS('background-color', surface);
           if (striped) {
             expect(
-              await cells.first().evaluate((node) => getComputedStyle(node).backgroundColor),
+              await cells.nth(1).evaluate((node) => getComputedStyle(node).backgroundColor),
             ).not.toBe(surface);
           }
           // Both ordinary and striped rows must visibly respond to hover and resolve to one color.
@@ -196,12 +216,68 @@ for (const theme of ['light', 'dark']) {
           expect(hoverColors[0]).toBe(hoverColors[1]);
         }
       }
-      await demo.getByRole('checkbox', { name: 'Column dividers', exact: true }).uncheck();
+      await demo.getByRole('checkbox', { name: 'Body column dividers', exact: true }).uncheck();
       await demo.screenshot({
         path: testInfo.outputPath(`table-${theme}-${compact ? 'compact' : 'comfortable'}.png`),
       });
     });
   }
+}
+
+for (const theme of ['light', 'dark']) {
+  test(`expandable rows use shared buttons and keep alternating backgrounds: ${theme}`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=table&theme=${theme}${theme === 'dark' ? '&compact=1&rtl=1' : ''}`);
+    const demo = page.getByRole('region', { name: 'Data table demo', exact: true });
+    const table = demo.getByRole('table');
+    await expect(table.locator('tbody > tr[data-row-id]')).toHaveCount(5);
+    await expect(table.locator('tbody > tr[data-detail-row][hidden]')).toHaveCount(5);
+    await expectDataRowStripes(table);
+    const expand = table.getByRole('button', {
+      name: 'Expand row: Alex Morgan (member-1)',
+      exact: true,
+    });
+    await expect(expand).toHaveClass(/\bleaf-button--text\b/);
+    await expect(expand).toHaveClass(/\bleaf-button--icon-only\b/);
+    await expect(expand).toHaveAttribute('type', 'button');
+    const geometry = await expand.evaluate((button) => {
+      const bounds = button.getBoundingClientRect();
+      const cell = button.closest('td')?.getBoundingClientRect();
+      return { width: bounds.width, height: bounds.height, cellWidth: cell?.width ?? 0 };
+    });
+    expect(geometry.width).toBe(geometry.height);
+    expect(geometry.width).toBeGreaterThanOrEqual(24);
+    expect(geometry.width).toBeLessThanOrEqual(geometry.cellWidth);
+    await expand.focus();
+    await expect(expand).toBeFocused();
+    await expect(expand).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    const collapse = table.getByRole('button', {
+      name: 'Collapse row: Alex Morgan (member-1)',
+      exact: true,
+    });
+    await expect(collapse).toHaveAttribute('aria-expanded', 'true');
+    await expect(table.locator('[data-detail-row="member-1"]')).toBeVisible();
+    await expect(collapse.locator('.leaf-data-table__expand-icon')).toHaveCSS(
+      'rotate',
+      theme === 'dark' ? '-90deg' : '90deg',
+    );
+    await expectDataRowStripes(table);
+    await page.keyboard.press('Space');
+    await expect(expand).toHaveAttribute('aria-expanded', 'false');
+    await expect(table.locator('[data-detail-row="member-1"]')).toBeHidden();
+    await expectDataRowStripes(table);
+    await demo.getByRole('button', { name: 'Next page', exact: true }).click();
+    await page.mouse.move(0, 0);
+    await expectDataRowStripes(table);
+    await table.getByRole('button', { name: 'Projects: Sort descending', exact: true }).click();
+    await page.mouse.move(0, 0);
+    await expectDataRowStripes(table);
+    await demo.getByRole('textbox', { name: 'Search table' }).fill('Riley');
+    await expect(table.locator('tbody > tr[data-row-id]')).toHaveCount(4);
+    await expectDataRowStripes(table);
+  });
 }
 
 test('data tables fill centered containers without collapsing or overflowing', async ({ page }) => {
@@ -225,7 +301,7 @@ test('data tables fill centered containers without collapsing or overflowing', a
       expect(geometry.width).toBeGreaterThan(200);
       expect(Math.abs(geometry.width - geometry.available)).toBeLessThan(2);
       expect(geometry.table).toBeGreaterThanOrEqual(geometry.client - 1);
-      expect(geometry.radius).toBe('10px');
+      expect(geometry.radius).toBe('12px');
       if (width === 375) expect(geometry.scroll).toBeGreaterThan(geometry.client);
     }
   }
@@ -318,6 +394,7 @@ test('sticky header and logical pinned columns retain geometry in both direction
       node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -maximum / 2 : maximum / 2;
     });
     await expect.poll(edgeShadows).toEqual([true, true]);
+    await expectShortHeaderSeparators(table);
     const after = await first.boundingBox();
     const afterEnd = await last.boundingBox();
     expect(Math.abs((before?.x ?? 0) - (after?.x ?? 0))).toBeLessThan(2);
@@ -375,6 +452,7 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   await expect(input).toBeFocused();
   await expect(input).toHaveValue('My draft');
   expect(await table.locator('tr[data-row-id]').count()).toBeLessThan(45);
+  await expectDataRowStripes(table);
   await page.getByRole('button', { name: 'Toggle virtual width' }).click();
   await viewport.evaluate((node) => {
     node.scrollTop = 0;
@@ -385,6 +463,8 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   await expect(table.locator('[data-detail-row="0"]')).toHaveAttribute('aria-rowindex', '3');
   await expect(table.locator('[data-row-id="1"]')).toHaveAttribute('aria-rowindex', '4');
   await expect(table.locator('[data-detail-row="0"]')).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expectDataRowStripes(table);
   // Row measurement runs through ResizeObserver. Read one consistent layout
   // and wait for the measured detail to replace the virtual height estimate.
   await expect
@@ -403,6 +483,7 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   });
   await expect(table.getByRole('textbox', { name: 'Edit Person 09999' })).toBeVisible();
   expect(await table.locator('tr[data-row-id]').count()).toBeLessThan(45);
+  await expectDataRowStripes(table);
 });
 
 test('remote pagination retains rows during refresh and retries errors', async ({ page }) => {
@@ -565,7 +646,9 @@ test('container-driven horizontal overflow uses an overlay scrollbar and updates
   }
 });
 
-test('data tables pass axe in both themes and reduced motion', async ({ page }) => {
+test('data tables pass axe in both themes and reduced motion', { tag: '@a11y' }, async ({
+  page,
+}) => {
   for (const theme of ['light', 'dark']) {
     await page.goto(`/?fixture=table&theme=${theme}`);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -583,7 +666,7 @@ test('data tables pass axe in both themes and reduced motion', async ({ page }) 
         nodes: item.nodes.map((node) => ({ target: node.target, summary: node.failureSummary })),
       })),
     );
-    expect(violations).toEqual([]);
+    expect.soft(violations).toEqual([]);
   }
 });
 

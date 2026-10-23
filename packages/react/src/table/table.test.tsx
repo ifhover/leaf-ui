@@ -1,24 +1,19 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { renderToString } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { TableControl as Table } from './table';
 
 describe('Table', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
   it('preserves native table semantics, header scopes, spans, caption and refs', () => {
     const ref = createRef<HTMLTableElement>();
     const scrollRef = createRef<HTMLDivElement>();
     render(
-      <Table
-        ref={ref}
-        scrollRef={scrollRef}
-        aria-label="People"
-        minWidth={640}
-        maxHeight={280}
-        stickyHeader
-      >
+      <Table ref={ref} scrollRef={scrollRef} aria-label="People" minWidth={640} maxHeight={280}>
         <Table.Caption>Team members</Table.Caption>
         <Table.Header>
           <Table.Row>
@@ -74,6 +69,63 @@ describe('Table', () => {
     expect(cell).toHaveAttribute('data-pinned', 'end');
     expect(cell).toHaveStyle({ insetInlineEnd: '80px', textAlign: 'end', color: 'rgb(255, 0, 0)' });
     expect(cell).not.toHaveAttribute('align');
+  });
+
+  it('contains overflowing boundary wheels in older browsers without hijacking other scrolling', () => {
+    vi.stubGlobal('CSS', { ...CSS, supports: () => false });
+    const scrollRef = createRef<HTMLDivElement>();
+    const { unmount } = render(
+      <Table scrollRef={scrollRef}>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>
+              <div data-testid="nested" style={{ overflowY: 'auto' }} />
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>,
+    );
+    const viewport = scrollRef.current as HTMLDivElement;
+    let height = 200;
+    Object.defineProperties(viewport, {
+      clientHeight: { value: 200 },
+      scrollHeight: { get: () => height },
+    });
+    expect(fireEvent.wheel(viewport, { deltaY: 120 })).toBe(true);
+    height = 600;
+    expect(fireEvent.wheel(viewport, { deltaY: -120 })).toBe(false);
+    expect(fireEvent.wheel(viewport, { deltaY: 120 })).toBe(true);
+    viewport.scrollTop = 200;
+    expect(fireEvent.wheel(viewport, { deltaY: -120 })).toBe(true);
+    expect(fireEvent.wheel(viewport, { deltaY: 120 })).toBe(true);
+    viewport.scrollTop = 400;
+    expect(fireEvent.wheel(viewport, { deltaY: 120 })).toBe(false);
+    expect(fireEvent.wheel(viewport, { deltaY: -120 })).toBe(true);
+    expect(fireEvent.wheel(viewport, { deltaX: 160, deltaY: 20 })).toBe(true);
+    expect(fireEvent.wheel(viewport, { deltaY: 120, ctrlKey: true })).toBe(true);
+    expect(fireEvent.wheel(viewport, { deltaY: 120, shiftKey: true })).toBe(true);
+    const nested = screen.getByTestId('nested');
+    Object.defineProperties(nested, {
+      clientHeight: { value: 50 },
+      scrollHeight: { value: 150 },
+    });
+    expect(fireEvent.wheel(nested, { deltaY: 120 })).toBe(true);
+    nested.scrollTop = 100;
+    expect(fireEvent.wheel(nested, { deltaY: 120 })).toBe(false);
+    unmount();
+    expect(fireEvent.wheel(viewport, { deltaY: 120 })).toBe(true);
+  });
+
+  it('leaves wheel containment to CSS in supporting browsers', () => {
+    vi.stubGlobal('CSS', { ...CSS, supports: () => true });
+    const scrollRef = createRef<HTMLDivElement>();
+    render(<Table scrollRef={scrollRef} />);
+    const viewport = scrollRef.current as HTMLDivElement;
+    Object.defineProperties(viewport, {
+      clientHeight: { value: 200 },
+      scrollHeight: { value: 600 },
+    });
+    expect(fireEvent.wheel(viewport, { deltaY: -120 })).toBe(true);
   });
 
   it('renders localized empty, loading and retryable error rows', async () => {

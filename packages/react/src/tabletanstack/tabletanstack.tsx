@@ -199,7 +199,6 @@ function DataTableRoot<TData>({
   columnDividers,
   bordered = false,
   striped = true,
-  stickyHeader = true,
   maxHeight,
   minWidth,
   loading = false,
@@ -260,7 +259,6 @@ function DataTableRoot<TData>({
     size,
     columnDividers: dividers,
     striped,
-    stickyHeader,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
     loading,
@@ -646,6 +644,7 @@ function MotionCell({ children, ...props }: DataTableCellProps) {
 function DataRow({
   row,
   rowIndex,
+  stripeIndex = rowIndex,
   ariaRowIndex,
   measureRef,
   collapsed = false,
@@ -654,6 +653,7 @@ function DataRow({
 }: {
   row: Row<unknown>;
   rowIndex: number;
+  stripeIndex?: number;
   ariaRowIndex?: number;
   measureRef?: (node: HTMLTableRowElement | null) => void;
   collapsed?: boolean;
@@ -706,6 +706,7 @@ function DataRow({
         }}
         data-index={rowIndex}
         data-row-id={row.id}
+        data-striped={stripeIndex % 2 === 1 || undefined}
         data-last-visible={lastVisible || undefined}
         hidden={hidden || undefined}
         aria-hidden={collapsed || undefined}
@@ -743,9 +744,11 @@ function DataRow({
         {expandable && (
           <Cell className="leaf-data-table__utility">
             {row.getCanExpand() && (
-              <button
-                type="button"
+              <ButtonControl
+                variant="text"
+                size="sm"
                 className="leaf-data-table__expand"
+                startIcon={<ChevronRight className="leaf-data-table__expand-icon" />}
                 aria-label={format(
                   row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow',
                   { label },
@@ -755,9 +758,7 @@ function DataRow({
                 disabled={loading}
                 onClick={row.getToggleExpandedHandler()}
                 style={{ marginInlineStart: row.depth * 12 }}
-              >
-                <ChevronRight size={16} aria-hidden="true" />
-              </button>
+              />
             )}
           </Cell>
         )}
@@ -981,7 +982,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
     return { indexes, count };
   }, [virtual, rows, headers.length, expanded, config.renderExpandedRow]);
   return (
-    <div {...props} className={className}>
+    <div {...props} className={classes('leaf-data-table__content', className)}>
       <Table
         ref={(node) => {
           assignRef(element, node);
@@ -995,7 +996,6 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
         size={config.size}
         columnDividers={config.columnDividers}
         striped={config.striped}
-        stickyHeader={config.stickyHeader}
         maxHeight={config.maxHeight}
         minWidth={config.minWidth ?? totalWidth}
         tableLayout="fixed"
@@ -1163,11 +1163,12 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
               kind="row"
               ids={config.onRowReorder ? rows.map((row) => row.id) : []}
             >
-              {renderedRows.map(({ row, rowIndex, collapsed, animate }) => (
+              {renderedRows.map(({ row, rowIndex, collapsed, animate }, stripeIndex) => (
                 <DataRow
                   key={row.id}
                   row={row}
                   rowIndex={rowIndex}
+                  stripeIndex={stripeIndex}
                   collapsed={collapsed}
                   animate={animate}
                   lastVisible={!collapsed && row.id === rows.at(-1)?.id}
@@ -1224,7 +1225,7 @@ export function DataTablePaginationControl({
       >
         <ButtonControl
           size={props.size ?? size}
-          variant={props.variant ?? 'outline'}
+          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
@@ -1233,7 +1234,7 @@ export function DataTablePaginationControl({
         <span>{pageIndex + 1}</span>
         <ButtonControl
           size={props.size ?? size}
-          variant={props.variant ?? 'outline'}
+          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !(hasNextPage ?? table.getCanNextPage())}
           onClick={() => table.nextPage()}
         >
@@ -1329,10 +1330,14 @@ function ManagedDataTable<TData>({
 }
 
 function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
-  const props = mergeComponentProps<DataTableProps<TData>>(
+  const merged = mergeComponentProps<DataTableProps<TData>>(
     useGenericComponentDefaults('DataTable'),
     rawProps,
   );
+  // Old JavaScript consumers cannot disable the fixed header or leak this prop to the DOM.
+  const { stickyHeader: _stickyHeader, ...props } = merged as typeof merged & {
+    stickyHeader?: unknown;
+  };
   return props.table ? (
     <DataTableRoot {...(props as DataTableInstanceProps<TData>)} />
   ) : (
