@@ -1,21 +1,21 @@
 @use '../styles/mixins' as *;
 
 .leaf-card-title {
-  --leaf-card-title-font-size: var(--leaf-font-size);
-  --leaf-card-title-line-height: var(--leaf-line-height);
+  --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
+  --leaf-card-title-line-height: calc(var(--leaf-line-height) + 2px);
   min-width: 0;
   margin: 0;
   color: var(--leaf-color-text);
-  font: var(--leaf-heading-weight, 600) var(--leaf-card-title-font-size) var(--leaf-font-family);
+  font: var(--leaf-heading-weight, 700) var(--leaf-card-title-font-size) var(--leaf-font-family);
   line-height: var(--leaf-card-title-line-height);
   overflow-wrap: anywhere;
   &--sm {
-    --leaf-card-title-font-size: var(--leaf-font-size-sm);
-    --leaf-card-title-line-height: var(--leaf-line-height-sm);
+    --leaf-card-title-font-size: var(--leaf-font-size);
+    --leaf-card-title-line-height: var(--leaf-line-height);
   }
   &--lg {
-    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
-    --leaf-card-title-line-height: var(--leaf-line-height-lg);
+    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 4px);
+    --leaf-card-title-line-height: calc(var(--leaf-line-height-lg) + 2px);
   }
 }
 
@@ -42,13 +42,13 @@
 
 .leaf-card {
   --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
-  --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
-  --leaf-card-title-font-size: var(--leaf-font-size);
-  --leaf-card-title-line-height: var(--leaf-line-height);
+  --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2.5));
+  --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
+  --leaf-card-title-line-height: calc(var(--leaf-line-height) + 2px);
   --leaf-card-surface: var(--leaf-component-card-background, var(--leaf-color-surface));
   --leaf-card-border-width: var(--leaf-component-card-border-width, var(--leaf-border-width, 1px));
   --leaf-card-radius: var(--leaf-component-card-radius, var(--leaf-radius-md));
-  --leaf-card-inset: calc(var(--leaf-spacing) * 0.75);
+  --leaf-card-inset: calc(var(--leaf-spacing) * 0.5);
   --leaf-card-inset-padding: max(
     0px,
     calc(var(--leaf-card-padding) - var(--leaf-card-inset) - var(--leaf-card-border-width))
@@ -75,15 +75,15 @@
   }
   &--sm {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2));
-    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 1.5));
-    --leaf-card-title-font-size: var(--leaf-font-size-sm);
-    --leaf-card-title-line-height: var(--leaf-line-height-sm);
+    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
+    --leaf-card-title-font-size: var(--leaf-font-size);
+    --leaf-card-title-line-height: var(--leaf-line-height);
   }
   &--lg {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 3));
-    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2.5));
-    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
-    --leaf-card-title-line-height: var(--leaf-line-height-lg);
+    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 3));
+    --leaf-card-title-font-size: calc(var(--leaf-font-size) + 4px);
+    --leaf-card-title-line-height: calc(var(--leaf-line-height-lg) + 2px);
   }
   &__header {
     display: flex;
@@ -157,23 +157,69 @@
     min-width: 0;
     border-radius: inherit;
   }
-  &--inset {
+  &--layered {
+    --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 0.75));
+    --leaf-card-title-font-size: max(12px, calc(var(--leaf-font-size) - 2px));
+    --leaf-card-title-line-height: var(--leaf-line-height-sm);
     background: var(--leaf-card-canvas);
+    box-shadow: none;
+    &.leaf-card--sm {
+      --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 0.5));
+    }
+    &.leaf-card--lg {
+      --leaf-card-heading-gap: var(--leaf-component-card-gap, var(--leaf-spacing));
+      --leaf-card-title-font-size: var(--leaf-font-size-sm);
+    }
+    > .leaf-card__header {
+      box-sizing: border-box;
+      min-block-size: calc(var(--leaf-line-height-sm) + 6px + var(--leaf-card-heading-gap) * 2);
+      padding: var(
+        --leaf-component-card-padding,
+        max(0px, calc(var(--leaf-card-padding) - var(--leaf-spacing) * 0.5 - 1px))
+      );
+      padding-block-start: calc(var(--leaf-card-heading-gap) + var(--leaf-spacing) * 0.25);
+      padding-block-end: max(0px, calc(var(--leaf-card-heading-gap) - var(--leaf-spacing) * 0.25));
+      padding-inline-end: var(--leaf-card-inset);
+    }
+    > .leaf-card__header > .leaf-card__extra {
+      display: flex;
+      align-items: center;
+    }
+    > .leaf-card__header .leaf-card__title {
+      color: var(--leaf-component-card-color, var(--leaf-color-text-muted));
+      font-size: max(12px, calc(var(--leaf-font-size) - 2px));
+      font-weight: 500;
+      line-height: var(--leaf-line-height-sm);
+    }
+    &.leaf-card--lg > .leaf-card__header .leaf-card__title {
+      font-size: var(--leaf-font-size-sm);
+    }
     > .leaf-card__panel {
+      position: relative;
       box-sizing: border-box;
       min-width: 0;
       margin: var(--leaf-card-inset);
+      margin-block-start: calc(var(--leaf-spacing) * 0.75);
       border: var(--leaf-card-border-width) solid
         var(
           --leaf-component-card-border-color,
           var(--leaf-frame-border-color, var(--leaf-card-frame-color))
         );
-      border-radius: max(
-        0px,
-        calc(var(--leaf-card-radius) - var(--leaf-card-inset) - var(--leaf-card-border-width))
-      );
+      border-radius: max(0px, calc(var(--leaf-card-radius) - var(--leaf-card-border-width) - 2px));
       background: var(--leaf-card-surface);
-      box-shadow: var(--leaf-shadow-xs);
+      // Clip only the shadow layer, leaving content and keyboard outlines unclipped.
+      &::before {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: var(
+          --leaf-component-card-shadow,
+          var(--leaf-surface-shadow, var(--leaf-shadow-sm))
+        );
+        clip-path: inset(0 -6px -6px);
+        pointer-events: none;
+        content: '';
+      }
     }
     > .leaf-card__header + .leaf-card__panel {
       margin-block-start: 0;
@@ -188,16 +234,20 @@
     > .leaf-card__panel > .leaf-card__tabs + .leaf-card__body {
       padding-block-start: 0;
     }
-    > .leaf-card__panel > .leaf-card__footer {
-      padding-inline: var(--leaf-card-inset-padding);
-      padding-block-end: var(--leaf-card-inset-padding);
-    }
-    > .leaf-card__panel > .leaf-card__footer:first-child {
-      padding-block-start: var(--leaf-card-inset-padding);
+    > .leaf-card__footer {
+      padding-block: 0 var(--leaf-card-inset);
+      padding-inline: var(--leaf-card-inset);
     }
     > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__header,
     > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel {
       padding-inline: var(--leaf-card-inset-padding);
+    }
+  }
+  &--selected {
+    border-color: var(--leaf-component-card-border-color, var(--leaf-color-primary));
+    box-shadow: none;
+    > .leaf-card__panel::before {
+      box-shadow: none;
     }
   }
   &--tabbed > &__header {
@@ -281,7 +331,7 @@
       align-self: center;
     }
   }
-  &:not(.leaf-card--inset) > &__header + &__panel > &__tabs > .leaf-tabs__header {
+  &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header {
     border-start-start-radius: 0;
     border-start-end-radius: 0;
   }
@@ -295,7 +345,10 @@
   }
 }
 @media (forced-colors: active) {
-  .leaf-card--inset > .leaf-card__panel {
+  .leaf-card--selected {
+    border-color: Highlight;
+  }
+  .leaf-card--layered > .leaf-card__panel {
     border-color: CanvasText;
   }
 }

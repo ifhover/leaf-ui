@@ -128,23 +128,11 @@
     padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-subtle);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-surface-muted);
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
     &:disabled {
-      cursor: not-allowed;
       opacity: 0.45;
     }
+
+    @include mixins.text-action;
   }
   &__drag {
     display: flex;

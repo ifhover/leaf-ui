@@ -1,8 +1,9 @@
 import { CardSections } from '../../src/examples/card/sections';
 import { ComponentExample } from '../../src/components/component-example';
 import { CardBasic } from '../../src/examples/card/basic';
-import { CardInset } from '../../src/examples/card/inset';
+import { CardLayered } from '../../src/examples/card/layered';
 import { CardSizes } from '../../src/examples/card/sizes';
+import { CardSelected } from '../../src/examples/card/selected';
 import { CardStandaloneTitle } from '../../src/examples/card/standalone-title';
 import { CardTabs } from '../../src/examples/card/tabs';
 import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
@@ -11,13 +12,24 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 在独立容器中展示相关内容和操作。
 
-标题默认使用 600 字重加粗，可通过 ConfigProvider 的 `theme.headingWeight` 调整。
+默认外观的标题使用 700 字重，可通过 ConfigProvider 的 `theme.headingWeight` 调整；分层卡片标题使用 500 字重。
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<CardBasic />} fileName="basic.tsx" width={520}>
+<ComponentExample title="基础用法" preview={<CardBasic />} fileName="basic.tsx" width={380}>
 
 ```tsx lineNumbers file="../../src/examples/card/basic.tsx"
+```
+
+</ComponentExample>
+
+## 选中状态
+
+`selected` 显示主色边框并去除阴影，通过按钮切换方案；它只改变外观，不会让整张卡片成为可点击控件。
+
+<ComponentExample title="选中状态" preview={<CardSelected />} fileName="selected.tsx" width={800}>
+
+```tsx lineNumbers file="../../src/examples/card/selected.tsx"
 ```
 
 </ComponentExample>
@@ -26,29 +38,29 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 
 `size` 提供小、默认和大三种尺寸，同时调整卡片内边距、标题字号与标题栏高度。内嵌 Tabs 默认跟随卡片尺寸，也可通过 `tabs.size` 单独设置；卡片内的按钮、输入框等控件使用各自的 `size`。
 
-下面的三张卡片展示相同内容，方便对比标题、标签栏与正文留白；每张卡片的标签均可独立切换。
+下面的三张卡片使用递增的展示宽度，标签均可独立切换；卡片宽度由容器或 `style` 控制，不随 `size` 自动改变。
 
-<ComponentExample title="尺寸" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
+<ComponentExample title="尺寸" preview={<CardSizes />} fileName="sizes.tsx" width={460}>
 
 ```tsx lineNumbers file="../../src/examples/card/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## 内嵌内容卡片
+## 分层卡片
 
-设置 `variant="inset"` 后，卡片使用柔和灰色外层，标题与状态保留在外层，正文、封面、标签页和底部操作收进一张白色内嵌卡片。内嵌表面与外层保持 6px 间距，内边距和圆角会自动补偿，使正文与标题的内容边缘对齐。
+设置 `variant="layered"`，以小号灰色标题和独立内容卡分层展示；可通过 `footer` 添加下方操作区，不展示 `description`。标题行预留默认描边 Tag 的高度，有无标签时保持等高。
 
-<ComponentExample title="内嵌内容卡片" preview={<CardInset />} fileName="inset.tsx" width={520}>
+<ComponentExample title="分层卡片" preview={<CardLayered />} fileName="layered.tsx" width={520}>
 
-```tsx lineNumbers file="../../src/examples/card/inset.tsx"
+```tsx lineNumbers file="../../src/examples/card/layered.tsx"
 ```
 
 </ComponentExample>
 
 ## 独立标题
 
-`CardTitle` 可在卡片外复用相同的标题样式，无需包裹 `Card`。它的默认标题层级与 Card 一致，均为 `<h3>`，通常直接使用即可；`size` 控制视觉尺寸：默认基础字号为 14px 时，`sm`、`md`、`lg` 分别为 13px、14px、16px。`description` 放在标题下方，`extra` 位于右侧，与 Card 标题区域一致。
+`CardTitle` 可在卡片外复用相同的标题样式，无需包裹 `Card`。它的默认标题层级与 Card 一致，均为 `<h3>`，通常直接使用即可；`size` 控制视觉尺寸：默认基础字号为 14px 时，`sm`、`md`、`lg` 分别为 14px、16px、18px，默认字重为 700。`description` 放在标题下方，`extra` 位于右侧，与 Card 标题区域一致。
 
 下面的三个内容区分别展示小、默认和大尺寸，并演示说明与右侧操作。可从 `@ifhover/leaf-ui` 或 `@ifhover/leaf-ui/card` 导入 `CardTitle`。
 
@@ -93,20 +105,23 @@ import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 </ComponentExample>
 
 ## Card API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | 卡片标题。 |
-| `description` | `ReactNode` | — | 补充说明。 |
+| `description` | `ReactNode` | — | 标题下方的补充说明，仅默认外观支持；layered 不展示。 |
 | `extra` | `ReactNode` | — | 标题旁的操作；没有标题时显示在标签栏右侧。 |
 | `tabs` | [`CardTabsProps`](#cardtabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方。 |
 | `cover` | `ReactNode` | — | 顶部封面。 |
-| `footer` | `ReactNode` | — | 底部内容或操作。 |
+| `footer` | `ReactNode` | — | 底部内容或操作；layered 展示在内容卡下方的外层区域。 |
 | `loading` | `boolean` | `false` | 使用骨架屏替换正文 |
 | `bordered` | `boolean` | `true` | 显示外轮廓 |
-| `variant` | `'default' \| 'inset'` | `'default'` | 卡片外观；inset 在柔和灰色外层中嵌入白色内容卡。 |
+| `selected` | `boolean` | `false` | 选中外观：主色边框且无阴影，即使 bordered=false 仍显示边框；仅改变外观，交互由按钮或选择控件提供。 |
+| `variant` | `'default' \| 'layered'` | `'default'` | 卡片外观；layered 将内容卡与外层标题、底部操作分层展示。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 卡片尺寸，影响内边距、标题字号、标题栏高度及内嵌 Tabs 的默认尺寸。 |
 
 ## CardTitle API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标题的视觉尺寸，与 Card 对应尺寸的标题一致。 |
@@ -137,9 +152,10 @@ extra 和 footer 可以放置按钮或链接。需要点击操作时请使用明
 
 ## 外观与丰富内容
 
-`description` 显示标题下的补充说明。卡片默认带一层向下的轻量阴影和比普通分隔线更淡的外框。普通卡片的内部不显示边框，标题、正文和底部操作通过留白衔接；标签页卡片始终在标签栏下方展示分割线。`variant="inset"` 使用灰色画布和白色内容卡形成内外两层，并跟随主题的明暗外观。通过 `ConfigProvider` 的 `components.Card` 可定制背景、分区背景、边框和阴影。
+默认外观支持 `description`，并带有向下的轻量阴影。`variant="layered"` 不展示说明文字，外层无阴影，内容卡保留偏下的轻薄阴影，左右两侧略微露出；`footer` 位于内容卡下方。两种外观均跟随明暗主题，可通过 `ConfigProvider` 的 `theme.components.Card` 定制。
 
 ## CardTabs API
+
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | 必填 | 标签与页面列表；为空时恢复普通卡片。 |

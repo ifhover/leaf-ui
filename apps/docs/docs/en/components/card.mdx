@@ -1,8 +1,9 @@
 import { CardSections } from '../../../src/examples/en/card/sections';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CardBasic } from '../../../src/examples/en/card/basic';
-import { CardInset } from '../../../src/examples/en/card/inset';
+import { CardLayered } from '../../../src/examples/en/card/layered';
 import { CardSizes } from '../../../src/examples/en/card/sizes';
+import { CardSelected } from '../../../src/examples/en/card/selected';
 import { CardStandaloneTitle } from '../../../src/examples/en/card/standalone-title';
 import { CardTabs } from '../../../src/examples/en/card/tabs';
 import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title';
@@ -11,13 +12,24 @@ import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title
 
 Group related content and actions in a container.
 
-Titles use a semibold weight of 600 by default. Customize it through ConfigProvider's `theme.headingWeight`.
+Default-appearance titles use weight 700, configurable through ConfigProvider's `theme.headingWeight`. Layered card titles use weight 500.
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx" width={520}>
+<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx" width={380}>
 
 ```tsx lineNumbers file="../../../src/examples/en/card/basic.tsx"
+```
+
+</ComponentExample>
+
+## Selected state
+
+`selected` displays a primary border without a shadow. Switch options with the buttons; the prop is visual only and does not make the whole card interactive.
+
+<ComponentExample title="Selected state" preview={<CardSelected />} fileName="selected.tsx" width={800}>
+
+```tsx lineNumbers file="../../../src/examples/en/card/selected.tsx"
 ```
 
 </ComponentExample>
@@ -26,29 +38,29 @@ Titles use a semibold weight of 600 by default. Customize it through ConfigProvi
 
 `size` offers small, default and large cards, adjusting padding, heading typography and heading height together. Embedded Tabs follow the card size unless overridden with `tabs.size`. Buttons, inputs and other controls inside the card use their own `size`.
 
-These cards share the same content to compare headings, tab bars and content spacing. Each card's tabs switch independently.
+These cards use increasing display widths and independent tabs. Set width through the container or `style`; `size` does not automatically change the card width.
 
-<ComponentExample title="Sizes" preview={<CardSizes />} fileName="sizes.tsx" width={520}>
+<ComponentExample title="Sizes" preview={<CardSizes />} fileName="sizes.tsx" width={460}>
 
 ```tsx lineNumbers file="../../../src/examples/en/card/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Inset content
+## Layered card
 
-Set `variant="inset"` to keep the heading and status on a muted canvas while placing the body, cover, tabs and footer actions on a white content card. The inset surface keeps a 6px gap from the outer card; padding and corners adapt so body content aligns with the heading.
+Set `variant="layered"` for a small muted heading and a separate content card; optionally add actions below it with `footer`. The `description` is not displayed. The heading row reserves room for a default outlined Tag, keeping headings equally tall with or without a tag.
 
-<ComponentExample title="Inset content" preview={<CardInset />} fileName="inset.tsx" width={520}>
+<ComponentExample title="Layered card" preview={<CardLayered />} fileName="layered.tsx" width={520}>
 
-```tsx lineNumbers file="../../../src/examples/en/card/inset.tsx"
+```tsx lineNumbers file="../../../src/examples/en/card/layered.tsx"
 ```
 
 </ComponentExample>
 
 ## Standalone title
 
-Use `CardTitle` outside a card to reuse its heading style without a `Card` wrapper. Its default heading level matches Card and renders `<h3>`, so most usages need no `level`. `size` controls visual size: with the default 14px base font, `sm`, `md` and `lg` are 13px, 14px and 16px. `description` sits beneath the heading and `extra` sits at its trailing edge, matching the Card heading area.
+Use `CardTitle` outside a card to reuse its heading style without a `Card` wrapper. Its default heading level matches Card and renders `<h3>`, so most usages need no `level`. `size` controls visual size: with the default 14px base font, `sm`, `md` and `lg` are 14px, 16px and 18px, with a default weight of 700. `description` sits beneath the heading and `extra` sits at its trailing edge, matching the Card heading area.
 
 These three content sections show small, default and large sizes with descriptions and trailing actions. Import `CardTitle` from `@ifhover/leaf-ui` or `@ifhover/leaf-ui/card`.
 
@@ -93,20 +105,23 @@ With a `title` or `description`, tabs sit beneath the heading. There is no divid
 </ComponentExample>
 
 ## Card API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | Card heading. |
-| `description` | `ReactNode` | — | Additional description. |
+| `description` | `ReactNode` | — | Supporting text below the title; only supported by the default appearance, not layered. |
 | `extra` | `ReactNode` | — | Heading actions; shown at the trailing edge of tabs without a heading. |
 | `tabs` | [`CardTabsProps`](#cardtabs-api) | — | Embedded tabs; replace the heading without a title or sit beneath it. |
 | `cover` | `ReactNode` | — | Top cover. |
-| `footer` | `ReactNode` | — | Footer content or actions. |
+| `footer` | `ReactNode` | — | Footer content or actions; layered places them on the canvas below the content card. |
 | `loading` | `boolean` | `false` | Replace the body with a skeleton |
 | `bordered` | `boolean` | `true` | Show the outer border |
-| `variant` | `'default' \| 'inset'` | `'default'` | Card appearance; inset nests a white content surface inside a muted canvas. |
+| `selected` | `boolean` | `false` | Selected appearance: primary border and no shadow, even when bordered=false; visual only, with interaction provided by buttons or selection controls. |
+| `variant` | `'default' \| 'layered'` | `'default'` | Card appearance; layered separates the content surface from the heading and footer on a muted canvas. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size: padding, heading typography and height, and the default size of embedded Tabs. |
 
 ## CardTitle API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Visual size, matching the heading in the corresponding Card size. |
@@ -137,9 +152,10 @@ Use `tabs` to configure disabled tabs, icons, manual keyboard activation, retain
 
 ## Surfaces and rich content
 
-`description` adds supporting text beneath the title. Cards use a subtle resting shadow offset downward and a frame lighter than ordinary dividers by default. Ordinary cards have no internal dividers; the heading, body and footer are grouped with spacing. Tabbed cards always have a divider below navigation. `variant="inset"` adds a muted canvas and white content surface that follow the active light or dark theme. Customize surfaces, borders and shadows through `ConfigProvider` `components.Card`.
+The default appearance supports `description` and keeps a subtle downward shadow. `variant="layered"` hides the description, removes the outer shadow and keeps a thin downward shadow with a subtle extension on both sides of the content card, with `footer` on the canvas beneath it. Both appearances follow the light or dark theme and support customization through `ConfigProvider` `theme.components.Card`.
 
 ## CardTabs API
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | Required | Tab labels and pages; an empty list restores an ordinary card. |

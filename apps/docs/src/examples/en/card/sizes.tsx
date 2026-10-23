@@ -1,4 +1,4 @@
-import { Card, Space } from '@ifhover/leaf-ui';
+import { Card, Flex } from '@ifhover/leaf-ui';
 
 export function CardSizes() {
   const items = [
@@ -14,10 +14,10 @@ export function CardSizes() {
     },
   ];
   return (
-    <Space direction="vertical" align="stretch" size="lg">
-      <Card title="Small" size="sm" tabs={{ items }} />
-      <Card title="Default" tabs={{ items }} />
-      <Card title="Large" size="lg" tabs={{ items }} />
-    </Space>
+    <Flex direction="column" align="center" gap="lg">
+      <Card title="Small" size="sm" tabs={{ items }} style={{ width: 300, maxWidth: '100%' }} />
+      <Card title="Default" tabs={{ items }} style={{ width: 380, maxWidth: '100%' }} />
+      <Card title="Large" size="lg" tabs={{ items }} style={{ width: 460, maxWidth: '100%' }} />
+    </Flex>
   );
 }

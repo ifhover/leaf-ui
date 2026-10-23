@@ -50,6 +50,8 @@ for (const query of ['', '&line=1', '&segmented=1', '&rtl=1&theme=dark', '&compa
       .getByRole('textbox', { name: 'Retained draft', exact: true })
       .fill('keep this draft');
     await sampleOverflow(root);
+    // Sample intermediate frames as well as the settled layout; these delays are
+    // part of the motion regression, not waits for an element to become ready.
     for (const name of ['A longer second tab', 'Third', 'First', 'Third', 'A longer second tab']) {
       await root.getByRole('tab', { name, exact: true }).click();
       await page.waitForTimeout(60);

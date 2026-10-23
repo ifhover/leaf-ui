@@ -1,4 +1,4 @@
-import { Card, Space } from '@ifhover/leaf-ui';
+import { Card, Flex } from '@ifhover/leaf-ui';
 
 export function CardSizes() {
   const items = [
@@ -10,10 +10,10 @@ export function CardSizes() {
     },
   ];
   return (
-    <Space direction="vertical" align="stretch" size="lg">
-      <Card title="小尺寸" size="sm" tabs={{ items }} />
-      <Card title="默认尺寸" tabs={{ items }} />
-      <Card title="大尺寸" size="lg" tabs={{ items }} />
-    </Space>
+    <Flex direction="column" align="center" gap="lg">
+      <Card title="小尺寸" size="sm" tabs={{ items }} style={{ width: 300, maxWidth: '100%' }} />
+      <Card title="默认尺寸" tabs={{ items }} style={{ width: 380, maxWidth: '100%' }} />
+      <Card title="大尺寸" size="lg" tabs={{ items }} style={{ width: 460, maxWidth: '100%' }} />
+    </Flex>
   );
 }

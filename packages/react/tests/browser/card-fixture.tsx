@@ -47,11 +47,15 @@ function CardTitlesFixture() {
           tokens: { textColor: dark ? '#d7e7ff' : '#123456' },
         }}
       >
-        <CardTitle data-testid="custom-title">Custom standalone title</CardTitle>
-        <Card data-testid="custom-card" title="Custom card title" />
+        <CardTitle data-testid="custom-title" size="lg">
+          Custom standalone title
+        </CardTitle>
+        <Card data-testid="custom-card" title="Custom card title" size="lg" />
         <ConfigProvider theme={{ headingWeight: 400 }} style={{ minHeight: 0 }}>
-          <CardTitle data-testid="local-title">Local standalone title</CardTitle>
-          <Card data-testid="local-card" title="Local card title" />
+          <CardTitle data-testid="local-title" size="lg">
+            Local standalone title
+          </CardTitle>
+          <Card data-testid="local-card" title="Local card title" size="lg" />
         </ConfigProvider>
       </ConfigProvider>
       <div data-testid="long-title-container">
@@ -66,6 +70,10 @@ export function CardTabsFixture() {
   const params = new URLSearchParams(location.search);
   const size = params.has('large') ? 'lg' : params.has('small') ? 'sm' : 'md';
   const [title, setTitle] = useState(true);
+  const [selected, setSelected] = useState(params.has('selected'));
+  const [primaryColor, setPrimaryColor] = useState(
+    params.get('theme') === 'dark' ? '#76aaff' : '#1669dc',
+  );
   const [loading, setLoading] = useState(false);
   const [activeKey, setActiveKey] = useState('details');
   const [sortedItems, setSortedItems] = useState<TabItem[]>([
@@ -92,18 +100,21 @@ export function CardTabsFixture() {
                 Card: { padding: '12px 24px', headerBackground: '#292935', borderColor: '#888899' },
               },
             }
-          : { primaryColor: params.get('theme') === 'dark' ? '#76aaff' : '#1669dc' }
+          : { primaryColor }
       }
     >
       <h1>Card tabs</h1>
       <h2>Integrated navigation</h2>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
         <Button onClick={() => setTitle((title) => !title)}>Toggle heading</Button>
         <Button onClick={() => setLoading((loading) => !loading)}>Toggle loading</Button>
+        <Button onClick={() => setSelected((selected) => !selected)}>Toggle selected</Button>
+        <Button onClick={() => setPrimaryColor('#b74913')}>Change primary</Button>
       </div>
       <div style={{ display: 'grid', gap: 24, maxWidth: 520 }}>
         <Card
           data-testid="titled-card"
+          selected={selected}
           title={title ? 'Project settings' : undefined}
           description={title ? 'Manage project details and members.' : undefined}
           extra={<Button variant="link">Manage project</Button>}
@@ -160,19 +171,29 @@ export function CardTabsFixture() {
           tabs={{ items: sortedItems, sortable: true, onReorder: setSortedItems }}
         />
         <Card
-          data-testid="inset-card"
+          data-testid="layered-card"
+          selected={selected}
           title="Visit at risk"
           description="The next visit starts later than the scheduled arrival."
-          extra={<Tag color="warning">17 min late</Tag>}
+          extra={
+            <Tag variant="outline" color="warning">
+              17 min late
+            </Tag>
+          }
           footer={<Button variant="outline">Review visit</Button>}
-          variant="inset"
+          variant="layered"
+          size={size}
         >
           The assigned caregiver has not started travel. Traffic places the arrival at 2:17 PM.
         </Card>
+        <Card data-testid="unbordered-card" bordered={false} selected={selected}>
+          Borderless until selected
+        </Card>
         <Card
-          data-testid="inset-tabbed-card"
+          data-testid="layered-tabbed-card"
           title="Visit notes"
-          variant="inset"
+          variant="layered"
+          size={size}
           tabs={{
             items: [
               { key: 'summary', label: 'Summary', children: 'Latest visit summary' },

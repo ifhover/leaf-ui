@@ -316,7 +316,7 @@ export function TabsControl({
           {onAdd && (
             <ButtonControl
               className="leaf-tabs__action"
-              variant="ghost"
+              variant="text"
               size={size}
               startIcon={<Plus size={16} />}
               aria-label={addLabel ?? t('tabs.addTab')}

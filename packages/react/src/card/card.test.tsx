@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { ConfigProvider } from '../config-provider';
 import { Card } from './card';
 
 const items = [
@@ -87,25 +88,76 @@ describe('Card tabs', () => {
 });
 
 describe('Card variants', () => {
-  it('keeps the heading on the canvas and groups content inside an inset panel', () => {
+  it('supports visual selection without adding an interactive role or forwarding selected to the DOM', () => {
+    const { rerender } = render(
+      <Card data-testid="card" selected bordered={false}>
+        Content
+      </Card>,
+    );
+    const card = screen.getByTestId('card');
+    expect(card).toHaveClass('leaf-card--selected');
+    expect(card).not.toHaveAttribute('selected');
+    expect(card).not.toHaveAttribute('role');
+    expect(card).not.toHaveAttribute('tabindex');
+    rerender(<Card data-testid="card">Content</Card>);
+    expect(card).not.toHaveClass('leaf-card--selected');
+  });
+
+  it('inherits the selection default and lets instances opt out', () => {
+    render(
+      <ConfigProvider components={{ Card: { selected: true } }}>
+        <Card data-testid="selected-card" variant="layered">
+          Selected
+        </Card>
+        <Card data-testid="plain-card" selected={false}>
+          Plain
+        </Card>
+      </ConfigProvider>,
+    );
+    expect(screen.getByTestId('selected-card')).toHaveClass('leaf-card--selected');
+    expect(screen.getByTestId('plain-card')).not.toHaveClass('leaf-card--selected');
+  });
+
+  it('keeps the heading and footer on the canvas and hides layered descriptions', () => {
     render(
       <Card
-        data-testid="inset-card"
+        data-testid="layered-card"
         description="Standalone supporting text"
         footer="Footer content"
-        title="Inset card"
-        variant="inset"
+        title="Layered card"
+        variant="layered"
       >
         Body content
       </Card>,
     );
 
-    const card = screen.getByTestId('inset-card');
+    const card = screen.getByTestId('layered-card');
     const panel = card.querySelector(':scope > .leaf-card__panel');
-    expect(card).toHaveClass('leaf-card--inset');
+    expect(card).toHaveClass('leaf-card--layered');
     expect(panel).not.toBeNull();
-    expect(panel?.contains(screen.getByRole('heading', { name: 'Inset card' }))).toBe(false);
+    expect(panel?.contains(screen.getByRole('heading', { name: 'Layered card' }))).toBe(false);
     expect(panel?.contains(screen.getByText('Body content'))).toBe(true);
-    expect(panel?.contains(screen.getByText('Footer content'))).toBe(true);
+    expect(panel?.contains(screen.getByText('Footer content'))).toBe(false);
+    expect(card.querySelector(':scope > .leaf-card__footer')).toHaveTextContent('Footer content');
+    expect(screen.queryByText('Standalone supporting text')).not.toBeInTheDocument();
+  });
+
+  it('does not create a heading for a hidden description or reserve its tab actions', () => {
+    const { rerender } = render(
+      <Card variant="layered" description="Hidden details" extra="Actions" tabs={{ items }} />,
+    );
+    expect(screen.queryByText('Hidden details')).not.toBeInTheDocument();
+    expect(screen.getByText('Actions').closest('.leaf-card__tab-extra')).not.toBeNull();
+    expect(document.querySelector('.leaf-card__header')).toBeNull();
+
+    rerender(
+      <Card description="Visible details" footer="Default footer">
+        Body
+      </Card>,
+    );
+    expect(screen.getByText('Visible details')).toBeInTheDocument();
+    expect(document.querySelector('.leaf-card__panel > .leaf-card__footer')).toHaveTextContent(
+      'Default footer',
+    );
   });
 });
