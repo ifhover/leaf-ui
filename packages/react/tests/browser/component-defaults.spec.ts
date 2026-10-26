@@ -128,9 +128,7 @@ test('cleared defaults restore editable local inputs, builtin buttons and native
   await expect(input).toHaveValue('Editable');
 });
 
-test('global defaults cannot change composite button actions, page size or command search', async ({
-  page,
-}) => {
+test('global defaults cannot change composite button actions or page size', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/?fixture=component-defaults');
@@ -155,16 +153,6 @@ test('global defaults cannot change composite button actions, page size or comma
   await section.getByRole('combobox', { name: 'Page size' }).click();
   await page.getByRole('option', { name: '20 / page' }).click();
   await expect(section.getByLabel('Boundary page size')).toHaveText('20');
-  await section.getByRole('button', { name: 'Open boundary commands' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Command search' });
-  const search = dialog.getByRole('combobox');
-  await expect(search).toBeEditable();
-  await expect(search).toHaveAttribute('type', 'text');
-  await search.fill('copy');
-  await expect(dialog.getByRole('option', { name: 'Copy command' })).toBeVisible();
-  await expect(dialog.getByRole('option', { name: 'Save command' })).toHaveCount(0);
-  await search.press('Escape');
-  await expect(dialog).toBeHidden();
   expect(errors).toEqual([]);
 });
 

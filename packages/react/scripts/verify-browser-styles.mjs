@@ -3,6 +3,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const root = path.resolve(import.meta.dirname, '..');
 const output = path.join(root, '.quality/style-entries');
@@ -31,7 +32,7 @@ const cases = {
   table: {
     names: ['DataTable'],
     subpath: '/table',
-    include: ['table', 'scrollbar', 'loading', 'checkbox', 'pagination'],
+    include: ['table', 'scrollbar', 'loading', 'result', 'checkbox', 'pagination'],
     exclude: ['color-picker', 'date-picker'],
   },
   date: {
@@ -110,6 +111,7 @@ async function readOutputs(directory) {
 }
 
 const report = [];
+const previewBoundaries = [];
 for (const engine of ['rspack', 'vite']) {
   const styles = new Map();
   for (const [name, fixture] of Object.entries(cases)) {
@@ -133,6 +135,7 @@ for (const engine of ['rspack', 'vite']) {
       );
     }
     const destination = path.join(directory, 'dist');
+    let initialAssets = [];
     assert.ok(
       destination.startsWith(`${output}${path.sep}`),
       'Only clean fixture output inside .quality',
@@ -153,7 +156,13 @@ for (const engine of ['rspack', 'vite']) {
           compiler.close((closeError) => {
             if (error || closeError || stats?.hasErrors())
               reject(error || closeError || new Error(stats.toString()));
-            else resolve();
+            else {
+              if (name === 'config') {
+                const entrypoints = stats.toJson({ all: false, entrypoints: true }).entrypoints;
+                initialAssets = entrypoints.main.assets.map((asset) => asset.name);
+              }
+              resolve();
+            }
           }),
         ),
       );
@@ -165,11 +174,76 @@ for (const engine of ['rspack', 'vite']) {
         build: {
           outDir: destination,
           emptyOutDir: true,
+          manifest: name === 'config',
           rollupOptions: { input: source, external },
         },
       });
+      if (name === 'config') {
+        const manifest = JSON.parse(
+          await readFile(path.join(destination, '.vite/manifest.json'), 'utf8'),
+        );
+        const visited = new Set();
+        const visit = (key) => {
+          if (visited.has(key)) return;
+          visited.add(key);
+          const chunk = manifest[key];
+          assert.ok(chunk, `Vite initial chunk ${key} exists`);
+          initialAssets.push(chunk.file, ...(chunk.css ?? []));
+          for (const imported of chunk.imports ?? []) visit(imported);
+        };
+        for (const [key, chunk] of Object.entries(manifest)) if (chunk.isEntry) visit(key);
+      }
     }
     const css = await readOutputs(destination);
+    if (name === 'config') {
+      assert.ok(initialAssets.length, `${engine}: ConfigProvider has initial output assets`);
+      const initial = await Promise.all(
+        [...new Set(initialAssets)].map(async (file) => ({
+          file,
+          code: await readFile(path.join(destination, file), 'utf8'),
+        })),
+      );
+      const initialCss = initial
+        .filter(({ file }) => file.endsWith('.css'))
+        .map(({ code }) => code)
+        .join('\n');
+      const initialJs = initial
+        .filter(({ file }) => file.endsWith('.js'))
+        .map(({ code }) => code)
+        .join('\n');
+      assert.doesNotMatch(
+        initialCss,
+        /\.leaf-image(?:\b|__|-)|\.yarl__/,
+        `${engine}: idle ConfigProvider excludes Image and YARL CSS`,
+      );
+      assert.doesNotMatch(
+        initialJs,
+        /leaf-image__trigger|leaf-image-viewer__|yarl__/,
+        `${engine}: idle ConfigProvider excludes image controls and viewer code`,
+      );
+      assert.match(
+        css,
+        /\.leaf-image-viewer__/,
+        `${engine}: requested preview retains lazy viewer CSS`,
+      );
+      assert.match(css, /\.yarl__/, `${engine}: requested preview retains lazy YARL CSS`);
+      const deferred = await Promise.all(
+        (await readdir(destination, { recursive: true }))
+          .map((file) => file.replaceAll(path.sep, '/'))
+          .filter((file) => /\.(?:js|css)$/.test(file) && !initialAssets.includes(file))
+          .map(async (file) => ({
+            file,
+            code: await readFile(path.join(destination, file), 'utf8'),
+          })),
+      );
+      const sizes = (assets) =>
+        assets.map(({ file, code }) => ({
+          file,
+          bytes: Buffer.byteLength(code),
+          gzip: gzipSync(code, { level: 9 }).length,
+        }));
+      previewBoundaries.push({ engine, initial: sizes(initial), deferred: sizes(deferred) });
+    }
     if (fixture.include.length) {
       assert.match(
         css,
@@ -206,6 +280,10 @@ for (const engine of ['rspack', 'vite']) {
   );
 }
 await writeFile(path.join(output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(
+  path.join(output, 'image-preview-boundary.json'),
+  `${JSON.stringify(previewBoundaries, null, 2)}\n`,
+);
 console.table(report);
 console.log(
   'Root named imports retain only used implementation styles in Rspack and Vite production builds.',

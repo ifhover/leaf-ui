@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   ConfigProvider,
+  DateRangePicker,
   FileList,
   FloatButton,
   FloatButtonGroup,
@@ -11,11 +12,9 @@ import {
   Modal,
   Select,
   Tabs,
-  TimeRangePicker,
 } from '@ifhover/leaf-ui';
 import { Plus } from 'lucide-react';
 import { type CSSProperties, useRef, useState } from 'react';
-import { AppBarBasic } from '../../../../apps/docs/src/examples/app-bar/basic';
 import { useListMotion } from '../../src/shared/motion';
 
 function AnimatedRows({ rows }: { rows: string[] }) {
@@ -164,7 +163,6 @@ export function MotionFixture() {
             Full-width scrolling action
           </Button>
         </div>
-        <AppBarBasic english />
         <Button onClick={() => setRows((items) => [...items].reverse())}>Reverse</Button>
         <Button onClick={() => setRows((items) => [...items.slice(1), ...items.slice(0, 1)])}>
           Rotate
@@ -229,7 +227,11 @@ export function MotionFixture() {
           popupPlacement="top-end"
           options={[{ value: 'one', label: 'Upward option' }]}
         />
-        <TimeRangePicker aria-label="Local time range" defaultValue={['09:00', '18:00']} />
+        <DateRangePicker
+          picker="time"
+          aria-label="Local time range"
+          defaultValue={['09:00', '18:00']}
+        />
         <div style={{ marginBlock: 16 }}>
           <Button data-testid="busy-button" loading={busy}>
             Save changes

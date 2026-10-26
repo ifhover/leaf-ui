@@ -189,13 +189,14 @@
       "textarea/textarea.scss",
       "treeselect/treeselect.scss"
     ],
-    "primaryFocusConsumers": ["input/input.scss", "select/select.scss"],
-    "neutralFocusConsumers": {
+    "primaryFocusConsumers": {
       "autocomplete/autocomplete.scss": "auto-complete",
       "cascader/cascader.scss": "cascader",
       "colorpicker/colorpicker.scss": "color-picker",
-      "datepicker/datepicker.scss": "date-picker",
+      "input/input.scss": "input",
       "inputnumber/inputnumber.scss": "input-number",
+      "select/select.scss": "select",
+      "datepicker/datepicker.scss": "date-picker",
       "textarea/textarea.scss": "textarea",
       "treeselect/treeselect.scss": "tree-select"
     }
@@ -277,7 +278,7 @@
       "fieldFamilyBorders": [
         {
           "expression": "border:0",
-          "count": 3,
+          "count": 2,
           "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
         },
         {
@@ -294,11 +295,6 @@
           "expression": "border:2px solid var(--leaf-color-surface)",
           "count": 1,
           "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
-        },
-        {
-          "expression": "border:1px solid var(--leaf-segmented-border)",
-          "count": 1,
-          "reason": "The internal format switch paints its segmented-family track, not the outer field shell."
         }
       ]
     },
@@ -364,11 +360,6 @@
       "hardcodedColors": [
         {
           "expression": "#0003",
-          "count": 2,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#0005",
           "count": 1,
           "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
         },
@@ -766,7 +757,7 @@
       {
         "expression": "color-mix(in srgb,currentColor #{$strength},var(--leaf-color-surface))",
         "count": 1,
-        "reason": "Shared inherited ink recipe supplies 80% for default Menu and 70% for choice rows; selected and active rows restore full regional ink."
+        "reason": "Default Menu retains its independent 80% inherited ink recipe; choice rows use full inherited ink in both unselected and selected states."
       },
       {
         "expression": "color-mix(in srgb,#{neutral-option-background()} 50%,transparent)",

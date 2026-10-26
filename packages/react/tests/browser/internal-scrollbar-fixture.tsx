@@ -1,11 +1,11 @@
 import {
   AutoComplete,
   Cascader,
+  DatePicker,
   Drawer,
   Mentions,
   Select,
   Textarea,
-  TimePicker,
   Transfer,
   TreeSelect,
   VirtualList,
@@ -66,7 +66,7 @@ export function InternalScrollbarFixture() {
         <AutoComplete aria-label="Suggestions" options={options} virtual listHeight={180} />
         <TreeSelect aria-label="Tree selection" options={tree} virtual listHeight={180} />
         <Cascader aria-label="Cascading selection" options={tree} />
-        <TimePicker aria-label="Time selection" minuteStep={1} showSeconds />
+        <DatePicker picker="time" aria-label="Time selection" minuteStep={1} showSeconds />
         <button type="button" onClick={() => setDrawer(true)}>
           Open scrolling drawer
         </button>

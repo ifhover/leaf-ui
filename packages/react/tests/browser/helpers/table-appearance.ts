@@ -1,5 +1,47 @@
 import { expect, type Locator } from '@playwright/test';
 
+export async function expectSimpleTableSurface(table: Locator) {
+  const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--simple")][1]');
+  await expect(root).toHaveCSS('border-top-width', '0px');
+  await expect(root).toHaveCSS('padding', '0px');
+  await expect(root).toHaveCSS('box-shadow', 'none');
+  await expect(root.locator('.leaf-table__panel')).toBeHidden();
+  await expect(table.locator('thead')).toHaveCSS('position', 'sticky');
+  await expect(table.locator('thead')).toHaveCSS('clip-path', 'inset(0px round 8px)');
+  await expect(root).not.toHaveClass(/leaf-table--striped|leaf-table--column-dividers/);
+  const headings = await table.locator('thead th').evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      separator: getComputedStyle(node, '::before').display,
+      border: getComputedStyle(node).borderBottomWidth,
+      background: getComputedStyle(node).backgroundColor,
+    })),
+  );
+  expect(headings.length).toBeGreaterThan(1);
+  for (const heading of headings) {
+    expect(heading.separator).toBe('none');
+    expect(heading.border).toBe('0px');
+    expect(heading.background).toBe(headings[0]?.background);
+  }
+  const rows = table.locator('tbody > tr[data-row-id]');
+  const colors = await rows.evaluateAll((nodes) =>
+    nodes
+      .slice(0, 3)
+      .map((node) => getComputedStyle(node.firstElementChild as Element).backgroundColor),
+  );
+  expect(colors.length).toBeGreaterThan(1);
+  expect(new Set(colors).size).toBe(1);
+  await expect(rows.first().locator('td').first()).toHaveCSS('border-bottom-width', '1px');
+  for (const cell of await table.locator('th, td').all()) {
+    await expect(cell).toHaveCSS('border-inline-end-width', '0px');
+    await expect(cell).toHaveCSS('box-shadow', 'none');
+  }
+  for (const heading of await table.locator('.leaf-data-table__heading[data-align="end"]').all()) {
+    await expect(heading).toHaveCSS('justify-content', 'flex-end');
+    for (const button of await heading.locator('.leaf-data-table__sort').all())
+      await expect(button).toHaveCSS('justify-content', 'flex-end');
+  }
+}
+
 export async function expectDataRowStripes(table: Locator) {
   const colors = await table.evaluate((node) => {
     const root = node.closest('.leaf-table');

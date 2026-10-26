@@ -22,11 +22,11 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 55 | 77 |
+| Legal hardcoded-color exceptions | 54 | 75 |
 | Legal color-mix exceptions | 1 | 1 |
 | Reviewed derived-token exceptions | 7 | 7 |
 | Reviewed color-scale step exceptions | 0 | 0 |
-| Reviewed field-structure exceptions | 18 | 29 |
+| Reviewed field-structure exceptions | 17 | 27 |
 
 Registered undefined-token risk occurrences: 0.
 
@@ -48,7 +48,7 @@ Optional override tokens and unknown fallback names remain visible in the audit.
 
 - `autocomplete/autocomplete.scss`: 1 controlled border expression
 - `cascader/cascader.scss`: 2 controlled border expressions
-- `colorpicker/colorpicker.scss`: 5 controlled border expressions
+- `colorpicker/colorpicker.scss`: 4 controlled border expressions
 - `datepicker/datepicker.scss`: 3 controlled border expressions
 - `input/input.scss`: 1 controlled border expression
 - `inputnumber/inputnumber.scss`: 4 controlled border expressions
@@ -56,13 +56,13 @@ Optional override tokens and unknown fallback names remain visible in the audit.
 - `textarea/textarea.scss`: 0 controlled border expressions
 - `treeselect/treeselect.scss`: 1 controlled border expression
 
-Input and Select must call `mixins.field(..., 'primary')` and must not redefine `--leaf-field-color` or `--leaf-field-rest-border`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
+All field shells must use the shared primary-focus default via `mixins.field(component)` and must not redefine `--leaf-field-color` or `--leaf-field-rest-border`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
 
 ## Undefined or optional tokens
 
 ### Override-only global tokens
 
-- `--leaf-color-focus`: 1 component files, 1 shared/infrastructure files, 2 occurrences.
+- `--leaf-color-focus`: 2 component files, 1 shared/infrastructure files, 3 occurrences.
 
 ### Registered undefined risks
 
@@ -70,6 +70,7 @@ Input and Select must call `mixins.field(..., 'primary')` and must not redefine 
 
 ### Optional-only consumers with fallback
 
+- `calendar/calendar.scss`: `var(--leaf-color-focus, ...)`
 - `inputotp/inputotp.scss`: `var(--leaf-color-focus, ...)`
 - `styles/_mixins.scss`: `var(--leaf-color-focus, ...)`
 
@@ -83,11 +84,11 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 32 | 5 | 60 |
+| `--leaf-color-border` | 24 | 5 | 42 |
 | `--leaf-color-border-hover` | 5 | 1 | 6 |
-| `--leaf-color-danger` | 10 | 1 | 13 |
+| `--leaf-color-danger` | 9 | 1 | 12 |
 | `--leaf-color-danger-active` | 1 | 0 | 1 |
-| `--leaf-color-danger-border` | 0 | 1 | 1 |
+| `--leaf-color-danger-border` | 1 | 1 | 4 |
 | `--leaf-color-danger-dark-1` | 0 | 0 | 0 |
 | `--leaf-color-danger-dark-3` | 0 | 0 | 0 |
 | `--leaf-color-danger-dark-7` | 0 | 0 | 0 |
@@ -100,8 +101,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-danger-soft` | 0 | 1 | 2 |
 | `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
 | `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-divider` | 18 | 5 | 35 |
-| `--leaf-color-info` | 3 | 0 | 4 |
+| `--leaf-color-divider` | 15 | 6 | 37 |
+| `--leaf-color-info` | 4 | 0 | 5 |
 | `--leaf-color-info-border` | 0 | 0 | 0 |
 | `--leaf-color-info-dark-1` | 0 | 0 | 0 |
 | `--leaf-color-info-dark-3` | 0 | 0 | 0 |
@@ -124,14 +125,14 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-neutral-700` | 0 | 0 | 0 |
 | `--leaf-color-neutral-800` | 0 | 0 | 0 |
 | `--leaf-color-neutral-900` | 0 | 0 | 0 |
-| `--leaf-color-on-danger` | 2 | 1 | 3 |
-| `--leaf-color-on-info` | 0 | 1 | 1 |
-| `--leaf-color-on-primary` | 8 | 1 | 10 |
-| `--leaf-color-on-success` | 0 | 1 | 1 |
-| `--leaf-color-on-warning` | 0 | 1 | 1 |
-| `--leaf-color-option-hover` | 9 | 3 | 22 |
-| `--leaf-color-primary` | 34 | 4 | 86 |
-| `--leaf-color-primary-active` | 2 | 0 | 2 |
+| `--leaf-color-on-danger` | 3 | 1 | 4 |
+| `--leaf-color-on-info` | 2 | 1 | 3 |
+| `--leaf-color-on-primary` | 8 | 1 | 12 |
+| `--leaf-color-on-success` | 1 | 1 | 2 |
+| `--leaf-color-on-warning` | 1 | 1 | 2 |
+| `--leaf-color-option-hover` | 5 | 2 | 13 |
+| `--leaf-color-primary` | 32 | 3 | 82 |
+| `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-16` | 0 | 1 | 1 |
@@ -145,11 +146,11 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-primary-fill-border` | 1 | 0 | 1 |
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
-| `--leaf-color-primary-hover` | 1 | 0 | 2 |
-| `--leaf-color-primary-indicator` | 28 | 3 | 53 |
-| `--leaf-color-primary-ink` | 18 | 3 | 29 |
-| `--leaf-color-primary-ink-active` | 2 | 0 | 2 |
-| `--leaf-color-primary-ink-hover` | 2 | 0 | 3 |
+| `--leaf-color-primary-hover` | 0 | 0 | 0 |
+| `--leaf-color-primary-indicator` | 26 | 2 | 49 |
+| `--leaf-color-primary-ink` | 16 | 3 | 31 |
+| `--leaf-color-primary-ink-active` | 1 | 0 | 1 |
+| `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
 | `--leaf-color-primary-light-7` | 0 | 0 | 0 |
 | `--leaf-color-primary-light-9` | 0 | 0 | 0 |
@@ -169,14 +170,14 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-success-soft` | 0 | 1 | 1 |
 | `--leaf-color-success-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-success-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-surface` | 37 | 4 | 62 |
+| `--leaf-color-surface` | 34 | 4 | 60 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 27 | 5 | 54 |
-| `--leaf-color-surface-raised` | 12 | 2 | 14 |
-| `--leaf-color-text` | 49 | 4 | 99 |
-| `--leaf-color-text-muted` | 46 | 6 | 108 |
-| `--leaf-color-text-subtle` | 12 | 1 | 16 |
+| `--leaf-color-surface-muted` | 26 | 4 | 46 |
+| `--leaf-color-surface-raised` | 8 | 2 | 10 |
+| `--leaf-color-text` | 47 | 5 | 98 |
+| `--leaf-color-text-muted` | 43 | 6 | 106 |
+| `--leaf-color-text-subtle` | 10 | 1 | 15 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
 | `--leaf-color-warning` | 3 | 1 | 5 |
 | `--leaf-color-warning-alpha-16` | 1 | 0 | 1 |
@@ -195,7 +196,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 ### Tokens with zero direct component consumers
 
-- `--leaf-color-danger-border`
 - `--leaf-color-danger-dark-1`
 - `--leaf-color-danger-dark-3`
 - `--leaf-color-danger-dark-7`
@@ -229,9 +229,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-neutral-700`
 - `--leaf-color-neutral-800`
 - `--leaf-color-neutral-900`
-- `--leaf-color-on-info`
-- `--leaf-color-on-success`
-- `--leaf-color-on-warning`
 - `--leaf-color-primary-alpha-12`
 - `--leaf-color-primary-alpha-16`
 - `--leaf-color-primary-alpha-20`
@@ -240,6 +237,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-primary-dark-7`
 - `--leaf-color-primary-dark-9`
 - `--leaf-color-primary-focus`
+- `--leaf-color-primary-hover`
 - `--leaf-color-primary-light-3`
 - `--leaf-color-primary-light-7`
 - `--leaf-color-primary-light-9`
@@ -305,11 +303,10 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `rgb(0 0 0/25%)` x4 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(0 0 0/8%)` x2 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(255 255 255/18%)` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
-- fieldFamilyBorders: `border:0` x3 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
+- fieldFamilyBorders: `border:0` x2 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
 - fieldFamilyBorders: `border:1px solid rgb(0 0 0/8%)` x1 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 - fieldFamilyBorders: `border:2px solid #fff` x3 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 - fieldFamilyBorders: `border:2px solid var(--leaf-color-surface)` x1 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
-- fieldFamilyBorders: `border:1px solid var(--leaf-segmented-border)` x1 - The internal format switch paints its segmented-family track, not the outer field shell.
 
 ### `colorpicker/colorpicker.tsx`
 - hardcodedColors: `#000` x1 - ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults.
@@ -334,8 +331,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `#111` x1 - Fixed letterboxing belongs to the video content, not the regional theme surface.
 
 ### `image/image.scss`
-- hardcodedColors: `#0003` x2 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#0005` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
+- hardcodedColors: `#0003` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
 - hardcodedColors: `#0006` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
 - hardcodedColors: `#0009` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
 - hardcodedColors: `#26292f` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
@@ -414,7 +410,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ## Ongoing controls
 
-1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. Outer neutral-focus fields retain their contract; Input/Select and the private native color input select primary focus.
+1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells and the private native color input inherit primary focus from the shared field default; Mentions reuses Textarea. Explicit neutral focus is reserved for reviewed exceptions.
 2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
 3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
 4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching `on-*` content. Where a dark custom base needs edge separation, `primary-indicator` provides the boundary rather than replacing the fill.

@@ -5,6 +5,63 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/?fixture=scrollbar');
 });
 
+for (const axis of ['vertical', 'horizontal', 'both']) {
+  for (const rtl of [false, true]) {
+    test(`persistent ${axis} tracks reserve space in ${rtl ? 'RTL' : 'LTR'}`, async ({ page }) => {
+      await page.goto(`/?fixture=scrollbar&persistent&axis=${axis}${rtl ? '&rtl' : ''}`);
+      const viewport = page.getByRole('region', { name: 'Both axes', exact: true });
+      const root = viewport.locator('..');
+      await expect(root).toHaveAttribute('data-persistent', '');
+      const rootBox = await root.boundingBox();
+      const viewBox = await viewport.boundingBox();
+      if (!rootBox || !viewBox) throw new Error('Missing persistent scrollbar geometry');
+      expect(rootBox.width - viewBox.width).toBeCloseTo(axis === 'horizontal' ? 0 : 16, 0);
+      expect(rootBox.height - viewBox.height).toBeCloseTo(axis === 'vertical' ? 0 : 16, 0);
+      for (const bar of await root.locator('.leaf-scrollbar__bar').all()) {
+        await expect(bar).toHaveCSS('opacity', '1');
+        const box = await bar.boundingBox();
+        if (!box) throw new Error('Missing persistent track');
+        if (await bar.locator('[aria-orientation="vertical"]').count()) {
+          expect(rtl ? box.x + box.width : viewBox.x + viewBox.width).toBeLessThanOrEqual(
+            rtl ? viewBox.x : box.x,
+          );
+          expect(box.y + box.height).toBeLessThanOrEqual(viewBox.y + viewBox.height);
+        } else {
+          expect(box.y).toBeGreaterThanOrEqual(viewBox.y + viewBox.height);
+          expect(box.x).toBeGreaterThanOrEqual(viewBox.x);
+          expect(box.x + box.width).toBeLessThanOrEqual(viewBox.x + viewBox.width);
+        }
+        await bar.getByRole('scrollbar').press('End');
+        await expect
+          .poll(async () => Number(await bar.getByRole('scrollbar').getAttribute('aria-valuenow')))
+          .toBeGreaterThan(0);
+      }
+    });
+  }
+}
+
+test('small tracks stay narrow and quiet on both axes without changing scroll controls', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=scrollbar&small');
+  const viewport = page.getByRole('region', { name: 'Both axes', exact: true });
+  const root = viewport.locator('..');
+  await viewport.hover();
+  const vertical = root.locator('.leaf-scrollbar__bar--vertical');
+  const horizontal = root.locator('.leaf-scrollbar__bar--horizontal');
+  await expect(vertical).toHaveCSS('width', '6px');
+  await expect(horizontal).toHaveCSS('height', '6px');
+  await expect(vertical).toHaveCSS('inset-inline-end', '2px');
+  await expect(horizontal).toHaveCSS('bottom', '2px');
+  await expect(vertical.locator('.leaf-scrollbar__thumb')).toHaveCSS('opacity', '0.3');
+  await vertical.hover();
+  await expect(vertical.locator('.leaf-scrollbar__thumb')).toHaveCSS('opacity', '0.55');
+  await vertical.getByRole('scrollbar').press('End');
+  await expect.poll(() => viewport.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+  await horizontal.getByRole('scrollbar').press('End');
+  await expect.poll(() => viewport.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
+});
+
 test('overlay tracks fade on hover, do not consume space and support dragging and track clicks', async ({
   page,
 }) => {

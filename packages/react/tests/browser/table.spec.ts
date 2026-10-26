@@ -493,11 +493,14 @@ test('remote pagination retains rows during refresh and retries errors', async (
   await demo.getByRole('button', { name: 'Next page', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
   await expect(table.locator('[data-row-id]')).toHaveCount(5);
-  await expect(table.locator('[data-row-id="member-6"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="1"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="6"]')).toBeVisible();
   await demo.getByRole('button', { name: 'Simulate error' }).click();
   await expect(table.getByRole('alert')).toContainText('Unable to load members');
+  await expect(table.getByRole('alert')).toHaveClass(/leaf-result--danger/);
+  await expect(table.locator('.leaf-result__icon')).toHaveCSS('width', '48px');
   await table.getByRole('button', { name: 'Retry' }).click();
-  await expect(table.locator('[data-row-id="member-6"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="6"]')).toBeVisible();
 });
 
 test('rows and columns reorder by keyboard and pointer without replacing table semantics', async ({

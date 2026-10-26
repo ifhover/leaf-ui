@@ -7,15 +7,12 @@ import {
   ConfigProvider,
   DatePicker,
   DateRangePicker,
-  DateTimePicker,
   Dropdown,
   type LeafTheme,
   Mentions,
   Menu,
   Select,
   Tabs,
-  TimePicker,
-  TimeRangePicker,
   Tree,
   TreeSelect,
 } from '@ifhover/leaf-ui';
@@ -48,7 +45,6 @@ export function RadiusFixture() {
       TreeSelect: { borderRadius: 13 },
       Cascader: { borderRadius: 15 },
       DatePicker: { borderRadius: 11 },
-      TimePicker: { borderRadius: 22 },
       ColorPicker: { borderRadius: 17 },
       Dropdown: { borderRadius: 18, padding: '3px 7px 5px 9px' },
       Tabs: { borderRadius: 14, padding: '2px 4px 6px 8px' },
@@ -87,17 +83,20 @@ export function RadiusFixture() {
             defaultValue={[new Date(2026, 9, 8), new Date(2026, 9, 12)]}
             panelVariant={params.has('card') ? 'card' : 'plain'}
           />
-          <TimePicker
+          <DatePicker
+            picker="time"
             aria-label="Radius time"
             defaultValue="09:00"
             panelVariant={params.has('card') ? 'card' : 'plain'}
           />
-          <TimeRangePicker
+          <DateRangePicker
+            picker="time"
             aria-label="Radius time range"
             defaultValue={['09:00', '10:00']}
             panelVariant={params.has('card') ? 'card' : 'plain'}
           />
-          <DateTimePicker
+          <DatePicker
+            picker="datetime"
             aria-label="Radius datetime"
             defaultValue={new Date(2026, 9, 8, 9)}
             panelVariant={params.has('card') ? 'card' : 'plain'}

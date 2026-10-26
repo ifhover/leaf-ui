@@ -64,6 +64,7 @@ for (const [theme, compact, rtl, lang] of [
 
     for (const index of [1, 2]) {
       await expect(fields.nth(index)).toHaveCSS('border-block-start-width', '1px');
+      await expect(fields.nth(index)).toHaveCSS('border-block-start-style', 'dashed');
     }
     const wide = fields.nth(2);
     const textarea = wide.getByRole('textbox');
@@ -100,7 +101,7 @@ for (const [theme, compact, rtl, lang] of [
     await expect(page.getByRole('alert')).toHaveText('This name is already taken.');
 
     const grouped = page.getByRole('form', { name: 'Grouped settings', exact: true });
-    await expectGroupSpacing(grouped, compact ? 16 : 24);
+    await expectGroupSpacing(grouped, compact ? 12 : 16);
 
     await page.addScriptTag({ content: axe.source });
     const violations = await page.evaluate(async () => {
@@ -127,7 +128,7 @@ for (const [theme, compact, rtl, lang] of [
       375,
     );
     expect((await rect(textarea)).width).toBeCloseTo(narrowForm.width, 0);
-    await expectGroupSpacing(grouped, compact ? 16 : 24);
+    await expectGroupSpacing(grouped, compact ? 12 : 16);
     await page.screenshot({
       path: test.info().outputPath(`form-settings-mobile-${variant}-${testInfo.project.name}.png`),
       fullPage: true,

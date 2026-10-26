@@ -1,10 +1,10 @@
 import {
-  BottomNavigation,
   Breadcrumb,
   Button,
   CheckableTag,
   ColorPicker,
   ConfigProvider,
+  DatePicker,
   Dropdown,
   Input,
   InputNumber,
@@ -13,7 +13,6 @@ import {
   Select,
   Switch,
   Textarea,
-  TimePicker,
   Transfer,
   Tree,
   TreeSelect,
@@ -83,7 +82,7 @@ export function SelectionFixture() {
             { key: 'bob', title: 'Tree Bob' },
           ]}
         />
-        <TimePicker aria-label="Selected time" defaultValue="09:00" />
+        <DatePicker picker="time" aria-label="Selected time" defaultValue="09:00" />
         <Dropdown
           items={[
             { key: 'saved', label: 'Saved filter', type: 'checkbox', checked: true },
@@ -102,13 +101,6 @@ export function SelectionFixture() {
           ]}
         />
         <CheckableTag defaultChecked>Design</CheckableTag>
-        <BottomNavigation
-          aria-label="Sections"
-          items={[
-            { key: 'home', label: 'Home' },
-            { key: 'inbox', label: 'Inbox' },
-          ]}
-        />
         <Transfer
           items={[
             { key: 'alice', label: 'Transfer Alice' },

@@ -35,10 +35,16 @@ test('all appearances and danger actions share reversible paint transitions', as
       await button.evaluate(async (node) => {
         await Promise.all(node.getAnimations().map((animation) => animation.finished));
       });
+      await button.evaluate((node) => {
+        void getComputedStyle(node).backgroundColor;
+      });
       await page.mouse.down();
-      await expect(button).toHaveCSS('text-decoration-line', 'none');
+      await expect(button).toHaveCSS(
+        'text-decoration-line',
+        variant === 'link' && button === danger ? 'underline' : 'none',
+      );
       if (variant !== 'link') {
-        const transition = await button.evaluate((node) => {
+        const transition = await button.evaluate(async (node) => {
           const animation = node
             .getAnimations()
             .find(
@@ -49,8 +55,10 @@ test('all appearances and danger actions share reversible paint transitions', as
           animation.pause();
           const duration = Number(animation.effect.getTiming().duration);
           animation.currentTime = 0;
+          await new Promise(requestAnimationFrame);
           const start = getComputedStyle(node).backgroundColor;
-          animation.currentTime = duration / 2;
+          animation.currentTime = duration / 4;
+          await new Promise(requestAnimationFrame);
           const middle = getComputedStyle(node).backgroundColor;
           animation.finish();
           return { duration, start, middle, end: getComputedStyle(node).backgroundColor };
@@ -113,7 +121,7 @@ for (const mode of ['light', 'dark']) {
     const link = page.getByTestId('press-link');
     const primary = await link.evaluate((node) => {
       const probe = document.createElement('span');
-      probe.style.color = 'var(--leaf-color-primary)';
+      probe.style.color = 'var(--leaf-color-primary-ink)';
       node.append(probe);
       const color = getComputedStyle(probe).color;
       probe.remove();
@@ -253,6 +261,7 @@ const appearance = (button: Locator) =>
       dangerText: resolveColor('var(--leaf-color-danger-ink)'),
       hoverBorder: resolveColor('var(--leaf-button-hover-border)'),
       activeBorder: resolveColor('var(--leaf-button-active-border)'),
+      onColor: resolveColor('var(--leaf-button-on-color)'),
       activeColor: resolveColor('var(--leaf-button-active-color)'),
       activeBackground: resolveColor('var(--leaf-button-active-background)'),
       text: resolveColor('var(--leaf-color-text)'),
@@ -356,7 +365,7 @@ for (const theme of ['light', 'dark']) {
       await button.scrollIntoViewIfNeeded();
       await page.mouse.move(0, 0);
       const original = await appearance(button);
-      expect(original.color).toBe('rgb(255, 255, 255)');
+      expect(readability(original.color, original.backgroundRgb)).toBeGreaterThanOrEqual(4.5);
       expect(original.hover).not.toBe(original.active);
       await button.hover();
       expect(await appearance(button)).toEqual(original);

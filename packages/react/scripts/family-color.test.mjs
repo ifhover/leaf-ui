@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { test } from 'node:test';
 import { resolveBaselinePath, resolvePackageRoot, scanColorContract } from './color-contract.mjs';
+import { styleDeclarations } from './compiled-styles.mjs';
 
 const root = resolvePackageRoot();
 const require = createRequire(path.join(root, 'package.json'));
@@ -58,6 +59,29 @@ test('recipes reject invented visual variants instead of silently picking a colo
       /Unknown/u,
     );
   }
+});
+
+test('fields default to primary focus while retaining validation and explicit neutral variants', async () => {
+  const { css } = await compile(`@use 'mixins' as colors;
+    .default { @include colors.field(example); }
+    .explicit { @include colors.field(example, primary); }
+    .neutral { @include colors.field(example, neutral); }
+  `);
+  const styles = styleDeclarations(css);
+  assert.deepEqual(styles('.default'), styles('.explicit'));
+  assert.equal(styles('.default')['--leaf-field-color'], 'var(--leaf-color-primary)');
+  assert.equal(
+    styles('.neutral')['--leaf-field-color'],
+    'color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))',
+  );
+  assert.equal(
+    styles('.default[data-status=error]')['--leaf-field-color'],
+    'var(--leaf-color-danger)',
+  );
+  assert.equal(
+    styles('.default[data-status=warning]')['--leaf-field-color'],
+    'var(--leaf-color-warning)',
+  );
 });
 
 test('reviewed exception budgets have no dormant permission to reintroduce removed colors', async () => {

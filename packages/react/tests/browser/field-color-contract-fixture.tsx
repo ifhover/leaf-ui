@@ -6,6 +6,7 @@ import {
   DatePicker,
   Input,
   InputNumber,
+  Mentions,
   Select,
   Textarea,
   TreeSelect,
@@ -33,6 +34,8 @@ const treeOptions = [
 const familyKinds = [
   'auto-complete',
   'input-number',
+  'textarea',
+  'mentions',
   'cascader',
   'tree-select',
   'color-picker',
@@ -43,6 +46,8 @@ type FieldState = 'default' | 'error' | 'warning' | 'disabled';
 const familyLabels: Record<FamilyKind, string> = {
   'auto-complete': 'AutoComplete',
   'input-number': 'InputNumber',
+  textarea: 'Textarea',
+  mentions: 'Mentions',
   cascader: 'Cascader',
   'tree-select': 'TreeSelect',
   'color-picker': 'ColorPicker',
@@ -77,6 +82,10 @@ function FamilyControl({
       return <AutoComplete {...props} options={options} />;
     case 'input-number':
       return <InputNumber {...props} />;
+    case 'textarea':
+      return <Textarea {...props} rows={2} />;
+    case 'mentions':
+      return <Mentions {...props} options={options} rows={2} />;
     case 'cascader':
       return <Cascader {...props} options={cascaderOptions} />;
     case 'tree-select':
@@ -152,19 +161,19 @@ function DefaultFields() {
           <Select aria-label="Disabled select" options={options} disabled />
         </div>
       </div>
-      <h2>Neutral field controls</h2>
+      <h2>Multiline field controls</h2>
       <div style={fieldGrid}>
-        <div data-field="neutral-textarea">
-          <Textarea aria-label="Neutral textarea" />
+        <div data-field="multiline-textarea">
+          <Textarea aria-label="Multiline textarea" />
         </div>
-        <div data-field="neutral-error-textarea">
-          <Textarea aria-label="Neutral error textarea" status="error" />
+        <div data-field="multiline-error-textarea">
+          <Textarea aria-label="Multiline error textarea" status="error" />
         </div>
-        <div data-field="neutral-warning-textarea">
-          <Textarea aria-label="Neutral warning textarea" status="warning" />
+        <div data-field="multiline-warning-textarea">
+          <Textarea aria-label="Multiline warning textarea" status="warning" />
         </div>
-        <div data-field="neutral-disabled-textarea">
-          <Textarea aria-label="Neutral disabled textarea" disabled />
+        <div data-field="multiline-disabled-textarea">
+          <Textarea aria-label="Multiline disabled textarea" disabled />
         </div>
       </div>
       <h2>Field family shell states</h2>
@@ -355,6 +364,10 @@ function ExplicitOverrides() {
               borderColor: '#4d7c0f',
               focus: { borderColor: '#3f6212' },
             },
+            Textarea: {
+              borderColor: '#4338ca',
+              focus: { borderColor: '#3730a3' },
+            },
             Cascader: {
               borderColor: '#a21caf',
               focus: { borderColor: '#86198f' },
@@ -395,8 +408,8 @@ function ExplicitOverrides() {
               kind="tree-select"
               state="disabled"
             />
-            <div data-field="target-override-sibling-textarea">
-              <Textarea aria-label="Target override sibling textarea" />
+            <div data-field="target-override-sibling-input">
+              <Input aria-label="Target override sibling input" />
             </div>
           </div>
         </section>

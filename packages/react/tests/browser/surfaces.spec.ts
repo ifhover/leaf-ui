@@ -4,6 +4,17 @@ import { expectAccessible } from './helpers/accessibility';
 test.use({ viewport: { width: 1100, height: 1000 } });
 test.setTimeout(120_000);
 
+async function primarySoftColor(surface: Locator) {
+  return surface.evaluate((element) => {
+    const probe = document.createElement('span');
+    probe.style.backgroundColor = 'var(--leaf-color-primary-soft)';
+    element.append(probe);
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return color;
+  });
+}
+
 async function expectQuietDialog(
   page: Page,
   dialog: Locator,
@@ -23,7 +34,7 @@ async function expectQuietDialog(
     'rgba(0, 0, 0, 0)',
   );
   const backdrop = page.locator('.leaf-modal-backdrop:visible');
-  await expect(backdrop).toHaveCSS('backdrop-filter', 'blur(12px)', { timeout: 20_000 });
+  await expect(backdrop).toHaveCSS('backdrop-filter', 'none', { timeout: 20_000 });
   const [red = 0, green = 0, blue = 0, alpha = 0] = await backdrop.evaluate((element) => {
     const context = document.createElement('canvas').getContext('2d');
     if (!context) throw new Error('Canvas context unavailable');
@@ -33,7 +44,7 @@ async function expectQuietDialog(
   });
   expect(Math.max(red, green, blue) - Math.min(red, green, blue)).toBeLessThanOrEqual(4);
   expect(alpha).toBeGreaterThan(0);
-  expect(alpha).toBeLessThan(60);
+  expect(alpha).toBeLessThan(70);
 }
 
 test('rich choices retain native form, reset, mouse and keyboard behavior', async ({ page }) => {
@@ -102,25 +113,31 @@ test('dialog sections align icons, descriptions and actions, and preserve rich c
   await expect(page.getByText('Access settings saved.')).toBeVisible();
 });
 
-test('API confirmations keep a compact footer and a bare semantic icon in the body', async ({
+test('API confirmations align a bare icon with a bold compact title', async ({
   page,
 }, testInfo) => {
   await page.goto('/?fixture=surfaces');
   await page.getByRole('button', { name: 'Simple confirmation', exact: true }).click();
   let dialog = page.getByRole('alertdialog', { name: 'Continue', exact: true });
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
-  const heading = await dialog
-    .getByRole('heading', { name: 'Continue', exact: true })
-    .boundingBox();
-  const icon = await dialog.locator('.leaf-confirm__body > .leaf-confirm__icon').boundingBox();
+  const heading = await dialog.locator('.leaf-confirm__title').boundingBox();
+  const icon = await dialog.locator('.leaf-modal__header .leaf-confirm__icon').boundingBox();
   const text = await dialog.getByText('Keep your current settings?', { exact: true }).boundingBox();
   expect(icon).not.toBeNull();
-  expect(heading?.x).toBeCloseTo(icon?.x ?? 0, 0);
+  expect((heading?.y ?? 0) + (heading?.height ?? 0) / 2).toBeCloseTo(
+    (icon?.y ?? 0) + (icon?.height ?? 0) / 2,
+    0,
+  );
+  expect(text?.x).toBeCloseTo(heading?.x ?? 0, 0);
   expect(text?.x).toBeGreaterThan((icon?.x ?? 0) + (icon?.width ?? 0));
-  await expect(dialog.locator('.leaf-confirm-description')).toHaveCSS('font-size', '15px');
-  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '16px');
+  await expect(dialog.getByRole('heading')).toHaveCSS('font-size', '16px');
+  await expect(dialog.getByRole('heading')).toHaveCSS('font-weight', '700');
+  await expect(dialog.locator('.leaf-confirm-description')).toHaveCSS('font-size', '14px');
+  const headingRow = await dialog.getByRole('heading').boundingBox();
+  expect((text?.y ?? 0) - (headingRow?.y ?? 0) - (headingRow?.height ?? 0)).toBeCloseTo(8, 0);
+  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '20px');
   await expectQuietDialog(page, dialog, 'Cancel');
-  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '12px');
+  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '20px');
   await expect(dialog.locator('.leaf-confirm__icon')).toHaveCSS(
     'background-color',
     'rgba(0, 0, 0, 0)',
@@ -151,11 +168,17 @@ test('drawer and cards share section styling while spacing-only surfaces stay av
   const drawer = page.getByRole('dialog', { name: 'Notification preferences', exact: true });
   await expect(drawer).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
   await expect(drawer).toHaveAccessibleDescription('Choose the right update frequency for you.');
-  await expect(drawer.locator('.leaf-drawer__header')).toHaveCSS('border-bottom-width', '1px');
+  await expect(drawer.locator('.leaf-drawer__header')).toHaveCSS('border-bottom-width', '0px');
   await expect(drawer.locator('.leaf-drawer__footer')).toHaveCSS(
     'background-color',
-    'rgb(245, 245, 245)',
+    'rgba(0, 0, 0, 0)',
   );
+  await expect(drawer.getByRole('radio', { name: 'Weekly', exact: true })).toBeChecked();
+  const daily = drawer.getByRole('radio', { name: 'Daily', exact: true });
+  await expect(daily).toHaveAccessibleDescription('A daily team activity digest');
+  await daily.check();
+  await expect(daily).toBeChecked();
+  await expect(drawer.getByText('Important alerts stay enabled', { exact: true })).toBeVisible();
   await drawer.screenshot({
     path: test.info().outputPath(`surface-drawer-${testInfo.project.name}.png`),
   });
@@ -200,6 +223,9 @@ test('theme settings reach portalled section surfaces and dense choices', async 
   const footer = dialog.locator('.leaf-modal__footer');
   const color = await footer.evaluate((element) => getComputedStyle(element).backgroundColor);
   expect(color).not.toBe('rgb(245, 245, 245)');
+  const primarySoft = await primarySoftColor(footer);
+  expect(primarySoft).not.toBe('rgba(0, 0, 0, 0)');
+  await expect(footer).toHaveCSS('background-color', primarySoft);
   await expect
     .poll(() =>
       dialog.getByRole('button', { name: 'Save access', exact: true }).evaluate((node) => {
@@ -227,6 +253,13 @@ test('theme settings reach portalled section surfaces and dense choices', async 
       portalHeight: '30px',
       scopeHeights: ['30px'],
     });
+  await dialog.press('Escape');
+  await expect(dialog).toBeHidden();
+  await page.getByRole('button', { name: 'Notification preferences', exact: true }).click();
+  const drawer = page.getByRole('dialog', { name: 'Notification preferences', exact: true });
+  await expect(drawer).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
+  const drawerFooter = drawer.locator('.leaf-drawer__footer');
+  await expect(drawerFooter).toHaveCSS('background-color', await primarySoftColor(drawerFooter));
 });
 
 test('long modal content scrolls through Scrollbar without moving the heading or actions', async ({
@@ -320,7 +353,8 @@ for (const [theme, rtl] of [
     await expectAccessible(page);
     await page.getByRole('button', { name: 'Configure access', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Register agent', exact: true });
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveCSS('opacity', '1');
+    await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
     await expectAccessible(page);
     await dialog.press('Escape');
     await expect(dialog).toBeHidden();
@@ -328,6 +362,8 @@ for (const [theme, rtl] of [
     await expect(
       page.getByRole('alertdialog', { name: 'Delete project', exact: true }),
     ).toBeVisible();
+    await expect(page.getByRole('alertdialog')).toHaveCSS('opacity', '1');
+    await expect(page.getByRole('alertdialog')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)');
     await expectAccessible(page);
   });
 }

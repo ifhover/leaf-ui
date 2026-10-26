@@ -13,9 +13,9 @@ import {
 import { HardDrive, Mail, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { NeutralAlerts } from '../../../../apps/docs/src/examples/alert/neutral';
-import { DrawerSections } from '../../../../apps/docs/src/examples/drawer/sections';
 import { CardSections } from '../../../../apps/docs/src/examples/en/card/sections';
 import { AccessScope } from './access-scope-fixture';
+import { DrawerSectionsFixture } from './drawer-sections-fixture';
 
 function ConfirmationActions() {
   const { confirm } = useConfirm();
@@ -73,11 +73,11 @@ export function SurfaceFixture() {
                 components: {
                   Modal: {
                     padding: '14px 18px',
-                    footerBackground: 'var(--leaf-color-primary-surface-5)',
+                    footerBackground: 'var(--leaf-color-primary-soft)',
                   },
                   Drawer: {
                     padding: '14px 18px',
-                    footerBackground: 'var(--leaf-color-primary-surface-5)',
+                    footerBackground: 'var(--leaf-color-primary-soft)',
                   },
                   Checkbox: { borderRadius: 8, borderColor: 'rgb(100 110 120)' },
                 },
@@ -88,7 +88,7 @@ export function SurfaceFixture() {
         <Space wrap align="start" size="sm">
           <AccessScope english />
           <ConfirmationActions />
-          <DrawerSections english />
+          <DrawerSectionsFixture />
           <Button variant="outline" onClick={() => setPlain(true)}>
             Spacing only
           </Button>

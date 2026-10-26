@@ -89,7 +89,7 @@ test('native textarea and mentions edit areas use shared tracks without changing
   }
 });
 
-test('suggestions, tree selections, time columns and cascader columns share overlay tracks', async ({
+test('suggestions and cascaders share overlay tracks while time columns reserve gutters', async ({
   page,
 }) => {
   for (const name of ['Suggestions', 'Tree selection', 'Cascading selection', 'Time selection']) {
@@ -100,11 +100,12 @@ test('suggestions, tree selections, time columns and cascader columns share over
     for (const list of await popup.getByRole('listbox').all())
       await expect(list.getByRole('scrollbar')).toHaveCount(0);
     if (name === 'Time selection') {
-      const minutes = popup.locator('.leaf-time-picker__column').nth(1);
+      const minutes = popup.locator('.leaf-time-picker__column').first();
+      await expect(minutes.locator('..')).toHaveAttribute('data-persistent', '');
       await expect(minutes).toHaveCSS('scrollbar-width', 'none');
-      await minutes.getByRole('option', { name: '00', exact: true }).focus();
+      await minutes.getByRole('option', { name: '09', exact: true }).focus();
       await page.keyboard.press('End');
-      await expect(minutes.getByRole('option', { name: '59', exact: true })).toBeFocused();
+      await expect(minutes.getByRole('option', { name: '23', exact: true })).toBeFocused();
       await expect.poll(() => minutes.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
     }
     await page.keyboard.press('Escape');

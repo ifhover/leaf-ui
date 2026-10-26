@@ -92,7 +92,10 @@ test('compiled feedback components retain semantic assignments and the danger al
 
 test('compiled alert close and confirm error use their intended feedback roles', async () => {
   const rule = await compiledStyles('alert/alert.scss');
-  assert.equal(rule('.leaf-alert__close:hover').background, 'var(--leaf-color-option-hover)');
+  assert.equal(
+    rule('.leaf-alert__close:hover:not(:disabled)').background,
+    'var(--leaf-text-action-background)',
+  );
   const error = rule('.leaf-confirm-error');
   assert.equal(error.color, 'var(--leaf-color-danger-ink)');
   assert.equal(error.background, 'var(--leaf-danger-soft-background)');

@@ -11,9 +11,19 @@ export function ScrollbarFixture() {
     <div style={{ display: 'grid', gap: 32, paddingBottom: 1000 }}>
       <h1>Scrollbar acceptance</h1>
       <Scrollbar
+        persistent={new URLSearchParams(location.search).has('persistent')}
+        orientation={
+          (new URLSearchParams(location.search).get('axis') as 'vertical' | 'horizontal') ?? 'both'
+        }
+        size={new URLSearchParams(location.search).has('small') ? 'sm' : 'md'}
         height={200}
         aria-label="Both axes"
-        style={{ width, maxWidth: '100%', background: 'var(--leaf-color-surface-muted)' }}
+        style={{
+          width,
+          maxWidth: '100%',
+          background: 'var(--leaf-color-surface-muted)',
+          direction: new URLSearchParams(location.search).has('rtl') ? 'rtl' : undefined,
+        }}
       >
         <div style={{ width: 900 }}>
           {Array.from({ length: 30 }, (_, index) => (

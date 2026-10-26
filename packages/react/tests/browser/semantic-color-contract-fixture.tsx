@@ -30,7 +30,7 @@ function SemanticSamples({ name }: { name: string }) {
           <Badge
             key={`badge-${tone}`}
             count={8}
-            status={tone}
+            color={`var(--leaf-color-${tone})`}
             aria-label={`${name} ${tone} badge`}
             data-testid={`${name}-badge-${tone}`}
           />

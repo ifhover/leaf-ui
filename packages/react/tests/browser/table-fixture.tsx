@@ -2,15 +2,14 @@ import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
 import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
-import { TableGrouped, TableServer } from '../../../../apps/docs/src/examples/table/advanced';
-import { TableAppearance } from '../../../../apps/docs/src/examples/table/appearance';
-import {
-  TableBasic,
-  TableSelection,
-  TableStates,
-} from '../../../../apps/docs/src/examples/table/basic';
-import { TableColumns, TableData } from '../../../../apps/docs/src/examples/table/data';
-import { TableReordering } from '../../../../apps/docs/src/examples/table/reordering';
+import { TableColumns as DocumentedTableColumns } from '../../../../apps/docs/src/examples/en/table/columns';
+import { TableGrouped } from '../../../../apps/docs/src/examples/en/table/grouped';
+import { TableReordering } from '../../../../apps/docs/src/examples/en/table/reordering';
+import { TableServer } from '../../../../apps/docs/src/examples/en/table/server';
+import { TableSimple } from '../../../../apps/docs/src/examples/en/table/simple';
+import { TableAppearance } from './table-appearance-fixture';
+import { TableBasic, TableSelection, TableStates } from './table-basic-fixture';
+import { TableColumns, TableData } from './table-data-fixture';
 
 const records = Array.from({ length: 10000 }, (_, index) => ({
   id: String(index),
@@ -23,6 +22,45 @@ const records = Array.from({ length: 10000 }, (_, index) => ({
 type RecordRow = (typeof records)[number];
 const apiRecords = records.slice(0, 14);
 const apiColumns: ColumnDef<RecordRow>[] = [{ accessorKey: 'name', header: 'Name' }];
+
+function PinningOverflowFixture() {
+  const [narrow, setNarrow] = useState(true);
+  const [pinningChanges, setPinningChanges] = useState(0);
+  const table = useDataTable({
+    data: apiRecords,
+    columns: [
+      { accessorKey: 'name', header: 'Name', size: 200, minSize: 160, maxSize: 320 },
+      { accessorKey: 'description', header: 'Description', size: 420 },
+      { id: 'projects', header: 'Projects', accessorFn: (row) => row.id, size: 100 },
+    ],
+    rowKey: 'id',
+    localPagination: false,
+    options: {
+      state: { columnPinning: { left: ['name'], right: ['projects'] } },
+      onColumnPinningChange: () => setPinningChanges((count) => count + 1),
+    },
+  });
+  return (
+    <section aria-label="Pinning overflow demo">
+      <Button onClick={() => setNarrow((value) => !value)}>Toggle container width</Button>
+      <Button onClick={() => table.getColumn('projects')?.toggleVisibility()}>
+        Toggle projects
+      </Button>
+      <Button onClick={() => table.resetColumnSizing()}>Reset column widths</Button>
+      <output aria-label="Pinning state">{JSON.stringify(table.getState().columnPinning)}</output>
+      <output aria-label="Pinning changes">{pinningChanges}</output>
+      <div style={{ width: narrow ? 293 : 500, maxWidth: '100%' }}>
+        <DataTable
+          table={table}
+          aria-label="Overflowing pinned columns"
+          pagination={false}
+          maxHeight={180}
+          resizable
+        />
+      </div>
+    </section>
+  );
+}
 
 function ApiTable() {
   const [pagination, setPagination] = useState(true);
@@ -129,7 +167,6 @@ function LayeredTableFixture() {
         columns={columns}
         rowKey="id"
         aria-label="Layered records"
-        caption="Project records"
         style={{ height: 280 }}
         pagination={false}
         toolbar={<Button onClick={() => setLongHeading((value) => !value)}>Change heading</Button>}
@@ -139,7 +176,56 @@ function LayeredTableFixture() {
   );
 }
 
+function SimpleTableFixture() {
+  const [simple, setSimple] = useState(true);
+  return (
+    <section aria-label="Simple table demo">
+      <h1>Simple table</h1>
+      <TableSimple />
+      <Button onClick={() => setSimple((value) => !value)}>Toggle simple appearance</Button>
+      <ConfigProvider
+        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
+        theme={{
+          tokens: { borderWidth: 3 },
+          components: { Table: { shadow: '0 4px 12px currentColor' } },
+        }}
+      >
+        <DataTable
+          variant={simple ? undefined : 'layered'}
+          data={apiRecords}
+          columns={[
+            {
+              header: 'Records',
+              columns: [
+                { accessorKey: 'name', header: 'Name', size: 220 },
+                {
+                  accessorKey: 'description',
+                  header: 'Description',
+                  size: 450,
+                  meta: { align: 'end' },
+                },
+              ],
+            },
+          ]}
+          rowKey="id"
+          aria-label="Simple pinned records"
+          options={{ enableSorting: true, initialState: { columnPinning: { left: ['name'] } } }}
+          localPagination={false}
+          selection="multiple"
+          pagination={false}
+          maxHeight={220}
+        />
+      </ConfigProvider>
+    </section>
+  );
+}
+
 export function TableFixture() {
+  if (new URLSearchParams(location.search).has('pinning-overflow'))
+    return <PinningOverflowFixture />;
+  if (new URLSearchParams(location.search).has('current-columns'))
+    return <DocumentedTableColumns />;
+  if (new URLSearchParams(location.search).has('simple')) return <SimpleTableFixture />;
   if (new URLSearchParams(location.search).has('layered')) return <LayeredTableFixture />;
   return (
     <div style={{ display: 'grid', gap: 32, maxWidth: 1000, minWidth: 0 }}>
@@ -172,16 +258,16 @@ export function TableFixture() {
       </section>
       <section aria-label="Grouped table demo">
         <h2>Grouping</h2>
-        <TableGrouped english />
+        <TableGrouped />
       </section>
       <section aria-label="Server table demo">
         <h2>Server data</h2>
-        <TableServer english />
+        <TableServer />
       </section>
       <VirtualTable />
       <section aria-label="Reordering table demo">
         <h2>Row and column reordering</h2>
-        <TableReordering english />
+        <TableReordering />
       </section>
       <section aria-label="State table demo">
         <h2>Data states</h2>

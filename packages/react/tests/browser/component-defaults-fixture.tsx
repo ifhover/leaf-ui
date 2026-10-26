@@ -3,7 +3,6 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
-  CommandPalette,
   ConfigProvider,
   DatePicker,
   Form,
@@ -44,7 +43,6 @@ function ComponentDefaultsBoundaries() {
   const [submits, setSubmits] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pageSize, setPageSize] = useState(10);
-  const [commandsOpen, setCommandsOpen] = useState(false);
   return (
     <section aria-label="Component boundaries">
       <h2>Component boundaries</h2>
@@ -82,24 +80,7 @@ function ComponentDefaultsBoundaries() {
               </Space>
             </form>
           </ConfigProvider>
-          <Button
-            type="button"
-            loading={false}
-            disabled={false}
-            onClick={() => setCommandsOpen(true)}
-          >
-            Open boundary commands
-          </Button>
         </Space>
-        <CommandPalette
-          open={commandsOpen}
-          onOpenChange={setCommandsOpen}
-          shortcut={false}
-          items={[
-            { key: 'copy', label: 'Copy command' },
-            { key: 'save', label: 'Save command' },
-          ]}
-        />
       </ConfigProvider>
     </section>
   );

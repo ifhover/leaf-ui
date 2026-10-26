@@ -68,6 +68,7 @@ for (const appearance of ['light', 'dark']) {
         const ordinaryInk = (
           await paint(reference.getByRole('option', { name: 'Bob', exact: true }))
         ).color;
+        expect(ordinaryInk).toBe(fullInk);
         expect(ordinaryInk).not.toBe((await paint(menuCandidate)).color);
         await page.keyboard.press('Escape');
         const tree = page.getByRole('tree', { name: 'Selected tree', exact: true });
@@ -287,14 +288,19 @@ for (const appearance of ['light', 'dark']) {
         .toBe('rgba(0, 0, 0, 0)');
       await expect(selected.locator('.leaf-dropdown__check')).toHaveCount(1);
       await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      const fullInk = (await paint(selected)).color;
+      await expect(candidate).toHaveCSS('color', fullInk);
       await candidate.hover();
+      await expect(candidate).toHaveCSS('color', fullInk);
       await expect.poll(async () => (await menuFeedback(candidate)).background).toBe(neutral);
       await expect.poll(async () => (await menuFeedback(candidate)).opacity).toBe(1);
       await expect(candidate).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expect
         .poll(async () => (await menuFeedback(selected)).background)
         .toBe('rgba(0, 0, 0, 0)');
-      await panel.getByRole('menuitem', { name: 'Disabled filter' }).hover();
+      const disabled = panel.getByRole('menuitem', { name: 'Disabled filter' });
+      await disabled.hover();
+      await expect(disabled).toHaveCSS('color', await tokenColor(panel, '--leaf-color-text-muted'));
       await expect
         .poll(
           async () =>
@@ -343,8 +349,6 @@ for (const appearance of ['light', 'dark']) {
       const select = page.getByRole('combobox', { name: 'Radius select', exact: true });
       await select.click();
       const selectPanel = page.locator('.leaf-select__panel');
-      const neutral = await tokenColor(selectPanel, '--leaf-color-option-hover');
-      const primary = await tokenColor(selectPanel, '--leaf-color-primary-soft');
       await selectPanel.getByRole('option', { name: 'Bob', exact: true }).hover();
       await expect
         .poll(() => menuFeedback(selectPanel.getByRole('option', { name: 'Bob', exact: true })))
@@ -356,6 +360,9 @@ for (const appearance of ['light', 'dark']) {
       await autocomplete.press('ArrowDown');
       const suggestions = page.locator('.leaf-autocomplete__panel');
       const suggestion = suggestions.getByRole('option', { name: 'Bob', exact: true });
+      const suggestionInk = await tokenColor(suggestions, '--leaf-color-text');
+      await expect(suggestion).toHaveCSS('color', suggestionInk);
+      await expect(suggestions.locator('[aria-selected="true"]')).toHaveCSS('color', suggestionInk);
       await suggestion.hover();
       await expect(suggestions.locator('.leaf-floating__highlight')).toHaveCount(0);
       await expect
@@ -375,6 +382,9 @@ for (const appearance of ['light', 'dark']) {
       await mentions.fill('@');
       const mentionsPanel = page.locator('.leaf-mentions__panel');
       const mention = mentionsPanel.getByRole('option', { name: 'Bob', exact: true });
+      const mentionInk = await tokenColor(mentionsPanel, '--leaf-color-text');
+      await expect(mention).toHaveCSS('color', mentionInk);
+      await expect(mentionsPanel.locator('[aria-selected="true"]')).toHaveCSS('color', mentionInk);
       await mention.hover();
       await expect
         .poll(() => menuFeedback(mention))
@@ -388,6 +398,12 @@ for (const appearance of ['light', 'dark']) {
       await page.getByRole('combobox', { name: 'Radius cascader' }).click();
       const cascader = page.locator('.leaf-cascader__panel');
       const engineering = cascader.getByRole('option', { name: 'Engineering', exact: true });
+      const cascaderInk = await tokenColor(cascader, '--leaf-color-text');
+      await expect(engineering).toHaveCSS('color', cascaderInk);
+      await expect(cascader.getByRole('option', { name: 'Design', exact: true })).toHaveCSS(
+        'color',
+        cascaderInk,
+      );
       await engineering.hover();
       await expect
         .poll(() => menuFeedback(engineering))
@@ -428,11 +444,13 @@ for (const appearance of ['light', 'dark']) {
       const hours = page.locator('.leaf-time-picker__column').first();
       const nextHour = hours.getByRole('option', { name: '10', exact: true });
       await nextHour.hover();
-      await expect(nextHour).toHaveCSS('background-color', neutral);
-      await expect(hours.locator('.leaf-time-picker__selection')).toHaveCSS(
-        'background-color',
-        primary,
-      );
+      await expect
+        .poll(() => menuFeedback(nextHour))
+        .toEqual({ background: 'rgba(0, 0, 0, 0.04)', opacity: 1 });
+      const savedHour = hours.locator('[aria-selected="true"]');
+      await expect(savedHour).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(savedHour.locator('.leaf-time-picker__check')).toHaveCSS('opacity', '1');
+      await expect(hours.locator('.leaf-time-picker__selection')).toHaveCount(0);
       await page.keyboard.press('Escape');
 
       const menu = page.getByRole('navigation', { name: 'Radius menu', exact: true });

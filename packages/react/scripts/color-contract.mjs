@@ -69,7 +69,7 @@ const NUMERIC_DERIVED_TOKEN = new RegExp(
 const FIELD_INCLUDE = /@include\s+(?:[a-z0-9_-]+\.)?field\s*\(/iu;
 const PRIMARY_FIELD_INCLUDE = (component) =>
   new RegExp(
-    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*,\\s*['"]primary['"]\\s*\\)`,
+    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*(?:,\\s*['"]primary['"]\\s*)?\\)`,
     'iu',
   );
 const FIELD_PAINT_DECLARATION =
@@ -688,16 +688,19 @@ function validateFieldFamily(scan, baseline, errors) {
         `${file} is a new field-family consumer; register it in fieldFamily.consumers after review.`,
       );
   }
-  for (const file of baseline.fieldFamily?.primaryFocusConsumers ?? []) {
+  const primaryConsumers = baseline.fieldFamily?.primaryFocusConsumers ?? [];
+  const primaryEntries = Array.isArray(primaryConsumers)
+    ? primaryConsumers.map((file) => [file, path.posix.basename(path.posix.dirname(file))])
+    : Object.entries(primaryConsumers);
+  for (const [file, component] of primaryEntries) {
     const source = scan.contents?.get?.(file);
     if (!source) {
       errors.push(`${file} is missing from the field-family primary-focus contract.`);
       continue;
     }
-    const component = path.posix.basename(path.posix.dirname(file));
     if (!PRIMARY_FIELD_INCLUDE(component).test(source))
       errors.push(
-        `${file} must call @include mixins.field('${component}', 'primary') for focused/open paint.`,
+        `${file} must use the shared primary field recipe for ${component}, with default or explicit primary focus.`,
       );
     if (/--leaf-field-(?:color|rest-border)\s*:/u.test(source))
       errors.push(
@@ -711,7 +714,7 @@ function validateFieldFamily(scan, baseline, errors) {
     const include = source.match(
       /@include\s+(?:[a-z0-9_-]+\.)?field\(\s*['"]([^'"]+)['"]\s*(?:,\s*['"]([^'"]+)['"]\s*)?\)/iu,
     );
-    if (!include || include[1] !== component || (include[2] && include[2] !== 'neutral'))
+    if (!include || include[1] !== component || include[2] !== 'neutral')
       errors.push(`${file} must retain the shared neutral field variant for ${component}.`);
     if (/--leaf-field-(?:color|rest-border)\s*:/u.test(source))
       errors.push(`${file} must not redefine field-shell color; use the shared field recipe.`);
@@ -989,7 +992,7 @@ Optional override tokens and unknown fallback names remain visible in the audit.
 
 ${fieldLines.join('\n')}
 
-Input and Select must call \`mixins.field(..., 'primary')\` and must not redefine \`--leaf-field-color\` or \`--leaf-field-rest-border\`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
+All field shells must use the shared primary-focus default via \`mixins.field(component)\` and must not redefine \`--leaf-field-color\` or \`--leaf-field-rest-border\`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
 
 ## Undefined or optional tokens
 
@@ -1031,7 +1034,7 @@ ${formatExceptions(baseline.exceptions)}
 
 ## Ongoing controls
 
-1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. Outer neutral-focus fields retain their contract; Input/Select and the private native color input select primary focus.
+1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells and the private native color input inherit primary focus from the shared field default; Mentions reuses Textarea. Explicit neutral focus is reserved for reviewed exceptions.
 2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
 3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
 4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching \`on-*\` content. Where a dark custom base needs edge separation, \`primary-indicator\` provides the boundary rather than replacing the fill.

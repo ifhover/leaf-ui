@@ -42,12 +42,20 @@ test('JS configuration updates bases and all explicit foregrounds; black outline
   const scope = page.getByTestId('js-color-config');
   const outline = page.getByTestId('black-outline');
   await outline.hover();
+  const hoverBorder = new TinyColor(
+    await outline.evaluate((node) =>
+      getComputedStyle(node).getPropertyValue('--leaf-color-border-hover'),
+    ),
+  ).toRgbString();
+  await expect(outline).toHaveCSS('border-top-color', hoverBorder);
   await page.mouse.down();
   const border = await outline.evaluate((node) => {
     const style = getComputedStyle(node);
     return { border: style.borderTopColor, surface: style.backgroundColor };
   });
-  expect(readability(border.border, border.surface)).toBeGreaterThanOrEqual(3);
+  expect(border.border).toBe(hoverBorder);
+  const text = await outline.evaluate((node) => getComputedStyle(node).color);
+  expect(readability(text, border.surface)).toBeGreaterThanOrEqual(4.5);
   await page.mouse.up();
   await page.getByTestId('change-js-colors').click();
   await expect(page.getByTestId('js-solid-button')).toHaveCSS(
@@ -90,7 +98,9 @@ test('dark solid selections pair the original fill with its own foreground', asy
   await expect(thumb).toHaveCSS('color', 'rgb(24, 24, 27)');
   await expect(scope.locator('.leaf-switch__spinner')).toBeVisible();
   const finishedStep = scope.locator('[data-status="finish"] .leaf-steps__icon');
-  const calendarDay = scope.locator('.leaf-date-picker__day--selected .leaf-calendar__cell-label');
+  const calendarDay = scope.locator(
+    '.leaf-calendar-view__cell[aria-selected="true"] .leaf-calendar-view__number',
+  );
   for (const label of [finishedStep, calendarDay]) {
     await expect(label).toHaveCSS('background-color', 'rgb(24, 24, 27)');
     await expect(label).toHaveCSS('color', 'rgb(255, 255, 255)');

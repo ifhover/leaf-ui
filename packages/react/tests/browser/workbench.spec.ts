@@ -61,11 +61,21 @@ for (const appearance of ['light', 'dark']) {
         };
       });
       await action.hover();
-      await expect(action).toHaveCSS('border-color', rest.border);
+      await expect(action).toHaveCSS('border-color', await tokenColor('--leaf-color-border-hover'));
       await page.mouse.down();
-      await expect(action).not.toHaveCSS('border-color', rest.border);
+      await expect(action).toHaveCSS('border-color', await tokenColor('--leaf-color-border-hover'));
       await expect(action).toHaveCSS('color', rest.color);
-      await expect(action).toHaveCSS('background-color', rest.background);
+      await expect(action).toHaveCSS(
+        'background-color',
+        await action.evaluate((node) => {
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--leaf-button-active-background)';
+          node.append(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        }),
+      );
       await expect(action).toHaveCSS('box-shadow', rest.shadow);
       await page.mouse.up();
       await page.mouse.move(0, 0);

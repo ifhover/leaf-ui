@@ -119,8 +119,8 @@ for (const appearance of ['light', 'dark']) {
     await page.getByRole('combobox', { name: 'Radius time', exact: true }).click();
     const time = page.locator('.leaf-time-picker__panel');
     const timeOption = time.locator('.leaf-floating__option').first();
-    await expectInset(time, timeOption, 11, 8);
-    await expectMatching(timeOption, time.locator('.leaf-time-picker__selection').first());
+    await expectChoiceCorners(time, timeOption);
+    await expect(time.locator('.leaf-time-picker__selection')).toHaveCount(0);
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Radius dropdown', exact: true }).click();
@@ -132,8 +132,8 @@ for (const appearance of ['light', 'dark']) {
     await page.keyboard.press('Escape');
 
     await page.getByRole('button', { name: 'Radius color', exact: true }).click();
-    const formats = page.locator('.leaf-color-picker__formats');
-    await expectInset(formats, formats.getByRole('button').first());
+    const formats = page.locator('.leaf-color-picker__formats .leaf-tabs__list');
+    await expectInset(formats, formats.getByRole('tab').first());
     await page.keyboard.press('Escape');
 
     const tabs = page.locator('.leaf-tabs__list');
@@ -304,20 +304,25 @@ test('open portals follow live theme changes and preserve nested overrides', asy
   await expect(panel).toHaveCSS('border-radius', '4px');
 });
 
-test('time controls inside range and datetime views keep a local semantic curve', async ({
+test('time rows and date cells share option curves while endpoint tabs keep flush dividers', async ({
   page,
 }) => {
   await page.goto('/?fixture=radius');
   await page.getByRole('combobox', { name: 'Radius time range' }).click();
   const range = page.locator('.leaf-time-range-picker__panel');
-  const rangeOption = range.locator('.leaf-floating__option').first();
-  await expect(rangeOption).toHaveCSS('border-radius', '5px');
-  await expectMatching(rangeOption, range.locator('.leaf-time-picker__selection').first());
+  await expectChoiceCorners(range, range.locator('.leaf-floating__option').first());
   await page.keyboard.press('Escape');
   await page.getByRole('combobox', { name: 'Radius datetime' }).click();
   const datetime = page.locator('.leaf-datetime-panel');
-  await datetime.locator('.leaf-picker-time-toggle').click();
-  const datetimeOption = datetime.locator('.leaf-floating__option').first();
-  await expect(datetimeOption).toHaveCSS('border-radius', '5px');
-  await expectMatching(datetimeOption, datetime.locator('.leaf-time-picker__selection').first());
+  await expectChoiceCorners(datetime, datetime.locator('.leaf-floating__option').first());
+  await expect(datetime.locator('.leaf-date-picker__day').first()).toHaveCSS(
+    'border-radius',
+    '8px',
+  );
+  await page.keyboard.press('Escape');
+  await page.getByRole('combobox', { name: 'Radius date range' }).click();
+  const endpoints = page.locator('.leaf-range-panel__endpoints');
+  await expect(endpoints).toHaveCSS('border-radius', '0px');
+  await expect(endpoints.getByRole('button').first()).toHaveCSS('border-radius', '0px');
+  await expect(endpoints.getByRole('button').last()).toHaveCSS('border-inline-start-width', '1px');
 });

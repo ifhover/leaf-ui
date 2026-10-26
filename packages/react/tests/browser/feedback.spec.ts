@@ -36,20 +36,19 @@ test('modal form shares the footer edge and uses balanced spacing', async ({ pag
   const input = await dialog.locator('.leaf-input').boundingBox();
   const save = await dialog.getByRole('button', { name: '保存', exact: true }).boundingBox();
   expect((input?.x ?? 0) + (input?.width ?? 0)).toBeCloseTo((save?.x ?? 0) + (save?.width ?? 0), 0);
-  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '16px');
-  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '12px');
+  await expect(dialog.locator('.leaf-modal__header')).toHaveCSS('padding-top', '20px');
+  await expect(dialog.locator('.leaf-modal__footer')).toHaveCSS('padding-bottom', '20px');
   const heading = await dialog.locator('h2').boundingBox();
   const form = await dialog.locator('form').boundingBox();
   const select = await dialog.locator('.leaf-select').boundingBox();
   const titleGap = (form?.y ?? 0) - (heading?.y ?? 0) - (heading?.height ?? 0);
   const footerGap = (save?.y ?? 0) - (select?.y ?? 0) - (select?.height ?? 0);
   expect(titleGap).toBeGreaterThanOrEqual(16);
-  expect(footerGap).toBeGreaterThanOrEqual(24);
-  expect(footerGap).toBeLessThanOrEqual(36);
+  expect(footerGap).toBeCloseTo(20, 0);
 });
 
 for (const surface of ['modal', 'drawer']) {
-  test(`${surface} animates its blur on open, reopen and close, and can disable it`, async ({
+  test(`${surface} defaults to a gray mask without blur and retains explicit opt-in`, async ({
     page,
   }) => {
     await page.goto('/?fixture=feedback');
@@ -59,44 +58,19 @@ for (const surface of ['modal', 'drawer']) {
     });
     const backdrop = page.locator(`.leaf-${surface}-backdrop`);
     for (let cycle = 0; cycle < 2; cycle++) {
-      await page.evaluate(() => {
-        document.documentElement.dataset.blurTransition = '';
-        document.addEventListener(
-          'animationstart',
-          (event) => {
-            if (
-              event instanceof AnimationEvent &&
-              ['leaf-backdrop-in', 'leaf-backdrop-webkit'].includes(event.animationName)
-            ) {
-              document.documentElement.dataset.blurTransition = 'started';
-            }
-          },
-          { once: false },
-        );
-      });
       await trigger.click();
-      await expect(page.locator('html')).toHaveAttribute('data-blur-transition', 'started');
-      // No ancestor may form an opacity backdrop root during the blur transition.
-      expect(
-        await backdrop.evaluate((node) => {
-          for (let parent = node.parentElement; parent; parent = parent.parentElement) {
-            if (Number(getComputedStyle(parent).opacity) < 1) return false;
-          }
-          return true;
-        }),
-      ).toBe(true);
-      await expect(backdrop).toHaveCSS(
-        'backdrop-filter',
-        surface === 'modal' ? 'blur(12px)' : 'blur(3px)',
-        { timeout: 20_000 },
-      );
+      await expect(backdrop).toHaveCSS('backdrop-filter', 'none');
+      await expect(backdrop).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.24)');
+      await expect(backdrop).toHaveCSS('transition-property', 'opacity');
       await page.keyboard.press('Escape');
-      await expect(page.locator(`.leaf-${surface}-mask`)).toBeHidden({ timeout: 20_000 });
+      await expect(page.locator(`.leaf-${surface}-mask`)).toBeHidden();
     }
     await page.getByRole('button', { name: 'Toggle mask blur' }).click();
     await trigger.click();
-    await expect(backdrop).toHaveCSS('backdrop-filter', 'none');
-    await expect(backdrop).toHaveCSS('transition-property', 'opacity');
+    await expect(backdrop).toHaveCSS(
+      'backdrop-filter',
+      surface === 'modal' ? 'blur(12px)' : 'blur(3px)',
+    );
   });
 }
 

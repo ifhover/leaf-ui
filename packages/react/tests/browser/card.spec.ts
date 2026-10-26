@@ -625,7 +625,7 @@ for (const appearance of ['light', 'dark']) {
         expect(pair.standalone).toEqual(pair.embedded);
         expect(pair.standalone.fontSize).toBe(sizes[index]?.fontSize);
         expect(pair.standalone.lineHeight).toBe(sizes[index]?.lineHeight);
-        expect(pair.standalone.fontWeight).toBe('700');
+        expect(pair.standalone.fontWeight).toBe(index === 2 ? '700' : '500');
         expect(pair.standalone.margin).toBe('0px');
         expect(pair.standalone.overflowWrap).toBe('anywhere');
         expect(pair.standaloneTag).toBe('H3');

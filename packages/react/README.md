@@ -1,6 +1,6 @@
 # Leaf UI
 
-A lightweight React component library with a green default theme, ConfigProvider theming and reusable CSS variables. Supports React 18 and 19.
+A quiet, consistent React component library for tools and data-heavy interfaces, with ConfigProvider theming and reusable CSS variables. Supports React 18 and 19.
 
 ## Usage
 
@@ -38,14 +38,12 @@ Browser component entries automatically load theme variables, shared popup style
 - Radio / RadioGroup: mutually exclusive native options, generated group names, keyboard navigation and controlled/default values.
 - Switch: native checkbox with switch semantics, loading and keyboard/form support.
 - Select: themed floating listbox, keyboard selection, clearable values, disabled options and form validation. onChange receives a string value and optional option.
-- DatePicker: calendar with local Date values, inclusive day bounds, keyboard navigation and clearing.
-- TimePicker: 12/24-hour clocks, optional seconds, configurable steps and clearing.
+- DatePicker: dates, times and date-times through picker; segmented input, shared time columns and clearing.
 - AutoComplete: free text input, filtered or dynamic suggestions, composition-aware keyboard selection.
 - Cascader: hierarchical options, full leaf paths, disabled branches and keyboard navigation.
 - Form / FormField: native submission, labels, help, validation and shared automatic or fixed label widths.
 - ConfigProvider: scoped themes, derived sizes, appearance, typography, motion and Chinese/English UI with nested inheritance.
-- DateTimePicker: calendar and time selection, optional seconds, draft confirmation and bounds.
-- DateRangePicker: year, month, ISO week, date and date-time ranges with hover previews and text input.
+- DateRangePicker: calendar, time and sequential date-time ranges through picker, with shared fields and panels.
 - Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
 - Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
 - Alert: inline success, info, warning and danger feedback.
@@ -56,7 +54,7 @@ Browser component entries automatically load theme variables, shared popup style
 - Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
 - DataTable: sorting, filtering, selection, grouping, pagination and virtualization through a TanStack Table instance. Import it from `@ifhover/leaf-ui/table`.
-- Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
+- Transfer / InputOTP / InputMask: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
 - Upload / FileList: upload progress and cancellation, file metadata, downloads and browser media previews.
 
@@ -144,9 +142,9 @@ Framework builds load styles automatically. Use the same initial theme during se
 
 ## Forms
 
-All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, TimePicker submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateTimePicker, DateRangePicker, TimePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
+All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, DatePicker with picker="time" submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateRangePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
 
-Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DateTimePicker submits YYYY-MM-DD HH:mm:ss; DateRangePicker submits a start/end string in the selected granularity.
+Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DatePicker with picker="datetime" submits YYYY-MM-DD HH:mm (or HH:mm:ss with showSeconds); DateRangePicker submits a start/end string in the selected granularity.
 
 ## More components
 

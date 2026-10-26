@@ -24,7 +24,7 @@ test('compiled solid selections retain base fills, foregrounds and visible bound
   for (const [file, selector, border] of [
     [
       'calendar/calendar.scss',
-      '.leaf-calendar-view .leaf-date-picker__day--selected:not(:disabled) .leaf-calendar__cell-label',
+      '.leaf-calendar-view__cell[aria-selected=true] .leaf-calendar-view__day:not(:disabled) .leaf-calendar-view__number',
       'box-shadow',
     ],
     ['datepicker/datepicker.scss', '.leaf-date-picker__day--selected', 'box-shadow'],
@@ -41,6 +41,27 @@ test('compiled solid selections retain base fills, foregrounds and visible bound
 test('compiled tree drag preview keeps the medium shadow role', async () => {
   const rule = await compiledStyles('tree/tree.scss');
   assert.equal(rule('.leaf-tree__drag-preview')['box-shadow'], 'var(--leaf-shadow-md)');
+});
+
+test('Menu popup and inline rows share text and interaction paint', async () => {
+  const menu = await compiledStyles('menu/menu.scss');
+  for (const selector of [
+    '.leaf-menu__item',
+    '.leaf-menu__popup.leaf-dropdown .leaf-floating__option',
+  ]) {
+    assert.equal(
+      menu(selector).color,
+      'var(--leaf-menu-item-color,var(--leaf-menu-unselected-color))',
+    );
+    assert.equal(
+      menu(
+        `${selector}:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled=true])`,
+      ).background,
+      'transparent',
+    );
+  }
+  assert.equal(menu('.leaf-menu__popup.leaf-dropdown').color, menu('.leaf-menu').color);
+  assert.equal(menu('.leaf-menu__popup.leaf-dropdown .leaf-dropdown__arrow').color, 'inherit');
 });
 
 test('default Menu retains its own neutral palette while choice rows share Select feedback', async () => {
@@ -60,11 +81,7 @@ test('default Menu retains its own neutral palette while choice rows share Selec
     ['dropdown/dropdown.scss', '.leaf-dropdown:not(.leaf-menu__popup) .leaf-floating__option'],
   ]) {
     const rule = await compiledStyles(file);
-    assert.equal(
-      rule(selector).color,
-      'color-mix(in srgb,currentColor 70%,var(--leaf-color-surface))',
-      file,
-    );
+    assert.equal(rule(selector).color, 'inherit', file);
     const layer = rule(`${selector}::before`);
     assert.equal(layer.background, 'transparent', file);
     assert.equal(layer.inset, '0px', file);
@@ -80,6 +97,11 @@ test('default Menu retains its own neutral palette while choice rows share Selec
     assert.equal(
       rule(`${selector}:is([aria-selected=true], [aria-checked=true], [data-selected])`).color,
       'inherit',
+      file,
+    );
+    assert.equal(
+      rule(`${selector}:is(:disabled, [aria-disabled=true], [data-disabled])`).color,
+      'var(--leaf-color-text-muted)',
       file,
     );
   }

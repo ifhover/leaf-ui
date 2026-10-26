@@ -147,9 +147,6 @@ const components = [
   ['FloatButton', { label: 'Help' }, null, /<button/],
   ['FloatButtonGroup', {}, 'Actions', /<fieldset/],
   ['Mentions', { options: [{ value: 'alice' }] }, null, /<textarea/],
-  ['AppBar', {}, 'Header', /<header/],
-  ['Toolbar', {}, 'Actions', /role="toolbar"/],
-  ['BottomNavigation', { items: [{ key: 'home', label: 'Home' }] }, null, /<nav/],
   ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
   ['Card', { title: 'Project' }, 'Details', /leaf-card/],
   ['CardTitle', { level: 2, size: 'lg' }, 'Section title', /<h2 class="leaf-card-title/],
@@ -221,10 +218,15 @@ const components = [
   ['Switch', { defaultChecked: true }, 'Notifications', /role="switch"/],
   ['Select', { options: [{ value: 'design', label: 'Design' }] }, null, /role="combobox"/],
   ['DatePicker', { defaultValue: new Date(2026, 9, 15) }, null, /role="combobox"/],
-  ['TimePicker', { defaultValue: '09:30' }, null, /role="combobox"/],
+  ['DatePicker', { picker: 'time', defaultValue: '09:30' }, null, /role="combobox"/],
   ['AutoComplete', { options: [{ value: 'Leaf' }] }, null, /role="combobox"/],
   ['Cascader', { options: [{ value: 'design', label: 'Design' }] }, null, /role="combobox"/],
-  ['DateTimePicker', { defaultValue: new Date(2026, 9, 15, 9, 30) }, null, /role="combobox"/],
+  [
+    'DatePicker',
+    { picker: 'datetime', defaultValue: new Date(2026, 9, 15, 9, 30) },
+    null,
+    /role="combobox"/,
+  ],
   [
     'DateRangePicker',
     { defaultValue: [new Date(2026, 9, 15), new Date(2026, 9, 20)] },
@@ -283,7 +285,12 @@ const components = [
   ],
   ['Transfer', { items: [{ key: 'a', label: 'Ada' }] }, null, /leaf-transfer/],
   ['InputOTP', { name: 'otp', defaultValue: '123' }, null, /one-time-code/],
-  ['TimeRangePicker', { defaultValue: ['09:00', '18:00'] }, null, /role="combobox"/],
+  [
+    'DateRangePicker',
+    { picker: 'time', defaultValue: ['09:00', '18:00'] },
+    null,
+    /role="combobox"/,
+  ],
   ['InputMask', { mask: '000-000', defaultValue: '123' }, null, /leaf-input/],
   ['Notification', { title: 'Saved', open: true }, null, /<span/, false],
   ['NotificationProvider', {}, 'Notifications', /Notifications/, false],
@@ -358,16 +365,26 @@ for (const [format, api] of [
     'useMessage',
     'useNotification',
     'useLoadingBar',
+    'useImagePreview',
     'moveTreeNode',
   ])
     assert.equal(typeof api[name], 'function', `${format} must export ${name}`);
   assert.equal(typeof api.Tour, 'function');
-  assert.equal(typeof api.CommandPalette, 'function');
   assert.equal(api.ResizablePanels, api.Splitter);
   assert.equal(api.FAB, api.FloatButton);
   assert.equal(typeof api.ConfirmProvider, 'function', `${format} must export ConfirmProvider`);
   assert.equal(api.Confirm, undefined, `${format} exposes confirmation only through its API`);
   assert.equal(api.Sortable, undefined, `${format} must not export the removed Sortable component`);
+  for (const name of [
+    'AppBar',
+    'Toolbar',
+    'BottomNavigation',
+    'CommandPalette',
+    'TimePicker',
+    'DateTimePicker',
+    'TimeRangePicker',
+  ])
+    assert.equal(api[name], undefined, `${format} must not export the removed ${name} component`);
   function ManagedFeedback() {
     const confirmation = api.useConfirm();
     const messages = api.useMessage();

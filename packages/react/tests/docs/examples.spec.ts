@@ -142,22 +142,20 @@ for (const english of [false, true]) {
     await expect(save).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
     const outlinedTags = preview.locator('.leaf-tag--outline');
     await expect(outlinedTags).toHaveCount(4);
-    for (const label of [save]) {
-      await expect(label).toHaveCSS('color', 'rgb(255, 255, 255)');
-    }
+    await expect(save).toHaveCSS('color', 'rgb(255, 255, 255)');
     await preview
       .getByRole('button', { name: english ? 'Use black text' : '改为黑字', exact: true })
       .click();
-    for (const label of [save]) {
-      await expect(label).toHaveCSS('color', 'rgb(0, 0, 0)');
-    }
+    await expect(save).toHaveCSS('color', 'rgb(0, 0, 0)');
+    await preview
+      .getByRole('button', { name: english ? 'Use white text' : '改为白字', exact: true })
+      .click();
+    await expect(save).toHaveCSS('color', 'rgb(255, 255, 255)');
     await expect(preview.locator('.leaf-card--layered')).toHaveCSS(
       'background-color',
       'rgb(244, 243, 239)',
     );
-    await expect(preview.locator('.leaf-tabs--segmented .leaf-tabs__list')).toHaveCSS(
-      'background-color',
-      'rgb(244, 243, 239)',
-    );
+    for (const track of await preview.locator('.leaf-tabs--segmented .leaf-tabs__list').all())
+      await expect(track).toHaveCSS('background-color', 'rgb(244, 243, 239)');
   });
 }

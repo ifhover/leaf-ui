@@ -187,7 +187,8 @@ for (const [mode, p] of Object.entries(palettes)) {
             ? p['border-hover']
             : p.border
           : undefined;
-      const color = variant === 'solid' ? p['on-primary'] : variant === 'link' ? p.primary : p.text;
+      const color =
+        variant === 'solid' ? p['on-primary'] : variant === 'link' ? p['primary-ink'] : p.text;
       const shadow = variant === 'outline' ? 'url(#button-outline-shadow)' : '';
       components += `<g id="button-${variant}-${state.toLowerCase()}" opacity="${state === 'Disabled' ? 0.45 : 1}">${rect(x, y, 136, controlHeight, bg, 8, border, shadow)}${text(x + 24, y + controlHeight / 2 + 5, state, 14, color, 500)}</g>`;
     }

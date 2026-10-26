@@ -10,7 +10,6 @@ import {
   Splitter,
   Switch,
   Tabs,
-  TimePicker,
 } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
@@ -27,7 +26,7 @@ function FamilySamples({ name }: { name: string }) {
       />
       <ColorPicker aria-label={`${name} color`} defaultValue="#336699" />
       <DatePicker aria-label={`${name} date`} panelVariant="card" />
-      <TimePicker aria-label={`${name} time`} defaultValue="10:30" />
+      <DatePicker picker="time" aria-label={`${name} time`} defaultValue="10:30" />
       <Pagination total={50} />
       <Switch aria-label={`${name} switch`} />
       <Splitter
@@ -44,7 +43,7 @@ function FamilySamples({ name }: { name: string }) {
         <Button>{name} dropdown</Button>
       </Dropdown>
       <Button onClick={() => setDialog(true)}>{name} dialog</Button>
-      <Modal open={dialog} title={`${name} dialog`} onClose={() => setDialog(false)}>
+      <Modal variant="card" open={dialog} title={`${name} dialog`} onClose={() => setDialog(false)}>
         Canvas contract
       </Modal>
     </section>

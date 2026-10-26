@@ -1,6 +1,6 @@
 # 组件编写与开发规则
 
-此文件是新增、修改和重构组件时必须遵守的编写规则，面向源码贡献者。开发与发布同时遵守 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)：用户未指定具体分支时，集中使用并复用以目标版本号命名的开发分支，不为每个需求新建分支。视觉和交互遵守 [设计标准](../../DESIGN-STANDARDS.md)；组件使用说明见 [README.md](README.md)。
+此文件是新增、修改和重构组件时必须遵守的编写规则，面向源码贡献者。分支与发布遵守 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)。视觉和交互遵守 [设计风格](../../DESIGN-STYLE.md) 与 [设计标准](../../DESIGN-STANDARDS.md)；组件使用说明见 [README.md](README.md)。
 
 ## 本地开发
 
@@ -36,7 +36,7 @@ pnpm dev
 
 对外主题配置统一经过 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`。`src/theme.ts` 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致；业务 CSS 只消费结果。不要在组件中增加 DOM 颜色监听或自动前景判断，不为每个状态公开新变量。新增配置必须同步实际消费、类型、中英 API 与测试。
 
-主题风格的完整定义放在文档示例源码中，使用者复制普通 `LeafTheme` 数据或生成函数到项目中定制；组件包只提供公共主题能力。辅助表面、描边和阴影配色从当前映射角色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置，也不能把语义原色重新定义为 500；语义色按需派生 light-N / dark-N，中性色独立保留九档。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色保留表达式，语义明暗派生保留 sRGB color-mix，中性色阶无法解析时输出 relative OKLCH；服务端和客户端均不读 DOM 推断颜色或外观，不在 hydration 后替换数值。主题只通过 ConfigProvider 的 JS 配置更新。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
+文档示例中的主题配置只用于说明品牌色、明暗与密度等接入方式，组件包只提供公共主题能力，不内置风格预设，也不以可定制作为卖点。辅助表面、描边和阴影配色从当前映射角色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置，也不能把语义原色重新定义为 500；语义色按需派生 light-N / dark-N，中性色独立保留九档。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色保留表达式，语义明暗派生保留 sRGB color-mix，中性色阶无法解析时输出 relative OKLCH；服务端和客户端均不读 DOM 推断颜色或外观，不在 hydration 后替换数值。主题只通过 ConfigProvider 的 JS 配置更新。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
 
 字段聚焦、普通选项、Button 各外观和语义状态的具体视觉契约由 [设计标准](../../DESIGN-STANDARDS.md) 与 [颜色家族契约](../../COLOR-SYSTEM.md#视觉家族契约) 维护。复用家族时保留这些差异和显式状态覆盖，不因为统一实现而扩大交互变化范围。
 
@@ -44,7 +44,7 @@ pnpm dev
 
 ## 交互动效
 
-视觉与动效以 [设计标准](../../DESIGN-STANDARDS.md) 为准，[DESIGN-REFRESH.md](../../DESIGN-REFRESH.md) 仅保留历史覆盖记录。基础时间为 200ms，快速与布局过渡从当前区域的 `--leaf-motion-duration` 派生。悬停、选中、展开和状态变化使用不同的反馈；拖动、输入与虚拟窗口位置保持即时响应。
+视觉与动效以 [设计标准](../../DESIGN-STANDARDS.md) 为准。基础时间为 200ms，快速与布局过渡从当前区域的 `--leaf-motion-duration` 派生。悬停、选中、展开和状态变化使用不同的反馈；拖动、输入与虚拟窗口位置保持即时响应。
 
 CSS keyframe 使用 `animation: var(--leaf-motion-animation, leaf-name …)`；`motion: false` 将它设为 none，内层 `motion: true` 用 initial 恢复 fallback。不要用父区域的后代选择器强行关闭嵌套区域。系统减少动态效果始终优先，浮层同步全部 `--leaf-*` 变量。
 
@@ -54,7 +54,7 @@ CSS keyframe 使用 `animation: var(--leaf-motion-animation, leaf-name …)`；`
 
 图标采用 lucide-react，使用具名导入；禁止增加手绘图标路径集或运行时动态加载整套图标。装饰性图标对辅助技术隐藏，无文字的控件需要可访问名称。
 
-基础功能参考 Ant Design 的 Input、Checkbox、Radio、Switch、Select 官方 API（github.com/ant-design/ant-design 的 components/<name>/index.en-US.md）。采用通用行为与成熟 API 思路，例如前后缀、校验状态、半选、受控值和组内互斥；实现保留 Leaf UI 的视觉、原生 HTML 语义与 SCSS 变量体系。本项目不包含 Ant Design 源码或运行依赖。
+基础表单控件的 API 思路可参考 Ant Design 官方文档，但实现保留 Leaf UI 的视觉、原生语义与 SCSS 变量体系，不引入其源码或运行依赖。
 
 ## 检查与打包
 
@@ -76,9 +76,9 @@ usePopupState 处理禁用时收起和去重后的 onOpenChange。useFloatingDis
 
 src/shared/field.tsx 统一受控 / 非受控值、ref 和原生 form reset。FormValue 使用不可交互的文本输入参与 FormData 与 required 校验，拦截原生校验提示并聚焦触发器。自定义选择组件 onChange 返回业务值，事件属性仍透传到触发按钮；清除值分别为 Select 空字符串、日期 / 时间 null、级联空数组。
 
-DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格式可以定制，FormData 始终使用标准格式。周起点由 ConfigProvider 控制，ISO 周编号保持独立。TimePicker 支持分钟或秒精度，使用草稿并确认提交；禁用时间同时应用于输入、选择和键盘导航。Cascader 默认选择末级，changeOnSelect 可选择中间层，并支持搜索、多选和懒加载。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
+DatePicker 与 DateRangePicker 通过 `picker` 统一日期、时间和日期时间模式，复用分段输入与时间列。日期使用本地年月日而非 UTC 序列化；显示与 onChange 的格式可以定制，FormData 始终使用标准格式。周起点由 ConfigProvider 控制，ISO 周编号保持独立。时间模式支持分钟或秒精度，面板编辑草稿：确定提交，点击外部或 Tab 离开时提交调整过的有效草稿，`needConfirm` 只允许确定提交，Escape 放弃；日期时间模式默认要求确认，区间先确认开始端、再确认结束端。`minTime` / `maxTime` 与禁用时间合并，同时应用于时间模式的输入、选择和键盘导航。输入解析（`shared/parse-date.ts`、`shared/time.ts`）接受常见分隔符、紧凑数字、中文年月日 / 时分与全角字符，但不纠正不存在的日期。Cascader 默认选择末级，changeOnSelect 可选择中间层，并支持搜索、多选和懒加载。SSR 不访问 document 或挂载浮层。新增浮层组件需覆盖键盘、焦点、禁用、表单 reset 和局部主题。
 
-公开 Calendar 的完整布局通过 `fullLayout` 与浮层面板区分。完整日期、月份和年份视图使用无边框网格，桌面分别为 7 / 4 / 3 列；选中态使用整格淡主题色背景和实心圆形日期标签，今天以主题色数字与圆点表达，不依赖描边。`cellRender` 位于日期下方并单行省略。紧凑日历保留 32px 无边框日期格，DatePicker、DateTimePicker 和 DateRangePicker 等浮层继续复用原紧凑 CalendarPanel，不套用完整布局标题。
+公开 Calendar 独立实现（`src/calendar`），不再复用浮层使用的 `shared/calendar` 面板；视觉契约见 [设计标准：Calendar](../../DESIGN-STANDARDS.md#calendar)。
 
 包产物包含 dist、package.json、使用说明及第三方许可证。整体架构见 [DEVELOPMENT.md](../../DEVELOPMENT.md)。
 
@@ -90,13 +90,11 @@ DatePicker 使用本地年月日而非 UTC 序列化；显示与 onChange 的格
 
 `styles/foundation.css` 在产物内部提供主题变量和公共浮层样式，由使用到的组件实现自动引入，同一个模块在构建时去重。服务组件的样式随各自实现加载，普通组件不会因此引入全部服务。应用无需手动导入 CSS；`styles.css` 保留为包含基础与 API 服务样式的兼容入口。`styles/all.css` 是完整静态入口；旧的 `<component>/style.css` 保留供显式管理 CSS 的构建使用。`browser` 导出条件选择带样式入口，Node 默认入口不导入 CSS，保持直接 SSR 可用。声明统一指向原组件，浏览器与 Node API 一致。
 
-开发分支移除普通 List / ListItem 和 OrgChart，业务列表使用原生 HTML、Space 或 Grid 组合；VirtualList、FileList 和 FormList 保留。`styles.css` 从整库改为基础样式，自行管理 SSR CSS 的应用迁移到 `styles/all.css`。这些兼容性变化应纳入下一次正式发布的迁移说明。
-
 ## 发布 npm
 
-每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。
+每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。尚未发布的兼容性变化写入 [待发布迁移](../../MIGRATION-PENDING.md)，不要散落在规范文件中。
 
-开发分支将 Button 的公开 `ghost` 与 `soft` 外观移除，提供 `solid`、`outline`、`text` 和 `link`，并以 `outline` 作为默认外观；次要操作直接使用默认描边按钮。SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件使用同一 `text` 外观；原生紧凑动作复用共享 text-action 配方，仅保留所属组件的尺寸与定位。这项兼容性变化需纳入下次正式发布的迁移说明。
+Button 外观为 `solid`、`outline`、`text`、`link`（默认 `outline`），SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件使用 `text` 外观；原生紧凑动作复用共享 text-action 配方，仅保留所属组件的尺寸与定位。
 
 ## 扩展组件的实现
 
@@ -108,13 +106,13 @@ Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加�
 
 Tabs、Tree 与 DataTable 的排序能力通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
-ConfigProvider 自动提供 Confirm、Message、Notification 与 LoadingBar 的作用域。useConfirm / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，调用区域卸载时取消待处理请求；任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
+ConfigProvider 自动提供 Confirm、ImagePreview、Message、Notification 与 LoadingBar 的作用域。useConfirm / useImagePreview / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，图片预览在同一 Provider 内只展示最近一组；调用区域卸载时取消所属请求。任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
 
-Confirm 只公开 `useConfirm().confirm(options)`，不再导出受控 `Confirm` 与 `ConfirmProps`。配置使用 `ConfirmOptions`，正文只展示简短的操作说明；包含表单或多步骤的流程迁移到 Modal。移除独立 Sortable 组件及其样式子路径，Tabs / Tree / DataTable 自身的排序能力保持可用。这些是开发分支上的 API 迁移，正式发布时需要纳入迁移说明。
+Confirm 只公开 `useConfirm().confirm(options)`，配置使用 `ConfirmOptions`，正文只展示简短的操作说明；包含表单或多步骤的流程使用 Modal。排序能力由 Tabs / Tree / DataTable 自身提供，不提供独立 Sortable。
 
 ## 区域组件默认参数
 
-开发分支移除 `LeafMessages` 类型与 ConfigProvider 的 `messages`、`textMessages` 参数。`locale` 接受 BCP 47 字符串或只读数组，第一项是当前语言，后续项按词条回退，最后使用内置英文。`translations` 接受按语言代码索引的纯 JSON，公共类型是 `LeafTranslation` / `LeafTranslations`；资源按语言和词条继承，显式语言链整体替换。业务文案由应用翻译；实例与 `components` 提供的文字仍优先。此兼容性变化需纳入下次正式发布的迁移说明。
+`locale` 接受 BCP 47 字符串或只读数组，第一项是当前语言，后续项按词条回退，最后使用内置英文。`translations` 接受按语言代码索引的纯 JSON，公共类型是 `LeafTranslation` / `LeafTranslations`；资源按语言和词条继承，显式语言链整体替换。业务文案由应用翻译；实例与 `components` 提供的文字仍优先。
 
 ### 翻译资源
 
@@ -126,7 +124,7 @@ Confirm 只公开 `useConfirm().confirm(options)`，不再导出受控 `Confirm`
 
 数组词条整体替换；只有缺失和 `undefined` 回退，空字符串保留。Provider 纯函数合并且不修改传入对象，不使用跨请求的可变注册表；主题变化不重新解析未变的资源。FloatingPanel 与 ScopedPortal 同步当前 `lang`。测试需覆盖部分翻译、内置覆盖、嵌套链替换、运行时切换、实例优先、Portal、服务组件与 SSR / hydration。包导出五种内置 JSON、Schema 和 `leaf-ui-check-translations` 检查命令；文档构建将同版本资源复制到版本根目录的 `locales/`。
 
-ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的公开部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable.Root 使用 DataTable，其他命名空间部件使用 LayoutHeader、DataTableSearch 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
+ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的公开部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable.Root 使用 DataTable，其他命名空间部件使用 LayoutHeader、DataTableSearch 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / ImagePreview / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
 
 ### 公开入口与合并语义
 
@@ -148,7 +146,7 @@ ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的�
 - 内部 `ComponentPropsMap` 将组件名与完整的公共 Props 绑定，`useComponentProps` 从名称推导参数和返回类型，保留 Select 等组件的判别联合。禁止改为可由调用方任意推断 Props 的泛型，或用宽泛字典、`any`、类型断言绕过名称与类型的对应关系。
 - `LeafComponentDefaults` 从各组件公共 Props 派生，仅使用 `import type` 引用组件类型；运行时不能因配置类型引入整库组件。排除 `key`、`ref`、命令式引用类参数（如 Table 的 `scrollRef`、DataTable 的 `tableRef`）、JSX 必填项和会破坏模式与值关联的属性，不用 Provider 放宽 JSX 的必填契约。引用在实例上设置，避免多个组件争用同一个引用。
 - 当前 Select 的 `options`、`multiple`、`value`、`defaultValue`、`onChange` 保留在实例；Modal 的 `open` 保留在实例。新增支持时逐项确认边界，不能只用 `Partial<Props>` 无差别开放所有字段。
-- 同样检查其他判别联合：DatePicker 的单 / 多选、Slider 的单值 / 范围、Cascader / TreeSelect 的选择模式、InputNumber 的数字 / 十进制字符串模式均由实例决定，相关值、回调与边界参数不能从区域配置改变其类型。浮层必填的触发节点、数据、内容和可见状态继续由实例提供。
+- 同样检查其他判别联合：DatePicker 的日期 / 时间模式、Slider 的单值 / 范围、Cascader / TreeSelect 的选择模式、InputNumber 的数字 / 十进制字符串模式均由实例决定，相关值、回调与边界参数不能从区域配置改变其类型。浮层必填的触发节点、数据、内容和可见状态继续由实例提供。
 - 不把所有值与回调一律禁用。普通 Input 的 `value`、`defaultValue` 和 `onChange` 可以配置，但必须遵守正常的受控、非受控、事件及表单 reset 语义，并在使用文档说明。
 - 泛型组件只开放与数据类型无关的参数：FormList 的行值 / 键 / 渲染、VirtualList 的项目 / 渲染 / 按项目测量函数、DataTable 的表实例 / 列 / 行回调留在实例。通过 `useGenericComponentDefaults` 获取明确的安全投影，再用组件自身完整的 `Props<T>` 合并，不能将业务类型强转为 `unknown` 或 `any` 来接入。VirtualList 的区域 `estimateSize` 只支持数字，实例仍可使用按项目计算的函数。
 - 全局配置类型不能让可选适配器变成必装依赖。DataTable 的通用参数集中在不导入 TanStack 的 `tabletanstack/defaults.ts`，由实现和配置共同使用；新增可选适配器同样需要拆出与引擎无关的参数类型，并验证未安装可选依赖时的根入口类型检查。
@@ -174,7 +172,7 @@ ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的�
 
 配置对象按不可变数据处理：外部静态配置可以复用，动态配置更新时创建新对象，并按需使用 useMemo 稳定引用；不支持对原对象的深层原地修改进行监听。
 
-Confirm、Message 和 Notification 在请求创建时读取调用区域的默认参数，保存本次合并选项；配置更新不能改变已有请求的操作选项、重启计时器或重复创建任务。服务正文中的公开组件继续继承调用区域当前的默认配置、主题和语言。LoadingBar 的 active / progress 由任务拥有，同一批并发任务使用首个任务的展示配置和主题，全部结束后下一批读取最新配置；独立 LoadingBarProvider 的显式参数优先于区域默认值。所有状态都必须隔离到 Provider / 请求，禁止在模块全局保存跨 SSR 请求共享的可变状态。
+Confirm、ImagePreview、Message 和 Notification 在请求创建时读取调用区域的默认参数，保存本次合并选项；配置更新不能改变已有请求的操作选项、重启计时器或重复创建任务。服务正文中的公开组件继续继承调用区域当前的默认配置、主题和语言。LoadingBar 的 active / progress 由任务拥有，同一批并发任务使用首个任务的展示配置和主题，全部结束后下一批读取最新配置；独立 LoadingBarProvider 的显式参数优先于区域默认值。所有状态都必须隔离到 Provider / 请求，禁止在模块全局保存跨 SSR 请求共享的可变状态。
 
 服务的主题传递容器不能占据普通文档流。即使尚未展示服务，也要验证 Provider 放进 Grid / Flex 不会插入空白格或间距；需要 DOM 祖先传递变量时使用不产生布局盒的容器。
 
@@ -213,8 +211,4 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 
 ## 设计资源与验收支持
 
-`pnpm design:export` regenerates the documentation's DTCG/legacy tokens, editable SVG sheets and local Figma plugin from `colors.ts`, `color-scale.ts`, `color-recipes.ts` and `density.ts`. Validate with `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` and `node --check design/figma/code.js`. Static runtime palettes regenerate with `pnpm --filter @ifhover/leaf-ui generate:palette`; the library build rejects stale palettes.
-
-[设计资源说明](../../design/figma/README.md) 维护导出和 Figma 导入流程；[设计标准](../../DESIGN-STANDARDS.md) 定义状态与几何规则。[ACCESSIBILITY.md](ACCESSIBILITY.md) 仅记录对应日期的覆盖和未完成的设备 / 读屏验收，当前验收以 QUALITY 为准。公共文档保留双语视觉与交互指南，详细证据留在仓库。逐像素黄金截图比较尚未建立。
-
-开发分支移除独立 Segmented 及其类型、子路径和样式入口；统一使用 Tabs。迁移时将 `options` 改为 `items`、选项 `value` 改为 `key`、`value` / `defaultValue` 改为 `activeKey` / `defaultActiveKey`；`block` 保持等宽铺满。只切换视图时可省略 `TabItem.children`，不会产生空面板或内容留白。卡片标签使用无外层容器的浅灰圆角选中底，间距为 4px，未选中文字使用更淡的中性色；需要灰色外轨和白色移动滑块时使用 `type="segmented"`，其圆角由外轨圆角减去实际内边距与边框派生，滑块使用不回弹的标准缓动直接移动。线形标签仅在选中项下方显示居中的短圆角指示条。Tabs 只保留顶部与底部布局，不再支持左右纵向标签；溢出时以悬停或键盘聚焦后显示的两侧描边箭头代替更多菜单。Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。这项兼容性变化需纳入下一次正式发布的迁移说明。
+设计资源的导出、校验与 Figma 导入见 [设计资源说明](../../design/figma/README.md)；静态 palette 由 `pnpm --filter @ifhover/leaf-ui generate:palette` 生成，库构建会拒绝过期 palette。[设计标准](../../DESIGN-STANDARDS.md) 定义状态与几何规则。公共文档保留双语视觉与交互指南，详细证据留在仓库。逐像素黄金截图比较尚未建立。

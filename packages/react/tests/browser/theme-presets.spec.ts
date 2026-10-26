@@ -361,7 +361,7 @@ test('nested default resets remain isolated when portals target the themed ances
   const dialog = outer.getByRole('dialog', { name: 'Reset dialog' });
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveCSS('border-top-width', '1px');
-  expect(await dialog.evaluate((node) => getComputedStyle(node).boxShadow)).toContain('60px');
+  expect(await dialog.evaluate((node) => getComputedStyle(node).boxShadow)).toContain('24px');
   await page.keyboard.press('Escape');
   const invalid = page.getByRole('textbox', { name: 'Nested invalid input' });
   await invalid.focus();

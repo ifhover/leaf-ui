@@ -16,53 +16,47 @@ for (const language of ['zh', 'en']) {
           const toggle = language === 'en' ? /Switch to (light|dark) theme/ : /切换到[浅深]色主题/;
           await page.getByRole('button', { name: toggle }).first().click();
         }
-        const previews = page.locator('.leaf-component-example__preview');
-        const basic = previews.nth(0).locator('.leaf-card');
+        const preview = (zh: string, en: string) =>
+          page
+            .getByRole('region', {
+              name: language === 'en' ? `${en} example` : `${zh}示例`,
+              exact: true,
+            })
+            .locator('.leaf-component-example__preview');
+        const basicPreview = preview('基础用法', 'Basic usage');
+        const selectedPreview = preview('选中状态', 'Selected state');
+        const sizesPreview = preview('尺寸', 'Sizes');
+        const basic = basicPreview.locator('.leaf-card');
         await expect(basic.getByRole('heading')).toHaveCSS('font-size', '16px');
-        await expect(basic.getByRole('heading')).toHaveCSS('font-weight', '700');
-        await expect(basic.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '67');
-        expect((await basic.boundingBox())?.width).toBeLessThanOrEqual(380);
-        const basicInsets = await basic.evaluate((node) => {
-          const heading = node.querySelector('.leaf-card__header');
-          const actions = node.querySelector('.leaf-card__footer');
-          if (!heading || !actions) throw new Error('Missing card sections');
-          const header = getComputedStyle(heading);
-          const footer = getComputedStyle(actions);
-          return [header.paddingTop, header.paddingLeft, header.paddingRight, footer.paddingBottom];
-        });
-        expect(basicInsets).toEqual(['20px', '20px', '20px', '20px']);
-        await previews.nth(0).screenshot({ path: test.info().outputPath('card-basic.png') });
-        const choices = previews.nth(1).locator('.leaf-card');
+        await expect(basic.getByRole('heading')).toHaveCSS('font-weight', '500');
+        const contentWidth = await basicPreview
+          .locator('.leaf-component-example__preview-content')
+          .evaluate((node) => node.getBoundingClientRect().width);
+        expect((await basic.boundingBox())?.width).toBeCloseTo(contentWidth, 0);
+        expect(contentWidth).toBeLessThanOrEqual(480);
+        await basicPreview.screenshot({ path: test.info().outputPath('card-basic.png') });
+        const choices = selectedPreview.locator('.leaf-card');
+        await expect(
+          selectedPreview.locator('.leaf-component-example__preview-content > .leaf-flex'),
+        ).toHaveCSS('gap', '16px');
         await expect(choices).toHaveCount(2);
         await expect(choices.nth(0)).toHaveClass(/leaf-card--selected/);
         await expect(choices.nth(1)).not.toHaveClass(/leaf-card--selected/);
-        const person = choices
-          .nth(0)
-          .getByText(
-            language === 'en' ? 'Home care · Available until 3:30 PM' : '上门护理 · 15:30 前空闲',
-            { exact: true },
-          );
-        const description = choices
-          .nth(0)
-          .getByText(language === 'en' ? '88% match · Verified' : '匹配度 88% · 已认证', {
-            exact: true,
-          });
-        await expect(person).toHaveCSS('font-size', '14px');
-        await expect(description).toHaveCSS('font-size', '13px');
-        await expect(description).toHaveCSS('line-height', '18px');
-        await expect(description).toHaveCSS('font-weight', '400');
-        const personBox = await person.boundingBox();
-        const descriptionBox = await description.boundingBox();
-        expect(descriptionBox?.x).toBeCloseTo(personBox?.x ?? 0, 1);
         for (const choice of await choices.all()) {
           await expect(choice.getByRole('heading')).toHaveCSS('font-size', '16px');
-          await expect(choice.getByRole('heading')).toHaveCSS('font-weight', '700');
+          await expect(choice.getByRole('heading')).toHaveCSS('font-weight', '500');
         }
-        if (width === 1280) {
-          const first = await choices.nth(0).getByRole('button').boundingBox();
-          const second = await choices.nth(1).getByRole('button').boundingBox();
-          expect(first?.y).toBeCloseTo(second?.y ?? 0, 1);
-        }
+        const boxes = await choices.evaluateAll((nodes) =>
+          nodes.map((node) => {
+            const { left, top, bottom, width } = node.getBoundingClientRect();
+            return { left, top, bottom, width };
+          }),
+        );
+        const [firstChoice, secondChoice] = boxes;
+        if (!firstChoice || !secondChoice) throw new Error('Missing selected-state card geometry');
+        expect(firstChoice.left).toBeCloseTo(secondChoice.left, 1);
+        expect(firstChoice.width).toBeCloseTo(secondChoice.width, 0);
+        expect(firstChoice.bottom).toBeLessThanOrEqual(secondChoice.top);
         const select = choices.nth(1).getByRole('button');
         await select.focus();
         await select.press('Space');
@@ -72,22 +66,31 @@ for (const language of ['zh', 'en']) {
         await expect(choices.nth(0)).not.toHaveClass(/leaf-card--selected/);
         await choices.nth(0).getByRole('button').click();
         await expect(choices.nth(0).getByRole('button')).toHaveAttribute('aria-pressed', 'true');
-        await previews.nth(1).screenshot({ path: test.info().outputPath('card-selected.png') });
-        const sizes = previews.nth(2).locator('.leaf-card');
-        const available = await previews
-          .nth(2)
+        await selectedPreview.screenshot({ path: test.info().outputPath('card-selected.png') });
+        const sizes = sizesPreview.locator('.leaf-card');
+        await expect(sizes).toHaveCount(3);
+        const available = await sizesPreview
           .locator('.leaf-component-example__preview-content')
           .boundingBox();
-        for (const [index, size] of [300, 380, 460].entries()) {
-          const box = await sizes.nth(index).boundingBox();
-          expect(box?.width).toBeCloseTo(Math.min(size, available?.width ?? size), 0);
-          await sizes.nth(index).getByRole('tab').nth(1).click();
-          await expect(sizes.nth(index).getByRole('tabpanel')).toContainText(
-            language === 'en' ? 'guidelines' : '规范',
+        for (const size of await sizes.all()) {
+          const box = await size.boundingBox();
+          expect(box?.width).toBeCloseTo(available?.width ?? 0, 0);
+          await expect(size).toContainText(
+            language === 'en' ? 'The same card content.' : '相同的卡片内容。',
           );
         }
-        await previews.nth(2).screenshot({ path: test.info().outputPath('card-sizes.png') });
-        const selectedExample = page.locator('.leaf-component-example').nth(1);
+        const paddings = await sizes
+          .locator('.leaf-card__body')
+          .evaluateAll((nodes) =>
+            nodes.map((node) => Number.parseFloat(getComputedStyle(node).paddingLeft)),
+          );
+        expect(paddings[0]).toBeLessThan(paddings[1] ?? 0);
+        expect(paddings[1]).toBeLessThan(paddings[2] ?? 0);
+        await sizesPreview.screenshot({ path: test.info().outputPath('card-sizes.png') });
+        const selectedExample = page.getByRole('region', {
+          name: language === 'en' ? 'Selected state example' : '选中状态示例',
+          exact: true,
+        });
         await selectedExample
           .getByRole('button', {
             name: language === 'en' ? 'Expand code' : '展开代码',
@@ -100,7 +103,7 @@ for (const language of ['zh', 'en']) {
           .click();
         await expect
           .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-          .toContain('selected={active}');
+          .toContain('selected={selected === option.key}');
         await selectedExample
           .getByRole('button', {
             name: language === 'en' ? 'Collapse code' : '收起代码',

@@ -6,7 +6,6 @@ import {
   ColorPicker,
   DatePicker,
   DateRangePicker,
-  DateTimePicker,
   Input,
   InputNumber,
   InputOTP,
@@ -15,8 +14,6 @@ import {
   Space,
   Switch,
   Tabs,
-  TimePicker,
-  TimeRangePicker,
   Transfer,
   TreeSelect,
 } from '@ifhover/leaf-ui';
@@ -66,17 +63,17 @@ export function ControlHeightFixture() {
           <div data-height-control="DatePicker">
             <DatePicker size={size} aria-label={`Date ${size}`} />
           </div>
-          <div data-height-control="DateTimePicker">
-            <DateTimePicker size={size} aria-label={`Date time ${size}`} />
+          <div data-height-control="DatePicker">
+            <DatePicker picker="datetime" size={size} aria-label={`Date time ${size}`} />
           </div>
           <div data-height-control="DateRangePicker">
             <DateRangePicker size={size} aria-label={`Date range ${size}`} />
           </div>
-          <div data-height-control="TimePicker">
-            <TimePicker size={size} aria-label={`Time ${size}`} />
+          <div data-height-control="DatePicker">
+            <DatePicker picker="time" size={size} aria-label={`Time ${size}`} />
           </div>
-          <div data-height-control="TimeRangePicker">
-            <TimeRangePicker size={size} aria-label={`Time range ${size}`} />
+          <div data-height-control="DateRangePicker">
+            <DateRangePicker picker="time" size={size} aria-label={`Time range ${size}`} />
           </div>
           <div data-height-control="ColorPicker">
             <ColorPicker size={size} showText />

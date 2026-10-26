@@ -60,6 +60,25 @@ const expectMotionEnd = (locator: Locator, property: 'opacity' | 'inset', value:
     )
     .toBe(value);
 
+for (const theme of ['light', 'dark']) {
+  test(`built-in raised appearance reaches collapsed popups ${theme}`, async ({ page }) => {
+    await page.goto(`/?fixture=menu&popup=1&builtin=1&collapsed=1&theme=${theme}`);
+    await expect(page.getByRole('navigation')).toHaveClass(/leaf-menu--raised/);
+    await page.getByRole('menuitem', { name: 'Resources', exact: true }).click();
+    const popup = page.locator('.leaf-menu__popup--raised');
+    await expect(popup).toBeVisible();
+    const selected = popup.getByRole('menuitem', { name: 'Components', exact: true });
+    await expect(selected).toHaveAttribute('aria-current', 'page');
+    await expect
+      .poll(() => selected.evaluate((node) => getComputedStyle(node, '::before').borderTopWidth))
+      .toBe('1px');
+    await expect
+      .poll(() => selected.evaluate((node) => getComputedStyle(node, '::before').boxShadow))
+      .not.toBe('none');
+    await page.screenshot({ path: test.info().outputPath(`menu-default-${theme}.png`) });
+  });
+}
+
 for (const { english, suffix } of [
   { english: false, suffix: '' },
   { english: true, suffix: '&theme=dark&compact=1&rtl=1' },
@@ -512,7 +531,16 @@ for (const dark of [false, true]) {
       await expect(item).not.toHaveCSS('color', color, { timeout: 20_000 });
       await item.hover();
       await expect(item).toHaveCSS('color', color, { timeout: 20_000 });
+      await expect(item).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expectMotionEnd(item, 'opacity', '0');
+      await selected.hover();
+      await expect(selected).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      if (collapsed) {
+        const nested = page.getByRole('menuitem', { name: 'More', exact: true });
+        await nested.hover();
+        await expect(nested.locator('.leaf-dropdown__arrow')).toHaveCSS('color', color);
+        await expect(nested).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      }
       await expectFeedback(
         selected,
         await resolveStyle(selected, 'background-color', 'var(--leaf-color-surface)'),

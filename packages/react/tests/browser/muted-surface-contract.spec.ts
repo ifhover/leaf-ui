@@ -42,7 +42,7 @@ async function expectLayeredSurfaces(page: Page, prefix: string, muted: string, 
 async function expectPortalSurfaces(page: Page, prefix: string, muted: string, surface: string) {
   await page.getByRole('button', { name: `Open ${prefix} modal`, exact: true }).click();
   const modal = page.locator('.leaf-modal-mask:not([hidden]) .leaf-modal');
-  await expect(modal).toHaveCSS('background-color', muted);
+  await expect(modal).toHaveCSS('background-color', surface);
   await page.keyboard.press('Escape');
   await expect(modal).not.toBeVisible();
 
@@ -55,8 +55,11 @@ async function expectPortalSurfaces(page: Page, prefix: string, muted: string, s
 
   await page.getByRole('button', { name: `${prefix} color`, exact: true }).click();
   const picker = page.locator('.leaf-color-picker__panel:visible');
-  await expect(picker.locator('.leaf-color-picker__formats')).toHaveCSS('background-color', muted);
-  await expect(picker.locator('.leaf-color-picker__formats button[aria-pressed="true"]')).toHaveCSS(
+  await expect(picker.locator('.leaf-color-picker__formats .leaf-tabs__list')).toHaveCSS(
+    'background-color',
+    muted,
+  );
+  await expect(picker.locator('.leaf-color-picker__formats .leaf-tabs__indicator')).toHaveCSS(
     'background-color',
     surface,
   );
@@ -134,13 +137,14 @@ for (const theme of ['light', 'dark'] as const) {
     await page.getByRole('button', { name: 'explicit color', exact: true }).click();
     const picker = page.locator('.leaf-color-picker__panel:visible');
     await expect(picker).toHaveCSS('background-color', explicitPaint);
-    await expect(picker.locator('.leaf-color-picker__formats')).toHaveCSS(
+    await expect(picker.locator('.leaf-color-picker__formats .leaf-tabs__list')).toHaveCSS(
       'background-color',
       initialMutedSurface,
     );
-    await expect(
-      picker.locator('.leaf-color-picker__formats button[aria-pressed="true"]'),
-    ).toHaveCSS('background-color', surface);
+    await expect(picker.locator('.leaf-color-picker__formats .leaf-tabs__indicator')).toHaveCSS(
+      'background-color',
+      surface,
+    );
     await page.keyboard.press('Escape');
   });
 }

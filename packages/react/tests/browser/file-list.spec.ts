@@ -18,24 +18,43 @@ for (const [name, query, width] of [
       nodes.map((node) => {
         const rtl = getComputedStyle(node).direction === 'rtl';
         const icon = node.querySelector('.leaf-file-list__icon')?.getBoundingClientRect();
+        const main = node.querySelector('.leaf-file-list__main')?.getBoundingClientRect();
         const details = node.querySelector('.leaf-file-list__details')?.getBoundingClientRect();
+        const nameBox = node.querySelector('.leaf-file-list__name')?.getBoundingClientRect();
+        const metaBox = node.querySelector('.leaf-file-list__meta')?.getBoundingClientRect();
+        const iconColor = node.querySelector('.leaf-file-list__icon')
+          ? getComputedStyle(node.querySelector('.leaf-file-list__icon') as Element).color
+          : '';
         const row = node.getBoundingClientRect();
         const actions = [...node.querySelectorAll('.leaf-file-list__action')].map((action) => {
           const rect = action.getBoundingClientRect();
           return { width: rect.width, height: rect.height, left: rect.left, right: rect.right };
         });
         return {
+          error: node.hasAttribute('data-error'),
+          iconColor,
           icon: rtl ? icon?.right : icon?.left,
+          iconCenterY: icon ? icon.top + icon.height / 2 : 0,
+          mainCenterY: main ? main.top + main.height / 2 : 0,
           details: rtl ? details?.right : details?.left,
+          nameTop: nameBox?.top ?? 0,
+          metaTop: metaBox?.top ?? 0,
           row: { left: row.left, right: row.right },
           actions,
         };
       }),
     );
     expect(geometry).toHaveLength(4);
+    expect(geometry[0]?.iconColor).toBe(geometry[1]?.iconColor);
+    expect(geometry[0]?.iconColor).toBe(geometry[3]?.iconColor);
+    expect(geometry[2]?.error).toBe(true);
+    expect(geometry[2]?.iconColor).not.toBe(geometry[0]?.iconColor);
     for (const entry of geometry) {
       expect(entry.icon).toBeCloseTo(geometry[0]?.icon ?? 0, 0);
       expect(entry.details).toBeCloseTo(geometry[0]?.details ?? 0, 0);
+      expect(Math.abs(entry.iconCenterY - entry.mainCenterY)).toBeLessThanOrEqual(1);
+      if (width > 480) expect(Math.abs(entry.metaTop - entry.nameTop)).toBeLessThan(6);
+      else expect(entry.metaTop).toBeGreaterThan(entry.nameTop + 12);
       for (const action of entry.actions) {
         expect(action.width).toBeCloseTo(action.height, 0);
         expect(action.width).toBeCloseTo(geometry[0]?.actions[0]?.width ?? 0, 0);
@@ -51,6 +70,23 @@ for (const [name, query, width] of [
       .evaluateAll((nodes) => nodes.map((node) => node.scrollWidth - node.clientWidth));
     expect(Math.max(...overflow)).toBeLessThanOrEqual(1);
     const cards = page.getByRole('region', { name: 'Picture cards', exact: true });
+    const cardCaptions = await cards.locator('.leaf-file-list__item').evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const footer = node.querySelector('.leaf-file-list__footer')?.getBoundingClientRect();
+        const title = node.querySelector('.leaf-file-list__name')?.getBoundingClientRect();
+        const actions = node.querySelector('.leaf-file-list__actions')?.getBoundingClientRect();
+        return {
+          footerWidth: footer?.width ?? 0,
+          titleWidth: title?.width ?? 0,
+          titleBottom: title?.bottom ?? 0,
+          actionsTop: actions?.top ?? 0,
+        };
+      }),
+    );
+    for (const caption of cardCaptions) {
+      expect(caption.titleWidth).toBeCloseTo(caption.footerWidth, 0);
+      expect(caption.actionsTop).toBeGreaterThanOrEqual(caption.titleBottom);
+    }
     const actionEdges = await cards
       .locator('.leaf-file-list__actions')
       .evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().bottom));

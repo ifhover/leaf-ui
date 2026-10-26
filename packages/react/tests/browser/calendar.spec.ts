@@ -7,121 +7,112 @@ async function uniqueColumns(cells: Locator) {
   });
 }
 
-async function expectBorderlessDays(calendar: Locator, shadowless = true) {
-  const styles = await calendar.locator('.leaf-date-picker__day').evaluateAll((nodes) =>
-    nodes.map((node) => {
-      const style = getComputedStyle(node);
-      return {
-        borderBlockEnd: style.borderBlockEndWidth,
-        borderBlockStart: style.borderBlockStartWidth,
-        borderInlineEnd: style.borderInlineEndWidth,
-        borderInlineStart: style.borderInlineStartWidth,
-        boxShadow: style.boxShadow,
-      };
-    }),
-  );
-  expect(styles.length).toBeGreaterThan(0);
-  expect(
-    styles.every(
-      (style) =>
-        style.borderBlockEnd === '0px' &&
-        style.borderBlockStart === '0px' &&
-        style.borderInlineEnd === '0px' &&
-        style.borderInlineStart === '0px' &&
-        (!shadowless || style.boxShadow === 'none'),
-    ),
-  ).toBe(true);
-}
-
-async function expectNoVisibleDayBorders(calendar: Locator) {
-  const colors = await calendar.locator('.leaf-date-picker__day').evaluateAll((nodes) =>
-    nodes.flatMap((node) => {
-      const style = getComputedStyle(node);
-      return [
-        style.borderBlockEndColor,
-        style.borderBlockStartColor,
-        style.borderInlineEndColor,
-        style.borderInlineStartColor,
-      ];
-    }),
-  );
-  expect(colors.length).toBeGreaterThan(0);
-  expect(colors.every((color) => color === 'transparent' || color === 'rgba(0, 0, 0, 0)')).toBe(
-    true,
-  );
-}
-
 for (const theme of ['light', 'dark'] as const) {
   for (const rtl of [false, true]) {
-    test(`full calendar is borderless, aligned and stateful: ${theme}, ${rtl ? 'RTL' : 'LTR'}`, async ({
+    test(`full calendar uses a hairline month grid and solid selection: ${theme}, ${rtl ? 'RTL' : 'LTR'}`, async ({
       page,
     }) => {
       await page.goto(`/?fixture=calendar&theme=${theme}${rtl ? '&rtl=1' : ''}`);
       const calendar = page.getByRole('region', { name: 'Full calendar', exact: true });
       await expect(calendar).toBeVisible();
       await expect(calendar).toHaveCSS('direction', rtl ? 'rtl' : 'ltr');
-      await expectBorderlessDays(calendar);
-      expect(await uniqueColumns(calendar.locator('.leaf-date-picker__day'))).toBe(7);
+      const days = calendar.locator('.leaf-calendar-view__day');
+      expect(await uniqueColumns(days)).toBe(7);
 
-      const selected = calendar.locator('.leaf-date-picker__day--selected');
+      // Cells are separated by shared divider hairlines, not individual frames.
+      const divider = await calendar.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('--leaf-calendar-view-line').trim(),
+      );
+      expect(divider).not.toBe('');
+      const lines = await calendar
+        .locator('.leaf-calendar-view__cell + .leaf-calendar-view__cell')
+        .first()
+        .evaluate((node) => getComputedStyle(node).borderInlineStartWidth);
+      expect(lines).toBe('1px');
+      // Hairlines must remain distinguishable from the calendar surface in both themes.
+      const paint = await calendar.evaluate((node) => {
+        const cell = node.querySelector('.leaf-calendar-view__cell + .leaf-calendar-view__cell');
+        return {
+          line: cell ? getComputedStyle(cell).borderInlineStartColor : '',
+          surface: getComputedStyle(node).backgroundColor,
+        };
+      });
+      expect(paint.line).not.toBe(paint.surface);
+      const dayBorders = await days.evaluateAll((nodes) =>
+        nodes.every((node) => getComputedStyle(node).borderTopWidth === '0px'),
+      );
+      expect(dayBorders).toBe(true);
+
+      const selected = calendar.locator('[role="gridcell"][aria-selected="true"]');
       await expect(selected).toHaveCount(1);
-      const selectedState = await selected.evaluate((node) => {
-        const label = node.querySelector<HTMLElement>('.leaf-calendar__cell-label');
-        if (!label) throw new Error('Missing selected date label');
-        const cellStyle = getComputedStyle(node);
-        const labelStyle = getComputedStyle(label);
+      const state = await selected.evaluate((cell, isRtl) => {
+        const day = cell.querySelector<HTMLElement>('.leaf-calendar-view__day');
+        const label = cell.querySelector<HTMLElement>('.leaf-calendar-view__number');
+        if (!day || !label) throw new Error('Missing selected day');
+        const dayBox = day.getBoundingClientRect();
         const box = label.getBoundingClientRect();
         return {
-          backgroundColor: cellStyle.backgroundColor,
-          labelBackground: labelStyle.backgroundColor,
-          labelHeight: box.height,
-          labelRadius: labelStyle.borderRadius,
-          labelWidth: box.width,
+          labelBackground: getComputedStyle(label).backgroundColor,
+          labelRadius: getComputedStyle(label).borderRadius,
+          height: box.height,
+          width: box.width,
+          // Numerals sit at the inline end edge, like desktop calendar apps.
+          endGap: isRtl ? box.left - dayBox.left : dayBox.right - box.right,
+          topGap: box.top - dayBox.top,
         };
-      });
-      expect(selectedState.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-      expect(selectedState.labelBackground).not.toBe('rgba(0, 0, 0, 0)');
-      expect(selectedState.labelRadius).toBe('999px');
-      expect(Math.abs(selectedState.labelWidth - selectedState.labelHeight)).toBeLessThan(1);
+      }, rtl);
+      expect(state.labelBackground).not.toBe('rgba(0, 0, 0, 0)');
+      // A disc for ordinary numerals; the first of a month widens it to a pill ("Oct 1").
+      expect(state.labelRadius).toBe('999px');
+      expect(state.height).toBe(26);
+      expect(state.width).toBeGreaterThanOrEqual(state.height);
+      expect(state.endGap).toBeLessThan(10);
+      expect(state.topGap).toBeLessThan(10);
 
-      const today = calendar.locator('[aria-current="date"]');
+      // Today is marked by primary ink only, so it never competes with the selected disc.
+      const today = calendar.locator('[aria-current="date"] .leaf-calendar-view__number');
       await expect(today).toHaveCount(1);
-      const todayMarker = await today.locator('.leaf-calendar__cell-label').evaluate((node) => {
-        const marker = getComputedStyle(node, '::after');
-        return {
-          backgroundColor: marker.backgroundColor,
-          borderRadius: marker.borderRadius,
-          content: marker.content,
-          height: marker.height,
-          width: marker.width,
-        };
-      });
-      expect(todayMarker.content).not.toBe('none');
-      expect(todayMarker.width).toBe('3px');
-      expect(todayMarker.height).toBe('3px');
-      expect(todayMarker.borderRadius).toBe('50%');
-      expect(todayMarker.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-
+      await expect(today).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await expect(calendar.getByText('Design review', { exact: true })).toHaveCSS(
         'font-size',
-        '11px',
+        '12px',
       );
+      // Tags become full-width event bars inside the cell.
+      const event = calendar.locator('.leaf-calendar-view__content > .leaf-tag');
+      const [eventWidth, contentWidth] = await event.evaluate((node) => [
+        node.getBoundingClientRect().width,
+        (node.parentElement as HTMLElement).getBoundingClientRect().width,
+      ]);
+      expect(eventWidth).toBeCloseTo(contentWidth, 0);
     });
   }
 }
 
-test('month and year views use open four- and three-column grids', async ({ page }) => {
+test('full calendar keyboard, toolbar and year overview', async ({ page }) => {
   await page.goto('/?fixture=calendar');
   const calendar = page.getByRole('region', { name: 'Full calendar', exact: true });
-  await calendar.getByRole('button', { name: 'Month', exact: true }).click();
-  await expect(calendar.locator('.leaf-calendar')).toHaveAttribute('data-view', 'month');
-  expect(await uniqueColumns(calendar.locator('.leaf-date-picker__day'))).toBe(4);
-  await expectBorderlessDays(calendar);
+  const grid = calendar.getByRole('grid');
+  const title = await grid.getAttribute('aria-labelledby');
+  const label = async () =>
+    page.evaluate((id) => document.getElementById(id ?? '')?.textContent ?? '', title);
+  const initial = await label();
+
+  await calendar.locator('[data-active="true"]').focus();
+  await page.keyboard.press('PageDown');
+  await expect.poll(label).not.toBe(initial);
+  await expect(calendar.locator('[data-active="true"]')).toBeFocused();
+  await calendar.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect.poll(label).toBe(initial);
 
   await calendar.getByRole('button', { name: 'Year', exact: true }).click();
-  await expect(calendar.locator('.leaf-calendar')).toHaveAttribute('data-view', 'year');
-  expect(await uniqueColumns(calendar.locator('.leaf-date-picker__day'))).toBe(3);
-  await expectBorderlessDays(calendar);
+  await expect(calendar).toHaveAttribute('data-view', 'months');
+  const months = calendar.locator('.leaf-calendar-view__month');
+  await expect(months).toHaveCount(12);
+  expect(await uniqueColumns(months)).toBe(4);
+  await expect(months.first().locator('.leaf-calendar-view__mini-day').first()).toBeAttached();
+  await months.nth(2).click();
+  await expect(calendar).toHaveAttribute('data-view', 'days');
+  await expect(calendar.locator('[data-active="true"]')).toBeFocused();
 });
 
 test('dark RTL calendar keeps seven columns without horizontal overflow at 375px', async ({
@@ -131,22 +122,50 @@ test('dark RTL calendar keeps seven columns without horizontal overflow at 375px
   await page.goto('/?fixture=calendar&theme=dark&rtl=1');
   const calendar = page.getByRole('region', { name: 'Full calendar', exact: true });
   await expect(calendar).toHaveCSS('direction', 'rtl');
-  expect(await uniqueColumns(calendar.locator('.leaf-date-picker__day'))).toBe(7);
-  await expectBorderlessDays(calendar);
+  const days = calendar.locator('.leaf-calendar-view__day');
+  expect(await uniqueColumns(days)).toBe(7);
   const layout = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
-  const cells = await calendar
-    .locator('.leaf-date-picker__day')
-    .evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().width));
-  expect(Math.min(...cells)).toBeGreaterThan(30);
+  const widths = await days.evaluateAll((nodes) =>
+    nodes.map((node) => node.getBoundingClientRect().width),
+  );
+  expect(Math.min(...widths)).toBeGreaterThan(30);
+  // Narrow layouts center numerals and switch to narrow weekday names.
+  await expect(calendar.locator('.leaf-calendar-view__weekday-narrow').first()).toBeVisible();
+  await expect(calendar.locator('.leaf-calendar-view__weekday-short').first()).toBeHidden();
+  // Dotted Tags collapse to their event dot while keeping the label as the day description.
+  const event = calendar.locator('.leaf-calendar-view__content > .leaf-tag');
+  await expect(event).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(event.locator('.leaf-tag__dot')).toBeVisible();
+  await expect(calendar.getByRole('button', { description: 'Release' })).toHaveCount(1);
 });
 
-test('date and date-time popup calendars retain the compact borderless grid', async ({ page }) => {
+test('compact calendar uses circular targets and a title month picker', async ({ page }) => {
   await page.goto('/?fixture=calendar');
-  await expectBorderlessDays(page.getByRole('region', { name: 'Compact calendar', exact: true }));
+  const calendar = page.getByRole('region', { name: 'Compact calendar', exact: true });
+  const box = await calendar.boundingBox();
+  expect(box?.width).toBe(296);
+  const selected = calendar.locator(
+    '[role="gridcell"][aria-selected="true"] .leaf-calendar-view__number',
+  );
+  await expect(selected).toHaveCSS('border-radius', '999px');
+  const size = await selected.boundingBox();
+  expect(size?.width).toBe(30);
+  expect(size?.height).toBe(30);
+  // The title is a disclosure button: it keeps focus and exposes the expanded state.
+  const toggle = calendar.locator('.leaf-calendar-view__title--toggle');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(calendar).toHaveAttribute('data-view', 'months');
+  expect(await uniqueColumns(calendar.locator('.leaf-calendar-view__month'))).toBe(3);
+  await expect(calendar.locator('.leaf-calendar-view__month[tabindex="0"]')).toHaveCount(1);
+});
+
+test('date and date-time popup calendars keep their own picker panel', async ({ page }) => {
+  await page.goto('/?fixture=calendar');
   for (const name of ['Date popup', 'Date time popup', 'Date range popup']) {
     await page.getByRole('combobox', { name, exact: true }).click();
     const panel = page
@@ -154,8 +173,7 @@ test('date and date-time popup calendars retain the compact borderless grid', as
       .filter({ has: page.locator('.leaf-calendar') })
       .last();
     await expect(panel).toBeVisible();
-    await expect(panel.locator('.leaf-calendar-view--full')).toHaveCount(0);
-    await expectNoVisibleDayBorders(panel);
+    await expect(panel.locator('.leaf-calendar-view')).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(panel).toBeHidden();
   }

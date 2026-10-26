@@ -61,7 +61,9 @@ function MenuPopupFixture() {
           ? 'primary'
           : new URLSearchParams(location.search).has('raised')
             ? 'raised'
-            : 'default'
+            : new URLSearchParams(location.search).has('builtin')
+              ? undefined
+              : 'default'
       }
       collapsed={collapsed}
       style={

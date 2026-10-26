@@ -13,7 +13,6 @@ const TARGET_FILES = [
   'badge/badge.scss',
   'progress/progress.scss',
   'loadingbar/loadingbar.scss',
-  'appbar/appbar.scss',
   'anchor/anchor.scss',
   'breadcrumb/breadcrumb.scss',
 ];
@@ -49,6 +48,18 @@ const EXTERNAL_CUSTOM_PROPERTY_CONSUMERS = [
     variable: '--leaf-button-radius',
     consumer: 'button/button.scss',
     reason: 'FileList constrains the private ButtonControl radius.',
+  },
+  {
+    file: 'filelist/filelist.scss',
+    variable: '--leaf-button-rest-color',
+    consumer: 'button/button.scss',
+    reason: 'FileList rests its private text actions in muted ink.',
+  },
+  {
+    file: 'filelist/filelist.scss',
+    variable: '--leaf-text-action-color',
+    consumer: 'styles/_mixins.scss',
+    reason: 'FileList download links rest in muted ink through the shared text action.',
   },
 ];
 

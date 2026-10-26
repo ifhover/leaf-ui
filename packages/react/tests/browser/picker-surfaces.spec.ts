@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { settleAnimations } from './helpers/motion';
 import { colorChannels as backgroundColor, colorChannels as tokenColor } from './helpers/paint';
 
 test('card dialog uses a muted canvas, an inset content surface and aligned sections', async ({
@@ -160,17 +161,13 @@ test('card dialog uses a muted canvas, an inset content surface and aligned sect
   });
 });
 
-test('plain dialog shares the canvas and aligns header and footer insets', async ({
-  page,
-}, testInfo) => {
+test('plain dialog uses the content surface and equal outer insets', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 700, height: 500 });
   await page.goto('/?fixture=picker-surfaces');
   await page.getByRole('button', { name: 'Open plain dialog', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Plain dialog', exact: true });
   await expect(dialog).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 0)', { timeout: 20_000 });
-  expect(await backgroundColor(dialog)).toEqual(
-    await tokenColor(dialog, '--leaf-color-surface-muted'),
-  );
+  expect(await backgroundColor(dialog)).toEqual(await tokenColor(dialog, '--leaf-color-surface'));
 
   const metrics = await dialog.evaluate((node) => {
     const box = (selector: string) =>
@@ -180,6 +177,7 @@ test('plain dialog shares the canvas and aligns header and footer insets', async
       const style = element ? getComputedStyle(element) : undefined;
       return {
         blockStart: Number.parseFloat(style?.paddingBlockStart ?? '0'),
+        blockEnd: Number.parseFloat(style?.paddingBlockEnd ?? '0'),
         inlineStart: Number.parseFloat(style?.paddingInlineStart ?? '0'),
         inlineEnd: Number.parseFloat(style?.paddingInlineEnd ?? '0'),
       };
@@ -199,7 +197,11 @@ test('plain dialog shares the canvas and aligns header and footer insets', async
   const contentLeft = (metrics.dialog?.x ?? 0) + metrics.borderWidth;
   const contentRight =
     (metrics.dialog?.x ?? 0) + (metrics.dialog?.width ?? 0) - metrics.borderWidth;
-  expect(metrics.headerPadding.blockStart).toBeCloseTo(16, 0);
+  expect(metrics.headerPadding.blockStart).toBeCloseTo(20, 0);
+  expect(metrics.headerPadding.blockStart).toBe(metrics.headerPadding.inlineStart);
+  expect(metrics.footerPadding.blockEnd).toBe(metrics.headerPadding.blockStart);
+  expect(metrics.contentPadding.blockStart).toBe(metrics.contentPadding.inlineStart);
+  expect(metrics.contentPadding.blockEnd).toBe(metrics.contentPadding.inlineStart);
   expect(metrics.headerPadding.inlineStart).toBeCloseTo(metrics.footerPadding.inlineStart, 0);
   expect(metrics.headerPadding.inlineEnd).toBeCloseTo(metrics.footerPadding.inlineEnd, 0);
   expect(metrics.title?.x).toBeCloseTo(contentLeft + metrics.headerPadding.inlineStart, 0);
@@ -240,6 +242,12 @@ const pickers = [
     footer: false,
   },
   {
+    name: 'Card date time range',
+    panel: '.leaf-range-panel--datetime',
+    surface: '.leaf-range-panel__calendars',
+    footer: true,
+  },
+  {
     name: 'Card time',
     panel: '.leaf-time-picker__panel',
     surface: '.leaf-time-picker__columns',
@@ -269,7 +277,7 @@ test('all date and time pickers share the card panel preset and footer alignment
 
     const surface = panel.locator(item.surface);
     expect(await backgroundColor(surface)).toEqual(
-      await tokenColor(surface, '--leaf-picker-card-surface'),
+      await tokenColor(surface, '--leaf-color-surface'),
     );
     const geometry = await panel.evaluate((node, surfaceSelector) => {
       const panelBox = node.getBoundingClientRect();
@@ -286,12 +294,19 @@ test('all date and time pickers share the card panel preset and footer alignment
         surfaceRight: surfaceBox?.right,
       };
     }, item.surface);
-    expect(geometry.insetLeft).toBeCloseTo(9, 0);
-    expect(geometry.insetRight).toBeCloseTo(9, 0);
+    expect(geometry.insetLeft).toBeCloseTo(7, 0);
+    expect(geometry.insetRight).toBeCloseTo(7, 0);
     if (item.footer) {
       expect(geometry.footerBackground).toBe('rgba(0, 0, 0, 0)');
       expect(geometry.footerLeft).toBeCloseTo(geometry.surfaceLeft ?? 0, 0);
       expect(geometry.footerRight).toBeCloseTo(geometry.surfaceRight ?? 0, 0);
+      const shortcuts = panel.locator('.leaf-picker-footer .leaf-button:not(.leaf-button--solid)');
+      for (const shortcut of await shortcuts.all()) {
+        await expect(shortcut).toHaveClass(/leaf-button--outline/);
+        await expect(shortcut).toHaveCSS('border-top-style', 'solid');
+        await expect(shortcut).toHaveCSS('border-top-width', '1px');
+        await expect(shortcut).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+      }
     }
     await panel.screenshot({
       path: test.info().outputPath(`picker-${slug}-${testInfo.project.name}.png`),
@@ -309,6 +324,7 @@ test('card picker panels stay contained in dark RTL layouts', async ({ page }, t
     await page.getByRole('combobox', { name: item.name, exact: true }).click();
     const panel = page.locator(item.panel).last();
     await expect(panel).toBeVisible();
+    await settleAnimations(panel);
     const bounds = await panel.boundingBox();
     expect(bounds).not.toBeNull();
     expect(bounds?.x ?? -1).toBeGreaterThanOrEqual(0);
@@ -316,7 +332,7 @@ test('card picker panels stay contained in dark RTL layouts', async ({ page }, t
     expect((bounds?.x ?? 0) + (bounds?.width ?? 0)).toBeLessThanOrEqual(375);
     expect((bounds?.y ?? 0) + (bounds?.height ?? 0)).toBeLessThanOrEqual(812);
     const surface = panel.locator(item.surface);
-    const surfaceColor = await tokenColor(surface, '--leaf-picker-card-surface');
+    const surfaceColor = await tokenColor(surface, '--leaf-color-surface');
     expect(await backgroundColor(surface)).toEqual(surfaceColor);
     expect(await backgroundColor(panel)).not.toEqual(surfaceColor);
     await panel.screenshot({
@@ -331,13 +347,103 @@ test('card picker panels stay contained in dark RTL layouts', async ({ page }, t
     const footer = panel.locator('.leaf-picker-footer');
     if (await footer.count()) {
       await footer.scrollIntoViewIfNeeded();
-      const footerBounds = await footer.boundingBox();
-      expect(footerBounds?.y ?? -1).toBeGreaterThanOrEqual(bounds?.y ?? 0);
-      expect((footerBounds?.y ?? 0) + (footerBounds?.height ?? 0)).toBeLessThanOrEqual(
-        (bounds?.y ?? 0) + (bounds?.height ?? 0) + 1,
-      );
+      for (const shortcut of await footer.locator('.leaf-button:not(.leaf-button--solid)').all()) {
+        await expect(shortcut).toHaveClass(/leaf-button--outline/);
+        await expect(shortcut).toHaveCSS('border-top-style', 'solid');
+        await expect(shortcut).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+      }
+      // Scrolling can reposition the panel; compare geometry from the same layout frame.
+      const { panelBounds, footerBounds } = await panel.evaluate((node) => {
+        const footer = node.querySelector<HTMLElement>('.leaf-picker-footer');
+        if (!footer) throw new Error('Missing picker footer geometry');
+        return {
+          panelBounds: node.getBoundingClientRect().toJSON(),
+          footerBounds: footer.getBoundingClientRect().toJSON(),
+        };
+      });
+      expect(footerBounds.top).toBeGreaterThanOrEqual(panelBounds.top);
+      expect(footerBounds.bottom).toBeLessThanOrEqual(panelBounds.bottom + 1);
     }
     await page.keyboard.press('Escape');
     await expect(panel).toBeHidden();
   }
+});
+
+test.describe('picker option feedback', () => {
+  test.use({ hasTouch: false });
+
+  for (const rtl of [false, true]) {
+    test(`time checks stay clear of small scrollbars in ${rtl ? 'dark compact RTL' : 'light LTR'}`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width: rtl ? 375 : 1100, height: 900 });
+      await page.goto(`/?fixture=picker-surfaces${rtl ? '&theme=dark&rtl=1&compact=1' : ''}`);
+      for (const item of pickers.filter((picker) => picker.name.includes('time'))) {
+        await page.getByRole('combobox', { name: item.name, exact: true }).click();
+        const panel = page.locator(`${item.panel}[data-state="open"]`);
+        const columns = panel.locator('.leaf-time-picker__column');
+        for (const column of await columns.all()) {
+          const selected = column.locator('[aria-selected="true"]');
+          const check = selected.locator('.leaf-time-picker__check');
+          const track = column.locator('..').locator('.leaf-scrollbar__bar--vertical');
+          await expect(check).toHaveCSS('opacity', '1');
+          await selected.hover();
+          await expect(track).toHaveCSS('width', '6px');
+          await expect(track).toHaveCSS('opacity', '1');
+          await expect
+            .poll(() =>
+              selected.evaluate((node) => getComputedStyle(node, '::before').backgroundColor),
+            )
+            .toBe('rgba(0, 0, 0, 0.04)');
+          const mark = await check.boundingBox();
+          const bar = await track.boundingBox();
+          if (!mark || !bar) throw new Error('Missing time check or scrollbar geometry');
+          const gap = rtl ? mark.x - bar.x - bar.width : bar.x - mark.x - mark.width;
+          expect(gap).toBeGreaterThanOrEqual(2);
+          // The same check-only feedback remains after keyboard selection and scrolling.
+          await selected.press('ArrowDown');
+          await expect(column.locator('[aria-selected="true"]')).toBeFocused();
+        }
+        await expect(panel.locator('.leaf-time-picker__selection')).toHaveCount(0);
+        await panel.screenshot({
+          path: testInfo.outputPath(`${item.name.replaceAll(' ', '-')}-${rtl ? 'rtl' : 'ltr'}.png`),
+        });
+        await page.keyboard.press('Escape');
+        await expect(panel).toHaveCount(0);
+      }
+    });
+  }
+
+  test('time checks share Select motion and dates never shrink on press', async ({ page }) => {
+    await page.goto('/?fixture=selection');
+    const motion = (selector: string) =>
+      page
+        .locator(selector)
+        .first()
+        .evaluate((node) => {
+          const css = getComputedStyle(node);
+          return [css.transitionProperty, css.transitionDuration, css.transitionTimingFunction];
+        });
+    await page.getByRole('combobox', { name: 'Selected person' }).click();
+    const selectMotion = await motion('.leaf-select__check');
+    await page.keyboard.press('Escape');
+    await page.getByRole('combobox', { name: 'Selected time' }).click();
+    expect(await motion('.leaf-time-picker__check')).toEqual(selectMotion);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(page.locator('.leaf-time-picker__check').first()).toHaveCSS(
+      'transition-duration',
+      '0s',
+    );
+    await page.keyboard.press('Escape');
+    await page.goto('/?fixture=picker-surfaces');
+    await page.getByRole('combobox', { name: 'Card date', exact: true }).click();
+    const date = page.locator('.leaf-date-picker__day[data-day="2026-10-16"]');
+    await expect(date).toHaveCSS('border-radius', '6px');
+    await date.hover();
+    await expect(date).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.04)');
+    await page.mouse.down();
+    await expect(date).toHaveCSS('scale', 'none');
+    await expect(date).toHaveCSS('transform', 'none');
+    await page.mouse.up();
+  });
 });

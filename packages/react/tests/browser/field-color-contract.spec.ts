@@ -9,6 +9,8 @@ const rootPrimary = rgb('#1265f5');
 const familyKinds = [
   'auto-complete',
   'input-number',
+  'textarea',
+  'mentions',
   'cascader',
   'tree-select',
   'color-picker',
@@ -18,6 +20,8 @@ type FamilyKind = (typeof familyKinds)[number];
 const familyShells: Record<FamilyKind, string> = {
   'auto-complete': 'leaf-autocomplete',
   'input-number': 'leaf-input-number',
+  textarea: 'leaf-textarea',
+  mentions: 'leaf-mentions',
   cascader: 'leaf-cascader',
   'tree-select': 'leaf-tree-select',
   'color-picker': 'leaf-color-picker',
@@ -35,6 +39,7 @@ function familyShell(page: Page, name: string, kind: FamilyKind) {
 function familyControl(page: Page, name: string, kind: FamilyKind) {
   const scope = page.locator(`[data-field="${name}"]`);
   if (kind === 'input-number') return scope.getByRole('spinbutton');
+  if (kind === 'textarea') return scope.getByRole('textbox');
   if (kind === 'color-picker') return scope.getByRole('button');
   return scope.getByRole('combobox');
 }
@@ -87,8 +92,13 @@ async function expectShellBorder(locator: Locator, expected: string) {
 
 async function focusOrOpenFamily(page: Page, name: string, kind: FamilyKind) {
   const target = familyControl(page, name, kind);
-  if (kind === 'auto-complete' || kind === 'input-number') {
+  if (kind === 'auto-complete' || kind === 'input-number' || kind === 'textarea') {
     await target.focus();
+    return;
+  }
+  if (kind === 'mentions') {
+    await target.fill('@');
+    await expect(target).toHaveAttribute('aria-expanded', 'true');
     return;
   }
   await target.click();
@@ -97,11 +107,17 @@ async function focusOrOpenFamily(page: Page, name: string, kind: FamilyKind) {
 
 async function releaseFamily(page: Page, name: string, kind: FamilyKind) {
   const target = familyControl(page, name, kind);
-  if (kind !== 'input-number') {
+  if (kind === 'mentions') {
+    await target.fill('');
+    await expect(target).toHaveAttribute('aria-expanded', 'false');
+  } else if (kind !== 'input-number' && kind !== 'textarea') {
     await page.keyboard.press('Escape');
     await expect(target).toHaveAttribute('aria-expanded', 'false');
   }
-  await target.blur();
+  await familyShell(page, name, kind).evaluate((node) => {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && node.contains(active)) active.blur();
+  });
   await page.mouse.move(0, 0);
 }
 
@@ -206,23 +222,19 @@ for (const appearance of ['light', 'dark'] as const) {
       await expect(page.getByRole('listbox', { name: 'Disabled select' })).toHaveCount(0);
       await expectBorder(field(page, 'disabled-select', 'leaf-select'), resting);
 
-      const textarea = field(page, 'neutral-textarea', 'leaf-textarea');
-      const textareaControl = control(page, 'Neutral textarea');
-      const neutralFocus = await resolveColor(
-        textarea,
-        'color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border))',
-      );
+      const textarea = field(page, 'multiline-textarea', 'leaf-textarea');
+      const textareaControl = control(page, 'Multiline textarea');
       await expectBorder(textarea, resting);
       await textarea.hover();
       await expectBorder(textarea, resting);
       const textareaShadow = await shadow(textarea);
       await page.mouse.move(0, 0);
       await textareaControl.focus();
-      await expectBorder(textarea, neutralFocus);
+      await expectBorder(textarea, primary);
       await expectNoHalo(textarea, textareaShadow);
-      await expectBorder(field(page, 'neutral-error-textarea', 'leaf-textarea'), danger);
-      await expectBorder(field(page, 'neutral-warning-textarea', 'leaf-textarea'), warning);
-      await expectBorder(field(page, 'neutral-disabled-textarea', 'leaf-textarea'), resting);
+      await expectBorder(field(page, 'multiline-error-textarea', 'leaf-textarea'), danger);
+      await expectBorder(field(page, 'multiline-warning-textarea', 'leaf-textarea'), warning);
+      await expectBorder(field(page, 'multiline-disabled-textarea', 'leaf-textarea'), resting);
     });
 
     test('global borders and nested themes keep their scoped precedence', async ({ page }) => {
@@ -388,16 +400,12 @@ for (const appearance of ['light', 'dark'] as const) {
       await expectBorder(defaultInput, defaultBorder);
     });
 
-    test('remaining field families share the Textarea shell, neutral focus, and states', async ({
+    test('field families share the resting shell and retain their focus and validation states', async ({
       page,
-    }) => {
-      const textarea = field(page, 'neutral-textarea', 'leaf-textarea');
-      const disabledTextarea = field(page, 'neutral-disabled-textarea', 'leaf-textarea');
+    }, testInfo) => {
+      const textarea = field(page, 'multiline-textarea', 'leaf-textarea');
+      const disabledTextarea = field(page, 'multiline-disabled-textarea', 'leaf-textarea');
       const resting = await resolveVariable(textarea, '--leaf-field-rest-border');
-      const neutralFocus = await resolveColor(
-        textarea,
-        'color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border))',
-      );
       const primary = await resolveColor(textarea, 'var(--leaf-color-primary)');
       const danger = await resolveColor(textarea, 'var(--leaf-color-danger)');
       const warning = await resolveColor(textarea, 'var(--leaf-color-warning)');
@@ -406,22 +414,29 @@ for (const appearance of ['light', 'dark'] as const) {
       );
 
       expect(primary).toBe(rootPrimary);
-      expect(neutralFocus).not.toBe(primary);
       await expectShellBorder(textarea, resting);
 
       for (const kind of familyKinds) {
         const name = `target-default-${kind}`;
         const shell = familyShell(page, name, kind);
         expect(await resolveVariable(shell, '--leaf-field-rest-border')).toBe(resting);
-        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(neutralFocus);
+        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(primary);
 
         await expectShellBorder(shell, resting);
         await shell.hover();
         await expectShellBorder(shell, resting);
         await page.mouse.move(0, 0);
         await focusOrOpenFamily(page, name, kind);
-        await expectShellBorder(shell, neutralFocus);
+        await expectShellBorder(shell, primary);
         await expect(shell).toHaveCSS('outline-style', 'none');
+        if (kind === 'textarea' || kind === 'mentions' || kind === 'input-number') {
+          await shell.screenshot({ path: testInfo.outputPath(`${kind}-focused.png`) });
+        }
+        if (kind === 'mentions') await expect(shell).toHaveAttribute('data-open', 'true');
+        if (kind === 'input-number') {
+          await page.locator(`[data-field="${name}"]`).getByRole('button').first().focus();
+          await expectShellBorder(shell, primary);
+        }
         await releaseFamily(page, name, kind);
         await expectShellBorder(shell, resting);
 
@@ -434,7 +449,7 @@ for (const appearance of ['light', 'dark'] as const) {
 
         const disabledControl = familyControl(page, `target-disabled-${kind}`, kind);
         await expect(disabledControl).toBeDisabled();
-        if (kind !== 'input-number') {
+        if (kind !== 'input-number' && kind !== 'textarea') {
           await disabledControl.click({ force: true });
           await expect(disabledControl).toHaveAttribute('aria-expanded', 'false');
         }
@@ -443,6 +458,10 @@ for (const appearance of ['light', 'dark'] as const) {
       for (const [name, kind, expected] of [
         ['target-error-date-picker', 'date-picker', danger],
         ['target-warning-tree-select', 'tree-select', warning],
+        ['target-error-textarea', 'textarea', danger],
+        ['target-warning-input-number', 'input-number', warning],
+        ['target-error-mentions', 'mentions', danger],
+        ['target-warning-mentions', 'mentions', warning],
       ] as const) {
         await focusOrOpenFamily(page, name, kind);
         await expectShellBorder(familyShell(page, name, kind), expected);
@@ -454,26 +473,21 @@ for (const appearance of ['light', 'dark'] as const) {
       page,
     }) => {
       const globalDate = familyShell(page, 'target-global-date-picker', 'date-picker');
-      const globalFocus = await resolveColor(
-        globalDate,
-        'color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border))',
-      );
       const primary = await resolveColor(globalDate, 'var(--leaf-color-primary)');
       const danger = await resolveColor(globalDate, 'var(--leaf-color-danger)');
       const warning = await resolveColor(globalDate, 'var(--leaf-color-warning)');
 
       expect(primary).toBe(rootPrimary);
-      expect(globalFocus).not.toBe(rootPrimary);
       for (const kind of familyKinds) {
         const shell = familyShell(page, `target-global-${kind}`, kind);
         expect(await resolveVariable(shell, '--leaf-field-rest-border')).toBe(globalBorder);
-        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(globalFocus);
+        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(primary);
         await expectShellBorder(shell, globalBorder);
       }
-      for (const kind of ['date-picker', 'tree-select'] as const) {
+      for (const kind of familyKinds) {
         const name = `target-global-${kind}`;
         await focusOrOpenFamily(page, name, kind);
-        await expectShellBorder(familyShell(page, name, kind), globalFocus);
+        await expectShellBorder(familyShell(page, name, kind), primary);
         await releaseFamily(page, name, kind);
         await expectShellBorder(familyShell(page, name, kind), globalBorder);
       }
@@ -499,10 +513,6 @@ for (const appearance of ['light', 'dark'] as const) {
       );
 
       const nestedDate = familyShell(page, 'target-nested-date-picker', 'date-picker');
-      const nestedFocus = await resolveColor(
-        nestedDate,
-        'color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border))',
-      );
       const nestedColor = await resolveColor(nestedDate, 'var(--leaf-color-primary)');
       const nestedDanger = await resolveColor(nestedDate, 'var(--leaf-color-danger)');
       const nestedWarning = await resolveColor(nestedDate, 'var(--leaf-color-warning)');
@@ -511,19 +521,18 @@ for (const appearance of ['light', 'dark'] as const) {
         '--leaf-field-rest-border',
       );
       expect(nestedColor).toBe(nestedPrimary);
-      expect(nestedFocus).not.toBe(nestedPrimary);
 
       for (const kind of familyKinds) {
         const shell = familyShell(page, `target-nested-${kind}`, kind);
         expect(await resolveVariable(shell, '--leaf-field-rest-border')).toBe(nestedResting);
-        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(nestedFocus);
+        expect(await resolveVariable(shell, '--leaf-field-color')).toBe(nestedColor);
         await expectShellBorder(shell, nestedResting);
         await expect(shell).toHaveCSS('background-color', nestedSurface);
       }
-      for (const kind of ['date-picker', 'tree-select'] as const) {
+      for (const kind of familyKinds) {
         const name = `target-nested-${kind}`;
         await focusOrOpenFamily(page, name, kind);
-        await expectShellBorder(familyShell(page, name, kind), nestedFocus);
+        await expectShellBorder(familyShell(page, name, kind), nestedColor);
         await expect(familyShell(page, name, kind)).toHaveCSS('background-color', nestedSurface);
         await releaseFamily(page, name, kind);
       }
@@ -543,6 +552,8 @@ for (const appearance of ['light', 'dark'] as const) {
       const overrideExpectations: Record<FamilyKind, { focus: string; rest: string }> = {
         'auto-complete': { rest: rgb('#9a3412'), focus: rgb('#7c2d12') },
         'input-number': { rest: rgb('#4d7c0f'), focus: rgb('#3f6212') },
+        textarea: { rest: rgb('#4338ca'), focus: rgb('#3730a3') },
+        mentions: { rest: rgb('#4338ca'), focus: rgb('#3730a3') },
         cascader: { rest: rgb('#a21caf'), focus: rgb('#86198f') },
         'tree-select': { rest: rgb('#0369a1'), focus: rgb('#075985') },
         'color-picker': { rest: rgb('#b45309'), focus: rgb('#92400e') },
@@ -567,14 +578,10 @@ for (const appearance of ['light', 'dark'] as const) {
         rgb('#7dd3fc'),
       );
 
-      const sibling = field(page, 'target-override-sibling-textarea', 'leaf-textarea');
-      const siblingFocus = await resolveColor(
-        sibling,
-        'color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border))',
-      );
+      const sibling = field(page, 'target-override-sibling-input', 'leaf-input');
       await expectShellBorder(sibling, globalBorder);
       await sibling.focus();
-      await expectShellBorder(sibling, siblingFocus);
+      await expectShellBorder(sibling, primary);
       await sibling.blur();
       await page.mouse.move(0, 0);
       await expectShellBorder(sibling, globalBorder);

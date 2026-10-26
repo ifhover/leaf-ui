@@ -379,10 +379,10 @@ test('requires review for formulas inside shared recipes without counting them a
   assert.match(changed.result.errors.join('\n'), /46%/u);
 });
 
-test('requires Input and Select to use the shared primary field variant', async (t) => {
+test('requires fields to use the shared primary recipe instead of local color overrides', async (t) => {
   const files = {
     'input/input.scss': `.leaf-input {
-  @include mixins.field('input');
+  @include mixins.field('input', 'neutral');
   --leaf-field-color: var(--leaf-color-primary);
 }`,
     'select/select.scss': `.leaf-select {
@@ -397,14 +397,14 @@ test('requires Input and Select to use the shared primary field variant', async 
     },
   });
   assert.equal(invalid.result.ok, false);
-  assert.match(invalid.result.errors.join('\n'), /field\('input', 'primary'\)/u);
+  assert.match(invalid.result.errors.join('\n'), /shared primary field recipe for input/u);
   assert.match(invalid.result.errors.join('\n'), /must not redefine --leaf-field-color/u);
 
   const valid = await fixture(
     t,
     {
       'input/input.scss': `.leaf-input {
-  @include mixins.field('input', 'primary');
+  @include mixins.field('input');
 }`,
       'select/select.scss': `.leaf-select {
   @include mixins.field('select', 'primary');
@@ -438,7 +438,19 @@ test('rejects a new global color token', async (t) => {
   assert.match(result.errors.join('\n'), /Added global color token --leaf-color-new-family/u);
 });
 
-test('does not let neutral fields silently opt into primary focus', async (t) => {
+test('primary field contracts can name dashed component slots explicitly', async (t) => {
+  const file = 'datepicker/datepicker.scss';
+  const { result } = await fixture(
+    t,
+    {
+      [file]: ".leaf-date-picker { @include mixins.field('date-picker', 'primary'); }",
+    },
+    { fieldFamily: { consumers: [file], primaryFocusConsumers: { [file]: 'date-picker' } } },
+  );
+  assert.equal(result.ok, true);
+});
+
+test('requires an explicit neutral variant for fields registered as exceptions', async (t) => {
   const limits = {
     fieldFamily: {
       consumers: ['textarea/textarea.scss'],
@@ -446,7 +458,7 @@ test('does not let neutral fields silently opt into primary focus', async (t) =>
       neutralFocusConsumers: { 'textarea/textarea.scss': 'textarea' },
     },
   };
-  for (const call of ["field('textarea')", "field('textarea', 'neutral')"]) {
+  for (const call of ["field('textarea', 'neutral')"]) {
     const valid = await fixture(
       t,
       {
@@ -456,15 +468,15 @@ test('does not let neutral fields silently opt into primary focus', async (t) =>
     );
     assert.equal(valid.result.ok, true);
   }
-  const invalid = await fixture(
-    t,
-    {
-      'textarea/textarea.scss': ".leaf-textarea { @include mixins.field('textarea', 'primary'); }",
-    },
-    limits,
-  );
-  assert.equal(invalid.result.ok, false);
-  assert.match(invalid.result.errors.join('\n'), /retain the shared neutral field variant/u);
+  for (const call of ["field('textarea')", "field('textarea', 'primary')"]) {
+    const invalid = await fixture(
+      t,
+      { 'textarea/textarea.scss': `.leaf-textarea { @include mixins.${call}; }` },
+      limits,
+    );
+    assert.equal(invalid.result.ok, false);
+    assert.match(invalid.result.errors.join('\n'), /retain the shared neutral field variant/u);
+  }
 });
 
 test('rejects recipe changes without review and accepts an explicit review record', async (t) => {

@@ -39,8 +39,8 @@ for (const theme of ['light', 'dark']) {
       await section.getByRole('button', { name: `${name} color`, exact: true }).click();
       const formats = page.locator('.leaf-color-picker__formats');
       await expect(formats).toBeVisible();
-      expect(await paint(formats)).toBe(trackColor);
-      expect(await paint(formats.locator('[aria-pressed="true"]'))).toBe(pillColor);
+      expect(await paint(formats.locator('.leaf-tabs__list'))).toBe(trackColor);
+      expect(await paint(formats.locator('.leaf-tabs__indicator'))).toBe(pillColor);
       const value = page.locator('.leaf-color-picker__input');
       await value.focus();
       await expect(value).toHaveCSS('outline-style', 'none');
@@ -68,11 +68,12 @@ for (const theme of ['light', 'dark']) {
       expect(await paint(datePanel)).toBe(canvas);
       await page.keyboard.press('Escape');
 
-      const pagination = await paint(section.locator('.leaf-pagination__indicator'));
+      // Time columns mark the saved value with a check, like Select, not a brand-tinted block.
       await section.getByRole('combobox', { name: `${name} time`, exact: true }).click();
-      const timeSelection = page.locator('.leaf-time-picker__selection').first();
-      await expect(timeSelection).toBeVisible();
-      expect(await paint(timeSelection)).toBe(pagination);
+      const savedTime = page.locator('.leaf-time-picker__column [aria-selected="true"]').first();
+      await expect(savedTime.locator('.leaf-time-picker__check')).toHaveCSS('opacity', '1');
+      await expect(savedTime).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+      await expect(page.locator('.leaf-time-picker__selection')).toHaveCount(0);
       await page.keyboard.press('Escape');
 
       const menuDanger = section.getByRole('menuitem', { name: 'Delete', exact: true });
@@ -95,8 +96,8 @@ for (const theme of ['light', 'dark']) {
     expect(await paint(custom.locator('.leaf-tabs__list'))).toBe('#213141');
     expect(await paint(original.locator('.leaf-tabs__list'))).not.toBe('#213141');
     await custom.getByRole('button', { name: 'Override color', exact: true }).click();
-    expect(await paint(page.locator('.leaf-color-picker__formats'))).toBe(
-      await paint(original.locator('.leaf-tabs__list')),
+    expect(await paint(page.locator('.leaf-color-picker__formats .leaf-tabs__list'))).toBe(
+      await paint(custom.locator('.leaf-tabs__list')),
     );
   });
 }

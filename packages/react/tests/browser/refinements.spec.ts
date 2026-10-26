@@ -422,7 +422,7 @@ test('single-line Alert aligns its icon with the title and Dropdown colors dange
     .toBe(await tokenColor(edit, '--leaf-color-danger-soft'));
 });
 
-test('Dropdown uses a 220px default width and keeps trailing content at the row end', async ({
+test('Dropdown grows from a 160px minimum and keeps trailing content at the row end', async ({
   page,
 }) => {
   await page.goto('/?fixture=refinements');
@@ -436,11 +436,11 @@ test('Dropdown uses a 220px default width and keeps trailing content at the row 
     .getByRole('menuitem', { name: /Status Awaiting a long-running export/ })
     .locator('.leaf-dropdown__extra');
 
-  await expect(panel).toHaveCSS('min-width', '220px');
+  await expect(panel).toHaveCSS('min-width', '160px');
   await panel.evaluate((node) => {
     for (const animation of node.getAnimations()) animation.finish();
   });
-  expect((await panel.boundingBox())?.width).toBeCloseTo(220, 0);
+  expect((await panel.boundingBox())?.width).toBeGreaterThan(220);
   const row = await open.boundingBox();
   const trailing = await extra.boundingBox();
   const inlineEnd = await open.evaluate((node) =>

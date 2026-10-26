@@ -7,7 +7,6 @@ import {
   Pagination,
   Select,
   Space,
-  TimePicker,
   useConfirm,
   useMessage,
   useNotification,
@@ -31,7 +30,7 @@ function Controls() {
           <DatePicker defaultValue={new Date(2026, 9, 16)} />
         </FormField>
         <FormField label="Time">
-          <TimePicker use12Hours defaultValue="14:30" />
+          <DatePicker picker="time" use12Hours defaultValue="14:30" />
         </FormField>
       </Form>
       <Pagination total={21} showTotal />
