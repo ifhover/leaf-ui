@@ -258,7 +258,17 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
   };
   const choose = (option: CascaderOption, level: number) => {
     if (option.disabled || disabled || readOnly) return;
-    const next = [...draft.slice(0, level), option.value];
+    const committedPath =
+      level === 0 && !changeOnSelect
+        ? paths.find(
+            (path) => path[0] === option.value && resolvePath(options, path).length === path.length,
+          )
+        : undefined;
+    let next = [...draft.slice(0, level), option.value];
+    if (level === 0 && !changeOnSelect) {
+      if (draft[0] === option.value) next = [...draft];
+      else if (committedPath) next = [...committedPath];
+    }
     setDraft(next);
     if (
       loadData &&
@@ -431,6 +441,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         triggerRef={triggerRef}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         placement={popupPlacement}
         container={getPopupContainer}
         render={popupRender}
@@ -491,92 +502,96 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
           </Scrollbar>
         ) : (
           <div className="leaf-cascader__columns">
-            {levels.map((level, depth) => (
-              <Scrollbar
-                key={depth === 0 ? 'root' : draft[depth - 1]}
-                className="leaf-cascader__column"
-                orientation="vertical"
-                maxHeight={256}
-                data-level={depth}
-                role="listbox"
-                aria-label={format('cascader.level', { level: depth + 1 })}
-              >
-                {level.length ? (
-                  level.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="option"
-                      className="leaf-floating__option"
-                      aria-selected={draft[depth] === option.value}
-                      disabled={option.disabled}
-                      tabIndex={
-                        option.value ===
-                        (draft[depth] ?? level.find((item) => !item.disabled)?.value)
-                          ? 0
-                          : -1
-                      }
-                      onClick={() => {
-                        choose(option, depth);
-                        if (option.children?.length) setFocusLevel(depth + 1);
-                      }}
-                      onKeyDown={(event) => {
-                        if (
-                          event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight') &&
-                          (option.children?.length || option.isLeaf === false)
-                        ) {
-                          event.preventDefault();
-                          choose(option, depth);
-                          setFocusLevel(depth + 1);
-                        } else if (
-                          event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft') &&
-                          depth > 0
-                        ) {
-                          event.preventDefault();
-                          setFocusLevel(depth - 1);
-                        } else if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                          event.preventDefault();
-                          const items = Array.from(
-                            event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                              'button:not(:disabled)',
-                            ) ?? [],
-                          );
-                          const index = items.indexOf(event.currentTarget);
-                          const next =
-                            event.key === 'Home'
-                              ? 0
-                              : event.key === 'End'
-                                ? items.length - 1
-                                : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) %
-                                  items.length;
-                          items[next]?.focus();
-                          items[next]?.scrollIntoView?.({ block: 'nearest' });
+            {levels.map((level, depth) => {
+              // Include depth so values containing '/' cannot collide across levels.
+              const stableKey = `${depth}:${draft.slice(0, depth).join('/')}`;
+              return (
+                <Scrollbar
+                  key={stableKey}
+                  className="leaf-cascader__column"
+                  orientation="vertical"
+                  maxHeight={256}
+                  data-level={depth}
+                  role="listbox"
+                  aria-label={format('cascader.level', { level: depth + 1 })}
+                >
+                  {level.length ? (
+                    level.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="option"
+                        className="leaf-floating__option"
+                        aria-selected={draft[depth] === option.value}
+                        disabled={option.disabled}
+                        tabIndex={
+                          option.value ===
+                          (draft[depth] ?? level.find((item) => !item.disabled)?.value)
+                            ? 0
+                            : -1
                         }
-                      }}
-                    >
-                      <span>{optionRender?.(option) ?? option.label}</span>
-                      {loading.has(option.value) ? (
-                        <LoaderCircle size={14} className="leaf-select__spinner" />
-                      ) : option.children?.length || option.isLeaf === false ? (
-                        <ChevronRight size={14} aria-hidden="true" />
-                      ) : (
-                        (multiple
-                          ? paths.some(
-                              (path) =>
-                                JSON.stringify(path) ===
-                                JSON.stringify([...draft.slice(0, depth), option.value]),
-                            )
-                          : draft[depth] === option.value) && (
-                          <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
-                        )
-                      )}
-                    </button>
-                  ))
-                ) : (
-                  <div className="leaf-floating__empty">{messages.cascader.empty}</div>
-                )}
-              </Scrollbar>
-            ))}
+                        onClick={() => {
+                          choose(option, depth);
+                          if (option.children?.length) setFocusLevel(depth + 1);
+                        }}
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight') &&
+                            (option.children?.length || option.isLeaf === false)
+                          ) {
+                            event.preventDefault();
+                            choose(option, depth);
+                            setFocusLevel(depth + 1);
+                          } else if (
+                            event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft') &&
+                            depth > 0
+                          ) {
+                            event.preventDefault();
+                            setFocusLevel(depth - 1);
+                          } else if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                            event.preventDefault();
+                            const items = Array.from(
+                              event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+                                'button:not(:disabled)',
+                              ) ?? [],
+                            );
+                            const index = items.indexOf(event.currentTarget);
+                            const next =
+                              event.key === 'Home'
+                                ? 0
+                                : event.key === 'End'
+                                  ? items.length - 1
+                                  : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) %
+                                    items.length;
+                            items[next]?.focus();
+                            items[next]?.scrollIntoView?.({ block: 'nearest' });
+                          }
+                        }}
+                      >
+                        <span>{optionRender?.(option) ?? option.label}</span>
+                        {loading.has(option.value) ? (
+                          <LoaderCircle size={14} className="leaf-select__spinner" />
+                        ) : option.children?.length || option.isLeaf === false ? (
+                          <ChevronRight size={14} aria-hidden="true" />
+                        ) : (
+                          (multiple
+                            ? paths.some(
+                                (path) =>
+                                  JSON.stringify(path) ===
+                                  JSON.stringify([...draft.slice(0, depth), option.value]),
+                              )
+                            : draft[depth] === option.value) && (
+                            <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
+                          )
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="leaf-floating__empty">{messages.cascader.empty}</div>
+                  )}
+                </Scrollbar>
+              );
+            })}
           </div>
         )}
       </FloatingPanel>

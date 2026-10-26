@@ -1,56 +1,76 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TimelineBasic } from '../../../src/examples/en/timeline/basic';
 import { TimelineAlternate } from '../../../src/examples/en/timeline/advanced';
+import { TimelinePending } from '../../../src/examples/en/timeline/pending';
+
+export const leafDoc = { component: 'Timeline', primaryApi: 'TimelineProps' };
 
 # Timeline
 
 Present events and progress in sequence.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<TimelineBasic />} fileName="basic.tsx" width="100%">
+Use `children` for the event content and `label` for supporting information such as a timestamp. Events follow the order of `items`, not an automatic sort by label. Use `reverse` to reverse the event order.
+
+<ComponentExample exampleId="basic" preview={<TimelineBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/timeline/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
+## Examples
+
+### Alternating layout
+
+`mode="alternate"` places events on alternating sides, including in narrow containers. Prefer the default one-sided layout for longer content. Use `mode="right"` to align all events to the right.
+
+<ComponentExample exampleId="advanced" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/timeline/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Pending event
 
-items presents events with individual colors and icons. mode controls alignment, reverse flips the order, and pending indicates an event is still in progress.
+`pending` appends a waiting entry; it does not start requests or complete work automatically. This example adds a completed event in application state and removes the waiting entry by setting `pending` to `null`. With `reverse`, the waiting entry still stays at the end.
 
-## Types
+<ComponentExample exampleId="pending" preview={<TimelinePending />} fileName="pending.tsx" width="100%">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { TimelineItem, TimelineProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/timeline/pending.tsx"
 ```
 
-## TimelineItem API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### TimelineProps API
+
+Configure timeline items, alignment and pending content.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`TimelineItem`](#timelineitem-api)`[]` | Required | Items; keep keys unique and stable |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Timeline layout: left, right or alternating. |
+| `pending` | `ReactNode` | — | Pending content appended at the end; null or undefined omits it, while false and empty strings still retain a node. |
+| `reverse` | `boolean` | `false` | Reverse items; pending is still appended at the end. |
+
+### TimelineItem API
+
+Describe the content, marker and color of an individual event.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique stable identifier |
-| `label` | `ReactNode` | — | Display label |
-| `children` | `ReactNode` | Required | Content or child items |
-| `dot` | `ReactNode` | — | Custom timeline dot |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| (string & {})` | — | Color |
-
-## TimelineProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `items` | [`readonly TimelineItem[]`](#timelineitem-api) | Required | Items; keep keys unique and stable |
-| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Display mode or allowed characters |
-| `reverse` | `boolean` | `false` | Reverse order |
-| `pending` | `ReactNode` | — | Pending content |
+| `children` | `ReactNode` | Required | Main event content. |
+| `label` | `ReactNode` | — | Secondary label, typically a timestamp. |
+| `color` | `'primary' \| FeedbackType \| 'error' \| (string & {})` | — | Color; `error` is a compatibility alias |
+| `dot` | `ReactNode` | — | Decorative custom dot; explain important status in the event text. |

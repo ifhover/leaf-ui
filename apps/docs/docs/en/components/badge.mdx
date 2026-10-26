@@ -1,53 +1,84 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { BadgeBasic, BadgeCounts, BadgeDot, BadgeStatuses } from '../../../src/examples/en/badge/basic';
+import { BadgeBasic } from '../../../src/examples/en/badge/basic';
+import { BadgeCounts } from '../../../src/examples/en/badge/counts';
+import { BadgeDot } from '../../../src/examples/en/badge/dot';
+import { BadgeInside } from '../../../src/examples/en/badge/inside';
+import { BadgeStandalone } from '../../../src/examples/en/badge/standalone';
+
+export const leafDoc = { component: 'Badge', primaryApi: 'BadgeProps' };
 
 # Badge
 
-Show counts, unread notifications or brief statuses.
+Show counts or unread notifications.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<BadgeBasic />} fileName="basic.tsx">
+Set a count with `count` and pass `children` to attach the badge to content.
+
+<ComponentExample exampleId="basic" preview={<BadgeBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Count rules
+{/* leaf:section examples */}
 
-Counts above `max` show the limit with a plus sign. Use `showZero` to display zero.
+## Examples
 
-<ComponentExample title="Count rules" preview={<BadgeCounts />} fileName="basic.tsx">
+### Count rules
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+Counts above `max` show the limit with a plus sign. Zero is hidden unless `showZero` is set.
+
+<ComponentExample exampleId="counts" preview={<BadgeCounts />} fileName="counts.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/counts.tsx"
 ```
 
 </ComponentExample>
 
-## Dot reminders
+### Dot reminders
 
-Indicate new content without displaying a count.
+Set `dot` to indicate new content without a count. Use `aria-label` to describe the notification.
 
-<ComponentExample title="Dot reminders" preview={<BadgeDot />} fileName="basic.tsx">
+<ComponentExample exampleId="dot" preview={<BadgeDot />} fileName="dot.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/dot.tsx"
 ```
 
 </ComponentExample>
 
-## Status indicators
+### Inside placement
 
-Describe the current status with a dot and text.
+Set `placement="inside"` to place the indicator inside the content. Leave room so it does not cover text or icons.
 
-<ComponentExample title="Status indicators" preview={<BadgeStatuses />} fileName="basic.tsx">
+<ComponentExample exampleId="inside" preview={<BadgeInside />} fileName="inside.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/en/badge/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/badge/inside.tsx"
 ```
 
 </ComponentExample>
 
-## Badge API
+### Standalone
+
+Omit `children` to display a count or short text on its own.
+
+<ComponentExample exampleId="standalone" preview={<BadgeStandalone />} fileName="standalone.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/badge/standalone.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Badge API
+
+Configuration for badge counts, dot indicators and attachment placement.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -56,18 +87,5 @@ Describe the current status with a dot and text.
 | `max` | `number` | `99` | Display max+ above this count |
 | `showZero` | `boolean` | `false` | Show a zero count |
 | `dot` | `boolean` | `false` | Use a notification dot |
-| `status` | `'success' \| 'warning' \| 'error' \| 'info' \| 'default'` | — | Use a semantic status dot |
-| `text` | `ReactNode` | — | Text beside the indicator |
+| `placement` | `'outside' \| 'inside'` | `'outside'` | Attached indicator position: outside by default, or inside the top-right corner; mirrored in RTL and ignored without children |
 | `color` | `string` | — | Custom indicator color |
-
-## Types
-
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { BadgeProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Use alone for counts or status text. When attaching a notification dot to another control, provide aria-label to explain the notification.

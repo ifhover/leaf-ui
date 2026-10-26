@@ -1,44 +1,66 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { MasonryBasic } from '../../src/examples/masonry/basic';
+import { MasonryColumns } from '../../src/examples/masonry/columns';
 import { MasonryImages } from '../../src/examples/masonry/advanced';
+
+export const leafDoc = { component: 'Masonry', primaryApi: 'MasonryProps' };
 
 # Masonry 瀑布流
 
 排列高度不一的卡片与图片。
 
-## 基本用法
+内容按列从上到下阅读，不按横行排列。需要逐行阅读或让键盘焦点顺序对应横行时，使用 [Grid](./grid)。
 
-<ComponentExample title="基本用法" preview={<MasonryBasic />} fileName="basic.tsx" width="100%">
+{/* leaf:section basic */}
+
+## 基础用法
+
+<a id="基本用法"></a>
+
+用 Masonry 包裹高度不一的内容，按列排列条目。
+
+<ComponentExample exampleId="basic" preview={<MasonryBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/masonry/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
+## 示例
+
+### 响应列数
+
+`columns` 可以是固定列数，也可以按断点配置。断点依据视口宽度，不是 Masonry 容器宽度；未指定的较大断点沿用前一个值。下面将窄屏设为一列，其余视口使用两列。
+
+<ComponentExample exampleId="columns" preview={<MasonryColumns />} fileName="columns.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/masonry/columns.tsx"
+```
+
+</ComponentExample>
+
+### 图片排列
+
+让图片填满列宽，并保留各自的长宽比。这里关闭 Image 预览，仅展示排列；图片放大与分组浏览见 [Image](./image)。
+
+<ComponentExample exampleId="advanced" preview={<MasonryImages />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/masonry/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+{/* leaf:section api */}
 
-按列从上到下排列；按行阅读或固定焦点顺序的内容建议使用 Grid。
+## API
 
-## 类型
+### MasonryProps API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { MasonryProps } from '@ifhover/leaf-ui';
-```
-
-## MasonryProps API
+配置瀑布流的列数与条目间距。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | 列数；较大断点继承较小断点 |
-| `gap` | `number \| string` | `16` | 间距；数组为 [纵向, 横向] |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | 列数或视口断点配置；未指定的断点继承更小断点。 |
+| `gap` | `number \| string` | `16` | 列间距与条目纵向间距；数字为 px，也支持 CSS 长度。 |

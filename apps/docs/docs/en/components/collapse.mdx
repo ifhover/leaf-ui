@@ -1,48 +1,92 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { CollapseBasic } from '../../../src/examples/en/collapse/basic';
+import { CollapseAccordion } from '../../../src/examples/en/collapse/accordion';
+import { CollapsePreserveContent } from '../../../src/examples/en/collapse/preserve-content';
+import { CollapseExtra } from '../../../src/examples/en/collapse/extra';
+
+export const leafDoc = { component: 'Collapse', primaryApi: 'CollapseProps' };
 
 # Collapse
 
-Expand or collapse a group of sections.
+Expand or collapse a group of sections on demand.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<CollapseBasic />} fileName="basic.tsx">
+Provide headers and content through `items`, and set the initial expanded panels with `defaultActiveKey`. Multiple panels can be expanded by default. `disabled` prevents toggling that header.
+
+<ComponentExample exampleId="basic" preview={<CollapseBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/collapse/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Collapse API
+{/* leaf:section examples */}
+
+## Examples
+
+### Accordion
+
+Set `accordion` to allow at most one expanded panel; all panels can also be closed. For controlled state, use `activeKey` and `onChange`. The callback always returns `string[]`, including in accordion mode.
+
+<ComponentExample exampleId="accordion" preview={<CollapseAccordion />} fileName="accordion.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/collapse/accordion.tsx"
+```
+
+</ComponentExample>
+
+### Preserve or destroy content
+
+Content mounts when first opened and remains mounted after closing by default. Enter a draft, close the panel and reopen it to continue editing. With `destroyInactive`, content unmounts after the closing animation, so internal uncontrolled values return to their initial state on reopening. Controlled state outside the panel remains application-owned.
+
+<ComponentExample exampleId="preserve-content" preview={<CollapsePreserveContent />} fileName="preserve-content.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/collapse/preserve-content.tsx"
+```
+
+</ComponentExample>
+
+### Header actions
+
+Use `extra` for an independent action beside the header. Extra buttons do not toggle the panel; this example only updates its read status.
+
+<ComponentExample exampleId="extra" preview={<CollapseExtra />} fileName="extra.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/collapse/extra.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Collapse API
+
+Configuration for panel entries, expanded state and accordion mode.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly CollapseItem[]`](#collapseitem) | Required | Panel items |
-| `activeKey / defaultActiveKey` | `string \| readonly string[]` | `[]` | Controlled / initial expanded keys |
-| `onChange` | `(keys: string[]) => void` | — | Expanded keys change |
+| `items` | `readonly `[`CollapseItem`](#collapseitem)`[]` | Required | Panel items |
+| `activeKey` | `string \| readonly string[]` | — | Controlled open keys as a string or array; accordion mode keeps only the first. |
+| `defaultActiveKey` | `string \| readonly string[]` | `[]` | Initial open keys for uncontrolled usage. |
+| `onChange` | `(keys: string[]) => void` | — | Always return a string array of open keys; an empty array means all are closed. |
 | `accordion` | `boolean` | `false` | Expand one panel at a time |
-| `bordered` | `boolean` | `true` | Show border |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Header size |
-| `destroyInactive` | `boolean` | `false` | Destroy content when collapsed |
+| `bordered` | `boolean` | `true` | Show border |
+| `destroyInactive` | `boolean` | `false` | Unmount closed contents after the exit animation; visited contents are preserved by default, with unvisited items mounted lazily. |
 
 ### CollapseItem
+
+The title, content and state of a collapsible panel entry.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique key |
-| `label / children` | `ReactNode` | Required | Header / panel content |
-| `disabled` | `boolean` | `false` | Disable this panel |
+| `label` | `ReactNode` | Required | Expandable item heading. |
+| `children` | `ReactNode` | Required | Contents shown when expanded. |
+| `disabled` | `boolean` | `false` | Prevent heading toggles without disabling independent extra actions. |
 | `extra` | `ReactNode` | — | Header actions |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { CollapseProps, CollapseItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Visited content is retained by default. Arrow keys, Home and End move between headers; Enter or Space toggles a panel. Actions in extra do not toggle the panel.

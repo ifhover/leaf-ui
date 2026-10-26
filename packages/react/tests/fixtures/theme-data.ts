@@ -4,14 +4,14 @@ import type { LeafTheme } from '../../src/theme';
 export const testThemes: Record<'default' | 'cartoon' | 'illustration', LeafTheme> = {
   default: {
     appearance: 'light',
-    primaryColor: '#20834a',
+    primaryColor: '#1e964f',
     borderRadius: 10,
     tokens: {
       onPrimaryColor: '#ffffff',
-      dangerColor: '#c83c3c',
+      dangerColor: '#dd3f2e',
       onDangerColor: '#ffffff',
-      successColor: '#20834a',
-      warningColor: '#faad14',
+      successColor: '#1e964f',
+      warningColor: '#d38b11',
       infoColor: '#1677ff',
       textColor: '#202024',
       mutedTextColor: '#68686f',

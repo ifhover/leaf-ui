@@ -24,7 +24,14 @@ import { classes } from '../shared/classes';
 import { useListMotion } from '../shared/motion';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import { fileExtension, fileKind, fileName, formatFileSize, safeFileUrl } from './model';
+import {
+  type FileKind,
+  fileExtension,
+  fileKind,
+  fileName,
+  formatFileSize,
+  safeFileUrl,
+} from './model';
 
 export interface FileItem {
   uid?: string;
@@ -50,7 +57,7 @@ export interface FileListProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onE
   disabled?: boolean;
   listType?: 'text' | 'picture' | 'picture-card';
 }
-const icons = {
+const icons: Record<FileKind, typeof File> = {
   image: FileImage,
   video: FileVideo2,
   audio: FileAudio2,
@@ -61,21 +68,40 @@ const icons = {
   file: File,
 };
 
-function FileVisual({ file, listType }: { file: FileItem; listType: FileListProps['listType'] }) {
+function FileVisual({
+  file,
+  listType,
+  fallbackLabel,
+}: {
+  file: FileItem;
+  listType: FileListProps['listType'];
+  fallbackLabel: string;
+}) {
   const kind = fileKind(file);
   const Icon = icons[kind];
   const url = safeFileUrl(file.url);
   const [failedUrl, setFailedUrl] = useState<string>();
   const thumbnail = Boolean(listType !== 'text' && kind === 'image' && url && failedUrl !== url);
+  const extension = fileExtension(file);
+  const iconSize = listType === 'text' ? 15 : 18;
   return (
     <span
       className="leaf-file-list__icon"
       data-kind={kind}
-      data-extension={fileExtension(file)}
+      data-extension={extension || undefined}
       data-thumbnail={thumbnail || undefined}
       aria-hidden="true"
     >
-      <Icon size={22} />
+      {!thumbnail && (
+        <span className="leaf-file-list__glyph">
+          <Icon size={iconSize} strokeWidth={1.75} />
+        </span>
+      )}
+      {listType === 'picture-card' && !thumbnail && (
+        <span className="leaf-file-list__extension">
+          {(extension || fallbackLabel).toUpperCase()}
+        </span>
+      )}
       {thumbnail && (
         <img src={url} alt="" loading="lazy" decoding="async" onError={() => setFailedUrl(url)} />
       )}
@@ -126,27 +152,28 @@ function FileRow({
   const size = file.size ?? file.originFile?.size;
   const formattedSize = size === undefined ? '' : formatFileSize(size);
   const percent = Number.isFinite(file.percent) ? Math.max(0, Math.min(100, file.percent ?? 0)) : 0;
-  const canPreview = previewable && url && ['image', 'video', 'audio'].includes(kind);
+  const canPreview = Boolean(previewable && url && ['image', 'video', 'audio'].includes(kind));
+  const canDownload = Boolean(downloadable && url);
+  const canRemove = Boolean(removable && onRemove);
+  const inlineDownload = Boolean(url && /^(?:data|blob):/i.test(url));
   const status =
     file.status === 'uploading' ? (
-      <>
-        {t('fileList.uploading')} <span>{Math.round(percent)}%</span>
-      </>
+      <bdi>{`${t('fileList.uploading')} ${Math.round(percent)}%`}</bdi>
     ) : file.status === 'done' ? (
       <>
-        <Check size={13} aria-hidden="true" />
+        <Check size={12} strokeWidth={2.1} aria-hidden="true" />
         {t('fileList.uploadComplete')}
       </>
     ) : file.status === 'error' ? (
       <>
-        <CircleAlert size={13} aria-hidden="true" />
+        <CircleAlert size={12} strokeWidth={2} aria-hidden="true" />
         {t('fileList.uploadFailed')}
       </>
     ) : file.status === 'cancelled' ? (
       t('fileList.cancelled')
     ) : file.status === 'ready' ? (
       <>
-        <Clock3 size={13} aria-hidden="true" />
+        <Clock3 size={12} strokeWidth={1.85} aria-hidden="true" />
         {t('fileList.ready')}
       </>
     ) : null;
@@ -155,24 +182,24 @@ function FileRow({
       {canPreview && (
         <ButtonControl
           className="leaf-file-list__action"
-          variant="ghost"
+          variant="text"
           size="sm"
           disabled={disabled}
-          startIcon={<Eye size={16} />}
+          startIcon={<Eye size={15} strokeWidth={1.75} />}
           aria-label={format('fileList.preview', { name })}
           title={t('common.preview')}
           onClick={() => onPreview(file)}
         />
       )}
-      {downloadable &&
+      {canDownload &&
         url &&
         (onDownload ? (
           <ButtonControl
             className="leaf-file-list__action"
-            variant="ghost"
+            variant="text"
             size="sm"
             disabled={disabled}
-            startIcon={<Download size={16} />}
+            startIcon={<Download size={15} strokeWidth={1.75} />}
             aria-label={format('fileList.download', { name })}
             title={t('common.download')}
             onClick={() => onDownload(file)}
@@ -182,25 +209,26 @@ function FileRow({
             className="leaf-file-list__action"
             href={disabled ? undefined : url}
             download={name}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={inlineDownload ? undefined : '_blank'}
+            rel={inlineDownload ? undefined : 'noopener noreferrer'}
             aria-label={format('fileList.download', { name })}
             title={t('common.download')}
             aria-disabled={disabled || undefined}
             role={disabled ? 'link' : undefined}
             tabIndex={disabled ? -1 : undefined}
           >
-            <Download size={16} aria-hidden="true" />
+            <Download size={15} strokeWidth={1.75} aria-hidden="true" />
           </a>
         ))}
-      {removable && onRemove && (
+      {canRemove && onRemove && (
         <ButtonControl
           className="leaf-file-list__action leaf-file-list__remove"
-          variant="ghost"
+          danger
+          variant="text"
           size="sm"
           disabled={disabled}
           loading={removing}
-          startIcon={<Trash2 size={16} />}
+          startIcon={<Trash2 size={15} strokeWidth={1.75} />}
           aria-label={format('fileList.remove', { name })}
           title={t('common.remove')}
           onClick={async () => {
@@ -222,48 +250,86 @@ function FileRow({
       )}
     </>
   );
-  const renderedActions = renderActions ? renderActions(file, actions) : actions;
-  return (
-    <li
-      className="leaf-file-list__item"
-      data-status={file.status}
-      data-motion-key={motionKey}
-      aria-busy={file.status === 'uploading' || removing || undefined}
-    >
-      <FileVisual file={file} listType={listType} />
-      <div className="leaf-file-list__details">
-        <span className="leaf-file-list__name" title={name}>
-          {name}
+  const hasBuiltInActions = canPreview || canDownload || canRemove;
+  const renderedActions = renderActions
+    ? renderActions(file, actions)
+    : hasBuiltInActions
+      ? actions
+      : null;
+  const showActions =
+    renderedActions !== null && renderedActions !== false && renderedActions !== undefined;
+  const errorMessage = removeError || (file.status === 'error' ? file.error : '');
+  const hasError = Boolean(errorMessage || file.status === 'error');
+  const meta = (
+    <div className="leaf-file-list__meta">
+      <span className="leaf-file-list__type">
+        <bdi>{extension || t('fileList.fileType')}</bdi>
+      </span>
+      {formattedSize && (
+        <span className="leaf-file-list__size">
+          <bdi>{formattedSize}</bdi>
         </span>
-        <div className="leaf-file-list__meta">
-          <span className="leaf-file-list__type">{extension || t('fileList.fileType')}</span>
-          {formattedSize && <span className="leaf-file-list__size">{formattedSize}</span>}
-        </div>
-      </div>
+      )}
       {status && (
         <span className="leaf-file-list__status" data-status={file.status}>
           {status}
         </span>
       )}
-      {file.status === 'uploading' && (
-        <div
-          className="leaf-file-list__progress"
-          role="progressbar"
-          aria-label={format('fileList.uploadProgress', { name })}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(percent)}
-        >
-          <span style={{ width: `${percent}%` }} />
+    </div>
+  );
+  const progress = file.status === 'uploading' && (
+    <div
+      className="leaf-file-list__progress"
+      role="progressbar"
+      aria-label={format('fileList.uploadProgress', { name })}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(percent)}
+    >
+      <span style={{ width: `${percent}%` }} />
+    </div>
+  );
+  const errorNode = errorMessage ? (
+    <p className="leaf-file-list__error" role={removeError ? 'alert' : undefined}>
+      <bdi>{errorMessage}</bdi>
+    </p>
+  ) : null;
+  return (
+    <li
+      className="leaf-file-list__item"
+      data-kind={kind}
+      data-status={file.status}
+      data-error={hasError || undefined}
+      data-motion-key={motionKey}
+      aria-busy={file.status === 'uploading' || removing || undefined}
+    >
+      <FileVisual file={file} listType={listType} fallbackLabel={t('fileList.fileType')} />
+      {listType === 'picture-card' ? (
+        <div className="leaf-file-list__details">
+          <span className="leaf-file-list__name" title={name}>
+            {name}
+          </span>
+          {progress}
+          {errorNode}
+          <div className="leaf-file-list__footer">
+            {meta}
+            {showActions && <div className="leaf-file-list__actions">{renderedActions}</div>}
+          </div>
         </div>
-      )}
-      {(removeError || (file.status === 'error' && file.error)) && (
-        <p className="leaf-file-list__error" role={removeError ? 'alert' : undefined}>
-          {removeError || file.error}
-        </p>
-      )}
-      {renderedActions !== null && renderedActions !== false && (
-        <div className="leaf-file-list__actions">{renderedActions}</div>
+      ) : (
+        <>
+          <div className="leaf-file-list__main">
+            <div className="leaf-file-list__details">
+              <span className="leaf-file-list__name" title={name}>
+                {name}
+              </span>
+              {meta}
+            </div>
+            {showActions && <div className="leaf-file-list__actions">{renderedActions}</div>}
+          </div>
+          {progress}
+          {errorNode}
+        </>
       )}
     </li>
   );
@@ -338,7 +404,9 @@ export function FileListControl({
         <div className="leaf-file-list__empty">
           {emptyContent ?? (
             <>
-              <Paperclip size={22} aria-hidden="true" />
+              <span className="leaf-file-list__empty-icon" aria-hidden="true">
+                <Paperclip size={16} strokeWidth={1.75} />
+              </span>
               <span>{t('fileList.noFiles')}</span>
             </>
           )}

@@ -1,37 +1,29 @@
-import { Button, Form, FormField, Input, Modal, Select } from '@ifhover/leaf-ui';
-import { useRef, useState } from 'react';
+import { Button, Form, FormField, Input, Modal } from '@ifhover/leaf-ui';
+import { useId, useState } from 'react';
+
 export function ModalBasic() {
   const [open, setOpen] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const formId = useId();
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Edit project</Button>
+      <Button onClick={() => setOpen(true)}>Edit title</Button>
       <Modal
         open={open}
-        title="Project settings"
+        title="Edit title"
         confirmText="Save"
         onClose={() => setOpen(false)}
-        onConfirm={() => formRef.current?.requestSubmit()}
+        confirmButtonProps={{ type: 'submit', form: formId }}
       >
         <Form
-          ref={formRef}
+          id={formId}
           layout="vertical"
           onSubmit={(event) => {
             event.preventDefault();
             setOpen(false);
           }}
         >
-          <FormField label="Project name" required>
-            <Input name="name" defaultValue="Leaf UI" />
-          </FormField>
-          <FormField label="Owner">
-            <Select
-              name="owner"
-              options={[
-                { value: 'design', label: 'Design team' },
-                { value: 'engineering', label: 'Engineering team' },
-              ]}
-            />
+          <FormField label="Title" required>
+            <Input name="title" defaultValue="Leaf UI" />
           </FormField>
         </Form>
       </Modal>

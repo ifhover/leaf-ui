@@ -1,15 +1,16 @@
-import { Flex, Rate, Space, Text } from '@ifhover/leaf-ui';
+import { Flex, Grid, Rate, Text } from '@ifhover/leaf-ui';
+
 export function RateStates() {
   return (
-    <Space direction="vertical" align="stretch">
-      <Flex direction="column" gap="sm">
-        <Text>只读评分</Text>
-        <Rate defaultValue={4} readOnly />
+    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+      <Text tone="muted">只读</Text>
+      <Flex align="center" wrap>
+        <Rate aria-label="只读评分" defaultValue={3} readOnly />
       </Flex>
-      <Flex direction="column" gap="sm">
-        <Text>禁用评分</Text>
-        <Rate defaultValue={2} disabled size="sm" />
+      <Text tone="muted">禁用</Text>
+      <Flex align="center" wrap>
+        <Rate aria-label="禁用评分" defaultValue={3} disabled />
       </Flex>
-    </Space>
+    </Grid>
   );
 }

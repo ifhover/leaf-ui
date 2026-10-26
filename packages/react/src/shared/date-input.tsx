@@ -14,22 +14,27 @@ import { classes } from './classes';
 import { ClearButton } from './clear-button';
 import { FormValue, useMergedRef } from './field';
 import { FloatingPanel, type PopupOptions, useFloatingDismiss } from './floating';
+import type { PickerSegments, SegmentKind } from './segments';
 import type { ControlSize, ControlStatus } from './types';
+import { useSegmentedInput } from './use-segmented-input';
 
 export interface PickerFieldProps
   extends Omit<
       InputHTMLAttributes<HTMLInputElement>,
-      'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children'
+      'type' | 'size' | 'value' | 'defaultValue' | 'onChange' | 'children' | 'multiple'
     >,
     PopupOptions {
   size?: ControlSize;
   status?: ControlStatus;
   allowClear?: boolean;
   inputReadOnly?: boolean;
+  /** `card` insets the picker content on a muted canvas. */
+  panelVariant?: 'plain' | 'card';
   open?: boolean;
   defaultOpen?: boolean;
 }
 export interface DateInputProps extends PickerFieldProps {
+  segments?: PickerSegments;
   displayValue: string;
   formValue: string;
   open: boolean;
@@ -38,8 +43,12 @@ export interface DateInputProps extends PickerFieldProps {
   onClear: () => void;
   onTextCommit: (text: string) => boolean;
   onTextChange?: (text: string) => void;
+  onPanelConfirm?: () => boolean;
+  onSegmentChange?: (group: number) => void;
   commitOnBlur?: boolean;
-  renderPanel: (close: () => void) => ReactNode;
+  /** Called when the panel closes by an outside click, focus move or Tab without typed text. */
+  onDismiss?: () => void;
+  renderPanel: (close: (focusSegment?: SegmentKind, group?: number) => void) => ReactNode;
   panelClassName?: string;
   clearLabel?: string;
   panelLabel?: string;
@@ -55,6 +64,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     required: requiredProp,
     allowClear = true,
     inputReadOnly,
+    panelVariant = 'card',
     defaultOpen: _defaultOpen,
     popupPlacement,
     popupClassName,
@@ -62,6 +72,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     popupRender,
     getPopupContainer,
     displayValue,
+    segments,
     formValue,
     open,
     onOpenChange,
@@ -69,7 +80,10 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     onClear,
     onTextCommit,
     onTextChange,
+    onPanelConfirm,
+    onSegmentChange,
     commitOnBlur = true,
+    onDismiss,
     renderPanel,
     panelClassName,
     clearLabel,
@@ -82,13 +96,17 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     onClick,
     onKeyDown,
     onBlur,
+    onFocus,
+    onPaste,
+    onCompositionStart,
+    onCompositionEnd,
     form,
     ...props
   },
   forwardedRef,
 ) {
   const field = useFormField();
-  const { messages } = useLeafConfig();
+  const { messages, weekStartsOn, direction } = useLeafConfig();
   const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
   const input = useRef<HTMLInputElement>(null);
@@ -100,42 +118,84 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
   const [dirty, setDirty] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [focusPanel, setFocusPanel] = useState(false);
+  const prepared = useRef(false);
+  const settled = useRef(false);
+  const editText = (value: string) => {
+    settled.current = false;
+    if (segments && value === '') {
+      onClear();
+      setText('');
+      setDirty(false);
+      setInvalid(false);
+      return;
+    }
+    setText(value);
+    setDirty(true);
+    setInvalid(false);
+    onTextChange?.(value);
+  };
+  const segmented = useSegmentedInput({
+    config: segments,
+    input,
+    displayValue,
+    text,
+    dirty,
+    readOnly: disabled || props.readOnly || inputReadOnly,
+    periods: [messages.timePicker.am, messages.timePicker.pm],
+    weekStartsOn,
+    onEdit: editText,
+    onSegmentChange,
+  });
   const status = statusProp ?? (invalid || field?.error ? 'error' : undefined);
+  const resetSegments = segmented.reset;
   const restore = () => {
+    settled.current = true;
     setText(displayValue);
     setDirty(false);
     setInvalid(false);
+    segmented.reset();
   };
   const close = () => {
     onOpenChange(false);
     restore();
   };
-  const finish = () => {
+  const finish = (focusSegment?: SegmentKind, group = 0) => {
     onOpenChange(false);
     restore();
     input.current?.focus();
+    if (focusSegment) segmented.focus(focusSegment, group);
   };
   const opening = () => {
     if (!open && !disabled && !props.readOnly) {
+      settled.current = false;
+      prepared.current = true;
       onOpening();
+      if (dirty) onTextChange?.(text);
       onOpenChange(true);
     }
   };
-  useFloatingDismiss(
-    open,
-    (reason) => {
-      if (reason === 'escape' || !dirty || !commitOnBlur) close();
-      else {
-        const valid = onTextCommit(text.trim());
-        setInvalid(!valid);
-        if (valid) restore();
-        onOpenChange(false);
-      }
-    },
-    input,
-    panel,
-    root,
-  );
+  const prepareExternal = useRef(() => {});
+  prepareExternal.current = () => {
+    settled.current = false;
+    onOpening();
+    if (dirty) onTextChange?.(text);
+  };
+  useEffect(() => {
+    if (open && !prepared.current) prepareExternal.current();
+    prepared.current = open;
+  }, [open]);
+  const dismiss = (reason?: 'escape' | 'outside' | 'focus' | 'tab') => {
+    // Outside pointerdown, blur and focusin can settle the same edit in one event sequence.
+    if (settled.current) return;
+    settled.current = true;
+    if (reason !== 'escape') {
+      if (dirty && commitOnBlur) onTextCommit(text.trim());
+      else if (!dirty) onDismiss?.();
+    }
+    // Invalid or incomplete text is a canceled edit, not a committed validation error.
+    close();
+  };
+  useFloatingDismiss(open, dismiss, input, panel, root);
   useEffect(() => {
     setText(displayValue);
     setDirty(false);
@@ -161,12 +221,13 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
           setText(displayValue);
           setDirty(false);
           setInvalid(false);
+          resetSegments();
           onOpenChange(false);
         }
       });
     owner?.addEventListener('reset', reset);
     return () => owner?.removeEventListener('reset', reset);
-  }, [displayValue, onOpenChange]);
+  }, [displayValue, onOpenChange, resetSegments]);
   const commitText = (focus = true) => {
     const valid = onTextCommit(text.trim());
     setInvalid(!valid);
@@ -185,6 +246,8 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
       data-status={status}
       data-disabled={disabled ? '' : undefined}
       data-open={open ? '' : undefined}
+      data-segmented={segments ? '' : undefined}
+      data-direction={direction}
       data-clearable={
         allowClear && (formValue || text) && !disabled && !props.readOnly ? '' : undefined
       }
@@ -194,16 +257,28 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         ref={ref}
         id={idProp ?? field?.id}
         type="text"
+        inputMode={
+          props.inputMode ??
+          (segments && !segments.template.segments.some((segment) => segment.kind === 'period')
+            ? 'numeric'
+            : undefined)
+        }
         form={form}
         className="leaf-date-picker__input"
         disabled={disabled}
         readOnly={props.readOnly || inputReadOnly}
-        value={dirty ? text : displayValue}
+        value={segmented.value}
         placeholder={placeholder ?? messages.datePicker.placeholder}
         role="combobox"
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={panelId}
+        aria-keyshortcuts={
+          props['aria-keyshortcuts'] ??
+          (segments
+            ? 'ArrowUp ArrowDown ArrowLeft ArrowRight Tab Shift+Tab Space Alt+ArrowDown'
+            : undefined)
+        }
         aria-required={required || undefined}
         aria-invalid={status === 'error' ? true : props['aria-invalid']}
         aria-describedby={
@@ -211,14 +286,30 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         }
         onClick={(event) => {
           onClick?.(event);
-          if (!event.defaultPrevented) opening();
+          if (!event.defaultPrevented) {
+            segmented.onClick(event);
+            opening();
+          }
+        }}
+        onFocus={(event) => {
+          onFocus?.(event);
+          if (!event.defaultPrevented) segmented.onFocus();
+        }}
+        onPaste={(event) => {
+          onPaste?.(event);
+          if (!event.defaultPrevented) segmented.onPaste(event);
+        }}
+        onCompositionStart={(event) => {
+          onCompositionStart?.(event);
+          if (!event.defaultPrevented) segmented.onCompositionStart();
+        }}
+        onCompositionEnd={(event) => {
+          onCompositionEnd?.(event);
+          if (!event.defaultPrevented) segmented.onCompositionEnd(event);
         }}
         onChange={(event) => {
-          opening();
-          setText(event.target.value);
-          setDirty(true);
-          setInvalid(false);
-          onTextChange?.(event.target.value);
+          if (!segments) opening();
+          if (!segmented.onChange(event)) editText(event.target.value);
         }}
         onBlur={(event) => {
           onBlur?.(event);
@@ -228,10 +319,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
             panel.current?.contains(event.relatedTarget)
           )
             return;
-          if (dirty) {
-            if (commitOnBlur) commitText(false);
-            else restore();
-          }
+          if (dirty) dismiss('focus');
         }}
         onInvalid={(event) => {
           props.onInvalid?.(event);
@@ -240,14 +328,18 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         }}
         onKeyDown={(event) => {
           onKeyDown?.(event);
-          if (event.defaultPrevented || event.nativeEvent.isComposing) return;
-          if (event.key === 'ArrowDown') {
+          if (event.defaultPrevented || event.nativeEvent.isComposing || segmented.isComposing)
+            return;
+          if (event.key === 'ArrowDown' && (!segments || event.altKey)) {
             event.preventDefault();
             opening();
             setFocusPanel(true);
+          } else if (segmented.onKeyDown(event)) {
+            return;
           } else if (event.key === 'Enter') {
             event.preventDefault();
             if (dirty) commitText();
+            else if (open && onPanelConfirm?.()) finish();
             else opening();
           } else if (event.key === 'Escape') {
             event.preventDefault();
@@ -258,6 +350,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
       />
       {allowClear && (formValue || text) && !disabled && !props.readOnly && (
         <ClearButton
+          tabIndex={segments ? -1 : undefined}
           label={clearLabel ?? messages.datePicker.clear}
           onClear={() => {
             onClear();
@@ -294,11 +387,18 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
         triggerRef={input}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={root}
         panelRef={panel}
         id={panelId}
-        className={classes('leaf-floating', panelClassName, popupClassName)}
+        className={classes(
+          'leaf-floating',
+          'leaf-picker-panel',
+          panelVariant === 'card' && 'leaf-picker-panel--card',
+          panelClassName,
+          popupClassName,
+        )}
         placement={popupPlacement}
         style={popupStyle}
         render={popupRender}

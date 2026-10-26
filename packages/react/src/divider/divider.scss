@@ -5,13 +5,13 @@
   margin-block: 20px;
   min-width: 0;
   color: var(--leaf-component-divider-color, var(--leaf-color-text));
-  font: 500 var(--leaf-component-divider-font-size, var(--leaf-font-size))/1.5
+  font: 500 var(--leaf-component-divider-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
     var(--leaf-font-family);
   &::before,
   &::after {
     content: '';
     flex: 1;
-    border-block-start: 1px solid var(--leaf-color-border);
+    border-block-start: 1px solid var(--leaf-color-divider);
   }
   &:not(&--text)::after {
     display: none;
@@ -34,7 +34,7 @@
     height: 1em;
     margin-block: 0;
     margin-inline: 12px;
-    border-inline-start: 1px solid var(--leaf-color-border);
+    border-inline-start: 1px solid var(--leaf-color-divider);
     vertical-align: middle;
     &::before,
     &::after {

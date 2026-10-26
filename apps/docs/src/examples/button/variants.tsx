@@ -1,12 +1,24 @@
-import { Button, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Grid, Text } from '@ifhover/leaf-ui';
+import { Fragment } from 'react';
+
+const options = [
+  { value: 'outline', label: '描边' },
+  { value: 'solid', label: '实底' },
+  { value: 'text', label: '文字' },
+  { value: 'link', label: '链接' },
+] as const;
 
 export function ButtonVariants() {
   return (
-    <Space wrap>
-      <Button>主要按钮</Button>
-      <Button variant="outline">描边按钮</Button>
-      <Button variant="soft">柔和按钮</Button>
-      <Button variant="link">链接按钮</Button>
-    </Space>
+    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+      {options.map(({ value, label }) => (
+        <Fragment key={value}>
+          <Text tone="muted">{label}</Text>
+          <Flex align="center" wrap>
+            <Button variant={value}>保存</Button>
+          </Flex>
+        </Fragment>
+      ))}
+    </Grid>
   );
 }

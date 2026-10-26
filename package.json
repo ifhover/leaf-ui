@@ -19,14 +19,18 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check . && prettier --check \"**/*.scss\"",
     "format": "biome check --write . && prettier --write \"**/*.scss\"",
-    "test": "pnpm --filter @ifhover/leaf-ui test && pnpm test:release && pnpm test:docs && pnpm test:skills",
+    "test": "pnpm --filter @ifhover/leaf-ui test && pnpm test:release && pnpm test:docs && pnpm test:skills && pnpm test:colors && pnpm test:tooling",
     "test:release": "node --test packages/react/scripts/check-release-notes.test.mjs",
-    "test:docs": "node --test apps/docs/scripts/versioned-docs.test.mjs apps/docs/scripts/tailwind.test.mjs",
-    "test:skills": "node --test skills/tests/docs.test.mjs",
+    "test:docs": "node --test apps/docs/scripts/versioned-docs.test.mjs apps/docs/scripts/docs-structure.test.mjs apps/docs/scripts/tailwind.test.mjs apps/docs/scripts/component-document.test.mjs apps/docs/scripts/component-coverage.test.mjs apps/docs/scripts/export-component-docs.test.mjs",
+    "test:docs:browser": "pnpm --filter @ifhover/leaf-ui exec playwright test --config=playwright.docs.config.ts",
+    "test:tooling": "node --test packages/react/scripts/browser-options.test.mjs packages/react/scripts/compiled-styles.test.mjs",
+    "test:skills": "node --test skills/tests/docs.test.mjs skills/tests/structured-docs.test.mjs",
     "test:watch": "pnpm --filter @ifhover/leaf-ui test:watch",
-    "check": "pnpm check:release && pnpm lint && pnpm typecheck && pnpm test",
+    "check": "pnpm check:release && pnpm check:colors && pnpm lint && pnpm typecheck && pnpm test",
     "check:release": "node packages/react/scripts/check-release-notes.mjs",
-    "format:scss": "prettier --write \"**/*.scss\""
+    "format:scss": "prettier --write \"**/*.scss\"",
+    "check:colors": "node packages/react/scripts/color-contract.mjs",
+    "test:colors": "node --test packages/react/scripts/*color*.test.mjs"
   },
   "devDependencies": {
     "@babel/parser": "^7.29.9",

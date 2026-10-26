@@ -106,7 +106,8 @@ export function createMessageStore() {
         success: (content, duration) => show({ content, duration, type: 'success' }),
         info: (content, duration) => show({ content, duration, type: 'info' }),
         warning: (content, duration) => show({ content, duration, type: 'warning' }),
-        error: (content, duration) => show({ content, duration, type: 'error' }),
+        danger: (content, duration) => show({ content, duration, type: 'danger' }),
+        error: (content, duration) => show({ content, duration, type: 'danger' }),
         loading: (content) => show({ content, duration: 0, type: 'loading' }),
       };
     },

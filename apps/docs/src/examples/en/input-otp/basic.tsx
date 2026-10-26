@@ -1,14 +1,26 @@
-import { InputOTP, Space, Text } from '@ifhover/leaf-ui';
+import { Flex, FormField, InputOTP, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function InputOTPBasic() {
   const [value, setValue] = useState('');
-  const [complete, setComplete] = useState('');
+  const [complete, setComplete] = useState(false);
+
   return (
-    <Space direction="vertical" align="stretch">
-      <InputOTP value={value} onChange={setValue} onComplete={setComplete} />
-      <output>
-        <Text tone="muted">Completed: {complete || '—'}</Text>
-      </output>
-    </Space>
+    <Flex direction="column" align="start" gap={16}>
+      <FormField layout="vertical" label="Verification code">
+        <InputOTP
+          aria-label="Verification code"
+          value={value}
+          onChange={(next) => {
+            setValue(next);
+            setComplete(false);
+          }}
+          onComplete={() => setComplete(true)}
+        />
+      </FormField>
+      <Text tone="muted" role="status">
+        {complete ? 'Code complete' : 'Incomplete'}
+      </Text>
+    </Flex>
   );
 }

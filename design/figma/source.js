@@ -1,11 +1,20 @@
 /* global figma, leafPalettes, leafDensity */
 async function importLeafResources() {
   const fonts = await figma.listAvailableFontsAsync();
-  const font =
-    fonts.find((item) => item.fontName.family === 'Inter' && item.fontName.style === 'Medium')
-      ?.fontName ?? fonts.find((item) => item.fontName.style === 'Regular')?.fontName;
-  if (!font) throw new Error('No usable font is available.');
-  await figma.loadFontAsync(font);
+  const family = ['Inter', ...new Set(fonts.map((item) => item.fontName.family))].find((name) =>
+    ['Regular', 'Medium', 'Bold'].every((style) =>
+      fonts.some((item) => item.fontName.family === name && item.fontName.style === style),
+    ),
+  );
+  if (!family) throw new Error('A font family with Regular, Medium and Bold is required.');
+  const weights = Object.fromEntries(
+    [
+      [400, 'Regular'],
+      [500, 'Medium'],
+      [700, 'Bold'],
+    ].map(([weight, style]) => [weight, { family, style }]),
+  );
+  await Promise.all(Object.values(weights).map((font) => figma.loadFontAsync(font)));
   const colors = figma.variables.createVariableCollection('Leaf / Color');
   colors.renameMode(colors.defaultModeId, 'Light');
   const dark = colors.addMode('Dark');
@@ -16,6 +25,34 @@ async function importLeafResources() {
     variable.setValueForMode(dark, leafPalettes.dark[key]);
     variables[key] = variable;
   }
+  const pressedBackground = figma.variables.createVariable(
+    'button-outline-active-background',
+    colors,
+    'COLOR',
+  );
+  for (const [mode, id] of [
+    ['light', colors.defaultModeId],
+    ['dark', dark],
+  ]) {
+    const surface = leafPalettes[mode].surface;
+    const muted = leafPalettes[mode]['surface-muted'];
+    pressedBackground.setValueForMode(id, {
+      r: (surface.r + muted.r) / 2,
+      g: (surface.g + muted.g) / 2,
+      b: (surface.b + muted.b) / 2,
+      a: 1,
+    });
+  }
+  variables['button-outline-active-background'] = pressedBackground;
+  const textHover = figma.variables.createVariable('button-text-hover-background', colors, 'COLOR');
+  for (const [mode, id] of [
+    ['light', colors.defaultModeId],
+    ['dark', dark],
+  ]) {
+    const gray = leafPalettes[mode]['option-hover'];
+    textHover.setValueForMode(id, { ...gray, a: gray.a * 0.5 });
+  }
+  variables['button-text-hover-background'] = textHover;
   const density = figma.variables.createVariableCollection('Leaf / Density');
   density.renameMode(density.defaultModeId, 'Comfortable');
   const compact = density.addMode('Compact');
@@ -35,9 +72,9 @@ async function importLeafResources() {
       'color',
       variables[key],
     );
-  const label = (name, key = 'text') => {
+  const label = (name, key = 'text', weight = 500) => {
     const node = figma.createText();
-    node.fontName = font;
+    node.fontName = weights[weight];
     node.fontSize = 14;
     node.characters = name;
     node.fills = [paint(key)];
@@ -45,7 +82,7 @@ async function importLeafResources() {
   };
   const buttons = [];
   for (const [index, mode] of ['comfortable', 'compact'].entries()) {
-    for (const [row, variant] of ['solid', 'soft', 'outline', 'ghost'].entries()) {
+    for (const [row, variant] of ['solid', 'outline', 'text', 'link'].entries()) {
       for (const [col, state] of ['default', 'hover', 'pressed', 'disabled'].entries()) {
         const component = figma.createComponent();
         component.name = `Variant=${variant}, State=${state}, Density=${mode}`;
@@ -55,7 +92,7 @@ async function importLeafResources() {
         component.primaryAxisSizingMode = 'FIXED';
         component.counterAxisSizingMode = 'FIXED';
         component.resize(136, leafDensity[mode]['control-height']);
-        component.cornerRadius = 10;
+        component.cornerRadius = 8;
         component.setExplicitVariableModeForCollection(
           density,
           index ? compact : density.defaultModeId,
@@ -63,28 +100,47 @@ async function importLeafResources() {
         component.setBoundVariable('height', dimensions['control-height']);
         const background =
           variant === 'solid'
-            ? ['hover', 'pressed'].includes(state)
-              ? 'primary-white-97-5'
+            ? state === 'pressed'
+              ? 'primary-active'
               : 'primary'
-            : variant === 'soft'
-              ? `primary-alpha-${state === 'hover' ? 18 : state === 'pressed' ? 25 : 11}`
-              : variant === 'outline'
-                ? `surface-muted-border-${['hover', 'pressed'].includes(state) ? 75 : 65}`
-                : state === 'hover'
-                  ? 'surface-muted'
-                  : state === 'pressed'
-                    ? 'border'
-                    : null;
+            : variant === 'outline'
+              ? state === 'pressed'
+                ? 'button-outline-active-background'
+                : 'surface'
+              : variant === 'text' && (state === 'hover' || state === 'pressed')
+                ? state === 'hover'
+                  ? 'button-text-hover-background'
+                  : 'option-hover'
+                : null;
         component.fills = background ? [paint(background)] : [];
+        if (variant === 'outline') {
+          component.strokes = [
+            paint(
+              state === 'pressed' ? 'border-hover' : state === 'hover' ? 'border-hover' : 'border',
+            ),
+          ];
+          component.strokeWeight = 1;
+          component.effects = [
+            {
+              type: 'DROP_SHADOW',
+              color: { r: 0, g: 0, b: 0, a: 0.06 },
+              offset: { x: 0, y: 1 },
+              radius: 1,
+              spread: 0,
+              visible: true,
+              blendMode: 'NORMAL',
+            },
+          ];
+        }
         component.appendChild(
           label(
             'Button',
-            variant === 'solid' ? 'on-primary' : variant === 'soft' ? 'primary' : 'text',
+            variant === 'solid' ? 'on-primary' : variant === 'link' ? 'primary-ink' : 'text',
           ),
         );
         if (state === 'disabled') component.opacity = 0.45;
         component.x = col * 164;
-        component.y = (index * 4 + row) * 68;
+        component.y = (index * 5 + row) * 68;
         page.appendChild(component);
         buttons.push(component);
       }
@@ -106,12 +162,14 @@ async function importLeafResources() {
       component.counterAxisSizingMode = 'FIXED';
       component.paddingLeft = leafDensity[mode]['density-field-padding'];
       component.resize(240, leafDensity[mode]['control-height']);
-      component.cornerRadius = 10;
+      component.cornerRadius = 8;
       component.fills = [paint('surface')];
       component.strokes = [
         paint(state === 'error' ? 'danger' : state === 'focus' ? 'primary' : 'border'),
       ];
-      component.appendChild(label('Field value', state === 'disabled' ? 'text-muted' : 'text'));
+      component.appendChild(
+        label('Field value', state === 'disabled' ? 'text-muted' : 'text', 400),
+      );
       component.setExplicitVariableModeForCollection(
         density,
         index ? compact : density.defaultModeId,
@@ -128,7 +186,7 @@ async function importLeafResources() {
   inputSet.name = 'Leaf / Input';
   inputSet.x = 32;
   inputSet.y = 720;
-  const title = label('Leaf UI · Editable variables and component variants');
+  const title = label('Leaf UI · Editable variables and component variants', 'text', 700);
   title.fontSize = 24;
   title.x = 32;
   title.y = 24;

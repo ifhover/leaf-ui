@@ -1,28 +1,32 @@
-import { Button, ConfigProvider, Flex, Space, Text } from '@ifhover/leaf-ui';
+import { Button, ConfigProvider, Flex, Grid, Text } from '@ifhover/leaf-ui';
 
 export function ConfigProviderInheritance() {
   return (
-    <ConfigProvider components={{ Button: { variant: 'outline', size: 'sm' } }}>
-      <Space direction="vertical" align="stretch">
-        <Flex justify="space-between" align="center" gap="md">
-          <Text tone="muted">Outer scope</Text>
-          <Button>Small · Outline</Button>
-        </Flex>
+    <ConfigProvider components={{ Button: { size: 'sm' } }}>
+      <Grid columns={1} gap={24}>
+        <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+          <Text tone="muted">Outer defaults</Text>
+          <Flex align="start">
+            <Button>Continue</Button>
+          </Flex>
+        </Grid>
         <ConfigProvider components={{ Button: { size: 'lg' } }}>
-          <Space direction="vertical" align="stretch">
-            <Flex justify="space-between" align="center" gap="md">
-              <Text tone="muted">Inner size override</Text>
-              <Button>Large · Outline</Button>
-            </Flex>
-            <Flex justify="space-between" align="center" gap="md">
+          <Grid columns={1} gap={24}>
+            <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+              <Text tone="muted">Inner override</Text>
+              <Flex align="start">
+                <Button>Continue</Button>
+              </Flex>
+            </Grid>
+            <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
               <Text tone="muted">Instance override</Text>
-              <Button size="md" variant="solid">
-                Default · Solid
-              </Button>
-            </Flex>
-          </Space>
+              <Flex align="start">
+                <Button size="md">Continue</Button>
+              </Flex>
+            </Grid>
+          </Grid>
         </ConfigProvider>
-      </Space>
+      </Grid>
     </ConfigProvider>
   );
 }

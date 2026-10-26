@@ -1,12 +1,31 @@
 @use '../table/table';
 @use '../styles/mixins' as *;
 
+html:has(.leaf-data-table [data-dragging]),
+body:has(.leaf-data-table [data-dragging]) {
+  overflow-anchor: none;
+}
+
 .leaf-data-table {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   &__heading {
     display: flex;
+    min-height: 24px;
     align-items: center;
     gap: 6px;
     min-width: 0;
+  }
+  .leaf-table--simple &__heading {
+    &[data-align='center'],
+    &[data-align='center'] .leaf-data-table__sort {
+      justify-content: center;
+    }
+    &[data-align='end'],
+    &[data-align='end'] .leaf-data-table__sort {
+      justify-content: flex-end;
+    }
   }
   &__drag-handle {
     display: inline-flex;
@@ -23,7 +42,7 @@
     cursor: grab;
     touch-action: none;
     &:hover {
-      background: var(--leaf-color-primary-soft);
+      background: var(--leaf-table-action-hover-background);
       color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
@@ -46,9 +65,17 @@
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
 
+  &__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
   &__toolbar,
   &__footer {
     display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--leaf-component-table-gap, 12px);
@@ -106,7 +133,7 @@
   }
   &__utility {
     width: 44px;
-    padding-inline: 10px;
+    padding-inline: 8px;
     text-align: center;
     .leaf-checkbox,
     .leaf-radio {
@@ -114,31 +141,11 @@
       min-height: 24px;
     }
   }
-  &__expand {
-    display: inline-flex;
-    min-width: 24px;
-    min-height: 24px;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    &:hover {
-      background: var(--leaf-color-primary-soft);
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    }
-    &:focus-visible {
-      @include focus-ring;
-    }
-    svg {
-      transition: rotate var(--leaf-motion-fast) var(--leaf-motion-easing);
-    }
-    &[aria-expanded='true'] svg {
-      rotate: 90deg;
-    }
+  &__expand-icon {
+    transition: rotate var(--leaf-motion-fast) var(--leaf-motion-easing);
+  }
+  &__expand[aria-expanded='true'] &__expand-icon {
+    rotate: 90deg;
   }
   &__detail {
     --leaf-table-row-base: var(--leaf-color-surface-muted);
@@ -156,6 +163,7 @@
     inset-block: 6px;
     inset-inline-end: 0;
     width: 8px;
+    height: auto;
     padding: 0;
     margin: 0;
     border: 0;
@@ -195,15 +203,15 @@
   }
 }
 
-[dir='rtl'] .leaf-data-table__expand svg {
+[dir='rtl'] .leaf-data-table__expand-icon {
   scale: -1 1;
 }
-[dir='rtl'] .leaf-data-table__expand[aria-expanded='true'] svg {
+[dir='rtl'] .leaf-data-table__expand[aria-expanded='true'] .leaf-data-table__expand-icon {
   rotate: -90deg;
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-data-table__sort,
-  .leaf-data-table__expand svg,
+  .leaf-data-table__expand-icon,
   .leaf-data-table__resize::after {
     transition: none;
   }

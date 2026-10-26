@@ -90,12 +90,37 @@ describe('ColorPicker', () => {
     fireEvent.change(input, { target: { value: 'rgba(255, 0, 0, 0.5)' } });
     fireEvent.keyDown(input, { key: 'Enter' });
     expect(change).toHaveBeenLastCalledWith('#ff000080');
-    await userEvent.click(screen.getByRole('button', { name: /^RGB$/ }));
+    await userEvent.click(screen.getByRole('tab', { name: /^RGB$/ }));
     expect(input).toHaveValue('rgba(255, 0, 0, 0.5)');
     fireEvent.change(input, { target: { value: 'not-a-color' } });
     fireEvent.keyDown(input, { key: 'Enter' });
     expect(input).toHaveAttribute('aria-invalid', 'true');
     expect(change).toHaveBeenCalledTimes(1);
+  });
+  it('uses isolated format tabs with keyboard navigation and controlled format updates', async () => {
+    const onFormatChange = vi.fn();
+    const renderPicker = (format?: 'hex' | 'rgb' | 'hsl') => (
+      <ConfigProvider
+        locale="en-US"
+        components={{ Tabs: { type: 'line', size: 'lg', onChange: vi.fn() } }}
+      >
+        <ColorPicker defaultOpen format={format} onFormatChange={onFormatChange} />
+      </ConfigProvider>
+    );
+    const { rerender } = render(renderPicker());
+    const hex = screen.getByRole('tab', { name: 'HEX' });
+    expect(hex.closest('.leaf-tabs')).toHaveClass('leaf-tabs--segmented', 'leaf-tabs--sm');
+    hex.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'RGB' })).toHaveFocus();
+    expect(screen.getByRole('tab', { name: 'RGB' })).toHaveAttribute('aria-selected', 'true');
+    expect(onFormatChange).toHaveBeenLastCalledWith('rgb');
+    rerender(renderPicker('hex'));
+    await userEvent.click(screen.getByRole('tab', { name: 'HSL' }));
+    expect(onFormatChange).toHaveBeenLastCalledWith('hsl');
+    expect(hex).toHaveAttribute('aria-selected', 'true');
+    rerender(renderPicker('hsl'));
+    expect(screen.getByRole('tab', { name: 'HSL' })).toHaveAttribute('aria-selected', 'true');
   });
   it('preserves hue while the color is black and supports keyboard adjustments', async () => {
     const change = vi.fn();

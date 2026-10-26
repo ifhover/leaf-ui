@@ -1,0 +1,1064 @@
+{
+  "version": 1,
+  "scope": {
+    "packageRoot": "packages/react",
+    "sourceRoot": "packages/react/src",
+    "comparison": "file + normalized expression + occurrence count; line numbers are not stored",
+    "excluded": ["styles/_palette.scss", "tests", "specs", "fixtures", "declaration files"],
+    "notConsumption": [
+      "color-scale.ts",
+      "colors.ts",
+      "color-recipes.ts",
+      "tailwind-tokens.ts",
+      "styles/tokens.scss",
+      "styles/_palette.scss"
+    ],
+    "updateMode": "none; baseline edits require manual review",
+    "sharedRecipeRegistry": "styles/_mixins.scss expressions require explicit review; no blanket formula allow region"
+  },
+  "globalTokens": [
+    "--leaf-color-border",
+    "--leaf-color-border-hover",
+    "--leaf-color-danger",
+    "--leaf-color-danger-dark-1",
+    "--leaf-color-danger-dark-3",
+    "--leaf-color-danger-dark-7",
+    "--leaf-color-danger-dark-9",
+    "--leaf-color-danger-light-3",
+    "--leaf-color-danger-light-7",
+    "--leaf-color-danger-light-9",
+    "--leaf-color-danger-active",
+    "--leaf-color-danger-border",
+    "--leaf-color-danger-hover",
+    "--leaf-color-danger-ink",
+    "--leaf-color-danger-soft",
+    "--leaf-color-danger-soft-active",
+    "--leaf-color-danger-soft-hover",
+    "--leaf-color-divider",
+    "--leaf-color-focus",
+    "--leaf-color-info",
+    "--leaf-color-info-dark-1",
+    "--leaf-color-info-dark-3",
+    "--leaf-color-info-dark-7",
+    "--leaf-color-info-dark-9",
+    "--leaf-color-info-light-3",
+    "--leaf-color-info-light-7",
+    "--leaf-color-info-light-9",
+    "--leaf-color-info-border",
+    "--leaf-color-info-ink",
+    "--leaf-color-info-soft",
+    "--leaf-color-info-soft-active",
+    "--leaf-color-info-soft-hover",
+    "--leaf-color-neutral",
+    "--leaf-color-neutral-100",
+    "--leaf-color-neutral-200",
+    "--leaf-color-neutral-300",
+    "--leaf-color-neutral-400",
+    "--leaf-color-neutral-500",
+    "--leaf-color-neutral-600",
+    "--leaf-color-neutral-700",
+    "--leaf-color-neutral-800",
+    "--leaf-color-neutral-900",
+    "--leaf-color-on-danger",
+    "--leaf-color-on-info",
+    "--leaf-color-on-primary",
+    "--leaf-color-on-success",
+    "--leaf-color-on-warning",
+    "--leaf-color-option-hover",
+    "--leaf-color-primary",
+    "--leaf-color-primary-dark-1",
+    "--leaf-color-primary-dark-3",
+    "--leaf-color-primary-dark-7",
+    "--leaf-color-primary-dark-9",
+    "--leaf-color-primary-light-3",
+    "--leaf-color-primary-light-7",
+    "--leaf-color-primary-light-9",
+    "--leaf-color-primary-active",
+    "--leaf-color-primary-alpha-10",
+    "--leaf-color-primary-alpha-12",
+    "--leaf-color-primary-alpha-16",
+    "--leaf-color-primary-alpha-20",
+    "--leaf-color-primary-alpha-4",
+    "--leaf-color-primary-alpha-55",
+    "--leaf-color-primary-border",
+    "--leaf-color-primary-fill-border",
+    "--leaf-color-primary-focus",
+    "--leaf-color-primary-hover",
+    "--leaf-color-primary-indicator",
+    "--leaf-color-primary-ink",
+    "--leaf-color-primary-ink-active",
+    "--leaf-color-primary-ink-hover",
+    "--leaf-color-primary-soft",
+    "--leaf-color-primary-soft-active",
+    "--leaf-color-primary-soft-hover",
+    "--leaf-color-success",
+    "--leaf-color-success-dark-1",
+    "--leaf-color-success-dark-3",
+    "--leaf-color-success-dark-7",
+    "--leaf-color-success-dark-9",
+    "--leaf-color-success-light-3",
+    "--leaf-color-success-light-7",
+    "--leaf-color-success-light-9",
+    "--leaf-color-success-border",
+    "--leaf-color-success-ink",
+    "--leaf-color-success-soft",
+    "--leaf-color-success-soft-active",
+    "--leaf-color-success-soft-hover",
+    "--leaf-color-surface",
+    "--leaf-color-surface-alpha-55",
+    "--leaf-color-surface-alpha-90",
+    "--leaf-color-surface-muted",
+    "--leaf-color-surface-raised",
+    "--leaf-color-text",
+    "--leaf-color-text-muted",
+    "--leaf-color-text-subtle",
+    "--leaf-color-text-subtle-alpha-9",
+    "--leaf-color-warning",
+    "--leaf-color-warning-dark-1",
+    "--leaf-color-warning-dark-3",
+    "--leaf-color-warning-dark-7",
+    "--leaf-color-warning-dark-9",
+    "--leaf-color-warning-light-3",
+    "--leaf-color-warning-light-7",
+    "--leaf-color-warning-light-9",
+    "--leaf-color-warning-alpha-16",
+    "--leaf-color-warning-border",
+    "--leaf-color-warning-ink",
+    "--leaf-color-warning-soft",
+    "--leaf-color-warning-soft-active",
+    "--leaf-color-warning-soft-hover"
+  ],
+  "recipeFormulas": {
+    "--leaf-color-primary-alpha-10": ["primary", "alpha", 10],
+    "--leaf-color-primary-alpha-12": ["primary", "alpha", 12],
+    "--leaf-color-primary-alpha-16": ["primary", "alpha", 16],
+    "--leaf-color-primary-alpha-20": ["primary", "alpha", 20],
+    "--leaf-color-primary-alpha-4": ["primary", "alpha", 4],
+    "--leaf-color-primary-alpha-55": ["primary", "alpha", 55],
+    "--leaf-color-surface-alpha-55": ["surface", "alpha", 55],
+    "--leaf-color-surface-alpha-90": ["surface", "alpha", 90],
+    "--leaf-color-text-subtle-alpha-9": ["text-subtle", "alpha", 9],
+    "--leaf-color-warning-alpha-16": ["warning", "alpha", 16]
+  },
+  "reviewedChanges": [
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-success-ink",
+      "reason": "Readable success text is shared by Tag, Typography and FileList. Base success paint remains independent from brand color even when numerically equal."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-warning-ink",
+      "reason": "Readable warning text is shared by status labels, Typography and FileList. The old text-80 variable remains a compatibility numeric recipe."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-danger-ink",
+      "reason": "Readable danger text is shared by action labels, validation errors, Tag, Typography and FileList; base danger still paints borders and indicators."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-info-ink",
+      "reason": "Readable info text is shared by status labels and FileList, rather than creating per-component blue text variants."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-on-success",
+      "reason": "A semantic on-fill counterpart to on-primary/on-danger is required by the shared status-label recipe and Badge status palette; derived from existing success configuration, not a new configuration matrix."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-on-info",
+      "reason": "A semantic on-fill counterpart is required for info status labels and the Badge status palette; kept global for documented CSS consumption and generated static/runtime parity rather than per-component foreground heuristics."
+    },
+    {
+      "kind": "global-token-add",
+      "token": "--leaf-color-neutral",
+      "reason": "ConfigProvider neutralColor configures the sixth shared base and its existing neutral role consumers."
+    }
+  ],
+  "fieldFamily": {
+    "consumers": [
+      "autocomplete/autocomplete.scss",
+      "cascader/cascader.scss",
+      "colorpicker/colorpicker.scss",
+      "datepicker/datepicker.scss",
+      "input/input.scss",
+      "inputnumber/inputnumber.scss",
+      "select/select.scss",
+      "textarea/textarea.scss",
+      "treeselect/treeselect.scss"
+    ],
+    "primaryFocusConsumers": {
+      "autocomplete/autocomplete.scss": "auto-complete",
+      "cascader/cascader.scss": "cascader",
+      "colorpicker/colorpicker.scss": "color-picker",
+      "input/input.scss": "input",
+      "inputnumber/inputnumber.scss": "input-number",
+      "select/select.scss": "select",
+      "datepicker/datepicker.scss": "date-picker",
+      "textarea/textarea.scss": "textarea",
+      "treeselect/treeselect.scss": "tree-select"
+    }
+  },
+  "debt": {},
+  "exceptions": {
+    "badge/badge.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1,
+          "reason": "Explicit inside Badge design contract: a fixed white separator ring on light and dark targets, independent of surface and foreground overrides. Covered by badge browser geometry and paint tests."
+        }
+      ]
+    },
+    "colorpicker/colorpicker.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#000",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#00f",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#0f0",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#0ff",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#ddd",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#f00",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#f0f",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#ff0",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "#fff",
+          "count": 6,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(0 0 0/25%)",
+          "count": 4,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(0 0 0/8%)",
+          "count": 2,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        },
+        {
+          "expression": "rgb(255 255 255/18%)",
+          "count": 1,
+          "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
+        }
+      ],
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:1px solid rgb(0 0 0/8%)",
+          "count": 1,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:2px solid #fff",
+          "count": 3,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        },
+        {
+          "expression": "border:2px solid var(--leaf-color-surface)",
+          "count": 1,
+          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
+        }
+      ]
+    },
+    "colorpicker/colorpicker.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "#000",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#13a8a8",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#1677ff",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#203329",
+          "count": 2,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#7654c6",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#ef5350",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#f49b23",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        },
+        {
+          "expression": "#fff",
+          "count": 2,
+          "reason": "ColorPicker preset palette and contrast-safe swatch labels are component content, not semantic theme defaults."
+        }
+      ]
+    },
+    "config-provider/helpers.ts": {
+      "hardcodedColors": [
+        {
+          "expression": "#ffffff",
+          "count": 1,
+          "reason": "Contrast helper uses white as a calculation canvas, not component paint."
+        }
+      ]
+    },
+    "image/image.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#0003",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#0006",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#0009",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#26292f",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#b7bfc9",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#e8edf3",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#f4f5f7",
+          "count": 2,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#f5b4b4",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#fff",
+          "count": 6,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff0b",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff0e",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff12",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff1c",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "#ffffff24",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "rgba(0,0,0,0.22)",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        },
+        {
+          "expression": "white",
+          "count": 1,
+          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
+        }
+      ]
+    },
+    "image/viewer.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "rgba(0,0,0,.92)",
+          "count": 1,
+          "reason": "Media viewer backdrop is a fixed photographic overlay color."
+        }
+      ]
+    },
+    "autocomplete/autocomplete.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "cascader/cascader.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-inline-start:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border:0",
+          "count": 1,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "datepicker/datepicker.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-color:var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Calendar day geometry/disabled day boundary or inner action reset; not the outer date field."
+        },
+        {
+          "expression": "border:0",
+          "count": 3,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        },
+        {
+          "expression": "border:1px solid transparent",
+          "count": 1,
+          "reason": "Calendar day geometry/disabled day boundary or inner action reset; not the outer date field."
+        }
+      ]
+    },
+    "input/input.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 3,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "inputnumber/inputnumber.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border-inline-start-color:var(--leaf-field-color-border-30)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border-inline-start:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border-top:1px solid var(--leaf-color-border)",
+          "count": 1,
+          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+        },
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "select/select.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "treeselect/treeselect.scss": {
+      "fieldFamilyBorders": [
+        {
+          "expression": "border:0",
+          "count": 2,
+          "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
+        }
+      ]
+    },
+    "button/button.scss": {
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)",
+          "count": 1,
+          "reason": "Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color."
+        }
+      ]
+    },
+    "filelist/filelist.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#111",
+          "count": 1,
+          "reason": "Fixed letterboxing belongs to the video content, not the regional theme surface."
+        }
+      ]
+    },
+    "loading/loading.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-55)",
+          "count": 1,
+          "reason": "A busy overlay allows the obscured content to remain visible; not an opaque surface or interactive option."
+        }
+      ]
+    },
+    "loadingbar/loadingbar.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-55)",
+          "count": 1,
+          "reason": "Glow around the progress indicator is an optical effect; it does not define label or selection paint."
+        }
+      ]
+    },
+    "menu/menu.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.08)",
+          "count": 1,
+          "reason": "Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract."
+        },
+        {
+          "expression": "rgba(0,0,0,0.04)",
+          "count": 1,
+          "reason": "Raised Menu press uses a lighter transient layer than default feedback, preserving its established motion/paint contract."
+        }
+      ],
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-primary-alpha-10)",
+          "count": 1,
+          "reason": "Primary Menu appearance retains its established translucent persistent-selection layer."
+        },
+        {
+          "expression": "var(--leaf-color-primary-alpha-4)",
+          "count": 1,
+          "reason": "Primary Menu press clears its persistent layer and uses a lighter transient feedback layer."
+        }
+      ]
+    },
+    "progress/progress.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(255 255 255/0.35)",
+          "count": 1,
+          "reason": "The moving light band is a shine effect over the progress fill, not a foreground/background role."
+        }
+      ]
+    },
+    "qrcode/qrcode.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-surface-alpha-90)",
+          "count": 1,
+          "reason": "Invalid/loading QR scrim deliberately obscures machine-readable content more strongly than a generic busy overlay."
+        }
+      ]
+    },
+    "rate/rate.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "Rating gold is an independent rating semantic, not warning feedback."
+        }
+      ]
+    },
+    "rate/rate.tsx": {
+      "hardcodedColors": [
+        {
+          "expression": "#ef5350",
+          "count": 1,
+          "reason": "Public colorByValue default belongs to the rating scale, not danger status feedback."
+        },
+        {
+          "expression": "#f49b23",
+          "count": 1,
+          "reason": "Public colorByValue default belongs to the rating scale, not warning status feedback."
+        },
+        {
+          "expression": "#ffc53d",
+          "count": 1,
+          "reason": "Public colorByValue gold is the same documented rating default, not a theme status alias."
+        }
+      ]
+    },
+    "skeleton/skeleton.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-text-subtle-alpha-9)",
+          "count": 1,
+          "reason": "A moving skeleton highlight is an optical loading effect, not a readable text tier."
+        }
+      ]
+    },
+    "theme.ts": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/${theme.elevation === 'soft' ? '.08':'.16'})",
+          "count": 1,
+          "reason": "Infrastructure generates the existing soft/strong elevation shadow inputs; this is not per-component paint."
+        }
+      ]
+    },
+    "typography/typography.scss": {
+      "derivedTokenUsages": [
+        {
+          "expression": "var(--leaf-color-warning-alpha-16)",
+          "count": 1,
+          "reason": "Inline mark highlighting annotates document content; it is distinct from warning feedback and status-label surfaces."
+        }
+      ]
+    },
+    "styles/tokens.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "rgb(0 0 0/0.04)",
+          "count": 2,
+          "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
+        },
+        {
+          "expression": "rgb(0 0 0/0.05)",
+          "count": 1,
+          "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
+        },
+        {
+          "expression": "rgb(0 0 0/0.06)",
+          "count": 2,
+          "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
+        },
+        {
+          "expression": "rgb(0 0 0/0.07)",
+          "count": 1,
+          "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
+        },
+        {
+          "expression": "rgb(0 0 0/0.1)",
+          "count": 1,
+          "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
+        }
+      ]
+    }
+  },
+  "risks": {
+    "undefinedGlobalTokens": {}
+  },
+  "sharedRecipeExpressions": {
+    "hardcodedColors": [
+      {
+        "expression": "rgb(0 0 0/8%)",
+        "count": 1,
+        "reason": "Default Menu neutral feedback is also the source of the half-strength shared choice-row feedback. Both remain borderless and shadowless."
+      },
+      {
+        "expression": "rgb(0 0 0/0.04)",
+        "count": 1,
+        "reason": "Shared Card/Table secondary resting shadow."
+      },
+      {
+        "expression": "rgb(0 0 0/0.045)",
+        "count": 1,
+        "reason": "Table pinned-column optical shadow."
+      },
+      {
+        "expression": "rgb(0 0 0/0.05)",
+        "count": 1,
+        "reason": "Shared Card/Table primary resting shadow."
+      },
+      {
+        "expression": "rgb(0 0 0/10%)",
+        "count": 1,
+        "reason": "Shared blurred-dialog backdrop."
+      },
+      {
+        "expression": "rgb(0 0 0/24%)",
+        "count": 1,
+        "reason": "Shared dialog backdrop fallback when blur is unavailable."
+      },
+      {
+        "expression": "rgb(0 0 0/45%)",
+        "count": 1,
+        "reason": "Spotlight mask must obscure non-target content."
+      }
+    ],
+    "mixFormulas": [
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-option-hover)50%,transparent)",
+        "count": 1,
+        "reason": "Text actions share a half-strength neutral hover overlay; pressed feedback retains the full option-hover role."
+      },
+      {
+        "expression": "color-mix(in srgb,currentColor #{$strength},var(--leaf-color-surface))",
+        "count": 1,
+        "reason": "Default Menu retains its independent 80% inherited ink recipe; choice rows use full inherited ink in both unselected and selected states."
+      },
+      {
+        "expression": "color-mix(in srgb,#{neutral-option-background()} 50%,transparent)",
+        "count": 1,
+        "reason": "Choice rows share Select's half-strength neutral feedback on their own background layer, without moving geometry or persistent selected fill."
+      },
+      {
+        "expression": "color-mix(in srgb,#{$surface},var(--leaf-color-surface-muted))",
+        "count": 1,
+        "reason": "Reviewed subtle outline press background blends its actual surface with the shared muted surface without a theme tint."
+      },
+      {
+        "expression": "color-mix(in srgb,currentColor 10%,transparent)",
+        "count": 1,
+        "reason": "Status-label close and checkable feedback share a foreground-relative tint."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-divider)70%,#{$surface})",
+        "count": 1,
+        "reason": "Card/Table softened frames follow their actual local surface."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-primary)3%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table hover follows component-local surface."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))",
+        "count": 1,
+        "reason": "Neutral-focus field variant preserves existing interactions."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",
+        "count": 1,
+        "reason": "Shared field internal separator follows semantic validation color."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
+        "count": 1,
+        "reason": "Table loading scrim follows the actual table surface with a compatibility override."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table stripes follow component-local text and surface."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)80%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table header ink follows component-local text and surface."
+      }
+    ],
+    "derivedTokenUsages": [
+      {
+        "expression": "var(--leaf-color-primary-alpha-12)",
+        "count": 1,
+        "reason": "Shared control halo is a transparent optical effect, not a soft selection surface."
+      },
+      {
+        "expression": "var(--leaf-color-primary-alpha-16)",
+        "count": 1,
+        "reason": "Shared active control halo."
+      },
+      {
+        "expression": "var(--leaf-color-primary-alpha-20)",
+        "count": 1,
+        "reason": "Shared keyboard control halo."
+      },
+      {
+        "expression": "var(--leaf-color-surface-alpha-80)",
+        "count": 1,
+        "reason": "Historical optional Table scrim compatibility input, with a local fallback."
+      }
+    ],
+    "scaleStepUsages": []
+  },
+  "migrationReview": {
+    "branch": "0.9.0",
+    "componentInventory": "packages/react/COLOR-MIGRATION.md",
+    "policy": "No unclassified component debt. Existing local effects and private Menu appearances are responsibility-specific exceptions, not reusable component defaults. Retired allowances are removed.",
+    "originalDebtOccurrences": 184,
+    "reviewedLocalOccurrences": 108,
+    "retiredGlobalTokens": [
+      "--leaf-color-border-alpha-55",
+      "--leaf-color-border-alpha-60",
+      "--leaf-color-border-alpha-65",
+      "--leaf-color-border-alpha-85",
+      "--leaf-color-border-surface-35",
+      "--leaf-color-border-surface-65",
+      "--leaf-color-border-surface-70",
+      "--leaf-color-border-text-muted-65",
+      "--leaf-color-danger-alpha-10",
+      "--leaf-color-danger-alpha-11",
+      "--leaf-color-danger-alpha-12",
+      "--leaf-color-danger-alpha-15",
+      "--leaf-color-danger-alpha-18",
+      "--leaf-color-danger-alpha-22",
+      "--leaf-color-danger-alpha-25",
+      "--leaf-color-danger-alpha-42",
+      "--leaf-color-danger-alpha-7",
+      "--leaf-color-danger-alpha-8",
+      "--leaf-color-danger-alpha-9",
+      "--leaf-color-danger-border-12",
+      "--leaf-color-danger-border-30",
+      "--leaf-color-danger-surface-4",
+      "--leaf-color-danger-surface-5",
+      "--leaf-color-danger-surface-6",
+      "--leaf-color-danger-surface-8",
+      "--leaf-color-danger-surface-9",
+      "--leaf-color-danger-text-80",
+      "--leaf-color-danger-white-97-5",
+      "--leaf-color-info-alpha-10",
+      "--leaf-color-info-alpha-15",
+      "--leaf-color-info-alpha-22",
+      "--leaf-color-info-alpha-8",
+      "--leaf-color-info-alpha-9",
+      "--leaf-color-info-border-12",
+      "--leaf-color-info-surface-5",
+      "--leaf-color-info-surface-8",
+      "--leaf-color-info-surface-9",
+      "--leaf-color-info-text-80",
+      "--leaf-color-primary-alpha-11",
+      "--leaf-color-primary-alpha-15",
+      "--leaf-color-primary-alpha-18",
+      "--leaf-color-primary-alpha-22",
+      "--leaf-color-primary-alpha-25",
+      "--leaf-color-primary-alpha-35",
+      "--leaf-color-primary-alpha-42",
+      "--leaf-color-primary-alpha-45",
+      "--leaf-color-primary-alpha-8",
+      "--leaf-color-primary-alpha-9",
+      "--leaf-color-primary-border-12",
+      "--leaf-color-primary-border-24",
+      "--leaf-color-primary-border-30",
+      "--leaf-color-primary-border-35",
+      "--leaf-color-primary-surface-10",
+      "--leaf-color-primary-surface-14",
+      "--leaf-color-primary-surface-28",
+      "--leaf-color-primary-surface-3",
+      "--leaf-color-primary-surface-5",
+      "--leaf-color-primary-surface-6",
+      "--leaf-color-primary-surface-7",
+      "--leaf-color-primary-surface-8",
+      "--leaf-color-primary-surface-9",
+      "--leaf-color-primary-text-55",
+      "--leaf-color-primary-text-80",
+      "--leaf-color-primary-text-85",
+      "--leaf-color-primary-white-97-5",
+      "--leaf-color-success-alpha-10",
+      "--leaf-color-success-alpha-15",
+      "--leaf-color-success-alpha-22",
+      "--leaf-color-success-alpha-8",
+      "--leaf-color-success-alpha-9",
+      "--leaf-color-success-border-12",
+      "--leaf-color-success-surface-5",
+      "--leaf-color-success-surface-8",
+      "--leaf-color-success-surface-9",
+      "--leaf-color-success-text-80",
+      "--leaf-color-surface-muted-alpha-45",
+      "--leaf-color-surface-muted-alpha-50",
+      "--leaf-color-surface-muted-border-65",
+      "--leaf-color-surface-muted-border-75",
+      "--leaf-color-surface-text-98",
+      "--leaf-color-text-alpha-10",
+      "--leaf-color-text-alpha-15",
+      "--leaf-color-text-alpha-16",
+      "--leaf-color-text-alpha-18",
+      "--leaf-color-text-alpha-8",
+      "--leaf-color-text-alpha-9",
+      "--leaf-color-text-border-12",
+      "--leaf-color-text-muted-alpha-10",
+      "--leaf-color-text-muted-alpha-22",
+      "--leaf-color-text-muted-surface-8",
+      "--leaf-color-text-muted-surface-9",
+      "--leaf-color-text-muted-surface-92",
+      "--leaf-color-text-subtle-surface-muted-38",
+      "--leaf-color-text-surface-5",
+      "--leaf-color-warning-alpha-10",
+      "--leaf-color-warning-alpha-12",
+      "--leaf-color-warning-alpha-15",
+      "--leaf-color-warning-alpha-22",
+      "--leaf-color-warning-alpha-8",
+      "--leaf-color-warning-alpha-9",
+      "--leaf-color-warning-border-12",
+      "--leaf-color-warning-border-30",
+      "--leaf-color-warning-surface-11",
+      "--leaf-color-warning-surface-5",
+      "--leaf-color-warning-surface-8",
+      "--leaf-color-warning-surface-9",
+      "--leaf-color-warning-text-80"
+    ],
+    "retiredRecipeNames": [
+      "--leaf-color-border-alpha-55",
+      "--leaf-color-border-alpha-60",
+      "--leaf-color-border-alpha-65",
+      "--leaf-color-border-alpha-85",
+      "--leaf-color-border-surface-35",
+      "--leaf-color-border-surface-65",
+      "--leaf-color-border-surface-70",
+      "--leaf-color-border-text-muted-65",
+      "--leaf-color-danger-alpha-10",
+      "--leaf-color-danger-alpha-11",
+      "--leaf-color-danger-alpha-12",
+      "--leaf-color-danger-alpha-15",
+      "--leaf-color-danger-alpha-18",
+      "--leaf-color-danger-alpha-22",
+      "--leaf-color-danger-alpha-25",
+      "--leaf-color-danger-alpha-42",
+      "--leaf-color-danger-alpha-7",
+      "--leaf-color-danger-alpha-8",
+      "--leaf-color-danger-alpha-9",
+      "--leaf-color-danger-border-12",
+      "--leaf-color-danger-border-30",
+      "--leaf-color-danger-surface-4",
+      "--leaf-color-danger-surface-5",
+      "--leaf-color-danger-surface-6",
+      "--leaf-color-danger-surface-8",
+      "--leaf-color-danger-surface-9",
+      "--leaf-color-danger-text-80",
+      "--leaf-color-danger-white-97-5",
+      "--leaf-color-info-alpha-10",
+      "--leaf-color-info-alpha-15",
+      "--leaf-color-info-alpha-22",
+      "--leaf-color-info-alpha-8",
+      "--leaf-color-info-alpha-9",
+      "--leaf-color-info-border-12",
+      "--leaf-color-info-surface-5",
+      "--leaf-color-info-surface-8",
+      "--leaf-color-info-surface-9",
+      "--leaf-color-info-text-80",
+      "--leaf-color-option-hover",
+      "--leaf-color-primary-alpha-11",
+      "--leaf-color-primary-alpha-15",
+      "--leaf-color-primary-alpha-18",
+      "--leaf-color-primary-alpha-22",
+      "--leaf-color-primary-alpha-25",
+      "--leaf-color-primary-alpha-35",
+      "--leaf-color-primary-alpha-42",
+      "--leaf-color-primary-alpha-45",
+      "--leaf-color-primary-alpha-8",
+      "--leaf-color-primary-alpha-9",
+      "--leaf-color-primary-border-12",
+      "--leaf-color-primary-border-24",
+      "--leaf-color-primary-border-30",
+      "--leaf-color-primary-border-35",
+      "--leaf-color-primary-surface-10",
+      "--leaf-color-primary-surface-14",
+      "--leaf-color-primary-surface-28",
+      "--leaf-color-primary-surface-3",
+      "--leaf-color-primary-surface-5",
+      "--leaf-color-primary-surface-6",
+      "--leaf-color-primary-surface-7",
+      "--leaf-color-primary-surface-8",
+      "--leaf-color-primary-surface-9",
+      "--leaf-color-primary-text-55",
+      "--leaf-color-primary-text-80",
+      "--leaf-color-primary-text-85",
+      "--leaf-color-primary-white-97-5",
+      "--leaf-color-success-alpha-10",
+      "--leaf-color-success-alpha-15",
+      "--leaf-color-success-alpha-22",
+      "--leaf-color-success-alpha-8",
+      "--leaf-color-success-alpha-9",
+      "--leaf-color-success-border-12",
+      "--leaf-color-success-surface-5",
+      "--leaf-color-success-surface-8",
+      "--leaf-color-success-surface-9",
+      "--leaf-color-success-text-80",
+      "--leaf-color-surface-muted-alpha-45",
+      "--leaf-color-surface-muted-alpha-50",
+      "--leaf-color-surface-muted-border-65",
+      "--leaf-color-surface-muted-border-75",
+      "--leaf-color-surface-text-98",
+      "--leaf-color-text-alpha-10",
+      "--leaf-color-text-alpha-15",
+      "--leaf-color-text-alpha-16",
+      "--leaf-color-text-alpha-18",
+      "--leaf-color-text-alpha-8",
+      "--leaf-color-text-alpha-9",
+      "--leaf-color-text-border-12",
+      "--leaf-color-text-muted-alpha-10",
+      "--leaf-color-text-muted-alpha-22",
+      "--leaf-color-text-muted-surface-8",
+      "--leaf-color-text-muted-surface-9",
+      "--leaf-color-text-muted-surface-92",
+      "--leaf-color-text-subtle-surface-muted-38",
+      "--leaf-color-text-surface-5",
+      "--leaf-color-warning-alpha-10",
+      "--leaf-color-warning-alpha-12",
+      "--leaf-color-warning-alpha-15",
+      "--leaf-color-warning-alpha-22",
+      "--leaf-color-warning-alpha-8",
+      "--leaf-color-warning-alpha-9",
+      "--leaf-color-warning-border-12",
+      "--leaf-color-warning-border-30",
+      "--leaf-color-warning-surface-11",
+      "--leaf-color-warning-surface-5",
+      "--leaf-color-warning-surface-8",
+      "--leaf-color-warning-surface-9",
+      "--leaf-color-warning-text-80"
+    ],
+    "cleanupReason": "0.9.0 approved simplification: remove unconsumed percentage outputs, retain ten optical recipes and all base/scale/role APIs; see COLOR-MIGRATION.md."
+  }
+}

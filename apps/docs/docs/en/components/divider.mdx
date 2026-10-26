@@ -1,36 +1,76 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { DividerBasic } from '../../../src/examples/en/divider/basic';
+import { DividerAlignment } from '../../../src/examples/en/divider/alignment';
+import { DividerDashed } from '../../../src/examples/en/divider/dashed';
+import { DividerVertical } from '../../../src/examples/en/divider/vertical';
+
+export const leafDoc = { component: 'Divider', primaryApi: 'DividerProps' };
 
 # Divider
 
-Separate content, paragraphs or actions.
+Separate content, paragraphs or inline information.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<DividerBasic />} fileName="basic.tsx">
+Place `Divider` between content sections; the default divider is horizontal.
+
+<ComponentExample exampleId="basic" preview={<DividerBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/divider/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Divider API
+{/* leaf:section examples */}
+
+## Examples
+
+### Text alignment
+
+Use `children` for a label and `align` for its position. Labels are only rendered on horizontal dividers.
+
+<ComponentExample exampleId="alignment" preview={<DividerAlignment />} fileName="alignment.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/divider/alignment.tsx"
+```
+
+</ComponentExample>
+
+### Dashed line
+
+Set `dashed` to use a dashed divider.
+
+<ComponentExample exampleId="dashed" preview={<DividerDashed />} fileName="dashed.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/divider/dashed.tsx"
+```
+
+</ComponentExample>
+
+### Vertical divider
+
+Use `type="vertical"` between inline content.
+
+<ComponentExample exampleId="vertical" preview={<DividerVertical />} fileName="vertical.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/divider/vertical.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Divider API
+
+Supports native `div` attributes. String children provide an accessible name automatically; use `aria-label` to name complex labels such as icons.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `type` | `'horizontal' \| 'vertical'` | `'horizontal'` | Orientation |
 | `align` | `'start' \| 'center' \| 'end'` | `'center'` | Text alignment |
 | `dashed` | `boolean` | `false` | Dashed line |
-| `children` | `ReactNode` | — | Horizontal divider text |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { DividerProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Use vertical dividers between inline content.
+| `children` | `ReactNode` | — | Content displayed within the divider. |

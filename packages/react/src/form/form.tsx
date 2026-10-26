@@ -102,7 +102,8 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
     [layout, labelAlign, disabled, measure, errors, registerError],
   );
   const variables: LeafThemeStyle = {
-    '--leaf-form-label-width': `${labelWidth === 'auto' ? maximum : Math.max(0, labelWidth)}px`,
+    '--leaf-form-label-width':
+      labelWidth === 'auto' ? `min(${maximum}px, 40%)` : `${Math.max(0, labelWidth)}px`,
     ...style,
   };
   return (
@@ -172,7 +173,14 @@ export function FormField(rawProps: FormFieldProps) {
     if (label == null || layout !== 'horizontal' || labelWidth !== undefined) return;
     const element = labelRef.current;
     if (!element) return;
-    const measure = () => form.measure(generated, element.getBoundingClientRect().width);
+    const measure = () => {
+      // Measure natural text, not the wrapped width of a narrow label column.
+      const previous = element.style.cssText;
+      element.style.cssText += ';width:max-content;max-width:none;white-space:nowrap';
+      const width = element.getBoundingClientRect().width;
+      element.style.cssText = previous;
+      form.measure(generated, width);
+    };
     measure();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
     observer?.observe(element);

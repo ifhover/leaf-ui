@@ -2,49 +2,59 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { InfiniteScrollBasic } from '../../../src/examples/en/infinite-scroll/basic';
 import { InfiniteScrollRetry } from '../../../src/examples/en/infinite-scroll/advanced';
 
+export const leafDoc = { component: 'InfiniteScroll', primaryApi: 'InfiniteScrollProps' };
+
 # InfiniteScroll
 
-Load more content when reaching the end of a list.
+Load more content when scrolling near the end of a list.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
+Return the loading task's Promise from `onLoadMore`. Only one load runs at a time. Update `dataLength` after appending items, and set `hasMore` to `false` when no more data remains.
+
+The example specifies its scroll container with `target`. When omitted, the component finds the nearest scrollable ancestor, falling back to the page. Loading starts when the end enters the `threshold` preloading range, which can happen on the initial render.
+
+<ComponentExample exampleId="basic" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/infinite-scroll/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+Unmounting or setting `hasMore` to `false` aborts the task's `signal`. Pass it to `fetch` or another cancellation-aware API. For other asynchronous work, check `signal.aborted` before updating state, as this example does.
 
-<ComponentExample title="More examples" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+{/* leaf:section examples */}
+
+## Examples
+
+### Retry after failure
+
+Reject the Promise when loading fails. The component pauses automatic loading and shows a retry button. The example deliberately fails its first request, then appends the remaining records after retrying. Use `onError` to report errors; the application still owns data recovery.
+
+<ComponentExample exampleId="advanced" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/infinite-scroll/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-Return a Promise from onLoadMore; requests do not overlap. Update dataLength after appending. The signal aborts on unmount and failures can be retried.
+## API
 
-## Types
+### InfiniteScrollProps API
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { InfiniteScrollProps } from '@ifhover/leaf-ui';
-```
-
-## InfiniteScrollProps API
+Configuration for scroll-loading triggers, asynchronous tasks and loading feedback.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `dataLength` | `number` | Required | Loaded count; changes allow the next request |
-| `hasMore` | `boolean` | Required | More data remains |
-| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | Required | Load more; signal aborts the request |
-| `target` | `() => HTMLElement \| null` | — | Scroll target or link target |
-| `threshold` | `number` | `200` | Pixels from the end that trigger loading |
+| `dataLength` | `number` | Required | Loaded item count; update after appending data to allow another load. |
+| `hasMore` | `boolean` | Required | Whether more data remains; false aborts the active task signal and displays the end content. |
+| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | Required | Return the loading Promise; append data and pass on or check the cancellation signal. Rejection pauses automatic loading and shows Retry. |
+| `target` | `() => HTMLElement \| null` | — | Return the scroll container; when omitted or null, use the nearest vertically scrollable ancestor, otherwise the viewport. |
+| `threshold` | `number` | `200` | Preload within this pixel distance from the end; negative values are treated as zero. |
 | `loader` | `ReactNode` | — | Loading placeholder |
 | `endMessage` | `ReactNode` | — | Content after all items are loaded |
-| `onError` | `(error: unknown) => void` | — | Error callback |
+| `onError` | `(error: unknown) => void` | — | Called when the loading Promise rejects without cancellation; does not restore application data. |

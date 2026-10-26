@@ -1,82 +1,107 @@
-import { MentionsPopup } from '../../src/examples/mentions/popup';
 import { ComponentExample } from '../../src/components/component-example';
-import { MentionsBasic, MentionsPrefixes } from '../../src/examples/mentions/basic';
+import { MentionsBasic } from '../../src/examples/mentions/basic';
+import { MentionsControlled } from '../../src/examples/mentions/controlled';
+import { MentionsPrefixes } from '../../src/examples/mentions/prefixes';
+import { MentionsPopup } from '../../src/examples/mentions/popup';
+
+export const leafDoc = { component: 'Mentions', primaryApi: 'MentionsProps' };
 
 # Mentions 提及
 
-在文本中插入成员或内容引用。
+在多行文本中插入成员或内容引用。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<MentionsBasic />} fileName="basic.tsx">
+输入 `@` 触发候选列表。前缀必须位于文本开头或空白之后，搜索文字中不能包含空白。
+
+<ComponentExample exampleId="basic" preview={<MentionsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/mentions/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 不同的前缀
+{/* leaf:section examples */}
 
-<ComponentExample title="不同的前缀" preview={<MentionsPrefixes />} fileName="basic.tsx">
+## 示例
 
-```tsx lineNumbers file="../../src/examples/mentions/basic.tsx"
+### 受控文本与插入结果
+
+`onChange` 返回完整文本，`onSelect` 返回选项及前缀。插入内容由前缀、选项的 `value` 和 `split` 组成，默认在末尾追加一个空格；`label` 只用于候选展示。光标后的原有文本会保留。
+
+<ComponentExample exampleId="controlled" preview={<MentionsControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/mentions/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## 浮层宽度
+### 不同前缀
 
-浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 仅按内容定宽，也可以比控件窄；`popupWidth={300}` 固定为 300px，也支持 CSS 长度。`popupMaxWidth` 默认未设置，下面的示例按内容定宽并显式设置最大宽度。浮层仍会在视口边缘避让。
+通过 `onSearch` 的 `prefix` 区分候选来源。示例中 `@` 提及成员，`#` 引用主题。
 
-<ComponentExample title="浮层宽度" preview={<MentionsPopup />} fileName="popup.tsx">
+<ComponentExample exampleId="prefixes" preview={<MentionsPrefixes />} fileName="prefixes.tsx">
+
+```tsx lineNumbers file="../../src/examples/mentions/prefixes.tsx"
+```
+
+</ComponentExample>
+
+### 浮层宽度
+
+浮层默认跟随文本框宽度。使用 `popupWidth="auto"` 按内容定宽，配合 `popupMaxWidth` 限制最大宽度。
+
+<ComponentExample exampleId="popup" preview={<MentionsPopup />} fileName="popup.tsx">
 
 ```tsx lineNumbers file="../../src/examples/mentions/popup.tsx"
 ```
 
 </ComponentExample>
 
-## MentionOption
+{/* leaf:section api */}
+
+## API
+
+### Mentions API
+
+配置提及文本、候选项与插入行为。
+
+继承 [Textarea](textarea) 的原生表单属性、只读与自动高度等配置。禁用或只读时不出现候选列表。共享浮层参数见 [PopupOptions](../api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | — | 必需。受控值。 |
-| `label` | `ReactNode` | — | 展示文字或内容。 |
-| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
-| `disabled` | `boolean` | — | 禁用交互。 |
-
-## Mentions API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 展示尺寸。 |
-| `status` | `'error' \| 'warning'` | — | 设置 status。 |
-| `resize` | `'none' \| 'vertical' \| 'both'` | — | 设置 resize。 |
-| `autoSize` | `boolean \| `[`TextareaAutoSize`](../components/textarea#textareaautosize-api) | — | 设置 autoSize。 |
-| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | — | 设置 showCount。 |
+| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | 必填 | 可供选择的选项。 |
+| `value` | `string` | — | 受控的完整文本。 |
+| `defaultValue` | `string` | `''` | 非受控的初始文本，表单重置时恢复。 |
+| `onChange` | `(value: string) => void` | — | 输入或选择候选项后返回完整文本，不是原生事件。 |
+| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | 选择候选项后返回选项与匹配的前缀。 |
+| `prefixes` | `readonly string[]` | `['@']` | 可触发建议的文本前缀。 |
+| `split` | `string` | `' '` | 插入引用后追加的分隔文字。 |
+| `onSearch` | `(query: string, prefix: string) => void` | — | 光标前匹配到前缀和查询文字时触发，返回查询文字与前缀。 |
+| `loading` | `boolean` | — | 没有匹配候选项时显示加载提示；已有候选项仍可选择。 |
+| `notFoundContent` | `ReactNode` | — | 没有匹配选项时的内容。 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 显示错误或警告的校验外观，不执行校验。 |
+| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | 允许用户拖动文本框的方向；none 禁止拖动。 |
+| `autoSize` | `boolean \| `[`TextareaAutoSize`](textarea#textareaautosize-api) | `false` | 根据文本自动调整高度，可限制最少和最多行数。 |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | 显示字符数；函数可自定义计数内容。 |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度 |
-| `popupMaxWidth` | `number \| string` | — | 可选的最大宽度；默认不限制，仍受视口限制 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `value` | `string` | — | 受控值。 |
-| `defaultValue` | `string` | `''` | 初始值；非受控模式支持表单重置。 |
-| `onChange` | `(value: string) => void` | — | 值发生变化时调用。 |
-| `onSearch` | `(query: string, prefix: string) => void` | — | 搜索文字改变时调用。 |
-| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | 条目被选择时调用。 |
-| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | — | 必需。可供选择的选项。 |
-| `prefixes` | `readonly string[]` | — | 可触发建议的文本前缀。 |
-| `split` | `string` | `' '` | 插入引用后追加的分隔文字。 |
-| `loading` | `boolean` | — | 展示加载状态。 |
-| `notFoundContent` | `ReactNode` | — | 没有匹配选项时的内容。 |
 
-## 类型与交互
+### MentionOption
 
-组装可复用配置时，可导入对应的属性和数据类型。
+传入 `options` 的提及候选项。
 
-```ts
-import type { MentionOption, MentionsProps } from '@ifhover/leaf-ui';
-```
-
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `value` | `string` | 必填 | 选择后插入的文字，前面保留匹配前缀，后面追加 split。 |
+| `label` | `ReactNode` | — | 展示文字或内容。 |
+| `searchLabel` | `string` | — | 搜索时使用的纯文本。 |
+| `disabled` | `boolean` | — | 禁用交互。 |

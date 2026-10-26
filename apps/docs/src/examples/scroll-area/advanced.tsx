@@ -1,15 +1,15 @@
-import { Card, ScrollArea, Space } from '@ifhover/leaf-ui';
+import { Card, Flex, ScrollArea, Text } from '@ifhover/leaf-ui';
 
 export function ScrollAreaHorizontal() {
   return (
     <ScrollArea orientation="horizontal" aria-label="横向卡片">
-      <Space size={12}>
+      <Flex gap="md" style={{ width: 'max-content' }}>
         {['A', 'B', 'C', 'D', 'E'].map((name) => (
           <Card key={name} title={name} style={{ width: 180, flex: 'none' }}>
-            横向浏览内容
+            <Text>横向浏览内容</Text>
           </Card>
         ))}
-      </Space>
+      </Flex>
     </ScrollArea>
   );
 }

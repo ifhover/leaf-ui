@@ -1,9 +1,13 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import { browserOptions } from '../../scripts/browser-options.mjs';
+
+const { directory, port } = browserOptions();
 
 export default defineConfig({
   root: fileURLToPath(new URL('.', import.meta.url)),
-  server: { host: '127.0.0.1', port: 4178, strictPort: true },
+  server: { host: '127.0.0.1', port, strictPort: true },
+  build: { outDir: `${directory}/build`, emptyOutDir: true },
   resolve: {
     alias: [
       {

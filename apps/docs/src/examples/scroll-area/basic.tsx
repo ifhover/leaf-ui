@@ -1,13 +1,15 @@
-import { ScrollArea } from '@ifhover/leaf-ui';
+import { Flex, ScrollArea, Text } from '@ifhover/leaf-ui';
+
+const items = Array.from({ length: 20 }, (_, index) => index + 1);
 
 export function ScrollAreaBasic() {
   return (
     <ScrollArea height={180} aria-label="项目列表">
-      {Array.from({ length: 20 }, (_, i) => (
-        <div key={String(i)} style={{ padding: '12px 16px' }}>
-          项目 {i + 1}
-        </div>
-      ))}
+      <Flex direction="column" gap="md">
+        {items.map((item) => (
+          <Text key={item}>项目 {item}</Text>
+        ))}
+      </Flex>
     </ScrollArea>
   );
 }

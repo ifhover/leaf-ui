@@ -1,58 +1,128 @@
-import { Capabilities } from '../../../src/examples/progress/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ProgressBasic } from '../../../src/examples/en/progress/basic';
 import { ProgressStates } from '../../../src/examples/en/progress/states';
+import { ProgressIndeterminate } from '../../../src/examples/en/progress/indeterminate';
 import { ProgressCircles } from '../../../src/examples/en/progress/circles';
+import { ProgressControlled } from '../../../src/examples/en/progress/controlled';
+import { ProgressSteps } from '../../../src/examples/en/progress/steps';
+import { ProgressSegments } from '../../../src/examples/en/progress/segments';
+import { ProgressDashboard } from '../../../src/examples/en/progress/dashboard';
+
+export const leafDoc = { component: 'Progress', primaryApi: 'ProgressProps' };
 
 # Progress
 
 Display task completion.
 
-## Interactive progress
+{/* leaf:section basic */}
 
-<ComponentExample title="Interactive progress" preview={<ProgressBasic />} fileName="basic.tsx">
+## Basic usage
+
+Pass the completion percentage as `percent` and identify the task with `aria-label`.
+
+<ComponentExample exampleId="basic" preview={<ProgressBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/progress/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Progress states
+{/* leaf:section examples */}
 
-<ComponentExample title="Progress states" preview={<ProgressStates />} fileName="states.tsx">
+## Examples
+
+### Progress states
+
+Reaching `100` automatically shows success. Set `status="error"` when a task fails.
+
+<ComponentExample exampleId="states" preview={<ProgressStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/progress/states.tsx"
 ```
 
 </ComponentExample>
 
-## Circular progress
+### Indeterminate progress
 
-<ComponentExample title="Circular progress" preview={<ProgressCircles />} fileName="circles.tsx">
+Use `indeterminate` when the total progress cannot be calculated. No numeric percentage is displayed or exposed in this mode.
+
+<ComponentExample exampleId="indeterminate" preview={<ProgressIndeterminate />} fileName="indeterminate.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/progress/indeterminate.tsx"
+```
+
+</ComponentExample>
+
+### Circular progress
+
+Use `type="circle"` for a circular indicator and `percent` for the completion percentage.
+
+<ComponentExample exampleId="circles" preview={<ProgressCircles />} fileName="circles.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/progress/circles.tsx"
 ```
 
 </ComponentExample>
 
-## Segments and dashboards
+<a id="advanced-usage"></a>
 
-<ComponentExample title="Segments and dashboards" preview={<Capabilities english />} fileName="capabilities.tsx">
+### Updating progress
 
-```tsx lineNumbers file="../../../src/examples/progress/capabilities.tsx"
+The application updates progress; the component does not advance it automatically. Set `active={false}` to disable the shimmer on line progress.
+
+<ComponentExample exampleId="controlled" preview={<ProgressControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/progress/controlled.tsx"
 ```
 
 </ComponentExample>
 
-Unfinished line progress has a soft shimmer within its filled portion. Set `active={false}` for a static bar. Completed, failed, indeterminate and stepped progress omit the shimmer. Motion preferences from the system and ConfigProvider are respected.
+### Stepped progress
 
-## Progress API
+`steps` divides the track into a fixed number of steps. `percent` still represents the completion percentage.
+
+<ComponentExample exampleId="steps" preview={<ProgressSteps />} fileName="steps.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/progress/steps.tsx"
+```
+
+</ComponentExample>
+
+### Segmented progress
+
+Each `segments` percentage is relative to the full track. Also set `percent` to the sum of the completed segments for the overall value.
+
+<ComponentExample exampleId="segments" preview={<ProgressSegments />} fileName="segments.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/progress/segments.tsx"
+```
+
+</ComponentExample>
+
+### Dashboard
+
+Set `dashboard` on a circular indicator to show progress as a dashboard.
+
+<ComponentExample exampleId="dashboard" preview={<ProgressDashboard />} fileName="dashboard.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/progress/dashboard.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Progress API
+
+Configure the progress percentage, status and presentation.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `percent` | `number` | `0` | Completion percentage, from 0 to 100 |
 | `type` | `'line' \| 'circle'` | `'line'` | Line or circular progress |
-| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | Progress status |
+| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | Progress state; normal becomes success at 100% unless indeterminate. |
 | `showInfo` | `boolean` | `true` | Show percentage or status icon |
 | `format` | `(percent: number) => ReactNode` | — | Custom progress text |
 | `strokeWidth` | `number` | — | Stroke width; pixels for lines, view units for circles |
@@ -66,22 +136,12 @@ Unfinished line progress has a soft shimmer within its filled portion. Set `acti
 | `dashboard` | `boolean` | `false` | Display progress as a dashboard gauge. |
 | `successPercent` | `number` | — | Part of the progress completed successfully. |
 
-## Types
+### ProgressSegment
 
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { ProgressProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Reaching 100% automatically uses success styling. Set aria-label to identify the task, such as upload progress. The numeric progress is also exposed to assistive technology.
-
-## ProgressSegment
+Describe the percentage and color of one progress segment.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
-| `percent` | `number` | `0` | Required. Completion percentage. |
+| `percent` | `number` | Required | Completion percentage. |
 | `color` | `string` | — | Color or semantic tone. |

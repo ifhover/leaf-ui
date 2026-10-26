@@ -1,32 +1,34 @@
-import { DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { Button, DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
+const initialDate = new Date(2026, 9, 15);
+
 export function DatePickerControlled() {
-  const [date, setDate] = useState<Date | null>(new Date(2026, 9, 15));
+  const [value, setValue] = useState<Date | null>(initialDate);
   const [dateString, setDateString] = useState('2026-10-15');
+
   return (
-    <Form layout="vertical">
-      <FormField label="Date in October">
+    <Form
+      layout="vertical"
+      onSubmit={(event) => event.preventDefault()}
+      onReset={() => {
+        setValue(initialDate);
+        setDateString('2026-10-15');
+      }}
+    >
+      <FormField label="Deadline">
         <DatePicker
-          aria-label="Date in October"
-          value={date}
-          minDate={new Date(2026, 9, 5)}
-          maxDate={new Date(2026, 9, 25)}
+          value={value}
           onChange={(next, text) => {
-            setDate(next);
+            setValue(next);
             setDateString(text);
           }}
         />
       </FormField>
-      <Text tone="muted">October 5–25 are available. Current:{dateString || 'Not selected'}</Text>
-      <FormField label="Required date · Error">
-        <DatePicker
-          aria-label="Required date"
-          status="error"
-          required
-          placeholder="Set a deadline"
-        />
-      </FormField>
+      <Text tone="muted" role="status">
+        Callback text: {dateString || 'Empty string'}
+      </Text>
+      <Button type="reset">Reset</Button>
     </Form>
   );
 }

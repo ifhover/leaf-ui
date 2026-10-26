@@ -1,63 +1,78 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { AnchorBasic, AnchorAffix } from '../../../src/examples/anchor/basic';
+import { AnchorBasic } from '../../../src/examples/en/anchor/basic';
+import { AnchorAffix } from '../../../src/examples/en/anchor/affix';
+
+export const leafDoc = { component: 'Anchor', primaryApi: 'AnchorProps' };
 
 # Anchor
 
-Navigate long pages and keep important actions visible.
+Use Anchor to navigate page sections and Affix to keep an action visible while scrolling.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<AnchorBasic english />} fileName="basic.tsx">
+Each item's `href` points to a section element's `id`. Set `container` to use a scroll area; omit it to use the window.
 
-```tsx lineNumbers file="../../../src/examples/anchor/basic.tsx"
+<ComponentExample exampleId="basic" preview={<AnchorBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/anchor/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Custom scroll container
+Same-page navigation updates the URL and history and moves focus to the destination. Modified clicks and external links retain native navigation.
 
-<ComponentExample title="Custom scroll container" preview={<AnchorAffix english />} fileName="basic.tsx">
+{/* leaf:section examples */}
 
-```tsx lineNumbers file="../../../src/examples/anchor/basic.tsx"
+## Examples
+
+### Fixed action
+
+Scroll the example to keep the button at the top of the selected scroll area. Set `offsetTop` to adjust its top offset.
+
+<ComponentExample exampleId="affix" preview={<AnchorAffix />} fileName="affix.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/anchor/affix.tsx"
 ```
 
 </ComponentExample>
 
-## AnchorItem
+{/* leaf:section api */}
+
+## API
+
+### Anchor API
+
+Configuration for directory entries, scroll positioning and the active section.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `key` | `string` | — | Required. Stable, unique identifier. |
-| `title` | `ReactNode` | — | Required. Title content. |
-| `href` | `string` | — | Required. Link destination. |
-| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Content, or child nodes for hierarchical records. |
-
-## Anchor API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Required. Items to display. |
-| `container` | `() => HTMLElement \| Window` | — | Custom portal or scroll container. |
+| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | Required | Items to display. |
+| `container` | `() => HTMLElement \| Window` | — | Return the scroll container; defaults to window. |
 | `offset` | `number` | `12` | Scroll-target distance from the container top in pixels. |
 | `activeKey` | `string` | — | Controlled active section. |
 | `onActiveChange` | `(key: string) => void` | — | Called when the active section changes. |
 | `smooth` | `boolean` | `true` | Enable smooth scrolling, respecting reduced motion. |
 
-## Affix API
+### AnchorItem
+
+An entry supplied through `items`, defining its target anchor, title and children.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Required | Stable, unique identifier. |
+| `title` | `ReactNode` | Required | Title content. |
+| `href` | `string` | Required | Link destination. |
+| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | Anchor entries. |
+
+### Affix API
+
+Props for fixing content within a specified scroll container.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `offsetTop` | `number` | `0` | Distance from the container top in pixels. |
 | `offsetBottom` | `number` | — | Distance from the container bottom in pixels. |
-| `container` | `() => HTMLElement \| Window` | — | Custom portal or scroll container. |
+| `container` | `() => HTMLElement \| Window` | — | Return the scroll container; defaults to window. |
 | `onAffixChange` | `(affixed: boolean) => void` | — | Called when the affixed state changes. |
-
-## Types and interaction
-
-Import the props and data types when creating reusable configuration.
-
-```ts
-import type { AnchorItem, AnchorProps, AffixProps } from '@ifhover/leaf-ui';
-```
-
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

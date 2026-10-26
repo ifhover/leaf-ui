@@ -1,60 +1,78 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { LayoutBasic } from '../../../src/examples/en/layout/basic';
+import { LayoutManual } from '../../../src/examples/en/layout/manual';
 import { LayoutResponsive } from '../../../src/examples/en/layout/advanced';
+
+export const leafDoc = { component: 'Layout', primaryApi: 'LayoutProps' };
 
 # Layout
 
-Organize headers, sidebars, content and footers.
+Organize a page into headers, sidebars, content and footers. For arranging individual controls, use [Flex](/en/components/flex), [Space](/en/components/space) or [Grid](/en/components/grid).
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-Compose the page with Header, Sider, Content and Footer. The nested horizontal layout places the sidebar next to the content.
+Nest a horizontal `Layout` to place the sidebar next to the content.
 
-<ComponentExample title="Basic usage" preview={<LayoutBasic />} fileName="basic.tsx" width="100%">
+<ComponentExample exampleId="basic" preview={<LayoutBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/layout/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Responsive sidebar
+{/* leaf:section examples */}
 
-Collapse the sidebar manually or automatically on narrow screens; the menu follows with icon navigation.
+## Examples
 
-<ComponentExample title="Responsive sidebar" preview={<LayoutResponsive />} fileName="advanced.tsx" width="100%">
+### Collapsible sidebar
+
+Use `collapsed` with `onCollapse` to control the sidebar, and pass the same state to the menu.
+
+<ComponentExample exampleId="manual" preview={<LayoutManual />} fileName="manual.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/layout/manual.tsx"
+```
+
+</ComponentExample>
+
+### Responsive sidebar
+
+`breakpoint` follows the viewport width, not the width of the example container. Below the threshold, the sidebar stays collapsed and hides its manual toggle without changing the controlled value or calling `onCollapse`.
+
+This example uses the default `sm` breakpoint to keep the menu in sync. If you customize that theme breakpoint, update the sidebar threshold as well.
+
+<ComponentExample exampleId="advanced" preview={<LayoutResponsive />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/layout/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-Compose Layout.Header, Layout.Sider, Layout.Content and Layout.Footer. Use direction="horizontal" for side-by-side regions. Control the sidebar with collapsed, or set breakpoint for automatic collapse.
+## API
 
-## Types
+### LayoutProps API
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { LayoutProps, LayoutSiderProps } from '@ifhover/leaf-ui';
-```
-
-## LayoutProps API
+The arrangement direction of child elements in a layout container.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `direction` | `'horizontal' \| 'vertical'` | `'vertical'` | Layout or movement direction |
+| `direction` | `'horizontal' \| 'vertical'` | `'vertical'` | Layout direction of the children. |
 
-## LayoutSiderProps API
+### LayoutSiderProps API
+
+When the viewport becomes wider again, the sidebar returns to the manual or controlled collapsed state. `trigger` replaces the content of the built-in toggle; the component still handles its click and accessible name.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `collapsed` | `boolean` | — | Controlled manual collapse state; the breakpoint may still force a collapsed presentation. |
+| `defaultCollapsed` | `boolean` | `false` | Initial manual collapse state in uncontrolled mode. |
+| `onCollapse` | `(collapsed: boolean) => void` | — | Called with the next state on manual toggling; breakpoint changes do not call it. |
 | `width` | `number \| string` | `220` | Width, numbers are in pixels |
 | `collapsedWidth` | `number \| string` | `64` | Collapsed width |
-| `collapsed` | `boolean` | — | Controlled collapsed state |
-| `defaultCollapsed` | `boolean` | `false` | Initial collapsed state |
 | `collapsible` | `boolean` | `false` | Show collapse controls |
-| `breakpoint` | `number` | — | Viewport width that triggers collapse |
-| `onCollapse` | `(collapsed: boolean) => void` | — | Collapsed state changes |
 | `trigger` | `ReactNode` | — | Custom trigger content |
+| `breakpoint` | `number` | — | Collapse and hide the built-in trigger when viewport width is at or below this pixel value, without changing manual state. |

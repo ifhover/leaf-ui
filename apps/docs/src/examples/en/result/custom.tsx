@@ -1,13 +1,15 @@
-import { Result } from '@ifhover/leaf-ui';
-import { Leaf } from 'lucide-react';
+import { Result, Text } from '@ifhover/leaf-ui';
+import { Archive } from 'lucide-react';
+
 export function ResultCustom() {
   return (
     <Result
-      title="Let your ideas grow"
-      description="Replace the icon, content and actions to suit your workflow."
-      icon={<Leaf />}
+      status="success"
+      title="File archived"
+      description="Find the archived file in the file list."
+      icon={<Archive />}
     >
-      <p>Add next steps, issue details or other helpful information here.</p>
+      <Text>Archived file: quarterly-report.pdf</Text>
     </Result>
   );
 }

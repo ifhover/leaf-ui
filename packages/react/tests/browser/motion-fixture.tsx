@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   ConfigProvider,
+  DateRangePicker,
   FileList,
   FloatButton,
   FloatButtonGroup,
@@ -11,11 +12,9 @@ import {
   Modal,
   Select,
   Tabs,
-  TimeRangePicker,
 } from '@ifhover/leaf-ui';
 import { Plus } from 'lucide-react';
 import { type CSSProperties, useRef, useState } from 'react';
-import { AppBarBasic } from '../../../../apps/docs/src/examples/app-bar/basic';
 import { useListMotion } from '../../src/shared/motion';
 
 function AnimatedRows({ rows }: { rows: string[] }) {
@@ -45,15 +44,29 @@ export function MotionFixture() {
   return (
     <div className="motion-fixture">
       <h1>Motion acceptance</h1>
+      <div data-testid="text-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+        <Input aria-label="Text action input" allowClear defaultValue="Clear me" />
+        <Select
+          aria-label="Text action select"
+          allowClear
+          defaultValue="one"
+          options={[{ value: 'one', label: 'One' }]}
+        />
+      </div>
       <Button onClick={() => setEnabled(!enabled)}>Toggle motion</Button>
       <ConfigProvider
         data-testid="motion-scope"
         theme={{ motion: enabled, tokens: { motionDuration: 360 } }}
       >
         <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-          {(['solid', 'outline', 'soft', 'link'] as const).map((variant) => (
+          {(['solid', 'outline', 'text', 'link'] as const).map((variant) => (
             <Button key={variant} variant={variant} data-testid={`press-${variant}`}>
               {variant}
+            </Button>
+          ))}
+          {(['text', 'link'] as const).map((variant) => (
+            <Button key={variant} danger variant={variant} data-testid={`press-danger-${variant}`}>
+              Danger {variant}
             </Button>
           ))}
           <ButtonGroup attached>
@@ -67,19 +80,44 @@ export function MotionFixture() {
             Loading action
           </Button>
         </div>
+        <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
+          <Button variant="outline" disabled data-testid="press-disabled-outline">
+            Disabled outline
+          </Button>
+          <Button variant="outline" loading data-testid="press-loading-outline">
+            Loading outline
+          </Button>
+          <ConfigProvider
+            theme={{
+              components: {
+                Button: {
+                  hover: { borderColor: '#a31010' },
+                  active: {
+                    color: '#12695f',
+                    borderColor: '#7654c6',
+                    shadow: '0 2px 4px rgb(0 0 0 / 0.2)',
+                  },
+                },
+              },
+            }}
+          >
+            <Button variant="outline" data-testid="press-component-outline">
+              Component state overrides
+            </Button>
+          </ConfigProvider>
+        </div>
         <div style={{ display: 'flex', gap: 16, marginBlock: 16 }}>
-          <Button danger data-testid="press-danger">
+          <Button danger variant="solid" data-testid="press-danger">
             Danger action
           </Button>
           <Button danger variant="outline" data-testid="press-danger-outline">
             Danger outline
           </Button>
-          <Button danger variant="soft" data-testid="press-danger-soft">
-            Danger soft
-          </Button>
           <Button startIcon={<Plus />} aria-label="Add action" data-testid="press-icon" />
           <ConfigProvider theme={{ primaryColor: '#2563eb', borderRadius: 24 }}>
-            <Button data-testid="press-custom">Custom rounded action</Button>
+            <Button variant="solid" data-testid="press-custom">
+              Custom rounded action
+            </Button>
           </ConfigProvider>
           <FloatButton
             fixed={false}
@@ -106,11 +144,13 @@ export function MotionFixture() {
           }}
         >
           <div style={{ display: 'flex', gap: 12, marginBlock: 16 }}>
-            <Button data-testid="press-override-solid">Custom state colors</Button>
+            <Button variant="solid" data-testid="press-override-solid">
+              Custom state colors
+            </Button>
             <Button variant="outline" data-testid="press-override-outline">
               Custom outline state colors
             </Button>
-            <Button danger data-testid="press-override-danger">
+            <Button danger variant="solid" data-testid="press-override-danger">
               Custom danger state colors
             </Button>
           </div>
@@ -123,7 +163,6 @@ export function MotionFixture() {
             Full-width scrolling action
           </Button>
         </div>
-        <AppBarBasic english />
         <Button onClick={() => setRows((items) => [...items].reverse())}>Reverse</Button>
         <Button onClick={() => setRows((items) => [...items.slice(1), ...items.slice(0, 1)])}>
           Rotate
@@ -188,7 +227,11 @@ export function MotionFixture() {
           popupPlacement="top-end"
           options={[{ value: 'one', label: 'Upward option' }]}
         />
-        <TimeRangePicker aria-label="Local time range" defaultValue={['09:00', '18:00']} />
+        <DateRangePicker
+          picker="time"
+          aria-label="Local time range"
+          defaultValue={['09:00', '18:00']}
+        />
         <div style={{ marginBlock: 16 }}>
           <Button data-testid="busy-button" loading={busy}>
             Save changes

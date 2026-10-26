@@ -8,6 +8,7 @@ import { parseArgs } from 'node:util';
 export const packageName = '@ifhover/leaf-ui';
 export const supportedPackages = [packageName, '@sudden3/leaf-ui'];
 export const docsSite = 'https://ifhover.github.io/leaf-ui/';
+const versionPattern = /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)*$/;
 
 export async function resolveInstallation(project, requestedPackage) {
   if (requestedPackage && !supportedPackages.includes(requestedPackage))
@@ -24,7 +25,7 @@ export async function resolveInstallation(project, requestedPackage) {
       continue;
     }
     const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-    if (manifest.name !== name || !/^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)*$/.test(manifest.version))
+    if (manifest.name !== name || !versionPattern.test(manifest.version))
       throw new Error(`Invalid installed Leaf UI package metadata at ${manifestPath}`);
     const types = manifest.types ?? manifest.exports?.['.']?.import?.types;
     installations.push({
@@ -47,6 +48,8 @@ export async function resolveInstallation(project, requestedPackage) {
 }
 
 export function versionRoot(site, version) {
+  if (typeof version !== 'string' || !versionPattern.test(version))
+    throw new Error('Documentation requires an exact installed package version.');
   const base = new URL(site.endsWith('/') ? site : `${site}/`);
   if (
     base.protocol !== 'https:' &&
@@ -67,13 +70,182 @@ export function pageUrl(root, markdown) {
   return url;
 }
 
-async function readUrl(url, fetcher) {
+async function readUrl(url, fetcher, { allowMissing = false } = {}) {
   const response = await fetcher(url, { redirect: 'error', signal: AbortSignal.timeout(15000) });
+  if (allowMissing && response.status === 404) {
+    await response.body?.cancel();
+    return null;
+  }
   if (!response.ok) throw new Error(`Documentation request returned ${response.status}: ${url}`);
-  const text = await response.text();
-  if (text.length > 1024 * 1024)
-    throw new Error('Documentation response exceeds the single-page limit.');
-  return text;
+  const limit = 1024 * 1024;
+  const reader = response.body?.getReader();
+  if (!reader) return '';
+  const decoder = new TextDecoder();
+  let size = 0;
+  let text = '';
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) return text + decoder.decode();
+      size += value.byteLength;
+      if (size > limit) {
+        await reader.cancel();
+        throw new Error('Documentation response exceeds the single-page limit (1 MiB).');
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+function structured(condition, message) {
+  if (!condition) throw new Error(`Invalid structured documentation: ${message}.`);
+}
+
+function text(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function validateIdentity(value, installation, commit) {
+  structured(
+    value?.schemaVersion === 1 &&
+      value.package === installation.package &&
+      value.version === installation.version,
+    'metadata does not match the installed package/version or supported schema',
+  );
+  structured(
+    value.sourceKind === 'release' && /^[a-f0-9]{40}$/i.test(value.sourceCommit ?? ''),
+    'expected a release snapshot, not workspace documentation',
+  );
+  if (commit)
+    structured(value.sourceCommit === commit, 'source commits do not match across responses');
+}
+
+export function structuredUrl(root, document) {
+  if (
+    typeof document !== 'string' ||
+    !/^(?:index\.json|(?:en|zh)\/[a-z][a-z0-9-]*\/(?:detail\.json|examples\/[a-z][a-z0-9-]*\.json))$/.test(
+      document,
+    )
+  )
+    throw new Error('The structured index contains an invalid document path.');
+  return new URL(`ai/v1/${document}`, root);
+}
+
+function validateSource(value, page, root, version) {
+  const document = page.markdown.replace(/\.md$/, '.mdx');
+  const html = page.markdown.replace(/\.md$/, '.html');
+  // Mirrors may serve the original release JSON without changing its canonical source URL.
+  const urls = [new URL(html, root).href, new URL(html, versionRoot(docsSite, version)).href];
+  structured(
+    value?.document === document && urls.includes(value.url),
+    'source does not identify the selected versioned page',
+  );
+}
+
+function selectExamples(examples, selectors) {
+  const selected = [];
+  for (const selector of selectors) {
+    const matches = examples.filter((example) =>
+      /^\d+$/.test(selector)
+        ? example.index === Number(selector)
+        : example.id === selector || example.title.toLowerCase() === selector.toLowerCase(),
+    );
+    if (matches.length !== 1)
+      throw new Error(
+        `Example ${JSON.stringify(selector)} ${matches.length ? 'is ambiguous' : 'was not found'}. Available: ${examples.map(({ index, id, title }) => `${index}:${id} (${title})`).join('; ') || '(none)'}`,
+      );
+    if (!selected.includes(matches[0])) selected.push(matches[0]);
+  }
+  return selected;
+}
+
+async function queryComponent({ installation, page, root, index, examples, fetcher }) {
+  const source = await readUrl(structuredUrl(root, 'index.json'), fetcher, {
+    allowMissing: true,
+  });
+  if (source === null) return null;
+  const catalog = JSON.parse(source);
+  structured(
+    /^[a-f0-9]{40}$/i.test(index.sourceCommit ?? ''),
+    'the API index must identify its release commit for structured queries',
+  );
+  validateIdentity(catalog, installation, index.sourceCommit);
+  structured(Array.isArray(catalog.components), 'missing component catalog');
+  const slug = page.id.slice('components/'.length);
+  const relative = `${page.language}/${slug}/detail.json`;
+  const matches = catalog.components.filter((item) => item?.document === relative);
+  structured(matches.length === 1, 'missing or duplicate selected component catalog entry');
+  const entry = matches[0];
+  structured(
+    entry.language === page.language &&
+      [entry.component, entry.title, entry.description, entry.primaryApi].every(text) &&
+      Number.isSafeInteger(entry.exampleCount) &&
+      entry.exampleCount >= 0,
+    'invalid component catalog entry',
+  );
+  const detail = JSON.parse(await readUrl(structuredUrl(root, entry.document), fetcher));
+  validateIdentity(detail, installation, catalog.sourceCommit);
+  validateSource(detail.source, page, root, installation.version);
+  structured(
+    detail.component === entry.component &&
+      detail.language === entry.language &&
+      detail.title === entry.title &&
+      detail.description === entry.description &&
+      detail.primaryApi === entry.primaryApi &&
+      Array.isArray(detail.apiNames) &&
+      detail.apiNames[0] === detail.primaryApi &&
+      detail.apiNames.every(text) &&
+      new Set(detail.apiNames).size === detail.apiNames.length &&
+      [detail.description, detail.introduction, detail.basic, detail.api].every(text),
+    'component details do not match the catalog',
+  );
+  structured(
+    Array.isArray(detail.examples) && detail.examples.length === entry.exampleCount,
+    'example list does not match the catalog',
+  );
+  const ids = new Set();
+  for (const [offset, example] of detail.examples.entries()) {
+    structured(
+      example &&
+        /^[a-z][a-z0-9-]*$/.test(example.id) &&
+        example.id !== 'basic' &&
+        !ids.has(example.id) &&
+        example.index === offset + 1 &&
+        text(example.title) &&
+        !('markdown' in example) &&
+        example.document === `${page.language}/${slug}/examples/${example.id}.json`,
+      'invalid example identity, order or document path',
+    );
+    ids.add(example.id);
+  }
+  if (!examples.length) return { mode: 'component', page: detail.source.url, detail };
+  const selected = selectExamples(detail.examples, examples);
+  const documents = [];
+  for (const example of selected) {
+    const full = JSON.parse(await readUrl(structuredUrl(root, example.document), fetcher));
+    validateIdentity(full, installation, catalog.sourceCommit);
+    validateSource(full.source, page, root, installation.version);
+    structured(
+      full.component === detail.component &&
+        full.language === detail.language &&
+        full.id === example.id &&
+        full.index === example.index &&
+        full.title === example.title &&
+        full.source.url === detail.source.url &&
+        text(full.markdown),
+      'example response does not match its requested identity',
+    );
+    documents.push(full);
+  }
+  return {
+    mode: 'examples',
+    page: detail.source.url,
+    component: detail.component,
+    language: detail.language,
+    examples: documents,
+  };
 }
 
 export async function queryDocs({
@@ -82,10 +254,23 @@ export async function queryDocs({
   guide,
   list = false,
   lang = 'en',
+  examples = [],
   site = docsSite,
   fetcher = fetch,
 }) {
-  if (api && guide) throw new Error('Query one API or one guide at a time.');
+  if ([Boolean(api), Boolean(guide), Boolean(list)].filter(Boolean).length > 1)
+    throw new Error('Query one API, one guide or the export list at a time.');
+  if (
+    !Array.isArray(examples) ||
+    examples.some((value) =>
+      typeof value === 'number'
+        ? !Number.isSafeInteger(value) || value < 1
+        : typeof value !== 'string' || !text(value),
+    )
+  )
+    throw new Error('Example selectors must be a non-empty index, ID or exact title.');
+  if (examples.length && !api) throw new Error('--examples requires --api.');
+  examples = examples.map((value) => String(value).trim());
   if (!['en', 'zh'].includes(lang)) throw new Error('Supported languages: en, zh.');
   if (!supportedPackages.includes(installation.package))
     throw new Error(`Unsupported installed Leaf UI package: ${installation.package}`);
@@ -131,6 +316,21 @@ export async function queryDocs({
       `No documentation for ${api ?? guide} in Leaf UI ${installation.version}. Inspect the installed declarations if needed.`,
     );
   const url = pageUrl(root, page.markdown);
+  if (api && /^components\/[a-z][a-z0-9-]*$/.test(page.id)) {
+    const component = await queryComponent({
+      installation,
+      page,
+      root,
+      index,
+      examples,
+      fetcher,
+    });
+    if (component) return { metadata, ...component };
+  }
+  if (examples.length)
+    throw new Error(
+      'Structured examples are unavailable for this version/page. Query --api without --examples to read its complete original Markdown; no newer version will be substituted.',
+    );
   const markdown = await readUrl(url, fetcher);
   const identity = markdown.split('\n', 1)[0].trimEnd().split(' · ');
   if (
@@ -138,7 +338,38 @@ export async function queryDocs({
     identity[1] !== `Package: ${installedPackage}`
   )
     throw new Error('The Markdown page does not identify the installed package version.');
-  return { metadata, page: url.href, markdown };
+  return {
+    metadata,
+    mode: api ? 'legacy-page' : 'page',
+    page: url.href,
+    ...(api
+      ? {
+          notice:
+            'Structured component details are unavailable for this version/page; returning its complete original Markdown, including all examples.',
+        }
+      : {}),
+    markdown,
+  };
+}
+
+export function formatDocs(result) {
+  if (result.mode === 'component') {
+    const { introduction, basic, api, language, examples } = result.detail;
+    return [
+      introduction,
+      basic,
+      api,
+      `## ${language === 'zh' ? '示例索引' : 'Example index'}`,
+      examples.length
+        ? examples.map(({ index, id, title }) => `${index}. ${title} (ID: \`${id}\`)`).join('\n')
+        : language === 'zh'
+          ? '无其他示例。'
+          : 'No additional examples.',
+    ].join('\n\n');
+  }
+  if (result.mode === 'examples')
+    return result.examples.map(({ markdown }) => markdown).join('\n\n');
+  return result.markdown ?? null;
 }
 
 export async function main(args = process.argv.slice(2)) {
@@ -150,6 +381,8 @@ export async function main(args = process.argv.slice(2)) {
       api: { type: 'string' },
       guide: { type: 'string' },
       lang: { type: 'string', default: 'en' },
+      examples: { type: 'string', multiple: true },
+      json: { type: 'boolean', default: false },
       list: { type: 'boolean', default: false },
       'docs-site': { type: 'string', default: docsSite },
       help: { type: 'boolean', short: 'h' },
@@ -157,22 +390,35 @@ export async function main(args = process.argv.slice(2)) {
   });
   if (values.help) {
     console.log(
-      'Usage: node docs.mjs --project <app> [--api <export> | --guide <name> | --list] [--lang en|zh] [--package @ifhover/leaf-ui|@sudden3/leaf-ui]\nUses the exact installed Leaf UI package and version. --docs-site supports a self-hosted versioned documentation site.',
+      'Usage: node docs.mjs --project <app> [--api <export> | --guide <name> | --list] [--lang en|zh] [--examples <index|id|title>] [--json] [--package @ifhover/leaf-ui|@sudden3/leaf-ui]\nRepeat --examples to select multiple complete blocks (one selector per flag). Requires --api. Default: complete basic usage + API + example index. Old versions return a labeled full Markdown page; example selection never falls back to another version. --json emits one JSON value. --docs-site supports a self-hosted versioned documentation site.',
     );
     return;
   }
   const installation = await resolveInstallation(values.project, values.package);
-  console.log(JSON.stringify(installation, null, 2));
-  const result = await queryDocs({
-    installation,
-    api: values.api,
-    guide: values.guide,
-    list: values.list,
-    lang: values.lang,
-    site: values['docs-site'],
-  });
-  if (result.markdown) console.log(`\nSource: ${result.page}\n\n${result.markdown}`);
-  else console.log(JSON.stringify(result, null, 2));
+  let result;
+  try {
+    result = await queryDocs({
+      installation,
+      api: values.api,
+      guide: values.guide,
+      list: values.list,
+      lang: values.lang,
+      examples: values.examples,
+      site: values['docs-site'],
+    });
+  } catch (error) {
+    throw new Error(
+      `${error.message}\nInstalled: ${installation.package}@${installation.version}\nDeclarations: ${installation.typesPath ?? '(not declared by the package)'}`,
+      { cause: error },
+    );
+  }
+  const markdown = formatDocs(result);
+  if (values.json || !markdown) console.log(JSON.stringify(result, null, 2));
+  else {
+    console.log(JSON.stringify(result.metadata, null, 2));
+    if (result.notice) console.log(`\nNotice: ${result.notice}`);
+    console.log(`\nSource: ${result.page}\n\n${markdown}`);
+  }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

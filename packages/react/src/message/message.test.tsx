@@ -193,6 +193,29 @@ it('applies the calling region settings and updates existing messages when they 
   expect(screen.getAllByRole('button', { name: '关闭' })).toHaveLength(2);
 });
 
+it('exposes danger as the canonical feedback method and keeps error compatible', async () => {
+  let message: MessageApi | undefined;
+  function Example() {
+    message = useMessage().message;
+    return null;
+  }
+  render(
+    <MessageProvider>
+      <Example />
+    </MessageProvider>,
+  );
+  await act(async () => {
+    message?.danger('Danger message', 0);
+  });
+  expect(screen.getByRole('alert')).toHaveClass('leaf-message--danger');
+  act(() => message?.close());
+  await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+  await act(async () => {
+    message?.error('Legacy error message', 0);
+  });
+  expect(screen.getByRole('alert')).toHaveClass('leaf-message--danger');
+});
+
 it('isolates providers and ignores delayed calls after the owning provider unmounts', async () => {
   let first: MessageApi | undefined;
   let second: MessageApi | undefined;

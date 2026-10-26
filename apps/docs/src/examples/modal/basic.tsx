@@ -1,37 +1,29 @@
-import { Button, Form, FormField, Input, Modal, Select } from '@ifhover/leaf-ui';
-import { useRef, useState } from 'react';
+import { Button, Form, FormField, Input, Modal } from '@ifhover/leaf-ui';
+import { useId, useState } from 'react';
+
 export function ModalBasic() {
   const [open, setOpen] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
+  const formId = useId();
   return (
     <>
-      <Button onClick={() => setOpen(true)}>编辑项目</Button>
+      <Button onClick={() => setOpen(true)}>编辑标题</Button>
       <Modal
         open={open}
-        title="项目设置"
+        title="编辑标题"
         confirmText="保存"
         onClose={() => setOpen(false)}
-        onConfirm={() => formRef.current?.requestSubmit()}
+        confirmButtonProps={{ type: 'submit', form: formId }}
       >
         <Form
-          ref={formRef}
+          id={formId}
           layout="vertical"
           onSubmit={(event) => {
             event.preventDefault();
             setOpen(false);
           }}
         >
-          <FormField label="项目名称" required>
-            <Input name="name" defaultValue="Leaf UI" />
-          </FormField>
-          <FormField label="负责人">
-            <Select
-              name="owner"
-              options={[
-                { value: 'design', label: '设计团队' },
-                { value: 'engineering', label: '工程团队' },
-              ]}
-            />
+          <FormField label="标题" required>
+            <Input name="title" defaultValue="Leaf UI" />
           </FormField>
         </Form>
       </Modal>

@@ -1,83 +1,295 @@
-# Leaf UI visual and interaction standard
+# Leaf UI 样式与交互标准
 
-The default appearance is quiet and readable. Every component uses semantic theme tokens, supports a light/dark scope, and inherits comfortable/compact density. Local component overrides and explicit sizes take precedence.
+本文是组件默认外观与交互的具体契约（尺寸、状态、几何）。整体方向见 [设计风格](DESIGN-STYLE.md)，颜色角色、配方与验收见 [颜色系统规范](COLOR-SYSTEM.md)；本文未覆盖的情况按设计风格判断。文档与源码不一致时以当前源码为准，并向用户报告差异。
 
-Optional theme presets may use thicker outer borders and offset shadows. Keep the default appearance unchanged when these tokens are absent. Global `borderWidth`, `controlShadow` and `surfaceShadow` and explicit component state paint must flow through ConfigProvider, including portals and API feedback. Structural dividers retain their own fine lines. Thicker borders subtract from inner control geometry and nested corner radii rather than increasing the control height. Custom shadows must preserve a distinct focus outline, disabled semantics, reduced motion and forced colors. Presets contain portable theme data; documentation decoration must not supply private component skin rules.
+标注“待收敛”的条目是与设计风格冲突的现行实现：修改前先与用户确认；确认前按本文现行契约维护，不顺带改动。
 
-Steps labels have transparent backgrounds; horizontal connectors occupy their own space after the label rather than passing behind it. Avatars use a single 2px white border, including overlapping groups, without an additional outline shadow. DataTable defaults to borderless striped rows. Borderless tables have square corners and untinted headers; bordered tables retain the base radius and the same untinted header surface (white by default in light mode). Headers use headingWeight and a slightly muted body color in both modes, with sorting icons 4px after the label. All headers have a 1px bottom divider; striped rows omit horizontal dividers, while striped=false restores fine row dividers. Enable bordered for an outer frame and column dividers; stripe backgrounds start on the first body row and mix 2% table text color into the table surface, and hover adds a subtle 3% primary tint to each row's base so both ordinary and striped rows respond.
+颜色修改遵守颜色系统规范：使用基色输入、语义明暗派生、独立中性色阶和用途角色；家族配方只是实现复用，不是另一层颜色。不引入近似的组件默认色，在各主题下验证最终绘制结果；数值相同不代表语义相同。
 
-| Foundation | Comfortable | Compact |
-| --- | --- | --- |
-| Base control height | 36 px | 30 px |
-| Base body text | 14 px / 1.6 | 14 px / 1.6 |
-| Secondary text | 13 px | 13 px |
-| Spacing unit | 8 px | 6 px |
-| Form row gap | 24 px | 16 px |
-| List row vertical padding | 12 px | 8 px |
-| Popup option minimum height | 32 px | 26 px |
-| Dialog padding, block / inline | 20 / 24 px | 16 / 20 px |
-| Radius, small / base / medium / large | 6 / 10 / 12 / 16 px | 6 / 10 / 12 / 16 px |
+## 基础
 
-Component size is a local choice; density is a region-wide layout choice. Compact is intended for pointer/keyboard data-heavy interfaces. Use comfortable or larger explicit controls for touch interfaces; essential targets should be at least 24 px and preferably 44 px.
+### 视觉方向
 
-Hierarchy comes from radius, borders and type rather than decoration. Radii step down from the outside in: dialogs, drawers and popups use the large radius; content surfaces (Card, Alert, Collapse, Descriptions, Transfer, Upload, FileList, Result content, choice cards and lists) use the medium radius; buttons, fields and bordered Table frames use the base radius; borderless tables use square corners; checkboxes and small chips use the small radius; status tags use borderless fills and the base radius. Content surfaces use hairline borders and muted fills without shadows; shadows are reserved for layers that float (popups use `shadow-md`, dialogs `shadow-lg`) and for raised handles such as slider thumbs and selected segments. Text hierarchy relies on size and color: 14 px body, 13 px secondary text, `fontWeight` (500) for other component titles, labels, selected tabs and buttons, and `headingWeight` (600) for Card titles and Typography headings. Option group headings in Select, Dropdown, Menu, CommandPalette, List and rich choice groups use the shared section label: 12 px, weight 500, 0.04em tracking, uppercase for Latin text, muted color. Indicators that accompany text (Steps icons, Result and Upload symbols) are sized relative to the text, not to the control height.
+- 默认外观安静、可读。所有组件使用语义主题 token，支持浅色 / 深色区域，并继承宽松 / 紧凑密度；组件局部覆盖与显式尺寸优先。
+- 桌面工具视觉：白色与浅灰中性表面、细边框、柔和圆角，紧凑控件放在宽松的容器留白中。品牌色可配置，只提供可操作的强调；更换品牌色时视觉结构保持一致。
+- 中性角色来自一套由 `neutralColor` 种子（默认 `#707070`）生成的共享色阶：浅色模式把文字、边框、表面映射到适合浅底的档位，深色模式把同一色阶映射到深色表面。组件消费这些角色，不硬编码中性值。语义状态色和可读的焦点反馈与中性表面区分开。
+- 可选主题预设可以使用更粗的外边框和偏移阴影；token 缺省时默认外观不变。全局 `borderWidth`、`controlShadow`、`surfaceShadow` 与显式组件状态绘制必须经由 ConfigProvider 生效，包括 Portal 和 API 反馈服务。结构分割线保留自身细线。
+- 更粗的边框从内部控件几何和嵌套圆角中扣除，不增加控件高度。自定义阴影必须保留清晰的焦点轮廓、禁用语义、减少动态效果与强制颜色模式。预设只包含可移植的主题数据；文档装饰不得提供私有组件皮肤规则。
 
-Inset surfaces use concentric curves: `inner radius = max(0px, outer radius - padding - border width)`. A default popup has a 16 px outer radius, 6 px padding and a 1 px border, so its options use 9 px. Hover, selected and moving highlight layers share that curve. The shared geometry helper accounts for unequal padding with horizontal/vertical corner radii, including the extra insets in Cascader, TreeSelect and TimePicker. Theme and component padding changes update the curves automatically; small and square themes clamp to zero. Independent controls, calendar cells, tags and icons retain their semantic radii. Do not introduce clipping merely to hide a mismatch.
+### 尺寸与密度
 
-Menu navigation items, hover backgrounds and moving selection indicators use the same base radius as buttons, independent of menu padding. An explicit Menu component radius overrides this shared default. Selectable items change only text/icon color on hover, keyboard focus and press, preserving their background and any selected fill. Danger items keep semantic danger feedback. Submenu triggers use a lighter neutral hover and keyboard-focus background (6% text mixed with 94% surface); pressing deepens the background. Only the current page is highlighted; its ancestors keep their normal appearance. Inline submenus and navigation popups use muted text and the shared option minimum height (32 / 26 px at default comfortable / compact density), with vertical padding derived from that height. Popup moving hover backgrounds remain transparent over selectable items.
+公开基础标尺统一见[界面指南：字号与字重](apps/docs/docs/guide/design-standards.mdx#字号与字重)、[间距与密度](apps/docs/docs/guide/design-standards.mdx#间距与密度)和[尺寸、圆角与阴影](apps/docs/docs/guide/design-standards.mdx#尺寸圆角与阴影)。默认值核对 `src/styles/tokens.scss`、`src/density.ts` 与 `src/theme.ts`（相对 `packages/react/`），不在此维护第二份基础数值表；各组件的特殊几何仍由下文约束。
 
-Select, TreeSelect and Cascader use shared multi-selection tags: tag height is the current control height minus 8 px, with 6 px inline gaps. Field padding defaults to 3 px on both block edges and at inline-start; inline-end reserves the actual clear and arrow space. Explicit component padding overrides take precedence. Tags wrap by default; `tagWrap={false}` or `maxTagCount="responsive"` keeps one line, truncates long labels and collapses excess values into `+N`. Reserve the actual input, clear and arrow space; when a label cannot fit, show the count alone. Folding is presentation only and must not alter selection or FormData. Width-driven folding does not replay selection entry animations. TreeSelect retains expanded branches across popup unmounts; search expansion is temporary, arrows only expand, and checkbox rows accept both label and empty-area activation.
+- 组件尺寸是局部选择，密度是区域布局选择。紧凑密度面向指针 / 键盘的数据密集界面；触屏界面使用宽松密度或更大的显式控件，关键目标至少 24 px，建议 44 px。
 
-Select, AutoComplete, TreeSelect, Mentions and Cascader use the shared Scrollbar for popup overflow, including horizontal overflow in Cascader columns. Keep one scroll viewport per scroll region so virtual-list measurement, scroll callbacks and keyboard navigation use the same element. Scrollbar interactions preserve the trigger's input focus.
+### 圆角与嵌套
 
-Tag uses borderless tinted or solid fills and the theme's base radius (10 px by default). Explicit Tag component radius overrides take precedence. Tag, CheckableTag and TagGroup use headingWeight (600 by default) for bold labels; set bold={false} for regular 400 weight. Regional component defaults can configure bold.
+- 层级来自圆角、边框和字体，不来自装饰。默认圆角：小标签 4px、控件 8px、内容面 12px、浮层 16px，由基础圆角按 0.5 / 1 / 1.5 / 2 派生。
+- 圆角由外向内递减：对话框、抽屉和通用浮层用 large；表单浮层跟随字段实际圆角，Dropdown 使用组件圆角或基础圆角；内容面（Card、Alert、Collapse、Descriptions、Transfer、Upload、FileList、DataTable、Result 内容、选择卡片与列表）用 medium；按钮和字段用 base；复选框与小标签用 small；Tag 见下文。
+- 嵌套表面使用同心曲线：`内圆角 = max(0px, 外圆角 - 内边距 - 边框宽度)`。例：外圆角 16px、内边距 6px、边框 1px 的通用浮层，内圆角为 9px。
+- 选择类浮层与 Dropdown 的选项圆角固定为字段 / 基础圆角减 2px（最小为 0），与 Select 一致，不随面板内边距变化；行内反馈层继承该选项圆角。日期 / 时间面板内的时间行、日期格与日历标题同样使用该选项圆角；区间分段控件的内圆角按轨道内缩派生，周选择只在行首尾保留外侧圆角。其他嵌套表面使用共享几何辅助函数处理不等的横纵内缩。主题和组件内边距变化自动更新曲线；小圆角与直角主题收敛到 0。
+- 独立控件、日历格、标签和图标保留各自的语义圆角。不要用裁剪掩盖圆角不匹配。
 
-Pagination defaults to surface-filled outline buttons; `variant="ghost"` keeps borderless controls. Both share control-height tokens, stable pressed geometry and a moving primary selection surface. Outline hover/press changes the border and text, while ghost uses neutral fills. `showTotal` accepts a boolean for a localized count or a render function. Page and page-size changes use one callback; quick jumps commit on Enter or on leaving the pagination region without overriding a clicked pagination action.
+### 文字
 
-Card-style Tabs fit the tab labels by default while panels retain the available content width. Their size describes the entire tab bar, including padding and borders: 30 / 36 / 42 px by default. Inner buttons subtract those insets from the shared control height. Tab entries, buttons and moving selection share an inner radius derived from the bar radius minus its actual padding and border, clamped at zero; regional themes and explicit component overrides feed the same calculation. Default bar padding is 3 px at every size, with 12 px inline label padding and a 3 px gap. The muted surface, translucent border, raised selected surface and neutral selected/hover text match the former compact view switcher. The selected surface is pure white in light mode and uses the theme's raised surface color in dark mode. Pressing never scales a tab. Set `block` for equal-width tabs; omit item content for a header-only view switcher. Keep room for the selection shadow inside the clipped track without introducing scroll overflow. Tab content and panel height update immediately without entry, fade, slide or height animations; the tab bar's selection indicator retains its movement animation.
+- 只使用 400 / 500 / 700 三种字重：正文 400，控件和普通分区标签 500，强调文字和醒目标题 700。
+- 层级依靠字号与颜色，基础字号与行高沿用界面指南的标尺。除 Card 大号标题与 Typography 标题使用 `headingWeight`（默认 700）外，组件标题、标签、选中标签页和按钮使用 `fontWeight`（500）。
+- 伴随文字的指示物（Steps 图标、Result 与 Upload 符号）按文字尺寸确定大小，不按控件高度。
 
-| State | Required behavior |
-| --- | --- |
-| Default | Legible text, consistent icon alignment, stable geometry |
-| Hover | Color, border or shadow feedback; ordinary actions retain position and dimensions |
-| Pressed | Immediate color/opacity feedback; solid/outlined Button activation emits a faint expanding outer contour while the button and label retain their geometry; soft/link/menu/tab actions retain geometry without a wave |
-| Focus-visible | Distinct outline; no layout shift; visible in forced colors |
-| Selected | Semantic selected background/indicator plus ARIA state; never color alone |
-| Disabled | Inoperable, correct native/ARIA state; distinguish from loading |
-| Loading | Stable label/width when possible; expose busy state; prevent duplicate submission |
-| Error / warning | Status text and icon; focusable summary where applicable; avoid reliance on color |
-| Empty | Explain what is empty and offer a next action when useful |
+### 阴影与边框
 
-Use the primary color for actionable emphasis. Use success/info/warning/danger for meaning. Muted text remains readable; custom palettes must meet WCAG contrast for their actual foreground/background combinations. Transparent derived colors use premultiplied sRGB alpha.
+- 内容面使用细边框与弱化填充；默认 Card 只加最轻的朝下静止阴影（`shadow-xs`，`0 1px 2px`）。分层 Card 与 DataTable 只在内层内容框使用 `shadow-sm`；其他内容面保持平面。
+- 描边按钮使用一道朝下的轻微静止阴影，悬停不抬起。
+- Card 与 Table 外框及 Card 内部分区线使用柔化分割线（70% divider 混合表面色），比独立分割线更轻。
+- 更强的阴影只用于浮起的层和抬起的手柄：浮层 `shadow-md`；Modal 与 Confirm 叠加三层 `shadow-md`；Drawer `shadow-lg`；滑块手柄和分段选中块使用各自的抬起阴影。
 
-Keep explicit primary fills intact in both appearances. Dark themes derive primary ink and indicators separately from the brand fill: ink targets 4.5:1 against content/muted surfaces, selected indicators target 3:1, and dim solid buttons gain a subtle boundary while retaining their on-primary label. Focus uses the visible indicator when the raw primary is dim. Never lighten every primary fill just to make primary text readable; explicit component/state, foreground and focus overrides retain precedence.
+### 像素网格
 
-Warning glyphs, field accents and status fills use a clear amber (`#faad14` in light, `#ffc53d` in dark). Warning text derives a darker or lighter readable ink independently; solid warning tags choose a contrasting label. Do not darken every warning accent to achieve text contrast.
+- 默认几何落在整像素：正文 / 次要 / 大号行盒为 20 / 18 / 22 px；28 / 34 / 40 px 控件、默认 Card 标题行盒（20 / 22 / 24 px）、浮层行与步骤指示器均为整像素。Steps 指示器至少 24 px，大号 28 px。
+- 显式小数 token、自定义字号、相对宽度和 SVG 内部坐标仍可能产生小数几何；不要为掩盖应用自身布局而对任意内容取整。
 
-Unselected options use one opaque neutral hover color (`--leaf-color-option-hover`, 9% text mixed with 91% surface; default light `#ebebeb`, dark `#2f2f33`) for pointer, keyboard candidate and pressed feedback. Select, AutoComplete, Cascader, TreeSelect / Tree, time columns, Dropdown and CommandPalette share it; Menu submenu triggers reserve it for press feedback and use the lighter hover background described above; selectable navigation items use text-only feedback. Persistent selections retain the opaque 9% primary tint, semantic text and checkmarks; suggestion candidates are neutral even when their listbox uses `aria-selected` to announce navigation. Moving backgrounds interpolate both position and color; opaque fills prevent darkening when they cross selected rows, and static rows must not add a second hover / pressed fill. Disabled options receive no interaction feedback; danger actions retain their red semantic fill. These states inherit the regional appearance and palette without changing option geometry.
+## 状态
 
-Ordinary action feedback uses 120–200 ms easing. Dialogs and drawers can use up to 320 ms; drawers slide without overshoot. Messages and notifications enter as one unit, without inner icon/text springs. Selection indicators may move to the newly selected item; their animation must not move the control itself. Cards retain their position and surface on hover. Honor system reduced motion and `theme.motion={false}`; animation never gates functionality.
+### 状态契约
 
-Solid and outlined Button activation uses a single translucent perimeter wave, following Ant Design's ease-out curve: a 400 ms expansion to 6 px outside the border and a 2 s opacity decay from 0.2. Soft and link buttons omit the decoration, including danger and icon-only soft buttons. Private borderless controls used by composite components also omit it. Both timings follow the regional motion duration. One persistent decorative span and one browser animation handle both properties, without geometry/color measurement, per-click React roots, observers or per-frame JavaScript. It follows the actual corner radii and semantic action color and never clips or scales the label. Repeated activation replaces the current wave; disabling, loading, switching to soft or link, unmounting or changing motion preferences cancels it. The decoration neither intercepts pointers nor changes scrollable layout, native submission, focus or accessible names. Forced colors omits the wave while retaining the focus outline.
+| 状态        | 要求                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 默认        | 文字清晰、图标对齐一致、几何稳定                                                                                                     |
+| 悬停        | 颜色或边框反馈；普通操作保持位置与尺寸（阴影抬升属于设计风格的待收敛项）                                                             |
+| 按下        | 立即的颜色 / 透明度反馈；按钮保持几何，无外缘波纹                                                                                    |
+| 键盘焦点    | 可见且不引起布局位移：输入和选择类字段（含 Textarea、Mentions、InputNumber）统一使用主题色边框、无外圈；按钮使用中性键盘轮廓；强制颜色模式保留可辨识轮廓 |
+| 选中        | 语义化的选中背景 / 指示加 ARIA 状态；不能只靠颜色                                                                                    |
+| 禁用        | 不可操作，原生 / ARIA 状态正确；与 loading 区分                                                                                      |
+| 加载        | 尽量保持标签与宽度；暴露 busy 状态；防止重复提交                                                                                     |
+| 错误 / 警告 | 状态文字和图标；适用时提供可聚焦摘要；不只依赖颜色                                                                                   |
+| 空          | 说明什么为空，必要时提供下一步操作                                                                                                   |
 
-Solid buttons brighten on hover and deepen on press; derived shades retain readable labels and explicit interaction tokens take precedence. Outlined buttons keep their surface while text and borders take the hover/active action color. Soft buttons use a subtle neutral surface that deepens on hover and press; danger soft buttons use the danger-surface-6 token for a pale red default surface, red text and semantic hover/active surfaces. All variants retain their geometry.
+### 颜色
 
-Dialog headings, form edges and footer actions share the same inline padding. The body has sufficient separation from both heading and actions. A notification close action occupies only the heading row. Icons are decorative when the accompanying text already conveys the meaning. Every icon-only action needs an accessible name.
+- 主题色用于可操作的强调；success / info / warning / danger 表达含义。弱化文字保持可读；自定义色板须对实际前景 / 背景组合满足 WCAG 对比度。透明派生色使用预乘 sRGB alpha。
+- 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由显式 `light-N` / `dark-N` 派生与 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary / success `#1e964f`、danger `#dd3f2e`、warning `#d38b11`、info `#1677ff`。用户提供的 primary 保持原值，不改写、不强制为 500 档。
+- 反馈类视觉 API 使用 `danger`；旧的 `error` 仅作为兼容别名并归一为 `danger`。Form 校验、Progress 与 Steps 的状态名保留 `error`，消费 danger token。
+- 浅深模式都保留显式主色实底；外观切换只换用途映射，不重新着色基色或生成另一套色阶。`ink`、`primary-indicator` 的选阶规则与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
+- 使用主色焦点指示的组件在原主色偏暗时使用可见指示色；按钮保持中性焦点反馈。
+- 实底 Button 默认透明边框，即使基色与周围表面相同也不自动补对比边框；显式全局、组件和状态边框覆盖及系统强制颜色模式仍有效。保留独立的 on-primary / on-success / on-danger / on-warning / on-info 角色，即使取值相同。浅深模式可以共享取值；只有确有视觉或对比需要时才区分，不复制完整矩阵。
+- Checkbox、Radio、Switch 的选中实底使用原 primary 与 on-primary 内容。primary indicator 只用于需要与表面分隔的边界和选中指示；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
+- Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式全局、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
+- Warning 图标、字段强调与状态填充使用共享琥珀基色（`#d38b11`）；警告文字独立派生可读 ink。warning Tag 圆点保留基色，soft 标签文字使用可读 warning ink。不要为文字对比度把所有警告强调色调暗。
 
-Modal and Drawer use a content surface, subtle section dividers and a muted footer by default. `divided={false}` groups content with spacing. Their heading icons share a neutral circular base. Confirm is an API-only decision prompt: a compact 420 px surface, spacing-based sections, a bare semantic glyph beside the explanation and no background base or section dividers. Its heading starts at the content edge, independently of the body icon. Popconfirm and Notification use a bare semantic glyph aligned with the title line. Headers without a supporting description use a 16 px vertical inset; Divided Card, Modal and Drawer footers share 12 px vertical insets; spacing-only dialog and Confirm footers use 12 px below their actions. Titles and supporting descriptions share an independent text column. The close action remains on the inline end. Body content scrolls without moving the heading or footer. Borders and surfaces derive from the current light/dark region, including custom palettes and density.
+### 动效
 
-Card no longer exposes `hoverable` or adds hover lift; `bordered` remains available. Card `size` offers small, default and large layouts: body padding defaults to 16 / 20 / 24 px, heading insets to 12 / 16 / 20 px and title text to 14 / 15 / 16 px. Embedded Tabs follow the Card size unless explicitly overridden; child controls keep their own sizes. Card headings use `headingWeight` (600 by default) and equal vertical insets; the body does not add a second inset below an undivided header. Card retains spacing-based sections by default; `divided` opts into borders and a muted footer for settings or action-focused content. Checkbox/Radio card choices have one full clickable label, a neutral icon base, a title/description column and a trailing native control. Groups may arrange these as a responsive grid or one list with shared borders and row separators. Selected borders use the primary color without gradients or lifting. Status tags are non-interactive, and supporting text is an accessible description rather than part of the choice name. Neutral Alert surfaces preserve semantic icon colors and announcement roles.
+- 普通操作反馈使用 120–200 ms 缓动。对话框与抽屉最长 320 ms；抽屉滑入无过冲。Message 与 Notification 整体入场，内部图标 / 文字无弹性。
+- 选中指示可以移动到新选中项，但不能移动控件本身。Card 悬停时保持位置与表面。
+- 遵守系统减少动态效果和 `theme.motion={false}`；动画永不阻塞功能。
+- 颜色过渡共用 `--leaf-motion-color`（当前等于标准动效时长），覆盖字段、按钮、菜单表面与浮层选项行。
 
-Card can integrate top line tabs through its `tabs` configuration. With a heading, navigation sits below the title and description without an intervening divider; without a heading, tabs fill the entire heading height with vertically centered labels and Card actions move to the trailing edge. Replacement headings derive their minimum height from the Card title line and symmetric heading insets, respect larger explicit tab sizes, and have no top-only outer padding. One full-width divider runs under the entire tab bar, including its actions. Tab labels and panels align with the Card content edge, panel insets and header surfaces inherit Card tokens, and tab size follows Card size unless explicitly set. The footer retains Card's spacing or divided treatment. Reuse Tabs navigation, overflow, content retention and animation rather than creating a second tab state system; loading replaces panel content while navigation remains mounted.
+## 操作
 
-CardTitle reuses Card title typography outside a Card, without adding a surface or padding. Its small, default and large sizes match Card titles (14 / 15 / 16 px at the default base font size); the semantic heading level defaults to h3 and is independent of visual size. Both use the regional font family, base font size and heading weight. Card owns its internal title size and does not consume standalone CardTitle default props; user-supplied CardTitle elements still receive their regional defaults.
+### Button
 
-FileList uses one shared frame and row separators for text and thumbnail lists. Visuals, file information and actions occupy separate columns; names truncate within their column, while type and optional size remain secondary. Upload state, progress and errors belong to the information column. Preview buttons, download links, removal and Upload actions share square geometry. Picture cards keep a stable preview ratio and align their actions at the bottom. Missing sizes leave no empty placeholder, failed thumbnails retain a type icon, and asynchronous removal feedback stays with its file. No row shadow or hover lift is applied.
+- 外观：`solid`、`outline`、`text`、`link`，默认 `outline`。所有外观保持几何不变；danger 只改变语义配色，不改变动效、装饰或几何。
+- 按钮与紧凑操作在悬停、按下和恢复时共用同一绘制过渡时长与缓动。loading 内容使用同一缓动，无弹性。响应只通过颜色过渡，无外缘波纹；指针激活不显示焦点光环；键盘焦点使用中性轮廓，强制颜色模式下仍可见。
+- `solid`：悬停保持静止外观，只在按下时加深；按下色为基色混入 10% 黑色，不量化。前景色见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)。
+- `outline`：内容表面、正文色、可见中性边框和一道轻微静止阴影。悬停用 `border-hover` 加深边框（danger 使用 `danger-ink`）；按下只把实际背景与 `surface-muted` 等比混合成浅灰，松开恢复。文字、边框、阴影和几何保持当前悬停或焦点状态。边框与背景使用共享颜色过渡。danger 描边保留语义文字与边框。
+- `text`：常规按钮高度和行内内边距，正文色、透明静止背景。悬停使用 50% 不透明度的中性选项悬停底，按下使用完整强度，不改变几何。
+- `link`：可读的 primary / danger ink（`--leaf-color-primary-ink` / `danger-ink`），无边框、内边距和控件最小高度。悬停保持静止颜色；按下时 primary 文字加深（`primary-ink-active`），danger 文字加下划线；无波纹。
+- 内边距随实际高度派生（高度 × 0.42，34px 时为 14.28px），显式组件内边距在所有尺寸下优先。显式交互 token 与组件状态覆盖优先。
 
-ConfigProvider remains the configuration entry. Base colors, radius and height derive related geometry; advanced `dividerColor`, component `borderColor`, `headerBackground` and `footerBackground` provide selective overrides. CSS variables are consumption points for application styling. Filled actions and checkmarks remain solid colors, and single-line controls keep the 36px base height.
+### 紧凑操作
 
-Buttons expose solid, outline, soft and link appearances. Soft uses the muted surface token for a subtle neutral background and the danger surface token for danger actions in both themes; it keeps the shared control dimensions and has no wave. Link actions use theme-colored text with no border, padding or control-height minimum; hover and press change only their color, and activation has no wave. Outline uses a content surface, body text and a visible neutral border; danger uses its semantic text and border. Alerts use one neutral surface with semantic icon colors. Result icons sit on the same muted circular base for every status. Bordered Table surfaces use the same base radius as buttons; borderless tables have square corners. Tables use 13 px bold, slightly muted column headers and divider-colored separators, and fill their container before horizontal overflow; a minimum width remains a lower bound. Scrollbar tracks overlay content and appear on hover, scroll or keyboard focus; dragging must neither steal input focus nor add a pointer focus outline.
+- 清除、显隐、关闭等紧凑操作复用文字按钮的 text-action 配方，保留所属组件的点击区域尺寸，最小 24px。
+- 每个纯图标操作都需要可访问名称；当相邻文字已表达含义时，图标为装饰性。
 
-Development migration: replace the removed Button `variant="ghost"` with the soft appearance `variant="soft"` and remove Alert `variant` props. Comfortable controls now derive 30 / 36 / 42 px sizes; compact controls use a 30 px base. Set `theme.controlHeight` explicitly when an application needs to retain its former sizing. Content surfaces move from the large to the new medium radius (`borderRadiusMd` / `--leaf-radius-md`) and drop their default shadow; small text becomes 13 px (`fontSize - 1px`); button inline padding derives from its actual height (0.42 times the height, 15.12 px at 36 px), with explicit component padding taking precedence for every size; component titles other than Card use `fontWeight` instead of `headingWeight`; small Steps retain body-size labels and at least 24 px indicators; rich choice legends use section labels; replace controlled `Confirm` / `ConfirmProps` with `useConfirm().confirm(options)` / `ConfirmOptions`, and move rich confirmation flows to Modal; Confirm retains a bare body icon; tags use borderless fills, the base radius and bold labels by default; replace Tag `variant="outline"` with the default `soft` appearance; popups use `shadow-md`; Pagination uses outlined page buttons by default; set variant="ghost" to retain borderless buttons. Include these compatibility changes in the next release's migration notes.
+### Pagination
 
-Acceptance uses keyboard behavior, geometry assertions, axe, SSR, build/package checks and manual inspection in both themes and densities. Screenshot baseline comparisons are deliberately deferred. See `IMPLEMENTATION-BATCHES.md` and `packages/react/ACCESSIBILITY.md` for evidence and manual coverage limits.
+- 默认使用表面填充的描边按钮；`variant="ghost"` 保留无边框控件。两者共用控件高度 token 和稳定的按下几何。
+- 描边悬停只加深中性边框；按下加与描边 Button 相同的浅中性底，不改变文字或几何。ghost 使用中性填充。
+- 当前页使用主题色浅底的弹性移动选中块（待收敛，见设计风格）。移动背景同时插值位置与颜色；不透明填充防止经过选中项时变暗。
+- `showTotal` 接受布尔值（本地化总数）或渲染函数。页码和每页条数变化使用同一回调；快速跳转在 Enter 或离开分页区域时提交，不覆盖已点击的分页操作。
+
+## 选择与导航
+
+### 选项行
+
+- Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和时间列共用 choice-option 配方：未选中、已选、悬停和键盘候选行都使用半强度中性反馈（4% 黑）和完整继承文字色，未选中文字不淡化。
+- 已保存的值用勾选标记表达，不常驻背景色；checkbox 模式以复选框作为持久标记。AutoComplete 与 Mentions 用 ARIA 选中态表示当前候选；建议候选即使使用 `aria-selected` 播报导航也保持中性。
+- 每行只渐变自身背景色（默认 200ms），不使用移动高亮、透明度或内缩动画；勾选标记保留现有动效。
+- 这些行跟随当前控件高度（宽松 / 紧凑 34 / 30 px，遵循显式组件 token），行间无额外间隙；长标签换行并增高行。Select 与 AutoComplete 的显式 `optionHeight` 优先。其他浮动列表（Menu 子菜单、时间列）使用通用浮层选项最小高度。Dropdown 图标与文字间距 12px。Tree 的层级缩进属于行布局。
+- Dropdown 未指定宽度时从 160px 最小宽度按完整内容增宽，达到最大宽度或视口边界后才换行；右侧 extra 按自身内容占位，不固定占据一半菜单。`size` 的 sm / md / lg 同时控制字号、行高、图标与行内间距，子菜单继承；默认 md 图文间距仍为 12px。
+- 浮层外框匹配字段圆角（包括组件覆盖），选项为该圆角减 2px（最小 0）。Mentions 跟随其 Textarea 字段，所有基于 DateInput 的日期 / 时间浮层跟随 DatePicker 字段槽。Portal 几何不得继承外层 Card 或 Menu 的表面圆角。
+- 选中值变化时立即更新触发器标签，不重放内部文字动画。Cascader 父级变化时立即替换更深列，不用会被看成闪烁的淡入。
+
+### 多选标签
+
+- Select、TreeSelect、Cascader 共用多选标签：高度为当前控件高度减 8 px，行内间距 6 px。字段内边距默认上下与行内起点各 3 px，行内终点预留清除与箭头的实际空间；显式组件内边距优先。
+- 默认换行；`tagWrap={false}` 或 `maxTagCount="responsive"` 保持单行、截断长标签并把多余值折叠为 `+N`。放不下标签时只显示计数。
+- 折叠只影响展示，不改变选择或 FormData；按宽度折叠不重放选择入场动画。
+- TreeSelect 在浮层卸载后保留展开分支；搜索展开是临时的，方向键只展开；checkbox 行的标签与空白区域都可激活。
+
+### 浮层滚动
+
+- Select、AutoComplete、TreeSelect、Mentions、Cascader 的浮层溢出使用共享 Scrollbar，包括 Cascader 列的横向溢出。每个滚动区域只保留一个滚动视口，使虚拟列表测量、滚动回调和键盘导航使用同一元素。滚动条交互保留触发器的输入焦点。
+
+### Menu
+
+- 只支持纵向，布局与键盘语义独立于外观。`variant` 可选 `default`、`raised`、`primary`，默认使用 `raised`；每种外观提供完整的状态配色、边框、阴影与进出时长；内联和浮动导航共用同一状态绘制器，不事后覆盖默认选中规则。
+- `default`：8% 黑的悬停、按下与选中填充；未选中行文字为 80% 继承色混合区域表面，选中行为完整文字色。
+- `raised`：灰色画布、主题表面选中块、1px 中性边框和 `0 2px 3px -1px rgb(0 0 0 / 0.08)` 阴影，用 `inset(0 0 -4px)` 裁剪为只在行下方溢出；悬停只加深文字，按下 4% 黑。
+- `primary`：选中使用可读 primary ink 与 10% primary 填充；悬停同色文字无背景；按下 4% primary 填充；选中无边框或阴影。
+- `raised` 与 `primary` 入场时长为标准时长的 1.2 倍（默认 240ms），立即清除旧选中，无灰色退出。
+- 所有外观保留危险语义、禁用行为、键盘轮廓、减少 / 关闭动效与系统强制颜色。只高亮当前页，不高亮其祖先。
+- 行圆角为基础圆角减 2px（默认 6px），浮层外框用基础圆角。顶层行高为控件高度加 2px（36 / 32px），子菜单行高跟随选项（30 / 26px）；16px 图标占 20px 槽，图标与文字间距 12px。内联子项在引导线后预留 8px 并保持标签对齐。反馈不移动行几何、标签或图标；子菜单与浮层保留共享的展开动效。
+
+### Tabs
+
+- 只支持横向。
+- line：选中标签用正文色，其他用弱化中性色；选中项下方是居中的 18 px 圆角指示条，使用 primary indicator 色，不画连续基线，指示条移动到新选中项。指示条贴在标签底边，按尺寸厚 2 / 3 / 4 px；line 标签项高度加 4 px（32 / 38 / 44 px），使标签与指示条之间保留空隙。指示条移动仍使用弹性曲线（待收敛，见设计风格）。
+- card：去掉外围栏，选中项为浅灰圆角表面，项间距 4 px，未选中标签使用更淡的中性色。保持 28 / 34 / 40 px 控件尺寸、12 px 行内内边距和稳定按下几何。
+- segmented：灰色圆角轨道，内边距 3 px、项间距 3 px，嵌套的表面色移动滑块带轻微静止阴影；轨道高 28 / 34 / 40 px，标签行内内边距 14 px。滑块使用不过冲的标准缓动直接落到选中项。
+- `block` 等宽铺满；省略项内容可作为只有标签栏的视图切换器。标签溢出时在两侧显示描边纯图标滚动按钮，仅在标签栏悬停或获得键盘焦点时出现。
+- 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；只有选中指示保留移动动画。
+- Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。
+
+### Tag
+
+- 外观 `soft` 与 `outline`，字重 500，标签最小 12px。soft 使用语义浅底与可读 ink，默认圆角 6px；outline 使用中性内容表面、中性边框、正文色和胶囊圆角。两者都可显示 6px 语义圆点；显式组件圆角 / 绘制覆盖优先。
+- CheckableTag 与 TagGroup 未选中用 outline，选中用 soft。旧的 `error` 仍是 `danger` 的别名。关闭操作保留至少 24px 点击区域，不增加标签行盒。
+
+### Badge
+
+- 附着 Badge 默认 `placement="outside"`：计数的行内起点固定在目标行内终点边界内 14 px，红点使用 8 px 锚点。两者最小尺寸时位置不变，只向行内终点方向外扩；更宽的值不围绕目标边界重新居中。
+- `placement="inside"`：指示器距顶部和行内终点 6 px，向内扩展，两种外观都加固定 2 px 白色分隔环（环外缘距目标 4 px）。
+- 位置不改变目标几何或交互；确保目标有空间容纳指示器而不遮挡内容。两种位置都在 RTL 中镜像，只影响附着指示器。
+
+### Steps 与 Avatar
+
+- Steps 标签背景透明；横向连接线在标签之后占据自身空间，不从标签下方穿过。
+- Avatar 使用单道 2px 表面色边框（包括重叠的头像组），不再加额外轮廓阴影。
+- AvatarGroup 的纯文字头像按组内顺序循环使用 primary / info / warning / danger 的 soft 与 ink 配对及中性 surface-muted / text-muted；仅用于区分成员，不表达状态。图片、默认图标、独立 Avatar 与人数计数保留中性回退，显式 Avatar 绘制覆盖优先。
+
+### 日期与时间输入
+
+- 单行字段共用稳定的 240px 默认宽度（Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect 与单值日期 / 时间），最大宽度不超过容器；选值 / 清空不改变宽度。日期区间 300px，日期时间区间 380px，日期时间显示秒或时段时单值 280px / 区间 440px，纯时间区间长格式 300px。显式 style.width 优先；FormField 内默认铺满，Textarea 保持 100%。
+
+- 日期、时间和范围字段共享原生 input 的分段选择：数字输满或无法接下一位时自动换段；Tab / 空格切到下一段（包括空段），Shift + Tab 返回上一段，左右键换段，上下键步进，Home / End 到首尾。首段 Shift + Tab、末段 Tab 按正常顺序离开字段，不循环；清除可用全选后 Delete；点击字段或图标展开面板，Alt + 下键移入面板。
+- token 型日期 format 决定段顺序与字面量；函数型或无 token 的格式保留文本输入；DatePicker 仅支持单值，不支持多日期数组。粘贴整值沿用既有解析器。输入中保留不完整草稿，非法日期或越界时间不提交；Escape 还原，表单值始终是已提交的标准格式。
+- 只保留 DatePicker 与 DateRangePicker，通过 picker 切换日期、时间、日期时间或日历粒度。分段选中文字使用 info 蓝色与 on-info 前景；字段聚焦 / 展开复用 primary 字段配方。有效输入实时更新日历与时间列，不提前提交表单值。
+- 时间浮层复用独立时、分列，开启秒后增加秒列；12 小时制另有时段列，上午 / 下午与列标题保持单行；列数增加时浮层随之加宽。分钟 / 秒步长默认 1，保留已有非步长值。时间行复用 choice-option 的中性悬停和勾选，Scrollbar 使用 sm 与 persistent；打开时当前项居中，键盘跳过禁用项。
+- 时间列点击只调整草稿，不自动关闭；确定或 Enter 提交。纯时间模式默认在外部点击 / Tab 离开时提交有效调整，needConfirm 时放弃。时间区间分为开始 / 结束两组并以细线分隔，不显示时长；未允许跨夜时禁用早于开始的结束时间。
+
+## 表面与复合组件
+
+### 对话框通用
+
+- 默认表面中，对话框标题、表单边缘与页脚操作共用同一行内内边距；正文与标题、操作之间有足够间隔。标题与辅助描述共用独立的文字列；关闭操作在行内终点；正文滚动时标题与页脚不动。
+- Modal、Drawer 及基于 Modal 的浮层默认使用半透明灰色遮罩、无背景模糊；ConfigProvider `maskBlur` 显式开启模糊。Tour 保留现有无模糊聚光遮罩。
+- Modal 与 Drawer 的标题图标共用中性圆形底座。边框与表面来自当前浅 / 深区域，包括自定义色板与密度。
+
+### Modal 与 Confirm
+
+- 水平居中，并通过更大的底部视口留白（16dvh，限制在 24–160 px）在视觉上偏上；过高的对话框保持 24 px 顶部留白并滚动正文。
+- 默认阴影为三层共享 `shadow-md` 叠加：投影范围紧凑、色调更深，不影响其他浮层；显式组件与表面阴影优先。
+- Modal 默认使用内容表面（默认浅色主题为白色），以间距分区。普通对话框四边外留白相等，来自区域对话框块向间距（宽松 20 px / 紧凑 16 px）；显式组件内边距优先。默认取消操作使用描边按钮。
+- Modal `variant="card"`：保留灰色画布，正文放在 6 px 内缩、无边框、medium 圆角的内容面上。14 px 标题使用 heading 字重和 22 px 行盒，与内容文字起点对齐，并在文字列内下移 2 px；关闭目标距内容卡右边缘 8 px，页脚操作与卡片对齐。页眉顶部内缩 12 px，到内容面一个 12 px 分区间距，内容卡到页脚按钮 10 px；页脚顶部内边距为 0 避免间距叠加，底部内缩 10 px。正文内边距独立控制内容到卡片边缘的距离。24 px 关闭目标内含正文色 16 px 图标，透明静止背景、更深的标准中性悬停背景和 small 圆角（默认 4px）。
+- Confirm 是只通过 API 调用的决策提示：紧凑的 420 px 表面、以间距分区，语义图标裸放在粗体标题旁并垂直居中，无背景底座或分区线。标题使用大号文字（默认 16 px），说明使用基础字号，两者文字起点一致，分区间距 8 px；无标题时图标放在说明旁。
+- 普通 Modal 与 Confirm 的页脚使用与其他外边相同的底部留白。
+
+### Drawer
+
+- 默认 `variant="card"`：灰色画布、紧凑标题；内容面左右与底部内缩 `spacing × 0.75`（宽松默认 6px），圆角为外层 large 圆角减内缩；内容内边距为 `spacing-md`；页脚透明，底部内边距 `spacing × 1.25`。`variant="plain"` 是普通内容表面。
+- 分区线默认关闭（`divided={false}`）；开启 `divided` 时页眉 / 页脚加分割线，页脚使用 `surface-muted` 背景和 12 px 上下内边距。
+- 阴影 `shadow-lg`；滑入无过冲。
+
+### Popconfirm 与 Notification
+
+- Popconfirm 与 Notification 的语义图标裸放并与标题行对齐。Notification 的关闭操作只占标题行。
+
+### 日期与时间面板
+
+- 日期、时间与范围选择面板默认 `panelVariant="card"`，与 Modal card 处理一致：浮层是灰色画布，日历、时间列、成对面板和预设区使用 medium 圆角的内嵌内容面。页脚去掉分割线和染色条，直接放在画布上并与内容面对齐。浅色、深色、RTL 和窄屏保持同样层次；显式 `panelVariant="plain"` 保留普通内容面板。
+- 提交：默认点击外部或 Tab 离开时提交在面板中调整过的有效草稿，只打开再关闭不改变值；Escape 始终放弃。`needConfirm` 改为只由确定按钮（及输入框 Enter）提交。年、季度、月、周与日期区间选好终点即提交并收起。
+- DatePicker 的 datetime 浮层为一个日历与共享时间列，日历内容网格与 292px 普通日期面板等宽，按外框、画布内缩及内容面边框扣除实际占位；浮层按内容自然宽度排列，时间列宽 84px、时段列宽 96px，最大宽度为 `100vw - 24px`。窄于 620px 时日历与时间上下排列；四列时间按视口适度扩宽，日历仍保持普通面板的内容尺寸。选日保留时间，默认 needConfirm 为 true；移除当前时间与完整草稿预览，页脚保留今天、自定义内容和确定。
+- DateRangePicker 的 datetime 模式同样只放一个日历与共享时间列，开始端点击“下一步”，结束端点击“确定”提交整个区间。顶部使用紧凑分段控件与 aria-pressed，灰色轨道和白色选中面复用 segmented-surface-family，不重复完整值。仅日历区间模式显示两个日历；只有开始值时打开即编辑结束。默认 needConfirm 为 true，Escape / 点击外部放弃。
+- 区间悬停预览使用浅色区间底、主题色描边和主题文字色的 `--preview` 单元格，不再借用实心选中样式；强制颜色模式下以系统高亮描边区分。预设位于日历左侧竖排（窄于 620 px 时移到上方横排），悬停或聚焦预览，匹配当前草稿时 `aria-pressed` 并使用区间底色。`allowEmpty` 的清空端点操作位于页脚。
+- 日期、月、季、年选项的网格和单元格内缩均为 0，不留行列间距；悬停为与 Select 行相同的 4% 中性底，范围预览无内层描边，保留键盘焦点轮廓。周模式按 weekStartsOn 悬停整周连续高亮。选中日期保留实心主题色（日历语义例外）。
+- 页脚可换行。触屏目标尺寸沿用区域密度规则，不按指针类型自动放大。周起点来自 ConfigProvider `weekStartsOn`，周编号仍按 ISO（取所在周内的星期四）。
+- 页脚内置的“今天”“当前时间”和清空端点等次要操作使用 small 描边按钮；“确定”保留 small 实底按钮。预设列表和使用者通过 `renderExtraFooter` 传入的内容不受此规则改写。
+
+### Calendar
+
+- 公开 Calendar 是独立实现，不复用浮层 CalendarPanel。完整布局参考 macOS 日历：粗体月份 + 常规字重年份作为标题，行尾为“月 / 年”分段控件与“‹ 今天 ›”按钮组。月视图使用 `divider` 细线网格，数字在格子顶部尾端，每月 1 日带月份缩写；年视图为 4 / 3 / 2 列迷你月历。
+- 选中日期是实心 `primary` 胶囊配 `on-primary` 文字；今天只用主题色粗体数字，不加底色或描边。悬停与按下只改变背景色。`cellRender` 内容位于数字下方，单行省略。容器窄于 560px 时用单字母星期并居中数字。
+- 紧凑日历宽 296px，日期为 30px 圆形目标，标题按钮展开月份选择。DatePicker 与 DateRangePicker 浮层继续复用紧凑 CalendarPanel，外观不受公开 Calendar 影响。
+
+### Card
+
+- 不提供 `hoverable`，不做悬停抬起；保留朝下的轻微静止阴影，`bordered` 仍可用。
+- `size` 为 small / default / large：正文内边距默认 16 / 20 / 24 px，标题内缩相同，标题文字 14 / 16 / 18 px。默认 Card 四边外留白相等（16 / 20 / 24 px）；页眉、页脚与正文共用阅读边，不重复内部分区间距；显式组件内边距优先。
+- 标题字重：small / default 使用 `fontWeight`（500），large 使用 `headingWeight`（默认 700）；标题上下内缩相等，无分割线的页眉下方正文不再加第二道内缩。Card 总是以间距组织标题、正文和页脚，没有公开的 `divided` 模式。
+- `selected` 加主题色外边框（`bordered=false` 时同样生效），并移除外层与分层面板阴影，不改变几何或表面；显式组件 `borderColor` 仍优先。选中只是视觉，不增加点击目标、role 或 Tab 停靠。
+- 内嵌 Tabs 跟随 Card 尺寸，除非显式覆盖；子控件保持各自尺寸。
+- `variant="layered"`（原未发布的 `inset`）：无外层阴影，灰色画布上放小号弱化标题和页脚，不显示 `description`。只有封面、标签页和正文放在内容面上，内容面左右和底部内缩 4 px（无标题时顶部 6 px）。
+- 分层标题尺寸 12 / 12 / 13 px，字重 500。内圆角为外圆角减边框宽度再减 2 px（默认 9 px 对 12 px）；朝下的柔和阴影使用 `shadow-sm`，模糊 6 px，两侧与下方最多可见 6 px，不超出面板顶部。
+- 分层内容内边距补偿内缩，使标签与正文共用阅读边；分层标题通过减小页眉行内起点内边距，相对该阅读边向行内起点偏移 5 px，不使用负外边距。
+- 分层标题顶部内缩 6 / 8 / 10 px，底部 2 / 4 / 6 px；页眉预留一行等于默认描边 Tag 的高度（small 行高加 6 px），有无 Tag 的单行标题等高；行尾内容与内容卡边缘对齐。页脚上方内边距 0、下方 4 px，由内容卡的 4 px 底部外边距负责间隔，页脚操作与内容卡边缘对齐。
+
+### Card 内嵌标签页
+
+- 通过 `tabs` 配置集成顶部 line 标签。有标题时，导航位于标题和描述下方，中间无分割线；无标题时，标签占满整个标题高度、文字垂直居中，Card 操作移到行尾。
+- 替代标题的最小高度由 Card 标题行和对称标题内缩派生，尊重更大的显式标签尺寸，无单独的顶部外内边距。
+- 一条全宽分割线贯穿整个标签栏（包括操作区）；选中下划线覆盖在该分割线上，厚度与独立 line 标签一致。标签文字与面板对齐 Card 内容边，面板内缩与页眉表面继承 Card token，标签尺寸跟随 Card 尺寸，除非显式设置。页脚保持间距式处理。
+- 复用 Tabs 的导航、溢出、内容保留与动画，不另建标签状态；loading 只替换面板内容，导航保持挂载。
+
+### CardTitle
+
+- 在 Card 外复用 Card 标题排版，不加表面或内边距。small / default / large 与 Card 标题一致（默认基础字号下 14 / 16 / 18 px，small / default 字重 500，large 使用 headingWeight）。
+- Card 与 CardTitle 默认都是 h3，除非文档大纲需要，调用方不指定 level。`description` 位于标题下方，`extra` 位于行尾，与 Card 标题区一致。
+- Card 自己决定内部标题尺寸，不消费独立 CardTitle 的默认参数；用户传入的 CardTitle 元素仍读取区域默认值。
+
+### DataTable
+
+- `variant="layered"` 为默认分层外观；`variant="simple"` 去掉外框、内层内容框与阴影，只保留一整块 `surface-muted` 圆角表头与细行分隔线。简洁模式忽略 `striped`、`columnDividers` 及旧的 `bordered`，不绘制表头短竖线或固定列边缘阴影；固定表头、列布局和交互能力不变，表头圆角默认使用 base 并尊重组件圆角覆盖。以下分层结构与条纹规则仅适用于 layered。
+- 外观同分层 Card：medium 圆角灰色画布承载紧凑的 500 字重列标题，无外层阴影，无表头横向分割线。相邻表头单元格之间始终有居中、占一半高度的竖向分隔。
+- 内层内容框静止不动，内缩为区域间距 token 的一半，使用柔化边框、嵌套圆角和 `shadow-sm`；行只在该框内滚动。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table。
+- 排序图标跟在标签后 4px。斑马纹（默认）省略横向分割线，`striped=false` 恢复细行分割线；`columnDividers` 为表体 / 表脚加列分割线。第一行数据保持内容表面，条纹从第二行开始，在表格表面中混入 2% 表格文字色；详情行与虚拟占位行不影响条纹奇偶。
+- 普通行与条纹行悬停都使用一层不透明的 3% primary 混合表格表面；主题色选中填充优先。显式 `primarySoftColor` 只覆盖选中填充。展开操作复用小号纯图标文字按钮及其中性反馈；拖拽操作保留中性选项悬停反馈。显式组件状态覆盖优先。
+- 到达对应逻辑方向的横向滚动边缘时，固定列阴影消失。表格先填满容器再横向溢出；最小宽度只是下限。
+- 内部结构与引擎见 [Table 实现说明](packages/react/src/table/README.md)。
+
+### FileList
+
+- 文本与缩略图列表共用柔化外框和与文件名起始对齐的内缩细线分割线；行悬停与聚焦使用半强度中性底并淡出相邻分割线。`text` 在宽容器（`> 480px`）中呈现单行清单（文件名居前，类型、可选大小与上传状态以圆点分隔对齐在操作前），窄容器自动折为双行；`picture` 保持双行缩略图附件布局。首行图标、文件信息与操作始终垂直居中，进度条与错误位于主行下方的信息列，不拉偏首行图标。
+- 类型图块为带柔化细线边框的 `surface-muted` 方块，静止图标统一使用弱化文字色，不按文件格式分配彩色；仅上传中（主题可读文字色）与错误态（危险浅底及语义文字色）着色。缩略图内侧保留 1px 柔化细线。
+- 预览按钮、下载链接、移除和 Upload 操作使用方形几何，静止为弱化文字色，悬停 / 聚焦恢复正文色，移除在交互时显示危险文字色。图片卡片（`picture-card`）为白色卡片内缩 6px 的媒体区（同心圆角，宽容器 16:10、窄容器 16:9），悬停只加深卡片边框而保持白底，无缩略图时展示带浅阴影的白色纸页标牌与大写扩展名；下方完整文件名独占一行，底栏对齐次要元信息与操作。空状态使用虚线框与中性回形针图块。缺少大小时不留空占位，缩略图失败时回退为类型图标，异步移除反馈留在对应文件上。无行阴影或悬停抬起。
+
+### 其他复合表面
+
+- Carousel 上一页 / 下一页使用浅中性底、无描边与阴影的圆形柔和按钮，复用文字动作的中性悬停 / 按下反馈，不缩放。按钮相对内容视口垂直居中，不包含底部指示点区域。
+- Transfer 的左右面板各使用灰色底板，紧凑标题与计数留在底板上，搜索和列表共用内缩的白色内容卡片；复用柔化边框、同心内圆角与内层 `shadow-sm`，外层无阴影、无表头分割线。显式组件背景、标题背景、边框与阴影覆盖优先。
+- 带边框的 Descriptions、FileList 和 Collapse 使用柔化内容框而不是强字段边框，保持平面，不机械嵌套卡片。组件圆角与内容绘制必须作用到可见表面。
+- 窄屏下 Form 与 Transfer 按自身容器宽度响应。
+- Checkbox / Radio 卡片选项：整张卡片是一个可点击 label，含中性图标底座、标题 / 描述列和行尾原生控件。组内可排成响应式网格，或一个共享边框与行分隔的列表。选中边框使用主题色，无渐变或抬起。状态标签不可交互；辅助文字是可访问描述，不属于选项名称。
+- Alert 使用一个中性表面和语义图标色，保留播报 role。
+- Result 图标无背景或外框；danger 使用红色语义 CircleAlert。默认 / small 图标 48 / 36 px。标题使用大号正文（sm 为基础字号），描述使用小号文字。
+- Scrollbar 轨道覆盖在内容上，在悬停、滚动或键盘聚焦时出现；拖动不抢输入焦点，也不显示指针焦点轮廓。`size="sm"` 用于密集列表：更窄的轨道（6 px、距边 2 px）和更淡的滑块。
+- Scrollbar 的 persistent 使轨道常驻并按 orientation 为对应轴预留独立空间；scrollbar="always" 仍是常显覆盖式，hidden 优先隐藏并不预留。时间列统一使用 persistent，避免遮挡数值与勾选。
+
+### 共享灰色底板
+
+- 分段 Tabs 轨道、ColorPicker 格式轨道、分层 Card 与 Transfer 外层画布、card 型 Modal 画布和 card 型选择器画布直接共用 `--leaf-color-surface-muted`。显式 `mutedSurfaceColor` 在这些画布上绘制完全相同的颜色，不再与边框或表面混合。
+- 选中滑块和内嵌内容面保持 `--leaf-color-surface`；显式组件覆盖与嵌套主题优先。
+
+### Upload、ColorPicker、InputOTP 与 Slider
+
+- ColorPicker 显示颜色文字时，HEX / RGB / HSL / 渐变模式默认宽度分别为 144 / 272 / 296 / 160px，透明度变化不改变宽度；显式 style.width 优先，最大宽度不超过容器。不显示文字时保持当前尺寸的方形色块控件，清除操作额外预留空间。格式切换复用内部 segmented Tabs。
+- Upload 反馈、ColorPicker 色块 / 预设和 OTP 焦点保持几何稳定；使用颜色、边框或克制的阴影变化，不做装饰性抬起、缩放或数字弹跳。
+- InputOTP、Slider、Upload 使用 `accent-halo-family` 主题色光晕（待收敛，见设计风格）；不得据此给 Input / Select 恢复外圈。
+
+## 配置
+
+- ConfigProvider 是唯一配置入口。基色、圆角和高度派生相关几何；高级 `dividerColor`、组件 `borderColor`、`headerBackground`、`footerBackground` 提供选择性覆盖。CSS 变量是应用样式的消费点。
+- 实心操作与勾选标记保持纯色；单行控件保持 34px 基础高度。
+
+## 验收
+
+验收使用键盘行为、几何断言、axe、SSR、构建 / 包检查，以及两种主题、两种密度的人工检查；截图基线比较暂缓。现行检查见 [质量验收：当前规则](packages/react/QUALITY.md#当前验收规则)。`history/` 下的记录只证明当时的覆盖范围，不是现行规则。待发布的兼容性变化记录在 [待发布迁移](MIGRATION-PENDING.md)。

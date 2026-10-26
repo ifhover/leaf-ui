@@ -17,18 +17,22 @@ for (const appearance of ['light', 'dark']) {
     const ghost = page.getByRole('navigation', { name: 'Ghost pages' });
     const candidate = outline.getByRole('button', { name: 'Page 3', exact: true });
     await expect(candidate).toHaveCSS('border-color', await color(outline, '--leaf-color-border'));
-    expect(
-      await candidate.evaluate((node) => getComputedStyle(node, '::before').backgroundColor),
-    ).toBe(await color(outline, '--leaf-color-surface'));
+    await expect(candidate).toHaveCSS(
+      'background-color',
+      await color(outline, '--leaf-color-surface'),
+    );
     await expect(ghost.getByRole('button', { name: 'Page 3', exact: true })).toHaveCSS(
       'border-color',
       'rgba(0, 0, 0, 0)',
     );
     const marker = outline.locator('.leaf-pagination__indicator');
-    await expect(marker).toHaveCSS('border-color', await color(outline, '--leaf-color-primary'));
+    await expect(marker).toHaveCSS(
+      'border-color',
+      await color(outline, '--leaf-color-primary-indicator'),
+    );
     await expect(marker).toHaveCSS(
       'background-color',
-      await color(outline, '--leaf-color-primary-surface-8'),
+      await color(outline, '--leaf-color-primary-soft'),
     );
     const current = outline.getByRole('button', { name: 'Page 2', exact: true });
     const currentColor = await current.evaluate((node) => getComputedStyle(node).color);
@@ -37,16 +41,18 @@ for (const appearance of ['light', 'dark']) {
     await candidate.hover();
     await expect(candidate).toHaveCSS(
       'border-color',
-      await color(outline, '--leaf-color-primary-hover'),
+      await color(outline, '--leaf-color-border-hover'),
     );
+    const candidateColor = await candidate.evaluate((node) => getComputedStyle(node).color);
     const before = await candidate.boundingBox();
     await page.mouse.down();
     try {
       await expect(candidate).toHaveCSS('transform', 'none');
+      await expect(candidate).toHaveCSS('color', candidateColor);
       expect(await candidate.boundingBox()).toEqual(before);
       await expect(candidate).toHaveCSS(
         'border-color',
-        await color(outline, '--leaf-color-primary-active'),
+        await color(outline, '--leaf-color-border-hover'),
       );
     } finally {
       await page.mouse.up();
@@ -67,13 +73,19 @@ for (const appearance of ['light', 'dark']) {
         { timeout: 20_000 },
       )
       .toBeLessThan(1);
+    const reference = page.getByRole('button', { name: 'Text reference', exact: true });
+    await reference.hover();
+    await expect(reference).toHaveCSS('background-color', /^color\(srgb/);
+    const textBackground = await reference.evaluate(
+      (node) => getComputedStyle(node).backgroundColor,
+    );
     await ghost.getByRole('button', { name: 'Page 3', exact: true }).hover();
     await expect(ghost.getByRole('button', { name: 'Page 3', exact: true })).toHaveCSS(
       'background-color',
-      await color(ghost, '--leaf-color-surface-muted'),
+      textBackground,
     );
     await page.screenshot({
-      path: `.quality/pagination-${appearance}-${info.project.name}.png`,
+      path: test.info().outputPath(`pagination-${appearance}-${info.project.name}.png`),
       fullPage: true,
     });
   });
@@ -81,9 +93,9 @@ for (const appearance of ['light', 'dark']) {
   test(`sizes, region overrides and disabled controls in ${appearance}`, async ({ page }) => {
     await page.goto(`/?fixture=pagination&theme=${appearance}`);
     for (const [size, height] of [
-      ['sm', 30],
-      ['md', 36],
-      ['lg', 42],
+      ['sm', 28],
+      ['md', 34],
+      ['lg', 40],
     ] as const) {
       const pagination = page.getByRole('navigation', { name: `Size ${size}` });
       await expect(pagination.getByRole('button', { name: 'Page 1', exact: true })).toHaveCSS(
@@ -114,10 +126,9 @@ for (const appearance of ['light', 'dark']) {
           await color(custom, '--leaf-color-surface-muted'),
         ),
       ).toBeGreaterThanOrEqual(3);
-    await expect(custom.getByRole('button', { name: 'Next page' }).locator('svg')).toHaveCSS(
-      'transform',
-      'matrix(-1, 0, 0, -1, 0, 0)',
-    );
+    await expect(
+      custom.getByRole('button', { name: 'Next page' }).locator('.leaf-button__label > svg'),
+    ).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
     await custom.getByRole('button', { name: 'Page 3', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(custom.getByRole('button', { name: 'Page 3', exact: true })).toHaveAttribute(
@@ -131,6 +142,15 @@ for (const appearance of ['light', 'dark']) {
     const disabled = page.getByRole('navigation', { name: 'Disabled pages' });
     for (const button of await disabled.getByRole('button').all())
       await expect(button).toBeDisabled();
+    const disabledPage = disabled.getByRole('button', { name: 'Page 2', exact: true });
+    await expect(disabledPage).toHaveCSS(
+      'border-color',
+      await color(disabled, '--leaf-color-border'),
+    );
+    await expect(disabledPage).toHaveCSS('opacity', '0.45');
+    expect(await disabledPage.evaluate((node) => getComputedStyle(node, '::before').content)).toBe(
+      'none',
+    );
     await expect(disabled.getByRole('combobox')).toBeDisabled();
     await expect(disabled.getByRole('spinbutton')).toBeDisabled();
     await expect(page.getByRole('navigation', { name: 'Hidden pages' })).toHaveCount(0);

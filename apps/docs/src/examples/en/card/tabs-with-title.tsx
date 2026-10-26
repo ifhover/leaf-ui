@@ -1,4 +1,4 @@
-import { Button, Card, Descriptions, Flex, Form, FormField, Input, Tag } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Form, FormField, Input, Text } from '@ifhover/leaf-ui';
 import { useId, useState } from 'react';
 
 export function CardTabsWithTitle() {
@@ -7,10 +7,7 @@ export function CardTabsWithTitle() {
   const formId = useId();
   return (
     <Card
-      divided
       title="Project settings"
-      description="Manage project details and team members."
-      extra={<Tag>{saved ? 'Saved' : 'Draft'}</Tag>}
       tabs={{
         activeKey,
         onChange: setActiveKey,
@@ -31,30 +28,21 @@ export function CardTabsWithTitle() {
                 <FormField label="Project name">
                   <Input name="name" defaultValue="Leaf Design System" required />
                 </FormField>
-                <FormField label="Contact email">
-                  <Input name="email" type="email" defaultValue="team@example.com" required />
-                </FormField>
               </Form>
             ),
           },
           {
-            key: 'members',
-            label: 'Members',
-            children: (
-              <Descriptions
-                columns={1}
-                items={[
-                  { key: 'owner', label: 'Project lead', children: 'Rowan Lin' },
-                  { key: 'designer', label: 'Designer', children: 'Alex Chen' },
-                ]}
-              />
-            ),
+            key: 'notes',
+            label: 'Notes',
+            children: <Text>Save the project name from the Details tab after editing it.</Text>,
           },
-          { key: 'billing', label: 'Billing', disabled: true, children: null },
         ],
       }}
       footer={
-        <Flex align="center" gap="sm" justify="end">
+        <Flex align="center" gap="sm" justify="space-between" wrap>
+          <Text role="status" tone="muted">
+            {saved ? 'Saved' : 'Not saved'}
+          </Text>
           <Button type="submit" form={formId} disabled={activeKey !== 'settings'}>
             Save changes
           </Button>

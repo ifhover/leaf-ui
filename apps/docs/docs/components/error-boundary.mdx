@@ -1,54 +1,80 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ErrorBoundaryBasic } from '../../src/examples/error-boundary/basic';
 import { ErrorBoundaryCustom } from '../../src/examples/error-boundary/advanced';
+import { ErrorBoundaryResetKeys } from '../../src/examples/error-boundary/reset-keys';
+
+export const leafDoc = { component: 'ErrorBoundary', primaryApi: 'ErrorBoundaryProps' };
 
 # ErrorBoundary 错误边界
 
-展示内容异常时的备用界面。
+捕获子组件的渲染异常，并为出错的区块提供备用界面。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<ErrorBoundaryBasic />} fileName="basic.tsx" width={360}>
+## 基础用法
+
+<a id="基本用法"></a>
+
+未设置 `fallback` 时显示默认错误界面和重试按钮。重试只会清除边界的错误状态并重新渲染子树；应用仍需修复致错的数据或状态，示例通过 `onReset` 清除异常开关。
+
+错误边界不接管事件处理、普通异步请求或服务端渲染中的错误，这些错误应在操作或框架中处理。
+
+<ComponentExample exampleId="basic" preview={<ErrorBoundaryBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/error-boundary/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx" width={360}>
+## 示例
+
+### 自定义兜底内容
+
+<a id="重试与恢复"></a>
+
+`fallback` 函数接收 `error` 和 `reset`。调用 `reset` 触发 `onReset` 后重新渲染子树；异常上报使用 `onError`，不要把内部错误堆栈直接展示给用户。
+
+<ComponentExample exampleId="advanced" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/error-boundary/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 切换记录后恢复
 
-捕获子组件渲染和生命周期错误。事件处理、异步请求与服务端渲染错误由操作或框架处理。通过 onError 上报异常，避免在用户界面显示内部堆栈。
+把记录 ID 等外部依赖放入 `resetKeys`。边界处于错误状态时，依赖值变化会触发重置；应用通过 `onReset` 清理旧记录的异常状态，再显示新记录。
 
-## 类型
+<ComponentExample exampleId="reset-keys" preview={<ErrorBoundaryResetKeys />} fileName="reset-keys.tsx">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/error-boundary/reset-keys.tsx"
 ```
 
-## ErrorBoundaryFallbackProps API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### ErrorBoundaryProps API
+
+需要保护的子树、错误替代内容与重置行为配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `error` | `Error` | 必填 | 错误对象或错误通知 |
-| `reset` | `() => void` | 必填 | 重置状态或重试 |
+| `children` | `ReactNode` | — | 需要捕获渲染异常的子树。 |
+| `fallback` | `ReactNode \| ((props: `[`ErrorBoundaryFallbackProps`](#errorboundaryfallbackprops-api)`) => ReactNode)` | — | 捕获错误后的替代内容；默认显示错误 Result 和重试按钮。函数形式接收 error 和 reset。 |
+| `onReset` | `() => void` | — | 手动或 resetKeys 重置时同步调用；应用须修复致错数据，组件不等待异步结果。 |
+| `resetKeys` | `readonly unknown[]` | — | 发生错误后逐项以 Object.is 浅比较；长度或项目变化会重置边界。 |
+| `onError` | `(error: Error, info: ErrorInfo) => void` | — | 捕获渲染或生命周期错误后接收 Error 与 React ErrorInfo，可用于上报。 |
 
-## ErrorBoundaryProps API
+### ErrorBoundaryFallbackProps API
+
+传给自定义 `fallback` 的错误与重试方法。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 内容或下级项目 |
-| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | 加载失败时的内容 |
-| `resetKeys` | `readonly unknown[]` | — | 值变化时重置错误 |
-| `onError` | `(error: Error, info: ErrorInfo) => void` | — | 异常回调 |
-| `onReset` | `() => void` | — | 重置回调 |
+| `error` | `Error` | 必填 | 捕获到的 Error。 |
+| `reset` | `() => void` | 必填 | 同步调用 onReset 后清除错误并重新渲染子树，不自动重做业务请求。 |

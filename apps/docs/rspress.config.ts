@@ -5,6 +5,7 @@ import { pluginSass } from '@rsbuild/plugin-sass';
 import { defineConfig } from '@rspress/core';
 import tailwindcss from '@tailwindcss/postcss';
 import { rehypeApiTypes } from './scripts/api-type-display.mjs';
+import { remarkComponentDocument } from './scripts/component-document.mjs';
 import { remarkExampleSource } from './scripts/example-source.mjs';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
@@ -15,18 +16,19 @@ const guideSidebar = [
     items: [
       { text: '认识 Leaf UI', link: '/guide/introduction' },
       { text: '安装&快速开始', link: '/guide/getting-started' },
+      { text: '颜色', link: '/guide/colors' },
       { text: '服务端渲染', tag: 'SSR', link: '/guide/ssr' },
       { text: 'AI 与 Skills', link: '/guide/ai' },
       { text: '浏览器兼容性', link: '/guide/compatibility' },
     ],
   },
   {
-    text: '个性化',
+    text: '外观与语言',
     items: [
       { text: '定制主题', link: '/guide/theming' },
       { text: 'Tailwind CSS', link: '/guide/tailwindcss' },
       { text: '切换语言', link: '/guide/internationalization' },
-      { text: '视觉与交互规范', link: '/guide/design-standards' },
+      { text: '界面设计与组合', link: '/guide/design-standards' },
     ],
   },
 ];
@@ -64,8 +66,6 @@ const componentSidebar = [
   {
     text: '导航',
     items: [
-      { text: 'AppBar', tag: '应用导航', link: '/components/app-bar' },
-      { text: 'CommandPalette', tag: '命令面板', link: '/components/command-palette' },
       { text: 'FloatButton', tag: '悬浮按钮', link: '/components/float-button' },
       { text: 'Anchor', tag: '锚点与固钉', link: '/components/anchor' },
       { text: 'Menu', tag: '菜单', link: '/components/menu' },
@@ -88,7 +88,7 @@ const componentSidebar = [
       { text: 'InfiniteScroll', tag: '无限滚动', link: '/components/infinite-scroll' },
       { text: 'Tag', tag: '标签', link: '/components/tag' },
       { text: 'Badge', tag: '角标', link: '/components/badge' },
-      { text: 'Avatar', tag: '头像', link: '/components/avatar' },
+      { text: 'AvatarGroup', tag: '头像组', link: '/components/avatar' },
       { text: 'Card', tag: '卡片', link: '/components/card' },
       { text: 'Collapse', tag: '折叠面板', link: '/components/collapse' },
       { text: 'Tree', tag: '树', link: '/components/tree' },
@@ -129,10 +129,7 @@ const componentSidebar = [
   {
     text: '日期与时间',
     items: [
-      { text: 'TimeRangePicker', tag: '时间范围', link: '/components/time-range-picker' },
       { text: 'DatePicker', tag: '日期选择器', link: '/components/date-picker' },
-      { text: 'TimePicker', tag: '时间选择器', link: '/components/time-picker' },
-      { text: 'DateTimePicker', tag: '日期时间选择器', link: '/components/date-time-picker' },
       { text: 'DateRangePicker', tag: '日期区间选择器', link: '/components/date-range-picker' },
       { text: 'Calendar', tag: '日历', link: '/components/calendar' },
     ],
@@ -183,13 +180,14 @@ const englishLabels: Record<string, string> = {
   翻译资源: 'Translation resources',
   全局配置: 'Configuration',
   浏览器兼容性: 'Browser compatibility',
-  视觉与交互规范: 'Visual and interaction standard',
+  界面设计与组合: 'Interface design & composition',
   开始使用: 'Getting started',
   '认识 Leaf UI': 'Introduction',
   '安装&快速开始': 'Installation & quick start',
+  颜色: 'Colors',
   服务端渲染: 'Server-side rendering',
   'AI 与 Skills': 'AI & Skills',
-  个性化: 'Personalization',
+  外观与语言: 'Appearance & language',
   定制主题: 'Theming',
   切换语言: 'Switch languages',
   使用图标: 'Icons',
@@ -246,14 +244,14 @@ export default defineConfig({
   root: path.join(directory, 'docs'),
   themeDir: path.join(directory, 'theme'),
   title: 'Leaf UI',
-  description: '轻盈、自然、可定制的 React 组件库。统一的基础组件与表单，让界面自然生长。',
+  description: '安静、一致、易读的 React 组件库。统一的基础组件与表单，让内容成为界面的主角。',
   lang: 'zh',
   locales: [
     { lang: 'zh', label: '简体中文' },
     {
       lang: 'en',
       label: 'English',
-      description: 'Lightweight, natural and customizable React components.',
+      description: 'Quiet, consistent and readable React components.',
     },
   ],
   icon: '/leaf.svg',
@@ -263,7 +261,7 @@ export default defineConfig({
   mediumZoom: { selector: '.rspress-doc img:not([data-no-zoom])' },
   markdown: {
     link: { checkDeadLinks: true },
-    remarkPlugins: [remarkExampleSource],
+    remarkPlugins: [remarkComponentDocument, remarkExampleSource],
     rehypePlugins: [rehypeApiTypes],
   },
   themeConfig: {

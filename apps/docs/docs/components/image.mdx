@@ -1,87 +1,193 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ImageBasic } from '../../src/examples/image/basic';
+import { ImageDisplay } from '../../src/examples/image/display';
+import { ImageFit } from '../../src/examples/image/fit';
+import { ImageStates } from '../../src/examples/image/states';
 import { ImageGallery } from '../../src/examples/image/advanced';
+import { ImageControlled } from '../../src/examples/image/controlled';
+import { ImageService } from '../../src/examples/image/service';
+
+export const leafDoc = { component: 'Image', primaryApi: 'ImageProps' };
 
 # Image 图片
 
-展示图片并放大浏览图片组。
+展示图片，并按需放大浏览单张图片或图片组。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<ImageBasic />} fileName="basic.tsx">
+## 基础用法
+
+<a id="基本用法"></a>
+
+提供能说明图片内容的 `alt`。默认点击图片打开预览；加载中或加载失败的图片不能打开预览。
+
+<ComponentExample exampleId="basic" preview={<ImageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/image/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<ImageGallery />} fileName="advanced.tsx">
+## 示例
+
+### 仅展示图片
+
+<a id="常用用法"></a>
+
+不需要放大浏览时，设置 `preview={false}`。
+
+<ComponentExample exampleId="display" preview={<ImageDisplay />} fileName="display.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/display.tsx"
+```
+
+</ComponentExample>
+
+### 填充方式
+
+在固定的显示区域内，`cover` 填满区域并裁剪超出的部分，`contain` 保留整张图片。
+
+<ComponentExample exampleId="fit" preview={<ImageFit />} fileName="fit.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/fit.tsx"
+```
+
+</ComponentExample>
+
+### 空图片与加载失败
+
+未提供图片或加载失败时显示占位内容。通过 `fallback` 替换这两种情况的默认内容；它不替换加载中的提示。
+
+<ComponentExample exampleId="states" preview={<ImageStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/states.tsx"
+```
+
+</ComponentExample>
+
+### 图片画廊与预览
+
+`ImagePreviewGroup` 收集内部开启预览且提供了 `src` 的 Image，点击任意一张后可在组内切换。通过 `previewSrc` 为单张 Image 提供单独的高清预览地址。
+
+<ComponentExample exampleId="advanced" preview={<ImageGallery />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/image/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 受控预览
 
-支持键盘翻页、触摸滑动、缩放、缩略图和全屏。ImagePreviewGroup 自动收集子 Image，也可传入 items 与受控 open / index。纯展示的图片可设置 `preview={false}`。
+<a id="进阶用法"></a>
 
-## 类型
+无需渲染用于打开预览的 Image 时，可直接使用 `ImagePreview`。应用维护 `open` 和 `index`：关闭请求中将 `open` 设为 `false`，图片切换时同步索引。关闭不会自动回到第一张，重置索引由应用处理。
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
+<ComponentExample exampleId="controlled" preview={<ImageControlled />} fileName="controlled.tsx">
 
-```ts
-import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, ImageProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/image/controlled.tsx"
 ```
 
-## ImagePreviewGroupProps API
+</ComponentExample>
+
+### 命令式预览
+
+在 [ConfigProvider](./config-provider) 内调用 `useImagePreview()`，无需预先渲染 Image。未使用 ConfigProvider 时，在调用组件外包裹 `ImagePreviewProvider`。`preview` 接受图片地址、图片对象或它们组成的数组；`index` 从 0 开始。
+
+<ComponentExample exampleId="service" preview={<ImageService />} width="fit-content" fileName="service.tsx">
+
+```tsx lineNumbers file="../../src/examples/image/service.tsx"
+```
+
+</ComponentExample>
+
+`preview` 返回可重复调用的关闭函数。同一 Provider 再次打开预览会替换当前图片组；主动关闭、替换或调用组件卸载时都会触发这一组的 `onClose`。
+
+{/* leaf:section api */}
+
+## API
+
+### ImageProps API
+
+同时支持 `src`、`alt`、`width`、`height`、`loading`、`onLoad`、`onError` 等原生图片属性；`loading` 默认是 `lazy`。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 内容或下级项目 |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | 按顺序展示的图片 |
-| `open` | `boolean` | — | 受控展示状态 |
-| `defaultOpen` | `boolean` | `false` | 初始展示状态 |
+| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | 图片缩放方式 |
+| `fallback` | `ReactNode` | — | 无图片或加载失败时的内容；默认自适应显示图标与单行提示，小尺寸仅显示图标。 |
+| `preview` | `boolean` | `true` | 允许放大预览 |
+| `previewSrc` | `string` | — | 高清预览地址 |
+
+### ImagePreviewGroupProps API
+
+组合多张图片并管理当前预览状态的参数。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 自动收集有 src 且允许预览的 Image；仅有 srcSet 的图片不加入预览。 |
+| `items` | `readonly `[`ImagePreviewItem`](#imagepreviewitem-api)`[]` | — | 显式图片列表；传入时优先于从 children 收集的图片。 |
+| `open` | `boolean` | — | 受控的预览展开状态。 |
+| `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
-| `index` | `number` | — | 当前索引，从 0 开始 |
-| `defaultIndex` | `number` | `0` | 初始索引 |
+| `index` | `number` | — | 受控的图片索引，从 0 开始，切换时须回写 onIndexChange。 |
+| `defaultIndex` | `number` | `0` | 非受控模式的初始图片索引，从 0 开始。 |
 | `onIndexChange` | `(index: number) => void` | — | 图片切换 |
 | `thumbnails` | `boolean` | `true` | 缩略图导航 |
 | `downloadable` | `boolean` | `false` | 显示下载操作 |
 
-## ImagePreviewItem API
+### ImagePreviewProps API
+
+独立图片预览的图片列表与受控状态参数。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`ImagePreviewItem`](#imagepreviewitem-api)`[]` | 必填 | 按顺序展示的图片 |
+| `open` | `boolean` | 必填 | 受控展示状态 |
+| `onClose` | `() => void` | 必填 | 关闭请求；应用须将受控 open 改为 false。 |
+| `index` | `number` | `0` | 从 0 开始的当前图片索引，切换时须回写 onIndexChange。 |
+| `onIndexChange` | `(index: number) => void` | — | 图片切换 |
+| `thumbnails` | `boolean` | `true` | 缩略图导航 |
+| `downloadable` | `boolean` | `false` | 显示下载操作 |
+
+### ImagePreviewItem API
+
+下载需要外层预览启用 `downloadable`；单张图片可用 `download={false}` 隐藏下载操作。跨域下载地址需要允许 CORS，下载失败时可通过预览中的原图链接另行保存。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `src` | `string` | 必填 | 图片地址 |
 | `thumbnailSrc` | `string` | — | 缩略图地址，默认使用 src |
 | `alt` | `string` | `''` | 图片文字说明 |
-| `width` | `number` | — | 宽度，数字按像素计算 |
-| `height` | `number` | — | 高度，数字按像素计算 |
-| `download` | `string \| boolean` | — | 下载地址或是否允许下载 |
+| `width` | `number` | — | 原图像素宽度，用于预览布局。 |
+| `height` | `number` | — | 原图像素高度，用于预览布局。 |
+| `download` | `string \| boolean` | — | 外层 downloadable 开启时，false 禁用本项下载，字符串替换下载地址，其余使用 src。跨域下载需要 CORS。 |
 | `downloadName` | `string` | — | 自定义下载后的文件名 |
 
-## ImagePreviewProps API
+### ImagePreviewApi
+
+`useImagePreview` 返回的预览调用接口。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | 必填 | 按顺序展示的图片 |
-| `open` | `boolean` | 必填 | 受控展示状态 |
-| `index` | `number` | `0` | 当前索引，从 0 开始 |
-| `onClose` | `() => void` | 必填 | 关闭时触发 |
-| `onIndexChange` | `(index: number) => void` | — | 图片切换 |
-| `thumbnails` | `boolean` | `true` | 缩略图导航 |
-| `downloadable` | `boolean` | `false` | 显示下载操作 |
+| `preview` | `( images: string \| `[`ImagePreviewItem`](#imagepreviewitem-api)` \| readonly (string \| `[`ImagePreviewItem`](#imagepreviewitem-api)`)[], options?: `[`ImagePreviewOptions`](#imagepreviewoptions)`, ) => () => void` | 必填 | 预览单张或一组图片，可指定初始索引与预览选项；返回幂等关闭函数。 |
 
-## ImageProps API
+### ImagePreviewOptions
+
+调用命令式图片预览时的展示与关闭配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `preview` | `boolean` | `true` | 允许放大预览 |
-| `previewSrc` | `string` | — | 高清预览地址 |
-| `fallback` | `ReactNode` | — | 加载失败时的内容 |
-| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | 图片缩放方式 |
+| `index` | `number` | — | 初始图片索引，从 0 开始。 |
+| `onIndexChange` | `(index: number) => void` | — | 当前图片切换时调用。 |
+| `thumbnails` | `boolean` | — | 显示图片组的缩略图导航，默认 true。 |
+| `downloadable` | `boolean` | — | 显示下载操作，默认 false。 |
+| `onClose` | `() => void` | — | 预览结束时调用，包括用户关闭、返回的关闭函数、同 Provider 替换和调用方卸载。 |
 
-Image 支持 src、alt、width、height、loading、onLoad、onError 等原生图片属性。
+### ImagePreviewProvider API
+
+为命令式图片预览提供上下文的参数。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 可调用 useImagePreview 的内容；ConfigProvider 已自动提供此服务。 |

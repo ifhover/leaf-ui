@@ -1,60 +1,100 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { TourBasic, TourCentered } from '../../src/examples/tour/basic';
+import { TourBasic } from '../../src/examples/tour/basic';
+import { TourCentered } from '../../src/examples/tour/centered';
+import { TourMissing } from '../../src/examples/tour/missing';
+import { TourMaskless } from '../../src/examples/tour/maskless';
+
+export const leafDoc = { component: 'Tour', primaryApi: 'TourProps' };
 
 # Tour 引导
 
 分步骤介绍页面上的功能。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<TourBasic />} fileName="basic.tsx">
+通过 `target` 关联每一步的目标元素，由应用响应 `onClose` 并更新 `open`。此例通过 `current` 控制步骤，每次开始时回到第一步。
+
+<ComponentExample exampleId="basic" preview={<TourBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 欢迎说明
+{/* leaf:section examples */}
 
-<ComponentExample title="欢迎说明" preview={<TourCentered />} fileName="basic.tsx" width="fit-content">
+## 示例
 
-```tsx lineNumbers file="../../src/examples/tour/basic.tsx"
+### 居中说明
+
+不传 `target`，默认的 `missingTarget="center"` 会将说明显示在页面中央。
+
+<ComponentExample exampleId="centered" preview={<TourCentered />} fileName="centered.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/tour/centered.tsx"
 ```
 
 </ComponentExample>
 
-## TourStep
+<a id="进阶用法"></a>
+
+### 目标缺失
+
+`missingTarget` 决定目标缺失时居中显示、跳过或请求关闭。最后一步缺失时，`skip` 也会请求关闭。未传入 `target` 的步骤同样遵循该策略。
+
+请等目标挂载后再开始引导；目标稍后插入页面，不会自动触发当前步骤重新查找。
+
+<ComponentExample exampleId="missing" preview={<TourMissing />} fileName="missing.tsx">
+
+```tsx lineNumbers file="../../src/examples/tour/missing.tsx"
+```
+
+</ComponentExample>
+
+### 与背景交互
+
+设置 `mask={false}`，允许在引导期间操作页面；同时不再锁定页面滚动或将焦点限制在浮层中，因此下方输入框仍可编辑。
+
+<ComponentExample exampleId="maskless" preview={<TourMaskless />} fileName="maskless.tsx">
+
+```tsx lineNumbers file="../../src/examples/tour/maskless.tsx"
+```
+
+</ComponentExample>
+{/* leaf:section api */}
+
+## API
+
+### Tour API
+
+Escape 和关闭按钮会请求 `onClose`，点击蒙层不会。完成按钮依次调用 `onFinish`、`onClose`，仍需由应用更新 `open` 才会关闭。
+
+`defaultCurrent` 只提供初始步骤，关闭不会重置；需要指定重新开始的位置时使用 `current`。默认有蒙层时，焦点保留在浮层内；关闭后回到触发元素。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | — | 稳定且唯一的标识。 |
-| `title` | `ReactNode` | — | 必需。标题内容。 |
-| `description` | `ReactNode` | — | 补充说明。 |
-| `target` | `string \| (() => HTMLElement \| null)` | — | 目标的选择器或返回元素的函数；省略时居中。 |
-| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | 布局或展示位置。 |
-
-## Tour API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `open` | `boolean` | — | 必需。控制面板是否展开。 |
-| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | — | 必需。引导的步骤列表。 |
-| `current` | `number` | — | 受控的当前步骤索引。 |
-| `defaultCurrent` | `number` | `0` | 初始步骤索引。 |
+| `open` | `boolean` | 必填 | 控制面板是否展开。 |
+| `steps` | `readonly `[`TourStep`](#tourstep)`[]` | 必填 | 引导的步骤列表。 |
+| `current` | `number` | — | 受控步骤索引，从 0 开始；应用须在 onChange 中回写，重开时不会自动归零。 |
+| `defaultCurrent` | `number` | `0` | 非受控模式的初始步骤索引，从 0 开始。 |
 | `onChange` | `(current: number) => void` | — | 值发生变化时调用。 |
-| `onClose` | `() => void` | — | 请求关闭时调用。 |
-| `onFinish` | `() => void` | — | 完成时调用一次。 |
-| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | 目标缺失时居中、跳过或关闭。 |
-| `mask` | `boolean` | `true` | 展示引导遮罩。 |
-| `padding` | `number` | `8` | 内容或高亮目标的内边距。 |
+| `onClose` | `() => void` | — | 关闭请求，包含关闭按钮、Escape、完成及缺失目标策略；应用须将 open 设为 false。 |
+| `onFinish` | `() => void` | — | 最后一步点击完成时调用，随后仍调用 onClose。 |
+| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | 进入步骤时找不到目标的处理：center 居中显示，skip 跳过且末步请求关闭，close 直接请求关闭。 |
+| `mask` | `boolean` | `true` | 显示遮罩并限制背景交互；false 允许继续操作页面。 |
+| `padding` | `number` | `8` | 目标高亮区域与目标元素之间的像素间隔。 |
 | `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
 
-## 类型与交互
+### TourStep
 
-组装可复用配置时，可导入对应的属性和数据类型。
+`target` 可传有效的 CSS 选择器，或返回目标元素的函数；函数返回 `null` 时按目标缺失处理。
 
-```ts
-import type { TourStep, TourProps } from '@ifhover/leaf-ui';
-```
-
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | 必填 | 标题内容。 |
+| `description` | `ReactNode` | — | 补充说明。 |
+| `target` | `string \| (() => HTMLElement \| null)` | — | 目标元素的选择器或返回元素的函数；未设置时使用 missingTarget 策略。 |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | `'bottom'` | 相对目标的浮层位置。 |
+| `key` | `string` | — | 稳定且唯一的标识。 |

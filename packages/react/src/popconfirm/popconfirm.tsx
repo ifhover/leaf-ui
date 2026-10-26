@@ -1,17 +1,18 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { FeedbackIcon, type FeedbackType } from '../alert/alert';
+import { FeedbackIcon } from '../alert/alert';
 import { ButtonControl, type ButtonProps } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import type { PopoverProps } from '../popover';
 import { PopoverControl as Popover } from '../popover/popover';
+import { type FeedbackTypeInput, normalizeFeedbackType } from '../shared/feedback';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
 export interface PopconfirmProps
   extends Omit<PopoverProps, 'title' | 'content' | 'trigger' | 'autoFocus'> {
   title: ReactNode;
   description?: ReactNode;
-  type?: FeedbackType | 'default';
+  type?: FeedbackTypeInput | 'default';
   icon?: ReactNode;
   confirmText?: ReactNode;
   cancelText?: ReactNode;
@@ -42,6 +43,7 @@ export function Popconfirm(rawProps: PopconfirmProps) {
     children,
     ...props
   } = useComponentProps('Popconfirm', rawProps);
+  const normalizedType = type === 'default' ? type : normalizeFeedbackType(type);
   const { messages } = useLeafConfig();
   const t = useText();
   const [open, setOpen] = useControllable(controlled, defaultOpen, onOpenChange);
@@ -69,15 +71,15 @@ export function Popconfirm(rawProps: PopconfirmProps) {
           setOpen(next);
         }
       }}
-      autoFocus={false}
+      autoFocus
       aria-label={
         props['aria-label'] ?? (typeof title === 'string' ? title : messages.common.confirm)
       }
       className={['leaf-popconfirm', props.className].filter(Boolean).join(' ')}
       content={
         <div className="leaf-popconfirm__content">
-          <div className={`leaf-popconfirm__icon leaf-popconfirm__icon--${type}`}>
-            {icon ?? (type !== 'default' ? <FeedbackIcon type={type} /> : null)}
+          <div className={`leaf-popconfirm__icon leaf-popconfirm__icon--${normalizedType}`}>
+            {icon ?? (normalizedType !== 'default' ? <FeedbackIcon type={normalizedType} /> : null)}
           </div>
           <div className="leaf-popconfirm__body">
             <div className="leaf-popconfirm__title">{title}</div>
@@ -108,7 +110,8 @@ export function Popconfirm(rawProps: PopconfirmProps) {
               <ButtonControl
                 {...confirmButtonProps}
                 size={confirmButtonProps?.size ?? 'sm'}
-                danger={confirmButtonProps?.danger ?? type === 'error'}
+                variant={confirmButtonProps?.variant ?? 'solid'}
+                danger={confirmButtonProps?.danger ?? normalizedType === 'danger'}
                 loading={busy || confirmButtonProps?.loading}
                 onClick={async (event) => {
                   confirmButtonProps?.onClick?.(event);

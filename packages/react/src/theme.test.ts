@@ -1,8 +1,10 @@
-import { readability } from '@ctrl/tinycolor';
+import { readability, TinyColor } from '@ctrl/tinycolor';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { testThemes } from '../tests/fixtures/theme-data';
+import { colorScaleSteps } from './color-scale';
+import { semanticColorShadeSteps } from './color-shades';
 import { ConfigProvider } from './config-provider/config-provider';
 import { type LeafTheme, leafThemeVariables, mergeLeafTheme } from './theme';
 
@@ -128,9 +130,130 @@ describe('portable component themes', () => {
     for (const token of ['color-focus', 'control-shadow', 'surface-shadow'] as const)
       expect(variables[`--leaf-${token}`]).toBe('initial');
   });
+
+  it('derives custom solid foregrounds while explicit foreground overrides retain priority', () => {
+    const tones = ['primary', 'success', 'warning', 'danger', 'info'] as const;
+    for (const mode of ['light', 'dark'] as const) {
+      for (const [background, expected] of [
+        ['#0b1f3a', '#ffffff'],
+        ['#fff59d', '#ffffff'],
+      ] as const) {
+        const variables = leafThemeVariables({
+          appearance: mode,
+          primaryColor: background,
+          tokens: {
+            successColor: background,
+            warningColor: background,
+            dangerColor: background,
+            infoColor: background,
+          },
+        });
+        for (const tone of tones)
+          expect(variables[`--leaf-color-on-${tone}`], `${mode} ${tone}`).toBe(expected);
+      }
+    }
+
+    const overridden = leafThemeVariables({
+      appearance: 'dark',
+      primaryColor: '#0b1f3a',
+      tokens: { onPrimaryColor: '#123456', dangerColor: '#0b1f3a', onDangerColor: '#654321' },
+    });
+    expect(overridden['--leaf-color-on-primary']).toBe('#123456');
+    expect(overridden['--leaf-color-on-danger']).toBe('#654321');
+  });
+
+  it('keeps the five seeds and semantic shades and neutral scale values shared while modern roles follow appearance', () => {
+    const seeds = {
+      primary: '#1e964f',
+      success: '#1e964f',
+      danger: '#dd3f2e',
+      warning: '#d38b11',
+      info: '#1677ff',
+    } as const;
+    const families = [...Object.keys(seeds), 'neutral'] as const;
+    const light = leafThemeVariables({ appearance: 'light' });
+    const dark = leafThemeVariables({ appearance: 'dark' });
+    const at = (variables: typeof light, key: string) => variables[key as keyof typeof variables];
+    for (const family of families)
+      for (const step of family === 'neutral' ? colorScaleSteps : semanticColorShadeSteps) {
+        const key = `--leaf-color-${family}-${step}`;
+        expect(at(light, key), key).toBe(at(dark, key));
+        expect(new TinyColor(at(light, key) ?? '').isValid, key).toBe(true);
+      }
+    for (const family of Object.keys(seeds) as (keyof typeof seeds)[]) {
+      const base = `--leaf-color-${family}`;
+      expect(at(light, base)).toBe(seeds[family]);
+      expect(at(dark, base)).toBe(seeds[family]);
+      expect(at(light, `--leaf-color-${family}-soft`)).toBe(
+        at(light, `--leaf-color-${family}-light-9`),
+      );
+      expect(at(dark, `--leaf-color-${family}-soft`)).toBe(
+        at(dark, `--leaf-color-${family}-dark-9`),
+      );
+      expect(at(light, `--leaf-color-${family}-border`)).toBe(
+        at(light, `--leaf-color-${family}-light-7`),
+      );
+      expect(at(dark, `--leaf-color-${family}-border`)).toBe(
+        at(dark, `--leaf-color-${family}-dark-7`),
+      );
+      expect(at(light, `--leaf-color-on-${family}`)).toBe(at(dark, `--leaf-color-on-${family}`));
+    }
+  });
+
+  it('keeps expression foregrounds reactive in server HTML while explicit overrides remain unchanged', () => {
+    const theme: LeafTheme = {
+      appearance: 'light',
+      primaryColor: 'var(--brand-primary)',
+      tokens: {
+        successColor: 'var(--brand-success)',
+        dangerColor: 'color-mix(in srgb, #dd3f2e 60%, black)',
+        onDangerColor: '#123456',
+      },
+    };
+    const content = createElement(
+      ConfigProvider,
+      { theme, id: 'expression-theme' },
+      'Expression content',
+    );
+    const first = renderToStaticMarkup(content);
+    expect(renderToStaticMarkup(content)).toBe(first);
+    const container = document.createElement('div');
+    container.innerHTML = first;
+    const node = container.querySelector<HTMLElement>('#expression-theme');
+    expect(node?.style.getPropertyValue('--leaf-color-primary')).toBe('var(--brand-primary)');
+    expect(node?.style.getPropertyValue('--leaf-color-success')).toBe('var(--brand-success)');
+    expect(node?.style.getPropertyValue('--leaf-color-danger')).toBe(
+      'color-mix(in srgb, #dd3f2e 60%, black)',
+    );
+    expect(node?.style.getPropertyValue('--leaf-color-primary-ink')).toBe('var(--brand-primary)');
+    expect(node?.style.getPropertyValue('--leaf-color-on-danger')).toBe('#123456');
+  });
 });
 
 describe('component padding geometry', () => {
+  it('keeps unitless line-height compatibility and derives an integer text scale', () => {
+    expect(leafThemeVariables({ lineHeight: 1.6 })).toEqual({
+      '--leaf-line-height': 'calc(var(--leaf-font-size) * 1.6)',
+      '--leaf-line-height-sm': 'calc(var(--leaf-font-size-sm) * 1.6)',
+      '--leaf-line-height-lg': 'calc(var(--leaf-font-size-lg) * 1.6)',
+    });
+    expect(leafThemeVariables({ lineHeight: 20 })).toEqual({
+      '--leaf-line-height': '20px',
+      '--leaf-line-height-sm': 'max(1px, calc(20px - 2px))',
+      '--leaf-line-height-lg': 'calc(20px + 2px)',
+    });
+    expect(leafThemeVariables({ lineHeight: '1.25rem' })).toEqual({
+      '--leaf-line-height': '1.25rem',
+      '--leaf-line-height-sm': 'calc(var(--leaf-line-height) - 2px)',
+      '--leaf-line-height-lg': 'calc(var(--leaf-line-height) + 2px)',
+    });
+    expect(leafThemeVariables({ lineHeight: '22px', tokens: { lineHeight: 18 } })).toMatchObject({
+      '--leaf-line-height': '18px',
+      '--leaf-line-height-sm': 'max(1px, calc(18px - 2px))',
+      '--leaf-line-height-lg': 'calc(18px + 2px)',
+    });
+  });
+
   it('merges and emits section surfaces through ConfigProvider theme inputs', () => {
     const theme = mergeLeafTheme(
       { components: { Modal: { footerBackground: '#f5f5f5', borderColor: '#ddd' } } },

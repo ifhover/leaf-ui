@@ -1,97 +1,149 @@
 import { ComponentExample } from '../../../src/components/component-example';
+import { ConfirmSimple } from '../../../src/examples/en/confirm/simple';
+import { ConfirmStatus } from '../../../src/examples/en/confirm/status';
 import { ConfirmBasic } from '../../../src/examples/en/confirm/basic';
+import { ConfirmRetry } from '../../../src/examples/en/confirm/retry';
+
+export const leafDoc = { component: 'Confirm', primaryApi: 'useConfirm' };
 
 # Confirm
 
-Ask for confirmation before an important action. Call the API and await the user's choice.
+Ask for confirmation before an important action and await the user's choice.
 
-## Configure the entry once
+Use [Modal](/en/components/modal) for editing, or [Popconfirm](/en/components/popconfirm) for a brief confirmation beside a trigger.
 
-Wrap the application in `ConfigProvider` and call `useConfirm()` in a child component. Each confirmation inherits the caller's theme and language without managing open state.
+Set up [ConfigProvider](/en/components/config-provider) at the application entry, then call `useConfirm()` in a child component. Each confirmation inherits the caller's theme and language.
 
 ```tsx
 import { ConfigProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
-  return <ConfigProvider><App /></ConfigProvider>;
+  return (
+    <ConfigProvider>
+      <App />
+    </ConfigProvider>
+  );
 }
 ```
 
-## Async confirmation
+{/* leaf:section basic */}
 
-<ComponentExample title="Async confirmation" preview={<ConfirmBasic />} fileName="basic.tsx">
+## Basic usage
+
+<a id="basic-confirmation"></a>
+
+`confirm()` returns `Promise<boolean>`: confirmation resolves to `true`, cancellation to `false`.
+
+<ComponentExample exampleId="basic" preview={<ConfirmSimple />} fileName="simple.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/simple.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section examples */}
+
+## Examples
+
+### Semantic states
+
+Use `type` to select a semantic state. `success` hides Cancel by default; set `showCancel` to display it.
+
+<ComponentExample exampleId="status" preview={<ConfirmStatus />} fileName="status.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/status.tsx"
+```
+
+</ComponentExample>
+
+### Async confirmation
+
+<a id="advanced-usage"></a>
+
+Place the async action in `onConfirm`. Success closes the dialog automatically and resolves to `true`. While pending, the default buttons show loading and prevent repeated confirmation or cancellation.
+
+<ComponentExample exampleId="async-confirm" preview={<ConfirmBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/confirm/basic.tsx"
 ```
 
 </ComponentExample>
 
-## useConfirm API
+### Failure and retry
 
-The returned object is [`ConfirmApi`](#confirmapi).
+A rejected `onConfirm` displays the error and keeps the dialog open for another attempt. Each new confirmation in this example fails once, then succeeds on the second attempt.
+
+<ComponentExample exampleId="retry" preview={<ConfirmRetry />} fileName="retry.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/retry.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### useConfirm API
+
+The returned object is [`ConfirmApi`](#confirmapi). Requests in the same queue appear in sequence, after the previous dialog finishes closing. The Promise resolves when the decision closes the dialog, without waiting for its closing animation.
+
+Unmounting the caller or provider resolves outstanding requests to `false`. It does not abort an async action already in progress or invoke `onCancel`.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or caller unmount. |
 
-## ConfirmOptions
+### ConfirmApi
+
+The command interface returned by `useConfirm()`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Initial focus target. |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Return focus after closing; set a target or disable with false. |
+| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | Required | Resolve to a boolean on decision: true after successful confirmation, false on cancellation or caller unmount, without waiting for the closing animation. |
+
+### ConfirmOptions
+
+Content, actions and interaction settings supplied to `confirm()`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
 | `title` | `ReactNode` | — | Confirmation heading. |
 | `children` | `ReactNode` | — | A short explanation of the action's consequences. |
-| `icon` | `ReactNode` | — | Semantic icon beside the explanation; null hides the icon. |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Semantic icon and color; only danger changes the confirm button color. |
-| `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
-| `confirmText` | `ReactNode` | Locale default | Confirm button label. |
-| `cancelText` | `ReactNode` | Locale default | Cancel button label. |
-| `confirmButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Confirm button props. |
-| `cancelButtonProps` | [`ButtonProps`](../components/button#button-api) | — | Cancel button props. |
 | `onConfirm` | `() => void \| Promise<void>` | — | Close after success; keep the dialog open and show the error on rejection. |
 | `onCancel` | `() => void` | — | Called on cancellation. |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Semantic icon and color; only danger changes the confirm button color. |
+| `icon` | `ReactNode` | — | Semantic icon beside the explanation; null hides the icon. |
+| `confirmText` | `ReactNode` | Locale default | Confirm button label. |
+| `cancelText` | `ReactNode` | Locale default | Cancel button label. |
+| `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Confirm button props. |
+| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Cancel button props. |
 | `width` | `number \| string` | `420` | Dialog width, in pixels for numbers. |
 | `closable` | `boolean` | `false` | Show a close button in the corner. |
 | `maskClosable` | `boolean` | `false` | Cancel when the backdrop is clicked. |
 | `keyboard` | `boolean` | `true` | Cancel when Escape is pressed. |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Initial focus target. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Return focus after closing; set a target or disable with false. |
 | `className` | `string` | — | Dialog class name. |
 | `style` | `CSSProperties` | — | Dialog styles. |
 
-## ConfirmProvider API
+### ConfirmProvider API
 
-Use `ConfirmProvider` at the entry when `ConfigProvider` is absent. An explicit provider can also create an independent queue for a region.
+Without `ConfigProvider`, wrap the application in `ConfirmProvider`. An explicit `ConfirmProvider` creates an independent queue; a nested `ConfigProvider` continues to share the existing queue.
 
 ```tsx
 import { ConfirmProvider } from '@ifhover/leaf-ui';
 
 export function Root() {
-  return <ConfirmProvider><App /></ConfirmProvider>;
+  return (
+    <ConfirmProvider>
+      <App />
+    </ConfirmProvider>
+  );
 }
 ```
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Components sharing this confirmation queue. |
-
-## ConfirmApi
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | — | Required. Request confirmation and await the choice. |
-
-## Types
-
-Import these types when composing options.
-
-```ts
-import type { ConfirmOptions, ConfirmApi, ConfirmProviderProps } from '@ifhover/leaf-ui';
-```
-
-## Usage
-
-`useConfirm()` returns `{ confirm }`. Requests sharing an entry appear in sequence, after the previous dialog finishes closing. Async confirmation shows loading and prevents duplicate actions; rejected actions keep the dialog open with an error and can be retried.
-
-The default type has no status icon. Info, warning, success and danger show a bare semantic icon beside the content; danger uses a red exclamation mark. Success hides the cancel button unless `showCancel` is set.
-
-Confirm is an API-only prompt for brief decisions. Use [Modal](/en/components/modal) for forms, multiple steps or complex content.
+| `children` | `ReactNode` | — | Contents sharing this independent confirmation queue; ConfigProvider already supplies a queue and nested ConfigProviders reuse it. |

@@ -117,6 +117,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         aria-autocomplete="list"
         aria-haspopup="listbox"
         aria-expanded={open}
+        data-open={open || undefined}
         aria-controls={open ? id : undefined}
         aria-activedescendant={open && list[active] ? `${id}-${active}` : undefined}
         onChange={(event) => {
@@ -160,6 +161,7 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
         }}
       />
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={input}
         panelRef={panel}

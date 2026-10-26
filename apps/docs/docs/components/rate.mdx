@@ -1,64 +1,107 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { RateBasic } from '../../src/examples/rate/basic';
-import { RateColors } from '../../src/examples/rate/colors';
+import { RateHalf } from '../../src/examples/rate/half';
 import { RateStates } from '../../src/examples/rate/states';
+import { RateControlled } from '../../src/examples/rate/controlled';
+import { RateColors } from '../../src/examples/rate/colors';
+
+export const leafDoc = { component: 'Rate', primaryApi: 'RateProps' };
 
 # Rate 评分
 
 选择或展示评分。
 
-## 选择评分
+{/* leaf:section basic */}
 
-<ComponentExample title="选择评分" preview={<RateBasic />} fileName="basic.tsx" width={360}>
+## 基础用法
+
+重复点击当前评分会清空为 `0`；设置 `allowClear={false}` 可禁止清除。悬停只预览评分，移出后恢复已选值。
+
+<ComponentExample exampleId="basic" preview={<RateBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/rate/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 按分数变色
+{/* leaf:section examples */}
 
-<ComponentExample title="按分数变色" preview={<RateColors />} fileName="colors.tsx" width={360}>
+## 示例
 
-```tsx lineNumbers file="../../src/examples/rate/colors.tsx"
+### 半星评分
+
+开启 `allowHalf` 后可按 `0.5` 分选择，`value` 和 `onChange` 也使用对应的小数值。
+
+<ComponentExample exampleId="half" preview={<RateHalf />} fileName="half.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/rate/half.tsx"
 ```
 
 </ComponentExample>
 
-## 只读与禁用
+### 只读与禁用
 
-<ComponentExample title="只读与禁用" preview={<RateStates />} fileName="states.tsx" width={360}>
+两者都禁止修改；需要仍参与表单提交时使用 `readOnly`。
+
+<ComponentExample exampleId="states" preview={<RateStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/rate/states.tsx"
 ```
 
 </ComponentExample>
 
-## Rate API
+<a id="进阶用法"></a>
+
+### 受控评分
+
+通过 `value` 和 `onChange` 管理评分。受控字段不会在表单重置时自行恢复，需同时重置应用状态。
+
+<ComponentExample exampleId="controlled" preview={<RateControlled />} fileName="controlled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/rate/controlled.tsx"
+```
+
+</ComponentExample>
+
+### 评分颜色
+
+`colorByValue` 随评分改变颜色；设置 `color` 可固定颜色，并优先于按评分配色。
+
+<ComponentExample exampleId="colors" preview={<RateColors />} fileName="colors.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/rate/colors.tsx"
+```
+
+</ComponentExample>
+
+#### 表单与键盘
+
+使用 `FormField` 提供字段名称，设置 `name` 参与 FormData 提交；清空时提交空字符串。非受控评分支持表单重置，设置 `required` 可要求非零评分。表单接入见 [Form](/components/form)。
+
+方向键调整评分，Home / End 跳至首尾，允许清除时可用 Delete / Backspace 清空。
+
+{/* leaf:section api */}
+
+## API
+
+### Rate API
+
+配置评分值、步进精度以及只读和清除行为。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `number` | `0` | 受控 / 初始评分 |
-| `onChange` | `(value: number) => void` | — | 评分变化 |
+| `value` | `number` | — | 受控评分。 |
+| `defaultValue` | `number` | `0` | 非受控模式的初始评分。 |
+| `onChange` | `(value: number) => void` | — | 评分变化时返回新值，清空为 0。 |
 | `count` | `number` | `5` | 星星数量，最多 20 |
-| `allowHalf / allowClear` | `boolean` | `false / true` | 半星 / 重复点击清除 |
-| `readOnly / disabled` | `boolean` | `false` | 只读 / 禁用 |
+| `allowHalf` | `boolean` | `false` | 允许按半星选择。 |
+| `allowClear` | `boolean` | `true` | 重复选择当前评分时清空为 0。 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `readOnly` | `boolean` | `false` | 禁止修改评分，仍参与表单提交。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 星星尺寸 |
-| `color` | `string` | `'#ffc53d'` | 固定星星颜色；优先于按分数变色 |
+| `color` | `string` | — | 固定评分颜色，优先于 colorByValue；均未设置时使用金色。 |
 | `colorByValue` | `boolean` | `false` | 按分数比例使用低、中、高档颜色 |
-| `colors` | `readonly [string, string, string]` | — | 低、中、高档颜色；阈值为总分的 40% 和 70% |
-| `name / form` | `string` | — | 字段名 / 关联表单 |
-| `required` | `boolean` | `false` | 需要非零评分 |
-
-
-## 类型
-
-可导入以下类型定义属性、组装数据或处理回调。
-
-```ts
-import type { RateProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-悬停可预览评分和颜色，离开恢复已选值。方向键调整评分，Home / End 跳至首尾，Delete / Backspace 可清除。只读保留展示，禁用也会阻止交互。支持 FormData 和非受控表单 reset。
+| `colors` | `readonly [string, string, string]` | `['#ef5350', '#f49b23', '#ffc53d']` | 低、中、高档颜色；阈值为总分的 40% 和 70% |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
+| `required` | `boolean` | `false` | 要求评分不为 0。 |

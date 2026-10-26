@@ -6,8 +6,14 @@ export function ControlSizes() {
       {(['sm', 'md', 'lg'] as const).map((size: ControlSize) => (
         <Flex key={size} align="center" gap="sm" wrap>
           <Text tone="muted">{size}</Text>
-          <Input size={size} aria-label={`${size} search`} placeholder="Search projects" />
+          <Input
+            style={{ flex: '1 1 120px', width: 0 }}
+            size={size}
+            aria-label={`${size} search`}
+            placeholder="Search projects"
+          />
           <Select
+            style={{ flex: '1 1 120px', width: 0 }}
             size={size}
             aria-label={`${size} status`}
             defaultValue="all"

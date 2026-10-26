@@ -1,7 +1,7 @@
 import { readability, TinyColor } from '@ctrl/tinycolor';
 import { expect, test } from '@playwright/test';
 
-test('dark primary expressions adapt through nested scopes and recover their original color', async ({
+test('dark primary JS configuration adapts through nested scopes and recover their original color', async ({
   page,
 }) => {
   await page.goto('/?fixture=colors');
@@ -36,30 +36,22 @@ test('dark primary expressions adapt through nested scopes and recover their ori
     )
     .toBeGreaterThanOrEqual(4.5);
   const dark = await read();
-  expect(dark.primary).toBe('rgb(24, 24, 27)');
+  expect(dark.primary).toBe('#18181b');
   expect(
     readability(dark['primary-indicator'] ?? '', dark['surface-muted'] ?? ''),
   ).toBeGreaterThanOrEqual(3);
   const button = theme.getByRole('button', { name: 'Adaptive primary', exact: true });
   await expect(button).toHaveCSS('background-color', 'rgb(24, 24, 27)');
   await expect(button).toHaveCSS('color', 'rgb(255, 255, 255)');
-  await expect(button).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+  // Solid actions keep transparent borders; the choice controls below retain
+  // their separate visible-indicator boundary contract.
+  await expect(button).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
   await button.focus();
   await expect(button).toHaveCSS('outline-style', 'solid');
-  await expect
-    .poll(() =>
-      button.evaluate((node) => {
-        const style = getComputedStyle(node);
-        return {
-          outline: style.outlineColor,
-          focus: style.getPropertyValue('--leaf-color-primary-focus').trim(),
-        };
-      }),
-    )
-    .toEqual({
-      outline: new TinyColor(dark['primary-focus']).toRgbString(),
-      focus: dark['primary-focus'],
-    });
+  const focusColor = await button.evaluate((node) =>
+    getComputedStyle(node).getPropertyValue('--leaf-color-text-muted').trim(),
+  );
+  await expect(button).toHaveCSS('outline-color', new TinyColor(focusColor).toRgbString());
   await expect(theme.getByRole('button', { name: 'Adaptive link', exact: true })).toHaveCSS(
     'color',
     new TinyColor(dark['primary-ink']).toRgbString(),
@@ -70,28 +62,32 @@ test('dark primary expressions adapt through nested scopes and recover their ori
     new TinyColor(dark['primary-indicator']).toRgbString(),
   );
   const track = theme.locator('.leaf-switch__track');
+  await expect(track).toHaveCSS('background-color', new TinyColor(dark.primary).toRgbString());
   await expect(track).toHaveCSS(
-    'background-color',
+    'border-top-color',
     new TinyColor(dark['primary-indicator']).toRgbString(),
+  );
+  const switchThumb = track.locator('.leaf-switch__thumb');
+  await expect(switchThumb).toHaveCSS(
+    'background-color',
+    new TinyColor(dark['on-primary']).toRgbString(),
+  );
+  const checkbox = theme.locator('.leaf-checkbox__input');
+  await expect(checkbox).toHaveCSS('background-color', new TinyColor(dark.primary).toRgbString());
+  await expect(checkbox).toHaveCSS(
+    'border-top-color',
+    new TinyColor(dark['primary-indicator']).toRgbString(),
+  );
+  await expect(theme.locator('.leaf-checkbox__mark--check')).toHaveCSS(
+    'color',
+    new TinyColor(dark['on-primary']).toRgbString(),
   );
   await theme.getByRole('combobox', { name: 'Adaptive select' }).click();
   const option = page.getByRole('option', { name: 'One', exact: true });
   await expect(option).toBeVisible();
-  await expect
-    .poll(() =>
-      option.evaluate((node) =>
-        getComputedStyle(node).getPropertyValue('--leaf-color-primary-ink').trim(),
-      ),
-    )
-    .toBe(dark['primary-ink']);
+  await expect(option).toHaveCSS('--leaf-color-primary-ink', dark['primary-ink'] ?? '');
   await page.keyboard.press('Escape');
-  await expect
-    .poll(() =>
-      inherited.evaluate((node) =>
-        getComputedStyle(node).getPropertyValue('--leaf-color-primary-ink').trim(),
-      ),
-    )
-    .toBe(dark['primary-ink']);
+  await expect(inherited).toHaveCSS('--leaf-color-primary-ink', dark['primary-ink'] ?? '');
   await expect(page.getByTestId('light-primary-theme').getByRole('button')).toHaveCSS(
     'background-color',
     'rgb(24, 24, 27)',
@@ -100,20 +96,21 @@ test('dark primary expressions adapt through nested scopes and recover their ori
     'color',
     'rgb(18, 52, 86)',
   );
-  await page.getByTestId('explicit-primary-theme').getByRole('button').hover();
-  await expect(page.getByTestId('explicit-primary-theme').getByRole('button')).toHaveCSS(
-    'background-color',
-    'rgb(171, 205, 239)',
+  const explicitButton = page.getByTestId('explicit-primary-theme').getByRole('button');
+  const explicitBackground = await explicitButton.evaluate(
+    (node) => getComputedStyle(node).backgroundColor,
   );
+  await explicitButton.hover();
+  await expect(explicitButton).toHaveCSS('background-color', explicitBackground);
   await page.getByRole('button', { name: 'Toggle accent color', exact: true }).click();
-  await expect.poll(async () => (await read()).primary).toBe('rgb(29, 155, 240)');
+  await expect(theme).toHaveCSS('--leaf-color-primary', '#1d9bf0');
   await page.getByRole('button', { name: 'Toggle accent color', exact: true }).click();
-  await expect.poll(async () => (await read()).primary).toBe(dark.primary);
+  await expect(theme).toHaveCSS('--leaf-color-primary', dark.primary ?? '');
   await page.getByRole('button', { name: 'Toggle accent appearance', exact: true }).click();
   await expect(theme.getByRole('button', { name: 'Adaptive primary', exact: true })).toHaveCSS(
     'background-color',
     'rgb(24, 24, 27)',
   );
   await page.getByRole('button', { name: 'Toggle accent appearance', exact: true }).click();
-  await expect.poll(async () => (await read()).primary).toBe(dark.primary);
+  await expect(theme).toHaveCSS('--leaf-color-primary', dark.primary ?? '');
 });

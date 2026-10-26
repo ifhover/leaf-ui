@@ -13,9 +13,6 @@ export function TextareaControlled() {
           onChange={(event) => setValue(event.target.value)}
         />
       </FormField>
-      <FormField label="错误留言" error="请补充描述。">
-        <Textarea placeholder="请补充描述" />
-      </FormField>
     </Form>
   );
 }

@@ -19,6 +19,7 @@ export function FloatButtonControl({
   const button = (
     <ButtonControl
       {...props}
+      variant={props.variant ?? 'solid'}
       className={classes('leaf-float-button', fixed && 'leaf-float-button--fixed', className)}
     />
   );

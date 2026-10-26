@@ -1,7 +1,6 @@
-import type { UploadRequest } from '@ifhover/leaf-ui';
-import { Space, Text, Upload } from '@ifhover/leaf-ui';
+import { Upload, type UploadRequest } from '@ifhover/leaf-ui';
 
-const demoRequest = ({ signal, onProgress }: UploadRequest) =>
+const simulateUpload = ({ signal, onProgress }: UploadRequest) =>
   new Promise<void>((resolve, reject) => {
     let percent = 0;
     const cleanup = () => {
@@ -13,30 +12,17 @@ const demoRequest = ({ signal, onProgress }: UploadRequest) =>
       reject(new DOMException('Aborted', 'AbortError'));
     };
     const timer = setInterval(() => {
-      percent += 12;
-      onProgress(percent);
+      percent += 10;
+      onProgress(Math.min(percent, 99));
       if (percent >= 100) {
         cleanup();
         resolve();
       }
-    }, 180);
+    }, 300);
     signal.addEventListener('abort', abort, { once: true });
     if (signal.aborted) abort();
   });
+
 export function UploadDrag() {
-  return (
-    <Space direction="vertical" align="stretch">
-      <Text tone="muted">
-        此示例在本地模拟上传进度，使用 action 或 customRequest 接入实际上传服务。
-      </Text>
-      <Upload
-        drag
-        multiple
-        accept="image/*"
-        maxCount={4}
-        customRequest={demoRequest}
-        hint="仅限图片 · 支持取消与重试"
-      />
-    </Space>
-  );
+  return <Upload drag multiple customRequest={simulateUpload} />;
 }

@@ -1,41 +1,29 @@
-import {
-  Button,
-  ConfigProvider,
-  Form,
-  FormField,
-  Input,
-  Select,
-  Space,
-  Text,
-} from '@ifhover/leaf-ui';
+import { ConfigProvider, Flex, Form, FormField, Input, Select, Text } from '@ifhover/leaf-ui';
 
 export function ConfigProviderDensity() {
   return (
-    <Space direction="vertical" align="stretch" size="lg">
+    <Flex direction="column" gap="lg">
       {(['comfortable', 'compact'] as const).map((density) => (
         <ConfigProvider key={density} density={density}>
-          <Space direction="vertical" align="stretch">
+          <Flex direction="column" gap="sm">
             <Text tone="muted">{density === 'compact' ? 'Compact' : 'Comfortable'}</Text>
-            <Form>
+            <Form onSubmit={(event) => event.preventDefault()}>
               <FormField label="Project name">
                 <Input defaultValue="Leaf UI" />
               </FormField>
               <FormField label="Owner">
                 <Select
+                  defaultValue="lin"
                   options={[
                     { value: 'lin', label: 'Lin' },
                     { value: 'alex', label: 'Alex' },
                   ]}
-                  defaultValue="lin"
                 />
               </FormField>
-              <Button type="reset" variant="outline">
-                Reset
-              </Button>
             </Form>
-          </Space>
+          </Flex>
         </ConfigProvider>
       ))}
-    </Space>
+    </Flex>
   );
 }

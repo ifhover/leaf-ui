@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import axe from 'axe-core';
+import { expectAccessible } from './helpers/accessibility';
 
 for (const appearance of ['light', 'dark']) {
   test(`default scopes, size overrides and forced disabled in ${appearance}`, async ({
@@ -8,30 +8,27 @@ for (const appearance of ['light', 'dark']) {
     await page.goto(`/?fixture=component-defaults&theme=${appearance}`);
     const inherited = page.getByRole('button', { name: 'Inherited', exact: true });
     await expect(inherited).toHaveClass(/leaf-button--outline/u);
-    await expect(inherited).toHaveCSS('height', '30px');
-    await expect(page.getByRole('button', { name: 'Nested override' })).toHaveCSS('height', '42px');
+    await expect(inherited).toHaveCSS('height', '28px');
+    await expect(page.getByRole('button', { name: 'Nested override' })).toHaveCSS('height', '40px');
     await expect(page.getByRole('button', { name: 'Instance override' })).toHaveCSS(
       'height',
-      '36px',
+      '34px',
     );
     await expect(page.getByRole('button', { name: 'Outside defaults' })).toHaveClass(
-      /leaf-button--solid/u,
+      /leaf-button--outline/u,
     );
     await expect(
       page.getByRole('textbox', { name: 'Disabled search', exact: true }),
     ).toBeDisabled();
     await expect(page.getByRole('button', { name: 'Disabled find' })).toBeDisabled();
-    await page.addScriptTag({ content: axe.source });
-    const violations = await page.evaluate(async () =>
-      (await (window as unknown as { axe: typeof axe }).axe.run(document.body)).violations.map(
-        (item) => item.id,
-      ),
-    );
-    expect(violations).toEqual([]);
     await page.screenshot({
-      path: `.quality/component-defaults-${appearance}-${info.project.name}.png`,
+      path: test.info().outputPath(`component-defaults-${appearance}-${info.project.name}.png`),
       fullPage: true,
     });
+  });
+  test(`default scopes accessibility in ${appearance}`, { tag: '@a11y' }, async ({ page }) => {
+    await page.goto(`/?fixture=component-defaults&theme=${appearance}`);
+    await expectAccessible(page);
   });
 }
 
@@ -47,7 +44,7 @@ test('updating defaults preserves native inputs, search values and current reset
   await page.getByRole('button', { name: 'Update defaults' }).click();
   await expect(name).toHaveValue('Edited name');
   await expect(search).toHaveValue('Leaf search');
-  await expect(page.getByRole('button', { name: 'Find', exact: true })).toHaveCSS('height', '42px');
+  await expect(page.getByRole('button', { name: 'Find', exact: true })).toHaveCSS('height', '40px');
   await search.press('Enter');
   await expect(page.getByRole('status', { name: 'Search result' })).toHaveText('Leaf search');
   await page.getByRole('button', { name: 'Reset inputs' }).click();
@@ -87,7 +84,7 @@ test('Modal portal inherits defaults and preserves keyboard/focus behavior', asy
   const dialog = page.getByRole('dialog', { name: 'Default modal' });
   await expect(dialog).toHaveCSS('width', '520px');
   await expect(dialog).toHaveAccessibleDescription('Modal defaults only');
-  await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveCSS('height', '30px');
+  await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveCSS('height', '28px');
   await expect(dialog.getByRole('button', { name: 'Portal button' })).toHaveClass(
     /leaf-button--outline/u,
   );
@@ -125,15 +122,13 @@ test('cleared defaults restore editable local inputs, builtin buttons and native
   await expect(input).toHaveAttribute('type', 'text');
   await input.fill('Changed locally');
   const reset = form.getByRole('button', { name: 'Reset local input' });
-  await expect(reset).toHaveCSS('height', '36px');
-  await expect(reset).toHaveClass(/leaf-button--solid/u);
+  await expect(reset).toHaveCSS('height', '34px');
+  await expect(reset).toHaveClass(/leaf-button--outline/u);
   await reset.click();
   await expect(input).toHaveValue('Editable');
 });
 
-test('global defaults cannot change composite button actions, page size or command search', async ({
-  page,
-}) => {
+test('global defaults cannot change composite button actions or page size', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/?fixture=component-defaults');
@@ -143,8 +138,8 @@ test('global defaults cannot change composite button actions, page size or comma
   await expect(main).toBeEnabled();
   await expect(menu).toBeEnabled();
   await expect(menu).toHaveAttribute('type', 'button');
-  await expect(main).toHaveCSS('height', '30px');
-  await expect(menu).toHaveCSS('height', '30px');
+  await expect(main).toHaveCSS('height', '28px');
+  await expect(menu).toHaveCSS('height', '28px');
   await menu.click();
   await page.getByRole('menuitem', { name: 'Copy item' }).click();
   await expect(section.getByLabel('Copied item')).toHaveText('true');
@@ -158,16 +153,6 @@ test('global defaults cannot change composite button actions, page size or comma
   await section.getByRole('combobox', { name: 'Page size' }).click();
   await page.getByRole('option', { name: '20 / page' }).click();
   await expect(section.getByLabel('Boundary page size')).toHaveText('20');
-  await section.getByRole('button', { name: 'Open boundary commands' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Command search' });
-  const search = dialog.getByRole('combobox');
-  await expect(search).toBeEditable();
-  await expect(search).toHaveAttribute('type', 'text');
-  await search.fill('copy');
-  await expect(dialog.getByRole('option', { name: 'Copy command' })).toBeVisible();
-  await expect(dialog.getByRole('option', { name: 'Save command' })).toHaveCount(0);
-  await search.press('Escape');
-  await expect(dialog).toBeHidden();
   expect(errors).toEqual([]);
 });
 
@@ -218,7 +203,7 @@ test('service requests keep options but content follows the calling region', asy
   const region = page.getByRole('region', { name: 'Expanded defaults' });
   await region.getByRole('button', { name: 'Regional message', exact: true }).click();
   await expect(page.locator('.leaf-tag').filter({ hasText: 'Message content' })).toHaveClass(
-    /leaf-tag--solid/u,
+    /leaf-tag--outline/u,
   );
   await expect(page.locator('.leaf-message').filter({ hasText: 'Message content' })).toHaveClass(
     /leaf-message--warning/u,
@@ -230,7 +215,7 @@ test('service requests keep options but content follows the calling region', asy
   await region.getByRole('button', { name: 'Regional confirm request' }).click();
   const dialog = page.getByRole('alertdialog', { name: 'Regional confirm' });
   await expect(dialog.getByRole('button', { name: 'Proceed', exact: true })).toBeVisible();
-  await expect(dialog.locator('.leaf-tag')).toHaveClass(/leaf-tag--solid/u);
+  await expect(dialog.locator('.leaf-tag')).toHaveClass(/leaf-tag--outline/u);
   await region
     .getByRole('button', { name: 'Change expanded defaults' })
     .evaluate((node: HTMLButtonElement) => node.click());

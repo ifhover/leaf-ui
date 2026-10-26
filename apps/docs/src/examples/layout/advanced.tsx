@@ -1,35 +1,30 @@
-import { Card, Layout, Menu, useBreakpoint } from '@ifhover/leaf-ui';
-import { Folder, LayoutDashboard } from 'lucide-react';
+import { Layout, Menu, Text, useBreakpoint } from '@ifhover/leaf-ui';
+import { Folder, House } from 'lucide-react';
 import { useState } from 'react';
+
 export function LayoutResponsive() {
   const [collapsed, setCollapsed] = useState(false);
+  const [selected, setSelected] = useState('home');
   const { sm } = useBreakpoint();
   const compact = collapsed || !sm;
-  const [selected, setSelected] = useState('overview');
   const items = [
-    { key: 'overview', label: '概览', icon: <LayoutDashboard /> },
-    { key: 'projects', label: '项目', icon: <Folder /> },
+    { key: 'home', label: '首页', icon: <House /> },
+    { key: 'documents', label: '文档', icon: <Folder /> },
   ];
   return (
     <Layout direction="horizontal">
       <Layout.Sider
         width={180}
-        collapsedWidth={64}
+        collapsedWidth={84}
         collapsed={collapsed}
         onCollapse={setCollapsed}
         collapsible
         breakpoint={575}
       >
-        <Menu
-          mode="inline"
-          collapsed={compact}
-          selectedKey={selected}
-          onSelect={setSelected}
-          items={items}
-        />
+        <Menu collapsed={compact} selectedKey={selected} onSelect={setSelected} items={items} />
       </Layout.Sider>
       <Layout.Content>
-        <Card title={items.find((item) => item.key === selected)?.label}>选择导航项查看内容。</Card>
+        <Text role="status">{items.find((item) => item.key === selected)?.label}</Text>
       </Layout.Content>
     </Layout>
   );

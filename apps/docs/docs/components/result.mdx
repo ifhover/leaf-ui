@@ -1,66 +1,84 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ResultBasic } from '../../src/examples/result/basic';
 import { ResultStates } from '../../src/examples/result/states';
+import { ResultSizes } from '../../src/examples/result/sizes';
 import { ResultCustom } from '../../src/examples/result/custom';
+
+export const leafDoc = { component: 'Result', primaryApi: 'ResultProps' };
 
 # Result 结果
 
 展示操作结果、空数据或需要关注的状态。
 
-## 操作结果
+{/* leaf:section basic */}
 
-<ComponentExample title="操作结果" preview={<ResultBasic />} fileName="basic.tsx">
+## 基础用法
+
+通过 `status` 表达结果，使用 `extra` 提供后续操作。
+
+<ComponentExample exampleId="basic" preview={<ResultBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/result/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 空数据与其他状态
+{/* leaf:section examples */}
 
-<ComponentExample title="空数据与其他状态" preview={<ResultStates />} fileName="states.tsx">
+## 示例
+
+### 结果状态
+
+空数据使用 `status="empty"`，其他状态使用 `success`、`warning`、`danger` 或 `info`。`error` 是 `danger` 的兼容别名。
+
+<ComponentExample exampleId="states" preview={<ResultStates />} fileName="states.tsx">
 
 ```tsx lineNumbers file="../../src/examples/result/states.tsx"
 ```
 
 </ComponentExample>
 
-## 自定义内容
+### 尺寸
 
-<ComponentExample title="自定义内容" preview={<ResultCustom />} fileName="custom.tsx">
+`size="sm"` 适合紧凑区域，默认尺寸为 `md`。
+
+<ComponentExample exampleId="sizes" preview={<ResultSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../src/examples/result/sizes.tsx"
+```
+
+</ComponentExample>
+
+### 自定义内容
+
+通过 `icon` 替换图标，使用 `children` 补充结果详情。
+
+<ComponentExample exampleId="custom" preview={<ResultCustom />} fileName="custom.tsx">
 
 ```tsx lineNumbers file="../../src/examples/result/custom.tsx"
 ```
 
 </ComponentExample>
 
-## Result API
+{/* leaf:section api */}
+
+## API
+
+### Result API
+
+配置结果状态、标题、说明和后续操作。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `status` | `'empty' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'empty'` | 结果状态 |
-| `title / description` | `ReactNode` | 语言默认标题 / — | 标题 / 说明，null 隐藏 |
+| `status` | `'empty' \| 'success' \| 'info' \| 'warning' \| 'danger' \| 'error'` | `'empty'` | 结果状态；`error` 为兼容别名 |
+| `title` | `ReactNode` | — | 结果标题；未设置时按状态和当前语言显示，null 隐藏。 |
+| `description` | `ReactNode` | — | 补充说明；未设置或为 null 时不显示。 |
 | `icon` | `ReactNode` | 状态图标 | 自定义图标；null 隐藏 |
 | `extra` | `ReactNode` | — | 底部按钮或链接 |
-| `children` | `ReactNode` | — | 补充信息 |
 | `size` | `'sm' \| 'md'` | `'md'` | 内容间距和图标大小 |
+| `children` | `ReactNode` | — | 补充结果详情。 |
 
-
-## 类型
-
-可导入以下类型定义属性、组装数据或处理回调。
-
-```ts
-import type { EmptyProps, ResultProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-空数据使用 `status="empty"`，成功、警告、错误与信息状态有对应图标和颜色。传入 `icon`、`title`、`description` 和 `extra` 可自定义内容。
-
-原来的 `Empty` 仍保留兼容入口，建议迁移为 `Result`：`image` 改为 `icon`，`description` 改为 `title`，原本的操作按钮移到 `extra`。
-
-## Empty API
+### Empty API
 
 兼容组件，新增用法请使用 `Result`。`EmptyProps` 同时支持原生 `div` 属性。
 

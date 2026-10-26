@@ -64,6 +64,7 @@ export const InputSearch = forwardRef<HTMLInputElement, InputSearchProps>(
         />
         <ButtonControl
           type="button"
+          variant="solid"
           size={size}
           loading={loading}
           disabled={disabled}

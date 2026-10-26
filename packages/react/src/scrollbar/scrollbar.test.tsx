@@ -46,9 +46,30 @@ afterEach(() => {
 });
 
 describe('Scrollbar', () => {
+  it('keeps persistent tracks visible without overflow and lets hidden override them', () => {
+    scrollHeight = height;
+    scrollWidth = width;
+    const { rerender } = render(
+      <Scrollbar persistent orientation="vertical" height={160}>
+        Short
+      </Scrollbar>,
+    );
+    const root = screen.getByRole('region').parentElement;
+    expect(root).toHaveAttribute('data-persistent');
+    expect(root).toHaveAttribute('data-orientation', 'vertical');
+    expect(screen.getByRole('scrollbar')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('scrollbar')).toHaveAttribute('tabindex', '-1');
+    rerender(
+      <Scrollbar persistent scrollbar="hidden">
+        Short
+      </Scrollbar>,
+    );
+    expect(root).not.toHaveAttribute('data-persistent');
+    expect(screen.queryByRole('scrollbar')).toBeNull();
+  });
   it('keeps composite scrollbars independent from public Scrollbar defaults', () => {
     render(
-      <ConfigProvider components={{ Scrollbar: { scrollbar: 'hidden', height: 12 } }}>
+      <ConfigProvider components={{ Scrollbar: { scrollbar: 'hidden', height: 12, size: 'sm' } }}>
         <Scrollbar aria-label="Public viewport">Public</Scrollbar>
         <ScrollbarControl aria-label="Internal viewport">Internal</ScrollbarControl>
       </ConfigProvider>,
@@ -57,9 +78,29 @@ describe('Scrollbar', () => {
     const internalRoot = screen.getByRole('region', { name: 'Internal viewport' }).parentElement;
     expect(publicRoot).toHaveAttribute('data-scrollbar', 'hidden');
     expect(publicRoot).toHaveStyle({ height: '12px' });
+    expect(publicRoot).toHaveClass('leaf-scrollbar--sm');
     expect(internalRoot).toHaveAttribute('data-scrollbar', 'auto');
     expect(internalRoot?.style.height).toBe('');
+    expect(internalRoot).not.toHaveClass('leaf-scrollbar--sm');
     expect(internalRoot?.querySelectorAll('[role="scrollbar"]')).toHaveLength(2);
+  });
+  it('uses a narrower track inset for the small size', () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Scrollbar aria-label="Dense" height={160} size="sm">
+          Items
+        </Scrollbar>
+      </ConfigProvider>,
+    );
+    const root = screen.getByRole('region', { name: 'Dense' }).parentElement;
+    expect(root).toHaveClass('leaf-scrollbar--sm');
+    // Both axes overflow: the vertical track starts 2px in and ends before the 8px cross track.
+    expect(screen.getByRole('scrollbar', { name: 'Vertical scrollbar' }).parentElement).toHaveStyle(
+      { top: '2px', bottom: '8px' },
+    );
+    expect(
+      screen.getByRole('scrollbar', { name: 'Horizontal scrollbar' }).parentElement,
+    ).toHaveStyle({ left: '2px', right: '8px' });
   });
   it('forwards viewport refs, names and scroll events while preserving native wheel behavior', () => {
     const ref = createRef<HTMLDivElement>();

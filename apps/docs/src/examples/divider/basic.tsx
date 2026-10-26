@@ -1,20 +1,11 @@
-import { Divider, Space } from '@ifhover/leaf-ui';
+import { Divider, Flex, Text } from '@ifhover/leaf-ui';
 
 export function DividerBasic() {
   return (
-    <Space direction="vertical" align="stretch">
-      <p>项目信息</p>
-      <Divider>设置</Divider>
-      <Divider align="start" dashed>
-        更多内容
-      </Divider>
-      <div>
-        编辑
-        <Divider type="vertical" />
-        分享
-        <Divider type="vertical" dashed />
-        归档
-      </div>
-    </Space>
+    <Flex direction="column" gap="sm">
+      <Text>项目资料</Text>
+      <Divider />
+      <Text>团队成员</Text>
+    </Flex>
   );
 }

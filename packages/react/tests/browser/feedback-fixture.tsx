@@ -27,7 +27,7 @@ function FeedbackContent() {
           description="Some fields need attention."
           type="warning"
         />
-        <Alert title="Unable to save" type="error" />
+        <Alert title="Unable to save" type="danger" />
       </div>
       <Result
         status="success"
@@ -35,12 +35,18 @@ function FeedbackContent() {
         description="一切准备就绪，可以开始你的下一个好想法。"
         extra={<Button>进入项目</Button>}
       />
+      <section aria-label="Result variants">
+        {(['empty', 'warning', 'danger', 'info'] as const).map((status) => (
+          <Result key={status} status={status} title={status} description="Review the details." />
+        ))}
+        <Result size="sm" status="danger" title="Failed" description="Please try again." />
+      </section>
     </>
   );
 }
 
 export function FeedbackFixture() {
-  const [blur, setBlur] = useState(true);
+  const [blur, setBlur] = useState(false);
   return (
     <ConfigProvider maskBlur={blur} theme={{ tokens: { motionDuration: 500 } }}>
       <Button onClick={() => setBlur(!blur)}>Toggle mask blur</Button>

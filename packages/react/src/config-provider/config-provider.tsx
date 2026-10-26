@@ -1,6 +1,7 @@
-import { type HTMLAttributes, useContext, useMemo, useRef } from 'react';
+import { type HTMLAttributes, useContext, useMemo } from 'react';
 import { ConfirmScope } from '../confirm/provider';
 import { type LeafDensity, leafDensityVariables } from '../density';
+import { ImagePreviewScope } from '../image/provider';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
 import { localeChain, mergeTranslations, resolveTranslations } from '../locales/resolve';
 import type { LeafTranslations } from '../locales/types';
@@ -13,7 +14,6 @@ import {
   mergeComponentDefaults,
 } from './component-defaults';
 import { ConfigContext, type LeafDirection, type LeafLocale, useLeafConfig } from './context';
-import { useColorVariables } from './use-color-variables';
 
 export type { LeafDensity } from '../density';
 export type { LeafTranslation, LeafTranslations } from '../locales/types';
@@ -31,7 +31,7 @@ export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   direction?: LeafDirection;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   getPopupContainer?: () => Element | DocumentFragment;
-  /** Enable the background blur on Modal and Drawer masks. Defaults to true. */
+  /** Enable the background blur on Modal and Drawer masks. Defaults to false. */
   maskBlur?: boolean;
   /** Inherited spacing preset; explicit theme and component sizes take precedence. */
   density?: LeafDensity;
@@ -108,13 +108,10 @@ export function ConfigProvider({
     density,
   ]);
   const variables = useMemo(() => leafThemeVariables(merged.theme), [merged.theme]);
-  const root = useRef<HTMLDivElement>(null);
-  const resolved = useColorVariables(root, merged.theme);
   return (
     <ConfigContext.Provider value={merged}>
       <div
         {...props}
-        ref={root}
         lang={merged.locale}
         dir={merged.direction}
         data-leaf-scope=""
@@ -123,13 +120,15 @@ export function ConfigProvider({
           merged.theme.motion === undefined ? undefined : merged.theme.motion ? 'on' : 'off'
         }
         data-leaf-theme={merged.theme.appearance}
-        style={{ ...leafDensityVariables(merged.density), ...variables, ...resolved, ...style }}
+        style={{ ...leafDensityVariables(merged.density), ...variables, ...style }}
       >
         <ComponentDefaultsContext.Provider value={mergedComponents}>
           <MessageScope>
             <ConfirmScope>
               <NotificationScope>
-                <LoadingBarScope>{children}</LoadingBarScope>
+                <LoadingBarScope>
+                  <ImagePreviewScope>{children}</ImagePreviewScope>
+                </LoadingBarScope>
               </NotificationScope>
             </ConfirmScope>
           </MessageScope>

@@ -19,6 +19,8 @@ export interface ModalProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>,
     DialogFocusOptions {
   open: boolean;
+  /** `card` places the content on an inset surface above a muted dialog canvas. */
+  variant?: 'plain' | 'card';
   title?: ReactNode;
   /** Supporting text displayed below the title. */
   description?: ReactNode;
@@ -48,10 +50,11 @@ export interface ModalProps
 
 function ModalSurface({
   open,
+  variant = 'plain',
   title,
   description,
   icon,
-  divided = true,
+  divided = false,
   footer,
   confirmText,
   cancelText,
@@ -139,6 +142,7 @@ function ModalSurface({
     confirmButton: (
       <ButtonControl
         type="button"
+        variant="solid"
         {...confirmButtonProps}
         loading={busy || confirmButtonProps?.loading}
         onClick={(event) => {
@@ -218,7 +222,12 @@ function ModalSurface({
             .join(' ') || undefined
         }
         tabIndex={-1}
-        className={classes('leaf-modal', divided && 'leaf-modal--divided', className)}
+        className={classes(
+          'leaf-modal',
+          variant === 'card' && 'leaf-modal--card',
+          divided && 'leaf-modal--divided',
+          className,
+        )}
         style={{ width, ...style }}
       >
         <OverlayOwner.Provider value={modalId}>

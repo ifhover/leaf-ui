@@ -7,12 +7,7 @@ export function NotificationBasic() {
       onClick={() =>
         notification.open({
           title: 'Report ready',
-          description: 'Your monthly report is ready to download.',
-          actions: (
-            <Button size="sm" onClick={() => notification.close()}>
-              Got it
-            </Button>
-          ),
+          description: 'Your monthly report is available in the report list.',
         })
       }
     >

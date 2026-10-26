@@ -6,14 +6,15 @@ import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from '.
 import { useContentTransition } from './presence';
 
 export type CalendarMode = 'year' | 'quarter' | 'month' | 'week' | 'date' | 'datetime';
-export function startOfPeriod(date: Date, mode: CalendarMode) {
+export type WeekStart = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export function startOfPeriod(date: Date, mode: CalendarMode, weekStartsOn: WeekStart = 1) {
   const next = new Date(date);
   next.setMilliseconds(0);
   if (mode !== 'datetime') next.setHours(0, 0, 0, 0);
   if (mode === 'year') next.setMonth(0, 1);
   if (mode === 'month') next.setDate(1);
   if (mode === 'quarter') next.setMonth(Math.floor(next.getMonth() / 3) * 3, 1);
-  if (mode === 'week') next.setDate(next.getDate() - ((next.getDay() + 6) % 7));
+  if (mode === 'week') next.setDate(next.getDate() - ((next.getDay() - weekStartsOn + 7) % 7));
   return next;
 }
 export function dateTimeKey(date: Date, showSeconds = true) {
@@ -25,16 +26,18 @@ export function dateTimeKey(date: Date, showSeconds = true) {
       .join(':')
   );
 }
-export function periodKey(date: Date, mode: CalendarMode) {
+export function periodKey(date: Date, mode: CalendarMode, weekStartsOn: WeekStart = 1) {
   if (mode === 'year') return String(date.getFullYear());
   if (mode === 'month') return dateKey(date).slice(0, 7);
   if (mode === 'quarter') return `${date.getFullYear()}-Q${Math.floor(date.getMonth() / 3) + 1}`;
   if (mode === 'datetime') return dateTimeKey(date);
   if (mode === 'week') {
-    const monday = startOfPeriod(date, 'week');
-    const thursday = new Date(monday);
-    thursday.setDate(monday.getDate() + 3);
-    const first = startOfPeriod(new Date(thursday.getFullYear(), 0, 4), 'week');
+    // The ISO number comes from the Thursday inside the locally started week.
+    const start = startOfPeriod(date, 'week', weekStartsOn);
+    const thursday = new Date(start);
+    thursday.setDate(start.getDate() + ((4 - start.getDay() + 7) % 7));
+    const monday = startOfPeriod(thursday, 'week', 1);
+    const first = startOfPeriod(new Date(thursday.getFullYear(), 0, 4), 'week', 1);
     const weeks = Math.round(
       (Date.UTC(monday.getFullYear(), monday.getMonth(), monday.getDate()) -
         Date.UTC(first.getFullYear(), first.getMonth(), first.getDate())) /
@@ -44,12 +47,18 @@ export function periodKey(date: Date, mode: CalendarMode) {
   }
   return dateKey(date);
 }
-export function withinPeriod(date: Date, mode: CalendarMode, min?: Date, max?: Date) {
-  const time = startOfPeriod(date, mode).getTime();
+export function withinPeriod(
+  date: Date,
+  mode: CalendarMode,
+  min?: Date,
+  max?: Date,
+  weekStartsOn: WeekStart = 1,
+) {
+  const time = startOfPeriod(date, mode, weekStartsOn).getTime();
   return (
     Number.isFinite(time) &&
-    (!min || time >= startOfPeriod(min, mode).getTime()) &&
-    (!max || time <= startOfPeriod(max, mode).getTime())
+    (!min || time >= startOfPeriod(min, mode, weekStartsOn).getTime()) &&
+    (!max || time <= startOfPeriod(max, mode, weekStartsOn).getTime())
   );
 }
 export function shiftCalendar(date: Date, mode: CalendarMode, amount: number) {
@@ -59,7 +68,6 @@ export function shiftCalendar(date: Date, mode: CalendarMode, amount: number) {
 }
 interface CalendarPanelProps {
   value?: Date | null;
-  values?: readonly Date[];
   onChange: (date: Date) => void;
   picker?: CalendarMode;
   minDate?: Date;
@@ -74,11 +82,9 @@ interface CalendarPanelProps {
   showOutsideDays?: boolean;
   disabledDate?: (date: Date) => boolean;
   cellRender?: (date: Date) => ReactNode;
-  showToday?: boolean;
 }
 export function CalendarPanel({
   value,
-  values,
   onChange,
   picker = 'date',
   minDate,
@@ -93,7 +99,6 @@ export function CalendarPanel({
   showOutsideDays = true,
   disabledDate,
   cellRender,
-  showToday = false,
 }: CalendarPanelProps) {
   const { locale, messages, weekStartsOn, direction } = useLeafConfig();
   const initial = value ?? minDate ?? new Date();
@@ -106,6 +111,7 @@ export function CalendarPanel({
   const [internalVisible, setInternalVisible] = useState(initial);
   const visible = visibleDate ?? internalVisible;
   const [active, setActive] = useState(initial);
+  const [hoverWeek, setHoverWeek] = useState<Date | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const grid = useRef<HTMLFieldSetElement>(null);
   const previousVisible = useRef(visible.getTime());
@@ -163,19 +169,21 @@ export function CalendarPanel({
   const focusableCells = cells.filter(
     (date) =>
       (showOutsideDays || view !== 'date' || date.getMonth() === visible.getMonth()) &&
-      withinPeriod(date, cellMode, minDate, maxDate) &&
+      withinPeriod(date, cellMode, minDate, maxDate, weekStartsOn) &&
       !(selecting && disabledDate?.(date)),
   );
   const activeCell =
     focusableCells.find((date) =>
       view === 'date'
         ? sameDate(date, active)
-        : startOfPeriod(date, cellMode).getTime() === startOfPeriod(active, cellMode).getTime(),
+        : startOfPeriod(date, cellMode, weekStartsOn).getTime() ===
+          startOfPeriod(active, cellMode, weekStartsOn).getTime(),
     ) ?? focusableCells[0];
   const samePeriod = (date: Date, candidate?: Date | null) =>
     Boolean(
       candidate &&
-        startOfPeriod(date, cellMode).getTime() === startOfPeriod(candidate, cellMode).getTime(),
+        startOfPeriod(date, cellMode, weekStartsOn).getTime() ===
+          startOfPeriod(candidate, cellMode, weekStartsOn).getTime(),
     );
   const choose = (date: Date) => {
     if (view === 'year' && picker !== 'year') {
@@ -188,7 +196,7 @@ export function CalendarPanel({
       setActive(date);
       setView('date');
       focusRequested.current = true;
-    } else onChange(startOfPeriod(date, picker === 'datetime' ? 'date' : picker));
+    } else onChange(startOfPeriod(date, picker === 'datetime' ? 'date' : picker, weekStartsOn));
   };
   const move = (date: Date, event: KeyboardEvent<HTMLButtonElement>) => {
     const next = new Date(date);
@@ -200,11 +208,15 @@ export function CalendarPanel({
           : event.key === 'ArrowUp'
             ? view === 'date'
               ? -7
-              : -3
+              : view === 'quarter'
+                ? -2
+                : -3
             : event.key === 'ArrowDown'
               ? view === 'date'
                 ? 7
-                : 3
+                : view === 'quarter'
+                  ? 2
+                  : 3
               : 0;
     if (delta) {
       if (view === 'date') next.setDate(next.getDate() + delta);
@@ -238,10 +250,10 @@ export function CalendarPanel({
       } else next.setFullYear(next.getFullYear() + sign * (view === 'year' ? 12 : 1));
     } else return;
     event.preventDefault();
-    if (minDate && next < startOfPeriod(minDate, cellMode))
-      next.setTime(startOfPeriod(minDate, cellMode).getTime());
-    if (maxDate && next > startOfPeriod(maxDate, cellMode))
-      next.setTime(startOfPeriod(maxDate, cellMode).getTime());
+    if (minDate && next < startOfPeriod(minDate, cellMode, weekStartsOn))
+      next.setTime(startOfPeriod(minDate, cellMode, weekStartsOn).getTime());
+    if (maxDate && next > startOfPeriod(maxDate, cellMode, weekStartsOn))
+      next.setTime(startOfPeriod(maxDate, cellMode, weekStartsOn).getTime());
     if (selecting && disabledDate?.(next)) {
       const step = delta || (event.key === 'End' || event.key === 'PageDown' ? 1 : -1);
       let attempts = 0;
@@ -250,7 +262,7 @@ export function CalendarPanel({
         else if (view === 'month') next.setMonth(next.getMonth() + step);
         else if (view === 'quarter') next.setMonth(next.getMonth() + step * 3);
         else next.setFullYear(next.getFullYear() + step);
-        if (!withinPeriod(next, cellMode, minDate, maxDate)) return;
+        if (!withinPeriod(next, cellMode, minDate, maxDate, weekStartsOn)) return;
         attempts += 1;
       }
       if (disabledDate(next)) return;
@@ -280,79 +292,86 @@ export function CalendarPanel({
   const periodNames = [range?.[0], range?.[1] ?? (range?.[0] ? hoverDate : null)] as const;
   const times = periodNames
     .filter((date): date is Date => Boolean(date))
-    .map((date) => startOfPeriod(date, cellMode).getTime());
+    .map((date) => startOfPeriod(date, cellMode, weekStartsOn).getTime());
   const start = times.length === 2 ? Math.min(...times) : undefined;
   const end = times.length === 2 ? Math.max(...times) : undefined;
+  const headingControls = (
+    <>
+      {view === 'date' && (
+        <button
+          type="button"
+          className="leaf-calendar__heading leaf-calendar__heading--month"
+          aria-label={messages.calendar.month}
+          onClick={() => setView('month')}
+        >
+          {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
+        </button>
+      )}
+      <button
+        type="button"
+        className={classes(
+          'leaf-calendar__heading',
+          view === 'date' ? 'leaf-calendar__heading--year' : 'leaf-calendar__heading--range',
+        )}
+        aria-label={view === 'year' ? undefined : messages.calendar.year}
+        disabled={view === 'year'}
+        onClick={() => setView('year')}
+      >
+        {view === 'year' ? `${decade} – ${decade + 11}` : visible.getFullYear()}
+      </button>
+    </>
+  );
+  const previousControl = (
+    <button
+      type="button"
+      className="leaf-date-picker__nav"
+      aria-label={
+        view === 'date'
+          ? messages.calendar.previousMonth
+          : view === 'month'
+            ? messages.calendar.previousYear
+            : messages.calendar.previousYears
+      }
+      onClick={() => navigate(-1)}
+    >
+      <ChevronLeft size={16} aria-hidden="true" />
+    </button>
+  );
+  const nextControl = (
+    <button
+      type="button"
+      className="leaf-date-picker__nav"
+      aria-label={
+        view === 'date'
+          ? messages.calendar.nextMonth
+          : view === 'month'
+            ? messages.calendar.nextYear
+            : messages.calendar.nextYears
+      }
+      onClick={() => navigate(1)}
+    >
+      <ChevronRight size={16} aria-hidden="true" />
+    </button>
+  );
+  const extraControl =
+    headerExtra != null ? <span className="leaf-calendar__extra">{headerExtra}</span> : null;
   return (
     <div
       ref={root}
       data-view={view}
-      className={classes('leaf-calendar', range && 'leaf-calendar--range')}
+      className={classes(
+        'leaf-calendar',
+        range && 'leaf-calendar--range',
+        picker === 'week' && view === 'date' && 'leaf-calendar--week',
+      )}
     >
       <div className="leaf-date-picker__header">
-        <button
-          type="button"
-          className="leaf-date-picker__nav"
-          aria-label={
-            view === 'date'
-              ? messages.calendar.previousMonth
-              : view === 'month'
-                ? messages.calendar.previousYear
-                : messages.calendar.previousYears
-          }
-          onClick={() => navigate(-1)}
-        >
-          <ChevronLeft size={16} aria-hidden="true" />
-        </button>
+        {previousControl}
         <div className="leaf-calendar__headings" aria-live="polite">
-          {view === 'date' && (
-            <button
-              type="button"
-              className="leaf-calendar__heading"
-              aria-label={messages.calendar.month}
-              onClick={() => setView('month')}
-            >
-              {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
-            </button>
-          )}
-          <button
-            type="button"
-            className="leaf-calendar__heading"
-            aria-label={view === 'year' ? undefined : messages.calendar.year}
-            disabled={view === 'year'}
-            onClick={() => setView('year')}
-          >
-            {view === 'year' ? `${decade} – ${decade + 11}` : visible.getFullYear()}
-          </button>
+          {headingControls}
         </div>
-        <button
-          type="button"
-          className="leaf-date-picker__nav"
-          aria-label={
-            view === 'date'
-              ? messages.calendar.nextMonth
-              : view === 'month'
-                ? messages.calendar.nextYear
-                : messages.calendar.nextYears
-          }
-          onClick={() => navigate(1)}
-        >
-          <ChevronRight size={16} aria-hidden="true" />
-        </button>
-        {showToday && (
-          <button
-            type="button"
-            className="leaf-calendar__today"
-            onClick={() => {
-              const today = new Date();
-              setVisible(today);
-              setActive(today);
-            }}
-          >
-            {messages.calendar.today}
-          </button>
-        )}
-        {headerExtra != null && <span className="leaf-calendar__extra">{headerExtra}</span>}
+        {nextControl}
+        {extraControl}
       </div>
       {view === 'date' && (
         <div className="leaf-calendar__weekdays">
@@ -379,13 +398,13 @@ export function CalendarPanel({
           const outside = view === 'date' && date.getMonth() !== visible.getMonth();
           if (outside && !showOutsideDays)
             return <span key={dateKey(date)} className="leaf-calendar__cell" />;
-          const time = startOfPeriod(date, cellMode).getTime();
+          const time = startOfPeriod(date, cellMode, weekStartsOn).getTime();
           const checked = range
             ? range.some((endpoint) => samePeriod(date, endpoint))
-            : values
-              ? values.some((value) => samePeriod(date, value))
-              : samePeriod(date, value);
-          const hovered = Boolean(range?.[0] && !range[1] && samePeriod(date, hoverDate));
+            : samePeriod(date, value);
+          const hovered = Boolean(
+            range?.[0] && !range[1] && !checked && samePeriod(date, hoverDate),
+          );
           const isActive = Boolean(
             activeCell &&
               (view === 'date' ? sameDate(date, activeCell) : samePeriod(date, activeCell)),
@@ -396,6 +415,9 @@ export function CalendarPanel({
               key={dateKey(date)}
               className={classes(
                 'leaf-calendar__cell',
+                picker === 'week' &&
+                  samePeriod(date, hoverWeek) &&
+                  'leaf-calendar__cell--week-hover',
                 between && start !== end && 'leaf-calendar__cell--range',
                 between && time === start && 'leaf-calendar__cell--start',
                 between && time === end && 'leaf-calendar__cell--end',
@@ -419,21 +441,25 @@ export function CalendarPanel({
                 aria-pressed={checked}
                 aria-current={sameDate(date, new Date()) ? 'date' : undefined}
                 disabled={
-                  !withinPeriod(date, cellMode, minDate, maxDate) ||
+                  !withinPeriod(date, cellMode, minDate, maxDate, weekStartsOn) ||
                   Boolean(selecting && disabledDate?.(date))
                 }
                 className={classes(
                   'leaf-date-picker__day',
                   outside && 'leaf-date-picker__day--outside',
-                  (checked || hovered) && 'leaf-date-picker__day--selected',
+                  checked && 'leaf-date-picker__day--selected',
+                  hovered && 'leaf-date-picker__day--preview',
                 )}
                 onMouseEnter={() => {
                   if (
-                    withinPeriod(date, cellMode, minDate, maxDate) &&
+                    withinPeriod(date, cellMode, minDate, maxDate, weekStartsOn) &&
                     !(selecting && disabledDate?.(date))
-                  )
+                  ) {
+                    if (picker === 'week') setHoverWeek(date);
                     onHover?.(date);
+                  } else setHoverWeek(null);
                 }}
+                onMouseLeave={() => setHoverWeek(null)}
                 onClick={() => choose(date)}
                 onKeyDown={(event) => move(date, event)}
               >

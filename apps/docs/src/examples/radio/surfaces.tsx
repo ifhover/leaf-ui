@@ -1,57 +1,23 @@
-import { RadioGroup, Tag } from '@ifhover/leaf-ui';
-import { Cloud, HardDrive, ShieldCheck } from 'lucide-react';
-
-export function RadioCards({ english = false }: { english?: boolean }) {
-  const t = (zh: string, en: string) => (english ? en : zh);
+import { RadioGroup } from '@ifhover/leaf-ui';
+import { Cloud, HardDrive } from 'lucide-react';
+export function RadioCards() {
   return (
     <RadioGroup
       variant="card"
-      label={t('备份方式', 'Backup method')}
+      label={'备份方式'}
       defaultValue="cloud"
       options={[
         {
           value: 'cloud',
-          label: t('云端备份', 'Cloud backup'),
-          description: t('在你的设备间同步', 'Sync across your devices'),
+          label: '云端备份',
+          description: '在你的设备间同步',
           icon: <Cloud />,
         },
         {
           value: 'local',
-          label: t('本地备份', 'Local backup'),
-          description: t('保存在当前设备', 'Keep data on this device'),
+          label: '本地备份',
+          description: '保存在当前设备',
           icon: <HardDrive />,
-        },
-      ]}
-    />
-  );
-}
-
-export function RadioList({ english = false }: { english?: boolean }) {
-  const t = (zh: string, en: string) => (english ? en : zh);
-  return (
-    <RadioGroup
-      variant="list"
-      label={t('访问策略', 'Access policy')}
-      defaultValue="readonly"
-      options={[
-        {
-          value: 'readonly',
-          label: t('只读访问', 'Read-only access'),
-          description: t(
-            '允许读取，保留变更审批',
-            'Allow reading and require approval for changes',
-          ),
-          icon: <ShieldCheck />,
-          extra: (
-            <Tag color="success" size="sm">
-              {t('推荐', 'Recommended')}
-            </Tag>
-          ),
-        },
-        {
-          value: 'review',
-          label: t('每次审批', 'Approve every request'),
-          description: t('每次操作都由负责人确认', 'Ask the owner to approve every action'),
         },
       ]}
     />

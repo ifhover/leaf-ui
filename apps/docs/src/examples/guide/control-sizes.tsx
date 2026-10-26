@@ -6,8 +6,14 @@ export function ControlSizes() {
       {(['sm', 'md', 'lg'] as const).map((size: ControlSize) => (
         <Flex key={size} align="center" gap="sm" wrap>
           <Text tone="muted">{size}</Text>
-          <Input size={size} aria-label={`${size} 搜索`} placeholder="搜索项目" />
+          <Input
+            style={{ flex: '1 1 120px', width: 0 }}
+            size={size}
+            aria-label={`${size} 搜索`}
+            placeholder="搜索项目"
+          />
           <Select
+            style={{ flex: '1 1 120px', width: 0 }}
             size={size}
             aria-label={`${size} 状态`}
             defaultValue="all"

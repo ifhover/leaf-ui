@@ -1,11 +1,13 @@
-import { InfiniteScroll, ScrollArea } from '@ifhover/leaf-ui';
+import { Flex, InfiniteScroll, ScrollArea, Text } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
+
 export function InfiniteScrollRetry() {
   const root = useRef<HTMLDivElement>(null);
   const attempt = useRef(0);
-  const [items, setItems] = useState([0, 1, 2, 3, 4, 5]);
+  const [items, setItems] = useState([1, 2, 3, 4, 5, 6]);
+
   return (
-    <ScrollArea ref={root} height={180} aria-label="Retry example">
+    <ScrollArea ref={root} height={240} aria-label="Retryable list">
       <InfiniteScroll
         dataLength={items.length}
         hasMore={items.length < 12}
@@ -14,12 +16,16 @@ export function InfiniteScrollRetry() {
           await new Promise((resolve) => setTimeout(resolve, 300));
           if (signal.aborted) return;
           if (attempt.current++ === 0) throw new Error('Retry demo');
-          setItems((previous) => [...previous, ...[6, 7, 8, 9, 10, 11]]);
+          setItems((previous) => [...previous, 7, 8, 9, 10, 11, 12]);
         }}
       >
-        {items.map((item) => (
-          <p key={item}>Record {item + 1}</p>
-        ))}
+        <Flex direction="column" gap={16} role="list">
+          {items.map((item) => (
+            <Text key={item} role="listitem">
+              Record {item}
+            </Text>
+          ))}
+        </Flex>
       </InfiniteScroll>
     </ScrollArea>
   );

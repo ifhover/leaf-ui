@@ -46,7 +46,7 @@
       }
       &[aria-current] {
         color: var(--leaf-color-primary);
-        background: var(--leaf-color-primary-alpha-8);
+        background: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
       }
     }
     small {

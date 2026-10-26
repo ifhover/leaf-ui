@@ -7,15 +7,19 @@ import {
   Minimize2,
   PanelBottom,
   RotateCcw,
+  RotateCw,
   X,
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Lightbox, {
   type FullscreenRef,
+  ImageSlide,
+  isImageSlide,
   useController,
   useLightboxState,
+  useLoseFocus,
   useNavigationState,
   type ZoomRef,
 } from 'yet-another-react-lightbox';
@@ -28,6 +32,8 @@ import { ScopedPortal } from '../shared/scoped-portal';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 import type { ImagePreviewItem, ImagePreviewProps } from './image';
+
+const maxZoomPixelRatio = 20;
 
 export function ImageViewer(props: ImagePreviewProps) {
   return (
@@ -51,6 +57,8 @@ function Control({
   onClick: () => void;
   className?: string;
 }) {
+  const { focus } = useController();
+  const focusHandlers = useLoseFocus(focus, disabled);
   return (
     <button
       type="button"
@@ -60,6 +68,7 @@ function Control({
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}
+      {...focusHandlers}
     >
       {children}
     </button>
@@ -71,12 +80,14 @@ function ViewerChrome({
   downloadable,
   zoomControl,
   fullscreenControl,
+  onRotate,
 }: {
   items: readonly ImagePreviewItem[];
   thumbnails: boolean;
   downloadable: boolean;
   zoomControl: ZoomRef | null;
   fullscreenControl: FullscreenRef | null;
+  onRotate: (src: string, delta: number) => void;
 }) {
   const t = useText();
   const format = useFormattedText();
@@ -91,6 +102,9 @@ function ViewerChrome({
   const item = items[currentIndex];
   const hasThumbs = thumbnails && items.length > 1;
   const zoom = zoomControl?.zoom ?? 1;
+  // The engine measures zoom relative to the fitted image, not its original pixels.
+  const originalZoom =
+    Math.max(zoomControl?.maxZoom ?? maxZoomPixelRatio, maxZoomPixelRatio) / maxZoomPixelRatio;
   const fullscreen = fullscreenControl?.fullscreen ?? false;
   const downloadUrl = typeof item?.download === 'string' ? item.download : item?.src;
   useEffect(() => setShowThumbs(thumbnails), [thumbnails]);
@@ -109,6 +123,12 @@ function ViewerChrome({
     const difference = target - currentIndex;
     if (difference > 0) next({ count: difference });
     else if (difference < 0) prev({ count: -difference });
+  };
+  const scrollThumbnails = (distance: number) => {
+    const viewport = strip.current;
+    if (!viewport) return;
+    const left = viewport.scrollLeft + distance;
+    viewport.scrollTo({ left, behavior: motion ? 'smooth' : 'auto' });
   };
   const download = async () => {
     if (!item || downloading) return;
@@ -137,7 +157,6 @@ function ViewerChrome({
     >
       <header className="leaf-image-viewer__header">
         <div className="leaf-image-viewer__title">
-          <span>{item?.alt || t('image.imagePreview')}</span>
           <span className="leaf-image-viewer__count" aria-live="polite">
             {currentIndex + 1} / {items.length}
           </span>
@@ -196,7 +215,7 @@ function ViewerChrome({
         <div className="leaf-image-viewer__tools">
           <Control
             label={t('image.zoomOut')}
-            disabled={!zoomControl || zoomControl.disabled || zoom <= 1}
+            disabled={!zoomControl || zoomControl.disabled || zoom <= zoomControl.minZoom}
             onClick={() => zoomControl?.zoomOut()}
           >
             <ZoomOut size={18} />
@@ -205,9 +224,11 @@ function ViewerChrome({
             type="button"
             className="leaf-image-viewer__zoom-level"
             onClick={() => zoomControl?.changeZoom(1)}
-            title={t('image.resetZoom')}
+            title={t('image.fitToWindow')}
+            aria-label={t('image.fitToWindow')}
+            disabled={!zoomControl || zoomControl.disabled}
           >
-            {Math.round(zoom * 100)}%
+            {Math.round((zoom / originalZoom) * 100)}%
           </button>
           <Control
             label={t('image.zoomIn')}
@@ -217,11 +238,27 @@ function ViewerChrome({
             <ZoomIn size={18} />
           </Control>
           <Control
-            label={t('image.resetZoom')}
-            disabled={zoom <= 1}
-            onClick={() => zoomControl?.changeZoom(1)}
+            label={t('image.actualSize')}
+            disabled={!zoomControl || zoomControl.disabled}
+            onClick={() => zoomControl?.changeZoom(originalZoom)}
           >
-            <RotateCcw size={17} />
+            <span className="leaf-image-viewer__actual-size" aria-hidden="true">
+              1:1
+            </span>
+          </Control>
+          <Control
+            label={t('image.rotateCounterclockwise')}
+            disabled={!zoomControl || zoomControl.disabled}
+            onClick={() => item && onRotate(item.src, -90)}
+          >
+            <RotateCcw size={18} />
+          </Control>
+          <Control
+            label={t('image.rotateClockwise')}
+            disabled={!zoomControl || zoomControl.disabled}
+            onClick={() => item && onRotate(item.src, 90)}
+          >
+            <RotateCw size={18} />
           </Control>
           {hasThumbs && (
             <>
@@ -240,12 +277,7 @@ function ViewerChrome({
           <div className="leaf-image-viewer__gallery">
             <Control
               label={t('image.scrollThumbnailsBackward')}
-              onClick={() =>
-                strip.current?.scrollBy({
-                  left: -(strip.current.clientWidth * 0.7),
-                  behavior: motion ? 'smooth' : 'auto',
-                })
-              }
+              onClick={() => scrollThumbnails(-(strip.current?.clientWidth ?? 0) * 0.7)}
             >
               <ChevronLeft size={18} />
             </Control>
@@ -308,12 +340,7 @@ function ViewerChrome({
             </ScrollbarControl>
             <Control
               label={t('image.scrollThumbnailsForward')}
-              onClick={() =>
-                strip.current?.scrollBy({
-                  left: strip.current.clientWidth * 0.7,
-                  behavior: motion ? 'smooth' : 'auto',
-                })
-              }
+              onClick={() => scrollThumbnails((strip.current?.clientWidth ?? 0) * 0.7)}
             >
               <ChevronRight size={18} />
             </Control>
@@ -335,6 +362,10 @@ function Viewer({
   const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const [zoomControl, setZoomControl] = useState<ZoomRef | null>(null);
   const [fullscreenControl, setFullscreenControl] = useState<FullscreenRef | null>(null);
+  const [rotations, setRotations] = useState<Record<string, number>>({});
+  const [dimensions, setDimensions] = useState<Record<string, { width: number; height: number }>>(
+    {},
+  );
   const [slides, setSlides] = useState(() => items.map((item) => ({ ...item })));
   // A new array with the same images must not reset the carousel's navigation animation.
   if (
@@ -359,13 +390,58 @@ function Viewer({
   const format = useFormattedText();
   const motion = useMotionEnabled();
   const duration = root && motion ? motionDuration(root) : 0;
+  useEffect(() => {
+    if (!root || !open) return;
+    let container: HTMLElement | null = null;
+    const closeOnMock = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (
+        target.closest('.leaf-image-viewer__control, .leaf-image-viewer__thumbnail') ||
+        target.closest('.yarl__slide_image')
+      )
+        return;
+      if (target === container || target.closest('.yarl__slide, .yarl__slide_wrapper')) onClose();
+    };
+    const connect = () => {
+      const next = root.querySelector<HTMLElement>('.yarl__container');
+      if (next === container) return;
+      container?.removeEventListener('click', closeOnMock);
+      container = next;
+      container?.addEventListener('click', closeOnMock);
+    };
+    connect();
+    const observer = new MutationObserver(connect);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      container?.removeEventListener('click', closeOnMock);
+    };
+  }, [root, open, onClose]);
+  const rotate = useCallback((src: string, delta: number) => {
+    setRotations((previous) => ({ ...previous, [src]: (previous[src] ?? 0) + delta }));
+  }, []);
+  const previewSlides = useMemo(
+    () =>
+      slides.map((slide) => {
+        const size = dimensions[slide.src] ?? slide;
+        const turned = Math.abs((rotations[slide.src] ?? 0) % 180) === 90;
+        // Keep the zoom engine's pan bounds aligned with the rotated image.
+        return {
+          ...slide,
+          width: turned ? size.height : size.width,
+          height: turned ? size.width : size.height,
+        };
+      }),
+    [slides, dimensions, rotations],
+  );
   return (
     <div ref={setRoot} className="leaf-image-viewer">
       {root && (
         <Lightbox
           open={open && items.length > 0}
           close={onClose}
-          slides={slides}
+          slides={previewSlides}
           index={Math.max(0, Math.min(index, items.length - 1))}
           portal={{ root }}
           plugins={[Zoom, Fullscreen]}
@@ -375,13 +451,66 @@ function Viewer({
             fade: duration * 1.2,
             swipe: duration * 1.6,
             navigation: duration * 1.6,
-            zoom: duration,
+            zoom: duration * 0.85,
           }}
-          zoom={{ ref: setZoomControl, maxZoomPixelRatio: 3, scrollToZoom: true }}
+          zoom={{
+            ref: setZoomControl,
+            minZoom: 0.1,
+            maxZoomPixelRatio,
+            zoomInMultiplier: 1.25,
+            wheelZoomDistanceFactor: 160,
+            scrollToZoom: true,
+          }}
           fullscreen={{ ref: setFullscreenControl }}
           controller={{ closeOnBackdropClick: true }}
           toolbar={{ buttons: [] }}
           render={{
+            slide: ({ slide, rect, offset }) => {
+              if (!isImageSlide(slide)) return undefined;
+              const size = dimensions[slide.src];
+              const angle = rotations[slide.src] ?? 0;
+              const turned = Math.abs(angle % 180) === 90;
+              const width = size?.width ?? slide.width;
+              const height = size?.height ?? slide.height;
+              const scale =
+                width && height
+                  ? Math.min(
+                      1,
+                      rect.width / (turned ? height : width),
+                      rect.height / (turned ? width : height),
+                    )
+                  : 1;
+              return (
+                <ImageSlide
+                  slide={{ ...slide, width, height }}
+                  offset={offset}
+                  rect={rect}
+                  render={{
+                    iconLoading: () => <Loading />,
+                    iconError: () => <ImageOff size={32} />,
+                  }}
+                  style={{
+                    width: width ? width * scale : undefined,
+                    height: height ? height * scale : undefined,
+                    maxWidth: width ? 'none' : undefined,
+                    maxHeight: height ? 'none' : undefined,
+                    rotate: `${angle}deg`,
+                    transition: motion
+                      ? `rotate ${duration * 1.8}ms var(--leaf-motion-easing)`
+                      : 'none',
+                  }}
+                  onLoad={(image) =>
+                    setDimensions((previous) => {
+                      const next = { width: image.naturalWidth, height: image.naturalHeight };
+                      return previous[slide.src]?.width === next.width &&
+                        previous[slide.src]?.height === next.height
+                        ? previous
+                        : { ...previous, [slide.src]: next };
+                    })
+                  }
+                />
+              );
+            },
             buttonClose: () => null,
             buttonPrev: () => null,
             buttonNext: () => null,
@@ -396,6 +525,7 @@ function Viewer({
                 downloadable={downloadable}
                 zoomControl={zoomControl}
                 fullscreenControl={fullscreenControl}
+                onRotate={rotate}
               />
             ),
           }}
@@ -410,6 +540,7 @@ function Viewer({
             Close: t('image.closePreview'),
           }}
           on={{
+            exited: () => setRotations({}),
             view: ({ index: next }) => {
               if (next !== index) onIndexChange?.(next);
             },

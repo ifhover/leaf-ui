@@ -11,6 +11,31 @@
   max-width: 100%;
   overflow: hidden;
   border-radius: inherit;
+  // Track metrics mirror trackMetrics in scrollbar.tsx.
+  --leaf-scrollbar-inset: 4px;
+  --leaf-scrollbar-thickness: 8px;
+  --leaf-scrollbar-thumb-opacity: 0.45;
+  --leaf-scrollbar-thumb-active-opacity: 0.75;
+
+  &[data-persistent] {
+    --leaf-scrollbar-gutter: calc(
+      var(--leaf-scrollbar-thickness) + 2 * var(--leaf-scrollbar-inset)
+    );
+    &:not([data-orientation='horizontal']) {
+      padding-inline-end: var(--leaf-scrollbar-gutter);
+    }
+    &:not([data-orientation='vertical']) {
+      padding-block-end: var(--leaf-scrollbar-gutter);
+    }
+  }
+
+  // Dense lists use a narrower, quieter track so it stays clear of row content.
+  &--sm {
+    --leaf-scrollbar-inset: 2px;
+    --leaf-scrollbar-thickness: 6px;
+    --leaf-scrollbar-thumb-opacity: 0.3;
+    --leaf-scrollbar-thumb-active-opacity: 0.55;
+  }
 
   &--external {
     display: block;
@@ -51,12 +76,12 @@
     pointer-events: none;
     transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
     &--vertical {
-      inset-inline-end: 4px;
-      width: 8px;
+      inset-inline-end: var(--leaf-scrollbar-inset);
+      width: var(--leaf-scrollbar-thickness);
     }
     &--horizontal {
-      bottom: 4px;
-      height: 8px;
+      bottom: var(--leaf-scrollbar-inset);
+      height: var(--leaf-scrollbar-thickness);
     }
   }
   &__thumb {
@@ -70,7 +95,7 @@
     border-radius: 999px;
     background: var(--leaf-color-text-muted);
     background-clip: padding-box;
-    opacity: 0.45;
+    opacity: var(--leaf-scrollbar-thumb-opacity);
     pointer-events: none;
     transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
   }
@@ -81,7 +106,7 @@
   &__bar:hover &__thumb,
   &__bar:focus-within &__thumb,
   &[data-dragging] &__thumb {
-    opacity: 0.75;
+    opacity: var(--leaf-scrollbar-thumb-active-opacity);
   }
   &__control {
     position: absolute;
@@ -105,6 +130,7 @@
   &:hover > &__bar,
   &:focus-within > &__bar,
   &[data-scrollbar='always'] > &__bar,
+  &[data-persistent] > &__bar,
   &[data-scrolling] > &__bar,
   &[data-dragging] > &__bar {
     opacity: 1;

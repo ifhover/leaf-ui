@@ -62,6 +62,11 @@ export function AvatarControl({
         className,
       )}
       data-loaded={imageVisible && loadedSource === source ? '' : undefined}
+      data-text-fallback={
+        !imageVisible && (typeof children === 'string' || typeof children === 'number')
+          ? ''
+          : undefined
+      }
       style={{
         ...(typeof size === 'number'
           ? {

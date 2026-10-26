@@ -1,63 +1,78 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { AnchorBasic, AnchorAffix } from '../../src/examples/anchor/basic';
+import { AnchorBasic } from '../../src/examples/anchor/basic';
+import { AnchorAffix } from '../../src/examples/anchor/affix';
+
+export const leafDoc = { component: 'Anchor', primaryApi: 'AnchorProps' };
 
 # Anchor 锚点与固钉
 
-浏览长页目录并保持重要操作可见。
+使用 Anchor 导航到页面章节，使用 Affix 在滚动时固定操作。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<AnchorBasic />} fileName="basic.tsx">
+目录项的 `href` 对应章节元素的 `id`。通过 `container` 指定滚动区域；省略时使用窗口。
+
+<ComponentExample exampleId="basic" preview={<AnchorBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/anchor/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 自定义滚动区域
+同页跳转会更新 URL 和浏览历史，并将焦点移到目标章节。修饰键点击和外部链接保留原生导航行为。
 
-<ComponentExample title="自定义滚动区域" preview={<AnchorAffix />} fileName="basic.tsx">
+{/* leaf:section examples */}
 
-```tsx lineNumbers file="../../src/examples/anchor/basic.tsx"
+## 示例
+
+### 固定操作
+
+向下滚动示例内容，Affix 会将按钮固定在指定滚动区域的顶部。使用 `offsetTop` 设置顶部距离。
+
+<ComponentExample exampleId="affix" preview={<AnchorAffix />} fileName="affix.tsx">
+
+```tsx lineNumbers file="../../src/examples/anchor/affix.tsx"
 ```
 
 </ComponentExample>
 
-## AnchorItem
+{/* leaf:section api */}
+
+## API
+
+### Anchor API
+
+目录项、滚动定位及当前章节状态的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `key` | `string` | — | 必需。稳定且唯一的标识。 |
-| `title` | `ReactNode` | — | 必需。标题内容。 |
-| `href` | `string` | — | 必需。链接目标。 |
-| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | 子内容；嵌套数据类型表示子节点。 |
-
-## Anchor API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | 必需。展示的条目。 |
-| `container` | `() => HTMLElement \| Window` | — | 自定义挂载或滚动容器。 |
+| `items` | `readonly `[`AnchorItem`](#anchoritem)`[]` | 必填 | 展示的条目。 |
+| `container` | `() => HTMLElement \| Window` | — | 返回滚动容器；省略时使用 window。 |
 | `offset` | `number` | `12` | 滚动目标距离容器顶部的像素数。 |
 | `activeKey` | `string` | — | 受控的当前章节。 |
 | `onActiveChange` | `(key: string) => void` | — | 当前章节变化时调用。 |
 | `smooth` | `boolean` | `true` | 启用平滑滚动，减少动画设置下会自动关闭。 |
 
-## Affix API
+### AnchorItem
+
+通过 `items` 提供的目录项，定义目标锚点、标题和子项。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `key` | `string` | 必填 | 稳定且唯一的标识。 |
+| `title` | `ReactNode` | 必填 | 标题内容。 |
+| `href` | `string` | 必填 | 链接目标。 |
+| `children` | `readonly `[`AnchorItem`](#anchoritem)`[]` | — | 锚点项列表。 |
+
+### Affix API
+
+将内容固定在指定滚动容器中的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `offsetTop` | `number` | `0` | 固定位置距离容器顶部的像素数。 |
 | `offsetBottom` | `number` | — | 固定位置距离容器底部的像素数。 |
-| `container` | `() => HTMLElement \| Window` | — | 自定义挂载或滚动容器。 |
+| `container` | `() => HTMLElement \| Window` | — | 返回滚动容器；省略时使用 window。 |
 | `onAffixChange` | `(affixed: boolean) => void` | — | 固定状态变化时调用。 |
-
-## 类型与交互
-
-组装可复用配置时，可导入对应的属性和数据类型。
-
-```ts
-import type { AnchorItem, AnchorProps, AffixProps } from '@ifhover/leaf-ui';
-```
-
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

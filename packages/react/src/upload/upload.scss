@@ -1,9 +1,12 @@
 @use '../styles/mixins' as mixins;
 .leaf-upload {
+  @include mixins.accent-soft-feedback-family;
+  @include mixins.accent-halo-family;
   width: 100%;
   min-width: 0;
   color: var(--leaf-component-upload-color, var(--leaf-color-text));
-  font: var(--leaf-component-upload-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  font: var(--leaf-component-upload-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   &__input {
     position: absolute;
     width: 1px;
@@ -44,14 +47,10 @@
     transition:
       border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       background: var(--leaf-color-surface-raised);
-    }
-    &:active:not(:disabled) {
-      transform: scale(0.99);
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -62,9 +61,10 @@
     }
   }
   &[data-dragging] &__dropzone {
-    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    background: var(--leaf-color-primary-surface-7);
-    box-shadow: 0 0 0 4px var(--leaf-color-primary-alpha-10);
+    border-color: var(--leaf-accent-soft-border);
+    background: var(--leaf-accent-soft-background);
+    // Keep the shared halo role distinct from the solid keyboard focus outline.
+    box-shadow: 0 0 0 4px var(--leaf-accent-halo-color);
   }
   &__symbol {
     display: grid;
@@ -77,17 +77,12 @@
     box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__dropzone:hover:not(:disabled) &__symbol,
   &[data-dragging] &__symbol {
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    background: var(--leaf-color-primary-surface-8);
-    transform: translateY(-2px);
-  }
-  &__dropzone:active:not(:disabled) &__symbol {
-    transform: translateY(-1px) scale(0.98);
+    background: var(--leaf-accent-soft-background);
   }
   &__title {
     font-weight: var(--leaf-font-weight);
@@ -99,7 +94,7 @@
   &__errors {
     margin: 8px 0;
     padding-inline-start: 20px;
-    color: var(--leaf-color-danger);
+    color: var(--leaf-color-danger-ink);
     font-size: var(--leaf-font-size-sm);
   }
   > .leaf-file-list {

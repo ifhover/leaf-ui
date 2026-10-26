@@ -1,52 +1,114 @@
-import { Capabilities } from '../../src/examples/color-picker/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { ColorPickerBasic } from '../../src/examples/color-picker/basic';
 import { ColorPickerFormats } from '../../src/examples/color-picker/formats';
+import { ColorPickerAlpha } from '../../src/examples/color-picker/alpha';
 import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
+import { ColorPickerStates } from '../../src/examples/color-picker/states';
+import { ColorPickerGradient } from '../../src/examples/color-picker/gradient';
+import { ColorPickerControlled } from '../../src/examples/color-picker/controlled';
+
+export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps' };
 
 # ColorPicker 颜色选择器
 
-选择颜色，为内容和品牌增添个性。
+选择纯色或线性渐变色。
 
-## 选择颜色
+{/* leaf:section basic */}
 
-点击色块、颜色文字或整行空白区域即可打开选择浮层。
+## 基础用法
 
-<ComponentExample title="选择颜色" preview={<ColorPickerBasic />} fileName="basic.tsx" width={360}>
+点击色块打开面板并选择颜色。
+
+<ComponentExample exampleId="basic" preview={<ColorPickerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/color-picker/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 颜色格式与透明度
+{/* leaf:section examples */}
 
-<ComponentExample title="颜色格式与透明度" preview={<ColorPickerFormats />} fileName="formats.tsx">
+## 示例
+
+### 颜色格式
+
+使用 `showText` 显示颜色文字，`defaultFormat` 设置初始格式。切换格式不改变当前值，下一次调色按新格式输出。
+
+<ComponentExample exampleId="formats" preview={<ColorPickerFormats />} fileName="formats.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/color-picker/formats.tsx"
 ```
 
 </ComponentExample>
 
-## 预设与状态
+### 透明度
 
-<ComponentExample title="预设与状态" preview={<ColorPickerPresets />} fileName="presets.tsx">
+默认支持透明度，此时 HEX 可能包含 8 位。设置 `disableAlpha` 隐藏透明度控制并输出不透明颜色。
+
+<ComponentExample exampleId="alpha" preview={<ColorPickerAlpha />} fileName="alpha.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/color-picker/alpha.tsx"
+```
+
+</ComponentExample>
+
+### 预设颜色
+
+通过 `presets` 提供分组颜色，方便选择常用色。
+
+<ComponentExample exampleId="presets" preview={<ColorPickerPresets />} fileName="presets.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/color-picker/presets.tsx"
 ```
 
 </ComponentExample>
 
-## 渐变色
+### 控件状态
 
-<ComponentExample title="渐变色" preview={<Capabilities />} fileName="capabilities.tsx">
+`disabled` 禁用交互，`readOnly` 锁定颜色值，`status` 显示校验外观但不执行校验。
 
-```tsx lineNumbers file="../../src/examples/color-picker/capabilities.tsx"
+<ComponentExample exampleId="states" preview={<ColorPickerStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/color-picker/states.tsx"
 ```
 
 </ComponentExample>
 
-## ColorPicker API
+### 渐变色
+
+设置 `mode="gradient"` 编辑角度与色标，颜色值使用 `linear-gradient(...)` 字符串。
+
+<ComponentExample exampleId="gradient" preview={<ColorPickerGradient />} fileName="gradient.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/color-picker/gradient.tsx"
+```
+
+</ComponentExample>
+
+需要处理结构化色标时，使用 `gradientString` 将 [`ColorGradient`](#colorgradient) 转为字符串，`parseGradient` 将支持的线性渐变解析为结构化数据；无法解析时返回 `null`。
+
+### 受控值与清除
+
+<a id="进阶用法"></a>
+
+通过 `value` 和 `onChange` 管理颜色，`allowClear` 允许清除并返回空字符串。拖动时 `onChange` 实时触发；只需处理最终值时，使用 `onChangeComplete`。
+
+<ComponentExample exampleId="controlled" preview={<ColorPickerControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/color-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+颜色文字按 Enter 或移走焦点提交，无效输入会提示错误。使用 `name` 参与原生表单提交；非受控字段支持表单重置，受控字段需同步重置应用状态。
+
+{/* leaf:section api */}
+
+## API
+
+### ColorPicker API
+
+颜色值、输出格式、预设颜色与面板交互的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -55,10 +117,10 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `value` | `string` | `'#20834a'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
-| `defaultValue` | `string` | `'#20834a'` | 受控颜色 / 初始颜色，可使用 HEX、RGB、HSL 或 CSS 命名颜色 |
-| `onChange` | `(color: string) => void` | — | 实时变化 / 一次调色操作结束；清除时返回空字符串 |
-| `onChangeComplete` | `(color: string) => void` | — | 实时变化 / 一次调色操作结束；清除时返回空字符串 |
+| `value` | `string` | — | 受控颜色值；支持 HEX、RGB、HSL、CSS 命名颜色，渐变模式使用 linear-gradient 字符串。 |
+| `defaultValue` | `string` | `'#1e964f'` | 非受控模式的初始颜色值；表单重置时恢复此值。 |
+| `onChange` | `(color: string) => void` | — | 调色过程中实时触发；清除时返回空字符串。 |
+| `onChangeComplete` | `(color: string) => void` | — | 一次调色操作结束时触发；清除时返回空字符串。 |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 颜色文字格式；渐变模式应用于每个色标。 |
 | `defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 初始颜色文字格式。 |
 | `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | 颜色文字格式变化时调用。 |
@@ -80,38 +142,30 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 | `name` | `string` | — | 原生 FormData 中的字段名。 |
 | `form` | `string` | — | 关联的原生表单 ID。 |
 
-## ColorPreset
+### ColorPreset
+
+预设颜色分组的标题与颜色值。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 必需。分组标题 |
-| `colors` | `readonly string[]` | — | 必需。该组的颜色值 |
+| `label` | `ReactNode` | 必填 | 分组标题 |
+| `colors` | `readonly string[]` | 必填 | 该组的颜色值 |
 
-## 类型
+### ColorGradient
 
-可导入以下类型定义属性、组装数据或处理回调。
-
-```ts
-import type { ColorPickerProps, ColorPreset } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-颜色值以字符串传递，开启透明度时 HEX 可能为 8 位。格式切换不会修改已提交值，下一次调色按所选格式输出。拖动时触发 `onChange`，释放指针、键盘调整、输入提交或选择预设时触发 `onChangeComplete`。
-
-调色区域支持方向键，按住 Shift 加大调整幅度；左右调整饱和度，上下调整亮度。颜色输入通过 Enter 或移走焦点提交，无效输入保留错误提示。支持 FormData、必填校验与非受控表单 reset；受控字段需同步重置自己的值。
-
-## ColorGradient
+描述渐变方向及色标的颜色值。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `angle` | `number` | — | 必需。渐变角度，单位为度。 |
-| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | — | 必需。渐变中的色标。 |
+| `angle` | `number` | 必填 | 渐变角度，单位为度。 |
+| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | 必填 | 渐变中的色标。 |
 
-## ColorGradientStop
+### ColorGradientStop
+
+渐变中单个颜色及其位置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | — | 稳定且唯一的标识。 |
-| `color` | `string` | — | 必需。颜色或语义色。 |
-| `offset` | `number` | — | 必需。偏移量；色标为 0–100 的百分比。 |
+| `color` | `string` | 必填 | 颜色或语义色。 |
+| `offset` | `number` | 必填 | 偏移量；色标为 0–100 的百分比。 |

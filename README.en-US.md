@@ -5,12 +5,12 @@
 
   <h1>Leaf UI</h1>
 
-  <p><strong>Lightweight · Natural · Customizable</strong></p>
-  <p>A React UI library with a green starting point and room for your own identity.</p>
+  <p><strong>Quiet · Consistent · Readable</strong></p>
+  <p>A React UI library for tools and data-heavy interfaces that keeps your content in focus.</p>
 
   <p>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm version" /></a>
-    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=20834a" alt="npm monthly downloads" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/dm/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm monthly downloads" /></a>
     <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18%20%7C%2019-149eca?style=flat-square&amp;logo=react&amp;logoColor=white" alt="React 18 and 19" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=flat-square&amp;logo=typescript&amp;logoColor=white" alt="TypeScript support" /></a>
     <a href="https://github.com/ifhover/leaf-ui/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/ifhover/leaf-ui/quality.yml?branch=main&amp;style=flat-square&amp;logo=githubactions&amp;logoColor=white&amp;label=CI" alt="Component quality check status" /></a>
@@ -28,8 +28,8 @@
 
 ## ✨ Features
 
-- 🍃 **A natural starting point** — A green default theme and clear interaction states, with components for inputs, forms, layout, navigation, and feedback.
-- 🎨 **Make it yours** — Customize colors, radii, typography, control heights, and light or dark appearance through ConfigProvider, scoped themes, and CSS variables.
+- 🍃 **Quiet by default** — Neutral surfaces, fine borders, and light shadows build the hierarchy, and feedback changes only color; with components for inputs, forms, layout, navigation, and feedback.
+- 🎨 **Consistent theming** — Apply a brand color, light or dark appearance, and compact density through ConfigProvider; related states derive automatically, with scoped themes and CSS variables.
 - 🛡️ **Built with TypeScript** — Includes type declarations and preserves native HTML attributes, DOM refs, and form semantics.
 - 🌍 **Multiple languages** — Chinese and English documentation, built-in locales, custom translations, nested locale settings, and RTL direction.
 - ⌨️ **Thoughtful interactions** — Keyboard navigation, focus management, and support for reduced motion preferences.
@@ -93,7 +93,7 @@ import App from './App';
 
 export default function Root() {
   return (
-    <ConfigProvider locale="en-US" theme={{ primaryColor: '#20834a', borderRadius: 8 }}>
+    <ConfigProvider locale="en-US" theme={{ primaryColor: '#1e964f', borderRadius: 8 }}>
       <App />
     </ConfigProvider>
   );

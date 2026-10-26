@@ -5,10 +5,12 @@ import { CopyButton } from './copy-button';
 import { useDocsLocale } from './i18n';
 import { Icon } from './icon';
 
-const COLLAPSED_HEIGHT = 172;
+const COLLAPSED_HEIGHT = 320;
 
 interface ComponentExampleProps {
-  title: string;
+  title?: string;
+  /** Stable identity for structured docs; the remark plugin supplies the heading title. */
+  exampleId?: string;
   preview: ReactNode;
   children: ReactNode;
   fileName?: string;
@@ -64,7 +66,9 @@ export function ComponentExample({
   return (
     <section
       className="leaf-component-example"
-      aria-label={t(`${title}示例`, `${title} example`)}
+      aria-label={
+        title ? t(`${title}示例`, `${title} example`) : t('组件示例', 'Component example')
+      }
       data-expanded={expanded}
       data-collapsible={collapsible}
       data-wrap-code={wrapCode}
@@ -83,7 +87,6 @@ export function ComponentExample({
           <div>
             <Button
               size="sm"
-              variant="soft"
               className="leaf-component-example__wrap"
               aria-label={t('切换代码换行', 'Toggle line wrapping')}
               title={t('切换代码换行', 'Toggle line wrapping')}

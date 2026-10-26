@@ -10,7 +10,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { FeedbackIcon, type FeedbackType } from '../alert/alert';
+import { FeedbackIcon } from '../alert/alert';
 import {
   ComponentDefaultsContext,
   type LeafComponentDefaults,
@@ -18,6 +18,7 @@ import {
   useComponentProps,
 } from '../config-provider/component-defaults';
 import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
+import { type FeedbackTypeInput, normalizeFeedbackType } from '../shared/feedback';
 import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
@@ -26,7 +27,7 @@ export interface NotificationOptions {
   key?: string;
   title: ReactNode;
   description?: ReactNode;
-  type?: FeedbackType;
+  type?: FeedbackTypeInput;
   icon?: ReactNode;
   actions?: ReactNode;
   duration?: number;
@@ -39,6 +40,8 @@ export interface NotificationApi {
   success: (options: Omit<NotificationOptions, 'type'>) => string;
   info: (options: Omit<NotificationOptions, 'type'>) => string;
   warning: (options: Omit<NotificationOptions, 'type'>) => string;
+  danger: (options: Omit<NotificationOptions, 'type'>) => string;
+  /** @deprecated Use danger. */
   error: (options: Omit<NotificationOptions, 'type'>) => string;
   close: (key?: string) => void;
 }
@@ -128,7 +131,8 @@ function createStore(maxCount: number) {
         success: (options) => open({ ...options, type: 'success' }),
         info: (options) => open({ ...options, type: 'info' }),
         warning: (options) => open({ ...options, type: 'warning' }),
-        error: (options) => open({ ...options, type: 'error' }),
+        danger: (options) => open({ ...options, type: 'danger' }),
+        error: (options) => open({ ...options, type: 'danger' }),
       };
     },
   };
@@ -228,7 +232,7 @@ function NotificationItem({
   const ref = useRef<HTMLDivElement>(null);
   const icon = useRef<HTMLSpanElement>(null);
   const present = usePresence(entry.open, ref);
-  const type = entry.type ?? 'info';
+  const type = normalizeFeedbackType(entry.type ?? 'info');
   useContentTransition(icon, `${entry.open}:${type}`);
   const [hover, setHover] = useState(false);
   const [focus, setFocus] = useState(false);
@@ -271,7 +275,7 @@ function NotificationItem({
           {/* biome-ignore lint/a11y/noStaticElementInteractions: Pause auto-dismiss while reading or interacting with the notification. */}
           <div
             className={`leaf-notification leaf-notification--${type}`}
-            role={type === 'error' || type === 'warning' ? 'alert' : 'status'}
+            role={type === 'danger' || type === 'warning' ? 'alert' : 'status'}
             onPointerEnter={() => setHover(true)}
             onPointerLeave={() => setHover(false)}
             onFocus={() => setFocus(true)}

@@ -20,36 +20,14 @@ export function MenuLayouts() {
   const [collapsed, setCollapsed] = useState(true);
   return (
     <Tabs
-      aria-label="菜单排列方式"
+      aria-label="垂直菜单状态"
       items={[
         {
-          key: 'vertical',
-          label: '垂直',
+          key: 'expanded',
+          label: '展开',
           children: (
-            <Menu
-              mode="vertical"
-              items={items}
-              defaultSelectedKey="components"
-              defaultOpenKeys={['resources']}
-            />
+            <Menu items={items} defaultSelectedKey="components" defaultOpenKeys={['resources']} />
           ),
-        },
-        {
-          key: 'inline',
-          label: '内嵌',
-          children: (
-            <Menu
-              mode="inline"
-              items={items}
-              defaultSelectedKey="components"
-              defaultOpenKeys={['resources']}
-            />
-          ),
-        },
-        {
-          key: 'horizontal',
-          label: '横向',
-          children: <Menu mode="horizontal" items={items} defaultSelectedKey="components" />,
         },
         {
           key: 'collapsed',
@@ -57,7 +35,6 @@ export function MenuLayouts() {
           children: (
             <Flex direction="column" gap="md" align="start">
               <Button
-                variant="soft"
                 size="sm"
                 aria-expanded={!collapsed}
                 onClick={() => setCollapsed((value) => !value)}

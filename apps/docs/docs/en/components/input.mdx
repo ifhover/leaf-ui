@@ -1,75 +1,148 @@
-import { ExtensionDemo } from '../../../src/examples/en/input/extensions';
-import { InputClear } from '../../../src/examples/en/input/clear';
 import { ComponentExample } from '../../../src/components/component-example';
-import { InputBasic, InputStates, InputControlled, ControlSizes } from '../../../src/components/en-form-examples';
+import { InputBasic } from '../../../src/examples/en/input/basic';
+import { InputAffixes } from '../../../src/examples/en/input/affixes';
 import { InputPassword } from '../../../src/examples/en/input/password';
+import { InputClear } from '../../../src/examples/en/input/clear';
+import { InputCount } from '../../../src/examples/en/input/count';
+import { InputSizes } from '../../../src/examples/en/input/sizes';
+import { InputStates } from '../../../src/examples/en/input/states';
+import { InputControlled } from '../../../src/examples/en/input/controlled';
+import { InputSearchDemo } from '../../../src/examples/en/input/search';
+import { InputGroupDemo } from '../../../src/examples/en/input/group';
+
+export const leafDoc = { component: 'Input', primaryApi: 'InputProps' };
 
 # Input
 
-Enter a single line of text.
+Enter single-line text, such as a name, email address or search query.
 
-## Examples
+{/* leaf:section basic */}
 
-Use controlled value / onChange or uncontrolled defaultValue. Prefix and suffix are decorative content. Standard name, required, type, form and aria-* properties are forwarded to the input; className and style apply to the container.
+## Basic usage
 
-<ComponentExample title="Basic input" preview={<InputBasic />} fileName="basic.tsx" width={360}>
+Use `FormField` to provide an accessible label. Placeholder text is not a replacement for a label.
+
+<ComponentExample exampleId="basic" preview={<InputBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input/basic.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Interactive example" preview={<InputStates />} fileName="states.tsx" width={360}>
+{/* leaf:section examples */}
 
-```tsx lineNumbers file="../../../src/examples/en/input/states.tsx"
+## Examples
+
+### Prefixes and suffixes
+
+Add an icon or text with `prefix` and `suffix`. These are decorative; place interactive controls outside the input.
+
+<ComponentExample exampleId="affixes" preview={<InputAffixes />} fileName="affixes.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/affixes.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Interactive example" preview={<InputControlled />} fileName="controlled.tsx" width={360}>
+### Password input
 
-```tsx lineNumbers file="../../../src/examples/en/input/controlled.tsx"
-```
+Set `type="password"` to mask the input. Control visibility with `visible` and `onVisibleChange`, customize the toggle with `visibilityIcon`, or hide it with `visibilityToggle={false}`.
 
-</ComponentExample>
-
-<ComponentExample title="Control sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/guide/control-sizes.tsx"
-```
-
-</ComponentExample>
-
-## Password input
-
-Use type="password" to mask input and show a visibility toggle. Customize the icon or hide the toggle when needed.
-
-<ComponentExample title="Password input" preview={<InputPassword />} fileName="password.tsx" width={360}>
+<ComponentExample exampleId="password" preview={<InputPassword />} fileName="password.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input/password.tsx"
 ```
 
 </ComponentExample>
 
-## Clear and character count
+### Clear input
 
-<ComponentExample title="Clear and character count" preview={<InputClear />} fileName="clear.tsx" width={360}>
+Set `allowClear` to show a clear button. Clearing fires `onChange` with an empty input value.
+
+<ComponentExample exampleId="clear" preview={<InputClear />} fileName="clear.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input/clear.tsx"
 ```
 
 </ComponentExample>
 
-## Extended features
+### Character count
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+Use `showCount` for a built-in or custom count, and `maxLength` to limit input length.
 
-```tsx lineNumbers file="../../../src/examples/en/input/extensions.tsx"
+<ComponentExample exampleId="count" preview={<InputCount />} fileName="count.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/count.tsx"
 ```
 
 </ComponentExample>
 
-## Input API
+### Sizes
+
+Choose from `sm`, `md` and `lg`.
+
+<ComponentExample exampleId="sizes" preview={<InputSizes />} fileName="sizes.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/sizes.tsx"
+```
+
+</ComponentExample>
+
+### States
+
+`disabled` prevents interaction; `readOnly` keeps content readable without allowing edits. `status` changes appearance without performing validation. Use `FormField` for error messages.
+
+<ComponentExample exampleId="states" preview={<InputStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/states.tsx"
+```
+
+</ComponentExample>
+
+### Controlled input and Enter
+
+<a id="advanced-usage"></a>
+
+Manage content with `value` and `onChange`. `onPressEnter` runs on Enter, except during IME composition or when the keyboard event has been prevented.
+
+<ComponentExample exampleId="controlled" preview={<InputControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/controlled.tsx"
+```
+
+</ComponentExample>
+
+### Search input
+
+`InputSearch` calls `onSearch` with the current value when its search button is clicked or Enter is pressed.
+
+<ComponentExample exampleId="search" preview={<InputSearchDemo />} fileName="search.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/search.tsx"
+```
+
+</ComponentExample>
+
+### Input groups
+
+Use `InputGroup` to join adjacent controls. Give each input in the group its own accessible name.
+
+<ComponentExample exampleId="group" preview={<InputGroupDemo />} fileName="group.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input/group.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Input API
+
+#### Forms
+
+Set `name` to include the value in FormData. Uncontrolled fields restore their initial value on form reset; reset controlled values in application state. See [Form](/en/components/form) for labels, help and errors.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -90,29 +163,13 @@ Use type="password" to mask input and show a visibility toggle. Customize the ic
 | `onClear` | `() => void` | — | After clearing; onChange also fires |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Show or customize the character count |
 
-## Types
+### InputSearchProps API
 
-Import InputProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { InputProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## Extension types
-
-```ts
-import type { InputSearchProps, InputGroupProps } from '@ifhover/leaf-ui';
-```
-
-## InputSearchProps API
+Props for the submission behavior and actions of a search input.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size. |
 | `status` | `'error' \| 'warning'` | — | Display state |
 | `prefix` | `ReactNode` | — | Content before the input |
 | `suffix` | `ReactNode` | — | Content after the input |
@@ -129,7 +186,9 @@ import type { InputSearchProps, InputGroupProps } from '@ifhover/leaf-ui';
 | `loading` | `boolean` | `false` | Loading state |
 | `enterButton` | `ReactNode` | — | Search button label; omitted shows an icon |
 
-## InputGroupProps API
+### InputGroupProps API
+
+Props for combining related input controls.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

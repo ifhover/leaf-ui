@@ -15,13 +15,16 @@ Wrap your application in ConfigProvider. This example uses a purple primary colo
 <ComponentExample title="Colors and corners" preview={<ThemeBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/theming/basic.tsx"
+
 ```
 
 </ComponentExample>
 
 Replace Button with your application content. Buttons, fields, selectors and popups share the theme. Hover, pressed and focus colors derive automatically.
 
-Text on primary backgrounds prefers white and switches to black when white has a contrast ratio below `2.8:1`. For example, blue `#1d9bf0` and orange `#ff6900` use white text, while bright yellow `#ffee00` uses black text. Set `theme.tokens.onPrimaryColor` to choose an explicit text color.
+`primaryColor` is a base input. The library keeps the supplied color and generates seven semantic shades: `light-3`, `light-7`, `light-9`, `dark-1`, `dark-3`, `dark-7` and `dark-9`. Light and dark modes share the bases and semantic shades, switching only neutral roles and the `soft`, `border` and `ink` mappings; neutral keeps its `100`–`900` scale.
+
+Text on solid fills defaults to white. Set `theme.tokens.onPrimaryColor` to `#000000` for black text. Change colors through ConfigProvider JS configuration; DOM style changes do not trigger JS palette recalculation.
 
 `borderRadius` sets the base radius. Cards, dialogs and other surfaces derive radii for their own level, so you do not need to configure each component. Numbers represent pixels; CSS lengths such as `'0.5rem'` also work.
 
@@ -29,17 +32,18 @@ Text on primary backgrounds prefers white and switches to black when white has a
 
 These fields all belong inside `theme`. Set only what you want to change.
 
-| Setting | Example | Purpose |
-| --- | --- | --- |
-| `primaryColor` | `'#7654c6'` | Set the primary color and derive related interaction colors. |
-| `borderRadius` | `8` | Set the base radius; use `0` for square corners. |
-| `appearance` | `'light'` / `'dark'` | Choose light or dark appearance. |
-| `controlHeight` | `40` | Set the base single-line control height; small and large sizes follow. |
-| `fontSize` | `14` | Set the base component font size. |
-| `fontFamily` | `'Inter, sans-serif'` | Set the font family; your application loads the font files. |
-| `motion` | `false` | Disable regional animations while keeping interactions available. |
+| Setting         | Example               | Purpose                                                                                                                      |
+| --------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `primaryColor`  | `'#7654c6'`           | Set the primary base and generate seven semantic shades; the color is not rewritten.                                          |
+| `borderRadius`  | `8`                   | Set the base radius; use `0` for square corners.                                                                             |
+| `appearance`    | `'light'` / `'dark'`  | Choose light or dark appearance.                                                                                             |
+| `controlHeight` | `40`                  | Set the base single-line control height; small and large sizes follow.                                                       |
+| `fontSize`      | `14`                  | Set the base component font size.                                                                                            |
+| `lineHeight`    | `20`                  | Set the body line height; numbers are pixels, `1`–`4` keep the legacy multiplier meaning, and CSS lengths are also accepted. |
+| `fontFamily`    | `'Inter, sans-serif'` | Set the font family; your application loads the font files.                                                                  |
+| `motion`        | `false`               | Disable regional animations while keeping interactions available.                                                            |
 
-Unspecified fields inherit the outer configuration. Defaults are light appearance, a 10px base radius, 36px base control height and 14px font size.
+Unspecified fields inherit the outer configuration. Defaults are light appearance, an 8px base radius, 34px base control height, 14px font size and a 20px body line height.
 
 See [LeafTheme](/en/components/config-provider#leaftheme) for all theme fields. For individual text colors, backgrounds or sizes, use [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens).
 
@@ -47,22 +51,23 @@ See [LeafTheme](/en/components/config-provider#leaftheme) for all theme fields. 
 
 The following example includes complete definitions for default, illustration, Windows XP, Material and skeuomorphic styles. Copy the source into your project and pass the resulting `LeafTheme` object to `ConfigProvider`. These definitions live in the example source and can be edited directly.
 
-| Style | Appearance |
-| --- | --- |
-| `default` | The unmodified library defaults, with no additional theme tokens. |
-| `illustration` | Contrasting borders, vivid colors and offset hard shadows. |
-| `windows-xp` | Small corners, Tahoma typography, beveled highlights and a gradient card header. |
-| `material` | MUI-inspired shapes, 4px corners and layered elevation. |
-| `skeuomorphic` | Soft surfaces, two-sided relief shadows and an inset pressed effect. |
+| Style          | Appearance                                                                       |
+| -------------- | -------------------------------------------------------------------------------- |
+| `default`      | The unmodified library defaults, with no additional theme tokens.                |
+| `illustration` | Contrasting borders, vivid colors and offset hard shadows.                       |
+| `windows-xp`   | Small corners, Tahoma typography, beveled highlights and a gradient card header. |
+| `material`     | MUI-inspired shapes, 4px corners and layered elevation.                          |
+| `skeuomorphic` | Soft surfaces, two-sided relief shadows and an inset pressed effect.             |
 
 <ComponentExample title="Switch theme styles" preview={<ThemePresets />} fileName="presets.tsx" width={640}>
 
 ```tsx lineNumbers file="../../../src/examples/en/theming/presets.tsx"
+
 ```
 
 </ComponentExample>
 
-The default style adds no tokens. Omit `density` for its default value. Automatic hover, active, focus and primary label colors come from the library, so these values do not need to be copied into your configuration. The examples only customize shadow feedback where the style calls for it.
+The default style adds no tokens. Omit `density` for its default value. Active, focus and primary label colors come from the library, while buttons keep their resting appearance on hover, so these values do not need to be copied into your configuration. The examples only customize shadow feedback where the style calls for it.
 
 Custom styles only define their differences: radius, border width, a global `tokens.borderColor`, shadows, and tinted surfaces using `color-mix()`. A single border color applies to all component frames, including solid buttons, switches, cards, tables and popups. Individual component overrides take precedence; error and selected states keep their meaning. Components that are borderless by design stay borderless.
 
@@ -82,9 +87,9 @@ Set `appearance: 'dark'`. Use `'light'` to switch back:
 </ConfigProvider>
 ```
 
-Component text, backgrounds and borders change together. When `primaryColor` is omitted, the appearance supplies its default primary color. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed.
+Component text, backgrounds and borders change together. When `primaryColor` is omitted, light and dark modes share the same default semantic bases. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed. Both appearances share the five semantic bands and the neutral scale; only neutral roles and mapped `soft`, `border` and `ink` steps switch.
 
-Primary text, selected indicators and focus colors derive separately. In dark mode, text targets `4.5:1` contrast against content and muted surfaces, while selected indicators target `3:1`. Only insufficient colors gain lightness; solid button fills stay unchanged. Blue and orange retain their original fills and white labels. Explicit foreground, focus and interaction tokens still take precedence. CSS color expressions participate after browser resolution without modifying the supplied theme object or color picker value.
+Primary and status labels use mapped readable ink while solid fills retain their original colors. Input and Select use a primary focus border; other fields retain neutral focus. Explicit foreground, focus and interaction settings take precedence. CSS color expressions are preserved without DOM-based numeric resolution.
 
 ConfigProvider styles the components in its region. It does not add a background to the page's `body`. To update your own page backgrounds and text, use the [CSS variables](#use-the-theme-in-application-css) below.
 
@@ -95,6 +100,7 @@ Theme settings are ordinary React props, so state can update them. Toggle the sw
 <ComponentExample title="Switch dark mode" preview={<ThemeAppearance />} fileName="appearance.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/theming/appearance.tsx"
+
 ```
 
 </ComponentExample>
@@ -126,6 +132,7 @@ Nest another ConfigProvider to theme a specific area. The inner provider overrid
 <ComponentExample title="Local theme" preview={<ThemeScoped />} fileName="scoped.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/theming/scoped.tsx"
+
 ```
 
 </ComponentExample>
@@ -142,7 +149,7 @@ For one control, prefer its `size="sm"` or `size="lg"` prop. To make an entire r
 </ConfigProvider>
 ```
 
-`density` is a sibling of `theme`. It defaults to `'comfortable'`. The `'compact'` preset tightens control, form and popup spacing and changes the base control height from 36px to 30px without reducing text size.
+`density` is a sibling of `theme`. It defaults to `'comfortable'`. The `'compact'` preset tightens control, form and popup spacing and changes the base control height from 34px to 30px without reducing text size.
 
 Set `theme.controlHeight` when you need an explicit height; it overrides the density preset. For example, `controlHeight: 40` produces 34px / 40px / 46px controls. See [ConfigProvider](/en/components/config-provider#base-height) for a size comparison.
 
@@ -161,7 +168,7 @@ const theme = {
   primaryColor: '#7654c6',
   borderRadius: 8,
   tokens: {
-    successColor: '#20834a',
+    successColor: '#1e964f',
     borderRadiusLg: 18,
     motionDuration: 160,
   },
@@ -170,19 +177,21 @@ const theme = {
 
 Pass this object to `<ConfigProvider theme={theme}>`. Here, `borderRadiusLg` overrides the derived large radius, and numeric `motionDuration` values are milliseconds. See [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens) for the complete reference.
 
-For a very light primary color, use `tokens.onPrimaryColor` to set the text color on solid primary buttons. Check readability in normal, hovered and disabled states after changing your palette. `motion: false` disables regional animations; system reduced-motion preferences always take precedence.
+For a very light primary color, use `tokens.onPrimaryColor` to set the text color on solid primary buttons. Check readability in normal, pressed and disabled states after changing your palette. `motion: false` disables regional animations; system reduced-motion preferences always take precedence.
 
 ### Style one component type
 
 `theme.components` assigns styles by component name. For example, use 4px button corners and change card padding:
 
 ```tsx
-<ConfigProvider theme={{
-  components: {
-    Button: { borderRadius: 4 },
-    Card: { padding: 24 },
-  },
-}}>
+<ConfigProvider
+  theme={{
+    components: {
+      Button: { borderRadius: 4 },
+      Card: { padding: 24 },
+    },
+  }}
+>
   <App />
 </ConfigProvider>
 ```
@@ -198,23 +207,25 @@ See [LeafComponentTokens](/en/api/theme-tokens#leafcomponenttokens) for style fi
 Components supporting state overrides also accept `hover`, `active`, `focus` and `disabled` colors, backgrounds, border colors and shadows:
 
 ```tsx
-<ConfigProvider theme={{
-  tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
-  components: {
-    Button: {
-      borderColor: '#252525',
-      hover: { shadow: '4px 4px 0 #252525' },
-      active: { shadow: '1px 1px 0 #252525' },
-      disabled: { shadow: 'none' },
+<ConfigProvider
+  theme={{
+    tokens: { borderWidth: 2, controlShadow: '3px 3px 0 #252525' },
+    components: {
+      Button: {
+        borderColor: '#252525',
+        hover: { shadow: '4px 4px 0 #252525' },
+        active: { shadow: '1px 1px 0 #252525' },
+        disabled: { shadow: 'none' },
+      },
+      Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
     },
-    Input: { focus: { borderColor: '#7654c6', shadow: '0 0 0 3px #7654c630' } },
-  },
-}}>
+  }}
+>
   <App />
 </ConfigProvider>
 ```
 
-State settings change appearance without changing events, dimensions, disabled or read-only behavior, or removing keyboard focus outlines. Nested providers merge each state's fields; `undefined` inherits. See [theme tokens](/en/api/theme-tokens#leafcomponenttokens) for fields and support scope.
+State settings change appearance without changing events, dimensions, disabled or read-only behavior, or removing visible keyboard focus feedback. Nested providers merge each state's fields; `undefined` inherits. See [theme tokens](/en/api/theme-tokens#leafcomponenttokens) for fields and support scope.
 
 ### Use the theme in application CSS
 
@@ -236,20 +247,27 @@ ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own cont
 }
 ```
 
-| Common variable | Purpose |
-| --- | --- |
-| `--leaf-color-primary` | Current primary color. |
-| `--leaf-color-primary-ink` | Primary text, lifted for contrast on dark surfaces. |
-| `--leaf-color-primary-indicator` | Primary selected, progress and outline indicators. |
-| `--leaf-color-primary-focus` | Default primary focus outline. |
-| `--leaf-color-primary-fill-border` | Subtle solid primary boundary, normally transparent. |
-| `--leaf-color-on-primary` | Text on a solid primary background. |
-| `--leaf-color-text` / `--leaf-color-text-muted` | Primary and secondary text. |
-| `--leaf-color-surface` / `--leaf-color-surface-muted` | Content and supporting backgrounds. |
-| `--leaf-color-border` | Border color. |
-| `--leaf-border-width` | Outer border width. |
-| `--leaf-control-shadow` / `--leaf-surface-shadow` | Control and content surface shadows. |
-| `--leaf-radius` | Base radius. |
+| Common variable                                       | Purpose                                                                                                                |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `--leaf-color-primary`                                | Current primary color.                                                                                                 |
+| `--leaf-color-<family>-{light-3,light-7,light-9,dark-1,dark-3,dark-7,dark-9}` | Seven shared semantic shades; `<family>` is primary, success, danger, warning or info. |
+| `--leaf-color-neutral-{100..900}`                     | The nine-step neutral scale, shared by light and dark modes.                     |
+| `--leaf-color-<family>-soft` / `-soft-hover` / `-soft-active` | Soft semantic surfaces and feedback fills.                                                |
+| `--leaf-color-<family>-border`                        | Scale-mapped semantic borders.                                                             |
+| `--leaf-color-<family>-ink`                           | Readable semantic text on ordinary surfaces.                                               |
+| `--leaf-color-primary-indicator`                      | Primary selected, progress and outline indicators.                                                                     |
+| `--leaf-color-primary-focus`                          | Primary focus feedback, used by Input and Select by default; other fields and buttons retain their own focus styles. |
+| `--leaf-color-primary-fill-border`                    | Supporting boundary for primary selections such as dates; solid buttons do not use this role.                            |
+| `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | Content colors on solid fills.                                           |
+| `--leaf-color-text` / `--leaf-color-text-muted`       | Primary and secondary text.                                                                                            |
+| `--leaf-color-surface` / `--leaf-color-surface-muted` | Content and supporting backgrounds.                                                                                    |
+| `--leaf-color-border`                                 | Border color.                                                                                                          |
+| `--leaf-color-option-hover`                           | Neutral feedback fill for options, menus and candidate rows.                                                           |
+| `--leaf-border-width`                                 | Outer border width.                                                                                                    |
+| `--leaf-control-shadow` / `--leaf-surface-shadow`     | Control and content surface shadows.                                                                                   |
+| `--leaf-radius`                                       | Base radius.                                                                                                           |
+
+`--leaf-color-primary-soft` and the other `*-soft` roles are always derived from the semantic shades; settings such as `primarySoftColor` provide explicit overrides only. `ink` uses the base color when it reaches 4.5:1, otherwise a readable derived shade; the primary indicator similarly prefers the base at 3:1 and falls back to a readable shade. Prefer purpose roles over constructing shade values in application code.
 
 Configure Leaf UI component themes through ConfigProvider and read the results from application CSS. Changing a single base CSS variable does not regenerate the full set of interaction colors.
 
@@ -259,6 +277,6 @@ For Tailwind CSS, import the package configuration to reuse the theme through ut
 
 Use the same appearance for the server and the client's initial render. To remember a user's choice, read a cookie on the server and supply that initial value. System appearance updates after mounting.
 
-Prefer concrete HEX, RGB or HSL colors. A color such as `var(--brand-color)` resolves after mounting in the browser and cannot guarantee matching derived colors in the server's first frame.
+Prefer concrete HEX, RGB or HSL colors. Solid foregrounds default to white; verify their contrast yourself. Expressions remain CSS expressions: they are not resolved to numeric scales after mounting or synchronized from DOM changes.
 
 See [Installation & quick start](/en/guide/getting-started) for setup, [server-side rendering](/en/guide/ssr) for frameworks such as Next.js, and [Browser compatibility](/en/guide/compatibility) for support targets.

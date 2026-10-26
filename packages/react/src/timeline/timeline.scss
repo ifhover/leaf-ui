@@ -3,7 +3,8 @@
   margin: 0;
   padding: var(--leaf-component-timeline-padding, 0);
   color: var(--leaf-component-timeline-color, var(--leaf-color-text));
-  font: var(--leaf-component-timeline-font-size, var(--leaf-font-size))/1.6 var(--leaf-font-family);
+  font: var(--leaf-component-timeline-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
+    var(--leaf-font-family);
   &__item {
     position: relative;
     padding-block: 0 24px;
@@ -16,7 +17,7 @@
       top: 16px;
       bottom: 0;
       width: 1px;
-      background: var(--leaf-color-border);
+      background: var(--leaf-color-divider);
     }
   }
   &__dot {

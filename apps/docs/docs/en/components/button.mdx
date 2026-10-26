@@ -1,80 +1,152 @@
-import { ExtensionDemo } from '../../../src/examples/en/button/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
-import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../../src/components/en-button-examples';
+import { ButtonBasic } from '../../../src/examples/en/button/basic';
+import { ButtonVariants } from '../../../src/examples/en/button/variants';
+import { ButtonSizes } from '../../../src/examples/en/button/sizes';
+import { ButtonDanger } from '../../../src/examples/en/button/danger';
+import { ButtonStates } from '../../../src/examples/en/button/states';
+import { ButtonIcons } from '../../../src/examples/en/button/icons';
+import { ButtonFullWidth } from '../../../src/examples/en/button/full-width';
+import { ButtonLoading } from '../../../src/examples/en/button/loading';
+import { ButtonGroupDemo } from '../../../src/examples/en/button/button-group';
+import { SplitButtonDemo } from '../../../src/examples/en/button/split-button';
+
+export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 # Button
 
-Trigger an action, such as saving, submitting or deleting.
+Trigger actions such as saving, submitting or deleting.
+
+{/* leaf:section basic */}
+
+## Basic usage
+
+Use button text that clearly describes the action and handle clicks through `onClick`.
+
+<ComponentExample exampleId="basic" preview={<ButtonBasic />} fileName="basic.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/basic.tsx"
+```
+
+</ComponentExample>
+
+`type` defaults to `button`, which does not submit a form. Set `type="submit"` for form submission.
+
+{/* leaf:section examples */}
 
 ## Examples
 
-Use solid for primary actions, outline for a content surface with a fine border, and soft for secondary actions on a subtle neutral surface. Danger soft buttons use a pale red surface with red text. Soft surfaces follow the light or dark theme and deepen on hover and press. Link buttons use the theme color without padding, border or a fixed control height; use the Link component for navigation. Loading preserves the label and prevents duplicate clicks. Set type="submit" for form submission, and aria-label for icon-only actions.
+### Appearance
 
-On activation, solid and outlined buttons emit a wave that quickly expands outside the button and slowly fades while the button and label stay still. Soft and link buttons do not emit a wave. Solid buttons brighten on hover and deepen on press; outlined buttons keep their surface and change their text and border colors. Danger actions use red. The wave follows the theme and respects regional and system motion preferences.
+Use `variant` for outline (the default), solid, text or inline link appearance.
 
-<ComponentExample title="Variants" preview={<ButtonVariants />} fileName="variants.tsx">
+<ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/variants.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Danger actions" preview={<ButtonDanger />} fileName="danger.tsx">
+### Sizes
 
-```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
-```
+Set the size with `size`; the default is `md`.
 
-</ComponentExample>
-
-<ComponentExample title="Sizes" preview={<ButtonSizes />} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<ButtonSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/sizes.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Disabled and loading" preview={<ButtonStates />} fileName="states.tsx">
+### Danger actions
+
+Set `danger` for destructive actions such as deleting or clearing. It works with every appearance.
+
+<ComponentExample exampleId="danger" preview={<ButtonDanger />} fileName="danger.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
+```
+
+</ComponentExample>
+
+### Disabled and loading
+
+`disabled` disables the button. `loading` shows a spinner and prevents repeated clicks.
+
+<ComponentExample exampleId="states" preview={<ButtonStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/states.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Async saving" preview={<ButtonLoading />} fileName="loading.tsx">
+### Icons
 
-```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
-```
+Add icons with `startIcon` and `endIcon`. An icon-only button needs an `aria-label`.
 
-</ComponentExample>
-
-<ComponentExample title="Icons" preview={<ButtonIcons />} fileName="icons.tsx">
+<ComponentExample exampleId="icons" preview={<ButtonIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
 ```
 
 </ComponentExample>
 
-<ComponentExample title="Full width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
+### Full width
+
+Set `fullWidth` to fill the parent container.
+
+<ComponentExample exampleId="full-width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/full-width.tsx"
 ```
 
 </ComponentExample>
 
-## Extended features
+### Async saving
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<a id="advanced-usage"></a>
 
-```tsx lineNumbers file="../../../src/examples/en/button/extensions.tsx"
+Control `loading` with application state. The timer simulates a request; replace it with your async operation.
+
+<ComponentExample exampleId="loading" preview={<ButtonLoading />} fileName="loading.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
 ```
 
 </ComponentExample>
 
-## Button API
+### Button group
+
+Use `ButtonGroup` to join adjacent actions and share a size or disabled state.
+
+<ComponentExample exampleId="button-group" preview={<ButtonGroupDemo />} fileName="button-group.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/button-group.tsx"
+```
+
+</ComponentExample>
+
+### Split button
+
+`SplitButton` pairs a primary action with related menu actions. Use `onClick` for the primary button and an action for each menu item.
+
+<ComponentExample exampleId="split-button" preview={<SplitButtonDemo />} fileName="split-button.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/split-button.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Button API
+
+Supports native `button` attributes such as `onClick`, `name`, `form`, `aria-*` and `data-*`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | Visual style |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Visual style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `danger` | `boolean` | `false` | Danger colors; works with every variant |
 | `loading` | `boolean` | `false` | Show loading and disable interaction |
@@ -85,43 +157,29 @@ On activation, solid and outlined buttons emit a wave that quickly expands outsi
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Native button type |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
 
-## Types
+### ButtonGroupProps API
 
-Import ButtonProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { ButtonProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## Extension types
-
-```ts
-import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
-```
-
-## ButtonGroupProps API
+Props for grouping related buttons.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Button size. |
 | `disabled` | `boolean` | — | Disable interaction. |
 | `attached` | `boolean` | `true` | Join adjacent buttons |
 
-## SplitButtonProps API
+### SplitButtonProps API
+
+Props for a button combining a primary action with dropdown actions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | Button appearance |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Size or spacing preset |
-| `danger` | `boolean` | — | Danger colors |
-| `loading` | `boolean` | — | Loading state |
-| `fullWidth` | `boolean` | — | Fill available width |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Button appearance |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size. |
+| `danger` | `boolean` | `false` | Danger colors |
+| `loading` | `boolean` | `false` | Loading state |
+| `fullWidth` | `boolean` | `false` | Fill available width |
 | `startIcon` | `ReactNode` | — | Leading icon |
 | `endIcon` | `ReactNode` | — | Trailing icon |
-| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | Required | Required. Items; keep keys unique and stable |
+| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | Required | Items; keep keys unique and stable |
 | `menuLabel` | `string` | — | Accessible menu button label |
 | `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | Action menu props |

@@ -125,7 +125,7 @@ export function InfiniteScroll(rawProps: InfiniteScrollProps) {
         >
           {error ? (
             <ButtonControl
-              variant="ghost"
+              variant="text"
               onClick={() => {
                 setError(false);
                 setRetry((value) => value + 1);
@@ -138,7 +138,7 @@ export function InfiniteScroll(rawProps: InfiniteScrollProps) {
           ) : !hasMore ? (
             (endMessage ?? t('infiniteScroll.allItemsLoaded'))
           ) : manual ? (
-            <ButtonControl variant="ghost" onClick={() => manualLoad.current()}>
+            <ButtonControl variant="text" onClick={() => manualLoad.current()}>
               {t('infiniteScroll.loadMore')}
             </ButtonControl>
           ) : null}

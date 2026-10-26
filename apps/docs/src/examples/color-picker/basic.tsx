@@ -1,11 +1,5 @@
-import { ColorPicker, Space, Text } from '@ifhover/leaf-ui';
-import { useState } from 'react';
+import { ColorPicker } from '@ifhover/leaf-ui';
+
 export function ColorPickerBasic() {
-  const [color, setColor] = useState('#20834a');
-  return (
-    <Space direction="vertical" align="start">
-      <ColorPicker value={color} onChange={setColor} showText aria-label="品牌颜色" />
-      <Text tone="muted">当前颜色：{color}</Text>
-    </Space>
-  );
+  return <ColorPicker aria-label="品牌颜色" />;
 }

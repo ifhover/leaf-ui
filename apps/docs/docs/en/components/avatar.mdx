@@ -1,85 +1,120 @@
+import { AvatarSizes } from '../../../src/examples/en/avatar/sizes';
+import { AvatarShapes } from '../../../src/examples/en/avatar/shapes';
 import { ExtensionDemo } from '../../../src/examples/en/avatar/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { AvatarBasic } from '../../../src/examples/en/avatar/basic';
 import { AvatarImage } from '../../../src/examples/en/avatar/image';
 import { AvatarFallback } from '../../../src/examples/en/avatar/fallback';
 
-# Avatar
+export const leafDoc = { component: 'AvatarGroup', primaryApi: 'AvatarGroupProps' };
 
-Display an avatar for a user, team or object.
+# AvatarGroup
 
-## Sizes and shapes
+Display member avatars together, with text fallbacks and overflow counts. Use `Avatar` for each member.
 
-<ComponentExample title="Sizes and shapes" preview={<AvatarBasic />} fileName="basic.tsx">
+{/* leaf:section basic */}
+
+## Basic usage
+
+Place member avatars inside `AvatarGroup` and provide each member name through `Avatar.alt`.
+
+<ComponentExample exampleId="basic" preview={<AvatarBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Image avatars
+Text avatar colors distinguish members; they do not indicate status.
 
-<ComponentExample title="Image avatars" preview={<AvatarImage />} fileName="image.tsx">
+{/* leaf:section examples */}
+
+## Examples
+
+### Sizes
+
+Use `AvatarGroup.size` to set the size of avatars in the group.
+
+<ComponentExample exampleId="sizes" preview={<AvatarSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/avatar/sizes.tsx"
+```
+
+</ComponentExample>
+
+### Image avatars
+
+Provide the member's name through `alt`, including when only initials are visible.
+
+<ComponentExample exampleId="image" preview={<AvatarImage />} fileName="image.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/image.tsx"
 ```
 
 </ComponentExample>
 
-## Fallbacks and defaults
+### Fallbacks and defaults
 
-<ComponentExample title="Fallbacks and defaults" preview={<AvatarFallback />} fileName="fallback.tsx">
+Failed images fall back to `children`, `icon` or the default icon. Changing the image source retries loading.
+
+<ComponentExample exampleId="fallback" preview={<AvatarFallback />} fileName="fallback.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/fallback.tsx"
 ```
 
 </ComponentExample>
 
-## Extended features
+### Avatar group overflow
 
-<ComponentExample title="Extended features" preview={<ExtensionDemo />} fileName="extensions.tsx">
+Set `maxCount` to limit visible members, then use `+N` to view the remaining members.
+
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/avatar/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## Avatar API
+### Shapes
+
+Use `Avatar.shape` to choose circular or square avatars.
+
+<ComponentExample exampleId="shapes" preview={<AvatarShapes />} fileName="shapes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/avatar/shapes.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### AvatarGroup API
+
+Props for displaying member avatars as a group with overflow counts.
+
+#### AvatarGroupProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `src / srcSet` | `string` | — | Image source / responsive candidates |
-| `alt` | `string` | Text or localized default | Accessible name |
+| `maxCount` | `number` | `Infinity` | Maximum visible avatars; the rest collapse into +N. |
+| `size` | [`AvatarProps`](#avatar-api)`['size']` | — | Avatar size preset; a number is treated as pixels. |
+| `shape` | [`AvatarProps`](#avatar-api)`['shape']` | — | Crop shape |
+| `maxContent` | `(hiddenCount: number) => ReactNode` | — | Custom overflow count content |
+
+### Avatar API
+
+Props for an individual member avatar within a group.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `src` | `string` | — | Avatar image URL. |
+| `srcSet` | `string` | — | Responsive image candidates. |
 | `imageProps` | `Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' \| 'srcSet' \| 'alt' \| 'onError'>` | — | Image attributes such as loading, sizes, crossOrigin and objectFit styles |
-| `onError` | `() => void` | — | Image loading error callback |
+| `alt` | `string` | Text or localized default | Accessible name |
 | `size` | `'sm' \| 'md' \| 'lg' \| number` | `'md'` | Preset size or pixel value |
 | `shape` | `'circle' \| 'square'` | `'circle'` | Shape |
-| `icon / children` | `ReactNode` | — | Fallback icon / text |
-
-
-## Types
-
-Import these types to define props or prepare data.
-
-```ts
-import type { AvatarProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Failed images fall back to children, icon or the default avatar. Changing the source retries loading. Alt provides an accessible name without duplicate image announcements. Use imageProps.style to customize cropping.
-
-## Extension types
-
-```ts
-import type { AvatarGroupProps } from '@ifhover/leaf-ui';
-```
-
-## AvatarGroupProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `maxCount` | `number` | `Infinity` | Maximum selections or visible items |
-| `size` | `'sm' \| 'md' \| 'lg' \| number` | — | Size or spacing preset |
-| `shape` | `'circle' \| 'square'` | — | Crop shape |
-| `maxContent` | `(hiddenCount: number) => ReactNode` | — | Custom overflow count content |
+| `icon` | `ReactNode` | — | Icon displayed without an image. |
+| `onError` | `() => void` | — | Image loading error callback |
+| `children` | `ReactNode` | — | Text or content displayed without an image. |

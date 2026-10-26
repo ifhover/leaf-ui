@@ -1,4 +1,4 @@
-import { Checkbox, Flex, Space, Text } from '@ifhover/leaf-ui';
+import { Checkbox, Flex, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = ['Design updates', 'Product news', 'Weekly updates'];
@@ -7,7 +7,7 @@ export function CheckboxCheckAll() {
   const [selected, setSelected] = useState<string[]>(['Design updates']);
   const allChecked = selected.length === options.length;
   return (
-    <Space direction="vertical" align="stretch">
+    <Flex direction="column" gap="md" align="start">
       <Checkbox
         checked={allChecked}
         indeterminate={selected.length > 0 && !allChecked}
@@ -15,7 +15,7 @@ export function CheckboxCheckAll() {
       >
         Subscribe to all
       </Checkbox>
-      <Flex gap="md" align="center" wrap justify="center">
+      <Flex direction="column" gap="sm" align="start">
         {options.map((option) => (
           <Checkbox
             key={option}
@@ -32,7 +32,9 @@ export function CheckboxCheckAll() {
           </Checkbox>
         ))}
       </Flex>
-      <Text tone="muted">Selected {selected.length} items</Text>
-    </Space>
+      <Text tone="muted" role="status">
+        Selected {selected.length} items
+      </Text>
+    </Flex>
   );
 }

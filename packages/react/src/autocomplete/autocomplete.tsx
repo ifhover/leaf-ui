@@ -1,5 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
+  type CSSProperties,
   forwardRef,
   type InputHTMLAttributes,
   type ReactNode,
@@ -23,7 +24,6 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
-import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
 
@@ -121,7 +121,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const { messages, theme, density } = useLeafConfig();
   const format = useFormattedText();
-  const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4);
+  const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density));
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -172,12 +172,6 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
   };
   useFloatingDismiss(expanded, () => setOpen(false), inputRef, panelRef);
   useActiveOption(expanded, visibleOptions[active] ? `${listId}-${active}` : undefined, panelRef);
-  const highlight = useFloatingHighlight(
-    expanded,
-    panelRef,
-    visibleOptions[active] ? `${listId}-${active}` : undefined,
-    `${text}:${visibleOptions[active]?.value}:${visibleOptions.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
-  );
 
   const select = (option: AutoCompleteOption) => {
     if (option.disabled || readOnly || disabled) return;
@@ -277,6 +271,7 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         />
       )}
       <FloatingPanel
+        resetSurfaceGeometry
         open={expanded}
         triggerRef={rootRef}
         panelRef={panelRef}
@@ -287,15 +282,19 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
         maxWidth={popupMaxWidth}
         {...(hasSuggestions ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-autocomplete__panel', popupClassName)}
-        data-hover-motion=""
         data-selection="candidate"
         placement={popupPlacement}
-        style={{ maxHeight: listHeight, ...popupStyle }}
+        style={
+          {
+            maxHeight: listHeight,
+            '--leaf-autocomplete-option-height': `${optionHeight}px`,
+            ...popupStyle,
+          } as CSSProperties
+        }
         container={getPopupContainer}
         render={popupRender}
       >
         {!hasSuggestions && <div {...listboxProps} />}
-        <FloatingHighlight style={highlight} />
         {loading && !visibleOptions.length ? (
           <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>
         ) : errorContent ? (

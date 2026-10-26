@@ -1,106 +1,152 @@
-import { ExtensionDemo } from '../../src/examples/button/extensions';
 import { ComponentExample } from '../../src/components/component-example';
-import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../src/components/button-examples';
+import { ButtonBasic } from '../../src/examples/button/basic';
+import { ButtonVariants } from '../../src/examples/button/variants';
+import { ButtonSizes } from '../../src/examples/button/sizes';
+import { ButtonDanger } from '../../src/examples/button/danger';
+import { ButtonStates } from '../../src/examples/button/states';
+import { ButtonIcons } from '../../src/examples/button/icons';
+import { ButtonFullWidth } from '../../src/examples/button/full-width';
+import { ButtonLoading } from '../../src/examples/button/loading';
+import { ButtonGroupDemo } from '../../src/examples/button/button-group';
+import { SplitButtonDemo } from '../../src/examples/button/split-button';
+
+export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 # Button 按钮
 
-用于触发操作，如提交表单、保存内容或删除记录。
+触发保存、提交或删除等操作。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-`solid` 适合主要操作，`outline` 使用内容底色、正文色和细边框，`soft` 为柔和按钮，使用中性浅底，适合次要操作；设置 `danger` 后使用淡红色背景和红色文字。柔和按钮的底色随深浅主题变化，悬停和按下时逐渐加深。`link` 使用主题色文字，无内边距、边框和固定控件高度。页面跳转使用 Link 组件。
+按钮文字应清楚描述操作，点击事件通过 `onClick` 处理。
 
-主按钮和描边按钮点击时，外缘波纹快速扩散后缓慢淡出，按钮与文字保持稳定；柔和按钮和链接按钮不展示波纹。主按钮悬停时提亮、按下时加深；描边按钮保持底色，通过文字和边框变色反馈。危险操作使用红色，波纹跟随主题；关闭动效或启用系统减少动态效果后不展示波纹。
+<ComponentExample exampleId="basic" preview={<ButtonBasic />} fileName="basic.tsx" width="fit-content">
 
-<ComponentExample title="按钮样式" preview={<ButtonVariants />} fileName="variants.tsx">
+```tsx lineNumbers file="../../src/examples/button/basic.tsx"
+```
+
+</ComponentExample>
+
+默认 `type="button"`，不会提交表单。需要提交时，请设置 `type="submit"`。
+
+{/* leaf:section examples */}
+
+## 示例
+
+### 按钮外观
+
+通过 `variant` 选择外观：默认描边、实底、文字或行内链接。
+
+<ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/variants.tsx"
 ```
 
 </ComponentExample>
 
-组件样式会自动加载，接入步骤见[快速开始](/guide/getting-started)。
+### 尺寸
 
-## 危险操作
+通过 `size` 设置尺寸，默认为 `md`。
 
-为删除、清空、撤销等操作使用 danger。所有样式、图标和加载状态都会使用独立的红色语义主题。
-
-<ComponentExample title="危险操作" preview={<ButtonDanger />} fileName="danger.tsx">
-
-```tsx lineNumbers file="../../src/examples/button/danger.tsx"
-```
-
-</ComponentExample>
-
-## 尺寸
-
-提供小、中、大三种尺寸，适配不同密度的操作区。外观可通过[主题变量](/guide/theming)定制。
-
-<ComponentExample title="按钮尺寸" preview={<ButtonSizes />} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<ButtonSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## 禁用与加载
+### 危险操作
 
-加载时会显示旋转指示器，自动禁用按钮，并设置 `aria-busy`。原有文字保留，帮助用户理解正在进行的操作。
+设置 `danger` 表示删除、清空等危险操作，可搭配任意外观。
 
-<ComponentExample title="禁用与加载" preview={<ButtonStates />} fileName="states.tsx">
+<ComponentExample exampleId="danger" preview={<ButtonDanger />} fileName="danger.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/button/danger.tsx"
+```
+
+</ComponentExample>
+
+### 禁用与加载
+
+`disabled` 禁用按钮；`loading` 显示加载指示器并阻止重复点击。
+
+<ComponentExample exampleId="states" preview={<ButtonStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/states.tsx"
 ```
 
 </ComponentExample>
 
-## 实际交互
+### 图标
 
-通过应用状态控制 `loading`。下面的示例会在 1.2 秒后完成保存；实际使用时，把计时器替换成你的异步业务操作。
+通过 `startIcon` 和 `endIcon` 添加图标。只有图标时，必须提供 `aria-label`。
 
-<ComponentExample title="异步保存" preview={<ButtonLoading />} fileName="loading.tsx">
-
-```tsx lineNumbers file="../../src/examples/button/loading.tsx"
-```
-
-</ComponentExample>
-
-## 图标
-
-示例使用 `lucide-react` 的按需导入图标。`startIcon` 和 `endIcon` 接受 React 节点。图标容器默认对辅助技术隐藏，按钮文字提供名称；只有图标时请设置 `aria-label`。
-
-<ComponentExample title="图标按钮" preview={<ButtonIcons />} fileName="icons.tsx">
+<ComponentExample exampleId="icons" preview={<ButtonIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/icons.tsx"
 ```
 
 </ComponentExample>
 
-## 整行显示
+### 整行显示
 
-`fullWidth` 让按钮填满父容器宽度，适合表单提交和移动端操作区。
+设置 `fullWidth`，让按钮填满父容器。
 
-<ComponentExample title="整行按钮" preview={<ButtonFullWidth />} fileName="full-width.tsx">
+<ComponentExample exampleId="full-width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
 
 ```tsx lineNumbers file="../../src/examples/button/full-width.tsx"
 ```
 
 </ComponentExample>
 
-## 扩展用法
+### 异步保存
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<a id="进阶用法"></a>
 
-```tsx lineNumbers file="../../src/examples/button/extensions.tsx"
+通过应用状态控制 `loading`。示例使用定时器模拟请求，实际使用时替换为业务异步操作。
+
+<ComponentExample exampleId="loading" preview={<ButtonLoading />} fileName="loading.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/button/loading.tsx"
 ```
 
 </ComponentExample>
 
-## Button API
+### 按钮组
+
+使用 `ButtonGroup` 连接相邻操作，并统一配置尺寸或禁用状态。
+
+<ComponentExample exampleId="button-group" preview={<ButtonGroupDemo />} fileName="button-group.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/button/button-group.tsx"
+```
+
+</ComponentExample>
+
+### 分裂按钮
+
+`SplitButton` 将主要操作和相关菜单放在一起；主按钮使用 `onClick`，菜单项分别提供自己的操作。
+
+<ComponentExample exampleId="split-button" preview={<SplitButtonDemo />} fileName="split-button.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/button/split-button.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Button API
+
+支持 `onClick`、`name`、`form`、`aria-*`、`data-*` 等原生 `button` 属性。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | 视觉样式 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 视觉样式 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
 | `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
@@ -111,57 +157,29 @@ import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, B
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | 原生按钮类型 |
 | `ref` | `Ref<HTMLButtonElement>` | — | 按钮 DOM 引用 |
 
-支持其他原生 `button` 属性，例如 `onClick`、`name`、`value`、`form`、`className`、`style`、`aria-*` 和 `data-*`。
+### ButtonGroupProps API
 
-## 类型
-
-可导入 [`ButtonProps`](#button-api) 定义组件属性，或单独使用以下样式、尺寸类型：
-
-```ts
-import type { ButtonProps, ButtonVariant, ButtonSize } from '@ifhover/leaf-ui';
-```
-
-## 表单与键盘
-
-默认 `type="button"`，放进表单时不会意外提交。需要提交表单，请显式设置 `type="submit"`。
-
-组件保留原生键盘行为：Tab 聚焦，Enter 或 Space 触发。禁用和加载状态会阻止交互；聚焦时显示清晰的焦点轮廓。
-
-## 定制样式
-
-```tsx
-<ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 18 }}>
-  <Button>自定义主题</Button>
-</ConfigProvider>
-```
-
-配置选项与实时示例见[定制主题](/guide/theming)。
-
-## 扩展类型
-
-```ts
-import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
-```
-
-## ButtonGroupProps API
+用于组合一组相关按钮的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 按钮尺寸 |
 | `disabled` | `boolean` | — | 禁用交互。 |
 | `attached` | `boolean` | `true` | 连接相邻按钮 |
 
-## SplitButtonProps API
+### SplitButtonProps API
+
+主操作与下拉操作组合按钮的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | — | 按钮样式 |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
-| `danger` | `boolean` | — | 危险操作颜色 |
-| `loading` | `boolean` | — | 加载状态 |
-| `fullWidth` | `boolean` | — | 占满宽度 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 按钮样式 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸。 |
+| `danger` | `boolean` | `false` | 危险操作颜色 |
+| `loading` | `boolean` | `false` | 加载状态 |
+| `fullWidth` | `boolean` | `false` | 占满宽度 |
 | `startIcon` | `ReactNode` | — | 前置图标 |
 | `endIcon` | `ReactNode` | — | 后置图标 |
-| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 必需。数据项目，保持 key 唯一且稳定 |
+| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
 | `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
 | `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |

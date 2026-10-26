@@ -1,6 +1,6 @@
 # Leaf UI
 
-A lightweight React component library with a green default theme, ConfigProvider theming and reusable CSS variables. Supports React 18 and 19.
+A quiet, consistent React component library for tools and data-heavy interfaces, with ConfigProvider theming and reusable CSS variables. Supports React 18 and 19.
 
 ## Usage
 
@@ -31,24 +31,22 @@ Browser component entries automatically load theme variables, shared popup style
 
 ## Components
 
-- Button: four variants, icons, loading, disabled, full width and semantic red danger states. Defaults to type="button"; icon-only controls require an accessible label.
+- Button: solid, outlined and link appearances, plus icons, loading, disabled, full width and semantic red danger states. Defaults to the outlined appearance and type="button"; icon-only controls require an accessible label.
 - Input: native input properties and ref, prefix/suffix, error/warning and composition-aware onPressEnter.
 - Textarea: native multiline input, rows, maxLength, resize and validation states.
 - Checkbox: native checked/defaultChecked, disabled, mixed state and form submission.
 - Radio / RadioGroup: mutually exclusive native options, generated group names, keyboard navigation and controlled/default values.
 - Switch: native checkbox with switch semantics, loading and keyboard/form support.
 - Select: themed floating listbox, keyboard selection, clearable values, disabled options and form validation. onChange receives a string value and optional option.
-- DatePicker: calendar with local Date values, inclusive day bounds, keyboard navigation and clearing.
-- TimePicker: 12/24-hour clocks, optional seconds, configurable steps and clearing.
+- DatePicker: dates, times and date-times through picker; segmented input, shared time columns and clearing.
 - AutoComplete: free text input, filtered or dynamic suggestions, composition-aware keyboard selection.
 - Cascader: hierarchical options, full leaf paths, disabled branches and keyboard navigation.
 - Form / FormField: native submission, labels, help, validation and shared automatic or fixed label widths.
 - ConfigProvider: scoped themes, derived sizes, appearance, typography, motion and Chinese/English UI with nested inheritance.
-- DateTimePicker: calendar and time selection, optional seconds, draft confirmation and bounds.
-- DateRangePicker: year, month, ISO week, date and date-time ranges with hover previews and text input.
+- DateRangePicker: calendar, time and sequential date-time ranges through picker, with shared fields and panels.
 - Dropdown: action menus with keyboard navigation, dividers and disabled or dangerous items.
 - Modal / Confirm: dialogs, focus management, async confirmation and useConfirm.
-- Alert: inline success, info, warning and error feedback.
+- Alert: inline success, info, warning and danger feedback.
 - Message / useMessage: transient feedback, loading and keyed updates.
 - Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
 - Tabs / Menu / BackTop: content and view switching, nested navigation and scroll-to-top.
@@ -56,13 +54,13 @@ Browser component entries automatically load theme variables, shared popup style
 - Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
 - DataTable: sorting, filtering, selection, grouping, pagination and virtualization through a TanStack Table instance. Import it from `@ifhover/leaf-ui/table`.
-- Transfer / InputOTP / InputMask / TimeRangePicker: transfers, code autofill/paste, formatted values and time ranges.
+- Transfer / InputOTP / InputMask: transfers, code autofill/paste, formatted values and time ranges.
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
 - Upload / FileList: upload progress and cancellation, file metadata, downloads and browser media previews.
 
 Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
-Single-line controls share sm / md / lg sizes of **30 / 36 / 42px**. The default **36px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
+Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 
 ## Data tables
 
@@ -86,7 +84,7 @@ export function ProjectTable() {
 }
 ```
 
-Tables are borderless and striped by default. Set `bordered` for an outer frame and column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
+Tables use the same softened frame and downward resting shadow as Card by default. Set `bordered` for column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
 
 Migration: replace native `Table`, `Table.Header`, `Table.Body`, `Table.Row`, `Table.Cell` and related named exports with a `DataTable` instance and column definitions. Native Table regional defaults are removed; use `components.DataTable` for presentation defaults. The `theme.components.Table` visual tokens remain available. The former `@ifhover/leaf-ui/table/tanstack` path remains a compatibility alias for `DataTable`.
 
@@ -144,15 +142,15 @@ Framework builds load styles automatically. Use the same initial theme during se
 
 ## Forms
 
-All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, TimePicker submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateTimePicker, DateRangePicker, TimePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
+All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, DatePicker with picker="time" submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateRangePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
 
-Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DateTimePicker submits YYYY-MM-DD HH:mm:ss; DateRangePicker submits a start/end string in the selected granularity.
+Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DatePicker with picker="datetime" submits YYYY-MM-DD HH:mm (or HH:mm:ss with showSeconds); DateRangePicker submits a start/end string in the selected granularity.
 
 ## More components
 
 Use Steps, Breadcrumb, Pagination and Tabs for navigation; Tag and Badge for classifications and notifications; Drawer, Loading, Progress and Tooltip for contextual feedback. Calendar supports compact and full layouts with custom schedule content. InputNumber handles numeric ranges, precision and stepping; Input with type="password" supports controlled visibility and custom toggle icons. See the [component overview](https://ifhover.github.io/leaf-ui/en/components/index.html) for examples and API details.
 
-Avatar, Card, Collapse and Tree organize content; Divider separates it. Result presents success, warning, error, information and empty states. The legacy Empty export remains compatible. TreeSelect chooses hierarchical values, and ColorPicker supports color formats, opacity and presets. Skeleton supplies loading placeholders, Popover offers nearby details or actions, and Slider and Rate collect numeric values and ratings. Select popups fit their content by default; popupWidth and popupMaxWidth customize the width. Input supports clear actions and character counts, Tabs supports closable items, and Progress can show indeterminate loading.
+Avatar, Card, Collapse and Tree organize content; Divider separates it. Result presents success, warning, danger, information and empty states. The legacy Empty export remains compatible. TreeSelect chooses hierarchical values, and ColorPicker supports color formats, opacity and presets. Skeleton supplies loading placeholders, Popover offers nearby details or actions, and Slider and Rate collect numeric values and ratings. Select popups fit their content by default; popupWidth and popupMaxWidth customize the width. Input supports clear actions and character counts, Tabs supports closable items, and Progress can show indeterminate loading.
 
 ## Icons
 

@@ -1,27 +1,34 @@
-import { DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { Button, DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
+const initialDate = new Date(2026, 9, 15);
+
 export function DatePickerControlled() {
-  const [date, setDate] = useState<Date | null>(new Date(2026, 9, 15));
+  const [value, setValue] = useState<Date | null>(initialDate);
   const [dateString, setDateString] = useState('2026-10-15');
+
   return (
-    <Form layout="vertical">
-      <FormField label="十月的日期">
+    <Form
+      layout="vertical"
+      onSubmit={(event) => event.preventDefault()}
+      onReset={() => {
+        setValue(initialDate);
+        setDateString('2026-10-15');
+      }}
+    >
+      <FormField label="截止日期">
         <DatePicker
-          aria-label="十月的日期"
-          value={date}
-          minDate={new Date(2026, 9, 5)}
-          maxDate={new Date(2026, 9, 25)}
+          value={value}
           onChange={(next, text) => {
-            setDate(next);
+            setValue(next);
             setDateString(text);
           }}
         />
       </FormField>
-      <Text tone="muted">可选 10 月 5–25 日，当前值：{dateString || '未选择'}</Text>
-      <FormField label="必填日期 · 错误">
-        <DatePicker aria-label="必填日期" status="error" required placeholder="请设置截止日期" />
-      </FormField>
+      <Text tone="muted" role="status">
+        回调文本：{dateString || '空字符串'}
+      </Text>
+      <Button type="reset">重置</Button>
     </Form>
   );
 }

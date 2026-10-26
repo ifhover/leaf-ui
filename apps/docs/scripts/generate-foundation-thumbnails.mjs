@@ -12,7 +12,6 @@ import {
   Info,
   LoaderCircle,
   Star,
-  UserRound,
   X,
 } from 'lucide-react';
 import { createElement } from 'react';
@@ -20,35 +19,43 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 const rect = (x, y, w, h, fill = '#fff', stroke = '#e5e5e8', r = 6) =>
   `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"/>`;
-const text = (x, y, value, color = '#202024', size = 10) =>
-  `<text x="${x}" y="${y}" fill="${color}" font-size="${size}" font-family="system-ui,sans-serif">${value}</text>`;
-const icon = (component, x, y, color = '#20834a', size = 14) =>
+const text = (x, y, value, color = '#202024', size = 10, weight) =>
+  `<text x="${x}" y="${y}" fill="${color}" font-size="${size}"${weight ? ` font-weight="${weight}"` : ''} font-family="system-ui,sans-serif">${value}</text>`;
+const icon = (component, x, y, color = '#1e964f', size = 14) =>
   `<g transform="translate(${x} ${y})">${renderToStaticMarkup(createElement(component, { size, color, strokeWidth: 1.8 }))}</g>`;
 const circle = (x, y, radius, color) =>
   `<circle cx="${x}" cy="${y}" r="${radius}" fill="${color}"/>`;
 const images = {
-  avatar:
-    circle(58, 62, 26, '#eaf4ed') +
-    icon(UserRound, 45, 48, '#20834a', 27) +
-    rect(103, 38, 50, 50, '#eaf4ed', '#bddcc7', 8) +
-    text(116, 69, 'LF', '#20834a', 18) +
-    circle(188, 62, 20, '#f1edf9') +
-    text(179, 67, 'UI', '#7654c6', 14),
+  avatar: [
+    ['A', '#eaf4ed', 'var(--leaf-color-primary-ink)'],
+    ['B', '#edf5ff', 'var(--leaf-color-info-ink)'],
+    ['C', '#fff6e9', 'var(--leaf-color-warning-ink)'],
+    ['D', 'var(--leaf-color-danger-soft)', 'var(--leaf-color-danger-ink)'],
+    ['+2', '#f6f6f7', '#68686f'],
+  ]
+    .map(([label, background, foreground], index) => {
+      const x = 56 + index * 32;
+      return (
+        `<circle cx="${x}" cy="64" r="23" fill="${background}" stroke="var(--leaf-color-surface)" stroke-width="2"/>` +
+        `<text x="${x}" y="69" text-anchor="middle" fill="${foreground}" font-size="14" font-family="system-ui,sans-serif">${label}</text>`
+      );
+    })
+    .join(''),
   card:
     rect(25, 15, 190, 98) +
     text(39, 37, 'Leaf Garden', '#202024', 11) +
     text(39, 70, 'Projects, people and plans', '#68686f', 9) +
     rect(39, 88, 52, 16, '#eaf4ed', 'none', 4) +
-    text(49, 100, 'Details', '#20834a', 8),
+    text(49, 100, 'Details', '#1e964f', 8),
   divider:
     text(38, 30, 'Project details', '#68686f', 10) +
     '<path d="M25 58h52m84 0h54M25 95h190" stroke="#e5e5e8"/>' +
     text(92, 62, 'Settings', '#202024', 10),
   result:
     circle(120, 42, 24, '#eaf4ed') +
-    icon(CircleCheck, 105, 27, '#20834a', 30) +
+    icon(CircleCheck, 105, 27, '#1e964f', 30) +
     text(82, 79, 'Project created', '#202024', 11) +
-    rect(83, 86, 76, 24, '#20834a', 'none', 5) +
+    rect(83, 86, 76, 24, '#1e964f', 'none', 5) +
     text(92, 102, 'Open project', '#fff', 9),
   skeleton:
     circle(43, 39, 17, '#e5e5e8') +
@@ -56,7 +63,7 @@ const images = {
     [60, 78, 96].map((y, i) => rect(73, y, 143 - i * 21, 9, '#e7ece8', 'none', 4)).join(''),
   collapse:
     rect(25, 15, 190, 98) +
-    icon(ChevronDown, 37, 25, '#20834a') +
+    icon(ChevronDown, 37, 25, '#1e964f') +
     text(60, 36, 'About this project', '#202024', 10) +
     text(60, 59, 'Keep your plans together.', '#68686f', 9) +
     icon(ChevronRight, 37, 87, '#68686f') +
@@ -66,10 +73,10 @@ const images = {
     text(60, 36, 'Project details', '#202024', 10) +
     text(60, 58, 'Edit and save your changes.', '#68686f', 8) +
     rect(90, 94, 60, 23, '#eaf4ed', '#bddcc7', 5) +
-    text(104, 110, 'Open', '#20834a', 9),
+    text(104, 110, 'Open', '#1e964f', 9),
   slider:
-    '<path d="M28 58h184" stroke="#e5e5e8" stroke-width="4" stroke-linecap="round"/><path d="M28 58h106" stroke="#20834a" stroke-width="4" stroke-linecap="round"/>' +
-    circle(134, 58, 7, '#20834a') +
+    '<path d="M28 58h184" stroke="#e5e5e8" stroke-width="4" stroke-linecap="round"/><path d="M28 58h106" stroke="#1e964f" stroke-width="4" stroke-linecap="round"/>' +
+    circle(134, 58, 7, '#1e964f') +
     circle(134, 58, 4, '#fff') +
     text(25, 86, '0', '#68686f', 9) +
     text(112, 86, '50', '#68686f', 9) +
@@ -80,15 +87,15 @@ const images = {
       .join('') + text(89, 96, '4 / 5 rating', '#68686f', 10),
   steps:
     '<path d="M40 43h164" stroke="#e5e5e8"/>' +
-    '<path d="M40 43h81" stroke="#20834a"/>' +
+    '<path d="M40 43h81" stroke="#1e964f"/>' +
     circle(36, 43, 14, '#eaf4ed') +
     icon(Check, 29, 36) +
-    circle(120, 43, 14, '#20834a') +
+    circle(120, 43, 14, '#1e964f') +
     text(116, 47, '2', '#fff', 11) +
     circle(204, 43, 14, '#f6f6f7') +
     text(200, 47, '3', '#68686f', 11) +
     text(16, 78, 'Create') +
-    text(101, 78, 'Review', '#20834a') +
+    text(101, 78, 'Review', '#1e964f') +
     text(190, 78, 'Done', '#68686f') +
     text(82, 100, 'Your next step', '#68686f', 9),
   breadcrumb:
@@ -111,8 +118,8 @@ const images = {
             26,
             28,
             n === 2 ? '#eaf4ed' : '#fff',
-            n === 2 ? '#20834a' : '#e5e5e8',
-          ) + text(53 + i * 31, 58, n, n === 2 ? '#20834a' : '#202024'),
+            n === 2 ? '#1e964f' : '#e5e5e8',
+          ) + text(53 + i * 31, 58, n, n === 2 ? '#1e964f' : '#202024'),
       )
       .join('') +
     rect(200, 40, 28, 28, '#fff', '#e5e5e8') +
@@ -120,26 +127,31 @@ const images = {
     text(73, 92, '11–20 / 50 items', '#68686f', 9),
   tag:
     rect(21, 34, 59, 25, '#eaf4ed', 'none', 5) +
-    text(30, 51, 'Published', '#20834a', 9) +
+    circle(30, 46.5, 3, '#1e964f') +
+    text(37, 51, 'Live', '#18783f', 10, 500) +
     rect(90, 34, 54, 25, '#edf5ff', 'none', 5) +
-    text(101, 51, 'Design', '#1677ff') +
+    circle(99, 46.5, 3, '#1677ff') +
+    text(106, 51, 'Info', '#125fcc', 10, 500) +
     rect(154, 34, 64, 25, '#fff6e9', 'none', 5) +
-    text(164, 51, 'Pending', '#8d671c') +
-    rect(56, 74, 61, 25, '#20834a', 'none', 5) +
-    text(68, 91, 'Ready', '#fff') +
-    rect(129, 74, 61, 25, '#f4effb', 'none', 5) +
-    text(141, 91, 'Leaf', '#7654c6') +
-    icon(X, 169, 80, '#7654c6', 12),
+    circle(163, 46.5, 3, '#d38b11') +
+    text(170, 51, 'Pending', '#94610c', 9, 500) +
+    rect(56, 74, 61, 25, '#fff', '#e5e5e8', 13) +
+    circle(66, 86.5, 3, '#1e964f') +
+    text(74, 91, 'Ready', '#202024', 10, 500) +
+    rect(129, 74, 61, 25, '#fff', '#e5e5e8', 13) +
+    circle(139, 86.5, 3, '#7654c6') +
+    text(147, 91, 'Leaf', '#202024', 10, 500) +
+    icon(X, 174, 80, '#202024', 12),
   badge:
     rect(27, 39, 46, 42, '#f6f6f7') +
     icon(Bell, 42, 52, '#68686f', 18) +
-    circle(72, 39, 10, '#c83c3c') +
+    circle(72, 39, 10, '#dd3f2e') +
     text(69, 43, '8', '#fff', 10) +
     rect(103, 39, 96, 42) +
     text(125, 65, 'Inbox') +
-    rect(182, 29, 35, 20, '#c83c3c', 'none', 10) +
+    rect(182, 29, 35, 20, '#dd3f2e', 'none', 10) +
     text(187, 43, '99+', '#fff') +
-    circle(77, 100, 4, '#20834a') +
+    circle(77, 100, 4, '#1e964f') +
     text(88, 104, 'Running', '#68686f'),
   drawer:
     rect(21, 12, 198, 105, '#00000040', 'none', 9) +
@@ -149,27 +161,27 @@ const images = {
     text(110, 54, 'Project name', '#68686f', 9) +
     rect(110, 61, 97, 23) +
     text(118, 77, 'Leaf Garden', '#202024', 9) +
-    rect(164, 92, 43, 17, '#20834a', 'none', 4) +
+    rect(164, 92, 43, 17, '#1e964f', 'none', 4) +
     text(175, 104, 'Save', '#fff', 8),
   loading:
     rect(24, 19, 192, 91, '#f6f6f7') +
     rect(39, 35, 120, 7, '#e5e5e8', 'none', 3) +
     rect(39, 53, 160, 6, '#e7ece8', 'none', 3) +
     rect(39, 70, 140, 6, '#e7ece8', 'none', 3) +
-    icon(LoaderCircle, 103, 41, '#20834a', 30) +
-    text(95, 92, 'Loading…', '#20834a', 10),
+    icon(LoaderCircle, 103, 41, '#1e964f', 30) +
+    text(95, 92, 'Loading…', '#1e964f', 10),
   progress:
     rect(22, 24, 158, 8, '#f6f6f7', 'none', 4) +
-    rect(22, 24, 107, 8, '#20834a', 'none', 4) +
+    rect(22, 24, 107, 8, '#1e964f', 'none', 4) +
     text(192, 32, '68%', '#68686f', 9) +
-    '<circle cx="120" cy="83" r="25" stroke="#edf1ee" stroke-width="5"/><circle cx="120" cy="83" r="25" stroke="#20834a" stroke-width="5" stroke-linecap="round" stroke-dasharray="107 157" transform="rotate(-90 120 83)"/>' +
+    '<circle cx="120" cy="83" r="25" stroke="#edf1ee" stroke-width="5"/><circle cx="120" cy="83" r="25" stroke="#1e964f" stroke-width="5" stroke-linecap="round" stroke-dasharray="107 157" transform="rotate(-90 120 83)"/>' +
     text(109, 87, '68%', '#202024', 10),
   tooltip:
     rect(63, 21, 114, 29, '#202024', 'none', 5) +
     text(78, 40, 'Save your changes', '#fff', 9) +
     rect(83, 62, 74, 30) +
     icon(Info, 96, 70) +
-    text(118, 82, 'Save', '#20834a'),
+    text(118, 82, 'Save', '#1e964f'),
   calendar:
     rect(22, 12, 196, 104) +
     text(79, 30, 'October 2026', '#202024', 10) +
@@ -179,17 +191,17 @@ const images = {
       const x = 33 + (i % 7) * 25;
       const y = 49 + Math.floor(i / 7) * 23;
       return (
-        (i === 7 ? rect(x - 3, y - 11, 21, 20, '#20834a', 'none', 4) : '') +
+        (i === 7 ? rect(x - 3, y - 11, 21, 20, '#1e964f', 'none', 4) : '') +
         text(x, y + 3, i + 1, i === 7 ? '#fff' : '#68686f', 9)
       );
     }).join('') +
     rect(135, 76, 40, 5, '#c5dfce', 'none', 2),
   tabs:
     rect(22, 22, 196, 85) +
-    text(34, 45, 'Overview', '#20834a') +
+    text(34, 45, 'Overview', '#1e964f') +
     text(104, 45, 'Settings', '#68686f') +
     text(166, 45, 'History', '#9cab9f') +
-    '<path d="M32 55h52" stroke="#20834a" stroke-width="2"/>' +
+    '<path d="M32 55h52" stroke="#1e964f" stroke-width="2"/>' +
     text(34, 77, 'Your project at a glance.', '#68686f', 9) +
     rect(34, 88, 112, 5, '#e7ece8', 'none', 2),
   'input-number':
@@ -208,7 +220,7 @@ const images = {
     text(86, 55, 'Components', '#68686f') +
     rect(51, 66, 166, 24, '#eaf4ed', 'none', 5) +
     icon(File, 65, 72) +
-    text(86, 83, 'Brand colors', '#20834a') +
+    text(86, 83, 'Brand colors', '#1e964f') +
     icon(ChevronRight, 28, 101, '#68686f', 12) +
     icon(Folder, 45, 100) +
     text(66, 111, 'Engineering'),
@@ -220,16 +232,16 @@ const images = {
     icon(ChevronDown, 35, 50, '#68686f', 12) +
     text(55, 60, 'Design') +
     rect(36, 69, 168, 22, '#eaf4ed', 'none', 4) +
-    text(66, 84, 'Visual design', '#20834a') +
-    icon(Check, 184, 74, '#20834a', 12) +
+    text(66, 84, 'Visual design', '#1e964f') +
+    icon(Check, 184, 74, '#1e964f', 12) +
     text(66, 108, 'Product design', '#68686f'),
   'color-picker':
-    '<defs><linearGradient id="c" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#20834a"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="h"><stop stop-color="#f00"/><stop offset=".2" stop-color="#ff0"/><stop offset=".4" stop-color="#0f0"/><stop offset=".6" stop-color="#0ff"/><stop offset=".8" stop-color="#00f"/><stop offset="1" stop-color="#f00"/></linearGradient></defs>' +
+    '<defs><linearGradient id="c" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#1e964f"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="h"><stop stop-color="#f00"/><stop offset=".2" stop-color="#ff0"/><stop offset=".4" stop-color="#0f0"/><stop offset=".6" stop-color="#0ff"/><stop offset=".8" stop-color="#00f"/><stop offset="1" stop-color="#f00"/></linearGradient></defs>' +
     rect(54, 8, 132, 111) +
     rect(63, 17, 114, 57, 'url(#c)', 'none', 5) +
     circle(128, 36, 4, '#fff') +
     rect(63, 83, 114, 6, 'url(#h)', 'none', 3) +
-    text(77, 108, '#20834A', '#68686f', 10),
+    text(77, 108, '#1e964f', '#68686f', 10),
 };
 const selected = new Set(process.argv.slice(2));
 for (const [slug, content] of Object.entries(images)) {

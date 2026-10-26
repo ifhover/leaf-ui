@@ -1,13 +1,92 @@
 import { expect, test } from '@playwright/test';
 import axe from 'axe-core';
+import { expectDataRowStripes, expectShortHeaderSeparators } from './helpers/table-appearance';
+
+const colorChannels = (color: string) => {
+  const srgb = color.match(/^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)$/);
+  if (srgb) return srgb.slice(1).map((value) => Number(value) * 255);
+  const rgb = color.match(/^rgba?\(([\d.]+),?\s+([\d.]+),?\s+([\d.]+)/);
+  if (rgb) return rgb.slice(1).map(Number);
+  throw new Error(`Unsupported color: ${color}`);
+};
+const colorDistance = (left: string, right: string) => {
+  const a = colorChannels(left);
+  const b = colorChannels(right);
+  return Math.hypot(
+    (a[0] ?? 0) - (b[0] ?? 0),
+    (a[1] ?? 0) - (b[1] ?? 0),
+    (a[2] ?? 0) - (b[2] ?? 0),
+  );
+};
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/?fixture=table');
 });
 
 for (const theme of ['light', 'dark']) {
+  for (const width of [1100, 375]) {
+    test(`automatic toolbar and pagination APIs: ${theme}, ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/?fixture=table&theme=${theme}`);
+      const demo = page.getByRole('region', { name: 'Table API demo', exact: true });
+      const table = demo.getByRole('table', { name: 'Dynamic pagination', exact: true });
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(10);
+      await table.getByRole('checkbox', { name: 'Select row: 0', exact: true }).check();
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(14);
+      await expect(
+        table.getByRole('checkbox', { name: 'Select row: 0', exact: true }),
+      ).toBeChecked();
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(10);
+      const root = table.locator(
+        'xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " leaf-data-table ")][1]',
+      );
+      await root.getByRole('button', { name: 'Next page', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(4);
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await root.getByRole('textbox', { name: 'Search table' }).fill('00000');
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(1);
+      await demo.getByRole('button', { name: 'Toggle pagination', exact: true }).click();
+      await expect(table.locator('tbody tr[data-row-id]')).toHaveCount(1);
+      await expect(
+        table.getByRole('checkbox', { name: 'Select row: 0', exact: true }),
+      ).toBeChecked();
+      const pages = demo.getByRole('navigation', { name: 'Unknown pages' });
+      await expect(pages).toHaveAttribute('id', 'unknown-total-pages');
+      await expect(pages).toHaveCSS('margin-top', '12px');
+      await expect(pages.getByRole('button', { name: 'Next page', exact: true })).toBeDisabled();
+
+      const selections = page.getByRole('region', {
+        name: 'Controlled selection demos',
+        exact: true,
+      });
+      for (const [label, searchName, rowLabel] of [
+        ['成员选择', '搜索表格', '选择行: 1'],
+        ['Member selection', 'Search table', 'Select row: 1'],
+      ]) {
+        const selectedTable = selections.getByRole('table', { name: label, exact: true });
+        const root = selectedTable.locator(
+          'xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " leaf-data-table ")][1]',
+        );
+        await selectedTable.getByRole('checkbox', { name: rowLabel, exact: true }).check();
+        await root.getByRole('textbox', { name: searchName }).fill('Alex');
+        await expect(selectedTable.locator('tbody tr[data-row-id]')).toHaveCount(1);
+        await expect(
+          selectedTable.getByRole('checkbox', { name: rowLabel, exact: true }),
+        ).toBeChecked();
+        await expect(root.locator('.leaf-data-table__toolbar')).toContainText('1');
+      }
+      expect(
+        await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      ).toBe(true);
+    });
+  }
+}
+
+for (const theme of ['light', 'dark']) {
   for (const compact of [false, true]) {
-    test(`borderless defaults and striped row dividers: ${theme}, ${compact ? 'compact' : 'comfortable'}`, async ({
+    test(`default frame, shadow and striped row dividers: ${theme}, ${compact ? 'compact' : 'comfortable'}`, async ({
       page,
     }, testInfo) => {
       await page.goto(`/?fixture=table&theme=${theme}${compact ? '&compact=1' : ''}`);
@@ -15,9 +94,36 @@ for (const theme of ['light', 'dark']) {
       for (const name of ['Team members']) {
         const table = page.getByRole('table', { name, exact: true });
         const root = table.locator('xpath=ancestor::div[contains(@class, "leaf-table--md")][1]');
-        await expect(root).toHaveCSS('border-top-width', '0px');
-        await expect(root).toHaveCSS('border-radius', '0px');
-        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
+        await expect(root).toHaveCSS('border-top-width', '1px');
+        await expect(root).toHaveCSS('border-radius', '12px');
+        await expect(root).toHaveCSS('box-shadow', 'none');
+        const panel = root.locator('.leaf-table__panel');
+        const shadow = await panel.evaluate((node) => getComputedStyle(node, '::before').boxShadow);
+        expect(shadow).toContain('0px 2px 6px');
+        expect(shadow).toContain('0px 1px 2px');
+        const colors = await root.evaluate((node) => {
+          const divider = document.createElement('div');
+          divider.style.backgroundColor = 'var(--leaf-color-divider)';
+          document.body.append(divider);
+          const dividerColor = getComputedStyle(divider).backgroundColor;
+          divider.remove();
+          const style = getComputedStyle(node.querySelector('.leaf-table__panel') ?? node);
+          const surface = document.createElement('div');
+          surface.style.backgroundColor = 'var(--leaf-table-surface)';
+          node.append(surface);
+          const surfaceColor = getComputedStyle(surface).backgroundColor;
+          surface.remove();
+          return {
+            border: style.borderTopColor,
+            divider: dividerColor,
+            surface: surfaceColor,
+          };
+        });
+        const frameDistance = colorDistance(colors.border, colors.surface);
+        expect(frameDistance).toBeGreaterThan(0);
+        expect(frameDistance).toBeLessThan(colorDistance(colors.divider, colors.surface));
+        await expectShortHeaderSeparators(table);
+        await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '0px');
         await expect(table.locator('thead th').first()).toHaveCSS(
           'background-color',
           await root.evaluate((node) => getComputedStyle(node).backgroundColor),
@@ -27,6 +133,7 @@ for (const theme of ['light', 'dark']) {
           '0px',
         );
         const cells = table.locator('tbody tr > td:first-child');
+        await expect(cells.first()).toHaveCSS('background-color', colors.surface);
         await expect(cells.first()).toHaveCSS('border-bottom-width', '0px');
         const backgrounds = await cells.evaluateAll((nodes) =>
           nodes.map((node) => getComputedStyle(node).backgroundColor),
@@ -39,16 +146,19 @@ for (const theme of ['light', 'dark']) {
       const table = demo.getByRole('table');
       const root = demo.locator('.leaf-table');
       for (const bordered of [false, true]) {
-        await demo.getByRole('checkbox', { name: 'Borders', exact: true }).setChecked(bordered);
+        await demo
+          .getByRole('checkbox', { name: 'Body column dividers', exact: true })
+          .setChecked(bordered);
+        await expectShortHeaderSeparators(table);
         for (const striped of [false, true]) {
           await demo.getByRole('checkbox', { name: 'Striped rows' }).setChecked(striped);
           await page.mouse.move(0, 0);
-          await expect(root).toHaveCSS('border-top-width', bordered ? '1px' : '0px');
-          await expect(root).toHaveCSS('border-radius', bordered ? '10px' : '0px');
-          await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '1px');
+          await expect(root).toHaveCSS('border-top-width', '1px');
+          await expect(root).toHaveCSS('border-radius', '12px');
+          await expect(table.locator('thead th').first()).toHaveCSS('border-bottom-width', '0px');
           const cells = table.locator('tbody tr > td:first-child');
           const header = table.locator('thead th').first();
-          await expect(header).toHaveCSS('font-weight', '600');
+          await expect(header).toHaveCSS('font-weight', '500');
           await expect(header).toHaveCSS(
             'background-color',
             await root.evaluate((node) => getComputedStyle(node).backgroundColor),
@@ -67,14 +177,22 @@ for (const theme of ['light', 'dark']) {
               return colors[0] === colors[1];
             })
             .toBe(!striped);
-          const surface = await root.evaluate((node) => getComputedStyle(node).backgroundColor);
-          await expect(cells.nth(1)).toHaveCSS('background-color', surface);
+          const surface = await root.evaluate((node) => {
+            const probe = document.createElement('div');
+            probe.style.backgroundColor = 'var(--leaf-table-surface)';
+            node.append(probe);
+            const color = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return color;
+          });
+          await expect(cells.first()).toHaveCSS('background-color', surface);
           if (striped) {
             expect(
-              await cells.first().evaluate((node) => getComputedStyle(node).backgroundColor),
+              await cells.nth(1).evaluate((node) => getComputedStyle(node).backgroundColor),
             ).not.toBe(surface);
           }
-          // Both ordinary and striped rows must visibly respond to hover.
+          // Both ordinary and striped rows must visibly respond to hover and resolve to one color.
+          const hoverColors: string[] = [];
           for (const cell of [cells.nth(0), cells.nth(1)]) {
             await cell.evaluate((node) =>
               Promise.all(
@@ -86,17 +204,80 @@ for (const theme of ['light', 'dark']) {
             await expect
               .poll(() => cell.evaluate((node) => getComputedStyle(node).backgroundColor))
               .not.toBe(rest);
+            await cell.evaluate((node) =>
+              Promise.all(
+                node.getAnimations().map((animation) => animation.finished.catch(() => {})),
+              ),
+            );
+            hoverColors.push(await cell.evaluate((node) => getComputedStyle(node).backgroundColor));
             await page.mouse.move(0, 0);
             await expect(cell).toHaveCSS('background-color', rest);
           }
+          expect(hoverColors[0]).toBe(hoverColors[1]);
         }
       }
-      await demo.getByRole('checkbox', { name: 'Borders', exact: true }).uncheck();
+      await demo.getByRole('checkbox', { name: 'Body column dividers', exact: true }).uncheck();
       await demo.screenshot({
         path: testInfo.outputPath(`table-${theme}-${compact ? 'compact' : 'comfortable'}.png`),
       });
     });
   }
+}
+
+for (const theme of ['light', 'dark']) {
+  test(`expandable rows use shared buttons and keep alternating backgrounds: ${theme}`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=table&theme=${theme}${theme === 'dark' ? '&compact=1&rtl=1' : ''}`);
+    const demo = page.getByRole('region', { name: 'Data table demo', exact: true });
+    const table = demo.getByRole('table');
+    await expect(table.locator('tbody > tr[data-row-id]')).toHaveCount(5);
+    await expect(table.locator('tbody > tr[data-detail-row][hidden]')).toHaveCount(5);
+    await expectDataRowStripes(table);
+    const expand = table.getByRole('button', {
+      name: 'Expand row: Alex Morgan (member-1)',
+      exact: true,
+    });
+    await expect(expand).toHaveClass(/\bleaf-button--text\b/);
+    await expect(expand).toHaveClass(/\bleaf-button--icon-only\b/);
+    await expect(expand).toHaveAttribute('type', 'button');
+    const geometry = await expand.evaluate((button) => {
+      const bounds = button.getBoundingClientRect();
+      const cell = button.closest('td')?.getBoundingClientRect();
+      return { width: bounds.width, height: bounds.height, cellWidth: cell?.width ?? 0 };
+    });
+    expect(geometry.width).toBe(geometry.height);
+    expect(geometry.width).toBeGreaterThanOrEqual(24);
+    expect(geometry.width).toBeLessThanOrEqual(geometry.cellWidth);
+    await expand.focus();
+    await expect(expand).toBeFocused();
+    await expect(expand).toHaveCSS('outline-style', 'solid');
+    await page.keyboard.press('Enter');
+    const collapse = table.getByRole('button', {
+      name: 'Collapse row: Alex Morgan (member-1)',
+      exact: true,
+    });
+    await expect(collapse).toHaveAttribute('aria-expanded', 'true');
+    await expect(table.locator('[data-detail-row="member-1"]')).toBeVisible();
+    await expect(collapse.locator('.leaf-data-table__expand-icon')).toHaveCSS(
+      'rotate',
+      theme === 'dark' ? '-90deg' : '90deg',
+    );
+    await expectDataRowStripes(table);
+    await page.keyboard.press('Space');
+    await expect(expand).toHaveAttribute('aria-expanded', 'false');
+    await expect(table.locator('[data-detail-row="member-1"]')).toBeHidden();
+    await expectDataRowStripes(table);
+    await demo.getByRole('button', { name: 'Next page', exact: true }).click();
+    await page.mouse.move(0, 0);
+    await expectDataRowStripes(table);
+    await table.getByRole('button', { name: 'Projects: Sort descending', exact: true }).click();
+    await page.mouse.move(0, 0);
+    await expectDataRowStripes(table);
+    await demo.getByRole('textbox', { name: 'Search table' }).fill('Riley');
+    await expect(table.locator('tbody > tr[data-row-id]')).toHaveCount(4);
+    await expectDataRowStripes(table);
+  });
 }
 
 test('data tables fill centered containers without collapsing or overflowing', async ({ page }) => {
@@ -120,10 +301,26 @@ test('data tables fill centered containers without collapsing or overflowing', a
       expect(geometry.width).toBeGreaterThan(200);
       expect(Math.abs(geometry.width - geometry.available)).toBeLessThan(2);
       expect(geometry.table).toBeGreaterThanOrEqual(geometry.client - 1);
-      expect(geometry.radius).toBe('0px');
+      expect(geometry.radius).toBe('12px');
       if (width === 375) expect(geometry.scroll).toBeGreaterThan(geometry.client);
     }
   }
+});
+
+test('basic and pinned-column demos share the same default header and row heights', async ({
+  page,
+}) => {
+  const measure = (name: string, page: import('@playwright/test').Page) => {
+    const table = page.getByRole('table', { name });
+    return table.evaluate((node) => ({
+      header: node.querySelector('thead th')?.getBoundingClientRect().height ?? 0,
+      row: node.querySelector('tbody tr')?.getBoundingClientRect().height ?? 0,
+    }));
+  };
+  const basic = await measure('Team members', page);
+  const pinned = await measure('Pinned and resizable columns', page);
+  expect(Math.abs(basic.header - pinned.header), JSON.stringify({ basic, pinned })).toBeLessThan(1);
+  expect(Math.abs(basic.row - pinned.row), JSON.stringify({ basic, pinned })).toBeLessThan(1);
 });
 
 test('keyboard sorting, page selection, filtering, expansion and column visibility share state', async ({
@@ -167,6 +364,7 @@ test('keyboard sorting, page selection, filtering, expansion and column visibili
 test('sticky header and logical pinned columns retain geometry in both directions', async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 640, height: 900 });
   for (const rtl of [false, true]) {
     await page.goto(`/?fixture=table${rtl ? '&rtl=1' : ''}`);
     const table = page.getByRole('table', { name: 'Pinned and resizable columns' });
@@ -176,15 +374,27 @@ test('sticky header and logical pinned columns retain geometry in both direction
     const first = table.locator('tbody tr').first().locator('td[data-pinned="start"]');
     const last = table.locator('tbody tr').first().locator('td[data-pinned="end"]');
     const header = table.locator('thead');
+    const edgeShadows = () =>
+      table.evaluate((node) => {
+        const firstPinned = node.querySelector('td[data-pinned="start"][data-pin-edge]');
+        const lastPinned = node.querySelector('td[data-pinned="end"][data-pin-edge]');
+        return [firstPinned, lastPinned].map((cell) =>
+          cell ? getComputedStyle(cell, '::after').backgroundImage !== 'none' : false,
+        );
+      });
     await expect(first).toHaveCSS('width', '230px');
     await expect(last).toHaveCSS('width', '110px');
     await viewport.scrollIntoViewIfNeeded();
+    await expect.poll(edgeShadows).toEqual([false, true]);
     const before = await first.boundingBox();
     const beforeEnd = await last.boundingBox();
     await viewport.evaluate((node) => {
       node.scrollTop = 180;
-      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -150 : 150;
+      const maximum = node.scrollWidth - node.clientWidth;
+      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -maximum / 2 : maximum / 2;
     });
+    await expect.poll(edgeShadows).toEqual([true, true]);
+    await expectShortHeaderSeparators(table);
     const after = await first.boundingBox();
     const afterEnd = await last.boundingBox();
     expect(Math.abs((before?.x ?? 0) - (after?.x ?? 0))).toBeLessThan(2);
@@ -192,6 +402,15 @@ test('sticky header and logical pinned columns retain geometry in both direction
     const viewportBox = await viewport.boundingBox();
     const headerBox = await header.boundingBox();
     expect(Math.abs((viewportBox?.y ?? 0) - (headerBox?.y ?? 0))).toBeLessThan(2);
+    await viewport.evaluate((node) => {
+      const maximum = node.scrollWidth - node.clientWidth;
+      node.scrollLeft = getComputedStyle(node).direction === 'rtl' ? -maximum : maximum;
+    });
+    await expect.poll(edgeShadows).toEqual([true, false]);
+    await viewport.evaluate((node) => {
+      node.scrollLeft = 0;
+    });
+    await expect.poll(edgeShadows).toEqual([false, true]);
   }
 });
 
@@ -233,6 +452,7 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   await expect(input).toBeFocused();
   await expect(input).toHaveValue('My draft');
   expect(await table.locator('tr[data-row-id]').count()).toBeLessThan(45);
+  await expectDataRowStripes(table);
   await page.getByRole('button', { name: 'Toggle virtual width' }).click();
   await viewport.evaluate((node) => {
     node.scrollTop = 0;
@@ -243,6 +463,8 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   await expect(table.locator('[data-detail-row="0"]')).toHaveAttribute('aria-rowindex', '3');
   await expect(table.locator('[data-row-id="1"]')).toHaveAttribute('aria-rowindex', '4');
   await expect(table.locator('[data-detail-row="0"]')).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expectDataRowStripes(table);
   // Row measurement runs through ResizeObserver. Read one consistent layout
   // and wait for the measured detail to replace the virtual height estimate.
   await expect
@@ -261,6 +483,7 @@ test('10000 variable rows virtualize, retain editing focus, remeasure details an
   });
   await expect(table.getByRole('textbox', { name: 'Edit Person 09999' })).toBeVisible();
   expect(await table.locator('tr[data-row-id]').count()).toBeLessThan(45);
+  await expectDataRowStripes(table);
 });
 
 test('remote pagination retains rows during refresh and retries errors', async ({ page }) => {
@@ -270,11 +493,14 @@ test('remote pagination retains rows during refresh and retries errors', async (
   await demo.getByRole('button', { name: 'Next page', exact: true }).click();
   await expect(table).toHaveAttribute('aria-busy', 'true');
   await expect(table.locator('[data-row-id]')).toHaveCount(5);
-  await expect(table.locator('[data-row-id="member-6"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="1"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="6"]')).toBeVisible();
   await demo.getByRole('button', { name: 'Simulate error' }).click();
   await expect(table.getByRole('alert')).toContainText('Unable to load members');
+  await expect(table.getByRole('alert')).toHaveClass(/leaf-result--danger/);
+  await expect(table.locator('.leaf-result__icon')).toHaveCSS('width', '48px');
   await table.getByRole('button', { name: 'Retry' }).click();
-  await expect(table.locator('[data-row-id="member-6"]')).toBeVisible();
+  await expect(table.locator('[data-row-id="6"]')).toBeVisible();
 });
 
 test('rows and columns reorder by keyboard and pointer without replacing table semantics', async ({
@@ -286,6 +512,9 @@ test('rows and columns reorder by keyboard and pointer without replacing table s
   await rowHandle.focus();
   await page.keyboard.press('Space');
   await expect(table.locator('tr[data-dragging]')).toHaveAttribute('data-row-id', 'alex');
+  await expect(
+    page.locator('[role="status"]').filter({ hasText: 'Move to Alex Morgan' }),
+  ).toBeVisible();
   await page.keyboard.press('ArrowDown');
   await expect(
     page.locator('[role="status"]').filter({ hasText: 'Move to Sam Taylor' }),
@@ -420,7 +649,9 @@ test('container-driven horizontal overflow uses an overlay scrollbar and updates
   }
 });
 
-test('data tables pass axe in both themes and reduced motion', async ({ page }) => {
+test('data tables pass axe in both themes and reduced motion', { tag: '@a11y' }, async ({
+  page,
+}) => {
   for (const theme of ['light', 'dark']) {
     await page.goto(`/?fixture=table&theme=${theme}`);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -438,7 +669,7 @@ test('data tables pass axe in both themes and reduced motion', async ({ page }) 
         nodes: item.nodes.map((node) => ({ target: node.target, summary: node.failureSummary })),
       })),
     );
-    expect(violations).toEqual([]);
+    expect.soft(violations).toEqual([]);
   }
 });
 

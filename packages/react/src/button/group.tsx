@@ -53,17 +53,24 @@ export function SplitButton(incomingProps: SplitButtonProps): ReactElement {
     'SplitButton',
     incomingProps,
   );
-  const { children, className, ...props } = useComponentProps('Button', rawProps);
+  const {
+    children,
+    className,
+    variant = 'outline',
+    ...props
+  } = useComponentProps('Button', rawProps);
   const inactive = Boolean(props.disabled || props.loading);
   const t = useText();
   return (
     <ButtonGroupControl className={classes('leaf-split-button', className)}>
-      <ButtonControl {...props}>{children}</ButtonControl>
+      <ButtonControl {...props} variant={variant}>
+        {children}
+      </ButtonControl>
       <Dropdown {...dropdownProps} items={items} disabled={inactive}>
         <ButtonControl
           type="button"
           disabled={inactive}
-          variant={props.variant}
+          variant={variant}
           size={props.size}
           danger={props.danger}
           startIcon={<ChevronDown size={16} />}

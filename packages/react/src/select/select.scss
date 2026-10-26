@@ -75,28 +75,42 @@
       cursor: not-allowed;
     }
     > svg {
-      transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+      transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
   }
   &[data-open] &__arrow > svg {
     transform: rotate(180deg);
   }
   &__panel .leaf-floating__option {
+    @include mixins.choice-option;
+    @include mixins.choice-option-size(
+      var(--leaf-select-option-height, var(--leaf-current-control-height, 34px))
+    );
+    height: auto;
     justify-content: space-between;
     > svg {
       flex: 0 0 auto;
     }
-  }
-  &__panel[data-hover-motion] {
-    .leaf-floating__highlight {
-      border-color: transparent;
+    .leaf-floating__option-label {
+      min-width: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
+  }
+  &__panel .leaf-floating__option + .leaf-floating__option,
+  &__panel .leaf-floating__options {
+    margin-top: 0;
+    gap: 0;
+  }
+  &__panel > .leaf-floating__viewport > .leaf-scrollbar__content {
+    display: flex;
+    flex-direction: column;
   }
   &__check {
     opacity: 0;
     transform: scale(0.6) rotate(-12deg);
     transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
       transform var(--leaf-motion-duration) var(--leaf-motion-spring);
   }
   &__panel [aria-selected='true'] &__check {
@@ -141,6 +155,10 @@
   .leaf-select__tag > button {
     transition: none;
   }
+  .leaf-select__panel .leaf-floating__option,
+  .leaf-select__panel .leaf-floating__option::before {
+    transition: none;
+  }
 }
 
 .leaf-select__group {
@@ -167,6 +185,7 @@
   --leaf-current-font-size: var(--leaf-font-size-lg);
 }
 
-.leaf-select__panel {
+.leaf-floating.leaf-select__panel {
   @include mixins.floating-paint(select);
+  @include mixins.field-popup(select);
 }

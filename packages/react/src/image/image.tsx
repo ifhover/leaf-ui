@@ -1,4 +1,4 @@
-import { ImageOff, Scan } from 'lucide-react';
+import { Image as ImageIcon, ImageOff, Scan } from 'lucide-react';
 import {
   createContext,
   forwardRef,
@@ -16,6 +16,7 @@ import {
 import { useComponentProps } from '../config-provider/component-defaults';
 import { LoadingControl as Loading } from '../loading/loading';
 import { classes } from '../shared/classes';
+import { deepActiveElement } from '../shared/dom';
 import { useMergedRef } from '../shared/field';
 import { useClient } from '../shared/use-client';
 import { useControllable } from '../shared/use-controllable';
@@ -41,9 +42,31 @@ export interface ImagePreviewProps {
   downloadable?: boolean;
 }
 const Viewer = lazy(() => import('./viewer').then((module) => ({ default: module.ImageViewer })));
-export function ImagePreviewControl(props: ImagePreviewProps) {
+interface ImagePreviewControlProps extends ImagePreviewProps {
+  returnFocus?: HTMLElement | null;
+}
+export function ImagePreviewControl({ returnFocus, ...props }: ImagePreviewControlProps) {
   const client = useClient();
   const [visited, setVisited] = useState(props.open);
+  const wasOpen = useRef(false);
+  const opener = useRef<HTMLElement | null>(null);
+  const requestedOpener = useRef(returnFocus);
+  requestedOpener.current = returnFocus;
+  // Safari may omit focus-event relatedTarget; snapshot before the lazy viewer takes focus.
+  if (props.open && !wasOpen.current && typeof document !== 'undefined') {
+    const active = deepActiveElement();
+    opener.current =
+      returnFocus === undefined ? (active instanceof HTMLElement ? active : null) : returnFocus;
+  }
+  wasOpen.current = props.open;
+  useEffect(() => {
+    if (!props.open) return;
+    const target = opener.current;
+    return () => {
+      const restore = requestedOpener.current === undefined ? target : requestedOpener.current;
+      if (restore?.isConnected) restore.focus({ preventScroll: true });
+    };
+  }, [props.open]);
   useEffect(() => {
     if (props.open) setVisited(true);
   }, [props.open]);
@@ -158,27 +181,32 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
   const native = useRef<HTMLImageElement>(null);
   const mergedRef = useMergedRef(native, ref);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const empty = !src?.trim() && !props.srcSet?.trim();
+  const status = empty ? 'empty' : state;
   const [open, setOpen] = useState(false);
   // biome-ignore lint/correctness/useExhaustiveDependencies: A changed source begins a new image loading cycle.
   useEffect(() => {
     const node = native.current;
     setState(node?.complete ? (node.naturalWidth > 0 ? 'ready' : 'error') : 'loading');
-  }, [src]);
+  }, [src, props.srcSet]);
   const register = group?.register;
   useEffect(() => {
-    register?.(id, preview && src ? { src: previewSrc ?? src, alt } : null);
+    register?.(id, preview && src?.trim() ? { src: previewSrc ?? src, alt } : null);
   }, [id, src, previewSrc, alt, preview, register]);
   useEffect(() => () => register?.(id, null), [id, register]);
   const image = (
     <img
       {...props}
       ref={mergedRef}
-      src={src}
+      src={src?.trim() ? src : undefined}
       alt={alt}
       width={width}
       height={height}
       loading={props.loading ?? 'lazy'}
-      style={{ objectFit: fit }}
+      style={{
+        objectFit: fit,
+        cursor: props.onClick && !empty ? 'pointer' : undefined,
+      }}
       onLoad={(event) => {
         setState('ready');
         onLoad?.(event);
@@ -193,15 +221,17 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     <span
       className={classes('leaf-image', className)}
       style={{ width, height, ...style }}
-      data-state={state}
+      data-state={status}
     >
-      {preview && src ? (
+      {preview && src?.trim() ? (
         <button
           type="button"
           className="leaf-image__trigger"
+          disabled={state !== 'ready'}
           aria-label={format('image.previewImage', { alt: alt ? `: ${alt}` : '' })}
           onClick={(event) => {
             if (!event.defaultPrevented && state !== 'error') {
+              event.currentTarget.focus({ preventScroll: true });
               if (group) group.show(id);
               else setOpen(true);
             }
@@ -215,18 +245,23 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
       ) : (
         image
       )}
-      {state === 'loading' && (
+      {status === 'loading' && (
         <span className="leaf-image__placeholder">
           <Loading size="sm" />
         </span>
       )}
-      {state === 'error' && (
+      {(status === 'error' || status === 'empty') && (
         <span
           className="leaf-image__placeholder"
           role="img"
-          aria-label={alt || t('image.imageUnavailable')}
+          aria-label={alt || t(empty ? 'image.noImage' : 'image.imageUnavailable')}
         >
-          {fallback ?? <ImageOff size={24} aria-hidden="true" />}
+          {fallback ?? (
+            <span className="leaf-image__fallback">
+              {empty ? <ImageIcon aria-hidden="true" /> : <ImageOff aria-hidden="true" />}
+              <span>{t(empty ? 'image.noImage' : 'image.imageUnavailable')}</span>
+            </span>
+          )}
         </span>
       )}
       {!group && (

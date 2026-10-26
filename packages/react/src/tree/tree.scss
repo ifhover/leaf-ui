@@ -1,7 +1,10 @@
+@use '../styles/mixins' as mixins;
 .leaf-tree {
+  @include mixins.accent-soft-feedback-family;
   min-width: 0;
   color: var(--leaf-component-tree-color, var(--leaf-color-text));
-  font: var(--leaf-component-tree-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  font: var(--leaf-component-tree-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   &__item {
     outline: none;
   }
@@ -34,33 +37,26 @@
   }
   &__item:focus-visible > .leaf-tree__row,
   &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
-    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    outline: 2px solid var(--leaf-color-text-muted);
     outline-offset: -2px;
-    &:not([data-disabled]):not([data-selected]) {
-      background: var(--leaf-color-option-hover);
-    }
   }
   &__row {
+    @include mixins.choice-option;
     box-sizing: border-box;
+    z-index: 1;
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     min-height: var(--leaf-control-height);
-    margin-block: 3px;
+    margin-block: 0;
     padding: 3px 8px 3px 4px;
-    border-radius: var(--leaf-radius-sm);
+    border-radius: var(
+      --leaf-tree-option-radius,
+      var(--leaf-component-tree-radius, max(0px, calc(var(--leaf-radius) - 2px)))
+    );
     cursor: pointer;
-    transition:
-      background-color var(--leaf-motion-duration),
-      color var(--leaf-motion-duration),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:hover:not([data-disabled]) {
-      background: var(--leaf-color-option-hover);
-    }
-    &[data-selected],
-    &[data-selected]:hover {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: var(--leaf-color-primary-surface-9);
+    &[data-selected] {
+      font-weight: var(--leaf-font-weight);
     }
     &[data-disabled] {
       color: var(--leaf-color-text-muted);
@@ -106,15 +102,28 @@
   &__icon {
     display: inline-flex;
     flex: 0 0 auto;
-    color: var(--leaf-color-text-muted);
+    color: inherit;
   }
   &__title {
+    flex: 1;
     min-width: 0;
     overflow-wrap: anywhere;
     &[data-match] {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
+  }
+  &__selection-mark {
+    flex: 0 0 auto;
+    opacity: 0;
+    transform: scale(0.6) rotate(-12deg);
+    transition:
+      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+  }
+  &__row[data-selected] &__selection-mark {
+    opacity: 1;
+    transform: scale(1) rotate(0);
   }
   &--lines .leaf-tree__group {
     position: relative;
@@ -130,6 +139,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-tree__row,
+  .leaf-tree__selection-mark,
   .leaf-tree__group,
   .leaf-tree__group-content,
   .leaf-tree__toggle svg {
@@ -155,7 +165,7 @@
     opacity: 0.4;
   }
   &[data-drop='inside'] {
-    background: var(--leaf-color-primary-alpha-12);
+    background: var(--leaf-accent-soft-background);
     border-radius: var(--leaf-radius-sm);
   }
   &[data-drop='before']::before,
@@ -196,5 +206,5 @@
   border-radius: var(--leaf-radius);
   background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
-  box-shadow: 0 4px 20px #0002;
+  box-shadow: var(--leaf-shadow-md);
 }

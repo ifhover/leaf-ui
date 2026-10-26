@@ -7,7 +7,7 @@ export function Capabilities({ english = false }) {
         <Progress
           percent={75}
           segments={[
-            { key: 'a', percent: 35, color: '#20834a' },
+            { key: 'a', percent: 35, color: '#1e964f' },
             { key: 'b', percent: 40, color: '#1677ff' },
           ]}
         />

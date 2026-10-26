@@ -1,12 +1,15 @@
 import { Button, ConfigProvider, Input } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
-import { type ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
-import { TableGrouped, TableServer } from '../../../../apps/docs/src/examples/table/advanced';
-import { TableAppearance } from '../../../../apps/docs/src/examples/table/appearance';
-import { TableBasic, TableStates } from '../../../../apps/docs/src/examples/table/basic';
-import { TableColumns, TableData } from '../../../../apps/docs/src/examples/table/data';
-import { TableReordering } from '../../../../apps/docs/src/examples/table/reordering';
+import { TableColumns as DocumentedTableColumns } from '../../../../apps/docs/src/examples/en/table/columns';
+import { TableGrouped } from '../../../../apps/docs/src/examples/en/table/grouped';
+import { TableReordering } from '../../../../apps/docs/src/examples/en/table/reordering';
+import { TableServer } from '../../../../apps/docs/src/examples/en/table/server';
+import { TableSimple } from '../../../../apps/docs/src/examples/en/table/simple';
+import { TableAppearance } from './table-appearance-fixture';
+import { TableBasic, TableSelection, TableStates } from './table-basic-fixture';
+import { TableColumns, TableData } from './table-data-fixture';
 
 const records = Array.from({ length: 10000 }, (_, index) => ({
   id: String(index),
@@ -17,6 +20,87 @@ const records = Array.from({ length: 10000 }, (_, index) => ({
       : 'A short description.',
 }));
 type RecordRow = (typeof records)[number];
+const apiRecords = records.slice(0, 14);
+const apiColumns: ColumnDef<RecordRow>[] = [{ accessorKey: 'name', header: 'Name' }];
+
+function PinningOverflowFixture() {
+  const [narrow, setNarrow] = useState(true);
+  const [pinningChanges, setPinningChanges] = useState(0);
+  const table = useDataTable({
+    data: apiRecords,
+    columns: [
+      { accessorKey: 'name', header: 'Name', size: 200, minSize: 160, maxSize: 320 },
+      { accessorKey: 'description', header: 'Description', size: 420 },
+      { id: 'projects', header: 'Projects', accessorFn: (row) => row.id, size: 100 },
+    ],
+    rowKey: 'id',
+    localPagination: false,
+    options: {
+      state: { columnPinning: { left: ['name'], right: ['projects'] } },
+      onColumnPinningChange: () => setPinningChanges((count) => count + 1),
+    },
+  });
+  return (
+    <section aria-label="Pinning overflow demo">
+      <Button onClick={() => setNarrow((value) => !value)}>Toggle container width</Button>
+      <Button onClick={() => table.getColumn('projects')?.toggleVisibility()}>
+        Toggle projects
+      </Button>
+      <Button onClick={() => table.resetColumnSizing()}>Reset column widths</Button>
+      <output aria-label="Pinning state">{JSON.stringify(table.getState().columnPinning)}</output>
+      <output aria-label="Pinning changes">{pinningChanges}</output>
+      <div style={{ width: narrow ? 293 : 500, maxWidth: '100%' }}>
+        <DataTable
+          table={table}
+          aria-label="Overflowing pinned columns"
+          pagination={false}
+          maxHeight={180}
+          resizable
+        />
+      </div>
+    </section>
+  );
+}
+
+function ApiTable() {
+  const [pagination, setPagination] = useState(true);
+  const table = useDataTable({
+    data: apiRecords,
+    columns: apiColumns,
+    rowKey: 'id',
+    options: { manualPagination: true, pageCount: -1 },
+  });
+  return (
+    <section aria-label="Table API demo">
+      <h2>Automatic layout and dynamic pagination</h2>
+      <DataTable
+        data={apiRecords}
+        columns={apiColumns}
+        rowKey="id"
+        aria-label="Dynamic pagination"
+        selection="multiple"
+        pagination={pagination ? { showSizeChanger: false } : false}
+        toolbar={
+          <>
+            <Button onClick={() => setPagination((value) => !value)}>Toggle pagination</Button>
+            <DataTable.Search columnId="name" />
+          </>
+        }
+      />
+      <DataTable
+        table={table}
+        aria-label="Unknown total"
+        pagination={{
+          id: 'unknown-total-pages',
+          'aria-label': 'Unknown pages',
+          style: { marginTop: 12 },
+          hasNextPage: false,
+        }}
+      />
+    </section>
+  );
+}
+
 const columns: ColumnDef<RecordRow>[] = [
   {
     accessorKey: 'name',
@@ -31,12 +115,12 @@ const columns: ColumnDef<RecordRow>[] = [
 
 function VirtualTable() {
   const [narrow, setNarrow] = useState(false);
-  const table = useReactTable({
+  const table = useDataTable({
     data: records,
     columns,
-    getRowId: (row) => row.id,
-    getCoreRowModel: getCoreRowModel(),
-    getRowCanExpand: () => true,
+    rowKey: 'id',
+    localPagination: false,
+    options: { getRowCanExpand: () => true },
   });
   return (
     <section aria-label="Virtual table demo">
@@ -48,7 +132,6 @@ function VirtualTable() {
           aria-label="Large table"
           maxHeight={320}
           virtual
-          stickyHeader
           pagination={false}
           renderExpandedRow={(row) => (
             <div style={{ height: Number(row.id) % 2 === 0 ? 160 : 72 }}>
@@ -61,7 +144,89 @@ function VirtualTable() {
   );
 }
 
+function LayeredTableFixture() {
+  const [longHeading, setLongHeading] = useState(false);
+  const details: ColumnDef<RecordRow>[] = [
+    { accessorKey: 'name', header: 'Name', size: 220 },
+    { accessorKey: 'description', header: 'Description', size: 420 },
+  ];
+  const columns: ColumnDef<RecordRow>[] = [
+    {
+      header: longHeading ? 'People and their current project information' : 'People',
+      columns: longHeading ? [{ header: 'Assignment', columns: details }] : details,
+    },
+  ];
+  // A legacy JavaScript option must not disable the fixed header.
+  const legacyOptions = { stickyHeader: false };
+  return (
+    <section aria-label="Layered table demo">
+      <h1>Layered table</h1>
+      <DataTable
+        {...legacyOptions}
+        data={records.slice(0, 100)}
+        columns={columns}
+        rowKey="id"
+        aria-label="Layered records"
+        style={{ height: 280 }}
+        pagination={false}
+        toolbar={<Button onClick={() => setLongHeading((value) => !value)}>Change heading</Button>}
+      />
+      <p style={{ marginTop: 800 }}>Page scroll target</p>
+    </section>
+  );
+}
+
+function SimpleTableFixture() {
+  const [simple, setSimple] = useState(true);
+  return (
+    <section aria-label="Simple table demo">
+      <h1>Simple table</h1>
+      <TableSimple />
+      <Button onClick={() => setSimple((value) => !value)}>Toggle simple appearance</Button>
+      <ConfigProvider
+        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
+        theme={{
+          tokens: { borderWidth: 3 },
+          components: { Table: { shadow: '0 4px 12px currentColor' } },
+        }}
+      >
+        <DataTable
+          variant={simple ? undefined : 'layered'}
+          data={apiRecords}
+          columns={[
+            {
+              header: 'Records',
+              columns: [
+                { accessorKey: 'name', header: 'Name', size: 220 },
+                {
+                  accessorKey: 'description',
+                  header: 'Description',
+                  size: 450,
+                  meta: { align: 'end' },
+                },
+              ],
+            },
+          ]}
+          rowKey="id"
+          aria-label="Simple pinned records"
+          options={{ enableSorting: true, initialState: { columnPinning: { left: ['name'] } } }}
+          localPagination={false}
+          selection="multiple"
+          pagination={false}
+          maxHeight={220}
+        />
+      </ConfigProvider>
+    </section>
+  );
+}
+
 export function TableFixture() {
+  if (new URLSearchParams(location.search).has('pinning-overflow'))
+    return <PinningOverflowFixture />;
+  if (new URLSearchParams(location.search).has('current-columns'))
+    return <DocumentedTableColumns />;
+  if (new URLSearchParams(location.search).has('simple')) return <SimpleTableFixture />;
+  if (new URLSearchParams(location.search).has('layered')) return <LayeredTableFixture />;
   return (
     <div style={{ display: 'grid', gap: 32, maxWidth: 1000, minWidth: 0 }}>
       <h1>Table acceptance</h1>
@@ -72,29 +237,37 @@ export function TableFixture() {
         </div>
       </section>
       <section aria-label="Table appearance demo">
-        <h2>Borders and stripes</h2>
+        <h2>Column dividers and stripes</h2>
         <TableAppearance english />
       </section>
       <section aria-label="Data table demo">
         <h2>Manage members</h2>
         <TableData english />
       </section>
+      <section aria-label="Controlled selection demos">
+        <h2>Control only selection</h2>
+        <ConfigProvider locale="zh-CN">
+          <TableSelection />
+        </ConfigProvider>
+        <TableSelection english />
+      </section>
+      <ApiTable />
       <section aria-label="Pinned table demo">
         <h2>Pinned columns</h2>
         <TableColumns english />
       </section>
       <section aria-label="Grouped table demo">
         <h2>Grouping</h2>
-        <TableGrouped english />
+        <TableGrouped />
       </section>
       <section aria-label="Server table demo">
         <h2>Server data</h2>
-        <TableServer english />
+        <TableServer />
       </section>
       <VirtualTable />
       <section aria-label="Reordering table demo">
         <h2>Row and column reordering</h2>
-        <TableReordering english />
+        <TableReordering />
       </section>
       <section aria-label="State table demo">
         <h2>Data states</h2>

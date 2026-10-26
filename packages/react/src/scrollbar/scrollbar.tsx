@@ -20,11 +20,15 @@ export interface ScrollbarProps extends HTMLAttributes<HTMLDivElement> {
   maxHeight?: CSSProperties['maxHeight'];
   orientation?: 'vertical' | 'horizontal' | 'both';
   scrollbar?: 'auto' | 'always' | 'hidden';
+  /** Keep tracks visible in reserved gutters instead of overlaying content. */
+  persistent?: boolean;
   viewportClassName?: string;
   viewportStyle?: CSSProperties;
   contentClassName?: string;
   contentStyle?: CSSProperties;
   verticalOffset?: number;
+  /** Track thickness; `sm` is narrower and quieter for dense lists. */
+  size?: 'sm' | 'md';
 }
 
 interface Geometry {
@@ -49,6 +53,12 @@ interface ScrollbarControlProps extends ScrollbarProps {
   resizeHandle?: boolean;
 }
 
+// Keep in sync with the bar inset and thickness in scrollbar.scss.
+const trackMetrics = {
+  sm: { inset: 2, thickness: 6 },
+  md: { inset: 4, thickness: 8 },
+} as const;
+
 const initialGeometry: Geometry = {
   width: 0,
   height: 0,
@@ -68,11 +78,13 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
       maxHeight,
       orientation = 'both',
       scrollbar = 'auto',
+      persistent = false,
       viewportClassName,
       viewportStyle,
       contentClassName,
       contentStyle,
       verticalOffset = 0,
+      size = 'md',
       viewportProps,
       rootRef,
       scrollbarTabIndex,
@@ -199,6 +211,9 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
       orientation !== 'vertical' && geometry.scrollWidth > geometry.width + 1;
     const verticalOverflow =
       orientation !== 'horizontal' && geometry.scrollHeight > geometry.height + 1;
+    const metrics = trackMetrics[size] ?? trackMetrics.md;
+    const edge = metrics.inset;
+    const cross = metrics.inset + metrics.thickness;
     const inset = Math.min(Math.max(0, verticalOffset), Math.max(0, geometry.height - 32));
     const viewportAccessibility = {
       role,
@@ -212,8 +227,8 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
       const contentSize = vertical ? geometry.scrollHeight : geometry.scrollWidth;
       const offset = vertical ? inset : 0;
       const crossOverflow = vertical ? horizontalOverflow : verticalOverflow;
-      const endInset = resizeHandle ? 16 : crossOverflow ? 12 : 4;
-      const trackSize = Math.max(0, visibleSize - offset - 4 - endInset);
+      const endInset = resizeHandle ? 16 : crossOverflow && !persistent ? cross : edge;
+      const trackSize = Math.max(0, visibleSize - offset - edge - endInset);
       const thumbSize = Math.min(
         trackSize,
         Math.max(24, (trackSize * (visibleSize - offset)) / Math.max(1, contentSize - offset)),
@@ -234,25 +249,32 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
             vertical
               ? externalViewport
                 ? {
-                    top: geometry.y + inset + 4,
-                    left: geometry.rtl ? geometry.x + 4 : geometry.x + geometry.width - 12,
+                    top: geometry.y + inset + edge,
+                    left: geometry.rtl ? geometry.x + edge : geometry.x + geometry.width - cross,
                     height: trackSize,
                     bottom: 'auto',
                     right: 'auto',
                   }
-                : { top: inset + 4, bottom: endInset }
+                : persistent
+                  ? { top: inset + edge, height: trackSize, bottom: 'auto' }
+                  : { top: inset + edge, bottom: endInset }
               : externalViewport
                 ? {
-                    top: geometry.y + geometry.height - 12,
-                    left: geometry.x + 4,
+                    top: geometry.y + geometry.height - cross,
+                    left: geometry.x + edge,
                     width: trackSize,
                     bottom: 'auto',
                     right: 'auto',
                   }
-                : {
-                    right: verticalOverflow && !geometry.rtl ? 12 : 4,
-                    left: verticalOverflow && geometry.rtl ? 12 : 4,
-                  }
+                : persistent
+                  ? {
+                      left: geometry.rtl && orientation !== 'horizontal' ? cross + edge : edge,
+                      width: trackSize,
+                    }
+                  : {
+                      right: verticalOverflow && !geometry.rtl ? cross : edge,
+                      left: verticalOverflow && geometry.rtl ? cross : edge,
+                    }
           }
         >
           <span
@@ -359,9 +381,12 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
         className={classes(
           'leaf-scrollbar',
           externalViewport && 'leaf-scrollbar--external',
+          size === 'sm' && 'leaf-scrollbar--sm',
           className,
         )}
         data-scrollbar={scrollbar}
+        data-persistent={persistent && scrollbar !== 'hidden' && !externalViewport ? '' : undefined}
+        data-orientation={orientation}
         data-scrolling={scrolling || undefined}
         data-dragging={dragging || undefined}
         style={{ height, maxHeight, ...style }}
@@ -398,10 +423,12 @@ export const ScrollbarControl = forwardRef<HTMLDivElement, ScrollbarControlProps
           </div>
         )}
         {scrollbar !== 'hidden' &&
-          (verticalOverflow || (scrollbar === 'always' && orientation !== 'horizontal')) &&
+          (verticalOverflow ||
+            ((scrollbar === 'always' || persistent) && orientation !== 'horizontal')) &&
           bar(true)}
         {scrollbar !== 'hidden' &&
-          (horizontalOverflow || (scrollbar === 'always' && orientation !== 'vertical')) &&
+          (horizontalOverflow ||
+            ((scrollbar === 'always' || persistent) && orientation !== 'vertical')) &&
           bar(false)}
       </div>
     );

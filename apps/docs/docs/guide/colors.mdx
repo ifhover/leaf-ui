@@ -1,0 +1,29 @@
+import { ColorPalette } from '../../src/components/color-palette';
+import { ComponentExample } from '../../src/components/component-example';
+import { ThemeColors } from '../../src/examples/theming/colors';
+
+# 颜色
+
+五个语义色各生成 7 档派生色，中性色保留 9 档色阶，浅色与深色模式共用。
+
+## 全局颜色变量
+
+每组展示独立保留的基色及其派生色带。五个语义色共 35 个派生色块，加上中性色的 9 档共 44 个。点击色块查看色值与 CSS 变量。
+
+<ColorPalette />
+
+## 修改基色
+
+通过 ConfigProvider 的 `theme.primaryColor` 修改主题基色，其他五组通过 `theme.tokens` 修改。更新这些 JS 配置即可重新生成色阶；修改 DOM 样式不会触发 JS 主题重算。
+
+示例固定为浅色外观，并把 `tokens.mutedSurfaceColor` 设为 `rgb(244,243,239)`。Tabs 轨道和 Card 的内嵌外层画布共用这份底板，卡片内部内容仍使用内容表面；组件显式覆盖优先。
+
+所有 `on*Color` 默认白色，需要黑字时将对应字段设为 `#000000`。请根据实际背景选择合适的字色。
+
+<ComponentExample title="基色与字色" preview={<ThemeColors />} fileName="colors.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/theming/colors.tsx"
+
+```
+
+</ComponentExample>

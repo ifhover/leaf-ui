@@ -165,48 +165,52 @@ export function Transfer(rawProps: TransferProps) {
             {list.length}
           </small>
         </header>
-        {searchable && (
-          <div className="leaf-transfer__search">
-            <InputControl
-              size="sm"
-              allowClear
-              prefix={<Search size={14} />}
-              aria-label={
-                side === 0 ? t('transfer.searchAvailableItems') : t('transfer.searchSelectedItems')
+        <div className="leaf-transfer__body">
+          {searchable && (
+            <div className="leaf-transfer__search">
+              <InputControl
+                size="sm"
+                allowClear
+                prefix={<Search size={14} />}
+                aria-label={
+                  side === 0
+                    ? t('transfer.searchAvailableItems')
+                    : t('transfer.searchSelectedItems')
+                }
+                value={query}
+                onChange={(event) =>
+                  setQueries((previous) =>
+                    previous.map((text, index) => (index === side ? event.target.value : text)),
+                  )
+                }
+              />
+            </div>
+          )}
+          {virtual ? (
+            <VirtualList
+              items={list}
+              itemKey={(item) => item.key}
+              renderItem={row}
+              height={height}
+              estimateSize={(item) =>
+                Math.max(estimateControlHeight(theme, density), item.description ? 42 : 0) + 6
               }
-              value={query}
-              onChange={(event) =>
-                setQueries((previous) =>
-                  previous.map((text, index) => (index === side ? event.target.value : text)),
-                )
-              }
+              emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
             />
-          </div>
-        )}
-        {virtual ? (
-          <VirtualList
-            items={list}
-            itemKey={(item) => item.key}
-            renderItem={row}
-            height={height}
-            estimateSize={(item) =>
-              Math.max(estimateControlHeight(theme, density), item.description ? 42 : 0) + 6
-            }
-            emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
-          />
-        ) : (
-          <ScrollbarControl
-            viewportClassName="leaf-transfer__list"
-            height={height}
-            role="presentation"
-          >
-            {list.length ? (
-              list.map((item) => <div key={item.key}>{row(item)}</div>)
-            ) : (
-              <Result size="sm" icon={null} title={t('transfer.noItems')} />
-            )}
-          </ScrollbarControl>
-        )}
+          ) : (
+            <ScrollbarControl
+              viewportClassName="leaf-transfer__list"
+              height={height}
+              role="presentation"
+            >
+              {list.length ? (
+                list.map((item) => <div key={item.key}>{row(item)}</div>)
+              ) : (
+                <Result size="sm" icon={null} title={t('transfer.noItems')} />
+              )}
+            </ScrollbarControl>
+          )}
+        </div>
       </section>
     );
   };
@@ -223,6 +227,7 @@ export function Transfer(rawProps: TransferProps) {
           ref={trigger}
           id={props.id ?? field?.id}
           size="sm"
+          variant="solid"
           startIcon={<ArrowRight size={16} />}
           aria-label={t('transfer.moveToSelected')}
           disabled={

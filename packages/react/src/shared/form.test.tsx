@@ -12,7 +12,6 @@ import {
   Select,
   Switch,
   Textarea,
-  TimePicker,
 } from '../index';
 
 describe('Native form integration', () => {
@@ -28,7 +27,13 @@ describe('Native form integration', () => {
           aria-label="日期"
           defaultValue={new Date(2026, 9, 15)}
         />
-        <TimePicker form="custom-fields" name="time" aria-label="时间" defaultValue="14:30" />
+        <DatePicker
+          picker="time"
+          form="custom-fields"
+          name="time"
+          aria-label="时间"
+          defaultValue="14:30"
+        />
         <AutoComplete
           form="custom-fields"
           name="title"

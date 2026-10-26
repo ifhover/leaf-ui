@@ -1,50 +1,76 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { VirtualListBasic } from '../../../src/examples/en/virtual-list/basic';
 import { VirtualListDynamic } from '../../../src/examples/en/virtual-list/advanced';
+import { VirtualListScrollControl } from '../../../src/examples/en/virtual-list/scroll-control';
+import { VirtualListEmpty } from '../../../src/examples/en/virtual-list/empty';
+
+export const leafDoc = { component: 'VirtualList', primaryApi: 'VirtualListProps' };
 
 # VirtualList
 
-Browse large lists smoothly.
+Render a window of items from a long list.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<VirtualListBasic />} fileName="basic.tsx">
+`itemKey` must return a unique, stable identifier. Do not use positions that can change after sorting or filtering.
+
+<ComponentExample exampleId="basic" preview={<VirtualListBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/virtual-list/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<VirtualListDynamic />} fileName="advanced.tsx">
+## Examples
+
+### Dynamic row heights
+
+`estimateSize` is an initial estimate; rows are measured from their content. Keep the same key when an item's content changes.
+
+<ComponentExample exampleId="advanced" preview={<VirtualListDynamic />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/virtual-list/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Scroll control
 
-Keep itemKey stable. estimateSize is used initially; rows are measured afterward. SSR outputs a deterministic initial window that adjusts after mounting.
+`scrollToIndex` uses zero-based indices.
 
-## Types
+<ComponentExample exampleId="scroll-control" preview={<VirtualListScrollControl />} fileName="scroll-control.tsx" width={600}>
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { VirtualListHandle, VirtualListProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/virtual-list/scroll-control.tsx"
 ```
 
-## VirtualListHandle API
+</ComponentExample>
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `element` | `HTMLDivElement \| null` | Required | Scroll container element |
-| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | Required | Scroll to an item |
-| `scrollToOffset` | `(offset: number) => void` | Required | Scroll to an offset |
+### Empty list
 
-## VirtualListProps API
+An empty `items` array shows the default empty state. Replace it with `emptyContent` when needed.
+
+<ComponentExample exampleId="empty" preview={<VirtualListEmpty />} fileName="empty.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/virtual-list/empty.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### VirtualListProps API
+
+Configure virtual-list data, dimensions and item rendering.
+
+```ts
+import type { VirtualListProps } from '@ifhover/leaf-ui';
+```
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -54,5 +80,19 @@ import type { VirtualListHandle, VirtualListProps } from '@ifhover/leaf-ui';
 | `height` | `number` | `320` | Height, numbers are in pixels |
 | `estimateSize` | `number \| ((item: T, index: number) => number)` | `40` | Estimated item size; actual size is measured |
 | `overscan` | `number` | `5` | Items rendered outside the visible range |
-| `emptyContent` | `ReactNode` | — | Empty list content |
 | `horizontal` | `boolean` | `false` | Horizontal virtual list |
+| `emptyContent` | `ReactNode` | — | Empty list content |
+
+### VirtualListHandle API
+
+Use the ref to scroll to an item or position.
+
+```ts
+import type { VirtualListHandle } from '@ifhover/leaf-ui';
+```
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `element` | `HTMLDivElement \| null` | Required | Scroll container element |
+| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | Required | Scroll to an item |
+| `scrollToOffset` | `(offset: number) => void` | Required | Scroll to an offset |

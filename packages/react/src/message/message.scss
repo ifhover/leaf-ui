@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-message-region {
   position: fixed;
   top: 24px;
@@ -58,7 +60,8 @@
     var(--leaf-color-surface-raised, var(--leaf-color-surface))
   );
   color: var(--leaf-component-message-color, var(--leaf-color-text));
-  font: var(--leaf-component-message-font-size, var(--leaf-font-size))/1.5 var(--leaf-font-family);
+  font: var(--leaf-component-message-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   box-shadow: var(
     --leaf-component-message-shadow,
     var(--leaf-surface-shadow, var(--leaf-shadow-md))
@@ -79,7 +82,7 @@
     flex-shrink: 0;
     color: var(--leaf-feedback-color, var(--leaf-color-primary-ink, var(--leaf-color-primary)));
   }
-  @each $type in info, success, warning, error {
+  @each $type in info, success, warning, danger, error {
     &--#{$type} {
       --leaf-feedback-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
     }
@@ -90,19 +93,8 @@
     padding: 3px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover {
-      background: var(--leaf-color-surface-muted);
-      color: var(--leaf-color-text);
-    }
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
+
+    @include mixins.text-action;
   }
   &[data-state='closing'] {
     transform: translateY(-6px);

@@ -13,9 +13,9 @@ import {
 import { HardDrive, Mail, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { NeutralAlerts } from '../../../../apps/docs/src/examples/alert/neutral';
-import { DrawerSections } from '../../../../apps/docs/src/examples/drawer/sections';
 import { CardSections } from '../../../../apps/docs/src/examples/en/card/sections';
 import { AccessScope } from './access-scope-fixture';
+import { DrawerSectionsFixture } from './drawer-sections-fixture';
 
 function ConfirmationActions() {
   const { confirm } = useConfirm();
@@ -58,6 +58,7 @@ function ConfirmationActions() {
 export function SurfaceFixture() {
   const [saved, setSaved] = useState('');
   const [plain, setPlain] = useState(false);
+  const [divided, setDivided] = useState(false);
   const tokens = new URLSearchParams(location.search).has('surface-tokens');
   return (
     <div className="surface-fixture">
@@ -72,11 +73,11 @@ export function SurfaceFixture() {
                 components: {
                   Modal: {
                     padding: '14px 18px',
-                    footerBackground: 'var(--leaf-color-primary-surface-5)',
+                    footerBackground: 'var(--leaf-color-primary-soft)',
                   },
                   Drawer: {
                     padding: '14px 18px',
-                    footerBackground: 'var(--leaf-color-primary-surface-5)',
+                    footerBackground: 'var(--leaf-color-primary-soft)',
                   },
                   Checkbox: { borderRadius: 8, borderColor: 'rgb(100 110 120)' },
                 },
@@ -87,9 +88,12 @@ export function SurfaceFixture() {
         <Space wrap align="start" size="sm">
           <AccessScope english />
           <ConfirmationActions />
-          <DrawerSections english />
+          <DrawerSectionsFixture />
           <Button variant="outline" onClick={() => setPlain(true)}>
             Spacing only
+          </Button>
+          <Button variant="outline" onClick={() => setDivided(true)}>
+            Divided dialog
           </Button>
         </Space>
         <Modal
@@ -100,6 +104,9 @@ export function SurfaceFixture() {
           onClose={() => setPlain(false)}
         >
           Content grouped with spacing.
+        </Modal>
+        <Modal open={divided} title="Divided dialog" divided onClose={() => setDivided(false)}>
+          Content grouped with dividers.
         </Modal>
         <h2>Choice and notice states</h2>
         <form

@@ -1,7 +1,7 @@
 import { type ReactNode, useContext, useEffect, useId, useMemo, useRef } from 'react';
-import type { FeedbackType } from '../alert/alert';
 import { ComponentDefaultsContext, useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
+import type { FeedbackTypeInput } from '../shared/feedback';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { MessageItem } from './item';
 import { MessageContext } from './store';
@@ -9,7 +9,7 @@ import { MessageContext } from './store';
 export interface MessageOptions {
   key?: string;
   content: ReactNode;
-  type?: FeedbackType | 'loading';
+  type?: FeedbackTypeInput | 'loading';
   duration?: number;
   closable?: boolean;
   onClose?: () => void;
@@ -19,6 +19,8 @@ export interface MessageApi {
   success: (content: ReactNode, duration?: number) => string;
   info: (content: ReactNode, duration?: number) => string;
   warning: (content: ReactNode, duration?: number) => string;
+  danger: (content: ReactNode, duration?: number) => string;
+  /** @deprecated Use danger. */
   error: (content: ReactNode, duration?: number) => string;
   loading: (content: ReactNode) => string;
   close: (key?: string) => void;

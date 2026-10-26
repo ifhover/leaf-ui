@@ -1,4 +1,4 @@
-import { Flex, Space, TimePicker } from '@ifhover/leaf-ui';
+import { DatePicker, Flex, Space } from '@ifhover/leaf-ui';
 export function Capabilities({ english = false }) {
   return (
     <Space direction="vertical" align="stretch">
@@ -6,7 +6,8 @@ export function Capabilities({ english = false }) {
         {english
           ? 'Business hours; disabled choices cannot be submitted'
           : '营业时间；禁用项无法选择或通过输入提交'}
-        <TimePicker
+        <DatePicker
+          picker="time"
           use12Hours
           defaultValue="09:30"
           disabledTime={(time) => time.hour < 9 || time.hour >= 18}

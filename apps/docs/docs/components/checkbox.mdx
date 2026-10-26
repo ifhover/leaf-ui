@@ -1,65 +1,106 @@
-import { CheckboxCards } from '../../src/examples/checkbox/surfaces';
-import { CheckboxList } from '../../src/examples/checkbox/surfaces';
-import { ExtensionDemo } from '../../src/examples/checkbox/extensions';
 import { ComponentExample } from '../../src/components/component-example';
-import { CheckboxBasic, CheckboxCheckAll } from '../../src/components/form-examples';
+import { CheckboxBasic } from '../../src/examples/checkbox/basic';
+import { CheckboxGroupDemo } from '../../src/examples/checkbox/group';
+import { CheckboxDisabled } from '../../src/examples/checkbox/disabled';
+import { CheckboxCheckAll } from '../../src/examples/checkbox/check-all';
+import { CheckboxCards } from '../../src/examples/checkbox/surfaces';
+import { CheckboxList } from '../../src/examples/checkbox/list';
+
+export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 
 # Checkbox 复选框
 
-用于从一组选项中选择多项。
+选择一个或多个选项，或确认某项设置。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<CheckboxBasic />} fileName="basic.tsx">
+通过文字内容提供选项名称，用户可独立切换选中状态。
+
+<ComponentExample exampleId="basic" preview={<CheckboxBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 全选与半选
+受控使用时传入 `checked`，在 `onChange` 中从 `event.target.checked` 读取布尔值。
 
-indeterminate 表示部分选中，用于汇总子选项。它只影响显示与辅助技术识别；全选和提交值由 checked 决定。
+{/* leaf:section examples */}
 
-<ComponentExample title="全选与半选" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width={360}>
+## 示例
+
+### 选项组
+
+使用 `CheckboxGroup` 管理多个选项。与单个复选框不同，组的 `value` 和 `onChange` 使用字符串数组。
+
+<ComponentExample exampleId="group" preview={<CheckboxGroupDemo />} fileName="group.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/checkbox/group.tsx"
+```
+
+</ComponentExample>
+
+### 禁用状态
+
+设置 `disabled` 后，选中状态仍可显示，但不能由用户切换。
+
+<ComponentExample exampleId="disabled" preview={<CheckboxDisabled />} fileName="disabled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/checkbox/disabled.tsx"
+```
+
+</ComponentExample>
+
+### 全选与半选
+
+`indeterminate` 表示部分选中，不改变 `checked` 或提交值。子选项和全选逻辑由应用维护。
+
+<ComponentExample exampleId="check-all" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/check-all.tsx"
 ```
 
 </ComponentExample>
 
-## 扩展用法
+### 卡片选项
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<a id="进阶用法"></a>
 
-```tsx lineNumbers file="../../src/examples/checkbox/extensions.tsx"
-```
+设置 `variant="card"`，展示包含图标和说明的选项。
 
-</ComponentExample>
-
-## 卡片选项
-
-卡片整块可点击，适合包含图标和说明的选项。
-
-<ComponentExample title="卡片选项" preview={<CheckboxCards />} fileName="surfaces.tsx">
+<ComponentExample exampleId="surfaces" preview={<CheckboxCards />} fileName="surfaces.tsx">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/surfaces.tsx"
 ```
 
 </ComponentExample>
 
-## 成组选项
+### 成组选项
 
-相关选项共用边框和行分隔线；状态标签放在右侧。
+使用 `CheckboxGroup variant="list"` 展示成组列表。`extra` 只放状态标签等非交互内容，不放按钮或链接。
 
-<ComponentExample title="成组选项" preview={<CheckboxList />} fileName="surfaces.tsx">
+<ComponentExample exampleId="list" preview={<CheckboxList />} fileName="list.tsx">
 
-```tsx lineNumbers file="../../src/examples/checkbox/surfaces.tsx"
+```tsx lineNumbers file="../../src/examples/checkbox/list.tsx"
 ```
 
 </ComponentExample>
 
-## Checkbox API
+#### 表单提交与重置
+
+设置 `name` 后，只有已勾选且未禁用的选项参与提交。选项组按同一个字段名提交多个值，可用 `FormData.getAll(name)` 读取。
+
+非受控字段在表单重置时恢复 `defaultChecked` 或 `defaultValue`；受控字段需要同步重置应用状态。
+
+{/* leaf:section api */}
+
+## API
+
+### Checkbox API
+
+支持 `name`、`value`、`required`、`form` 等原生 checkbox 属性。没有文字标签时提供 `aria-label`；`className` 和 `style` 作用于标签容器。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -69,56 +110,38 @@ indeterminate 表示部分选中，用于汇总子选项。它只影响显示与
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |
 | `indeterminate` | `boolean` | `false` | 半选状态 |
-| `checked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
-| `defaultChecked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 值发生变化时调用。 |
+| `checked` | `boolean` | — | 受控的勾选状态。 |
+| `defaultChecked` | `boolean` | — | 非受控模式的初始勾选状态。 |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 event.target.checked 读取选中状态。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
-| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
+| `children` | `ReactNode` | — | 可点击的选项标签。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 复选框引用 |
 
-name、value、required、form 等原生属性可直接使用。只有已勾选且未禁用的复选框参与原生表单提交。没有文字标签时必须提供 aria-label。className 与 style 作用于标签容器。
+### CheckboxGroupProps API
 
-## 类型
-
-可导入 [`CheckboxProps`](#checkbox-api) 定义组件属性，或使用尺寸类型：
-
-```ts
-import type { CheckboxProps, ControlSize } from '@ifhover/leaf-ui';
-```
-
-## 扩展类型
-
-```ts
-import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
-```
-
-## CheckboxGroupProps API
+统一管理一组选项和值的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | 必填 | 必需。可用选项 |
+| `options` | `readonly (`[`CheckboxOption`](#checkboxoption-api)` \| string)[]` | 必填 | 可用选项 |
 | `value` | `readonly string[]` | — | 受控值 |
 | `defaultValue` | `readonly string[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: string[]) => void` | — | 值变化回调 |
 | `legend` | `ReactNode` | — | 字段组名称 |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 尺寸或间距预设 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 复选框尺寸。 |
 | `variant` | `'plain' \| 'card' \| 'list'` | `'plain'` | 普通排列、卡片网格或带分隔线的成组列表。 |
-| `minCount` | `number` | `0` | 最少勾选数量 |
-| `maxCount` | `number` | `Infinity` | 最多勾选或展示数量 |
 | `required` | `boolean` | — | 要求整体值非空，复合控件只校验一次。 |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向或移动方向 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 选项的排列方向。 |
 
-## CheckboxOption API
+### CheckboxOption API
+
+通过复选框组 `options` 提供的选项数据。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 必填 | 必需。受控值 |
-| `label` | `ReactNode` | 必填 | 必需。显示内容 |
+| `value` | `string` | 必填 | 选项值；同一组内应唯一。 |
+| `label` | `ReactNode` | 必填 | 显示内容 |
 | `description` | `ReactNode` | — | 补充说明。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |
 | `disabled` | `boolean` | — | 禁用交互。 |
-
-## 外观与丰富内容
-
-Checkbox 的 variant="card" 让标签整体成为可点击卡片；CheckboxGroup 的 variant="card" 自动排列卡片，variant="list" 使用成组列表。description 与 extra 会作为辅助描述，icon 为装饰内容。extra 适合状态标签，不应包含按钮或链接。原生 name、value、form、表单重置与键盘操作保持可用。

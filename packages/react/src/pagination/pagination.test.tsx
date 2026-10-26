@@ -5,6 +5,24 @@ import { ConfigProvider } from '../config-provider';
 import { Pagination } from './pagination';
 
 describe('Pagination', () => {
+  it('reuses internal buttons without inheriting public Button defaults', async () => {
+    const change = vi.fn();
+    render(
+      <ConfigProvider
+        locale="en-US"
+        components={{ Button: { loading: true, disabled: true, type: 'submit', variant: 'solid' } }}
+      >
+        <Pagination total={100} onChange={change} />
+      </ConfigProvider>,
+    );
+    const next = screen.getByRole('button', { name: 'Next page' });
+    expect(next).toHaveClass('leaf-button', 'leaf-button--outline');
+    expect(next).toHaveAttribute('type', 'button');
+    expect(next).toBeEnabled();
+    expect(next).not.toHaveAttribute('data-loading');
+    await userEvent.click(next);
+    expect(change).toHaveBeenLastCalledWith(2, 10);
+  });
   it('jumps across omitted pages using accessible ellipsis controls', async () => {
     const change = vi.fn();
     render(

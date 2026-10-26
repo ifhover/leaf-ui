@@ -1,6 +1,6 @@
 # 文档站维护说明
 
-本文件由 [AGENTS.md](AGENTS.md) 引用。示例写法遵循 [EXAMPLE-WRITING.md](EXAMPLE-WRITING.md)，版本开发与发布遵循 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)。
+本文件由 [AGENTS.md](AGENTS.md) 引用。内容与页面结构遵循 [使用文档编写规范](DOCUMENT-WRITING.md)，示例展示与源码遵循 [示例编写规则](EXAMPLE-WRITING.md)，版本开发与发布遵循 [仓库流程](../../DEVELOPMENT-WORKFLOW.md)；本文件只维护站点实现与生成流程。
 
 ## 运行与构建
 
@@ -23,7 +23,7 @@ pnpm preview
 
 导航在 `rspress.config.ts`，中英文指南和组件侧边栏使用各自路径键。组件名称使用实际导入名称，中文副标题写在 `tag` 中。新增组件同步 `src/components/component-catalog.ts`、`scripts/component-metadata.mjs` 和 `docs/public/components` 静态 SVG；总览不挂载所有交互实例。图标使用 `lucide-react` 具名导入，避免手绘运行时图标集合。
 
-顶部 API 导航使用独立 `/api/`、`/en/api/` 侧边栏。ConfigProvider 页面先介绍多语言、主题与外观、组件默认值，底部独立 API 章节集中放置 `ConfigProvider API`、`LeafTheme` 与类型参考；API 表格使用三级标题。完整 `LeafComponentDefaults`、`LeafThemeTokens` 分别放在 `api/component-defaults`、`api/theme-tokens`，通过链接查询。默认参数示例要直观展示占位文本等变化，并说明配置键的命名规则与实例覆盖。使用建议只保留简短、常见的注意事项。
+顶部 API 导航使用独立 `/api/`、`/en/api/` 侧边栏。ConfigProvider 页面遵循[组件页固定结构](DOCUMENT-WRITING.md#组件页固定结构)，配置、主题与关联类型的 API 集中放在 API 区域。完整 `LeafComponentDefaults`、`LeafThemeTokens` 分别放在 `api/component-defaults`、`api/theme-tokens`，通过链接查询。默认参数示例要直观展示占位文本等变化，并说明配置键的命名规则与实例覆盖。使用建议只保留简短、常见的注意事项。
 
 所有文档页使用相同的正文宽度和水平留白，不根据是否包含演示切换布局；首页保留独立展示布局，普通内容的最大外宽为 1280px，宽屏左右各留 32px。平板和手机留白分别为 24px、18px。同步修改 API 表格时保留所在标题层级，避免自动生成额外的主章节。
 
@@ -39,11 +39,17 @@ pnpm preview
 
 正文规则排除 `.rp-not-doc`。站点排版与组件 token 分开，不能覆盖预览或首页中组件的默认圆角、阴影、内边距与状态。搜索和主题按钮使用 Leaf UI Button；外观切换保留 Rspress ThemeContext、存储和键盘操作。
 
+## 主题配置与颜色页面
+
 `DocsThemeProvider` 通过外层 ConfigProvider 同步站点和示例主题色。`ThemeColorSwitcher` 使用 ColorPicker，配色存储在 `leaf-ui-docs-primary-color`，支持刷新、语言切换与同源标签页同步；静态 HTML 和初次渲染使用默认值，挂载后恢复存储。存储不可用时仍可切换。Rspress 搜索 portal 只同步根元素的站点强调色，组件色板由 ConfigProvider 生成；局部主题保持独立。
 
 首页、认识 Leaf UI 和快速开始共用 `PackageInstall`。包管理器偏好存储在 `leaf-ui-docs-package-manager`，支持刷新、页面与语言切换、同页实例和同源标签页同步；存储不可用时仍可切换。品牌图标使用 `data-no-zoom` 排除文档图片放大。指南的四种命令保留在 MDX 子内容中，Markdown 导出完整输出这些命令。
 
-配色入口和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。颜色选择、存储与实心主色背景保留原色；深色下的主色文字、选中指示、焦点和必要边界由组件库分别派生。主题指南示例使用 `src/examples/theming/presets.tsx` 中的完整主题定义，包含默认、插画、Windows XP、Material（MUI 风格）与拟物，移除卡通入口。中英文示例包含全部生成逻辑，组件包不内置风格预设。首页不展示主题定制模块。默认风格没有额外主题 token，省略默认密度和动效。自定义风格只写差异；基础表面继续由库生成，染色背景和统一描边使用 color-mix，阴影复用全局描边色。自动派生的交互色和主色文字不写进示例，主色文字对比由库统一处理；Switch 滑块保持白色。Windows XP 的斜面与渐变、Material 的层次阴影、拟物的双向光照与按下内凹由普通主题 token 表达；组件级差异只涉及 Card 标题渐变、Button 阴影反馈。XP / Material 字体使用本地字体与系统回退，不额外加载第三方资源。主题编辑器将 HEX / RGB / HSL 归一为 HEX。
+配色入口和主题编辑器共用 `src/components/theme-colors.ts`：绿色、黑色、橙色 `#ff6900`、蓝色 `#1d9bf0`、红色 `#cf0b2d`。颜色选择、存储与实心主色背景保留原色；输入色不会被改写。主题指南示例使用 `src/examples/theming/presets.tsx` 中的完整主题定义，包含默认、插画、Windows XP、Material（MUI 风格）与拟物；这些示例只用于说明主题 token 的接入方式，介绍文字不把它们描述为可随意切换风格的卖点，也不再新增装饰性预设（是否保留现有预设待用户决定）。中英文示例包含全部生成逻辑，组件包不内置风格预设。首页不展示主题定制模块。默认风格没有额外主题 token，省略默认密度和动效。自定义风格只写差异；基础表面继续由库生成，染色背景和统一描边使用 color-mix，阴影复用全局描边色。自动派生的语义色与状态不在示例重复配置，前景与实底角色遵守颜色规范。Windows XP 的斜面与渐变、Material 的层次阴影、拟物的双向光照与按下内凹由普通主题 token 表达；组件级差异只涉及 Card 标题渐变、Button 阴影反馈。XP / Material 字体使用本地字体与系统回退，不额外加载第三方资源。主题编辑器将 HEX / RGB / HSL 归一为 HEX。
+
+颜色定义、派生、变量准入和生成物同步统一遵守 [颜色系统规范](../../COLOR-SYSTEM.md)，本文件只维护站点实现和使用者页面范围，不重复算法。存储事件与 Rspress 外观状态转为 JS ConfigProvider 配置；它们不是监听 DOM 颜色后重新派生。
+
+颜色页只展示五组语义色带（每组基色与 7 档派生色）、中性色 9 档色阶，以及通过 ConfigProvider 配置六组基色与白字 / 黑字的可运行示例。不再展示用途映射、场景矩阵或高级参考。中性色基色可通过 neutralColor 修改。实底前景规则见 [颜色系统：角色映射与选阶](../../COLOR-SYSTEM.md#角色映射与选阶)；颜色生成不监听 DOM，不在 hydration 后解析数值，更新统一来自 JS 配置。
 
 组件和站点主题使用 SCSS，由 `pluginSass` 编译。Tailwind 4 入口 `theme/tailwind.css` 只服务现有站点界面，不是组件示例的前置依赖；PostCSS 接入 `@tailwindcss/postcss`，扫描 `src`、`docs`、`theme`，不加载 Preflight，不使用全局 `!important`。组件行内布局通过公共参数调整。不要把 Tailwind 依赖加入组件包。
 
@@ -75,6 +81,20 @@ API 类型单元格由 `scripts/api-type-display.mjs` 的 rehype 插件合并为
 
 Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `api/index.json` 并写入准确包版本、提交和浏览器地址。每版根目录有 `llm.txt` / `llms.txt`；右侧 Markdown 链接必须指向当前版本。独立 Skill 维护见 [skills/README.md](../../skills/README.md)。
 
+`guide/design-standards` 的中英文原文同时用于界面设计指南和 Skill 查询（`--guide design-standards`）。组合示例仍引用真实 TSX，由现有示例导出链路展开，不维护额外的 AI 摘要或 Skill 内置标尺。新增 / 修改标尺的内容边界见[编写规范](DOCUMENT-WRITING.md#页面组织)；不得将当前指南覆盖到历史发布快照。
+
+## 结构化组件文档
+
+编写契约只维护在[使用文档编写规范](DOCUMENT-WRITING.md#组件页固定结构)。所有具有独立 API 的组件页声明 `leafDoc`；目录、图标接入指南与 Empty 兼容迁移页使用该规范明确的例外，不以遗漏元信息绕过检查。历史快照未声明元信息时保留原链路，不混入当前组件内容。
+
+`scripts/component-document.mjs` 使用 MDX / GFM AST 识别元信息、区域、标题和表格，按源码位置保留正文，复用 `example-source.mjs` 提取同源示例。`remarkComponentDocument` 在站点编译时校验结构并注入示例标题；API 同步脚本对结构化页面使用相同的 AST 边界保证主 API 在前，并在写回前校验。
+
+`pnpm build:docs` 在网站构建后运行 `scripts/export-component-docs.mjs`，生成 `doc_build/ai/v1/index.json`、按语言和组件拆分的 `detail.json` 与独立示例 JSON。详情保留完整基础用法和 API，只列出普通示例的身份和名称；独立示例保留完整区块。索引和 JSON 均为生成文件，禁止手改。每份产物标记包版本、文档来源及 `sourceKind`；未提供发布提交时明确为 `workspace`，不声称是已发布快照。
+
+导出层按原页面 URL 和 `LEAF_DOCS_BASE` 解析站内 Markdown 链接，保留版本路径、语言、查询参数和锚点，将文档路由转换为真实 `.html` 地址；资源链接保留其扩展。只改写链接目的地址，不改写正文或代码，原始抽取结果仍用于网页源码一致性检查。
+
+单独导出可运行 `node apps/docs/scripts/export-component-docs.mjs --output .quality/doc-structure-rollout/export`。解析、覆盖和导出测试纳入 `pnpm test:docs`；真实页面验证复用文档布局浏览器测试。unified / remark 依赖均为 MIT，仅作为文档构建开发依赖，不进入组件运行产物。结构升级不改写历史版本文档，查询客户端须按版本支持情况读取，不能伪造旧版结构化数据。
+
 ## 正式站点与历史快照
 
 正式地址为 `https://ifhover.github.io/leaf-ui/`。`.github/workflows/pages.yml` 通过 GitHub Actions 部署 `site_build`，使用 `LEAF_DOCS_BASE=/leaf-ui/`。不提交静态产物和缓存。
@@ -89,6 +109,6 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 ## 开发预览
 
-开发分支可使用独立 `/dev/<name>/` 地址，展示开发状态、分支/提交和目标版本，使用独立资源、搜索与 base。稳定版本列表只记录 npm 正式版本；开发包使用 SemVer 预发布号和 `dev` 标签。
+开发预览的分支、地址、版本标记、记录与清理要求统一见 [开发流程](../../DEVELOPMENT-WORKFLOW.md#开发版在线文档)，不在此维护第二份发布规则。
 
 当前 Pages 与 `build:versions` 没有自动开发预览部署/清理；配置 base 之外还需独立部署步骤。记录 URL、分支、提交、部署位置和清理方式。合并或放弃后删除预览、资源、入口与活动清单，保留清理证据；正式历史快照继续可访问。

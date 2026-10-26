@@ -1,47 +1,79 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { SpaceBasic } from '../../src/examples/space/basic';
 import { SpaceVertical } from '../../src/examples/space/advanced';
+import { SpaceSizes } from '../../src/examples/space/sizes';
+import { SpaceSplit } from '../../src/examples/space/split';
+
+export const leafDoc = { component: 'Space', primaryApi: 'SpaceProps' };
 
 # Space 间距
 
-统一一组元素之间的间距。
+统一一组元素之间的间距。需要主轴对齐时使用 [Flex](/components/flex)，分列排列使用 [Grid](/components/grid)。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<SpaceBasic />} fileName="basic.tsx">
+## 基础用法
+
+`wrap` 允许内容在空间不足时换行。
+
+<ComponentExample exampleId="basic" preview={<SpaceBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/space/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<SpaceVertical />} fileName="advanced.tsx">
+## 示例
+
+### 间距大小
+
+`size` 可使用预设间距、像素值，或 `[行间距, 列间距]` 数组。
+
+<ComponentExample exampleId="sizes" preview={<SpaceSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/space/sizes.tsx"
+```
+
+</ComponentExample>
+
+### 纵向排列
+
+设置 `direction="vertical"` 后，`align="start"` 保留子元素的自然宽度；需要铺满容器时使用 `align="stretch"`。
+
+<ComponentExample exampleId="advanced" preview={<SpaceVertical />} fileName="advanced.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/space/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 分隔符
 
-size 可使用预设、像素值或 [纵向, 横向] 间距。wrap 允许换行，split 在相邻内容之间插入分隔符。
+`split` 在相邻元素间插入装饰性分隔内容，辅助技术会忽略它；不要在其中放置链接或按钮。
 
-## 类型
+<ComponentExample exampleId="split" preview={<SpaceSplit />} fileName="split.tsx" width="fit-content">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { SpaceProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/space/split.tsx"
 ```
 
-## SpaceProps API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### SpaceProps API
+
+配置子内容的排列方向、间距与分隔符。
+
+支持原生 `div` 属性和 DOM ref；显式 `style` 优先于布局属性。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向或移动方向 |
-| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | 尺寸或间距预设 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 子元素的排列方向。 |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | 子元素间距；数字为像素，数组为 [行间距, 列间距]。 |
 | `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | 对齐方式 |
 | `wrap` | `boolean` | `false` | 空间不足时换行 |
-| `split` | `ReactNode` | — | 相邻元素分隔内容 |
+| `split` | `ReactNode` | — | 相邻元素间的装饰性分隔内容，不放交互控件。 |

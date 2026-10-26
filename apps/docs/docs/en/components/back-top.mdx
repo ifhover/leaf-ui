@@ -2,44 +2,54 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { BackTopBasic } from '../../../src/examples/en/back-top/basic';
 import { BackTopCustom } from '../../../src/examples/en/back-top/advanced';
 
+export const leafDoc = { component: 'BackTop', primaryApi: 'BackTopProps' };
+
 # BackTop
 
 Return to the top of a page or scroll container.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<BackTopBasic />} fileName="basic.tsx">
+<a id="page-scrolling"></a>
+
+By default, BackTop listens to the window and appears in a viewport corner when the scroll position reaches `visibilityHeight`. Click the example button to scroll this page, then use the bottom-right button to return to the top.
+
+<ComponentExample exampleId="basic" preview={<BackTopBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/back-top/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<BackTopCustom />} fileName="advanced.tsx">
+## Examples
+
+### Scroll container
+
+Return the scrolling element from `target`. The `ScrollArea` ref points to its scroll viewport; this example positions the return button inside that area.
+
+<ComponentExample exampleId="advanced" preview={<BackTopCustom />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/back-top/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-The default target is the window. Return a scrolling element from target to use a custom container. The button appears after visibilityHeight and respects reduced-motion preferences.
+## API
 
-## Types
+### BackTopProps API
 
-Import these types for data, callbacks and refs.
+Omitting `target`, or returning `null`, uses the window. When reduced motion is requested or [ConfigProvider](/en/components/config-provider) disables motion, scrolling uses `auto` regardless of `behavior`.
 
-```ts
-import type { BackTopProps } from '@ifhover/leaf-ui';
-```
-
-## BackTopProps API
+You can supply a native `onClick` handler. Calling `event.preventDefault()` prevents the built-in scroll action.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `target` | `() => HTMLElement \| Window \| null` | — | Scroll target or link target |
-| `visibilityHeight` | `number` | `400` | Show after this scroll distance |
-| `behavior` | `ScrollBehavior` | `'smooth'` | Scroll behavior |
+| `target` | `() => HTMLElement \| Window \| null` | — | Return the scroll container; omitted or null uses window. |
+| `visibilityHeight` | `number` | `400` | Show when the scroll distance is at or above this pixel value. |
+| `behavior` | `ScrollBehavior` | `'smooth'` | Scroll-to-top behavior; auto is used when motion is disabled or reduced motion is preferred. |

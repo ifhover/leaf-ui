@@ -6,7 +6,7 @@
   color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
   background: var(--leaf-component-tooltip-background, var(--leaf-color-text));
   font-size: var(--leaf-font-size-sm);
-  line-height: 1.6;
+  line-height: var(--leaf-line-height-sm);
   overflow-wrap: anywhere;
   box-shadow: var(
     --leaf-component-tooltip-shadow,

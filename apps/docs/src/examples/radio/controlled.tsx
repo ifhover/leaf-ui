@@ -1,13 +1,12 @@
-import { RadioGroup, Space, Text } from '@ifhover/leaf-ui';
+import { Flex, RadioGroup, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function RadioControlled() {
   const [value, setValue] = useState('daily');
   return (
-    <Space direction="vertical" align="stretch">
+    <Flex direction="column" gap="md" align="start">
       <RadioGroup
         label="提醒频率"
-        direction="vertical"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         options={[
@@ -16,7 +15,9 @@ export function RadioControlled() {
           { label: '仅重要消息', value: 'important' },
         ]}
       />
-      <Text tone="muted">当前选择：{value}</Text>
-    </Space>
+      <Text tone="muted" role="status">
+        当前选择：{value}
+      </Text>
+    </Flex>
   );
 }

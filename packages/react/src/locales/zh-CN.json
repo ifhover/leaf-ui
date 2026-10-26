@@ -13,7 +13,8 @@
     "placeholder": "请选择日期",
     "clear": "清除日期",
     "label": "选择日期",
-    "selectDate": "选择日期"
+    "selectDate": "选择日期",
+    "presets": "快捷选项"
   },
   "timePicker": {
     "placeholder": "请选择时间",
@@ -57,6 +58,7 @@
   },
   "common": {
     "confirm": "确定",
+    "next": "下一步",
     "cancel": "取消",
     "close": "关闭",
     "start": "开始",
@@ -154,6 +156,8 @@
   },
   "tabs": {
     "moreTabs": "更多标签页",
+    "scrollLeft": "向左滚动标签页",
+    "scrollRight": "向右滚动标签页",
     "addTab": "添加标签页",
     "reorder": "移动标签页 {label}",
     "closeLabel": "关闭标签页 {label}"
@@ -171,14 +175,6 @@
     "goTo": "转到 {index}",
     "slide": "幻灯片",
     "role": "轮播"
-  },
-  "commandPalette": {
-    "commandSearch": "命令搜索",
-    "placeholder": "搜索命令…",
-    "searchCommands": "搜索命令",
-    "commands": "命令",
-    "navigate": "选择",
-    "run": "执行"
   },
   "errorBoundary": {
     "title": "内容暂时无法显示",
@@ -221,7 +217,12 @@
     "scrollThumbnailsForward": "向后滚动缩略图",
     "image": "图片",
     "position": "第 {index} 张，共 {total} 张",
-    "viewImage": "查看第 {index} 张图片{alt}"
+    "viewImage": "查看第 {index} 张图片{alt}",
+    "noImage": "暂无图片",
+    "actualSize": "原始尺寸（1:1）",
+    "fitToWindow": "适应窗口",
+    "rotateCounterclockwise": "逆时针旋转",
+    "rotateClockwise": "顺时针旋转"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "加载失败，重试",

@@ -36,6 +36,7 @@ export function BackTop(rawProps: BackTopProps) {
   return (
     <ButtonControl
       {...props}
+      variant="solid"
       className={classes('leaf-back-top', className)}
       aria-label={props['aria-label'] ?? t('backTop.backToTop')}
       data-visible={visible || undefined}

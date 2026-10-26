@@ -1,17 +1,48 @@
-import { Form, FormField, TreeSelect } from '@ifhover/leaf-ui';
-import { treeOptions } from './options';
+import { Flex, Text, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+
+const treeOptions: readonly TreeSelectOption[] = [
+  {
+    value: 'design',
+    label: 'Design team',
+    selectable: false,
+    children: [
+      { value: 'visual', label: 'Visual design' },
+      { value: 'product', label: 'Product design' },
+      { value: 'archive', label: 'Archived team', disabled: true },
+    ],
+  },
+  {
+    value: 'engineering',
+    label: 'Engineering team',
+    selectable: false,
+    children: [
+      { value: 'web', label: 'Frontend development' },
+      { value: 'server', label: 'Backend development' },
+    ],
+  },
+];
+
 export function TreeSelectStates() {
   return (
-    <Form layout="vertical">
-      <FormField label="Disabled">
-        <TreeSelect options={treeOptions} disabled defaultValue="web" />
-      </FormField>
-      <FormField label="Validation feedback">
-        <TreeSelect options={treeOptions} status="error" placeholder="Select a team" />
-      </FormField>
-      <FormField label="Custom popup width">
-        <TreeSelect options={treeOptions} popupWidth={320} popupMaxWidth={360} defaultExpandAll />
-      </FormField>
-    </Form>
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">Disabled</Text>
+        <TreeSelect
+          aria-label="Disabled team selection"
+          options={treeOptions}
+          disabled
+          defaultValue="web"
+        />
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">Error</Text>
+        <TreeSelect
+          aria-label="Team selection with an error"
+          options={treeOptions}
+          status="error"
+          placeholder="Select a team"
+        />
+      </Flex>
+    </Flex>
   );
 }

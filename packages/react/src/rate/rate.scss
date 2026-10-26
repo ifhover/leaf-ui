@@ -1,5 +1,6 @@
 .leaf-rate {
   --leaf-rate-size: 24px;
+  // Rating gold is its own semantic scale; it is not a warning state.
   --leaf-rate-color: #ffc53d;
   position: relative;
   display: inline-flex;

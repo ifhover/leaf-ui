@@ -4,6 +4,7 @@ import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { type FileItem, FileList, type FileListProps } from './filelist';
+import { fileExtension, fileKind, fileName, safeFileUrl } from './model';
 
 const view = (items: readonly FileItem[], props: Partial<FileListProps> = {}) => (
   <StrictMode>
@@ -131,5 +132,47 @@ describe('FileList', () => {
       rerender(view([{ ...files[0], percent }]));
       expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', value);
     }
+  });
+
+  it('allows safe inline data and blob URLs while blocking executable schemes and scripted SVGs', () => {
+    const cleanSvg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ccc"/></svg>',
+    )}`;
+    const scriptedSvg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>',
+    )}`;
+    expect(safeFileUrl(cleanSvg)).toBe(cleanSvg);
+    expect(safeFileUrl('data:text/plain;charset=utf-8,hello')).toBe(
+      'data:text/plain;charset=utf-8,hello',
+    );
+    expect(safeFileUrl('blob:https://example.com/123')).toBe('blob:https://example.com/123');
+    expect(safeFileUrl('javascript:alert(1)')).toBeUndefined();
+    expect(safeFileUrl('vbscript:msgbox(1)')).toBeUndefined();
+    expect(safeFileUrl('data:text/html,<script>alert(1)</script>')).toBeUndefined();
+    expect(safeFileUrl(scriptedSvg)).toBeUndefined();
+    expect(fileName({ url: 'data:text/plain;charset=utf-8,hello' })).toBe('File');
+    expect(fileExtension({ name: '.gitignore' })).toBe('');
+    expect(fileKind({ name: 'export', type: 'application/pdf' })).toBe('document');
+
+    const { container } = render(
+      view(
+        [
+          { uid: 'clean', name: 'clean.svg', url: cleanSvg },
+          { uid: 'unsafe', name: 'unsafe.svg', url: scriptedSvg },
+          { uid: 'remote', name: 'remote.pdf', url: 'https://example.com/remote.pdf' },
+        ],
+        { listType: 'picture-card' },
+      ),
+    );
+    const items = container.querySelectorAll('.leaf-file-list__item');
+    expect(items[0]?.querySelector('img')).toHaveAttribute('src', cleanSvg);
+    expect(items[0]?.querySelector('.leaf-file-list__glyph')).toBeNull();
+    expect(items[1]?.querySelector('img')).toBeNull();
+    expect(items[1]?.querySelector('.leaf-file-list__extension')).toHaveTextContent('SVG');
+    expect(screen.getByRole('link', { name: 'Download clean.svg' })).not.toHaveAttribute('target');
+    expect(screen.getByRole('link', { name: 'Download remote.pdf' })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
   });
 });

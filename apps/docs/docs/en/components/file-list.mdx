@@ -1,117 +1,127 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { FileListBasic } from '../../../src/examples/en/file-list/basic';
-import { FileListActions } from '../../../src/examples/en/file-list/advanced';
 import { FileListPicture } from '../../../src/examples/en/file-list/picture';
 import { FileListCards } from '../../../src/examples/en/file-list/cards';
 import { FileListStates } from '../../../src/examples/en/file-list/states';
+import { FileListActions } from '../../../src/examples/en/file-list/advanced';
 import { FileListEmpty } from '../../../src/examples/en/file-list/empty';
+
+export const leafDoc = { component: 'FileList', primaryApi: 'FileListProps' };
 
 # FileList
 
-Display file information and upload status, with preview, download and removal actions.
+Display file information with preview, download and removal actions. Your application owns the file data; use [Upload](./upload.mdx) for uploads.
 
-## File information
+{/* leaf:section basic */}
 
-Icons identify each file type. File size is optional. Preview images or download other files.
+## Basic usage
 
-<ComponentExample title="File information" preview={<FileListBasic />} fileName="basic.tsx" width="100%">
+Pass file information through `items`, with a stable `uid` for each item. Sizes are in bytes and fall back to `originFile.size`; no size is displayed if neither is available. Remote file metadata is not fetched.
+
+<ComponentExample exampleId="basic" preview={<FileListBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Thumbnail list
+{/* leaf:section examples */}
 
-Use `listType="picture"` to show image thumbnails. Other files keep their type icons.
+## Examples
 
-<ComponentExample title="Thumbnail list" preview={<FileListPicture />} fileName="picture.tsx" width="100%">
+### Thumbnail list
+
+Set `listType="picture"` for thumbnails. A usable `url` enables preview for images, video and audio, and download for files. Providing only `onPreview` or `onDownload` does not create action buttons for files without a URL.
+
+<ComponentExample exampleId="picture" preview={<FileListPicture />} fileName="picture.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/picture.tsx"
 ```
 
 </ComponentExample>
 
-## Picture cards
+### Picture cards
 
-Use `listType="picture-card"` to show picture cards. The preview lets you switch between images in the same list.
+Set `listType="picture-card"` for a card grid using the same data as the thumbnail example. The built-in preview can switch between images in the same list.
 
-<ComponentExample title="Picture cards" preview={<FileListCards />} fileName="cards.tsx" width="100%">
+<ComponentExample exampleId="cards" preview={<FileListCards />} fileName="cards.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/cards.tsx"
 ```
 
 </ComponentExample>
 
-## Upload status
+### Upload status
 
-Show progress, completed, failed, ready and cancelled uploads. Error details appear below the affected file.
+Pass `status`, `percent` and `error` to display upload states. FileList does not send requests, cancel or retry uploads. Use [Upload](./upload.mdx) for those interactions.
 
-<ComponentExample title="Upload status" preview={<FileListStates />} fileName="states.tsx" width="100%">
+<ComponentExample exampleId="states" preview={<FileListStates />} fileName="states.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/states.tsx"
 ```
 
 </ComponentExample>
 
-## URL-only files and removal
+### Remove files
 
-Names can come from the URL. Update `items` in `onRemove`; the remove button waits when the callback returns a Promise.
+Set both `removable` and `onRemove` to show removal actions. Update `items` in the callback to remove the item; the return value itself does not change the list. This example uses a short delay to simulate asynchronous deletion. The button prevents repeated actions while pending. A rejected Promise displays an error in that row and allows another attempt.
 
-<ComponentExample title="URL-only files and removal" preview={<FileListActions />} fileName="advanced.tsx" width="100%">
+<ComponentExample exampleId="advanced" preview={<FileListActions />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Empty list
+### Empty list
 
-An empty state appears when there are no files. Use `emptyContent` to customize it.
+An empty state appears when there are no files. Use `emptyContent` to replace its content.
 
-<ComponentExample title="Empty list" preview={<FileListEmpty />} fileName="empty.tsx" width="100%">
+<ComponentExample exampleId="empty" preview={<FileListEmpty />} fileName="empty.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/file-list/empty.tsx"
 ```
 
 </ComponentExample>
 
-## Usage notes
+{/* leaf:section api */}
 
-Size is optional and no file metadata is fetched automatically. Icons follow MIME types or extensions; failed thumbnails fall back to a type icon. Preview is available for images, video and audio; other files show download only. Browser codec support determines media playback. Cross-origin downloads may open in a new tab; use `onDownload` for your download service. Use [Upload](./upload.mdx) to handle file uploads.
+## API
 
-## Types
+### FileListProps API
 
-```ts
-import type { FileItem, FileListProps } from '@ifhover/leaf-ui';
-```
+#### File data and actions
 
-## FileListProps API
+Names fall back from `name` to `originFile.name`, then the URL filename, and finally a default name. File icons and media detection use MIME types or extensions. Failed thumbnails fall back to a type icon. These inferences do not modify your file data.
+
+Media playback depends on browser codec support. Cross-origin downloads may open in a new tab; use `onDownload` to connect a download service. When adding controls through `renderActions`, provide accessible names and handle their disabled state.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `readonly `[`FileItem`](#fileitem-api)`[]` | Required | Required. Files to display |
-| `downloadable` | `boolean` | `true` | Show download actions for files with a URL |
-| `previewable` | `boolean` | `true` | Show preview actions for images, video and audio with a URL |
-| `removable` | `boolean` | `false` | Show removal actions when `onRemove` is also provided |
-| `onPreview` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Override media preview; uses the built-in preview when omitted |
-| `onDownload` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Override download; uses the file URL when omitted |
-| `onRemove` | `(file: `[`FileItem`](#fileitem-api)`) => void \| boolean \| Promise<void> \| Promise<boolean>` | — | Request removal; the caller updates `items`. Waits for async callbacks and shows rejections in the affected row. Return `false` to deny removal |
-| `renderActions` | `(file: `[`FileItem`](#fileitem-api)`, actions: ReactNode) => ReactNode` | — | Customize the action area |
-| `emptyContent` | `ReactNode` | No files | Empty list content |
-| `disabled` | `boolean` | `false` | Disable interaction. |
+| `items` | `readonly `[`FileItem`](#fileitem-api)`[]` | Required | Files to display |
 | `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
+| `previewable` | `boolean` | `true` | Show preview actions for images, video and audio with a URL |
+| `downloadable` | `boolean` | `true` | Show download actions for files with a URL |
+| `removable` | `boolean` | `false` | Show removal actions when `onRemove` is also provided |
+| `onPreview` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Replace preview for images, video and audio with a usable URL; other files and entries without a URL have no preview button. |
+| `onDownload` | `(file: `[`FileItem`](#fileitem-api)`) => void` | — | Replace built-in download for a usable URL; no download button appears without a URL. |
+| `onRemove` | `(file: `[`FileItem`](#fileitem-api)`) => void \| boolean \| Promise<void> \| Promise<boolean>` | — | Await removal and prevent repeated clicks; the application must update items. Boolean results do not control the list; Promise rejection shows an inline error. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `renderActions` | `(file: `[`FileItem`](#fileitem-api)`, actions: ReactNode) => ReactNode` | — | Customize row actions; provide accessible names and disabled handling for custom actions. |
+| `emptyContent` | `ReactNode` | No files | Empty list content |
 
-## FileItem API
+### FileItem API
+
+The file, state and presentation metadata of a file list entry.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `uid` | `string` | — | Stable identifier, recommended |
+| `name` | `string` | — | Display name; falls back to originFile.name, the URL filename, then File. Data URLs do not provide a filename. |
 | `url` | `string` | — | File URL |
-| `name` | `string` | — | Name, inferred from URL if omitted |
-| `size` | `number` | — | Bytes; omitted sizes are not displayed |
-| `type` | `string` | — | MIME type; inferred from the extension if omitted |
+| `size` | `number` | — | Size in bytes; falls back to originFile.size and is hidden only when both are absent. |
+| `type` | `string` | — | Optional MIME type; display classification also checks originFile.type and the extension without filling this field. |
+| `originFile` | `globalThis.File` | — | Original browser File |
 | `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Optional upload status |
 | `percent` | `number` | — | Upload progress from 0 to 100 |
 | `error` | `string` | — | Error description |
-| `originFile` | `globalThis.File` | — | Original browser File |

@@ -1,5 +1,31 @@
 import { TinyColor } from '@ctrl/tinycolor';
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
+import { settleAnimations } from './helpers/motion';
+
+async function tokenColor(locator: Locator, token: string) {
+  return new TinyColor(
+    await locator.evaluate(
+      (element, name) => getComputedStyle(element).getPropertyValue(name),
+      token,
+    ),
+  ).toRgbString();
+}
+
+async function hoverLayer(locator: Locator) {
+  return locator.evaluate((node) => {
+    const style = getComputedStyle(node, '::before');
+    return {
+      background: style.backgroundColor,
+      borderStyle: style.borderTopStyle,
+      borderWidth: style.borderTopWidth,
+      bottom: style.bottom,
+      boxShadow: style.boxShadow,
+      opacity: Number(style.opacity),
+      top: style.top,
+      transition: style.transitionProperty,
+    };
+  });
+}
 
 test('Cascader expands without transient overflow and keeps equal inline insets', async ({
   page,
@@ -55,14 +81,18 @@ test('Cascader expands without transient overflow and keeps equal inline insets'
   await expect(panel).toBeHidden();
 });
 
-for (const [suffix, height] of [
-  ['', 32],
-  ['&compact=1', 26],
-  ['&tokens=1', 40],
+for (const [suffix, selectHeight, menuHeight] of [
+  ['', 34, 34],
+  ['&compact=1', 30, 30],
+  ['&tokens=1', 44, 44],
 ] as const) {
-  test(`popup rows follow the regional control height ${height}px`, async ({ page }, testInfo) => {
+  test(`Select and Dropdown rows follow control height ${selectHeight}/${menuHeight}px`, async ({
+    page,
+  }, testInfo) => {
     await page.goto(`/?fixture=refinements${suffix}`);
     await page.getByRole('combobox', { name: 'Animated select' }).click();
+    await expect(page.locator('.leaf-select__panel')).toHaveAttribute('data-positioned', 'true');
+    await settleAnimations(page.locator('.leaf-select__panel'));
     await testInfo.attach('popup-sizing', {
       body: JSON.stringify(
         await page.evaluate(() =>
@@ -80,58 +110,268 @@ for (const [suffix, height] of [
     });
     await expect(page.getByRole('option', { name: 'Bob', exact: true })).toHaveCSS(
       'min-height',
-      `${height}px`,
+      `${selectHeight}px`,
     );
     await expect
       .poll(
         async () =>
           (await page.getByRole('option', { name: 'Bob', exact: true }).boundingBox())?.height,
       )
-      .toBeCloseTo(height, 0);
+      .toBeCloseTo(selectHeight, 0);
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Animated menu' }).click();
+    await expect(page.locator('.leaf-dropdown')).toHaveAttribute('data-positioned', 'true');
+    await settleAnimations(page.locator('.leaf-dropdown'));
     await expect(page.getByRole('menuitem', { name: 'Edit', exact: true })).toHaveCSS(
       'min-height',
-      `${height}px`,
+      `${menuHeight}px`,
     );
     await expect
       .poll(
         async () =>
           (await page.getByRole('menuitem', { name: 'Edit', exact: true }).boundingBox())?.height,
       )
-      .toBeCloseTo(height, 0);
+      .toBeCloseTo(menuHeight, 0);
   });
 }
 
-test('Select hover moves one highlight, settles after rapid changes and skips disabled rows', async ({
+test('Select rows have no gaps, fill the field and wrap long labels without clipping', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=refinements');
+  const select = page.getByRole('combobox', { name: 'Long option select' });
+  await select.click();
+  const panel = page.locator('.leaf-select__panel');
+  const trigger = page.locator('.leaf-select').filter({ has: select });
+  const first = panel.getByRole('option', { name: 'First compact option', exact: true });
+  const second = panel.getByRole('option', { name: 'Second compact option', exact: true });
+  const long = panel.getByRole('option', { name: /A deliberately long option label/ });
+  const triggerBox = await trigger.boundingBox();
+  const firstBox = await first.boundingBox();
+  const secondBox = await second.boundingBox();
+  if (!triggerBox || !firstBox || !secondBox) throw new Error('Missing Select geometry');
+  await expect
+    .poll(async () => Math.abs(((await first.boundingBox())?.height ?? 0) - triggerBox.height) < 1)
+    .toBe(true);
+  expect(
+    await second.evaluate(
+      (node) =>
+        (node as HTMLElement).offsetTop - (node.previousElementSibling as HTMLElement).offsetTop,
+    ),
+  ).toBe(await first.evaluate((node) => (node as HTMLElement).offsetHeight));
+  expect(await first.evaluate((node) => getComputedStyle(node).marginTop)).toBe('0px');
+  expect(await second.evaluate((node) => getComputedStyle(node).marginTop)).toBe('0px');
+  await expect
+    .poll(async () => (await long.boundingBox())?.height ?? 0)
+    .toBeGreaterThan(triggerBox.height);
+  expect(
+    await long.evaluate((node) => ({
+      scroll: node.scrollHeight,
+      client: node.clientHeight,
+      overflow: getComputedStyle(node).overflow,
+    })),
+  ).toEqual({ scroll: expect.any(Number), client: expect.any(Number), overflow: 'visible' });
+  expect(await long.evaluate((node) => node.scrollHeight <= node.clientHeight + 1)).toBe(true);
+});
+
+test('Select optionHeight still controls the visible row without stretching the field', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=refinements');
+  const select = page.getByRole('combobox', { name: 'Custom option height select' });
+  const trigger = page.locator('.leaf-select').filter({ has: select });
+  await select.click();
+  const option = page.getByRole('option', { name: 'Alice', exact: true });
+  await expect(option).toBeVisible();
+  await expect.poll(async () => (await option.boundingBox())?.height).toBeCloseTo(48, 0);
+  await expect.poll(async () => (await trigger.boundingBox())?.height).toBeCloseTo(34, 0);
+});
+
+test('changing a Select value does not animate the control label and Cascader swaps columns immediately', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=refinements');
+  const select = page.getByRole('combobox', { name: 'Animated select' });
+  const trigger = page.locator('.leaf-select').filter({ has: select });
+  const value = trigger.locator('.leaf-select__input-wrap');
+  await select.click();
+  await expect(value).not.toHaveAttribute('data-motion-key');
+  const before = await value.evaluate((node) => ({
+    animations: node.getAnimations({ subtree: true }).length,
+    rect: node.getBoundingClientRect().toJSON(),
+  }));
+  await page.getByRole('option', { name: 'Bob', exact: true }).click();
+  expect(await value.evaluate((node) => node.getAnimations({ subtree: true }).length)).toBe(0);
+  expect(await value.evaluate((node) => node.getBoundingClientRect().toJSON())).toEqual(
+    before.rect,
+  );
+
+  await page.getByRole('combobox', { name: 'Animated cascader' }).click();
+  const panel = page.locator('.leaf-cascader__panel');
+  const firstColumn = panel.locator('.leaf-cascader__column').first();
+  const firstIdentity = await firstColumn.evaluate((node) => {
+    node.dataset.identity = 'stable';
+    return node.dataset.identity;
+  });
+  await firstColumn.getByRole('option', { name: 'Design', exact: true }).click();
+  const columns = panel.locator('.leaf-cascader__column');
+  await expect(columns).toHaveCount(2);
+  expect(
+    await columns.first().evaluate((node) => ({
+      identity: node.dataset.identity,
+      animation: getComputedStyle(node).animationName,
+    })),
+  ).toEqual({ identity: firstIdentity, animation: 'none' });
+  await expect(columns.nth(1)).toHaveCSS('animation-name', 'none');
+  await expect(columns.nth(1).getByRole('option', { name: 'UI', exact: true })).toBeVisible();
+});
+
+test('Select fades rounded row backgrounds without moving geometry and skips disabled rows', async ({
   page,
 }) => {
   await page.goto('/?fixture=refinements');
   await page.getByRole('combobox', { name: 'Animated select' }).click();
-  const marker = page.locator('.leaf-select__panel .leaf-floating__highlight');
-  await expect(marker).toHaveAttribute('data-ready', 'true');
-  await marker.evaluate((node) =>
+  const panel = page.locator('.leaf-select__panel');
+  await expect(panel.locator('.leaf-floating__highlight')).toHaveCount(0);
+  await expect(panel).toHaveAttribute('data-positioned', 'true');
+  await settleAnimations(panel);
+  const bob = panel.getByRole('option', { name: 'Bob', exact: true });
+  const charlie = panel.getByRole('option', { name: 'Charlie', exact: true });
+  const geometry = await bob.boundingBox();
+  const style = await bob.evaluate((node) => {
+    const row = getComputedStyle(node);
+    const layer = getComputedStyle(node, '::before');
     node.addEventListener('transitionrun', (event) => {
-      if ((event as TransitionEvent).propertyName === 'translate')
-        node.setAttribute('data-translated', 'true');
+      if ((event as TransitionEvent).propertyName === 'background-color')
+        node.setAttribute('data-background-transition', 'true');
+    });
+    return {
+      radius: row.borderRadius,
+      layerRadius: layer.borderRadius,
+      transition: layer.transitionProperty,
+      duration: layer.transitionDuration,
+      inset: [layer.top, layer.right, layer.bottom, layer.left],
+    };
+  });
+  expect(style).toEqual({
+    radius: '6px',
+    layerRadius: '6px',
+    transition: 'background-color',
+    duration: '0.2s',
+    inset: ['0px', '0px', '0px', '0px'],
+  });
+  await bob.hover();
+  await expect(bob).toHaveAttribute('data-background-transition', 'true');
+  await expect.poll(async () => (await hoverLayer(bob)).background).toBe('rgba(0, 0, 0, 0.04)');
+  expect(await bob.boundingBox()).toEqual(geometry);
+  await charlie.hover();
+  await expect.poll(async () => (await hoverLayer(bob)).background).toBe('rgba(0, 0, 0, 0)');
+  await expect.poll(async () => (await hoverLayer(charlie)).background).toBe('rgba(0, 0, 0, 0.04)');
+  const disabled = panel.getByRole('option', { name: 'Unavailable', exact: true });
+  await disabled.hover();
+  expect((await hoverLayer(disabled)).background).toBe('rgba(0, 0, 0, 0)');
+  await charlie.click();
+  await expect(page.getByRole('combobox', { name: 'Animated select' })).toHaveValue('Charlie');
+});
+
+test('Tree and TreeSelect fade row-local feedback without moving selection checks', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=refinements');
+  await page.getByRole('combobox', { name: 'Animated tree select' }).click();
+  const panel = page.locator('.leaf-tree-select__panel');
+  const selected = panel.getByRole('treeitem', { name: 'Alice', exact: true });
+  const target = panel.getByRole('treeitem', { name: 'Bob', exact: true });
+  const selectedRow = selected.locator('.leaf-tree__row');
+  const targetRow = target.locator('.leaf-tree__row');
+  await settleAnimations(panel);
+  await expect(panel.locator('.leaf-tree__highlight')).toHaveCount(0);
+  await expect(selectedRow).toHaveAttribute('data-highlighted', 'true');
+  await expect(selectedRow).toHaveCSS('margin-top', '0px');
+  await expect(targetRow).toHaveCSS('margin-top', '0px');
+  const selectedMetrics = await selectedRow.evaluate((node) => ({
+    top: (node as HTMLElement).offsetTop,
+    height: (node as HTMLElement).offsetHeight,
+  }));
+  const targetMetrics = await targetRow.evaluate((node) => ({
+    top: (node as HTMLElement).offsetTop,
+    height: (node as HTMLElement).offsetHeight,
+  }));
+  expect(targetMetrics.top - selectedMetrics.top).toBe(selectedMetrics.height);
+  expect(targetMetrics.height).toBe(selectedMetrics.height);
+  await targetRow.evaluate((node) =>
+    node.addEventListener('transitionrun', (event) => {
+      if ((event as TransitionEvent).propertyName === 'background-color')
+        node.setAttribute('data-background-transition', 'true');
     }),
   );
-  await page.getByRole('option', { name: 'Bob', exact: true }).hover();
-  await expect(marker).toHaveAttribute('data-translated', 'true');
-  const target = page.getByRole('option', { name: 'Charlie', exact: true });
+  const geometry = await targetRow.boundingBox();
   await target.hover();
+  await expect(targetRow).toHaveAttribute('data-background-transition', 'true');
   await expect
-    .poll(async () => {
-      const mark = await marker.boundingBox();
-      const row = await target.boundingBox();
-      return mark && row ? Math.abs(mark.y - row.y) : Infinity;
-    })
-    .toBeLessThan(1);
-  const before = await marker.getAttribute('style');
-  await page.getByRole('option', { name: 'Unavailable', exact: true }).hover();
-  expect(await marker.getAttribute('style')).toBe(before);
-  await target.click();
-  await expect(page.getByRole('combobox', { name: 'Animated select' })).toHaveValue('Charlie');
+    .poll(async () => (await hoverLayer(targetRow)).background)
+    .toBe('rgba(0, 0, 0, 0.04)');
+  await expect
+    .poll(async () => (await hoverLayer(selectedRow)).background)
+    .toBe('rgba(0, 0, 0, 0)');
+  expect(await targetRow.boundingBox()).toEqual(geometry);
+  await expect(targetRow).toHaveCSS('border-radius', '6px');
+  expect((await hoverLayer(targetRow)).transition).not.toContain('translate');
+  await expect(selected.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '1');
+  await page.mouse.move(0, 0);
+  await expect(selectedRow).toHaveAttribute('data-highlighted', 'true');
+  await expect
+    .poll(async () => (await hoverLayer(selectedRow)).background)
+    .toBe('rgba(0, 0, 0, 0.04)');
+  const disabled = panel
+    .getByRole('treeitem', { name: 'Unavailable', exact: true })
+    .locator('.leaf-tree__row');
+  await disabled.hover();
+  await expect.poll(async () => (await hoverLayer(disabled)).background).toBe('rgba(0, 0, 0, 0)');
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+
+  await page.getByRole('combobox', { name: 'Empty tree select' }).click();
+  const emptyPanel = page.locator('.leaf-tree-select__panel');
+  const first = emptyPanel.getByRole('treeitem', { name: 'Alice', exact: true });
+  await expect(first.locator('.leaf-tree__row')).toHaveAttribute('data-highlighted', 'true');
+  await expect
+    .poll(async () => (await hoverLayer(first.locator('.leaf-tree__row'))).background)
+    .toBe('rgba(0, 0, 0, 0.04)');
+  await expect(first.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '0');
+  await page.keyboard.press('Escape');
+  await expect(emptyPanel).toBeHidden();
+
+  const tree = page.getByRole('tree', { name: 'Animated tree' });
+  const treeSelected = tree.getByRole('treeitem', { name: 'Alice', exact: true });
+  const treeTarget = tree.getByRole('treeitem', { name: 'Bob', exact: true });
+  const treeSelectedRow = treeSelected.locator('.leaf-tree__row');
+  await expect(tree.locator('.leaf-tree__highlight')).toHaveCount(0);
+  await expect(treeSelectedRow).toHaveCSS('border-radius', '6px');
+  await treeTarget.hover();
+  await expect
+    .poll(async () => (await hoverLayer(treeTarget.locator('.leaf-tree__row'))).background)
+    .toBe('rgba(0, 0, 0, 0.04)');
+  await page.mouse.move(0, 0);
+  await expect
+    .poll(async () => (await hoverLayer(treeSelectedRow)).background)
+    .toBe('rgba(0, 0, 0, 0)');
+  await expect(treeSelected.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '1');
+});
+
+test('a disabled selected Tree row retains muted ink without hover feedback', async ({ page }) => {
+  await page.goto('/?fixture=refinements&disabled-selection');
+  const tree = page.getByRole('tree', { name: 'Animated tree', exact: true });
+  const selected = tree.getByRole('treeitem', { name: 'Unavailable', exact: true });
+  const row = selected.locator('.leaf-tree__row');
+  await expect(selected).toHaveAttribute('aria-disabled', 'true');
+  await expect(selected).toHaveAttribute('aria-selected', 'true');
+  const muted = await tokenColor(row, '--leaf-color-text-muted');
+  await expect(row).toHaveCSS('color', muted);
+  await row.hover();
+  await expect(row).toHaveCSS('color', muted);
+  await expect.poll(async () => (await hoverLayer(row)).background).toBe('rgba(0, 0, 0, 0)');
+  await expect(row.locator('.leaf-tree__selection-mark')).toHaveCSS('opacity', '1');
 });
 
 test('long Cascader columns scroll independently without consuming option width', async ({
@@ -166,107 +406,178 @@ test('single-line Alert aligns its icon with the title and Dropdown colors dange
     0,
   );
   await page.getByRole('button', { name: 'Animated menu' }).click();
-  const highlight = page.locator('.leaf-dropdown__highlight');
-  const neutral = await highlight.evaluate((node) => getComputedStyle(node).backgroundColor);
-  expect(neutral).not.toBe('rgb(246, 246, 247)');
+  const edit = page.getByRole('menuitem', { name: 'Edit', exact: true });
+  const neutral = 'rgba(0, 0, 0, 0.04)';
+  await edit.hover();
+  await expect.poll(async () => (await hoverLayer(edit)).background).toBe(neutral);
+  const layer = await hoverLayer(edit);
+  expect(layer).toMatchObject({
+    borderStyle: 'none',
+    borderWidth: '0px',
+    boxShadow: 'none',
+  });
   await page.getByRole('menuitem', { name: 'Delete', exact: true }).hover();
-  await expect(highlight).toHaveAttribute('data-danger', 'true');
   await expect
-    .poll(() => highlight.evaluate((node) => getComputedStyle(node).backgroundColor))
-    .not.toBe(neutral);
+    .poll(async () => (await hoverLayer(page.getByRole('menuitem', { name: 'Delete' }))).background)
+    .toBe(await tokenColor(edit, '--leaf-color-danger-soft'));
+});
+
+test('Dropdown grows from a 160px minimum and keeps trailing content at the row end', async ({
+  page,
+}) => {
+  await page.goto('/?fixture=refinements');
+  await page.getByRole('button', { name: 'Trailing menu' }).click();
+  const panel = page.locator('.leaf-dropdown');
+  const open = panel.getByRole('menuitem', { name: /Open Ctrl O/ });
+  const extra = open.locator('.leaf-dropdown__extra');
+  const more = panel.getByRole('menuitem', { name: /More Ctrl M/ });
+  const arrow = more.locator('.leaf-dropdown__arrow');
+  const longExtra = panel
+    .getByRole('menuitem', { name: /Status Awaiting a long-running export/ })
+    .locator('.leaf-dropdown__extra');
+
+  await expect(panel).toHaveCSS('min-width', '160px');
+  await panel.evaluate((node) => {
+    for (const animation of node.getAnimations()) animation.finish();
+  });
+  expect((await panel.boundingBox())?.width).toBeGreaterThan(220);
+  const row = await open.boundingBox();
+  const trailing = await extra.boundingBox();
+  const inlineEnd = await open.evaluate((node) =>
+    Number.parseFloat(getComputedStyle(node).paddingInlineEnd),
+  );
+  if (!row || !trailing) throw new Error('Missing Dropdown row geometry');
+  expect(row.x + row.width - (trailing.x + trailing.width)).toBeCloseTo(inlineEnd, 0);
+  expect(await arrow.evaluate((node) => node.previousElementSibling?.className)).toContain(
+    'leaf-dropdown__extra',
+  );
+  expect(
+    await longExtra.evaluate((node) => ({
+      display: getComputedStyle(node).display,
+      overflow: getComputedStyle(node).overflow,
+      textAlign: getComputedStyle(node).textAlign,
+      textOverflow: getComputedStyle(node).textOverflow,
+      clipped: node.scrollWidth > node.clientWidth,
+    })),
+  ).toEqual({
+    display: 'block',
+    overflow: 'hidden',
+    textAlign: 'end',
+    textOverflow: 'ellipsis',
+    clipped: true,
+  });
+});
+
+test('Dropdown preserves an explicit popup width', async ({ page }) => {
+  await page.goto('/?fixture=refinements');
+  const trigger = page.getByRole('button', { name: 'Narrow menu' });
+  await trigger.click();
+  const popupId = await trigger.getAttribute('aria-controls');
+  if (!popupId) throw new Error('Dropdown trigger has no aria-controls');
+  const panel = page
+    .locator(`[id="${popupId}"]`)
+    .locator(
+      'xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " leaf-dropdown ")][1]',
+    );
+  await expect(panel).toBeVisible();
+  await panel.evaluate((node) => {
+    for (const animation of node.getAnimations()) animation.finish();
+  });
+  expect((await panel.boundingBox())?.width).toBeCloseTo(160, 0);
 });
 
 for (const appearance of ['light', 'dark']) {
-  test(`Dropdown uses one background for keyboard and pointer highlights in ${appearance}`, async ({
+  test(`Dropdown feedback follows keyboard and pointer targets in ${appearance}`, async ({
     page,
   }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(`/?fixture=refinements&theme=${appearance}`);
-    await page.getByRole('button', { name: 'Animated menu' }).click();
-    const marker = page.locator('.leaf-dropdown__highlight');
+    const trigger = page.getByRole('button', { name: 'Animated menu' });
+    await trigger.focus();
+    await page.keyboard.press('ArrowDown');
     const first = page.getByRole('menuitem', { name: 'Open', exact: true });
     const second = page.getByRole('menuitem', { name: 'Edit', exact: true });
     const danger = page.getByRole('menuitem', { name: 'Delete', exact: true });
     await expect(first).toBeFocused();
-    const neutral = new TinyColor(
-      await marker.evaluate((node) =>
-        getComputedStyle(node).getPropertyValue('--leaf-color-option-hover').trim(),
-      ),
-    ).toRgbString();
-    await expect(marker).toHaveCSS('background-color', neutral);
+    const neutral = 'rgba(0, 0, 0, 0.04)';
+    await expect.poll(async () => (await hoverLayer(first)).background).toBe(neutral);
+    await expect.poll(async () => (await hoverLayer(first)).opacity).toBe(1);
     await second.hover();
-    await expect(second).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(marker).toHaveCSS('background-color', neutral);
-    // Pointer movement keeps keyboard focus, but neither row paints another background.
     await expect(first).toBeFocused();
+    await expect.poll(async () => (await hoverLayer(second)).background).toBe(neutral);
+    await expect.poll(async () => (await hoverLayer(second)).opacity).toBe(1);
     await expect(first).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(second).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     await danger.hover();
-    await expect(danger).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const dangerHover = await tokenColor(danger, '--leaf-color-danger-soft');
+    await expect.poll(async () => (await hoverLayer(danger)).background).toBe(dangerHover);
     await page.keyboard.press('End');
     await expect(danger).toBeFocused();
-    await expect(danger).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect.poll(async () => (await hoverLayer(danger)).background).toBe(dangerHover);
     await page.keyboard.press('Home');
     await expect(first).toBeFocused();
-    await marker.evaluate((node) => {
-      for (const animation of node.getAnimations()) animation.finish();
-    });
-    await expect(marker).toHaveCSS('background-color', neutral);
-    // Holding the pointer button must not add the shared option's pressed fill either.
-    const target = await second.boundingBox();
-    if (!target) throw new Error('Missing menu option');
-    await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2);
-    await page.mouse.down();
-    try {
-      await expect(second).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    } finally {
-      await page.mouse.up();
-    }
+    await expect.poll(async () => (await hoverLayer(first)).background).toBe(neutral);
   });
 }
 
+test('Dropdown fades only background color and preserves row geometry', async ({ page }) => {
+  await page.goto('/?fixture=refinements');
+  await page.getByRole('button', { name: 'Animated menu' }).click();
+  const item = page.getByRole('menuitem', { name: 'Edit', exact: true });
+  await settleAnimations(page.locator('.leaf-dropdown'));
+  await expect.poll(async () => (await hoverLayer(item)).background).toBe('rgba(0, 0, 0, 0)');
+  const before = await item.boundingBox();
+  await expect(item).toHaveCSS('min-height', '34px');
+  await expect(item).toHaveCSS('gap', '12px');
+  await item.evaluate((node) => {
+    node.addEventListener('transitionrun', (event) => {
+      if ((event as TransitionEvent).propertyName === 'background-color')
+        node.setAttribute('data-background-transition', 'true');
+    });
+  });
+  await item.hover();
+  await expect(item).toHaveAttribute('data-background-transition', 'true');
+  await expect.poll(async () => (await hoverLayer(item)).background).toBe('rgba(0, 0, 0, 0.04)');
+  const layer = await hoverLayer(item);
+  expect(layer).toMatchObject({
+    borderStyle: 'none',
+    borderWidth: '0px',
+    top: '0px',
+    bottom: '0px',
+    boxShadow: 'none',
+    opacity: 1,
+    transition: 'background-color',
+  });
+  expect(await item.boundingBox()).toEqual(before);
+  await page.mouse.move(0, 0);
+  await expect.poll(async () => (await hoverLayer(item)).background).toBe('rgba(0, 0, 0, 0)');
+});
+
 for (const appearance of ['light', 'dark']) {
-  test(`Select uses neutral candidates without changing selected rows in ${appearance}`, async ({
+  test(`Select keeps pale rounded feedback and persistent checks in ${appearance}`, async ({
     page,
   }) => {
     await page.goto(`/?fixture=refinements&theme=${appearance}`);
     const input = page.getByRole('combobox', { name: 'Animated select' });
     await input.click();
-    const marker = page.locator('.leaf-select__panel .leaf-floating__highlight');
     const selected = page.getByRole('option', { name: 'Alice', exact: true });
     const next = page.getByRole('option', { name: 'Bob', exact: true });
-    const background = new TinyColor(
-      await marker.evaluate((node) =>
-        getComputedStyle(node).getPropertyValue('--leaf-color-primary-surface-9').trim(),
-      ),
-    ).toRgbString();
-    const neutral = new TinyColor(
-      await marker.evaluate((node) =>
-        getComputedStyle(node).getPropertyValue('--leaf-color-option-hover').trim(),
-      ),
-    ).toRgbString();
-    expect(neutral).not.toBe(background);
-    await expect(selected).toHaveCSS('background-color', background);
-    await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', background);
+    const neutral = 'rgba(0, 0, 0, 0.04)';
+    await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
+    await expect.poll(async () => (await hoverLayer(selected)).background).toBe(neutral);
     await next.hover();
-    await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', neutral);
-    await expect(selected).toHaveCSS('background-color', background);
-    await expect(next).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await page.getByRole('option', { name: 'Unavailable', exact: true }).hover();
-    await expect(marker).toHaveCSS('background-color', neutral);
-    await expect(page.getByRole('option', { name: 'Unavailable', exact: true })).toHaveCSS(
-      'background-color',
-      'rgba(0, 0, 0, 0)',
-    );
-    await selected.hover();
-    await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', background);
+    await expect.poll(async () => (await hoverLayer(next)).background).toBe(neutral);
+    await expect.poll(async () => (await hoverLayer(selected)).background).toBe('rgba(0, 0, 0, 0)');
+    await expect(selected.locator('.leaf-select__check')).toHaveCSS('opacity', '1');
+    const disabled = page.getByRole('option', { name: 'Unavailable', exact: true });
+    await disabled.hover();
+    expect((await hoverLayer(disabled)).background).toBe('rgba(0, 0, 0, 0)');
+    await page.mouse.move(0, 0);
+    await expect.poll(async () => (await hoverLayer(selected)).background).toBe(neutral);
     await input.press('ArrowDown');
-    await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', neutral);
+    await expect.poll(async () => (await hoverLayer(next)).background).toBe(neutral);
     await input.press('ArrowUp');
-    await expect(marker).toBeVisible();
-    await expect(marker).toHaveCSS('background-color', background);
+    await expect.poll(async () => (await hoverLayer(selected)).background).toBe(neutral);
     await expect(selected).toHaveAttribute('aria-selected', 'true');
     await expect(next).toHaveAttribute('aria-selected', 'false');
   });
@@ -328,9 +639,9 @@ for (const preference of ['reduce', 'scope'] as const) {
     );
     await page.getByRole('combobox', { name: 'Animated select' }).click();
     await page.getByRole('option', { name: 'Bob', exact: true }).hover();
-    await expect(page.locator('.leaf-floating__highlight')).toHaveCSS(
-      'transition-duration',
-      /^0s(?:,\s*0s)*$/,
-    );
+    const option = page.getByRole('option', { name: 'Bob', exact: true });
+    expect(
+      await option.evaluate((node) => getComputedStyle(node, '::before').transitionDuration),
+    ).toMatch(/^0s(?:,\s*0s)*$/);
   });
 }

@@ -68,32 +68,25 @@
     margin-inline-end: -3px;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-    &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted);
-      color: var(--leaf-color-text);
-    }
-    &:active:not(:disabled) {
-      transform: scale(0.9);
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
+
+    @include mixins.text-action;
   }
   &:focus-within &__affix {
     color: var(--leaf-field-color);
   }
   &:focus-within &__count {
     color: var(--leaf-color-text-muted);
+  }
+}
+@media (hover: hover) {
+  .leaf-input__clear {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .leaf-input:hover .leaf-input__clear,
+  .leaf-input__clear:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -142,6 +135,11 @@
       z-index: 1;
     }
   }
+}
+
+.leaf-input-search {
+  @include mixins.field-width;
+  box-sizing: border-box;
 }
 
 .leaf-input-group {

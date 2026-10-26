@@ -2,43 +2,53 @@ import { ComponentExample } from '../../src/components/component-example';
 import { ScrollAreaBasic } from '../../src/examples/scroll-area/basic';
 import { ScrollAreaHorizontal } from '../../src/examples/scroll-area/advanced';
 
+export const leafDoc = { component: 'ScrollArea', primaryApi: 'ScrollAreaProps' };
+
 # ScrollArea 滚动区域
 
 在限定区域内浏览内容。
 
-## 基本用法
+与 [Scrollbar](/components/scrollbar) 使用相同的参数，默认只纵向滚动。
 
-<ComponentExample title="基本用法" preview={<ScrollAreaBasic />} fileName="basic.tsx">
+{/* leaf:section basic */}
+
+## 基础用法
+
+设置滚动区域的高度，使超出的内容在区域内滚动。
+
+<ComponentExample exampleId="basic" preview={<ScrollAreaBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/scroll-area/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx">
+## 示例
+
+### 横向滚动
+
+设置 `orientation="horizontal"`，横向浏览超出区域宽度的内容。
+
+<ComponentExample exampleId="advanced" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/scroll-area/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+{/* leaf:section api */}
 
-通过 height 或 maxHeight 限制滚动区域。orientation 控制方向，scrollbar 控制滚动条显示；支持原生滚轮、触摸和键盘滚动。
+## API
 
-滚动条默认悬浮并在鼠标移入时淡入，不占用内容空间。`ref` 指向实际滚动容器，`style` 与 `className` 用于外层。完整的样式扩展与键盘操作见 [Scrollbar](./scrollbar)。未溢出或到达边界时，滚轮继续滚动页面。
+### ScrollAreaProps API
 
-## 类型
-
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
+配置滚动方向、区域尺寸和滚动条显示方式。
 
 ```ts
 import type { ScrollAreaProps } from '@ifhover/leaf-ui';
 ```
-
-## ScrollAreaProps API
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -46,8 +56,10 @@ import type { ScrollAreaProps } from '@ifhover/leaf-ui';
 | `maxHeight` | `CSSProperties['maxHeight']` | — | 最大高度 |
 | `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | 滚动方向 |
 | `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | 滚动条显示方式 |
+| `persistent` | `boolean` | `false` | 滚动条常驻并占用独立宽度；默认覆盖内容。 |
+| `size` | `'sm' \| 'md'` | `'md'` | 滚动条尺寸；sm 使用较窄轨道。 |
+| `verticalOffset` | `number` | `0` | 纵向轨道顶部预留空间。 |
 | `viewportClassName` | `string` | — | 实际滚动容器的类名。 |
 | `viewportStyle` | `CSSProperties` | — | 实际滚动容器的样式。 |
 | `contentClassName` | `string` | — | 内容容器的类名。 |
 | `contentStyle` | `CSSProperties` | — | 内容容器的样式。 |
-| `verticalOffset` | `number` | `0` | 纵向轨道顶部预留空间。 |

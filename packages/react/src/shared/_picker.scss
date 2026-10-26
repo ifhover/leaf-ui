@@ -1,34 +1,23 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-picker-clear {
   position: absolute;
-  inset-inline-end: 8px;
+  inset-inline-end: 5px;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  color: var(--leaf-color-text-muted);
-  background: var(--leaf-color-surface);
-  cursor: pointer;
-  transition:
-    color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-  &:hover {
-    color: var(--leaf-color-text);
-    background: var(--leaf-color-surface-muted);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    outline-offset: 2px;
-  }
   &--before-arrow {
-    inset-inline-end: 30px;
+    inset-inline-end: 29px;
   }
+
+  @include mixins.text-action;
 }
 
 .leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {

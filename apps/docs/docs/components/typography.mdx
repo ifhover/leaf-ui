@@ -1,35 +1,80 @@
 import { ComponentExample } from '../../src/components/component-example';
-import { TypographyBasic, TypographyActions } from '../../src/examples/typography/basic';
+import { TypographyBasic } from '../../src/examples/typography/basic';
+import { TypographyCopy } from '../../src/examples/typography/copy';
+import { TypographyEditable } from '../../src/examples/typography/editable';
+import { TypographyEllipsis } from '../../src/examples/typography/ellipsis';
+
+export const leafDoc = { component: 'Typography', primaryApi: 'TypographyProps' };
 
 # Typography 排版
 
 组织标题、正文和链接。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<TypographyBasic />} fileName="basic.tsx">
+使用标题、段落、文字与链接组件组织文档内容。
+
+<ComponentExample exampleId="basic" preview={<TypographyBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/typography/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 复制与编辑
+{/* leaf:section examples */}
 
-<ComponentExample title="复制与编辑" preview={<TypographyActions />} fileName="basic.tsx">
+## 示例
 
-```tsx lineNumbers file="../../src/examples/typography/basic.tsx"
+### 复制
+
+<ComponentExample exampleId="copy" preview={<TypographyCopy />} fileName="copy.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/typography/copy.tsx"
 ```
 
 </ComponentExample>
 
-## Typography API
+复制默认读取实际渲染的文本，包括嵌套 JSX；通过 `copyable.text` 指定其他内容。
+
+### 编辑
+
+<ComponentExample exampleId="editable" preview={<TypographyEditable />} fileName="editable.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/typography/editable.tsx"
+```
+
+</ComponentExample>
+
+在 `editable.onChange` 中更新显示的文字。编辑以渲染文本为初始值，也可通过 `editable.text` 指定；按 Enter 或移出焦点提交，按 Escape 取消。
+
+### 段落省略
+
+设置 `ellipsis` 限制段落显示行数，并按需提供展开操作。
+
+<ComponentExample exampleId="ellipsis" preview={<TypographyEllipsis />} fileName="ellipsis.tsx">
+
+```tsx lineNumbers file="../../src/examples/typography/ellipsis.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Typography API
+
+配置排版内容区域的段落密度。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `compact` | `boolean` | — | 减少正文段落间距。 |
 
-## Text API
+### Text API
+
+配置文字样式、语义色和复制编辑操作。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -43,7 +88,9 @@ import { TypographyBasic, TypographyActions } from '../../src/examples/typograph
 | `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | 提供复制操作，可指定复制内容和回调。 |
 | `editable` | `{ onChange: (text: string) => void; text?: string }` | — | 提供编辑操作；onChange 后由调用者更新文字。 |
 
-## Paragraph API
+### Paragraph API
+
+配置段落样式、省略和复制编辑操作。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -57,13 +104,17 @@ import { TypographyBasic, TypographyActions } from '../../src/examples/typograph
 | `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | 提供复制操作，可指定复制内容和回调。 |
 | `editable` | `{ onChange: (text: string) => void; text?: string }` | — | 提供编辑操作；onChange 后由调用者更新文字。 |
 
-## Title API
+### Title API
+
+通过标题等级设置内容的语义层级。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | 标题层级，输出对应的 h1–h6。 |
 
-## Link API
+### Link API
+
+配置链接的禁用、下划线和外部访问行为。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -71,13 +122,3 @@ import { TypographyBasic, TypographyActions } from '../../src/examples/typograph
 | `underline` | `boolean` | `true` | 显示下划线。 |
 | `external` | `boolean` | — | 在新标签页打开并设置安全的 rel。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
-
-## 类型与交互
-
-组装可复用配置时，可导入对应的属性和数据类型。
-
-```ts
-import type { TypographyProps, TextProps, ParagraphProps, TitleProps, LinkProps } from '@ifhover/leaf-ui';
-```
-
-为仅展示图标的操作提供可访问名称。交互控件支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

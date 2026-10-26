@@ -1,19 +1,30 @@
-import { Button, Card, Loading, Space } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Loading, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function LoadingOverlay() {
   const [spinning, setSpinning] = useState(true);
+  const [edited, setEdited] = useState(false);
+
   return (
-    <Space direction="vertical" align="stretch">
-      <Button variant="outline" onClick={() => setSpinning(!spinning)}>
-        {spinning ? '结束加载' : '开始加载'}
-      </Button>
-      <Loading spinning={spinning} tip="正在读取项目" delay={200}>
-        <Card>
-          <strong>Leaf Garden</strong>
-          <p>在此查看项目概览和最近更新。</p>
-          <Button variant="outline">编辑项目</Button>
+    <Flex direction="column" gap="md">
+      <Flex>
+        <Button variant="outline" onClick={() => setSpinning((value) => !value)}>
+          {spinning ? '结束加载' : '开始加载'}
+        </Button>
+      </Flex>
+      <Loading spinning={spinning} tip="正在读取项目">
+        <Card title="项目概览">
+          <Flex direction="column" gap="md">
+            <Text>在此查看项目进度。</Text>
+            <Flex>
+              <Button variant="outline" onClick={() => setEdited(true)}>
+                编辑项目
+              </Button>
+            </Flex>
+            {edited && <Text role="status">已打开项目编辑</Text>}
+          </Flex>
         </Card>
       </Loading>
-    </Space>
+    </Flex>
   );
 }

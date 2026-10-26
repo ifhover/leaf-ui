@@ -1,40 +1,89 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TooltipBasic } from '../../../src/examples/en/tooltip/basic';
+import { TooltipPlacements } from '../../../src/examples/en/tooltip/placements';
+import { TooltipDisabled } from '../../../src/examples/en/tooltip/disabled';
+import { TooltipControlled } from '../../../src/examples/en/tooltip/controlled';
+
+export const leafDoc = { component: 'Tooltip', primaryApi: 'TooltipProps' };
 
 # Tooltip
 
 Add a brief explanation to a page element.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<TooltipBasic />} fileName="basic.tsx">
+Hover or keyboard focus shows the tooltip; Escape closes it. Keep content descriptive; use [Popover](popover) for interactive content.
+
+<ComponentExample exampleId="basic" preview={<TooltipBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tooltip/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Tooltip API
+{/* leaf:section examples */}
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `content` | `ReactNode` | Required | Tooltip content |
-| `children` | `ReactElement` | Required | Trigger element supporting a ref and events |
-| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Preferred placement; adjusts when space is limited |
-| `open / defaultOpen` | `boolean` | `false` | Controlled / initial open state |
-| `onOpenChange` | `(open: boolean) => void` | — | Open state change |
-| `disabled` | `boolean` | `false` | Disable the tooltip |
-| `enterDelay / leaveDelay` | `number` | `100` | Pointer enter / leave delays in milliseconds |
-| `className` | `string` | — | Tooltip panel class |
+## Examples
 
-## Types
+### Placement
 
-Import the component props and item types when preparing your own values.
+Set the preferred position with `placement`; it adjusts when space is limited.
 
-```ts
-import type { TooltipProps } from '@ifhover/leaf-ui';
+<ComponentExample exampleId="placements" preview={<TooltipPlacements />} fileName="placements.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/placements.tsx"
 ```
 
-## Usage notes
+</ComponentExample>
 
-Hover and keyboard focus both open the tooltip; Escape closes it. Existing events, refs and aria-describedby are preserved. Disabled buttons cannot receive focus; use a focusable span wrapper when needed. Use tooltips for explanatory text and a Dropdown or dialog for interactive actions.
+### Disabled tooltip
+
+Tooltip's `disabled` only turns off the tooltip, not the button. A disabled button cannot receive focus; use a focusable wrapper to explain why it is disabled.
+
+<ComponentExample exampleId="disabled" preview={<TooltipDisabled />} fileName="disabled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/disabled.tsx"
+```
+
+</ComponentExample>
+
+### Controlled visibility
+
+Manage visibility with `open` and `onOpenChange`. Without `open`, `defaultOpen` only sets the initial state.
+
+<ComponentExample exampleId="controlled" preview={<TooltipControlled />} fileName="controlled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tooltip/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Tooltip API
+
+Configure hint content, placement and visibility behavior.
+
+The trigger must forward its ref and events. Its existing `aria-describedby` is merged with the tooltip reference. See [PopupOptions](/en/api/popup-options) for shared popup options.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `content` | `ReactNode` | Required | Tooltip content; empty strings, null and undefined suppress the tooltip. |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Trigger element supporting a ref and events |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Preferred placement; adjusts when space is limited |
+| `disabled` | `boolean` | `false` | Suppress the tooltip without disabling its trigger. |
+| `open` | `boolean` | — | Controlled open state. |
+| `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state change |
+| `enterDelay` | `number` | `100` | Delay in milliseconds before opening on hover. |
+| `leaveDelay` | `number` | `100` | Delay in milliseconds before closing after pointer leave. |
+| `className` | `string` | — | Tooltip panel class |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |

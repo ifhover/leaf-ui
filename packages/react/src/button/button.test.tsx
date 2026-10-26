@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Plus, Trash2 } from 'lucide-react';
 import { createRef } from 'react';
@@ -6,6 +6,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { Button } from './button';
 
 describe('Button', () => {
+  it('uses the outlined appearance by default', () => {
+    render(<Button>默认按钮</Button>);
+    expect(screen.getByRole('button', { name: '默认按钮' })).toHaveClass('leaf-button--outline');
+  });
+
   it('hides decorative icons and preserves an icon-only button name during loading', () => {
     const { rerender } = render(<Button aria-label="添加项目" startIcon={<Plus />} />);
     const button = screen.getByRole('button', { name: '添加项目' });
@@ -28,7 +33,7 @@ describe('Button', () => {
     expect(button).not.toHaveAttribute('danger');
     await userEvent.click(button);
     expect(onClick).toHaveBeenCalledOnce();
-    for (const variant of ['solid', 'outline', 'soft', 'link'] as const) {
+    for (const variant of ['solid', 'outline', 'text', 'link'] as const) {
       rerender(
         <Button danger variant={variant}>
           删除项目
@@ -96,7 +101,7 @@ describe('Button', () => {
     expect(onSubmit).toHaveBeenCalledOnce();
   });
 
-  it('preserves preventDefault and the native click target when activation is decorated', async () => {
+  it('preserves preventDefault and the native click target during native activation', async () => {
     const onSubmit = vi.fn((event) => event.preventDefault());
     const onClick = vi.fn((event) => event.preventDefault());
     render(
@@ -113,62 +118,31 @@ describe('Button', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('keeps native actions and consumer cancellation working if decorative animation is unsupported', async () => {
-    const onClick = vi.fn((event) => event.preventDefault());
-    const onSubmit = vi.fn((event) => event.preventDefault());
-    render(
-      <form onSubmit={onSubmit}>
-        <Button type="submit" onClick={onClick}>
+  it.each(['solid', 'outline', 'text', 'link'] as const)(
+    'keeps %s actions free of decorative wave nodes during repeated activation',
+    async (variant) => {
+      const onClick = vi.fn();
+      const { rerender } = render(
+        <Button variant={variant} onClick={onClick}>
           继续
-        </Button>
-      </form>,
-    );
-    const button = screen.getByRole('button', { name: '继续' });
-    const wave = button.querySelector('.leaf-button__wave') as HTMLElement;
-    wave.animate = vi.fn(() => {
-      throw new TypeError('Unsupported animation easing');
-    });
-    await userEvent.click(button);
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).not.toHaveBeenCalled();
-  });
-
-  it('replaces an unfinished wave and cancels it when disabled, switched to soft or unmounted', () => {
-    const { rerender, unmount } = render(<Button>继续</Button>);
-    const button = screen.getByRole('button', { name: '继续' });
-    const wave = button.querySelector('.leaf-button__wave') as HTMLElement;
-    const first = { cancel: vi.fn(), onfinish: null };
-    const second = { cancel: vi.fn(), onfinish: null };
-    const third = { cancel: vi.fn(), onfinish: null };
-    const fourth = { cancel: vi.fn(), onfinish: null };
-    const animate = vi
-      .fn()
-      .mockReturnValueOnce(first)
-      .mockReturnValueOnce(second)
-      .mockReturnValueOnce(third)
-      .mockReturnValueOnce(fourth);
-    wave.animate = animate;
-    fireEvent.click(button);
-    fireEvent.click(button);
-    expect(first.cancel).toHaveBeenCalledOnce();
-    expect(button.querySelectorAll('.leaf-button__wave')).toHaveLength(1);
-    rerender(<Button loading>继续</Button>);
-    expect(second.cancel).toHaveBeenCalledOnce();
-    fireEvent.click(button);
-    expect(animate).toHaveBeenCalledTimes(2);
-    rerender(<Button>继续</Button>);
-    fireEvent.click(button);
-    rerender(<Button variant="soft">继续</Button>);
-    expect(third.cancel).toHaveBeenCalledOnce();
-    fireEvent.click(button);
-    expect(animate).toHaveBeenCalledTimes(3);
-    rerender(<Button>继续</Button>);
-    const restoredWave = button.querySelector('.leaf-button__wave') as HTMLElement;
-    restoredWave.animate = animate;
-    fireEvent.click(button);
-    unmount();
-    expect(fourth.cancel).toHaveBeenCalledOnce();
-  });
+        </Button>,
+      );
+      const button = screen.getByRole('button', { name: '继续' });
+      await userEvent.click(button);
+      await userEvent.click(button);
+      expect(onClick).toHaveBeenCalledTimes(2);
+      expect(button.querySelector('.leaf-button__wave')).toBeNull();
+      rerender(
+        <Button variant={variant} loading onClick={onClick}>
+          继续
+        </Button>,
+      );
+      expect(button).toBeDisabled();
+      await userEvent.click(button);
+      expect(onClick).toHaveBeenCalledTimes(2);
+      expect(button.querySelector('.leaf-button__wave')).toBeNull();
+    },
+  );
 
   it('prevents mouse and keyboard actions while disabled', async () => {
     const onClick = vi.fn();

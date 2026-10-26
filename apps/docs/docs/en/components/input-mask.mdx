@@ -1,58 +1,92 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputMaskBasic } from '../../../src/examples/en/input-mask/basic';
+import { InputMaskControlled } from '../../../src/examples/en/input-mask/controlled';
+import { InputMaskPlaceholder } from '../../../src/examples/en/input-mask/placeholder';
 import { InputMaskFormats } from '../../../src/examples/en/input-mask/advanced';
+
+export const leafDoc = { component: 'InputMask', primaryApi: 'InputMaskProps' };
 
 # InputMask
 
-Enter information in a specified format.
+Enter text in a specified format.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<InputMaskBasic />} fileName="basic.tsx" width={360}>
+Use `0` for a digit, `a` for a letter and `*` for a letter or digit. Masking constrains the format; validate phone numbers and other business rules in your application.
+
+<ComponentExample exampleId="basic" preview={<InputMaskBasic />} width={360} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/input-mask/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<InputMaskFormats />} fileName="advanced.tsx" width={360}>
+## Examples
+
+### Unmasked value
+
+`unmask` makes `value`, `defaultValue` and the first `onChange` argument use the unmasked value. The second argument is always the formatted display value. Clearing returns an empty string.
+
+<ComponentExample exampleId="controlled" preview={<InputMaskControlled />} width={360} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-mask/controlled.tsx"
+```
+
+</ComponentExample>
+
+Native form submission still uses the display value when `name` is set. Uncontrolled form reset restores `defaultValue`; reset controlled values in application state. External value updates do not trigger user change or completion callbacks.
+
+### Persistent placeholders
+
+Set `lazy={false}` to show placeholders for unfilled positions.
+
+<ComponentExample exampleId="placeholder" preview={<InputMaskPlaceholder />} width={360} fileName="placeholder.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-mask/placeholder.tsx"
+```
+
+</ComponentExample>
+
+### Custom rules
+
+Use `definitions` to add character rules. Here, `A` accepts an uppercase letter.
+
+<ComponentExample exampleId="advanced" preview={<InputMaskFormats />} width={360} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/input-mask/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+`onComplete` means the mask is filled, not that the value passes business validation. Its argument follows the same `unmask` setting.
 
-Mask characters are 0 for digits, a for letters and * for alphanumeric. Validate business rules in your application. unmask affects component values and callbacks; native form submission uses the display value.
+{/* leaf:section api */}
 
-## Types
+## API
 
-Import these types for data, callbacks and refs.
+### InputMaskProps API
 
-```ts
-import type { InputMaskProps } from '@ifhover/leaf-ui';
-```
-
-## InputMaskProps API
+Configuration for input patterns, controlled values, formatted output and completion events.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size or spacing preset |
+| `mask` | `string` | Required | Pattern: 0 for digits, a for letters, * for alphanumeric |
+| `value` | `string` | — | Controlled value; unmask selects an unmasked value or the formatted display value. |
+| `defaultValue` | `string` | `''` | Initial uncontrolled value in the format selected by unmask, restored on form reset. |
+| `onChange` | `(value: string, formatted: string) => void` | — | Return the component value and formatted display value; unmask affects only the first argument. |
+| `onComplete` | `(value: string) => void` | — | Called when user input completes the format, using the unmask value format; this is not business validation. |
+| `unmask` | `boolean` | `false` | Use unmasked component values for value, defaultValue and callbacks without changing the formatted native form value. |
+| `lazy` | `boolean` | `true` | Hide placeholders for unfilled positions; false keeps them visible. |
+| `definitions` | `Record<string, RegExp>` | — | Custom character rules |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size. |
 | `status` | `'error' \| 'warning'` | — | Display state |
+| `allowClear` | `boolean` | `false` | Show the clear button |
 | `prefix` | `ReactNode` | — | Content before the input |
 | `suffix` | `ReactNode` | — | Content after the input |
-| `allowClear` | `boolean` | `false` | Show the clear button |
 | `onClear` | `() => void` | — | Called after clearing the input |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display count or a custom renderer |
 | `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | Called when Enter is pressed |
-| `mask` | `string` | Required | Pattern: 0 for digits, a for letters, * for alphanumeric |
-| `definitions` | `Record<string, RegExp>` | — | Custom character rules |
-| `lazy` | `boolean` | `true` | Show placeholders as needed |
-| `unmask` | `boolean` | `false` | Use unmasked values and callbacks |
-| `value` | `string` | — | Controlled value |
-| `defaultValue` | `string` | `''` | Initial value, restored by uncontrolled form resets |
-| `onChange` | `(value: string, formatted: string) => void` | — | Value change callback |
-| `onComplete` | `(value: string) => void` | — | Called when input is complete |

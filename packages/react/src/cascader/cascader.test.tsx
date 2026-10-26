@@ -42,4 +42,71 @@ describe('Cascader', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('combobox')).toHaveFocus();
   });
+  it('keeps selected paths from other branches when switching the first level in multiple mode', async () => {
+    render(<Cascader multiple options={options} aria-label="地区" />);
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: '浙江' }));
+    await userEvent.click(screen.getByRole('option', { name: '杭州' }));
+    await userEvent.click(screen.getByRole('option', { name: '西湖' }));
+
+    await userEvent.click(screen.getByRole('option', { name: '江苏' }));
+    expect(screen.getByRole('combobox')).toHaveTextContent('浙江 / 杭州 / 西湖');
+
+    const secondLevel = screen.getByRole('listbox', { name: '第 2 级' });
+    await userEvent.click(within(secondLevel).getByRole('option', { name: '南京' }));
+    const combobox = screen.getByRole('combobox');
+    expect(within(combobox).getByTitle('浙江 / 杭州 / 西湖')).toBeInTheDocument();
+    expect(within(combobox).getByTitle('江苏 / 南京')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('option', { name: '浙江' }));
+    expect(
+      within(screen.getByRole('listbox', { name: '第 2 级' })).getByRole('option', {
+        name: '杭州',
+      }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+  it('restores the committed descendants after browsing another first-level branch', async () => {
+    render(
+      <Cascader
+        options={options}
+        defaultValue={['zhejiang', 'hangzhou', 'xihu']}
+        aria-label="地区"
+      />,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: '江苏' }));
+    await userEvent.click(screen.getByRole('option', { name: '浙江' }));
+
+    expect(
+      within(screen.getByRole('listbox', { name: '第 2 级' })).getByRole('option', {
+        name: '杭州',
+      }),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(
+      within(screen.getByRole('listbox', { name: '第 3 级' })).getByRole('option', {
+        name: '西湖',
+      }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+  it('still selects an intermediate first-level option when changeOnSelect is enabled', async () => {
+    const onChange = vi.fn();
+    render(
+      <Cascader
+        options={options}
+        defaultValue={['zhejiang', 'hangzhou', 'xihu']}
+        changeOnSelect
+        onChange={onChange}
+        aria-label="地区"
+      />,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: '浙江' }));
+
+    expect(onChange).toHaveBeenLastCalledWith(['zhejiang'], expect.any(Array));
+    expect(
+      within(screen.getByRole('listbox', { name: '第 2 级' })).getByRole('option', {
+        name: '杭州',
+      }),
+    ).toHaveAttribute('aria-selected', 'false');
+  });
 });

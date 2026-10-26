@@ -118,7 +118,7 @@ export function Tour(rawProps: TourProps) {
           <h3 id={`${id}-title`}>{step.title}</h3>
           <ButtonControl
             size="sm"
-            variant="ghost"
+            variant="text"
             startIcon={<X size={16} />}
             aria-label={messages.common.close}
             onClick={onClose}
@@ -136,6 +136,7 @@ export function Tour(rawProps: TourProps) {
           )}
           <ButtonControl
             size="sm"
+            variant="solid"
             onClick={() => {
               if (index < steps.length - 1) setIndex(index + 1);
               else {

@@ -3,15 +3,14 @@ import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
-import { useButtonWave } from './wave';
 
-export type ButtonVariant = 'solid' | 'outline' | 'soft' | 'link';
+export type ButtonVariant = 'solid' | 'outline' | 'text' | 'link';
 export type ButtonSize = ControlSize;
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Visual style. @default 'solid' */
+  /** Visual style. @default 'outline' */
   variant?: ButtonVariant;
-  /** Shared control size. @default 'md' (36px) */
+  /** Shared control size. @default 'md' (34px) */
   size?: ButtonSize;
   /** Uses the semantic danger color in every variant. */
   danger?: boolean;
@@ -25,79 +24,69 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   endIcon?: ReactNode;
 }
 
-interface ButtonControlProps extends Omit<ButtonProps, 'variant'> {
-  /** Borderless controls remain an implementation detail of their owning components. */
-  variant?: ButtonVariant | 'ghost';
-}
-
 /** Internal rendering primitive; its owner resolves defaults and interaction constraints. */
-export const ButtonControl = forwardRef<HTMLButtonElement, ButtonControlProps>(
-  function ButtonControl(rawProps: ButtonControlProps, ref) {
-    const {
-      variant = 'solid',
-      size = 'md',
-      danger = false,
-      loading = false,
-      fullWidth = false,
-      disabled = false,
-      type = 'button',
-      className,
-      children,
-      startIcon,
-      endIcon,
-      onClick,
-      'aria-busy': ariaBusy,
-      ...props
-    } = rawProps;
-    const hasLabel =
-      children !== undefined && children !== null && children !== false && children !== '';
-    const iconOnly = !hasLabel && Boolean(startIcon || endIcon || loading);
-    const hasWave = variant === 'solid' || variant === 'outline';
-    const { wave, play } = useButtonWave(disabled || loading || !hasWave);
+export const ButtonControl = forwardRef<HTMLButtonElement, ButtonProps>(function ButtonControl(
+  rawProps: ButtonProps,
+  ref,
+) {
+  const {
+    variant = 'outline',
+    size = 'md',
+    danger = false,
+    loading = false,
+    fullWidth = false,
+    disabled = false,
+    type = 'button',
+    className,
+    children,
+    startIcon,
+    endIcon,
+    onClick,
+    'aria-busy': ariaBusy,
+    ...props
+  } = rawProps;
+  const hasLabel =
+    children !== undefined && children !== null && children !== false && children !== '';
+  const iconOnly = !hasLabel && Boolean(startIcon || endIcon || loading);
 
-    return (
-      <button
-        {...props}
-        ref={ref}
-        type={type}
-        className={classes(
-          'leaf-button',
-          `leaf-button--${variant}`,
-          `leaf-button--${size}`,
-          danger && 'leaf-button--danger',
-          iconOnly && 'leaf-button--icon-only',
-          fullWidth && 'leaf-button--full-width',
-          className,
+  return (
+    <button
+      {...props}
+      ref={ref}
+      type={type}
+      className={classes(
+        'leaf-button',
+        `leaf-button--${variant}`,
+        `leaf-button--${size}`,
+        danger && 'leaf-button--danger',
+        iconOnly && 'leaf-button--icon-only',
+        fullWidth && 'leaf-button--full-width',
+        className,
+      )}
+      disabled={disabled || loading}
+      aria-busy={loading || ariaBusy}
+      data-loading={loading ? '' : undefined}
+      onClick={onClick}
+    >
+      <span className="leaf-button__content">
+        {startIcon && (
+          <span className="leaf-button__icon" aria-hidden="true">
+            {startIcon}
+          </span>
         )}
-        disabled={disabled || loading}
-        aria-busy={loading || ariaBusy}
-        data-loading={loading ? '' : undefined}
-        onClick={(event) => {
-          play(event.currentTarget);
-          onClick?.(event);
-        }}
-      >
-        {hasWave && <span ref={wave} className="leaf-button__wave" aria-hidden="true" />}
-        <span className="leaf-button__content">
-          {startIcon && (
-            <span className="leaf-button__icon" aria-hidden="true">
-              {startIcon}
-            </span>
-          )}
-          {hasLabel && <span className="leaf-button__label">{children}</span>}
-          {endIcon && (
-            <span className="leaf-button__icon" aria-hidden="true">
-              {endIcon}
-            </span>
-          )}
-        </span>
-        <span className="leaf-button__loading" aria-hidden="true">
-          <LoaderCircle className="leaf-button__spinner" />
-        </span>
-      </button>
-    );
-  },
-);
+        {hasLabel && <span className="leaf-button__label">{children}</span>}
+        {endIcon && (
+          <span className="leaf-button__icon" aria-hidden="true">
+            {endIcon}
+          </span>
+        )}
+      </span>
+      <span className="leaf-button__loading" aria-hidden="true">
+        <LoaderCircle className="leaf-button__spinner" />
+      </span>
+    </button>
+  );
+});
 ButtonControl.displayName = 'ButtonControl';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(rawProps, ref) {

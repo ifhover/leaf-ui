@@ -27,7 +27,6 @@ export function SearchButton({ setFocused }: SearchButtonProps) {
       </Button>
       <Button
         className="leaf-docs-search-mobile"
-        variant="soft"
         aria-label={label}
         startIcon={<Search />}
         onClick={() => setFocused(true)}

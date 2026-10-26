@@ -1,35 +1,80 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TypographyBasic, TypographyActions } from '../../../src/examples/typography/basic';
+import { TypographyBasic } from '../../../src/examples/en/typography/basic';
+import { TypographyCopy } from '../../../src/examples/en/typography/copy';
+import { TypographyEditable } from '../../../src/examples/en/typography/editable';
+import { TypographyEllipsis } from '../../../src/examples/en/typography/ellipsis';
+
+export const leafDoc = { component: 'Typography', primaryApi: 'TypographyProps' };
 
 # Typography
 
 Organize headings, body text and links.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<TypographyBasic english />} fileName="basic.tsx">
+Organize content with the title, paragraph, text and link components.
 
-```tsx lineNumbers file="../../../src/examples/typography/basic.tsx"
+<ComponentExample exampleId="basic" preview={<TypographyBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/typography/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Copy and edit
+{/* leaf:section examples */}
 
-<ComponentExample title="Copy and edit" preview={<TypographyActions english />} fileName="basic.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/typography/basic.tsx"
+### Copy
+
+<ComponentExample exampleId="copy" preview={<TypographyCopy />} fileName="copy.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/typography/copy.tsx"
 ```
 
 </ComponentExample>
 
-## Typography API
+Copy reads the rendered text by default, including nested JSX. Use `copyable.text` to provide different content.
+
+### Edit
+
+<ComponentExample exampleId="editable" preview={<TypographyEditable />} fileName="editable.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/typography/editable.tsx"
+```
+
+</ComponentExample>
+
+Update the displayed text in `editable.onChange`. Editing starts with the rendered text unless `editable.text` is supplied. Press Enter or move focus away to submit; press Escape to cancel.
+
+### Paragraph truncation
+
+Use `ellipsis` to limit visible paragraph lines and optionally offer expansion.
+
+<ComponentExample exampleId="ellipsis" preview={<TypographyEllipsis />} fileName="ellipsis.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/typography/ellipsis.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Typography API
+
+Configure paragraph density within a typography content area.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `compact` | `boolean` | — | Use tighter paragraph spacing. |
 
-## Text API
+### Text API
+
+Configure text style, semantic color, copying and editing.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -43,7 +88,9 @@ Organize headings, body text and links.
 | `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | Provide a copy action with optional content and callbacks. |
 | `editable` | `{ onChange: (text: string) => void; text?: string }` | — | Provide editing; update the text after onChange. |
 
-## Paragraph API
+### Paragraph API
+
+Configure paragraph style, truncation, copying and editing.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -57,13 +104,17 @@ Organize headings, body text and links.
 | `copyable` | `boolean \| { text?: string; onCopy?: (text: string) => void; onError?: (error: unknown) => void }` | — | Provide a copy action with optional content and callbacks. |
 | `editable` | `{ onChange: (text: string) => void; text?: string }` | — | Provide editing; update the text after onChange. |
 
-## Title API
+### Title API
+
+Set the semantic heading level of the content.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `2` | Heading level, rendering h1–h6. |
 
-## Link API
+### Link API
+
+Configure disabled state, underlining and external navigation.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -71,13 +122,3 @@ Organize headings, body text and links.
 | `underline` | `boolean` | `true` | Show an underline. |
 | `external` | `boolean` | — | Open in a new tab with a safe rel attribute. |
 | `icon` | `ReactNode` | — | Icon content. |
-
-## Types and interaction
-
-Import the props and data types when creating reusable configuration.
-
-```ts
-import type { TypographyProps, TextProps, ParagraphProps, TitleProps, LinkProps } from '@ifhover/leaf-ui';
-```
-
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

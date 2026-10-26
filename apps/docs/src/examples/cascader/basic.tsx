@@ -1,6 +1,6 @@
-import { Cascader, Form, FormField } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField } from '@ifhover/leaf-ui';
 
-const options = [
+const options: CascaderOption[] = [
   {
     value: 'design',
     label: '设计',
@@ -24,13 +24,7 @@ export function CascaderBasic() {
   return (
     <Form layout="vertical">
       <FormField label="项目分类">
-        <Cascader aria-label="项目分类" options={options} placeholder="选择项目分类" />
-      </FormField>
-      <FormField label="默认分类">
-        <Cascader aria-label="默认分类" options={options} defaultValue={['design', 'interface']} />
-      </FormField>
-      <FormField label="禁用分类">
-        <Cascader aria-label="禁用分类" options={options} disabled />
+        <Cascader options={options} placeholder="选择项目分类" />
       </FormField>
     </Form>
   );

@@ -1,54 +1,145 @@
-import { ExtensionDemo } from '../../src/examples/form/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { FormBasic } from '../../src/examples/form/basic';
 import { FormLabelWidth } from '../../src/examples/form/label-width';
 import { FormSettings } from '../../src/examples/form/settings';
+import { ExtensionDemo } from '../../src/examples/form/extensions';
+import { FormSummary } from '../../src/examples/form/error-summary';
+import { FormValidation } from '../../src/examples/form/validation';
+
+export const leafDoc = { component: 'Form', primaryApi: 'FormProps' };
 
 # Form 表单
 
 组织字段、标签和校验提示，收集表单数据。
 
-## 提交与校验
+{/* leaf:section basic */}
 
-<ComponentExample title="提交与校验" preview={<FormBasic />} fileName="basic.tsx" width={600}>
+## 基础用法
+
+为控件设置 `name`，通过提交事件中的 `FormData` 读取值。`FormField required` 配合输入类型进行原生校验，错误显示在对应字段下方。
+
+<ComponentExample exampleId="basic" preview={<FormBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 标签宽度
+{/* leaf:section examples */}
 
-<ComponentExample title="标签宽度" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
+## 示例
+
+### 标签宽度
+
+水平布局默认统一使用最宽标签的宽度；设置数字 `labelWidth` 可使用固定宽度。水平和设置布局在窄容器内自动上下排列。
+
+<ComponentExample exampleId="label-width" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/label-width.tsx"
 ```
 
 </ComponentExample>
 
-## 设置布局
+### 设置布局
 
-设置 `layout="settings"`，在左侧展示标签和 `description`，右侧展示保持自然宽度的控件，字段之间带有分隔线。较宽的控件可以单独设置 `FormField layout="vertical"`，让标签和描述位于控件上方，控件占满整行。窄屏下自动改为纵向排列。
+`layout="settings"` 将标签与 `description` 放在控件左侧；较宽的字段可单独设置 `layout="vertical"`。`description` 解释字段含义，`help` 是控件下方的提示，`error` 会替代 `help`。
 
-`description` 用于说明字段含义，始终跟随标签；`help` 用于控件下方的操作提示，校验失败时由 `error` 替代。
-
-<ComponentExample title="设置布局与垂直字段" preview={<FormSettings />} fileName="settings.tsx" width={600}>
+<ComponentExample exampleId="settings" preview={<FormSettings />} fileName="settings.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/settings.tsx"
 ```
 
 </ComponentExample>
 
-## 扩展用法
+### 动态表单列表
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
+`FormList` 管理列表项的值和增删、排序操作。使用 `field.key` 作为 React key，并把 `field.name` 传给实际控件；移动后索引与名称会更新。非受控列表在表单重置时恢复 `defaultValue`。
+
+`name` 只是字段名前缀；点号名称在 `FormData` 中仍是普通字符串，不会自动生成嵌套对象。
+
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/form/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## Form API
+### 错误汇总
+
+在同一 `Form` 内放置 `FormErrorSummary`，汇总字段校验错误。提交空表单后，点击汇总项可以聚焦对应控件。
+
+<ComponentExample exampleId="error-summary" preview={<FormSummary />} fileName="error-summary.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/form/error-summary.tsx"
+```
+
+</ComponentExample>
+
+### 业务校验
+
+`useFormValidation` 读取 `FormData`，管理错误和 `pending` 状态。使用 `noValidate` 接管校验，把按字段名返回的错误传给 `FormField`。此例进行同步校验，输入时清除当前字段错误。
+
+<ComponentExample exampleId="validation" preview={<FormValidation />} fileName="validation.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/form/validation.tsx"
+```
+
+</ComponentExample>
+
+异步 `validate` 和 `onSubmit` 应响应传入的 `AbortSignal`。新的提交会取消旧请求；`clearErrors` 也会取消当前请求。把 `handleReset` 绑定到表单重置事件，以取消请求并清除错误。
+
+### 接入 React Hook Form
+
+{/* leaf:example react-hook-form */}
+
+下面是第三方集成代码，文档站不加载 React Hook Form，因此不提供实时预览。请先在应用中安装依赖；原生输入使用 `register`，返回业务值的控件使用 `Controller`。
+
+```bash
+npm install react-hook-form
+```
+
+```tsx
+import { Button, Form, FormField, Input, Select } from '@ifhover/leaf-ui';
+import { Controller, useForm } from 'react-hook-form';
+
+export function AccountForm() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { email: '', role: '' },
+  });
+  return (
+    <Form noValidate onSubmit={handleSubmit((values) => console.log(values))}>
+      <FormField label="邮箱" error={errors.email?.message}>
+        <Input {...register('email', { required: '请输入邮箱' })} />
+      </FormField>
+      <Controller
+        name="role"
+        control={control}
+        rules={{ required: '请选择角色' }}
+        render={({ field, fieldState }) => (
+          <FormField label="角色" error={fieldState.error?.message}>
+            <Select {...field} options={[{ value: 'editor', label: '编辑者' }]} />
+          </FormField>
+        )}
+      />
+      <Button type="submit">保存</Button>
+    </Form>
+  );
+}
+```
+
+数组字段使用 React Hook Form 的 `useFieldArray` 管理。
+
+{/* leaf:section api */}
+
+## API
+
+### Form API
+
+#### 表单接入
+
+`FormData` 的值是字符串或 `File`；数字转换和对象组装由应用处理。未勾选的复选框不会提交 `false`；同名字段用 `getAll()` 读取。非受控字段由原生重置恢复默认值，受控字段需要应用同步重置状态。
+
+Leaf UI 控件会读取 `FormField` 的关联信息。原生或第三方控件需要自行设置匹配的 `id` 与 `htmlFor`。`Form disabled` 只向支持表单上下文的控件传递禁用状态，不会禁用任意 DOM 元素或阻止提交。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -58,134 +149,105 @@ import { FormSettings } from '../../src/examples/form/settings';
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `ref` | `Ref<HTMLFormElement>` | — | 表单引用 |
 
-## FormField API
+### FormField API
+
+关联字段名称、控件与校验信息的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `label` | `ReactNode` | — | 字段标签 |
-| `description` | `ReactNode` | — | 标签下方的字段说明；与控件下方的 help 和 error 独立展示 |
-| `layout` | [`FormProps`](#form-api)`['layout']` | 继承 Form | 当前字段的布局；vertical 可用于占满整行的宽控件 |
 | `htmlFor` | `string` | 自动生成 | 与输入控件的 id 关联；一个字段对应一个控件或组 |
 | `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
 | `help` | `ReactNode` | — | 显示在控件下方的辅助提示，占据正常布局空间 |
 | `error` | `ReactNode` | — | 错误提示，优先于 help 展示 |
+| `layout` | [`FormProps`](#form-api)`['layout']` | 继承 Form | 当前字段的布局；vertical 可用于占满整行的宽控件 |
 | `labelWidth` | `number` | — | 当前 horizontal 字段的标签宽度，单位像素 |
+| `description` | `ReactNode` | — | 标签下方的字段说明；与控件下方的 help 和 error 独立展示 |
 
-## 类型
+### FormGroupProps API
 
-定义组件属性或组装变量时可导入相关类型。
-
-```ts
-import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-默认使用 horizontal 布局，自动计算同一 Form 中水平字段最宽的标签。标签文本、字体或可见字段变化时更新；窄屏和 vertical 布局按纵向排列。FormField 可以通过 layout 覆盖 Form 的默认布局；labelWidth 和 labelAlign 只作用于 horizontal 字段。支持 onSubmit、onReset、action、method 等表单属性。
-
-help 和错误提示会占据正常布局空间，并与下一项保留表单间距；文字换行后自然增加高度。
-
-用 FormData 读取控件上的 name。简单校验使用 required、type、minLength 等属性，错误提示跟随字段显示；业务与服务端错误通过 error 传入。设置 noValidate 可以接管校验。FormData 返回字符串，不会自动转换为数字或嵌套对象，未勾选复选框不会提交 false。受控字段的重置由应用处理。
-
-## 扩展类型
-
-```ts
-import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@ifhover/leaf-ui';
-```
-
-## FormGroupProps API
+表单字段组的图例与说明参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `legend` | `ReactNode` | — | 字段组名称 |
 | `description` | `ReactNode` | — | 补充说明 |
 
-## FormListProps API
+### FormListProps API
+
+动态表单列表的数据、字段命名与渲染参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `name` | `string` | 必填 | 必需。表单字段名称 |
+| `name` | `string` | 必填 | 字段名前缀；将 field.name 用于实际控件，点号名称不自动生成嵌套对象。 |
 | `value` | `readonly T[]` | — | 受控值 |
 | `defaultValue` | `readonly T[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
 | `onChange` | `(values: T[]) => void` | — | 值变化回调 |
 | `itemKey` | `(value: T) => string` | — | 提取稳定的项目标识 |
-| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | 必填 | 必需。内容或下级项目 |
+| `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | 必填 | 渲染列表项与操作的函数。 |
 
-## FormListField API
+### FormListField API
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `key` | `string` | 必填 | 必需。唯一且稳定的标识 |
-| `index` | `number` | 必填 | 必需。当前索引，从 0 开始 |
-| `name` | `string` | 必填 | 必需。表单字段名称 |
-| `value` | `T` | 必填 | 必需。受控值 |
-
-## FormListOperations API
+传给列表渲染函数的单个字段信息。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `add` | `(value: T, index?: number) => void` | 必填 | 必需。插入字段，省略 index 时追加 |
-| `remove` | `(index: number \| readonly number[]) => void` | 必填 | 必需。移除一个或多个位置 |
-| `move` | `(from: number, to: number) => void` | 必填 | 必需。移动字段并保留稳定 key |
-| `update` | `(index: number, value: T) => void` | 必填 | 必需。更新字段值 |
+| `key` | `string` | 必填 | 唯一且稳定的标识 |
+| `index` | `number` | 必填 | 当前索引，从 0 开始 |
+| `name` | `string` | 必填 | 表单字段名称 |
+| `value` | `T` | 必填 | 该行当前值。 |
 
-## FormErrorSummaryProps API
+### FormListOperations API
+
+动态表单列表的增删、移动与更新方法。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `add` | `(value: T, index?: number) => void` | 必填 | 插入字段，省略 index 时追加 |
+| `remove` | `(index: number \| readonly number[]) => void` | 必填 | 移除一个或多个位置 |
+| `move` | `(from: number, to: number) => void` | 必填 | 移动字段并保留稳定 key |
+| `update` | `(index: number, value: T) => void` | 必填 | 更新字段值 |
+
+### FormErrorSummaryProps API
+
+集中展示字段校验错误的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `errors` | `readonly `[`FormError`](#formerror-api)`[]` | — | 省略时汇总同一 Form 内字段错误 |
-| `title` | `ReactNode` | — | 标题内容 |
+| `title` | `ReactNode` | 语言默认值 | 错误汇总标题，默认使用当前语言的提示。 |
 
-## FormError API
+### FormError API
+
+错误汇总中的字段标识、名称和错误消息。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `fieldId` | `string` | 必填 | 必需。关联输入控件 id，点击错误后聚焦 |
-| `message` | `ReactNode` | 必填 | 必需。错误内容 |
+| `fieldId` | `string` | 必填 | 关联输入控件 id，点击错误后聚焦 |
+| `message` | `ReactNode` | 必填 | 错误内容 |
 | `label` | `ReactNode` | — | 显示内容 |
 
-## 接入 React Hook Form
+### FormValidationApi
 
-在应用中安装 react-hook-form。原生输入使用 register；onChange 返回业务值的组件使用 Controller。Leaf Form 负责布局，表单库负责状态与校验，使用 noValidate 接管校验。FormList 的点号 name 只是字段名，不会自动生成嵌套对象；使用 React Hook Form 管理数组时优先使用 useFieldArray。
-
-```tsx
-import { useForm, Controller } from 'react-hook-form';
-import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@ifhover/leaf-ui';
-
-export function AccountForm() {
-  const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });
-  return <Form noValidate onSubmit={handleSubmit(values => console.log(values))}>
-    <FormErrorSummary />
-    <FormField label="Email" error={errors.email?.message}>
-      <Input {...register('email', { required: 'Enter an email' })} />
-    </FormField>
-    <Controller name="role" control={control} rules={{ required: 'Choose a role' }} render={({ field, fieldState }) =>
-      <FormField label="Role" error={fieldState.error?.message}>
-        <Select {...field} options={[{ value: 'editor', label: 'Editor' }]} />
-      </FormField>}
-    />
-    <Button type="submit">Save</Button>
-  </Form>;
-}
-```
-
-## FormValidationApi
+`useFormValidation` 返回的状态与表单事件处理方法。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `errors` | `Record<string, string>` | — | 必需。按字段名组织的错误，可传给 FormField。 |
-| `pending` | `boolean` | — | 必需。校验或提交是否进行中。 |
-| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | — | 必需。设置服务端或业务错误。 |
-| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | — | 必需。绑定到 Form.onSubmit。 |
-| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | — | 必需。绑定到 Form.onReset，取消请求并清除错误。 |
-| `cancel` | `() => void` | — | 必需。取消当前请求。 |
-| `clearErrors` | `(name?: string) => void` | — | 必需。清除一个或全部错误并取消旧请求。 |
+| `errors` | `Record<string, string>` | 必填 | 按字段名组织的错误，可传给 FormField。 |
+| `pending` | `boolean` | 必填 | 校验或提交是否进行中。 |
+| `setErrors` | `Dispatch<SetStateAction<Record<string, string>>>` | 必填 | 设置服务端或业务错误。 |
+| `handleSubmit` | `(event: FormEvent<HTMLFormElement>) => Promise<void>` | 必填 | 绑定到 Form.onSubmit。 |
+| `handleReset` | `(event: FormEvent<HTMLFormElement>) => void` | 必填 | 绑定到 Form.onReset，取消请求并清除错误。 |
+| `cancel` | `() => void` | 必填 | 取消当前请求。 |
+| `clearErrors` | `(name?: string) => void` | 必填 | 清除一个或全部错误并取消旧请求。 |
 
-## FormValidationOptions
+### FormValidationOptions
+
+业务校验、提交回调与错误处理配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | — | 必需。接收 FormData 和取消信号，返回按字段名组织的错误。 |
+| `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | 必填 | 接收 FormData 和取消信号，返回按字段名组织的错误。 |
 | `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | 校验通过后提交；应响应取消信号。 |
-| `onError` | `(error: unknown) => void` | — | 操作失败时调用；命令面板会保留并展示错误。 |
-| `focusError` | `boolean` | — | 出现错误时聚焦第一个字段。 |
+| `onError` | `(error: unknown) => void` | — | 校验或提交过程中抛出异常时调用。 |
+| `focusError` | `boolean` | `true` | 出现错误时聚焦第一个字段。 |

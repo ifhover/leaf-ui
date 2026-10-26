@@ -1,40 +1,89 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TooltipBasic } from '../../src/examples/tooltip/basic';
+import { TooltipPlacements } from '../../src/examples/tooltip/placements';
+import { TooltipDisabled } from '../../src/examples/tooltip/disabled';
+import { TooltipControlled } from '../../src/examples/tooltip/controlled';
+
+export const leafDoc = { component: 'Tooltip', primaryApi: 'TooltipProps' };
 
 # Tooltip 文字提示
 
 为页面元素补充简短说明。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<TooltipBasic />} fileName="basic.tsx">
+悬停或键盘聚焦可展示提示，Escape 关闭。提示只放简短说明；需要交互内容时使用 [Popover](popover)。
+
+<ComponentExample exampleId="basic" preview={<TooltipBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/tooltip/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Tooltip API
+{/* leaf:section examples */}
+
+## 示例
+
+### 提示位置
+
+通过 `placement` 设置期望位置，空间不足时会自动调整。
+
+<ComponentExample exampleId="placements" preview={<TooltipPlacements />} fileName="placements.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/tooltip/placements.tsx"
+```
+
+</ComponentExample>
+
+### 禁用提示
+
+Tooltip 的 `disabled` 只关闭提示，不会禁用按钮。禁用按钮本身不能接收焦点；如需解释原因，可使用外层可聚焦的元素作为提示触发器。
+
+<ComponentExample exampleId="disabled" preview={<TooltipDisabled />} fileName="disabled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/tooltip/disabled.tsx"
+```
+
+</ComponentExample>
+
+### 受控展开
+
+使用 `open` 与 `onOpenChange` 管理显示状态。不传 `open` 时，`defaultOpen` 只设置初始状态。
+
+<ComponentExample exampleId="controlled" preview={<TooltipControlled />} fileName="controlled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/tooltip/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Tooltip API
+
+配置提示内容、出现位置和展开方式。
+
+触发元素需透传 ref 与事件；现有的 `aria-describedby` 会与提示关联合并。共享浮层参数见 [PopupOptions](/api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `content` | `ReactNode` | 必填 | 提示内容 |
-| `children` | `ReactElement` | 必填 | 触发元素，需支持 ref 和事件 |
+| `content` | `ReactNode` | 必填 | 提示内容；为空字符串、null 或 undefined 时不显示。 |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发元素，需支持 ref 和事件 |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 期望展示位置，空间不足时自动调整 |
-| `open / defaultOpen` | `boolean` | `false` | 受控展开状态 / 初始状态 |
+| `disabled` | `boolean` | `false` | 禁止显示提示，不禁用触发元素。 |
+| `open` | `boolean` | — | 受控的展开状态。 |
+| `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
-| `disabled` | `boolean` | `false` | 禁用提示 |
-| `enterDelay / leaveDelay` | `number` | `100` | 指针进入 / 离开后的延迟，单位毫秒 |
+| `enterDelay` | `number` | `100` | 悬停后等待多少毫秒再打开。 |
+| `leaveDelay` | `number` | `100` | 指针离开后等待多少毫秒再关闭。 |
 | `className` | `string` | — | 提示浮层类名 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { TooltipProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-鼠标悬停或键盘聚焦均可展示，Escape 关闭。Tooltip 会保留触发元素原有事件、ref 和 aria-describedby。禁用按钮不接受焦点，可改用外层可聚焦 span 作为触发元素。提示中适合放说明文字；可交互操作请使用 Dropdown 或弹窗。
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |

@@ -1,16 +1,16 @@
 import { Breadcrumb } from '@ifhover/leaf-ui';
-export function Capabilities({ english = false }) {
+
+export function Capabilities() {
   return (
     <Breadcrumb
-      aria-label={english ? 'Collapsed project path' : '折叠后的项目路径'}
-      maxItems={3}
+      aria-label="折叠后的文档路径"
       items={[
-        { title: 'Home', href: '#home' },
-        { title: 'Workspace', href: '#workspace' },
-        { title: 'Projects', href: '#projects' },
-        { title: 'Leaf UI', href: '#leaf' },
-        { title: 'Tokens' },
+        { title: '首页', href: 'https://ifhover.github.io/leaf-ui/' },
+        { title: '组件', href: 'https://ifhover.github.io/leaf-ui/components/index.html' },
+        { title: 'Breadcrumb', href: '#基础用法' },
+        { title: 'API' },
       ]}
+      maxItems={3}
     />
   );
 }

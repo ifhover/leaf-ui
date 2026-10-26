@@ -1,5 +1,5 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ChevronRight, File, Folder, FolderOpen, LoaderCircle } from 'lucide-react';
+import { Check, ChevronRight, File, Folder, FolderOpen, LoaderCircle } from 'lucide-react';
 import {
   type CSSProperties,
   type HTMLAttributes,
@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -101,6 +102,7 @@ export function TreeControl({
   checkable = false,
   checkOnClick = false,
   expandOnClick = false,
+  highlightFirst = false,
   checkStrictly = false,
   checkedKeys,
   defaultCheckedKeys = [],
@@ -129,10 +131,11 @@ export function TreeControl({
   className,
   'aria-label': label,
   ...props
-}: TreeProps & { checkOnClick?: boolean; expandOnClick?: boolean }) {
+}: TreeProps & { checkOnClick?: boolean; expandOnClick?: boolean; highlightFirst?: boolean }) {
   const { messages, direction, theme, density } = useLeafConfig();
   const format = useFormattedText();
-  const itemHeight = itemHeightProp ?? estimateControlHeight(theme, density) + 6;
+  const itemHeight = itemHeightProp ?? estimateControlHeight(theme, density);
+  const treeId = useId();
   const [loaded, setLoaded] = useState<Map<string, readonly TreeNode[]>>(new Map());
   const [loading, setLoading] = useState<readonly string[]>([]);
   const requests = useRef(new Map<string, AbortController>());
@@ -222,6 +225,8 @@ export function TreeControl({
     [records, searchValue, filterTreeNode],
   );
   const [active, setActive] = useState<string>();
+  const [hovered, setHovered] = useState<string>();
+  const [focusWithin, setFocusWithin] = useState(false);
   const elements = useRef(new Map<string, HTMLDivElement>());
   const anchor = useRef<string | undefined>(undefined);
   const typeAhead = useRef({ text: '', time: 0 });
@@ -248,6 +253,14 @@ export function TreeControl({
   const focusKey = visible.some((node) => node.key === active)
     ? active
     : (visible.find((node) => selected.includes(node.key))?.key ?? visible[0]?.key);
+  const itemIds = useMemo(
+    () => new Map([...records.keys()].map((key, index) => [key, `${treeId}-${index}`])),
+    [records, treeId],
+  );
+  const visibleKeys = new Set(visible.map((node) => node.key));
+  const hoveredKey = hovered && visibleKeys.has(hovered) ? hovered : undefined;
+  const focusedKey = focusWithin && focusKey && visibleKeys.has(focusKey) ? focusKey : undefined;
+  const highlightKey = hoveredKey ?? focusedKey ?? (highlightFirst ? focusKey : undefined);
   const focus = (key?: string) => {
     if (key) {
       setActive(key);
@@ -429,9 +442,17 @@ export function TreeControl({
           {' '}
           <div
             className="leaf-tree__row"
+            id={itemIds.get(node.key)}
             data-selected={selected.includes(node.key) || undefined}
             data-disabled={inactive || undefined}
+            data-highlighted={highlightKey === node.key || undefined}
             style={{ paddingInlineStart: `${(level - 1) * 20 + 4}px` }}
+            onPointerEnter={() => {
+              if (!inactive) setHovered(node.key);
+            }}
+            onPointerLeave={() => {
+              setHovered((current) => (current === node.key ? undefined : current));
+            }}
           >
             <button
               type="button"
@@ -484,6 +505,9 @@ export function TreeControl({
             >
               {nodeRender?.(node) ?? node.title}
             </span>
+            {selectable && !checkable && node.selectable !== false && (
+              <Check size={15} aria-hidden="true" className="leaf-tree__selection-mark" />
+            )}
           </div>
         </TreeRow>
         {hasChildren && !flat && (
@@ -509,6 +533,22 @@ export function TreeControl({
         ...props,
         'aria-multiselectable': multiple || checkable || undefined,
         'aria-disabled': disabled || undefined,
+        onFocus: (event) => {
+          props.onFocus?.(event);
+          if (!event.defaultPrevented) setFocusWithin(true);
+        },
+        onBlur: (event) => {
+          props.onBlur?.(event);
+          if (
+            !event.defaultPrevented &&
+            !event.currentTarget.contains(event.relatedTarget as Node | null)
+          )
+            setFocusWithin(false);
+        },
+        onPointerLeave: (event) => {
+          props.onPointerLeave?.(event);
+          if (!event.defaultPrevented) setHovered(undefined);
+        },
       }}
       style={{ ...(virtual ? { height } : {}), ...props.style }}
       viewportStyle={{ position: 'relative' }}

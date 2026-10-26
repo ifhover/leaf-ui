@@ -1,6 +1,6 @@
 # Leaf UI 项目架构与开发
 
-开始修改组件或使用文档前，先阅读 [开发、版本与文档同步流程](DEVELOPMENT-WORKFLOW.md)。用户未指定具体分支时，新功能与修复集中在以目标版本号命名的开发分支（如 `0.7.0`）完成；已有对应分支直接复用，不为每个需求新建分支。合并到 `main` 后同步发布 npm 和正式文档，并清理临时开发预览。
+本文说明项目结构与构建链路，不重复维护组件、颜色和发布细则。开始工作前按 [AGENTS.md](AGENTS.md) 选择必读规范；分支、版本、发布与预览清理以 [开发流程](DEVELOPMENT-WORKFLOW.md) 为准。
 
 ## 工作区
 
@@ -62,12 +62,7 @@ React 是 peer dependency；Lucide 与其他运行依赖由包管理器安装，
 
 ## 添加新组件
 
-1. 建立 `src/<component>` 目录，定义原生属性与组件扩展属性。
-2. 编写组件 SCSS，统一使用 `leaf-` 类名前缀和 `--leaf-*` 变量。
-3. 更新组件目录与库入口的导出，并引入样式。
-4. 添加必要的用户行为测试，覆盖键盘、禁用或表单等实际交互。
-5. 在 `apps/docs/docs/components` 中添加 MDX 页面，在 `apps/docs/src/examples` 中添加预览源码。通过代码围栏的 `file` 属性复用同一份源码。
-6. 更新 `apps/docs/rspress.config.ts` 中的组件侧边栏与组件总览，再执行 `pnpm check` 与 `pnpm build`。
+完整步骤由 [组件编写与开发规则](packages/react/DEVELOPMENT.md#添加组件) 维护，覆盖实现、公开导出、独立样式、测试和双语示例。涉及颜色时先执行 [颜色接入流程](COLOR-SYSTEM.md#新增组件的用色流程)，不要从某个存量组件复制一套默认配色。示例与导航遵循 [文档站协作约定](apps/docs/AGENTS.md)，验证按 [当前验收规则](packages/react/QUALITY.md#当前验收规则) 选择。
 
 ## 打包本地安装包
 
@@ -82,11 +77,11 @@ pnpm --dir packages/react pack
 
 在线文档只包含组件使用说明。文档站运行与维护说明见 [apps/docs/AGENTS.md](apps/docs/AGENTS.md)，组件开发流程见 [packages/react/DEVELOPMENT.md](packages/react/DEVELOPMENT.md)。
 
-每次 npm 升版发布都需维护中英文更新记录，并同步部署版本快照。具体步骤见 [发布文档](packages/react/RELEASING.md)；`pnpm check:release` 会校验组件包当前版本的记录。`pnpm build:versions` 使用 npm gitHead 独立构建每个已发布版本，导航和 AI 查询均以快照版本为准。版本构建与 AI 文档契约见 [文档站维护说明](apps/docs/AGENTS.md)，Skill 发行见 [skills/README.md](skills/README.md)。
+每次 npm 升版发布都需维护中英文更新记录，并同步部署版本快照。具体步骤见 [发布文档](packages/react/RELEASING.md)；`pnpm check:release` 会校验组件包当前版本的记录。`pnpm build:versions` 使用 npm gitHead 独立构建每个已发布版本，导航和 AI 查询均以快照版本为准。版本构建与 AI 文档契约见 [文档站维护说明](apps/docs/MAINTENANCE.md)，Skill 发行见 [skills/README.md](skills/README.md)。
 
 ## 样式与图标
 
-组件库与文档站主题使用 SCSS，通过 @rsbuild/plugin-sass 构建；文档示例优先使用 Flex、Space、Grid、FormField 和 Text，不依赖 Tailwind CSS；示例规则见 [文档站协作约定](apps/docs/AGENTS.md)。站点界面现有的 Tailwind CSS 入口由 PostCSS 编译。公共尺寸和样式 mixin 在 packages/react/src/styles；36px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。
+组件库与文档站主题使用 SCSS，通过 @rsbuild/plugin-sass 构建；文档示例优先使用 Flex、Space、Grid、FormField 和 Text，不依赖 Tailwind CSS；示例规则见 [文档站协作约定](apps/docs/AGENTS.md)。站点界面现有的 Tailwind CSS 入口由 PostCSS 编译。公共尺寸和样式 mixin 在 packages/react/src/styles；34px 是默认表单对齐基准。图标使用 lucide-react 的具名导入，具体约定见组件库开发文档。
 
 ## 质量验收
 

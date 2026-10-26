@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { createRef, type FormEvent } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from '../button';
+import { ConfigProvider } from '../config-provider';
 import { Dropdown } from './dropdown';
 
 it('navigates enabled menu items, skips dividers, selects and restores focus', async () => {
@@ -29,6 +30,58 @@ it('navigates enabled menu items, skips dividers, selects and restores focus', a
   expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
 });
 describe('controlled menus', () => {
+  it('inherits configured menu sizes in submenus and permits instance overrides', async () => {
+    const items = [{ key: 'more', label: 'More', children: [{ key: 'copy', label: 'Copy' }] }];
+    const example = (size?: 'sm' | 'md' | 'lg') => (
+      <ConfigProvider components={{ Dropdown: { size: 'sm' } }}>
+        <Dropdown size={size} items={items}>
+          <Button>Menu</Button>
+        </Dropdown>
+      </ConfigProvider>
+    );
+    const { rerender } = render(example());
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    expect(screen.getByRole('menu').closest('.leaf-dropdown')).toHaveClass('leaf-dropdown--sm');
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getAllByRole('menu')).toHaveLength(2);
+    for (const menu of screen.getAllByRole('menu'))
+      expect(menu.closest('.leaf-dropdown')).toHaveClass('leaf-dropdown--sm');
+    rerender(example('lg'));
+    for (const menu of screen.getAllByRole('menu'))
+      expect(menu.closest('.leaf-dropdown')).toHaveClass('leaf-dropdown--lg');
+  });
+
+  it('renders trailing content at the end of the row and before submenu affordances', async () => {
+    const selected = vi.fn();
+    render(
+      <Dropdown
+        onSelect={selected}
+        items={[
+          { key: 'copy', label: 'Copy', extra: <span>Ctrl C</span> },
+          {
+            key: 'more',
+            label: 'More',
+            extra: <span>Ctrl M</span>,
+            children: [{ key: 'archive', label: 'Archive' }],
+          },
+        ]}
+      >
+        <Button>Menu</Button>
+      </Dropdown>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const copy = screen.getByRole('menuitem', { name: 'Copy Ctrl C' });
+    expect(copy.querySelector('.leaf-dropdown__extra')).toHaveTextContent('Ctrl C');
+    await userEvent.click(copy);
+    expect(selected).toHaveBeenCalledWith('copy');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    const more = screen.getByRole('menuitem', { name: 'More Ctrl M' });
+    expect(more.querySelector('.leaf-dropdown__extra')?.nextElementSibling).toHaveClass(
+      'leaf-dropdown__arrow',
+    );
+  });
+
   it('moves the pointer highlight without stealing keyboard focus or checking disabled items', async () => {
     const change = vi.fn();
     render(

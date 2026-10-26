@@ -13,7 +13,8 @@
     "placeholder": "날짜 선택",
     "clear": "날짜 지우기",
     "label": "날짜 선택",
-    "selectDate": "날짜 선택"
+    "selectDate": "날짜 선택",
+    "presets": "프리셋"
   },
   "timePicker": {
     "placeholder": "시간 선택",
@@ -57,6 +58,7 @@
   },
   "common": {
     "confirm": "확인",
+    "next": "다음",
     "cancel": "취소",
     "close": "닫기",
     "start": "시작",
@@ -154,6 +156,8 @@
   },
   "tabs": {
     "moreTabs": "다른 탭",
+    "scrollLeft": "탭을 왼쪽으로 스크롤",
+    "scrollRight": "탭을 오른쪽으로 스크롤",
     "addTab": "탭 추가",
     "reorder": "{label} 탭 순서 변경",
     "closeLabel": "{label} 탭 닫기"
@@ -171,14 +175,6 @@
     "goTo": "{index}번째 슬라이드로 이동",
     "slide": "슬라이드",
     "role": "캐러셀"
-  },
-  "commandPalette": {
-    "commandSearch": "명령 검색",
-    "placeholder": "명령 검색…",
-    "searchCommands": "명령 검색",
-    "commands": "명령",
-    "navigate": "이동",
-    "run": "실행"
   },
   "errorBoundary": {
     "title": "이 콘텐츠를 표시할 수 없습니다",
@@ -221,7 +217,12 @@
     "scrollThumbnailsForward": "다음 썸네일로 스크롤",
     "image": "이미지",
     "position": "{total}개 중 {index}번째",
-    "viewImage": "{index}번째 이미지 보기{alt}"
+    "viewImage": "{index}번째 이미지 보기{alt}",
+    "noImage": "이미지 없음",
+    "actualSize": "실제 크기 (1:1)",
+    "fitToWindow": "화면에 맞추기",
+    "rotateCounterclockwise": "시계 반대 방향으로 회전",
+    "rotateClockwise": "시계 방향으로 회전"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "불러오기 실패. 다시 시도",

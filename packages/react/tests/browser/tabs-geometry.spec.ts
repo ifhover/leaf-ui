@@ -21,13 +21,13 @@ async function expectAligned(root: Locator) {
 }
 
 for (const direction of ['ltr', 'rtl']) {
-  for (const type of ['line', 'card']) {
+  for (const type of ['line', 'card', 'segmented']) {
     test(`scaled ${direction} ${type} selection stays aligned through real scroll and resize`, async ({
       page,
     }, testInfo) => {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(
-        `/?fixture=tabs&narrow=1${direction === 'rtl' ? '&rtl=1' : ''}${type === 'line' ? '&line=1' : ''}`,
+        `/?fixture=tabs&narrow=1${direction === 'rtl' ? '&rtl=1' : ''}${type === 'line' ? '&line=1' : type === 'segmented' ? '&segmented=1' : ''}`,
       );
       const root = page.getByTestId('motion-tabs');
       const list = root.locator('.leaf-tabs__list');

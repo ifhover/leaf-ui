@@ -1,23 +1,26 @@
-import { Button, Space, useLoadingBar } from '@ifhover/leaf-ui';
+import { Button, Flex, LoadingBar, Space, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
 export function LoadingBarProgress() {
-  const bar = useLoadingBar();
+  const [progress, setProgress] = useState<number>();
+
   return (
-    <Space>
-      <Button
-        variant="outline"
-        onClick={() => {
-          bar.reset();
-          bar.start();
-          bar.set(40);
-        }}
-      >
-        进度 40%
-      </Button>
-      <Button onClick={() => bar.finish()}>完成</Button>
-      <Button variant="soft" onClick={() => bar.reset()}>
-        重置
-      </Button>
-    </Space>
+    <Flex direction="column" gap="md" align="start">
+      <LoadingBar active={progress !== undefined} progress={progress} />
+      <Space wrap>
+        <Button variant="outline" onClick={() => setProgress(40)}>
+          设为 40%
+        </Button>
+        <Button variant="outline" onClick={() => setProgress(70)}>
+          设为 70%
+        </Button>
+        <Button disabled={progress === undefined} onClick={() => setProgress(undefined)}>
+          完成
+        </Button>
+      </Space>
+      <Text role="status">
+        {progress === undefined ? '加载条已收起' : `当前进度：${progress}%`}
+      </Text>
+    </Flex>
   );
 }

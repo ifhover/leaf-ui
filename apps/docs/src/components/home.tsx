@@ -13,16 +13,16 @@ export function HomeLayout() {
       icon: 'sliders',
       title: t('交互顺手，细节到位。', 'Small details. Smoother interactions.'),
       text: t(
-        '清楚的状态反馈、自然的动效、完整的键盘操作。常用的交互，已经替你照顾好。',
-        'Clear feedback, natural motion and keyboard support. The everyday interactions are taken care of.',
+        '清楚的状态反馈、克制的动效、完整的键盘操作。常用的交互，已经替你照顾好。',
+        'Clear feedback, restrained motion and keyboard support. The everyday interactions are taken care of.',
       ),
     },
     {
       icon: 'leaf',
-      title: t('你的品牌，自有风格。', 'Your brand. Your style.'),
+      title: t('安静一致，内容优先。', 'Quiet by default. Content first.'),
       text: t(
-        '从主题色、圆角到深浅外观，几处设置就能融入你的产品。默认好看，也经得起定制。',
-        'Make it yours with colors, corners and light or dark themes. Start with thoughtful defaults and adapt them to your product.',
+        '中性的表面、细边框和轻阴影构成层次，让数据和内容成为主角。主题色只标记主要操作与选中状态，接入品牌色后结构依然一致。',
+        'Neutral surfaces, fine borders and light shadows build the hierarchy and keep data in focus. Brand color marks primary actions and selection, and the structure stays consistent when it changes.',
       ),
     },
     {
@@ -43,15 +43,12 @@ export function HomeLayout() {
   return (
     <main className="leaf-home">
       <section className="leaf-hero">
-        <Badge
-          className="leaf-release"
-          status="success"
-          color="var(--leaf-color-primary)"
-          text={t(
-            `${componentCatalog.length} 个 React 组件 · 开箱即用，随你定制`,
-            `${componentCatalog.length} React components · Ready to make your own`,
+        <Badge className="leaf-release">
+          {t(
+            `${componentCatalog.length} 个 React 组件 · 开箱即用，风格统一`,
+            `${componentCatalog.length} React components · Consistent out of the box`,
           )}
-        />
+        </Badge>
         <h1>
           <span className="leaf-hero__brand">Leaf UI</span>
           <span className="leaf-hero__headline">
@@ -60,13 +57,13 @@ export function HomeLayout() {
         </h1>
         <p>
           {t(
-            '轻盈、好用、随你定制的 React 组件库。',
-            'A lightweight React component library that feels right at home.',
+            '安静、一致、细节到位的 React 组件库。',
+            'A quiet, consistent React component library with the details in place.',
           )}
           <br />
           {t(
-            '从按钮到表单，细节已经就位，接下来随你发挥。',
-            'From buttons to forms, the details are ready. Make something of your own.',
+            '从按钮到表单，统一的尺寸、状态与交互，让界面专注于内容。',
+            'From buttons to forms, shared sizing, states and interactions keep the focus on your content.',
           )}
         </p>
         <div className="leaf-hero__actions">

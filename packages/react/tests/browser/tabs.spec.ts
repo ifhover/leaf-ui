@@ -40,7 +40,7 @@ async function sampleOverflow(root: Locator) {
   });
 }
 
-for (const query of ['', '&line=1', '&vertical=1', '&rtl=1&theme=dark', '&compact=1']) {
+for (const query of ['', '&line=1', '&segmented=1', '&rtl=1&theme=dark', '&compact=1']) {
   test(`switching and closing fitting tabs never creates scroll overflow (${query || 'default'})`, async ({
     page,
   }) => {
@@ -50,6 +50,8 @@ for (const query of ['', '&line=1', '&vertical=1', '&rtl=1&theme=dark', '&compac
       .getByRole('textbox', { name: 'Retained draft', exact: true })
       .fill('keep this draft');
     await sampleOverflow(root);
+    // Sample intermediate frames as well as the settled layout; these delays are
+    // part of the motion regression, not waits for an element to become ready.
     for (const name of ['A longer second tab', 'Third', 'First', 'Third', 'A longer second tab']) {
       await root.getByRole('tab', { name, exact: true }).click();
       await page.waitForTimeout(60);
@@ -66,7 +68,7 @@ for (const query of ['', '&line=1', '&vertical=1', '&rtl=1&theme=dark', '&compac
       return JSON.parse(node.dataset.overflowFrames ?? '[]');
     });
     expect(frames).toEqual([]);
-    await expect(page.getByRole('button', { name: 'More tabs', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^Scroll tabs (left|right)$/ })).toHaveCount(0);
     await root.getByRole('button', { name: 'Close tab Third', exact: true }).click();
     await root.getByRole('button', { name: 'Close tab First', exact: true }).click();
     await expect(root).toHaveCount(0);
@@ -87,25 +89,69 @@ for (const query of ['', '&line=1', '&vertical=1', '&rtl=1&theme=dark', '&compac
   });
 }
 
-test('true horizontal overflow remains usable and the menu disappears when tabs fit', async ({
-  page,
-}) => {
-  await page.goto('/?fixture=tabs&narrow=1');
-  const root = page.getByTestId('motion-tabs');
-  const list = root.locator('.leaf-tabs__list');
-  await expect
-    .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
-    .toBeGreaterThan(0);
-  await page.getByRole('button', { name: 'More tabs', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Third', exact: true }).click();
-  await expect(root.getByRole('tab', { name: 'Third', exact: true })).toBeFocused();
-  await root.getByRole('button', { name: 'Close tab A longer second tab', exact: true }).click();
-  await root.getByRole('button', { name: 'Close tab Third', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'More tabs', exact: true })).toHaveCount(0);
-  await expect
-    .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
-    .toBeLessThanOrEqual(1);
-});
+for (const appearance of ['light', 'dark']) {
+  test(`line tabs use the primary indicator color in ${appearance} appearance`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=tabs&view=1&line=1&theme=${appearance}`);
+    const root = page.getByTestId('view-tabs');
+    await expect(root.getByRole('tab', { name: 'Week', exact: true })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    const colors = await root.evaluate((node) => {
+      const indicator = node.querySelector('.leaf-tabs__indicator');
+      if (!indicator) throw new Error('Missing line indicator');
+      const probe = document.createElement('span');
+      probe.style.backgroundColor =
+        'var(--leaf-color-primary-indicator, var(--leaf-color-primary))';
+      node.append(probe);
+      const expected = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return {
+        indicator: getComputedStyle(indicator, '::after').backgroundColor,
+        expected,
+        text: getComputedStyle(node).color,
+      };
+    });
+    expect(colors.indicator).toBe(colors.expected);
+    expect(colors.indicator).not.toBe(colors.text);
+  });
+}
+
+for (const rtl of [false, true]) {
+  test(`true horizontal overflow uses directional buttons and disappears when tabs fit (${rtl ? 'rtl' : 'ltr'})`, async ({
+    page,
+  }) => {
+    await page.goto(`/?fixture=tabs&narrow=1${rtl ? '&rtl=1' : ''}`);
+    const root = page.getByTestId('motion-tabs');
+    const list = root.locator('.leaf-tabs__list');
+    const header = root.locator('.leaf-tabs__header');
+    const start = root.locator('.leaf-tabs__scroll-action--start');
+    const end = root.locator('.leaf-tabs__scroll-action--end');
+    await expect
+      .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
+      .toBeGreaterThan(0);
+    await expect(end).toHaveCount(1);
+    await expect(end).toBeHidden();
+    await header.hover();
+    await expect(end).toBeVisible();
+    const before = await list.evaluate((node) => Math.abs(node.scrollLeft));
+    await end.click();
+    await expect
+      .poll(() => list.evaluate((node) => Math.abs(node.scrollLeft)))
+      .toBeGreaterThan(before);
+    await expect(start).toBeVisible();
+    await root.getByRole('tab', { name: 'Third', exact: true }).click();
+    await expect(root.getByRole('tab', { name: 'Third', exact: true })).toBeFocused();
+    await root.getByRole('button', { name: 'Close tab A longer second tab', exact: true }).click();
+    await root.getByRole('button', { name: 'Close tab Third', exact: true }).click();
+    await expect(page.getByRole('button', { name: /^Scroll tabs (left|right)$/ })).toHaveCount(0);
+    await expect
+      .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
+      .toBeLessThanOrEqual(1);
+  });
+}
 
 for (const size of ['sm', 'md', 'lg']) {
   test(`card ${size} view switcher keeps compact geometry and never scales on press`, async ({
@@ -121,22 +167,19 @@ for (const size of ['sm', 'md', 'lg']) {
       const track = node.querySelector('.leaf-tabs__track');
       const tabs = [...node.querySelectorAll('.leaf-tabs__tab')];
       if (!list || !track || !tabs[0]) throw new Error('Missing view tabs');
-      const style = getComputedStyle(list);
       return {
         height: list.getBoundingClientRect().height,
         rootHeight: node.getBoundingClientRect().height,
-        padding: [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft],
         gap: getComputedStyle(track).gap,
         widths: tabs.map((tab) => tab.getBoundingClientRect().width),
         color: getComputedStyle(tabs[0]).color,
         expectedColor: getComputedStyle(node).color,
       };
     });
-    const height = size === 'sm' ? 30 : size === 'lg' ? 42 : 36;
+    const height = size === 'sm' ? 28 : size === 'lg' ? 40 : 34;
     expect(metrics.height).toBe(height);
     expect(metrics.rootHeight).toBe(height);
-    expect(metrics.padding).toEqual(['3px', '3px', '3px', '3px']);
-    expect(metrics.gap).toBe('3px');
+    expect(metrics.gap).toBe('4px');
     expect(Math.max(...metrics.widths) - Math.min(...metrics.widths)).toBeLessThan(1);
     expect(metrics.color).toBe(metrics.expectedColor);
     await expect(root.getByRole('tabpanel')).toHaveCount(0);
@@ -159,7 +202,7 @@ for (const size of ['sm', 'md', 'lg']) {
     await page.goto(`/?fixture=tabs&wide=1&size=${size}`);
     const root = page.getByTestId('motion-tabs');
     const list = root.locator('.leaf-tabs__list');
-    const height = size === 'sm' ? 30 : size === 'lg' ? 42 : 36;
+    const height = size === 'sm' ? 28 : size === 'lg' ? 40 : 34;
     const metrics = await root.evaluate((node) => {
       const list = node.querySelector('.leaf-tabs__list');
       const track = node.querySelector('.leaf-tabs__track');
@@ -174,22 +217,23 @@ for (const size of ['sm', 'md', 'lg']) {
       };
     });
     expect(metrics.listHeight).toBe(height);
-    expect(metrics.tabHeight).toBeLessThan(height);
+    expect(metrics.tabHeight).toBe(height);
     expect(metrics.listWidth).toBeLessThan(metrics.rootWidth - height - 24);
-    expect(Math.abs(metrics.listWidth - metrics.trackWidth - 2)).toBeLessThan(1);
+    expect(Math.abs(metrics.listWidth - metrics.trackWidth)).toBeLessThan(1);
     await root.getByRole('tab', { name: 'A longer second tab', exact: true }).click();
     await expect
       .poll(() => list.evaluate((node) => node.getBoundingClientRect().width), {
         timeout: 20_000,
       })
       .toBe(metrics.listWidth);
-    await expect(root.getByRole('button', { name: 'More tabs', exact: true })).toHaveCount(0);
+    await expect(root.getByRole('button', { name: /^Scroll tabs (left|right)$/ })).toHaveCount(0);
     await root.evaluate((node) => {
       node.style.width = '230px';
     });
-    await expect(root.getByRole('button', { name: 'More tabs', exact: true })).toBeVisible({
-      timeout: 20_000,
-    });
+    const end = root.locator('.leaf-tabs__scroll-action--end');
+    await expect(end).toHaveCount(1, { timeout: 20_000 });
+    await root.locator('.leaf-tabs__header').hover();
+    await expect(end).toBeVisible({ timeout: 20_000 });
     await expect
       .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth), {
         timeout: 20_000,
@@ -198,7 +242,7 @@ for (const size of ['sm', 'md', 'lg']) {
     await root.evaluate((node) => {
       node.style.width = '640px';
     });
-    await expect(root.getByRole('button', { name: 'More tabs', exact: true })).toHaveCount(0, {
+    await expect(root.getByRole('button', { name: /^Scroll tabs (left|right)$/ })).toHaveCount(0, {
       timeout: 20_000,
     });
     await expect
@@ -207,58 +251,6 @@ for (const size of ['sm', 'md', 'lg']) {
       })
       .toBeLessThanOrEqual(1);
   });
-
-  for (const vertical of [false, true]) {
-    test(`card ${size} selection has shadow room inside the clipped track (${vertical ? 'vertical' : 'horizontal'})`, async ({
-      page,
-    }) => {
-      await page.goto(`/?fixture=tabs&size=${size}${vertical ? '&vertical=1' : ''}`);
-      const root = page.getByTestId('motion-tabs');
-      for (const name of ['First', 'Third', 'A longer second tab']) {
-        await root.getByRole('tab', { name, exact: true }).click();
-        await expect
-          .poll(
-            () =>
-              root.evaluate((node) => {
-                const list = node.querySelector('.leaf-tabs__list');
-                const track = node.querySelector('.leaf-tabs__track');
-                const marker = node.querySelector('.leaf-tabs__indicator');
-                const active = node.querySelector('[data-active="true"]');
-                if (!list || !track || !marker || !active) throw new Error('Missing tab header');
-                const clip = track.getBoundingClientRect();
-                const selection = marker.getBoundingClientRect();
-                const item = active.getBoundingClientRect();
-                const style = getComputedStyle(list);
-                const insets = [
-                  selection.top - clip.top,
-                  clip.right - selection.right,
-                  clip.bottom - selection.bottom,
-                  selection.left - clip.left,
-                ];
-                const padding = [
-                  style.paddingTop,
-                  style.paddingRight,
-                  style.paddingBottom,
-                  style.paddingLeft,
-                ];
-                return {
-                  shadowRoom: insets.every(
-                    (inset, index) => inset >= Number.parseFloat(padding[index] ?? '0') - 0.5,
-                  ),
-                  aligned:
-                    Math.abs(selection.x - item.x) < 0.5 && Math.abs(selection.y - item.y) < 0.5,
-                  shadow: getComputedStyle(marker).boxShadow !== 'none',
-                  overflow:
-                    list.scrollWidth > list.clientWidth + 1 ||
-                    list.scrollHeight > list.clientHeight + 1,
-                };
-              }),
-            { timeout: 10_000 },
-          )
-          .toEqual({ shadowRoom: true, aligned: true, shadow: true, overflow: false });
-      }
-    });
-  }
 
   test(`card add action matches the ${size} header without moving the close button`, async ({
     page,
@@ -275,7 +267,7 @@ for (const size of ['sm', 'md', 'lg']) {
       };
     });
     expect(Math.abs(metrics.list - metrics.action)).toBeLessThan(1);
-    expect(metrics.list).toBe(size === 'sm' ? 30 : size === 'lg' ? 42 : 36);
+    expect(metrics.list).toBe(size === 'sm' ? 28 : size === 'lg' ? 40 : 34);
     const close = root.getByRole('button', { name: 'Close tab First', exact: true });
     await close.hover();
     const before = await close.boundingBox();
@@ -287,3 +279,109 @@ for (const size of ['sm', 'md', 'lg']) {
     await page.mouse.up();
   });
 }
+
+for (const size of ['sm', 'md', 'lg']) {
+  test(`segmented ${size} tabs use a nested white selection surface`, async ({ page }) => {
+    await page.goto(`/?fixture=tabs&view=1&segmented=1&size=${size}`);
+    const root = page.getByTestId('view-tabs');
+    const list = root.getByRole('tablist');
+    const week = root.getByRole('tab', { name: 'Week', exact: true });
+    const month = root.getByRole('tab', { name: 'Month', exact: true });
+    const height = size === 'sm' ? 28 : size === 'lg' ? 40 : 34;
+    const metrics = await root.evaluate((node) => {
+      const list = node.querySelector('.leaf-tabs__list');
+      const track = node.querySelector('.leaf-tabs__track');
+      const indicator = node.querySelector('.leaf-tabs__indicator');
+      const tabs = [...node.querySelectorAll('.leaf-tabs__tab')];
+      if (!list || !track || !indicator || !tabs[0]) throw new Error('Missing segmented tabs');
+      const listStyle = getComputedStyle(list);
+      const tabStyle = getComputedStyle(tabs[0]);
+      const indicatorStyle = getComputedStyle(indicator);
+      const listBox = list.getBoundingClientRect();
+      const indicatorBox = indicator.getBoundingClientRect();
+      return {
+        height: listBox.height,
+        rootHeight: node.getBoundingClientRect().height,
+        tabHeight: tabs[0].getBoundingClientRect().height,
+        indicatorHeight: indicatorBox.height,
+        indicatorInset: indicatorBox.left - listBox.left,
+        widths: tabs.map((tab) => tab.getBoundingClientRect().width),
+        gap: getComputedStyle(track).gap,
+        padding: listStyle.paddingLeft,
+        border: listStyle.borderLeftWidth,
+        radius: Number.parseFloat(listStyle.borderTopLeftRadius),
+        tabRadius: Number.parseFloat(tabStyle.borderTopLeftRadius),
+        listBackground: listStyle.backgroundColor,
+        indicatorBackground: indicatorStyle.backgroundColor,
+        indicatorShadow: indicatorStyle.boxShadow,
+        selectedColor: tabStyle.color,
+        expectedColor: getComputedStyle(node).color,
+      };
+    });
+    expect(metrics.height).toBe(height);
+    expect(metrics.rootHeight).toBe(height);
+    expect(metrics.tabHeight).toBe(height - 8);
+    expect(metrics.indicatorHeight).toBe(metrics.tabHeight);
+    expect(metrics.indicatorInset).toBeCloseTo(4, 0);
+    expect(Math.max(...metrics.widths) - Math.min(...metrics.widths)).toBeLessThan(1);
+    expect(metrics.gap).toBe('3px');
+    expect(metrics.padding).toBe('3px');
+    expect(metrics.border).toBe('1px');
+    expect(metrics.tabRadius).toBe(Math.max(0, metrics.radius - 4));
+    expect(metrics.listBackground).not.toBe('rgba(0, 0, 0, 0)');
+    expect(metrics.indicatorBackground).not.toBe(metrics.listBackground);
+    expect(metrics.indicatorShadow).not.toBe('none');
+    expect(metrics.selectedColor).toBe(metrics.expectedColor);
+    await month.hover();
+    const before = await month.boundingBox();
+    await page.mouse.down();
+    await expect(month).toHaveCSS('transform', 'none');
+    expect(await month.boundingBox()).toEqual(before);
+    await page.mouse.up();
+    await expect(month).toHaveAttribute('aria-selected', 'true');
+    const motion = await root.evaluate((node) => {
+      const indicator = node.querySelector('.leaf-tabs__indicator');
+      if (!indicator) throw new Error('Missing segmented indicator');
+      const style = getComputedStyle(node);
+      const points = (value: string) =>
+        [...value.matchAll(/-?\d*\.?\d+/g)].map(([number]) => Number(number));
+      const timing = getComputedStyle(indicator).transitionTimingFunction;
+      return {
+        timing: [...timing.matchAll(/cubic-bezier\(([^)]+)\)/g)].map(([, value]) =>
+          points(value ?? ''),
+        ),
+        easing: points(style.getPropertyValue('--leaf-motion-easing')),
+        spring: points(style.getPropertyValue('--leaf-motion-spring')),
+      };
+    });
+    expect(motion.timing).toHaveLength(3);
+    for (const timing of motion.timing) {
+      expect(timing).toEqual(motion.easing);
+      expect(timing).not.toEqual(motion.spring);
+    }
+    await expect(list).toHaveCSS('height', `${height}px`);
+    await week.focus();
+    await page.keyboard.press('End');
+    await expect(month).toBeFocused();
+  });
+}
+
+test('segmented tabs keep the raised selection visible in dark appearance', async ({ page }) => {
+  await page.goto('/?fixture=tabs&view=1&segmented=1&theme=dark');
+  const root = page.getByTestId('view-tabs');
+  const colors = await root.evaluate((node) => {
+    const list = node.querySelector('.leaf-tabs__list');
+    const indicator = node.querySelector('.leaf-tabs__indicator');
+    const selected = node.querySelector('.leaf-tabs__tab[aria-selected="true"]');
+    if (!list || !indicator || !selected) throw new Error('Missing segmented tabs');
+    return {
+      track: getComputedStyle(list).backgroundColor,
+      indicator: getComputedStyle(indicator).backgroundColor,
+      selected: getComputedStyle(selected).color,
+      expected: getComputedStyle(node).color,
+    };
+  });
+  expect(colors.track).not.toBe('rgba(0, 0, 0, 0)');
+  expect(colors.indicator).not.toBe(colors.track);
+  expect(colors.selected).toBe(colors.expected);
+});

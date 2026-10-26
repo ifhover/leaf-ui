@@ -57,7 +57,7 @@ export function Breadcrumb(rawProps: BreadcrumbProps) {
               }))}
             >
               <ButtonControl
-                variant="ghost"
+                variant="text"
                 size="sm"
                 aria-label={messages.tree.expand}
                 startIcon={<Ellipsis size={16} />}
@@ -90,7 +90,7 @@ export function Breadcrumb(rawProps: BreadcrumbProps) {
               )
             ) : menu ? (
               <Dropdown items={menu}>
-                <ButtonControl variant="ghost" size="sm">
+                <ButtonControl variant="text" size="sm">
                   {title}
                 </ButtonControl>
               </Dropdown>

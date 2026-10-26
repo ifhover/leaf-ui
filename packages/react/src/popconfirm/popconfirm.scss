@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: center;
   width: 18px;
-  height: calc(var(--leaf-font-size) * 1.5);
+  height: var(--leaf-line-height);
   > svg {
     width: 18px;
     height: 18px;
@@ -18,19 +18,16 @@
   }
   &--info {
     color: var(--leaf-color-info);
-    --leaf-popconfirm-icon-background: var(--leaf-color-info-alpha-8);
   }
   &--success {
     color: var(--leaf-color-success);
-    --leaf-popconfirm-icon-background: var(--leaf-color-success-alpha-8);
   }
   &--warning {
     color: var(--leaf-color-warning);
-    --leaf-popconfirm-icon-background: var(--leaf-color-warning-alpha-8);
   }
+  &--danger,
   &--error {
     color: var(--leaf-color-danger);
-    --leaf-popconfirm-icon-background: var(--leaf-color-danger-alpha-8);
   }
 }
 .leaf-popconfirm__body {
@@ -39,7 +36,7 @@
 .leaf-popconfirm__title {
   font-weight: var(--leaf-font-weight);
   color: var(--leaf-color-text);
-  line-height: 1.5;
+  line-height: var(--leaf-line-height);
 }
 .leaf-popconfirm__description {
   margin-top: 2px;
@@ -54,8 +51,7 @@
 }
 .leaf-popconfirm__error {
   margin: 8px 0;
-  color: var(--leaf-color-danger);
-  --leaf-popconfirm-icon-background: var(--leaf-color-danger-alpha-8);
+  color: var(--leaf-color-danger-ink);
   opacity: 1;
   translate: 0 0;
   transition:

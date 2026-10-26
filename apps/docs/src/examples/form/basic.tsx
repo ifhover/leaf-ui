@@ -1,5 +1,6 @@
 import { Button, Flex, Form, FormField, Input, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function FormBasic() {
   const [result, setResult] = useState('');
   return (
@@ -27,17 +28,21 @@ export function FormBasic() {
         />
       </FormField>
       <FormField>
-        <Flex gap="md" align="center" wrap justify="center">
-          <Button type="submit">提交</Button>
+        <Flex gap="sm" wrap>
+          <Button type="submit" variant="solid">
+            提交
+          </Button>
           <Button type="reset" variant="outline">
             重置
           </Button>
         </Flex>
       </FormField>
       {result && (
-        <output>
-          <Text tone="muted">{result}</Text>
-        </output>
+        <FormField>
+          <Text role="status" tone="muted">
+            已提交：{result}
+          </Text>
+        </FormField>
       )}
     </Form>
   );

@@ -7,9 +7,9 @@ const rect = (x, y, w, h, fill = '#fff', stroke = '#e5e5e8', r = 6) =>
   `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"/>`;
 const text = (x, y, value, color = '#202024', size = 10) =>
   `<text x="${x}" y="${y}" fill="${color}" font-size="${size}" font-family="system-ui,sans-serif">${value}</text>`;
-const icon = (component, x, y, color = '#20834a') =>
+const icon = (component, x, y, color = '#1e964f') =>
   `<g transform="translate(${x} ${y})">${renderToStaticMarkup(createElement(component, { size: 14, color, strokeWidth: 1.8 }))}</g>`;
-const button = (x, y, label, fill = '#20834a') =>
+const button = (x, y, label, fill = '#1e964f') =>
   rect(x, y, 52, 22, fill, 'none', 5) + text(x + 10, y + 15, label, '#fff', 9);
 const dialog = (title, body, confirm = false) =>
   rect(20, 9, 200, 110, '#00000040', 'none', 9) +
@@ -17,19 +17,19 @@ const dialog = (title, body, confirm = false) =>
   text(confirm ? 69 : 48, 36, title, '#202024', 11) +
   icon(X, 182, 24, '#68686f') +
   text(confirm ? 69 : 48, 58, body) +
-  (confirm ? icon(CircleX, 48, 24, '#c83c3c') : '') +
+  (confirm ? icon(CircleX, 48, 24, '#dd3f2e') : '') +
   rect(82, 78, 52, 22) +
   text(91, 93, 'Cancel', '#68686f', 9) +
-  button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#c83c3c' : '#20834a');
+  button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#dd3f2e' : '#1e964f');
 const confirmation =
   rect(20, 13, 200, 102, '#00000026', 'none', 12) +
   rect(36, 24, 168, 80, '#fff', '#e5e5e8', 10) +
   text(48, 43, 'Delete project?', '#202024', 11) +
-  icon(CircleAlert, 48, 53, '#c83c3c') +
+  icon(CircleAlert, 48, 53, '#dd3f2e') +
   text(68, 64, 'This cannot be undone.', '#202024', 8) +
   rect(94, 78, 43, 18, '#fff', '#e5e5e8', 5) +
   text(103, 90, 'Cancel', '#202024', 8) +
-  rect(143, 78, 49, 18, '#c83c3c', 'none', 5) +
+  rect(143, 78, 49, 18, '#dd3f2e', 'none', 5) +
   text(155, 90, 'Delete', '#fff', 8);
 const images = {
   form:
@@ -56,21 +56,21 @@ const images = {
     text(72, 24, 'More actions') +
     rect(59, 38, 122, 82) +
     rect(64, 43, 112, 22, '#eaf4ed', 'none', 4) +
-    text(75, 58, 'Edit', '#20834a') +
+    text(75, 58, 'Edit', '#1e964f') +
     text(75, 81, 'Copy') +
     `<path d="M66 91h108" stroke="#e5e5e8"/>` +
-    text(75, 108, 'Delete', '#c83c3c'),
+    text(75, 108, 'Delete', '#dd3f2e'),
   alert:
     rect(18, 30, 204, 68, '#eaf4ed', '#b9d8c3') +
     icon(Check, 30, 45) +
-    text(53, 57, 'Project saved', '#20834a', 11) +
+    text(53, 57, 'Project saved', '#1e964f', 11) +
     text(53, 77, 'Your changes are ready.', '#68686f', 9),
   message:
     rect(41, 29, 158, 30) +
     icon(Info, 53, 37, '#1677ff') +
     text(76, 49, 'A new notification') +
     rect(31, 70, 178, 30) +
-    icon(CircleAlert, 43, 78, '#faad14') +
+    icon(CircleAlert, 43, 78, '#d38b11') +
     text(65, 90, 'Check your settings'),
   'date-time-picker':
     rect(20, 13, 200, 26) +
@@ -78,9 +78,9 @@ const images = {
     text(52, 30, '2026-10-03 14:30:00') +
     rect(20, 45, 200, 73) +
     text(35, 60, 'October 2026') +
-    text(156, 60, '14:30:00', '#20834a', 9) +
+    text(156, 60, '14:30:00', '#1e964f', 9) +
     text(34, 83, '12    13    14    15    16    17') +
-    text(35, 106, 'Today', '#20834a', 9) +
+    text(35, 106, 'Today', '#1e964f', 9) +
     button(158, 90, 'OK'),
   'date-range-picker':
     rect(15, 13, 210, 26) +
@@ -91,8 +91,8 @@ const images = {
     text(134, 61, 'November 2026', '#202024', 9) +
     rect(24, 74, 87, 18, '#eaf4ed', 'none', 2) +
     rect(128, 74, 87, 18, '#eaf4ed', 'none', 2) +
-    rect(24, 74, 18, 18, '#20834a', 'none', 3) +
-    rect(197, 74, 18, 18, '#20834a', 'none', 3) +
+    rect(24, 74, 18, 18, '#1e964f', 'none', 3) +
+    rect(197, 74, 18, 18, '#1e964f', 'none', 3) +
     text(28, 87, '28', '#fff', 8) +
     text(46, 87, '29   30   31', '#202024', 8) +
     text(136, 87, '1     2     3', '#202024', 8) +

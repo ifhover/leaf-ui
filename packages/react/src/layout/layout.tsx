@@ -72,7 +72,7 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
       </ScrollbarControl>
       {collapsible && !narrow && (
         <ButtonControl
-          variant="ghost"
+          variant="text"
           size="sm"
           onClick={() => setCompact(!compact)}
           aria-expanded={!folded}

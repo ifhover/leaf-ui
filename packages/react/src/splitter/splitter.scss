@@ -1,4 +1,6 @@
+@use '../styles/mixins' as mixins;
 .leaf-splitter {
+  @include mixins.accent-soft-feedback-family;
   display: flex;
   width: 100%;
   min-width: 0;
@@ -23,7 +25,13 @@
     transition: background var(--leaf-motion-duration);
     &:hover,
     &:focus-visible {
-      background: var(--leaf-color-primary-surface-28);
+      background: var(--leaf-accent-soft-border);
+    }
+    &:focus-visible {
+      --leaf-focus-color: var(--leaf-color-primary-ink);
+      background: var(--leaf-color-surface-muted);
+      @include mixins.focus-ring;
+      outline-offset: -2px;
     }
     button {
       position: absolute;

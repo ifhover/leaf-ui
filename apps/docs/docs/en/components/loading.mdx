@@ -2,41 +2,73 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { LoadingBasic } from '../../../src/examples/en/loading/basic';
 import { LoadingSizes } from '../../../src/examples/en/loading/sizes';
 import { LoadingOverlay } from '../../../src/examples/en/loading/overlay';
+import { LoadingDelay } from '../../../src/examples/en/loading/delay';
+
+export const leafDoc = { component: 'Loading', primaryApi: 'LoadingProps' };
 
 # Loading
 
 Indicate that content is loading or an operation is in progress.
 
-## Loading indicator
+{/* leaf:section basic */}
 
-<ComponentExample title="Loading indicator" preview={<LoadingBasic />} fileName="basic.tsx">
+## Basic usage
+
+Display a loading indicator while waiting for content or an operation to complete.
+
+<ComponentExample exampleId="basic" preview={<LoadingBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Sizes
+{/* leaf:section examples */}
 
-<ComponentExample title="Sizes" preview={<LoadingSizes />} fileName="sizes.tsx">
+## Examples
+
+### Sizes
+
+Use `size` to choose the loading indicator size.
+
+<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width="fit-content" fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Loading an area
+### Loading an area
 
-Cover a content area while loading and restore interaction when finished.
+With `children`, Loading covers the content and blocks interaction while the loading layer is visible. Use `spinning` to control loading and `tip` to add a message.
 
-<ComponentExample title="Loading an area" preview={<LoadingOverlay />} fileName="overlay.tsx">
+<ComponentExample exampleId="overlay" preview={<LoadingOverlay />} fileName="overlay.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading/overlay.tsx"
 ```
 
 </ComponentExample>
 
-## Loading API
+### Delayed display
+
+The indicator appears only if `spinning` is still `true` after `delay` milliseconds. Ending loading before then leaves it hidden.
+
+`delay` does not delay your request or block interaction during the wait. Disable actions separately if they must be unavailable immediately.
+
+<ComponentExample exampleId="delay" preview={<LoadingDelay />} width="fit-content" fileName="delay.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading/delay.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Loading API
+
+Props for loading state, status content and delayed display.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -44,17 +76,4 @@ Cover a content area while loading and restore interaction when finished.
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Indicator size |
 | `tip` | `ReactNode` | — | Hint text |
 | `delay` | `number` | `0` | Display delay in milliseconds |
-| `children` | `ReactNode` | — | Covered content |
-
-
-## Types
-
-Import these types to define props or prepare data.
-
-```ts
-import type { LoadingProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Used alone, Loading displays an indicator. With children it covers the area and prevents interaction while visible. A delay prevents flicker for brief requests.
+| `children` | `ReactNode` | — | Content covered by the loading overlay. |

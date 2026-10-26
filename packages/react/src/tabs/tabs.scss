@@ -2,14 +2,21 @@
 @use '../styles/geometry' as geometry;
 .leaf-tabs {
   @include mixins.control-size;
+  @include mixins.segmented-surface-family;
   min-width: 0;
   color: var(--leaf-component-tabs-color, var(--leaf-color-text));
-  font: var(--leaf-component-tabs-font-size, var(--leaf-current-font-size))/1.6
-    var(--leaf-font-family);
+  font: var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) /
+    var(--leaf-line-height) var(--leaf-font-family);
   &__header {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+  &__viewport {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
   }
   &__scroll {
     flex: 1;
@@ -17,7 +24,6 @@
   }
   &__list {
     box-sizing: border-box;
-    box-shadow: inset 0 -1px 0 var(--leaf-color-divider);
   }
   &__track {
     position: relative;
@@ -25,7 +31,7 @@
     display: flex;
     width: max-content;
     min-width: 100%;
-    gap: 12px;
+    gap: 4px;
     // The moving background must never enlarge the tablist's scrollable area.
     overflow: clip;
   }
@@ -51,11 +57,16 @@
     &::after {
       content: '';
       position: absolute;
-      inset-inline: 0;
+      inset-inline-start: 50%;
       bottom: 0;
-      height: 2px;
-      border-radius: 2px;
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      width: 18px;
+      height: var(--leaf-tabs-indicator-line, 2px);
+      border-radius: 999px;
+      background: var(
+        --leaf-component-tabs-indicator-color,
+        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+      );
+      transform: translateX(-50%);
     }
   }
   &__tab {
@@ -69,14 +80,17 @@
     min-height: var(--leaf-current-control-height);
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    color: var(--leaf-color-text-muted);
+    color: var(--leaf-tabs-tab-color, var(--leaf-color-text-muted));
     background: transparent;
     font: inherit;
+    font-weight: var(--leaf-font-weight);
     cursor: pointer;
     transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[aria-selected='true'] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      font-weight: var(--leaf-font-weight);
+      color: var(
+        --leaf-tabs-tab-active-color,
+        var(--leaf-component-tabs-color, var(--leaf-color-text))
+      );
     }
     &:disabled {
       opacity: 0.45;
@@ -108,29 +122,17 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     margin-inline: 2px 4px;
     padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-subtle);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      color: var(--leaf-color-text);
-      background: var(--leaf-color-surface-muted);
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
     &:disabled {
-      cursor: not-allowed;
       opacity: 0.45;
     }
+
+    @include mixins.text-action;
   }
   &__drag {
     display: flex;
@@ -155,6 +157,31 @@
     width: auto;
     aspect-ratio: 1;
   }
+  &__scroll-action {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition:
+      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+      visibility var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &--start {
+      inset-inline-start: 4px;
+    }
+    &--end {
+      inset-inline-end: 4px;
+    }
+  }
+  &__header:hover &__scroll-action,
+  &:has(.leaf-tabs__tab:focus-visible) &__scroll-action,
+  &__scroll-action:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
   &__panels {
     min-width: 0;
   }
@@ -169,7 +196,35 @@
       display: none;
     }
   }
-  &--card &__list {
+  &--card &__viewport {
+    flex: 0 1 auto;
+  }
+  &--segmented &__viewport {
+    flex: 0 1 auto;
+  }
+  &--card &__scroll {
+    flex: 0 1 auto;
+    width: auto;
+  }
+  &--segmented &__scroll {
+    flex: 0 1 auto;
+    width: auto;
+  }
+  &--card &__track {
+    gap: var(--leaf-component-tabs-gap, 4px);
+  }
+  &--card &__indicator {
+    border-radius: var(--leaf-component-tabs-radius, var(--leaf-radius));
+    background: var(--leaf-component-tabs-indicator-background, var(--leaf-color-surface-muted));
+    &::after {
+      display: none;
+    }
+  }
+  &--card &__entry {
+    height: var(--leaf-current-control-height);
+    border-radius: var(--leaf-component-tabs-radius, var(--leaf-radius));
+  }
+  &--segmented &__list {
     @include geometry.nested-surface(
       tabs,
       var(--leaf-component-tabs-radius, var(--leaf-radius)),
@@ -178,7 +233,7 @@
     );
     flex: 0 1 auto;
     box-sizing: border-box;
-    --leaf-tabs-card-tab-height: max(
+    --leaf-tabs-segmented-tab-height: max(
       1px,
       calc(
         var(--leaf-current-control-height) - var(--leaf-surface-padding-top) - var(
@@ -191,19 +246,13 @@
     border: var(--leaf-surface-border) solid
       var(
         --leaf-component-tabs-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-border-alpha-65))
+        var(--leaf-frame-border-color, var(--leaf-segmented-border))
       );
-    background: var(--leaf-component-tabs-background, var(--leaf-color-surface-muted));
+    background: var(--leaf-component-tabs-background, var(--leaf-segmented-background));
     box-shadow: var(--leaf-component-tabs-shadow, var(--leaf-control-shadow, none));
   }
-  &--card &__scroll {
-    flex: 0 1 auto;
-    width: auto;
-  }
-  &--card &__track {
+  &--segmented &__track {
     gap: var(--leaf-component-tabs-gap, 3px);
-    // Include the list's inset in the clip box so the raised selection can cast its shadow.
-    // Negative margins keep the existing tab geometry and scroll range unchanged.
     box-sizing: border-box;
     min-width: calc(100% + var(--leaf-surface-padding-left) + var(--leaf-surface-padding-right));
     padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
@@ -211,16 +260,25 @@
     margin: calc(-1 * var(--leaf-surface-padding-top)) calc(-1 * var(--leaf-surface-padding-right))
       calc(-1 * var(--leaf-surface-padding-bottom)) calc(-1 * var(--leaf-surface-padding-left));
   }
-  &--card &__indicator {
+  &--segmented &__indicator {
     border-radius: var(--leaf-surface-inner-radius);
-    background: light-dark(#fff, var(--leaf-color-surface-raised));
-    box-shadow: var(--leaf-shadow-xs);
+    background: var(
+      --leaf-component-tabs-indicator-background,
+      var(--leaf-segmented-selected-background)
+    );
+    box-shadow: var(--leaf-component-tabs-indicator-shadow, var(--leaf-shadow-xs));
+    &[data-animate='true'] {
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-easing),
+        width var(--leaf-motion-slow) var(--leaf-motion-easing),
+        height var(--leaf-motion-slow) var(--leaf-motion-easing);
+    }
     &::after {
       display: none;
     }
   }
-  &--card &__entry {
-    height: var(--leaf-tabs-card-tab-height);
+  &--segmented &__entry {
+    height: var(--leaf-tabs-segmented-tab-height);
     border-radius: var(--leaf-surface-inner-radius);
   }
   &--bottom {
@@ -230,71 +288,29 @@
       order: 2;
     }
   }
-  &--left,
-  &--right {
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
-    .leaf-tabs__header {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .leaf-tabs__list {
-      box-shadow: none;
-    }
-    .leaf-tabs__track {
-      flex-direction: column;
-      width: auto;
-      gap: 4px;
-    }
-    .leaf-tabs__tab {
-      justify-content: flex-start;
-      padding: 6px 14px;
-    }
-    .leaf-tabs__indicator::after {
-      inset-block: 0;
-      inset-inline-start: auto;
-      inset-inline-end: 0;
-      width: 2px;
-      height: auto;
-    }
-    .leaf-tabs__panels {
-      flex: 1;
-    }
-    .leaf-tabs__panel {
-      padding-block: 6px;
-    }
-    .leaf-tabs__extra {
-      margin: auto 12px 8px;
-    }
-    .leaf-tabs__action {
-      align-self: center;
-      width: var(--leaf-current-control-height);
-    }
-  }
-  &--right {
-    .leaf-tabs__header {
-      order: 2;
-    }
-    .leaf-tabs__indicator::after {
-      inset-inline-start: 0;
-      inset-inline-end: auto;
-    }
+  &--line &__tab {
+    // The line indicator lives inside the tab box, so line tabs are slightly
+    // taller than card tabs to keep a clear gap between the label and the pill.
+    min-height: calc(var(--leaf-current-control-height) + 4px);
   }
   &--card &__tab {
     gap: 6px;
-    height: var(--leaf-tabs-card-tab-height);
-    min-height: var(--leaf-tabs-card-tab-height);
-    border-radius: var(--leaf-surface-inner-radius);
+    height: var(--leaf-current-control-height);
+    min-height: var(--leaf-current-control-height);
+    border-radius: var(--leaf-component-tabs-radius, var(--leaf-radius));
     padding: 0 12px;
-    // Intrinsic bars must not resize when selection changes a label's weight.
-    font-weight: var(--leaf-font-weight);
-    line-height: 1.5;
-
-    color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+    line-height: var(--leaf-line-height);
   }
-  &--card:is(&--left, &--right) &__track {
-    gap: var(--leaf-component-tabs-gap, 3px);
+  &--segmented &__tab {
+    gap: 6px;
+    height: var(--leaf-tabs-segmented-tab-height);
+    min-height: var(--leaf-tabs-segmented-tab-height);
+    border-radius: var(--leaf-surface-inner-radius);
+    padding: 0 14px;
+    line-height: var(--leaf-line-height);
+  }
+  &--block &__viewport {
+    flex: 1;
   }
   &--block &__list {
     flex: 1;
@@ -315,6 +331,7 @@
 @media (prefers-reduced-motion: reduce) {
   .leaf-tabs__tab,
   .leaf-tabs__close,
+  .leaf-tabs__scroll-action,
   .leaf-tabs__indicator[data-animate='true'] {
     transition: none;
   }
@@ -322,6 +339,7 @@
 .leaf-tabs {
   --leaf-current-control-height: var(--leaf-component-tabs-height, var(--leaf-control-height));
   --leaf-current-font-size: var(--leaf-component-tabs-font-size, var(--leaf-font-size));
+  --leaf-tabs-indicator-line: 3px;
 }
 .leaf-tabs--sm {
   --leaf-current-control-height: var(
@@ -329,6 +347,7 @@
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size-sm);
+  --leaf-tabs-indicator-line: 2px;
 }
 .leaf-tabs--lg {
   --leaf-current-control-height: var(
@@ -336,23 +355,18 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+  --leaf-tabs-indicator-line: 4px;
 }
 
 .leaf-tabs {
   &__tab {
     --leaf-tabs-tab-color: var(--leaf-color-text-muted);
-    --leaf-tabs-tab-hover-color: var(
-      --leaf-color-primary-ink-hover,
-      var(--leaf-color-primary-hover, var(--leaf-color-primary))
-    );
-    --leaf-tabs-tab-active-color: var(
-      --leaf-color-primary-ink-active,
-      var(--leaf-color-primary-active, var(--leaf-color-primary))
-    );
+    --leaf-tabs-tab-hover-color: var(--leaf-color-text);
+    --leaf-tabs-tab-active-color: var(--leaf-color-text);
     &[aria-selected='true'] {
-      --leaf-tabs-tab-color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      --leaf-tabs-tab-hover-color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      --leaf-tabs-tab-active-color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
     }
     &:focus-visible:not(:disabled) {
       @include mixins.state-paint(
@@ -396,9 +410,30 @@
     }
   }
   &--card &__tab {
-    --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
-    --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
-    --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
+    --leaf-tabs-tab-color: var(
+      --leaf-component-tabs-muted-color,
+      var(--leaf-segmented-muted-color)
+    );
+    --leaf-tabs-tab-hover-color: var(--leaf-color-text);
+    --leaf-tabs-tab-active-color: var(--leaf-color-text);
+    &[aria-selected='true'] {
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+    }
+  }
+  &--segmented &__tab {
+    --leaf-tabs-tab-color: var(
+      --leaf-component-tabs-muted-color,
+      var(--leaf-segmented-muted-color)
+    );
+    --leaf-tabs-tab-hover-color: var(--leaf-color-text);
+    --leaf-tabs-tab-active-color: var(--leaf-color-text);
+    &[aria-selected='true'] {
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+    }
   }
 }
 
@@ -407,11 +442,13 @@
     background: Highlight;
     forced-color-adjust: none;
   }
-  .leaf-tabs--card .leaf-tabs__indicator {
+  .leaf-tabs--card .leaf-tabs__indicator,
+  .leaf-tabs--segmented .leaf-tabs__indicator {
     background: Highlight;
     forced-color-adjust: none;
   }
-  .leaf-tabs--card .leaf-tabs__tab[aria-selected='true'] {
+  .leaf-tabs--card .leaf-tabs__tab[aria-selected='true'],
+  .leaf-tabs--segmented .leaf-tabs__tab[aria-selected='true'] {
     color: HighlightText;
   }
   .leaf-tabs--line .leaf-tabs__tab[aria-selected='true'] {

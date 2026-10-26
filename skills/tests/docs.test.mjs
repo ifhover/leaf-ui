@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { pageUrl, queryDocs, resolveInstallation } from '../leaf-ui/scripts/docs.mjs';
+import { pageUrl, queryDocs, resolveInstallation, versionRoot } from '../leaf-ui/scripts/docs.mjs';
 
 const packageName = '@sudden3/leaf-ui';
 const metadata = (version, installedPackage = packageName) => ({
@@ -24,6 +24,32 @@ const index = (version, name = 'Button', installedPackage = packageName) => ({
 });
 const markdown = (version, installedPackage = packageName) =>
   `> Leaf UI ${version} · Package: ${installedPackage}\n\n# Button\n\n| Property | Type |\n| --- | --- |\n| children | ReactNode |`;
+const legacyResponse = (url, data, body) =>
+  url.pathname.endsWith('/ai/v1/index.json')
+    ? new Response('', { status: 404 })
+    : url.pathname.endsWith('.json')
+      ? Response.json(data)
+      : new Response(body);
+
+test('version roots reject ranges, path escapes and insecure remote sites', () => {
+  for (const version of ['latest', '^0.9.0', '../latest', '0.9.0/../../latest', null])
+    assert.throws(
+      () => versionRoot('https://example.com/docs/', version),
+      /exact installed package version/,
+    );
+  for (const site of [
+    'http://example.com/docs/',
+    'file:///docs/',
+    'https://user:password@example.com/docs/',
+    'https://example.com/docs/?version=latest',
+    'https://example.com/docs/#latest',
+  ])
+    assert.throws(() => versionRoot(site, '0.9.0'));
+  assert.equal(
+    versionRoot('http://127.0.0.1:1234/docs/', '0.9.0-dev.1').href,
+    'http://127.0.0.1:1234/docs/v/0.9.0-dev.1/',
+  );
+});
 
 test('resolve installed packages independently for two apps, ignoring dependency ranges', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-skill-test-'));
@@ -96,10 +122,7 @@ test('new scope reads its exact version and refuses the other scope even with an
   const result = await queryDocs({
     installation,
     api: 'Button',
-    fetcher: async (url) =>
-      url.pathname.endsWith('.json')
-        ? Response.json(correctIndex)
-        : new Response(markdown('0.5.0', installedPackage)),
+    fetcher: async (url) => legacyResponse(url, correctIndex, markdown('0.5.0', installedPackage)),
   });
   assert.equal(result.metadata.package, installedPackage);
   assert.equal(result.page, 'https://ifhover.github.io/leaf-ui/v/0.5.0/en/components/button.md');
@@ -116,17 +139,14 @@ test('new scope reads its exact version and refuses the other scope even with an
       queryDocs({
         installation,
         api: 'Button',
-        fetcher: async (url) =>
-          url.pathname.endsWith('.json')
-            ? Response.json(correctIndex)
-            : new Response(markdown('0.5.0', otherPackage)),
+        fetcher: async (url) => legacyResponse(url, correctIndex, markdown('0.5.0', otherPackage)),
       }),
       /does not identify/,
     );
   }
 });
 
-test('a query fetches only the exact version index and requested Markdown', async () => {
+test('a legacy query probes structured support and retrieves only its exact original page', async () => {
   const requests = [];
   const result = await queryDocs({
     installation: metadata('0.2.0'),
@@ -134,16 +154,17 @@ test('a query fetches only the exact version index and requested Markdown', asyn
     fetcher: async (url, options) => {
       requests.push(url.href);
       assert.equal(options.redirect, 'error');
-      return new Response(
-        url.pathname.endsWith('.json') ? JSON.stringify(index('0.2.0')) : markdown('0.2.0'),
-      );
+      return legacyResponse(url, index('0.2.0'), markdown('0.2.0'));
     },
   });
   assert.deepEqual(requests, [
     'https://ifhover.github.io/leaf-ui/v/0.2.0/api/index.json',
+    'https://ifhover.github.io/leaf-ui/v/0.2.0/ai/v1/index.json',
     'https://ifhover.github.io/leaf-ui/v/0.2.0/en/components/button.md',
   ]);
   assert.match(result.markdown, /Leaf UI 0.2.0/);
+  assert.equal(result.mode, 'legacy-page');
+  assert.match(result.notice, /complete original Markdown/);
 });
 
 test('missing export rejects on the index and never requests latest', async () => {
@@ -177,10 +198,7 @@ test('reject a wrong version or package in metadata and Markdown', async () => {
     queryDocs({
       installation: metadata('0.2.0'),
       api: 'Button',
-      fetcher: async (url) =>
-        new Response(
-          url.pathname.endsWith('.json') ? JSON.stringify(index('0.2.0')) : markdown('0.3.0'),
-        ),
+      fetcher: async (url) => legacyResponse(url, index('0.2.0'), markdown('0.3.0')),
     }),
     /does not identify/,
   );
@@ -192,8 +210,7 @@ test('language fallback keeps the installed version', async () => {
   const result = await queryDocs({
     installation: metadata('0.1.0'),
     api: 'Button',
-    fetcher: async (url) =>
-      new Response(url.pathname.endsWith('.json') ? JSON.stringify(data) : markdown('0.1.0')),
+    fetcher: async (url) => legacyResponse(url, data, markdown('0.1.0')),
   });
   assert.equal(result.page, 'https://ifhover.github.io/leaf-ui/v/0.1.0/components/button.md');
 });
@@ -202,8 +219,7 @@ test('exported types and guides resolve to one page', async () => {
   const data = index('0.3.0', 'ButtonProps');
   data.exports[0].kind = 'type';
   data.pages.push({ id: 'guide/ssr', language: 'en', markdown: 'en/guide/ssr.md', symbols: [] });
-  const fetcher = async (url) =>
-    new Response(url.pathname.endsWith('.json') ? JSON.stringify(data) : markdown('0.3.0'));
+  const fetcher = async (url) => legacyResponse(url, data, markdown('0.3.0'));
   assert.match(
     (await queryDocs({ installation: metadata('0.3.0'), api: 'ButtonProps', fetcher })).page,
     /button.md$/,
@@ -212,6 +228,31 @@ test('exported types and guides resolve to one page', async () => {
     (await queryDocs({ installation: metadata('0.3.0'), guide: 'ssr', fetcher })).page,
     /guide\/ssr.md$/,
   );
+});
+
+test('design guidance returns the exact bilingual original without component-data requests', async () => {
+  for (const language of ['en', 'zh']) {
+    const data = index('0.9.0');
+    const document = `${language === 'en' ? 'en/' : ''}guide/design-standards.md`;
+    data.pages.push({ id: 'guide/design-standards', language, markdown: document, symbols: [] });
+    const original = `${markdown('0.9.0')}\n\n## ${language === 'en' ? 'Color roles' : '颜色角色'}\n\nUse \`--leaf-color-surface-muted\` and retain user overrides.\n\n\`\`\`css\n.page { gap: var(--leaf-spacing-lg); }\n\`\`\`\n`;
+    const requests = [];
+    const result = await queryDocs({
+      installation: metadata('0.9.0'),
+      guide: 'design-standards',
+      lang: language,
+      fetcher: async (url) => {
+        requests.push(url.href);
+        return url.pathname.endsWith('/api/index.json')
+          ? Response.json(data)
+          : new Response(original);
+      },
+    });
+    const root = 'https://ifhover.github.io/leaf-ui/v/0.9.0/';
+    assert.deepEqual(requests, [`${root}api/index.json`, `${root}${document}`]);
+    assert.equal(result.mode, 'page');
+    assert.equal(result.markdown, original);
+  }
 });
 
 test('network failures and malicious page paths cannot select another version', async () => {

@@ -1,20 +1,13 @@
-import { FileList, Space } from '@ifhover/leaf-ui';
-import { withBase } from '@rspress/core/runtime';
+import { FileList } from '@ifhover/leaf-ui';
+
 export function FileListBasic() {
   return (
-    <Space direction="vertical" align="stretch">
-      <FileList
-        items={[
-          {
-            url: withBase('/media/sample.pdf'),
-            name: 'Project proposal.pdf',
-            size: 685,
-          },
-          { url: withBase('/media/quarterly-data.csv'), name: 'Quarterly data.csv' },
-          { url: withBase('/media/landscape-1.svg'), name: 'Summer landscape.svg', size: 414 },
-          { url: withBase('/media/file-list-readme.md'), name: 'Delivery notes.md' },
-        ]}
-      />
-    </Space>
+    <FileList
+      items={[
+        { uid: 'plan', name: 'Project plan.pdf', size: 1024 * 240 },
+        { uid: 'data', name: 'Statistics.csv', size: 1024 * 12 },
+        { uid: 'empty', name: 'empty.txt', size: 0 },
+      ]}
+    />
   );
 }

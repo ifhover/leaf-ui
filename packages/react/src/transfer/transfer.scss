@@ -1,5 +1,20 @@
+@use '../styles/mixins' as mixins;
+@use '../styles/geometry' as geometry;
 .leaf-transfer {
+  --leaf-transfer-radius: var(--leaf-component-transfer-radius, var(--leaf-radius-md));
+  --leaf-transfer-border-width: var(
+    --leaf-component-transfer-border-width,
+    var(--leaf-border-width, 1px)
+  );
+  --leaf-transfer-inset: calc(var(--leaf-spacing) * 0.5);
+  @include mixins.softened-frame-color(
+    transfer,
+    var(--leaf-component-transfer-background, var(--leaf-color-surface))
+  );
+  @include mixins.accent-soft-feedback-family;
   display: inline-flex;
+  flex-wrap: wrap;
+  container: leaf-transfer / inline-size;
   width: 404px;
   max-width: 100%;
   align-self: flex-start;
@@ -10,17 +25,16 @@
   font: var(--leaf-component-transfer-font-size, var(--leaf-font-size)) var(--leaf-font-family);
 }
 .leaf-transfer__panel {
-  flex: 1;
+  flex: 1 1 140px;
   min-width: 0;
   overflow: hidden;
-  border: var(--leaf-component-transfer-border-width, var(--leaf-border-width, 1px)) solid
+  border: var(--leaf-transfer-border-width) solid
     var(
       --leaf-component-transfer-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+      var(--leaf-frame-border-color, var(--leaf-transfer-frame-color))
     );
-  box-shadow: var(--leaf-component-transfer-shadow, var(--leaf-surface-shadow, none));
-  border-radius: var(--leaf-radius-md);
-  background: var(--leaf-color-surface);
+  border-radius: var(--leaf-transfer-radius);
+  background: var(--leaf-component-transfer-background, var(--leaf-color-surface-muted));
   transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   &:focus-within {
     border-color: var(--leaf-color-border-hover);
@@ -31,11 +45,13 @@
   align-items: center;
   gap: 8px;
   min-height: var(--leaf-control-height);
-  padding: 6px 10px;
+  padding: var(--leaf-component-transfer-padding, 6px 10px);
   box-sizing: border-box;
   font-weight: var(--leaf-font-weight);
-  background: var(--leaf-color-surface-muted);
-  border-bottom: 1px solid var(--leaf-color-divider);
+  font-size: var(--leaf-font-size-sm);
+  line-height: var(--leaf-line-height-sm);
+  color: var(--leaf-component-transfer-color, var(--leaf-color-text-muted));
+  background: var(--leaf-component-transfer-header-background, transparent);
   small {
     margin-inline-start: auto;
     color: var(--leaf-color-text-muted);
@@ -43,22 +59,47 @@
     font-variant-numeric: tabular-nums;
   }
 }
+.leaf-transfer__body {
+  min-width: 0;
+  margin: 0 var(--leaf-transfer-inset) var(--leaf-transfer-inset);
+  border: var(--leaf-transfer-border-width) solid
+    var(
+      --leaf-component-transfer-border-color,
+      var(--leaf-frame-border-color, var(--leaf-transfer-frame-color))
+    );
+  border-radius: geometry.inner-radius(
+    var(--leaf-transfer-radius),
+    var(--leaf-transfer-inset),
+    var(--leaf-transfer-border-width)
+  );
+  background: var(--leaf-component-transfer-background, var(--leaf-color-surface));
+  box-shadow: var(
+    --leaf-component-transfer-shadow,
+    var(--leaf-surface-shadow, var(--leaf-shadow-sm))
+  );
+}
 .leaf-transfer__search {
   padding: 8px;
+  > .leaf-input {
+    width: 100%;
+  }
 }
 .leaf-transfer__list {
   box-sizing: border-box;
-  padding: 0 4px 4px;
+  padding: 4px;
+}
+.leaf-transfer__body > .leaf-virtual-list .leaf-transfer__item {
+  margin-inline: 4px;
 }
 .leaf-transfer__item {
   padding: 3px 6px;
   border-radius: var(--leaf-radius-sm);
   transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-option-hover);
   }
   &[data-selected] {
-    background: var(--leaf-color-primary-surface-8);
+    background: var(--leaf-accent-soft-background);
   }
   .leaf-checkbox {
     display: flex;
@@ -92,5 +133,19 @@
   .leaf-transfer__header {
     padding: 6px 8px;
     gap: 6px;
+  }
+}
+
+@container leaf-transfer (max-width: 360px) {
+  .leaf-transfer__panel {
+    flex-basis: 100%;
+  }
+  .leaf-transfer__actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .leaf-transfer__actions svg {
+    transform: rotate(90deg);
   }
 }

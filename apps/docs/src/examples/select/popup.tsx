@@ -1,71 +1,32 @@
-import type { SelectOption } from '@ifhover/leaf-ui';
-import { Form, FormField, Select } from '@ifhover/leaf-ui';
+import { Flex, Select, Text } from '@ifhover/leaf-ui';
 
-const options: SelectOption[] = [
+const options = [
   { value: 'garden', label: 'Leaf Garden Design System' },
   { value: 'studio', label: 'Leaf Studio' },
   { value: 'notes', label: 'Leaf Notes' },
 ];
+
 export function SelectPopup() {
   return (
-    <Form layout="vertical">
-      <FormField label="默认与选择器等宽">
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">跟随控件</Text>
+        <Select aria-label="跟随控件" options={options} placeholder="选择项目" />
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">按内容定宽，最大 320px</Text>
         <Select
-          aria-label="默认与选择器等宽"
-          style={{ width: 180 }}
-          options={options}
-          defaultValue="studio"
-        />
-      </FormField>
-      <FormField label="按内容定宽">
-        <Select
-          aria-label="按内容定宽"
+          aria-label="按内容定宽，最大 320px"
           popupWidth="auto"
-          style={{ width: 180 }}
+          popupMaxWidth={320}
           options={options}
-          defaultValue="studio"
+          placeholder="选择项目"
         />
-      </FormField>
-      <FormField label="固定浮层宽度">
-        <Select
-          aria-label="固定浮层宽度"
-          popupWidth={300}
-          style={{ width: 180 }}
-          options={options}
-          optionRender={(option) => (
-            <div>
-              <strong>{option.label}</strong>
-              <div style={{ fontSize: 12, opacity: 0.65 }}>{option.value}</div>
-            </div>
-          )}
-        />
-      </FormField>
-      <FormField label="按内容定宽，最大 200px">
-        <Select
-          aria-label="按内容定宽，最大 200px"
-          popupWidth="auto"
-          popupMaxWidth={200}
-          style={{ width: 180 }}
-          options={options}
-        />
-      </FormField>
-      <FormField label="多选数量限制">
-        <Select
-          aria-label="多选数量限制"
-          multiple
-          options={options}
-          defaultValue={['studio', 'notes']}
-          maxCount={2}
-          maxTagCount={1}
-          allowClear
-        />
-      </FormField>
-      <FormField label="加载选项">
-        <Select aria-label="加载选项" options={[]} loading placeholder="加载中" />
-      </FormField>
-      <FormField label="空选项">
-        <Select aria-label="空选项" options={[]} notFoundContent="还没有项目" />
-      </FormField>
-    </Form>
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">固定 300px</Text>
+        <Select aria-label="固定 300px" popupWidth={300} options={options} placeholder="选择项目" />
+      </Flex>
+    </Flex>
   );
 }

@@ -1,6 +1,5 @@
 @use '../styles/mixins' as mixins;
 @use '../shared/picker';
-@use '../styles/geometry' as geometry;
 @use '../shared/selection';
 .leaf-cascader {
   @include mixins.field('cascader');
@@ -28,7 +27,7 @@
       cursor: not-allowed;
     }
     &:focus-visible {
-      @include mixins.focus-ring;
+      outline: none;
     }
     > svg {
       flex: 0 0 auto;
@@ -58,6 +57,9 @@
   }
   &__search {
     margin: 0 var(--leaf-cascader-column-padding, 4px) 8px;
+    > .leaf-input {
+      width: 100%;
+    }
   }
   &__panel {
     width: max-content;
@@ -70,15 +72,6 @@
   }
   &__column.leaf-scrollbar {
     --leaf-cascader-column-padding: 4px;
-    @include geometry.inset-corners(
-      --leaf-floating-option-radius,
-      var(--leaf-surface-radius),
-      var(--leaf-surface-padding-top),
-      calc(var(--leaf-surface-padding-right) + var(--leaf-cascader-column-padding)),
-      var(--leaf-surface-padding-bottom),
-      calc(var(--leaf-surface-padding-left) + var(--leaf-cascader-column-padding)),
-      var(--leaf-surface-border)
-    );
     min-width: 140px;
     width: 160px;
     max-width: none;
@@ -90,6 +83,8 @@
     border-inline-start: 1px solid var(--leaf-color-border);
   }
   &__column .leaf-floating__option {
+    @include mixins.choice-option;
+    @include mixins.choice-option-size;
     justify-content: space-between;
     > svg:not(.leaf-select__spinner) {
       transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
@@ -106,13 +101,6 @@
   }
   &[data-open] &__trigger > svg {
     transform: rotate(180deg);
-  }
-  &__column[data-level]:not([data-level='0']) {
-    animation: var(
-      --leaf-motion-animation,
-      leaf-cascader-column-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
-    );
-    animation-play-state: var(--leaf-motion-play-state, running);
   }
   &__check {
     animation: var(
@@ -131,20 +119,11 @@
     transform: scale(1);
   }
 }
-@keyframes leaf-cascader-column-enter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .leaf-cascader__trigger > svg,
   .leaf-cascader__column .leaf-floating__option > svg {
     transition: none;
   }
-  .leaf-cascader__column[data-level]:not([data-level='0']),
   .leaf-cascader__check {
     animation: none;
   }
@@ -169,6 +148,7 @@
   --leaf-current-font-size: var(--leaf-font-size-lg);
 }
 
-.leaf-cascader__panel {
+.leaf-floating.leaf-cascader__panel {
   @include mixins.floating-paint(cascader);
+  @include mixins.field-popup(cascader);
 }

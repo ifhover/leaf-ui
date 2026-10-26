@@ -26,8 +26,6 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
-import { FloatingHighlight, useFloatingHighlight } from '../shared/floating-highlight';
-import { useListMotion } from '../shared/motion';
 import { SelectionContent } from '../shared/selection-content';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -185,7 +183,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   );
   const virtual = virtualProp ?? options.length > 100;
   const { messages, theme, density, direction: configuredDirection } = useLeafConfig();
-  const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density) - 4);
+  const optionHeight = optionHeightProp ?? Math.max(24, estimateControlHeight(theme, density));
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
@@ -202,7 +200,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     form,
   );
   const values = typeof selected === 'string' ? (selected ? [selected] : []) : selected;
-  useListMotion(root, values[0], multiple ? '' : '.leaf-select__input-wrap[data-motion-key]');
   const atLimit =
     multiple && maxCount !== undefined && values.length >= Math.max(0, Math.floor(maxCount));
   const unavailable = (option: SelectOption) =>
@@ -279,12 +276,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   };
   useFloatingDismiss(open, close, input, panel, root);
   useActiveOption(open, highlighted >= 0 ? `${panelId}-${highlighted}` : undefined, panel);
-  const highlight = useFloatingHighlight(
-    open,
-    panel,
-    highlighted >= 0 ? `${panelId}-${highlighted}` : undefined,
-    `${searchQuery}:${filtered[highlighted]?.value}:${rows.length}:${virtualizer.range?.startIndex}:${virtualizer.range?.endIndex}`,
-  );
   useEffect(() => {
     if (!open) setQuery(null);
   }, [open]);
@@ -308,6 +299,8 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         ),
       );
   };
+  const selectionIndex = () =>
+    filtered.findIndex((option) => values.includes(option.value) && !unavailable(option));
   const openMenu = () => {
     if (disabled || inputProps.readOnly) return;
     const active = filtered.findIndex(
@@ -316,6 +309,8 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     setHighlighted(active >= 0 ? active : filtered.findIndex((option) => !unavailable(option)));
     setOpen(true);
   };
+  const restoreSelectionHighlight = () =>
+    setHighlighted((previous) => (previous === selectionIndex() ? previous : selectionIndex()));
   const beginSearch = () => {
     if (!showSearch || disabled || inputProps.readOnly || inputReadOnly) return;
     if (!multiple && query === null) input.current?.select();
@@ -396,6 +391,10 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
       : '';
   const inputValue = multiple ? searchQuery : showSearch && open ? (query ?? textLabel) : textLabel;
   const clearable = allowClear && values.length > 0 && !disabled && !inputProps.readOnly;
+  const controlOptionHeight =
+    optionHeightProp === undefined
+      ? 'var(--leaf-current-control-height, 34px)'
+      : `${Math.max(24, optionHeightProp)}px`;
   const listboxProps = {
     id: panelId,
     role: 'listbox' as const,
@@ -469,7 +468,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
             : undefined
         }
       >
-        <span className="leaf-select__input-wrap" data-motion-key={values[0] ?? ''}>
+        <span className="leaf-select__input-wrap">
           {!multiple &&
             !textLabel &&
             displayLabel != null &&
@@ -638,6 +637,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
           />
         ))}
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         placement={popupPlacement}
         container={getPopupContainer}
@@ -651,15 +651,18 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         {...(filtered.length ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}
         data-hover-motion=""
-        style={{ maxHeight: listHeight, ...popupStyle }}
+        onMouseLeave={restoreSelectionHighlight}
+        style={
+          {
+            maxHeight: listHeight,
+            '--leaf-select-option-height': controlOptionHeight,
+            ...popupStyle,
+          } as CSSProperties
+        }
         onScroll={onPopupScroll}
       >
         {/* Feedback is announced beside an empty listbox, never as a selectable option. */}
         {!filtered.length && <div {...listboxProps} />}
-        <FloatingHighlight
-          style={highlight}
-          selected={values.includes(filtered[highlighted]?.value ?? '')}
-        />
         {(popupRender ?? ((content: ReactNode) => content))(
           loading && !filtered.length ? (
             <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>

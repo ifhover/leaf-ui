@@ -1,15 +1,21 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MessageBasic } from '../../../src/examples/en/message/basic';
-import { MessageStack } from '../../../src/examples/en/message/stack';
+import { MessageStates } from '../../../src/examples/en/message/states';
+import { MessageManual } from '../../../src/examples/en/message/manual';
+import { MessageAsync } from '../../../src/examples/en/message/async';
 import { MessageShared } from '../../../src/examples/en/message/shared';
+
+export const leafDoc = { component: 'Message', primaryApi: 'MessageProps' };
 
 # Message
 
-Provide brief feedback about an operation.
+Provide brief feedback about an operation. Use [Notification](/en/components/notification) when you need a title, detail or follow-up actions.
 
-## Set up once
+{/* leaf:section basic */}
 
-Wrap your application in `ConfigProvider`. It manages messages automatically, so pages and business components can call `useMessage` directly.
+## Basic usage
+
+Wrap the application in [ConfigProvider](/en/components/config-provider), then call `useMessage()` in a child component. Applications already using it need no additional provider.
 
 ```tsx
 import { ConfigProvider } from '@ifhover/leaf-ui';
@@ -19,48 +25,122 @@ export function Root() {
 }
 ```
 
-Applications already using `ConfigProvider` need no additional setup. Call `useMessage` in its descendants; the returned `message` can also be passed to business functions.
-
-## Messages and updates
-
-<ComponentExample title="Messages and updates" preview={<MessageBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<MessageBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/message/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Share between components
+{/* leaf:section examples */}
 
-These two buttons belong to different components. Use the same `key` to update one message, even when switching pages.
+## Examples
 
-<ComponentExample title="Share between components" preview={<MessageShared />} fileName="shared.tsx">
+### Semantic states
+
+Use the shortcut methods to display success, information, warning and danger messages.
+
+<ComponentExample exampleId="states" preview={<MessageStates />} fileName="states.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/message/states.tsx"
+```
+
+</ComponentExample>
+
+### Manual dismissal
+
+Set `duration: 0` to keep a message visible and `closable: true` to provide a close button.
+
+<ComponentExample exampleId="manual" preview={<MessageManual />} fileName="manual.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/message/manual.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Async updates
+
+Use the key returned by `loading()` to replace the loading message with a result. A matching key replaces the options rather than merging them, and restarts the timer with the new duration.
+
+<ComponentExample exampleId="async" preview={<MessageAsync />} fileName="async.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/message/async.tsx"
+```
+
+</ComponentExample>
+
+### Share between components
+
+The two buttons below belong to separate components. Components under the same provider share a queue and can update the same message with a shared key. Nested `ConfigProvider` regions share that queue while keeping the calling component's theme and language.
+
+<ComponentExample exampleId="shared" preview={<MessageShared />} fileName="shared.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/message/shared.tsx"
 ```
 
 </ComponentExample>
 
-## Multiple messages
+Messages remain after the calling component unmounts; ongoing work can still update them. Unmounting the entry provider removes its messages and timers.
 
-When a message closes, those below it move up smoothly. Content of different heights collapses using its actual space.
+{/* leaf:section api */}
 
-<ComponentExample title="Multiple messages" preview={<MessageStack />} fileName="stack.tsx" width="fit-content">
+## API
 
-```tsx lineNumbers file="../../../src/examples/en/message/stack.tsx"
-```
+### Message API
 
-</ComponentExample>
+For declarative rendering, handle `onClose` by setting `open` to `false`. `afterClose` runs after the exit animation.
 
-## useMessage API
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | Required | Controlled visibility |
+| `content` | `ReactNode` | Required | Message content |
+| `type` | `FeedbackType \| 'error' \| 'loading'` | `'info'` | Message type; `error` is a compatibility alias |
+| `duration` | `number` | 3 normally; 0 for loading | Seconds before automatic closing; zero or negative values keep it open. Hover or focus pauses the remaining time. |
+| `closable` | `boolean` | `false` | Close button |
+| `onClose` | `() => void` | — | Called when closing is requested; declarative Message requires the application to set open to false. |
+| `afterClose` | `() => void` | — | Called after the closing animation and content unmount; does not replace updating controlled state in onClose. |
+
+### useMessage API
+
+Access the message queue managed by the current provider.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `message` | [`MessageApi`](#messageapi) | — | Call the queue managed by the application provider |
 
-## MessageProvider API
+### MessageApi
 
-If your application has no `ConfigProvider`, add `MessageProvider` at the entry point. An explicit `MessageProvider` also creates an independent queue for a region.
+`close(key)` closes one message; `close()` closes every message in the shared queue.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `(options: `[`MessageOptions`](#messageoptions)`) => string` | Required | Open or replace a message by key, returning its key. |
+| `success` | `(content: ReactNode, duration?: number) => string` | Required | Show feedback of the specified type; `error` remains as a compatibility method |
+| `info` | `(content: ReactNode, duration?: number) => string` | Required | Show feedback of the specified type; `error` remains as a compatibility method |
+| `warning` | `(content: ReactNode, duration?: number) => string` | Required | Show feedback of the specified type; `error` remains as a compatibility method |
+| `danger` | `(content: ReactNode, duration?: number) => string` | Required | Show feedback of the specified type; `error` remains as a compatibility method |
+| `error` | `(content: ReactNode, duration?: number) => string` | Required | Content displayed instead of data rows after a request failure. |
+| `loading` | `(content: ReactNode) => string` | Required | Show a loading message without automatic dismissal and return its key; the application updates or closes it. |
+| `close` | `(key?: string) => void` | Required | Close a key; omitting it closes every message in the same Provider, not only this caller's messages. |
+
+### MessageOptions
+
+Timers pause when the pointer or focus enters a message. After resuming, they use the remaining duration.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `content` | `ReactNode` | Required | Message content |
+| `type` | `FeedbackType \| 'error' \| 'loading'` | `'info'` | Message type; `error` is a compatibility alias |
+| `duration` | `number` | 3 normally; 0 for loading | Seconds before automatic closing; zero or negative values keep it open. Hover or focus pauses the remaining time. |
+| `closable` | `boolean` | `false` | Show a close button |
+| `key` | `string` | Generated | Unique key within a Provider; opening the same key replaces that message and restarts its dismissal timer instead of appending. |
+| `onClose` | `() => void` | — | Called when closing is requested; declarative Message requires the application to set open to false. |
+
+### MessageProvider API
+
+Use `MessageProvider` instead of `ConfigProvider` for standalone message support, or add it explicitly to create an independent queue. Separate React applications and SSR requests have independent queues.
 
 ```tsx
 import { MessageProvider } from '@ifhover/leaf-ui';
@@ -72,53 +152,4 @@ export function Root() {
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Components sharing this queue |
-
-## MessageApi
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | Create or update by key; returns the key |
-| `success / info / warning / error` | `(content: ReactNode, duration?: number) => string` | — | Show feedback of the specified type |
-| `loading` | `(content: ReactNode) => string` | — | Persistent loading message; returns the key |
-| `close` | `(key?: string) => void` | — | Close one message, or all when key is omitted |
-
-## MessageOptions
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `key` | `string` | Generated | Use the same key to update a message |
-| `content` | `ReactNode` | Required | Message content |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
-| `duration` | `number` | `3` | Seconds before dismissal; 0 persists, loading defaults to 0 |
-| `closable` | `boolean` | `false` | Show a close button |
-| `onClose` | `() => void` | — | Called once when dismissal starts |
-
-## Message API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | `boolean` | Required | Controlled visibility |
-| `content` | `ReactNode` | Required | Message content |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type |
-| `duration` | `number` | `3` | Duration in seconds; 0 persists, loading defaults to 0 |
-| `closable` | `boolean` | `false` | Close button |
-| `onClose / afterClose` | `() => void` | — | Requests closure / closing animation completed |
-
-## Types
-
-Import types when defining reusable component props or assembling options.
-
-```ts
-import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Prefer `useMessage`. Update a loading message with its `key` to show the result. Timers pause while a message is hovered or focused and resume with the remaining time.
-
-Components under the same entry provider share a queue. `close()` closes all its messages; `close(key)` closes one. Nested `ConfigProvider` regions share that queue, while each message keeps the theme and language of the calling component.
-
-Messages continue after the calling component unmounts, and asynchronous work can update them through the same `message` instance. Unmounting the entry provider clears its messages and timers. Separate React applications and SSR requests have independent queues.
-
-`Message` also supports declarative rendering; set `open=false` after `onClose`.
+| `children` | `ReactNode` | — | Contents sharing this independent message queue; ConfigProvider already supplies one, reused by nested ConfigProviders. |

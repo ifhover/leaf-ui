@@ -1,44 +1,64 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { MasonryBasic } from '../../../src/examples/en/masonry/basic';
+import { MasonryColumns } from '../../../src/examples/en/masonry/columns';
 import { MasonryImages } from '../../../src/examples/en/masonry/advanced';
+
+export const leafDoc = { component: 'Masonry', primaryApi: 'MasonryProps' };
 
 # Masonry
 
 Arrange cards and images of varying heights.
 
+Content flows down each column rather than across rows. Use [Grid](./grid) when reading or keyboard focus order needs to follow rows.
+
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<MasonryBasic />} fileName="basic.tsx" width="100%">
+Wrap content of different heights in Masonry to arrange items in columns.
+
+<ComponentExample exampleId="basic" preview={<MasonryBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/masonry/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<MasonryImages />} fileName="advanced.tsx" width="100%">
+## Examples
+
+### Responsive columns
+
+Set `columns` to a fixed number or a breakpoint map. Breakpoints use the viewport width, not the Masonry container width; larger unspecified breakpoints inherit the preceding value. This example uses one column on narrow screens and two on wider screens.
+
+<ComponentExample exampleId="columns" preview={<MasonryColumns />} fileName="columns.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/masonry/columns.tsx"
+```
+
+</ComponentExample>
+
+### Image layout
+
+Fill each column's width while preserving the images' individual aspect ratios. Image previews are disabled here to focus on layout. See [Image](./image) for enlarged and grouped previews.
+
+<ComponentExample exampleId="advanced" preview={<MasonryImages />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/masonry/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-Flows down each column. Use Grid when row order matters for reading or focus.
+## API
 
-## Types
+### MasonryProps API
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { MasonryProps } from '@ifhover/leaf-ui';
-```
-
-## MasonryProps API
+Configure the masonry columns and spacing between items.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | Columns; unspecified breakpoints inherit smaller ones |
-| `gap` | `number \| string` | `16` | Gap; tuples use [vertical, horizontal] |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, sm: 2, lg: 3 }` | Column count or viewport breakpoint map; omitted breakpoints inherit smaller ones. |
+| `gap` | `number \| string` | `16` | Column and vertical item gaps; numbers are pixels and CSS lengths are supported. |

@@ -1,32 +1,59 @@
-.leaf-time-range-picker__panel {
-  width: min(480px, calc(100vw - 24px));
+.leaf-floating.leaf-time-range-picker__panel {
+  width: min(560px, calc(100vw - 24px));
   min-width: 0;
+  &:has(.leaf-time-picker__columns[data-seconds], .leaf-time-picker__columns[data-period]) {
+    width: min(680px, calc(100vw - 24px));
+  }
+  &:has(.leaf-time-picker__columns[data-seconds][data-period]) {
+    width: min(840px, calc(100vw - 24px));
+  }
 }
 .leaf-time-range-picker__panels {
-  // These controls sit inside a separate range section, away from the popup edge.
-  --leaf-time-option-radius: var(--leaf-radius-sm);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  padding: 10px 4px 4px;
+  gap: 0;
+  padding: 0;
+  margin: 0;
   > fieldset {
     min-width: 0;
     padding: 0;
     margin: 0;
     border: 0;
+    + fieldset {
+      border-inline-start: 1px solid var(--leaf-color-divider);
+    }
     > legend {
-      padding: 0 8px 4px;
+      float: inline-start;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 8px 12px;
+      border-block-end: 1px solid var(--leaf-color-divider);
       color: var(--leaf-color-text-muted);
       font-size: var(--leaf-font-size-sm);
     }
+    > .leaf-time-picker__columns {
+      clear: both;
+    }
   }
 }
-@media (max-width: 480px) {
-  .leaf-time-range-picker__panels {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    .leaf-time-picker__column {
-      max-height: 130px;
+@media (max-width: 620px) {
+  .leaf-time-range-picker__panels:has(
+    .leaf-time-picker__columns[data-seconds],
+    .leaf-time-picker__columns[data-period]
+  ) {
+    grid-template-columns: minmax(0, 1fr);
+    > fieldset + fieldset {
+      border-inline-start: 0;
+      border-block-start: 1px solid var(--leaf-color-divider);
     }
+    .leaf-time-picker__columns {
+      --leaf-time-column-height: 160px;
+    }
+  }
+  .leaf-time-range-picker__panels .leaf-time-picker__columns {
+    padding: 8px 2px;
+  }
+  .leaf-time-range-picker__panels .leaf-time-picker__column-wrap {
+    padding-inline: 2px;
   }
 }

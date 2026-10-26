@@ -553,7 +553,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
               <>
                 {file.status === 'uploading' && (
                   <ButtonControl
-                    variant="ghost"
+                    variant="text"
                     size="sm"
                     disabled={disabled}
                     startIcon={<X size={15} />}
@@ -570,7 +570,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
                   (action || customRequest) &&
                   file.originFile && (
                     <ButtonControl
-                      variant="ghost"
+                      variant="text"
                       size="sm"
                       disabled={disabled}
                       startIcon={<RotateCw size={15} />}

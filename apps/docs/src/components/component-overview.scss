@@ -33,7 +33,7 @@
     background: var(--leaf-site-soft);
   }
   &:focus-visible {
-    outline: 3px solid var(--leaf-color-primary-alpha-35);
+    outline: 3px solid color-mix(in srgb, var(--leaf-color-primary) 35%, transparent);
     outline-offset: 3px;
   }
   &__preview {
@@ -54,21 +54,26 @@
     padding: 14px;
     h3 {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 5px;
-      flex-wrap: wrap;
       margin: 5px 0 8px;
       font-size: 14px;
       font-weight: 500;
       line-height: 1.5;
       color: var(--leaf-site-text);
-      span {
+      .leaf-component-card__title {
+        flex: 1;
+        min-width: 0;
+      }
+      .leaf-component-card__label {
+        display: inline-block;
         color: var(--leaf-site-muted);
         font-size: 13px;
         font-weight: 400;
       }
       svg {
         flex: 0 0 auto;
+        margin-top: 3px;
         margin-left: auto;
         color: var(--leaf-site-muted);
       }
@@ -90,7 +95,6 @@
     padding: 12px 10px;
   }
   .leaf-component-card__body h3 {
-    flex-wrap: wrap;
     gap: 3px;
     font-size: 13px;
   }

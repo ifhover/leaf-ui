@@ -1,36 +1,76 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { DividerBasic } from '../../src/examples/divider/basic';
+import { DividerAlignment } from '../../src/examples/divider/alignment';
+import { DividerDashed } from '../../src/examples/divider/dashed';
+import { DividerVertical } from '../../src/examples/divider/vertical';
+
+export const leafDoc = { component: 'Divider', primaryApi: 'DividerProps' };
 
 # Divider 分割线
 
-分隔内容、段落或一组操作。
+分隔内容、段落或行内信息。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<DividerBasic />} fileName="basic.tsx">
+将 `Divider` 放在需要区分的内容之间，默认使用水平分割线。
+
+<ComponentExample exampleId="basic" preview={<DividerBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/divider/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Divider API
+{/* leaf:section examples */}
+
+## 示例
+
+### 文字位置
+
+通过 `children` 设置文字，使用 `align` 调整位置。文字只用于水平分割线。
+
+<ComponentExample exampleId="alignment" preview={<DividerAlignment />} fileName="alignment.tsx">
+
+```tsx lineNumbers file="../../src/examples/divider/alignment.tsx"
+```
+
+</ComponentExample>
+
+### 虚线
+
+设置 `dashed` 使用虚线分隔。
+
+<ComponentExample exampleId="dashed" preview={<DividerDashed />} fileName="dashed.tsx">
+
+```tsx lineNumbers file="../../src/examples/divider/dashed.tsx"
+```
+
+</ComponentExample>
+
+### 垂直分割线
+
+设置 `type="vertical"`，放在行内内容之间。
+
+<ComponentExample exampleId="vertical" preview={<DividerVertical />} fileName="vertical.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/divider/vertical.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Divider API
+
+支持原生 `div` 属性。字符串内容自动作为可访问名称；使用图标等复杂内容时，通过 `aria-label` 提供名称。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `type` | `'horizontal' \| 'vertical'` | `'horizontal'` | 分割方向 |
 | `align` | `'start' \| 'center' \| 'end'` | `'center'` | 文字位置 |
 | `dashed` | `boolean` | `false` | 虚线样式 |
-| `children` | `ReactNode` | — | 水平分割线上的文字 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { DividerProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-垂直分割线适合放在行内内容之间。
+| `children` | `ReactNode` | — | 显示在分割线中的内容。 |

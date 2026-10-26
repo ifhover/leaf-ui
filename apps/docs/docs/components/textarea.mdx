@@ -1,41 +1,90 @@
-import { ExtensionDemo } from '../../src/examples/textarea/extensions';
 import { ComponentExample } from '../../src/components/component-example';
-import { TextareaBasic, TextareaControlled } from '../../src/components/form-examples';
+import { TextareaBasic } from '../../src/examples/textarea/basic';
+import { TextareaStates } from '../../src/examples/textarea/states';
+import { TextareaAutoHeight } from '../../src/examples/textarea/auto-size';
+import { TextareaCount } from '../../src/examples/textarea/count';
+import { TextareaControlled } from '../../src/examples/textarea/controlled';
+
+export const leafDoc = { component: 'Textarea', primaryApi: 'TextareaProps' };
 
 # Textarea 文本域
 
-用于输入多行文本，如留言、简介或备注。
+输入多行文本，如留言、简介或备注。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<TextareaBasic />} fileName="basic.tsx" width={360}>
+使用多行输入框编辑文本，并为字段提供关联名称。
+
+<ComponentExample exampleId="basic" preview={<TextareaBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/textarea/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 受控与长度提示
+{/* leaf:section examples */}
 
-使用 value / onChange 管理内容，结合 maxLength 限制长度。长度提示由业务决定，resize="none" 可以关闭手动缩放。
+## 示例
 
-<ComponentExample title="受控与长度提示" preview={<TextareaControlled />} fileName="controlled.tsx" width={360}>
+### 状态
+
+使用 `readOnly`、`disabled` 或 `FormField` 的错误信息表达字段状态。
+
+<ComponentExample exampleId="states" preview={<TextareaStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/textarea/states.tsx"
+```
+
+</ComponentExample>
+
+### 自动高度
+
+`autoSize` 根据内容调整高度，`minRows` 与 `maxRows` 限制行数；达到最大高度后在文本域内滚动。
+
+<ComponentExample exampleId="auto-size" preview={<TextareaAutoHeight />} fileName="auto-size.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/textarea/auto-size.tsx"
+```
+
+</ComponentExample>
+
+### 字数统计
+
+设置 `showCount` 显示统计，搭配 `maxLength` 限制输入长度。
+
+<ComponentExample exampleId="count" preview={<TextareaCount />} fileName="count.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/textarea/count.tsx"
+```
+
+</ComponentExample>
+
+<a id="进阶用法"></a>
+
+### 受控输入
+
+通过 `value` 和 `onChange` 管理内容，示例用当前值更新长度提示。
+
+<ComponentExample exampleId="controlled" preview={<TextareaControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/textarea/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## 扩展用法
+#### 表单接入
 
-<ComponentExample title="扩展用法" preview={<ExtensionDemo />} fileName="extensions.tsx">
+使用 `FormField` 或 `aria-label` 提供名称。设置 `name` 可参与原生表单提交；非受控值支持表单重置，受控值需同步重置应用状态。表单接入见 [Form](/components/form)。
 
-```tsx lineNumbers file="../../src/examples/textarea/extensions.tsx"
-```
+{/* leaf:section api */}
 
-</ComponentExample>
+## API
 
-## Textarea API
+### Textarea API
+
+配置多行文本、字数限制和输入状态。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -50,23 +99,9 @@ import { TextareaBasic, TextareaControlled } from '../../src/components/form-exa
 | `autoSize` | [`boolean \| TextareaAutoSize`](#textareaautosize-api) | `false` | 根据内容调整高度，可限制行数 |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | 显示字数，可自定义渲染 |
 
-可通过 `rows` 调整行数，或通过 `style` 设置高度。支持其他 textarea 属性。通过 `label` 或 `aria-label` 提供名称，错误说明可用 `aria-describedby` 关联。
+### TextareaAutoSize API
 
-## 类型
-
-可导入 [`TextareaProps`](#textarea-api) 定义组件属性，或单独使用尺寸、校验状态类型：
-
-```ts
-import type { TextareaProps, ControlSize, ControlStatus } from '@ifhover/leaf-ui';
-```
-
-## 扩展类型
-
-```ts
-import type { TextareaAutoSize } from '@ifhover/leaf-ui';
-```
-
-## TextareaAutoSize API
+限制自动调整高度时使用的最小和最大行数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |

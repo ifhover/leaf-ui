@@ -1,7 +1,6 @@
 import { withBase } from '@rspress/core/runtime';
 
 import { ComponentExample } from '../../src/components/component-example';
-import { DocsCollapse } from '../../src/components/docs-collapse';
 import { ConfigProviderBasic } from '../../src/examples/config-provider/basic';
 import { ConfigProviderDefaults } from '../../src/examples/config-provider/defaults';
 import { ConfigProviderModalDefaults } from '../../src/examples/config-provider/modal-defaults';
@@ -12,25 +11,40 @@ import { ConfigProviderTranslations } from '../../src/examples/config-provider/t
 import { ConfigProviderDensity } from '../../src/examples/config-provider/density';
 import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
+export const leafDoc = { component: 'ConfigProvider', primaryApi: 'ConfigProviderProps' };
+
 # ConfigProvider 配置
 
-为整个应用或局部区域统一设置主题、语言和组件默认参数。
+为应用或局部区域设置语言、主题和组件默认参数。嵌套使用时，未指定的配置继承上层。
 
-放在应用入口时作用于整个应用；嵌套使用时只调整当前区域。
+{/* leaf:section basic */}
 
-| 想调整什么 | 使用的配置 |
-| --- | --- |
-| 内置文本与自定义语言 | `locale`、`translations` |
-| 主题色、外观、尺寸与间距 | `theme`、`density` |
-| 统一组件参数 | `components` |
+## 基础用法
 
-## 多语言
+<a id="区域主题"></a>
 
-`locale` 切换日期面板、空状态、清除按钮等内置文本。业务标题、字段标签和选项内容由应用自行翻译。
+<a id="主题与外观"></a>
 
-### 内置语言
+通过 `theme` 配置当前区域及其浮层。示例只修改主题色。
 
-以下语言已内置，无需额外导入语言包。未配置 `locale` 时，默认使用简体中文。
+<ComponentExample exampleId="basic" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/config-provider/basic.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section examples */}
+
+## 示例
+
+### 切换语言
+
+#### 多语言
+
+`locale` 切换日期面板、空状态等内置文本。业务标题、字段标签和选项内容由应用自行翻译。
+
+#### 内置语言
 
 | 语言 | `locale` |
 | --- | --- |
@@ -40,65 +54,39 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 | 日本語 | `ja-JP` |
 | 한국어 | `ko-KR` |
 
-其他语言需要[提供翻译资源](#补充自己的语言)。仅传入其他语言代码不会自动翻译内置文本；未找到的词条最终回退到英文。
+默认语言为简体中文，与文档站的语言无关。这五种资源已内置；其他语言需要[提供翻译资源](#补充自己的语言)。
 
-### 切换语言
+更新 `locale` 后，打开日期面板或空选项下拉框，查看内置文本。应用提供的字段标签保持不变。
 
-更新 `locale` 即可切换语言。在下拉框中选择语言，再打开日期或空选项控件，可比较五种语言的内置提示。
-
-<ComponentExample title="切换内置语言" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={360}>
+<ComponentExample exampleId="locale" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/locale.tsx"
 ```
 
 </ComponentExample>
 
-嵌套区域未指定语言时继承上层；`direction` 调整文字方向，`weekStartsOn` 设置一周的起始日，浮层也会继承这些配置。
+嵌套区域未指定语言时继承上层。`direction` 设置文字和交互方向，`weekStartsOn` 设置一周的起始日；浮层也会继承。
 
 ### 补充自己的语言
 
-复制<a href={withBase('/locales/en-US.json')} download>完整英文 JSON</a>作为模板，翻译后导入并传给 `translations`。键是语言代码，JSON 只包含按组件分组的文本，不需要重复写语言代码。可以只提供部分词条。
+通过 `translations` 按语言代码提供资源。示例只补充三个法语词条，其他词条回退英文；字段名称仍由应用提供。
 
-👽 下面用[火星文](https://zh.wikipedia.org/wiki/火星文)演示自定义资源，作为一个小彩蛋。它是一种混用谐音字、形近字和符号的网络写法。
-
-未翻译的词条回退英文。字段名称、确认框正文等业务内容仍由应用提供。
-
-火星文使用私用语言标记 `zh-CN-x-mars`，日期和数字仍按简体中文的区域格式显示。它仅用于演示，不属于内置语言。
-
-<ComponentExample title="自定义火星文" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={360}>
+<ComponentExample exampleId="translations" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/translations.tsx"
 ```
 
 </ComponentExample>
 
-示例中的 `zh-CN-x-mars.json`：
+`locale={['fr-FR', 'en-US']}` 按顺序查找每个词条，最后由内置英文兜底。第一项控制日期与数字的区域格式。字符串等价于单项语言链，空数组无效；不会自动添加 `fr-CA → fr` 等区域回退。
 
-```json file="../../src/examples/config-provider/zh-CN-x-mars.json"
-```
-
-`locale={['zh-CN-x-mars', 'en-US']}` 按顺序查找每个缺失词条，最后由内置英文兜底。第一项始终控制当前语言、日期与数字的区域格式；字符串等价于单项数组，空数组无效。不会自动添加 `zh-CN-x-mars → zh-CN` 或 `fr-CA → fr` 等回退。
-
-嵌套时 `translations` 按语言和词条合并；未传 `locale` 则继承，显式传入则替换整条语言链。组件实例与 `components` 设置的文案优先。完整规则、类型、JSON Schema 和词条检查见[翻译资源](/api/translations)。
-
-## 主题与外观
-
-### 区域主题
-
-主题会应用到区域内的组件和浮层。通常只需要修改主题色或基础圆角，其余样式会随之调整。
-
-<ComponentExample title="区域主题" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/config-provider/basic.tsx"
-```
-
-</ComponentExample>
+嵌套资源按语言和词条合并。未传 `locale` 时继承语言链，显式传入则替换整条链；组件文案参数与 `components` 默认值优先。需要完整资源时可下载<a href={withBase('/locales/en-US.json')} download>英文 JSON 模板</a>。类型、JSON Schema 与校验方式见[翻译资源](/api/translations)。
 
 ### 区域密度
 
-`density="compact"` 适合信息较多的界面，会一起收紧控件和内容间距；默认使用 `comfortable`。嵌套区域可单独设置。
+`density="compact"` 收紧控件和内容间距，默认使用 `comfortable`。显式的主题尺寸和组件尺寸优先于密度预设。
 
-<ComponentExample title="舒适与紧凑" preview={<ConfigProviderDensity />} fileName="density.tsx" width={360}>
+<ComponentExample exampleId="density" preview={<ConfigProviderDensity />} fileName="density.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/density.tsx"
 ```
@@ -107,39 +95,35 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 ### 基础高度
 
-需要改变整体尺寸基准时，设置 `theme.controlHeight`，小、大尺寸会自动派生。无需逐项调整按钮和输入框的高度。
+设置 `theme.controlHeight` 改变尺寸基准，小、大尺寸会随之派生。
 
-<ComponentExample title="基础高度" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={360}>
+<ComponentExample exampleId="sizes" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/sizes.tsx"
 ```
 
 </ComponentExample>
 
-进一步定制见[定制主题](/guide/theming)。`theme.components` 调整组件局部样式，下方的 `components` 设置组件默认参数；两者用途不同，可以同时使用。服务端接入见 [服务端渲染](/guide/ssr)。
+外观和 token 配置见[定制主题](/guide/theming)，服务端接入见[服务端渲染](/guide/ssr)。`theme.components` 设置组件样式 token，下方的 `components` 设置组件默认参数。
 
-## 组件默认值
+### 统一输入参数
 
-**常用参数设一次，省去每个组件重复传参。** 用 `components` 统一按钮样式、输入提示、弹窗关闭方式，后续调整也只改一处。
+<a id="组件默认值"></a>
 
-放在应用入口作用于全站，放在局部只影响当前区域；个别组件仍可用自身参数覆盖。
+通过 `components` 设置共享的输入提示和清除行为。实例传入的参数覆盖配置默认值。
 
-### 统一表单习惯
-
-下面统一输入提示、清除按钮和按钮样式，结束日期与保存按钮单独覆盖。
-
-<ComponentExample title="常用参数，一处配置" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={360}>
+<ComponentExample exampleId="defaults" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/defaults.tsx"
 ```
 
 </ComponentExample>
 
-### 防止误点遮罩关闭弹窗
+### 弹窗关闭方式
 
-编辑时不希望误点遮罩就关掉弹窗，可以统一设置 `Modal: { maskClosable: false }`。区域内的 Modal 都会沿用，无需逐个设置；关闭按钮和 Esc 仍然可用。
+`Modal: { maskClosable: false }` 禁止点击遮罩关闭区域内的弹窗。关闭按钮、底部操作和 Escape 仍然可用。
 
-<ComponentExample title="打开弹窗，试试点击遮罩" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
+<ComponentExample exampleId="modal-defaults" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/config-provider/modal-defaults.tsx"
 ```
@@ -148,38 +132,33 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 ### 继承与覆盖
 
-统一默认值后，局部仍可灵活调整：**实例参数 > 内层配置 > 外层配置 > 组件内置值**。
+优先级为 **实例参数 > 内层配置 > 外层配置 > 组件内置值**。
 
-<ComponentExample title="继承与覆盖" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx">
+<ComponentExample exampleId="inheritance" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/inheritance.tsx"
 ```
 
 </ComponentExample>
 
+默认值按组件和参数合并。只有 `undefined` 会回退；`false`、`0` 和空字符串等值会保留。对象、数组、类名和回调整体替换，不继续合并。
+
 ### 清除继承
 
-将组件配置设为 `null`，可在局部恢复它的内置默认值，例如 `components={{ Input: null }}`。
+将组件配置设为 `null`，在当前区域恢复它的内置默认值。空对象和 `undefined` 继续继承；其他组件与主题不受影响。
 
-<ComponentExample title="清除继承" preview={<ConfigProviderReset />} fileName="reset.tsx" width={360}>
+<ComponentExample exampleId="reset" preview={<ConfigProviderReset />} fileName="reset.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/config-provider/reset.tsx"
 ```
 
 </ComponentExample>
 
-<DocsCollapse title="配置键、合并规则与使用建议">
+使用 `LeafComponentDefaults` 检查可复用配置。键名与公开组件名一致；组合组件使用 `DataTableSearch` 等键，别名使用规范名称，例如 `FAB` 对应 `FloatButton`。完整参数见[组件默认值参考](/api/component-defaults#leafcomponentdefaults)。
 
-使用 `LeafComponentDefaults` 获得类型提示，可配参数见[完整参考](/api/component-defaults#leafcomponentdefaults)。
+每个实例的数据、受控状态和事件仍传给组件。更新配置时传入新对象；内部控件通过所属组件配置，例如 `Modal.confirmButtonProps`，不会跟随全局 `Button` 默认值。
 
-- 键名与组件名一致，如 `Input`、`Modal`。组合组件 `DataTable.Search` 写作 `DataTableSearch`，`DataTable.Root` 写作 `DataTable`；别名 `FAB`、`ResizablePanels` 使用 `FloatButton`、`Splitter`。
-- 只有 `undefined` 会回退到默认值；`false`、`0`、空字符串和类型允许的 `null` 均保留。对象、数组、类名和回调整体替换。
-- 组件配置为 `null` 时清除继承，空对象和 `undefined` 继续继承；其他组件与主题不受影响。
-- 每个实例的数据和事件仍写在组件上，如 `Select.options`、`Modal.open`、`onChange`。
-- 更新配置时传入新对象，不要直接修改原对象。
-- 内部按钮通过所属组件的参数调整，例如 `Modal.confirmButtonProps`；不会跟随全局 `Button` 配置。
-
-</DocsCollapse>
+{/* leaf:section api */}
 
 ## API
 
@@ -190,14 +169,14 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 | `locale` | `LeafLocale \| readonly LeafLocale[]` | `'zh-CN'` | 当前语言与逐词条回退顺序；未指定则继承 |
 | `translations` | `Readonly<Record<string, `[`LeafTranslation`](../api/translations#leaftranslation)`>>` | — | 按语言代码提供 JSON 翻译，嵌套时按词条合并 |
 | `theme` | [`LeafTheme`](#leaftheme) | — | 区域主题；未设置的字段继承上层 |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | 继承控件、表单、菜单、列表与浮层的密度；显式尺寸优先于预设。 |
+| `components` | [`LeafComponentDefaults`](../api/component-defaults#leafcomponentdefaults) | — | 当前区域的组件默认参数，嵌套时按组件和参数继承。 |
 | `direction` | `'ltr' \| 'rtl'` | — | 文字和交互方向。 |
 | `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | 一周起始日，0 表示周日、1 表示周一。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `maskBlur` | `boolean` | `true` | 启用 Modal、Drawer 及基于 Modal 的确认框、命令面板等遮罩模糊；关闭可减少渲染开销，嵌套时继承。 |
-| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | 继承控件、表单、菜单、列表与浮层的密度；显式尺寸优先于预设。 |
-| `components` | [`LeafComponentDefaults`](../api/component-defaults#leafcomponentdefaults) | — | 当前区域的组件默认参数，嵌套时按组件和参数继承。 |
+| `maskBlur` | `boolean` | `false` | 启用 Modal、Drawer 及基于 Modal 的确认框、命令面板等遮罩模糊；关闭可减少渲染开销，嵌套时继承。 |
 
-其余原生 div 属性、`className` 和 `style` 作用于区域容器。`maskBlur={false}` 关闭背景模糊，仍保留半透明遮罩；此设置独立于 `theme.motion`。
+其余原生 div 属性、`className` 和 `style` 作用于区域容器。
 
 ### LeafTheme
 
@@ -205,28 +184,17 @@ import { ConfigProviderSizes } from '../../src/examples/config-provider/sizes';
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#20834a'` | 主题色，悬停和按下等状态自动生成；深色默认采用较浅的绿色 |
-| `borderRadius` | `number \| string` | `10` | 基础圆角；数字为 px，小 / 中 / 大圆角按 0.6 / 1.2 / 1.6 倍生成 |
-| `controlHeight` | `number \| string` | `36` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
+| `primaryColor` | `string` | `'#1e964f'` | 主题基色，浅深外观共用；交互色自动派生。 |
+| `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
+| `borderRadius` | `number \| string` | `8` | 基础圆角；数字为 px，小 / 中 / 大圆角按 0.5 / 1.5 / 2 倍生成 |
+| `controlHeight` | `number \| string` | `34` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
 | `fontSize` | `number \| string` | `14` | 基础字号；小字号减 1px，大字号加 2px |
 | `fontFamily` | `string` | 系统无衬线字体 | 字体族 |
-| `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
 | `motion` | `boolean` | `true` | 启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。 |
-| `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | 可选的高级覆盖，不必配置全部字段 |
 | `spacing` | `number` | — | 基础间距，其他间距按比例派生。 |
-| `lineHeight` | `number` | — | 正文行高。 |
-| `headingWeight` | `number` | — | Typography 文档标题的字重；组件标题使用 `tokens.fontWeight`。 |
+| `lineHeight` | `number \| string` | `20` | 正文行高。数字默认为 px；大于 0 且不超过 4 的数字保留旧倍率语义，字符串按 CSS 长度处理。 |
+| `headingWeight` | `400 \| 500 \| 700` | `700` | Card 与 Typography 标题字重，默认 700；其他组件标签使用 `tokens.fontWeight`，默认 500。 |
 | `elevation` | `'none' \| 'soft' \| 'medium'` | — | 整体阴影强度。 |
 | `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | useBreakpoint 使用的响应式断点。 |
+| `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | 可选的高级覆盖，不必配置全部字段 |
 | `components` | `Record<string, `[`LeafComponentTokens`](../api/theme-tokens#leafcomponenttokens)`>` | — | 按组件名称覆盖局部样式。 |
-
-### 类型与完整参考
-
-组装可复用配置时，可按需导入类型：
-
-```ts
-import type { ConfigProviderProps, LeafComponentDefaults, LeafTheme } from '@ifhover/leaf-ui';
-```
-
-- [LeafComponentDefaults](/api/component-defaults#leafcomponentdefaults)：组件名称与可配置的默认参数。
-- [LeafThemeTokens](/api/theme-tokens#leafthemetokens)：高级主题覆盖。

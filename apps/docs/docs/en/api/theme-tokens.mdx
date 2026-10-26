@@ -2,23 +2,27 @@
 
 Prefer ConfigProvider's `theme.primaryColor`, `theme.borderRadius` and `theme.controlHeight` for everyday customization. Related styles derive automatically; see [theming](/en/guide/theming).
 
-## LeafThemeTokens
+Default light base colors come from `colors.ts`: primary and success use `#1e964f`, danger uses `#dd3f2e`, warning uses `#d38b11`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
 
-Pass advanced overrides through `theme.tokens` only when a derived value needs to change independently. Every field is optional, and nested providers inherit unspecified fields. Numeric lengths use pixels; numeric durations use milliseconds.
+## LeafThemeTokens
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `onPrimaryColor` | `string` | Theme | Text on primary backgrounds; defaults to readable black or white. |
-| `dangerColor` | `string` | Appearance | Danger background / foreground |
-| `onDangerColor` | `string` | Appearance | Danger background / foreground |
-| `successColor` | `string` | Appearance | Success / warning / information |
-| `warningColor` | `string` | Appearance | Success / warning / information |
-| `infoColor` | `string` | Appearance | Success / warning / information |
+| `onPrimaryColor` | `string` | `#ffffff` | Text on primary solid fills; defaults to white and can be set to #000000. |
+| `dangerColor` | `string` | `#dd3f2e` | Danger base shared by both appearances. |
+| `onDangerColor` | `string` | `#ffffff` | Text on danger fills; white by default. |
+| `onSuccessColor` | `string` | `#ffffff` | Text on success fills; white by default. |
+| `onWarningColor` | `string` | `#ffffff` | Text on warning fills; white by default. |
+| `onInfoColor` | `string` | `#ffffff` | Text on info fills; white by default. |
+| `neutralColor` | `string` | `#707070` | Neutral base used to generate the neutral scale. |
+| `successColor` | `string` | `#1e964f` | Success base shared by both appearances. |
+| `warningColor` | `string` | `#d38b11` | Warning base shared by both appearances. |
+| `infoColor` | `string` | `#1677ff` | Info base shared by both appearances. |
 | `textColor` | `string` | Appearance | Main / secondary text |
 | `mutedTextColor` | `string` | Appearance | Main / secondary text |
-| `subtleTextColor` | `string` | — | Subtle supporting text color. |
+| `subtleTextColor` | `string` | — | Auxiliary text; shares the muted default and can be overridden separately. |
 | `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
-| `mutedSurfaceColor` | `string` | Appearance | Main / subtle surfaces |
+| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, the outer canvases of layered Card and DataTable, Modal and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence. |
 | `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
 | `borderColor` | `string` | Appearance | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
 | `borderHoverColor` | `string` | — | Neutral border color on hover. |
@@ -26,14 +30,14 @@ Pass advanced overrides through `theme.tokens` only when a derived value needs t
 | `borderWidth` | `number \| string` | — | Border width for controls, content surfaces and popups; numbers are px. |
 | `controlShadow` | `string` | — | Default shadow for interactive controls. |
 | `surfaceShadow` | `string` | — | Default shadow for content surfaces and popups; component elevation remains the fallback. |
-| `borderRadiusSm` | `number \| string` | `Base × 0.6` | Small / large radius override |
-| `borderRadiusMd` | `number \| string` | `Base × 1.2` | Medium radius override for content surfaces such as cards and alerts |
-| `borderRadiusLg` | `number \| string` | Base × 1.6 | Large radius override |
+| `borderRadiusSm` | `number \| string` | `Base × 0.5` | Small / large radius override |
+| `borderRadiusMd` | `number \| string` | `Base × 1.5` | Medium radius override for content surfaces such as cards and alerts |
+| `borderRadiusLg` | `number \| string` | Base × 2 | Large radius override |
 | `controlHeightSm` | `number \| string` | Base height − 6px (minimum 1px) | Small control height override |
 | `controlHeightLg` | `number \| string` | Base height + 6px | Large control height override |
 | `fontSizeSm` | `number \| string` | `Base − 1px` | Small / large font override |
 | `fontSizeLg` | `number \| string` | Base font size + 2px | Large font size override |
-| `fontWeight` | `number` | `500` | Emphasis weight for buttons, labels and component titles |
+| `fontWeight` | `400 \| 500 \| 700` | `500` | Emphasis weight for buttons, labels and component titles |
 | `motionDuration` | `number \| string` | `200` | Base transition duration; numbers are ms and CSS times are accepted. motion=false forces 0. |
 | `motionEasing` | `string` | `'cubic-bezier(0.22, 1, 0.36, 1)'` | Easing for hover, content and ordinary transitions. |
 | `motionSpring` | `string` | `'cubic-bezier(0.22, 1.28, 0.36, 1)'` | A mild spring curve for selection and shape changes. |
@@ -52,13 +56,13 @@ Pass advanced overrides through `theme.tokens` only when a derived value needs t
 | `primaryBorderColor` | `string` | Primary color | Primary border |
 | `dangerHoverColor` | `string` | Danger color | Hover / pressed danger states |
 | `dangerActiveColor` | `string` | Danger color | Hover / pressed danger states |
-| `spacingSm` | `number \| string` | — | Configure spacing sm. |
-| `spacingLg` | `number \| string` | — | Configure spacing lg. |
-| `shadowSm` | `string` | — | Configure shadow sm. |
+| `spacingSm` | `number \| string` | — | Override small spacing; uses the base spacing when omitted. |
+| `spacingLg` | `number \| string` | — | Override large spacing; uses three times the base spacing when omitted. |
+| `shadowSm` | `string` | — | Small surface shadow as a CSS box-shadow value. |
 | `shadowXs` | `string` | — | The lightest surface shadow. |
-| `shadowMd` | `string` | — | Configure shadow md. |
-| `shadowLg` | `string` | — | Configure shadow lg. |
-| `lineHeight` | `number` | — | Body line height. |
+| `shadowMd` | `string` | — | Medium popup shadow as a CSS box-shadow value. |
+| `shadowLg` | `string` | — | Large shadow as a CSS box-shadow value. |
+| `lineHeight` | `number \| string` | `20` | Body line height; numbers are pixels, `1`–`4` keep the legacy multiplier meaning, and strings are CSS lengths. |
 
 ## Type import
 
@@ -75,51 +79,38 @@ Pass this object to `<ConfigProvider theme={{ tokens }}>`.
 
 ## LeafComponentTokens
 
-| Support scope | Keys and affected regions |
-| --- | --- |
-| Four interaction states | `Button`, `Input`, `InputNumber`, `Textarea`, `Select`, `AutoComplete`, `Cascader`, `TreeSelect`, `ColorPicker`, `DatePicker`. |
-| Choice controls | `Checkbox` and `Radio` paint the native control and label text; `Switch` paints the track and label text; `Tabs` paints tab actions. |
-| Content and feedback surfaces | Card, Alert, Table, Modal, Drawer, Confirm, Message and other surfaces consume base borders and shadows, without the four interaction states. |
-| Popups | `Floating` sets shared popup paint. Select, AutoComplete, Cascader, TreeSelect, ColorPicker, DatePicker, TimePicker, Dropdown, Mentions and Popover can override their own panel background, text color, border and shadow. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `borderRadius` | `string \| number` | — | Corner radius; numbers are pixels. |
+| `borderWidth` | `string \| number` | — | Border width for this component; numbers are px. |
+| `controlHeight` | `string \| number` | — | Control height; numbers are pixels. |
+| `padding` | `string \| number` | — | Content padding. |
+| `gap` | `string \| number` | — | Space between children. |
+| `fontSize` | `string \| number` | — | Font size; numbers are pixels. |
+| `color` | `string` | — | Color or semantic color. |
+| `background` | `string` | — | Component surface background. |
+| `borderColor` | `string` | — | Outer borders and section dividers. |
+| `headerBackground` | `string` | — | Header background. |
+| `footerBackground` | `string` | — | Footer background. |
+| `shadow` | `string` | — | CSS box-shadow value. |
+| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Hover overrides, merged field by field in nested scopes. |
+| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Pressed overrides, merged field by field in nested scopes. |
+| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Keyboard focus overrides; the visible focus outline remains. |
+| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Disabled appearance overrides; disabled behavior is unchanged. |
 
-Date, time and range pickers share the `DatePicker` field shell states. For example, use `DatePicker.focus` for a TimePicker's focused field and `TimePicker` for its panel paint. `InputOTP` does not support all four state overrides. States affect the control regions listed here, without recursively restyling all child nodes.
-
-Style fields for `theme.components` overrides by component name. Check each component's documentation for the fields it supports.
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `borderRadius` | `string \| number` | Corner radius; numbers are pixels. |
-| `borderWidth` | `string \| number` | Border width for this component; numbers are px. |
-| `controlHeight` | `string \| number` | Control height; numbers are pixels. |
-| `padding` | `string \| number` | Content padding. |
-| `gap` | `string \| number` | Space between children. |
-| `fontSize` | `string \| number` | Font size; numbers are pixels. |
-| `color` | `string` | Color or semantic color. |
-| `background` | `string` | Component surface background. |
-| `borderColor` | `string` | Outer borders and section dividers. | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
-| `headerBackground` | `string` | Header background. |
-| `footerBackground` | `string` | Footer background. |
-| `shadow` | `string` | CSS box-shadow value. |
-| `hover` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Hover overrides, merged field by field in nested scopes. |
-| `active` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Pressed overrides, merged field by field in nested scopes. |
-| `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Keyboard focus overrides; the visible focus outline remains. |
-| `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | Disabled appearance overrides; disabled behavior is unchanged. |
+Date, time and range pickers share the `DatePicker` field shell states. This includes `picker="time"`: use `DatePicker.focus` for the focused field and `DatePicker` for panel paint. `InputOTP` does not support all four state overrides. States affect the control regions listed here, without recursively restyling all child nodes.
 
 ## LeafComponentStateTokens
 
-States override only explicitly supplied appearance fields. Nested themes inherit each field without mutating the parent; `undefined` does not replace existing values. Disabled appearance takes precedence over hover, active and focus states. Native disabled behavior and keyboard focus outlines remain available.
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `color` | `string` | Text color in this state. |
-| `background` | `string` | Background in this state. |
-| `borderColor` | `string` | Border color in this state. | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
-| `shadow` | `string` | CSS box-shadow in this state. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `color` | `string` | — | Text color in this state. |
+| `background` | `string` | — | Background in this state. |
+| `borderColor` | `string` | — | Border color in this state. |
+| `shadow` | `string` | — | CSS box-shadow in this state. |
 
 ## LeafThemeStyle
 
-A React style type with `--leaf-*` custom properties. See [Theming](/en/guide/theming#use-the-theme-in-application-css) for consuming variables in application CSS.
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | Reusable CSS custom property. |
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `` [key: `--leaf-${string}`] `` | `string \| number \| undefined` | — | Reusable CSS custom property. |

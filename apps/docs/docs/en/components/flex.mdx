@@ -1,34 +1,86 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { FlexBasic } from '../../../src/examples/en/flex/basic';
 import { FlexAlignment } from '../../../src/examples/en/flex/alignment';
+import { FlexVertical } from '../../../src/examples/en/flex/vertical';
+import { FlexCrossAlignment } from '../../../src/examples/en/flex/cross-alignment';
+import { FlexWrap } from '../../../src/examples/en/flex/wrap';
+
+export const leafDoc = { component: 'Flex', primaryApi: 'FlexProps' };
 
 # Flex
 
-Control direction, alignment, spacing and wrapping without adding wrappers around children.
+Control direction, alignment and wrapping. Use [Space](/en/components/space) for consistent spacing or [Grid](/en/components/grid) for equal-width columns.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-Use `gap` for spacing and `wrap` to allow items to move onto another line.
+Use `gap` to set the spacing between adjacent elements.
 
-<ComponentExample title="Basic usage" preview={<FlexBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<FlexBasic />} fileName="basic.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/flex/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Direction and alignment
+{/* leaf:section examples */}
 
-`direction` controls flow, `align` controls cross-axis alignment and `justify` controls main-axis alignment. `start` / `end` follow the corresponding flex axis.
+## Examples
 
-<ComponentExample title="Direction and alignment" preview={<FlexAlignment />} fileName="alignment.tsx">
+### Vertical layout
+
+<a id="direction-and-alignment"></a>
+
+Set `direction="column"` for vertical flow. Use `align="start"` to keep buttons at their natural width. Reversed flow only changes visual positions, not DOM reading order or Tab order.
+
+<ComponentExample exampleId="vertical" preview={<FlexVertical />} fileName="vertical.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/flex/vertical.tsx"
+```
+
+</ComponentExample>
+
+### Main-axis alignment
+
+`justify` controls alignment along the flow direction. These horizontal rows compare start, center, end and space-between alignment.
+
+<ComponentExample exampleId="alignment" preview={<FlexAlignment />} fileName="alignment.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/flex/alignment.tsx"
 ```
 
 </ComponentExample>
 
-## Flex API
+### Cross-axis alignment
+
+`align` controls alignment perpendicular to the flow direction. These equal-height areas compare top, center and bottom alignment with two differently sized buttons.
+
+<ComponentExample exampleId="cross-alignment" preview={<FlexCrossAlignment />} fileName="cross-alignment.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/flex/cross-alignment.tsx"
+```
+
+</ComponentExample>
+
+### Wrapping
+
+Enable `wrap` to move items onto another line when space runs out. A `gap` tuple sets `[row gap, column gap]` separately.
+
+<ComponentExample exampleId="wrap" preview={<FlexWrap />} fileName="wrap.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/flex/wrap.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Flex API
+
+Native `div` attributes and DOM refs are supported. Explicit `style` takes precedence over layout props.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -38,15 +90,3 @@ Use `gap` for spacing and `wrap` to allow items to move onto another line.
 | `justify` | `'start' \| 'center' \| 'end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `'start'` | Main-axis alignment. |
 | `wrap` | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'` | `false` | Enable wrapping or choose its direction. |
 | `inline` | `boolean` | `false` | Use inline flex layout. |
-
-## Types
-
-```ts
-import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
-```
-
-`FlexGap` is `number | string`. Native `div` attributes, `className`, `style` and DOM refs are supported. Explicit `style` takes precedence over layout props.
-
-## Usage notes
-
-Use Space for simple equal spacing, Flex for main-axis alignment, reversed flow or inline layout, and Grid for columns. Flex preserves the appearance and size of its children.

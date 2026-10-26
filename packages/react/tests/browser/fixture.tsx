@@ -11,7 +11,6 @@ import {
   ConfigProvider,
   DatePicker,
   DateRangePicker,
-  DateTimePicker,
   Drawer,
   Dropdown,
   Form,
@@ -28,7 +27,6 @@ import {
   Statistic,
   Steps,
   Tabs,
-  TimePicker,
   Tree,
   Typography,
   VirtualList,
@@ -42,34 +40,51 @@ import '../../src/styles/index.scss';
 import css from '../../src/styles/index.scss?inline';
 import './fixture.scss';
 import { AccessibilityWorkbench } from './accessibility-workbench';
+import { AvatarFixture } from './avatar-fixture';
+import { BadgeFixture } from './badge-fixture';
+import { CalendarFixture } from './calendar-fixture';
 import { CardTabsFixture } from './card-fixture';
 import { ColorFixture } from './color-fixture';
+import { ColorPickerFixture } from './color-picker-fixture';
 import { ComponentDefaultsFixture } from './component-defaults-fixture';
 import { ControlHeightFixture } from './control-height-fixture';
+import { DropdownFixture } from './dropdown-fixture';
+import { FamilyColorContractFixture } from './family-color-contract-fixture';
 import { FeedbackFixture } from './feedback-fixture';
+import { FieldColorContractFixture } from './field-color-contract-fixture';
 import { FileListFixture } from './file-list-fixture';
 import { FlexFixture } from './flex-fixture';
 import { FormFixture, FormHelpFixture } from './form-fixture';
 import { FormSettingsFixture } from './form-settings-fixture';
+import { ImageFixture } from './image-fixture';
 import { InputPopupWidthFixture } from './input-popup-width-fixture';
 import { InternalScrollbarFixture } from './internal-scrollbar-fixture';
 import { MenuFixture } from './menu-fixture';
 import { MotionFixture } from './motion-fixture';
 import { MultiSelectFixture } from './multi-select-fixture';
+import { MutedSurfaceContractFixture } from './muted-surface-contract-fixture';
 import { PaginationFixture } from './pagination-fixture';
+import { PickerSurfacesFixture } from './picker-surfaces-fixture';
 import { RadiusFixture } from './radius-fixture';
 import { RefinementsFixture } from './refinements-fixture';
 import { ScrollbarFixture } from './scrollbar-fixture';
 import { SearchSelectFixture } from './search-select-fixture';
 import { SelectWidthFixture } from './select-width-fixture';
 import { SelectionFixture } from './selection-fixture';
+import { SemanticColorContractFixture } from './semantic-color-contract-fixture';
 import { StatisticFixture } from './statistic-fixture';
 import { SurfaceFixture } from './surface-fixture';
+import { SwitchFixture } from './switch-fixture';
+import { TableColorContractFixture } from './table-color-contract-fixture';
 import { TableFixture } from './table-fixture';
 import { TabsFixture } from './tabs-fixture';
+import { TagFixture } from './tag-fixture';
 import { ThemePresetsFixture } from './theme-presets-fixture';
+import { TransferFixture } from './transfer-fixture';
 import { TranslationsFixture } from './translations-fixture';
 import { WarningFixture } from './warning-fixture';
+import { WorkbenchFixture } from './workbench-fixture';
+import { WorkbenchReviewFixture } from './workbench-review-fixture';
 
 const params = new URLSearchParams(location.search);
 const options = [
@@ -120,7 +135,12 @@ function Controls() {
           <InputNumber stringMode name="amount" defaultValue="9007199254740993.01" step="0.01" />
         </FormField>
         <FormField label="Time">
-          <TimePicker name="time" defaultValue="09:30" disabledTime={(time) => time.hour === 10} />
+          <DatePicker
+            picker="time"
+            name="time"
+            defaultValue="09:30"
+            disabledTime={(time) => time.hour === 10}
+          />
         </FormField>
         <FormField label="Notes">
           <Mentions
@@ -236,12 +256,12 @@ function Visual() {
       <Space className="fixture-control-row">
         <Select aria-label="Person" options={options} />
         <DatePicker aria-label="Date" defaultValue={baseline} />
-        <DateTimePicker aria-label="Appointment" defaultValue={baseline} />
+        <DatePicker picker="datetime" aria-label="Appointment" defaultValue={baseline} />
       </Space>
       <Space wrap>
         <ColorPicker showText />
         <ColorPicker mode="gradient" showText />
-        <TimePicker aria-label="Time" style={{ width: 220 }} />
+        <DatePicker picker="time" aria-label="Time" style={{ width: 220 }} />
       </Space>
       <CheckboxGroup legend="Access" options={['Read', 'Write']} defaultValue={['Read']} />
       <Menu
@@ -370,10 +390,31 @@ createRoot(root).render(
     }
   >
     <main>
-      {fixture === 'menu' ? (
+      {fixture === 'image' ? (
+        <ImageFixture />
+      ) : fixture === 'workbench-review' ? (
+        <WorkbenchReviewFixture />
+      ) : fixture === 'input-count' ? (
+        <Input
+          aria-label="Counted input"
+          defaultValue="Leaf"
+          allowClear
+          showCount
+          maxLength={10}
+          style={{ width: '100%', maxWidth: 320 }}
+        />
+      ) : fixture === 'workbench' ? (
+        <WorkbenchFixture />
+      ) : fixture === 'menu' ? (
         <MenuFixture />
+      ) : fixture === 'avatar' ? (
+        <AvatarFixture />
+      ) : fixture === 'badge' ? (
+        <BadgeFixture />
       ) : fixture === 'theme-presets' ? (
         <ThemePresetsFixture />
+      ) : fixture === 'transfer' ? (
+        <TransferFixture />
       ) : fixture === 'translations' ? (
         <TranslationsFixture />
       ) : fixture === 'component-defaults' ? (
@@ -384,6 +425,8 @@ createRoot(root).render(
         <ControlHeightFixture />
       ) : fixture === 'card' ? (
         <CardTabsFixture />
+      ) : fixture === 'calendar' ? (
+        <CalendarFixture />
       ) : fixture === 'flex' ? (
         <FlexFixture />
       ) : fixture === 'tabs' ? (
@@ -398,6 +441,8 @@ createRoot(root).render(
         <FileListFixture />
       ) : fixture === 'surfaces' ? (
         <SurfaceFixture />
+      ) : fixture === 'picker-surfaces' ? (
+        <PickerSurfacesFixture />
       ) : fixture === 'warning' ? (
         <WarningFixture />
       ) : fixture === 'scrollbar' ? (
@@ -406,6 +451,14 @@ createRoot(root).render(
         <InternalScrollbarFixture />
       ) : fixture === 'table' ? (
         <TableFixture />
+      ) : fixture === 'family-color-contract' ? (
+        <FamilyColorContractFixture />
+      ) : fixture === 'switch' ? (
+        <SwitchFixture />
+      ) : fixture === 'table-color-contract' ? (
+        <TableColorContractFixture />
+      ) : fixture === 'tags' ? (
+        <TagFixture />
       ) : fixture === 'radius' ? (
         <RadiusFixture />
       ) : fixture === 'colors' ? (
@@ -418,6 +471,8 @@ createRoot(root).render(
         <RefinementsFixture />
       ) : fixture === 'multi-select' ? (
         <MultiSelectFixture />
+      ) : fixture === 'muted-surface-contract' ? (
+        <MutedSurfaceContractFixture />
       ) : fixture === 'search-select' ? (
         <SearchSelectFixture />
       ) : fixture === 'select-width' ? (
@@ -426,12 +481,20 @@ createRoot(root).render(
         <InputPopupWidthFixture />
       ) : fixture === 'selection' ? (
         <SelectionFixture />
+      ) : fixture === 'field-color-contract' ? (
+        <FieldColorContractFixture />
+      ) : fixture === 'color-picker' ? (
+        <ColorPickerFixture />
+      ) : fixture === 'semantic-color-contract' ? (
+        <SemanticColorContractFixture />
       ) : fixture === 'statistic' ? (
         <StatisticFixture />
       ) : fixture === 'motion' ? (
         <MotionFixture />
       ) : fixture === 'large' ? (
         <LargeData />
+      ) : fixture === 'dropdown' ? (
+        <DropdownFixture />
       ) : fixture === 'visual' ? (
         <Visual />
       ) : fixture === 'sliders' ? (

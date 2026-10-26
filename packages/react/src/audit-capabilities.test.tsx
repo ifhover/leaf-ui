@@ -4,13 +4,11 @@ import axe from 'axe-core';
 import { createRef, StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { Toolbar } from './appbar';
 import { AutoComplete } from './autocomplete';
 import { Carousel, type CarouselHandle } from './carousel';
 import { Cascader, mapCascaderOptions } from './cascader';
 import { CheckboxGroup } from './checkbox';
 import { ColorPicker } from './colorpicker';
-import { CommandPalette } from './commandpalette';
 import { ConfigProvider } from './config-provider';
 import { colorContrast } from './config-provider/helpers';
 import { DatePicker } from './datepicker';
@@ -23,7 +21,7 @@ import { Mentions } from './mentions';
 import { formatPickerDate, parsePickerDate } from './shared/date-format';
 import { Splitter } from './splitter';
 import { Countdown } from './statistic';
-import { TimePicker } from './timepicker';
+
 import { Tour } from './tour';
 import { Text } from './typography';
 import { Upload, type UploadHandle } from './upload';
@@ -44,7 +42,7 @@ describe('audit selection, date and native form capabilities', () => {
   });
   it('keeps a read-only color value locked even with a controlled-open request', async () => {
     const change = vi.fn();
-    render(<ColorPicker defaultValue="#20834a" readOnly open allowClear onChange={change} />);
+    render(<ColorPicker defaultValue="#1e964f" readOnly open allowClear onChange={change} />);
     await userEvent.click(screen.getByRole('button', { name: '选择颜色' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '清除颜色' })).not.toBeInTheDocument();
@@ -207,18 +205,18 @@ describe('audit selection, date and native form capabilities', () => {
     rerender(<AutoComplete options={[]} defaultOpen errorContent="Retry connection" />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Retry connection');
   });
-  it('applies format, presets, controlled panels and multiple date selection', async () => {
+  it('applies a custom date format to single-date values', async () => {
     const change = vi.fn();
-    render(<DatePicker multiple format="DD/MM/YYYY" onChange={change} aria-label="Dates" />);
+    render(<DatePicker format="DD/MM/YYYY" onChange={change} aria-label="Date" />);
     const input = screen.getByRole('combobox');
-    await userEvent.type(input, '05/10/2026, 06/10/2026{Enter}');
-    expect(change.mock.lastCall?.[0]).toHaveLength(2);
-    expect(change.mock.lastCall?.[1]).toEqual(['05/10/2026', '06/10/2026']);
+    await userEvent.type(input, '05/10/2026{Enter}');
+    expect(change).toHaveBeenCalledWith(new Date(2026, 9, 5), '05/10/2026');
   });
   it('disables time options and blocks the same values when entered as text', async () => {
     const change = vi.fn();
     render(
-      <TimePicker
+      <DatePicker
+        picker="time"
         defaultValue="09:00"
         disabledTime={(time) => time.hour === 10}
         onChange={change}
@@ -229,6 +227,8 @@ describe('audit selection, date and native form capabilities', () => {
       within(screen.getByRole('listbox', { name: '小时' })).getByRole('option', { name: '10' }),
     ).toBeDisabled();
     await userEvent.clear(screen.getByRole('combobox'));
+    expect(change).toHaveBeenLastCalledWith(null);
+    change.mockClear();
     await userEvent.type(screen.getByRole('combobox'), '10:00{Enter}');
     expect(change).not.toHaveBeenCalled();
     expect(screen.getByRole('combobox')).toHaveAttribute('aria-invalid', 'true');
@@ -383,67 +383,6 @@ describe('new content and interaction families', () => {
     fireEvent.click(input);
     await userEvent.keyboard('{ArrowDown}{Enter}');
     expect(input.value).toBe('Hello @ada  suffix');
-  });
-  it('retains a failing command with an error and prevents duplicate asynchronous actions', async () => {
-    let reject: (reason: Error) => void = () => {};
-    const select = vi.fn(
-      () =>
-        new Promise<void>((_resolve, fail) => {
-          reject = fail;
-        }),
-    );
-    render(
-      <CommandPalette defaultOpen items={[{ key: 'save', label: 'Save', onSelect: select }]} />,
-    );
-    const option = await screen.findByRole('option', { name: 'Save' });
-    fireEvent.click(option);
-    fireEvent.click(option);
-    expect(select).toHaveBeenCalledTimes(1);
-    await act(async () => reject(new Error('Offline')));
-    expect(screen.getByRole('alert')).toHaveTextContent('Offline');
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-  });
-  it('ignores an old command completion after the palette is reopened', async () => {
-    let finish = () => {};
-    const complete = vi.fn();
-    const items = [
-      {
-        key: 'save',
-        label: 'Save',
-        onSelect: () =>
-          new Promise<void>((resolve) => {
-            finish = resolve;
-          }),
-      },
-    ];
-    const { rerender } = render(<CommandPalette open items={items} onSelect={complete} />);
-    await userEvent.click(await screen.findByRole('option', { name: 'Save' }));
-    rerender(<CommandPalette open={false} items={items} onSelect={complete} />);
-    rerender(<CommandPalette open items={items} onSelect={complete} />);
-    await act(async () => finish());
-    expect(complete).not.toHaveBeenCalled();
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Save' })).toBeEnabled();
-  });
-  it('moves toolbar focus in RTL while leaving editable fields their arrow keys', async () => {
-    render(
-      <ConfigProvider direction="rtl">
-        <Toolbar aria-label="Actions">
-          <button type="button">First action</button>
-          <button type="button" disabled>
-            Unavailable
-          </button>
-          <button type="button">Second action</button>
-          <Input aria-label="Query" defaultValue="abc" />
-        </Toolbar>
-      </ConfigProvider>,
-    );
-    screen.getByRole('button', { name: 'First action' }).focus();
-    await userEvent.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('button', { name: 'Second action' })).toHaveFocus();
-    screen.getByRole('textbox', { name: 'Query' }).focus();
-    await userEvent.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('textbox', { name: 'Query' })).toHaveFocus();
   });
   it('finishes a countdown once even under StrictMode and stops its timer', () => {
     vi.useFakeTimers();

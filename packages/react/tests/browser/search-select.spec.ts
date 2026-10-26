@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import axe from 'axe-core';
+import { settleAnimations } from './helpers/motion';
 
 for (const appearance of ['light', 'dark']) {
   test.describe(appearance, () => {
@@ -15,7 +16,7 @@ for (const appearance of ['light', 'dark']) {
         await input.click();
         await page.getByRole('option', { name: 'Bob Miller', exact: true }).click();
         await expect(input).toHaveValue('Bob Miller');
-        await page.waitForTimeout(350);
+        await settleAnimations(input.locator('..'));
         const metrics = () =>
           input.evaluate((node) => {
             const style = getComputedStyle(node);
@@ -74,32 +75,46 @@ for (const appearance of ['light', 'dark']) {
               height: rect.height,
               start: style.paddingInlineStart,
               end: style.paddingInlineEnd,
-              radius: style.borderRadius,
               gap: previous ? Math.round(rect.top - previous.bottom) : 0,
-              marker: getComputedStyle(node, '::before').content,
             };
           });
       await input.click();
       await expect(page.locator('.leaf-select__panel')).toHaveAttribute('data-positioned', 'true');
-      await page.waitForTimeout(350);
+      await settleAnimations(page.locator('.leaf-select__panel'));
       const selected = await metrics('.leaf-select__panel');
       await input.press('Escape');
       const autocomplete = page.getByRole('combobox', { name: 'Matching suggestions' });
       await autocomplete.click();
       const panel = page.locator('.leaf-autocomplete__panel');
       await expect(panel).toHaveAttribute('data-positioned', 'true');
-      await page.waitForTimeout(350);
+      await settleAnimations(panel);
       expect(await metrics('.leaf-autocomplete__panel')).toEqual(selected);
       const row = panel.getByRole('option', { name: 'Bob Miller', exact: true });
       await row.hover();
       await expect(row).toHaveAttribute('aria-selected', 'true');
-      await expect(panel.locator('.leaf-floating__highlight')).toHaveCSS(
-        'border-color',
-        'rgba(0, 0, 0, 0)',
-      );
+      await expect(panel.locator('.leaf-floating__highlight')).toHaveCount(0);
+      await expect
+        .poll(() => row.evaluate((node) => getComputedStyle(node, '::before').backgroundColor))
+        .toBe('rgba(0, 0, 0, 0.04)');
       await expect(row).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
       await row.click();
       await expect(autocomplete).toHaveValue('bob');
+    });
+
+    test('explicit suggestion row heights apply to ordinary and virtual options', async ({
+      page,
+    }) => {
+      for (const name of ['Short suggestions', 'Virtual short suggestions']) {
+        const input = page.getByRole('combobox', { name, exact: true });
+        await input.click();
+        const panel = page.locator('.leaf-autocomplete__panel[data-state="open"]');
+        await expect(panel).toHaveAttribute('data-positioned', 'true');
+        await settleAnimations(panel);
+        const row = panel.getByRole('option').first();
+        await expect(row).toHaveCSS('min-height', '28px');
+        expect((await row.boundingBox())?.height).toBe(28);
+        await input.press('Escape');
+      }
     });
 
     test('empty and busy panels put a decorative icon above the message and honor reduced motion', async ({

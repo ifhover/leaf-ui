@@ -1,18 +1,29 @@
-import { Button, Flex, Popover } from '@ifhover/leaf-ui';
+import { Button, Flex, Grid, Popover, Text } from '@ifhover/leaf-ui';
+
+const placements = [
+  { placement: 'top', label: '上方' },
+  { placement: 'bottom', label: '下方' },
+  { placement: 'left', label: '左侧' },
+  { placement: 'right', label: '右侧' },
+] as const;
+
 export function PopoverPlacements() {
   return (
-    <Flex gap="md" align="center" wrap justify="center">
-      {(['top', 'bottom', 'left', 'right'] as const).map((placement) => (
-        <Popover
+    <Flex direction="column" gap="md">
+      {placements.map(({ placement, label }) => (
+        <Grid
           key={placement}
-          placement={placement}
-          title="项目提示"
-          content="浮层会根据可用空间调整位置。"
+          role="group"
+          aria-label={label}
+          columns={{ xs: 1, sm: 2 }}
+          gap="8px"
+          align="center"
         >
-          <Button variant="outline">
-            {{ top: '上方', bottom: '下方', left: '左侧', right: '右侧' }[placement]}
-          </Button>
-        </Popover>
+          <Text tone="muted">{label}</Text>
+          <Popover placement={placement} title="项目信息" content="在此查看项目概览和最近更新。">
+            <Button variant="outline">查看详情</Button>
+          </Popover>
+        </Grid>
       ))}
     </Flex>
   );

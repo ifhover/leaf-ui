@@ -3,7 +3,6 @@ import {
   Card,
   Checkbox,
   CheckboxGroup,
-  CommandPalette,
   ConfigProvider,
   DatePicker,
   Form,
@@ -44,7 +43,6 @@ function ComponentDefaultsBoundaries() {
   const [submits, setSubmits] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pageSize, setPageSize] = useState(10);
-  const [commandsOpen, setCommandsOpen] = useState(false);
   return (
     <section aria-label="Component boundaries">
       <h2>Component boundaries</h2>
@@ -82,24 +80,7 @@ function ComponentDefaultsBoundaries() {
               </Space>
             </form>
           </ConfigProvider>
-          <Button
-            type="button"
-            loading={false}
-            disabled={false}
-            onClick={() => setCommandsOpen(true)}
-          >
-            Open boundary commands
-          </Button>
         </Space>
-        <CommandPalette
-          open={commandsOpen}
-          onOpenChange={setCommandsOpen}
-          shortcut={false}
-          items={[
-            { key: 'copy', label: 'Copy command' },
-            { key: 'save', label: 'Save command' },
-          ]}
-        />
       </ConfigProvider>
     </section>
   );
@@ -162,7 +143,7 @@ function ExpandedComponentDefaults() {
       DatePicker: { size: 'sm', allowClear: true, popupClassName: 'regional-date-panel' },
       Card: { size: 'sm' },
       Tabs: { size: 'lg', closable: true },
-      Tag: { variant: updated ? 'soft' : 'solid', color: 'success' },
+      Tag: { variant: updated ? 'soft' : 'outline', color: 'success' },
       Confirm: { confirmText: updated ? 'Proceed now' : 'Proceed', cancelText: 'Back' },
       Message: { duration: 30, type: 'warning', closable: true },
       Notification: { duration: 30, placement: 'bottom-left' },

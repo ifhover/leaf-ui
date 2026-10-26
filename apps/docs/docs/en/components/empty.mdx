@@ -1,3 +1,29 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { EmptyBasic } from '../../../src/examples/en/empty/basic';
+
 # Empty
 
-Empty states are now part of [Result](/components/result). Use Result with status="empty". The Empty export remains as a compatibility entry.
+`Empty` is a compatibility entry. For new empty states, use [Result](/en/components/result) with `status="empty"`.
+
+## Compatibility usage
+
+<ComponentExample title="Compatibility usage" preview={<EmptyBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/empty/basic.tsx"
+```
+
+</ComponentExample>
+
+## Migrate to Result
+
+Rename `image` to `icon` and `description` to `title`, and move actions from `children` to `extra`.
+
+```diff
+- import { Empty } from '@ifhover/leaf-ui';
++ import { Result } from '@ifhover/leaf-ui';
+
+- <Empty description="No projects yet" />
++ <Result status="empty" title="No projects yet" />
+```
+
+See [Empty API](/en/components/result#empty-api) for the full reference.

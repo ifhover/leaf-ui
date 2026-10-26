@@ -1,31 +1,28 @@
-import { Button, Space, VirtualList } from '@ifhover/leaf-ui';
-import { useRef, useState } from 'react';
+import { Card, Flex, Text, VirtualList } from '@ifhover/leaf-ui';
+
+const items = Array.from({ length: 1000 }, (_, index) => ({
+  id: index + 1,
+  name: `项目 ${index + 1}`,
+  description: '用于记录项目进展与下一步安排。'.repeat((index % 3) + 1),
+}));
+
 export function VirtualListDynamic() {
-  const list = useRef<import('@ifhover/leaf-ui').VirtualListHandle>(null);
-  const [items] = useState(() =>
-    Array.from({ length: 1000 }, (_, index) => ({
-      id: String(index),
-      text: '长度不同的内容。 '.repeat((index % 3) + 1),
-    })),
-  );
   return (
-    <Space direction="vertical" align="stretch">
-      <Button variant="outline" onClick={() => list.current?.scrollToIndex(500, 'start')}>
-        跳至第 501 项
-      </Button>
-      <VirtualList
-        ref={list}
-        items={items}
-        itemKey={(item) => item.id}
-        height={220}
-        estimateSize={60}
-        renderItem={(item) => (
-          <div style={{ padding: 16 }}>
-            <strong>#{item.id}</strong>
-            <p style={{ margin: '4px 0' }}>{item.text}</p>
-          </div>
-        )}
-      />
-    </Space>
+    <VirtualList
+      items={items}
+      itemKey={(item) => item.id}
+      height={240}
+      estimateSize={96}
+      role="region"
+      aria-label="动态高度列表"
+      renderItem={(item) => (
+        <Card size="sm">
+          <Flex direction="column" gap="sm">
+            <Text>{item.name}</Text>
+            <Text tone="muted">{item.description}</Text>
+          </Flex>
+        </Card>
+      )}
+    />
   );
 }

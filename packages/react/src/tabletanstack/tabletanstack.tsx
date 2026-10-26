@@ -55,6 +55,7 @@ import { ButtonControl } from '../button/button';
 import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
 import {
   mergeComponentProps,
+  useComponentDefaults,
   useComponentProps,
   useGenericComponentDefaults,
 } from '../config-provider/component-defaults';
@@ -85,6 +86,59 @@ export interface DataTableColumnMeta {
   headerClassName?: string;
 }
 
+declare const process: { env: { NODE_ENV?: string } };
+
+const developmentWarnings = new Set<string>();
+
+function warnDevelopment(key: string, message: string) {
+  if (typeof process === 'undefined' || process.env.NODE_ENV === 'production') return;
+  if (developmentWarnings.has(key)) return;
+  developmentWarnings.add(key);
+  console.warn(`Leaf UI: ${message}`);
+}
+
+function hasConfiguredDefaults(defaults: object | null | undefined) {
+  return Boolean(defaults && Object.keys(defaults).length);
+}
+
+function hasSortingModel(table: TanStackTable<unknown>) {
+  return Boolean(table.options.getSortedRowModel || table.options.manualSorting);
+}
+
+function hasFilteringModel(table: TanStackTable<unknown>) {
+  return Boolean(table.options.getFilteredRowModel || table.options.manualFiltering);
+}
+
+function hasPaginationModel(table: TanStackTable<unknown>) {
+  return Boolean(table.options.getPaginationRowModel || table.options.manualPagination);
+}
+
+function hasExpansionModel(table: TanStackTable<unknown>) {
+  return Boolean(table.options.getExpandedRowModel || table.options.manualExpanding);
+}
+
+/** Optional metadata checking without augmenting TanStack's global ColumnMeta. */
+export type DataTableColumnDef<TData, TValue = unknown> = ColumnDef<TData, TValue> & {
+  meta?: DataTableColumnMeta;
+};
+
+export type DataTableRowKey<TData> =
+  | {
+      [Key in keyof TData]-?: TData[Key] extends string | number ? Key : never;
+    }[keyof TData]
+  | ((row: TData, index: number) => string | number);
+
+export interface UseDataTableOptions<TData> {
+  data: readonly TData[];
+  columns: readonly ColumnDef<TData>[];
+  rowKey: DataTableRowKey<TData>;
+  /** Enables local pagination slicing; false takes precedence over options.manualPagination. */
+  localPagination?: boolean;
+  /** @deprecated Use `localPagination` instead. */
+  pagination?: boolean;
+  options?: Omit<TableOptions<TData>, 'data' | 'columns' | 'getCoreRowModel' | 'getRowId'>;
+}
+
 export interface DataTableRowReorderInfo<TData> {
   rows: readonly Row<TData>[];
   fromIndex: number;
@@ -93,7 +147,7 @@ export interface DataTableRowReorderInfo<TData> {
   overRow: Row<TData>;
 }
 
-export interface DataTableProps<TData> extends DataTablePresentationProps {
+export interface DataTableInstanceProps<TData> extends DataTablePresentationProps {
   table: TanStackTable<TData>;
   data?: never;
   columns?: never;
@@ -109,15 +163,17 @@ export interface DataTableProps<TData> extends DataTablePresentationProps {
 }
 
 export interface DataTableDataProps<TData>
-  extends Omit<DataTableProps<TData>, 'table' | 'data' | 'columns' | 'rowKey' | 'options'> {
+  extends Omit<DataTableInstanceProps<TData>, 'table' | 'data' | 'columns' | 'rowKey' | 'options'>,
+    Omit<UseDataTableOptions<TData>, 'pagination'> {
   table?: never;
-  data: readonly TData[];
-  columns: ColumnDef<TData>[];
-  rowKey: keyof TData | ((row: TData, index: number) => string);
-  options?: Omit<TableOptions<TData>, 'data' | 'columns' | 'getCoreRowModel' | 'getRowId'>;
 }
 
-type DataTableContextValue = Omit<DataTableProps<unknown>, keyof HTMLAttributes<HTMLDivElement>> & {
+export type DataTableProps<TData> = DataTableInstanceProps<TData> | DataTableDataProps<TData>;
+
+type DataTableContextValue = Omit<
+  DataTableInstanceProps<unknown>,
+  keyof HTMLAttributes<HTMLDivElement>
+> & {
   id: string;
   label?: string;
   labelledBy?: string;
@@ -127,7 +183,7 @@ type DataTableContextValue = Omit<DataTableProps<unknown>, keyof HTMLAttributes<
 };
 const DataTableContext = createContext<DataTableContextValue | null>(null);
 
-function useDataTable() {
+function useDataTableContext() {
   const value = useContext(DataTableContext);
   if (!value) throw new Error('DataTable parts must be rendered inside DataTable.');
   return value;
@@ -135,12 +191,14 @@ function useDataTable() {
 
 function DataTableRoot<TData>({
   table,
+  layout,
   children,
-  caption,
+  toolbar,
   size = 'md',
+  variant = 'layered',
+  columnDividers,
   bordered = false,
   striped = true,
-  stickyHeader = true,
   maxHeight,
   minWidth,
   loading = false,
@@ -163,10 +221,20 @@ function DataTableRoot<TData>({
   'aria-label': label,
   'aria-labelledby': labelledBy,
   ...props
-}: DataTableProps<TData>) {
+}: DataTableInstanceProps<TData>) {
   const id = useId();
+  const toolbarDefaults = useComponentDefaults('DataTableToolbar');
+  const contentDefaults = useComponentDefaults('DataTableContent');
+  const footerDefaults = useComponentDefaults('DataTableFooter');
+  const paginationDefaults = useComponentDefaults('DataTablePagination');
   const state = table.getState();
   const rows = table.getRowModel().rows;
+  const hasCustomChildren = children != null && children !== false;
+  const automaticLayout = layout === 'auto' || (layout === undefined && !hasCustomChildren);
+  const dividers = columnDividers ?? bordered;
+  const paginationAvailable = hasPaginationModel(table as unknown as TanStackTable<unknown>);
+  const expansionAvailable = hasExpansionModel(table as unknown as TanStackTable<unknown>);
+  const automaticPagination = automaticLayout && pagination !== false && paginationAvailable;
   const rowReordering = Boolean(
     onRowReorder &&
       !loading &&
@@ -181,16 +249,16 @@ function DataTableRoot<TData>({
   );
   const reorderColumns =
     columnReordering && !loading && table.getAllColumns().every((column) => !column.columns.length);
+  const expandable = expansionAvailable && table.getCanSomeRowsExpand();
   const value: DataTableContextValue = {
     table: table as unknown as TanStackTable<unknown>,
     id,
     label,
     labelledBy,
-    caption,
     size,
-    bordered,
+    variant,
+    columnDividers: dividers,
     striped,
-    stickyHeader,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
     loading,
@@ -215,8 +283,102 @@ function DataTableRoot<TData>({
     virtual,
     pagination,
     tableRef,
-    expandable: Boolean(renderExpandedRow) || table.getCanSomeRowsExpand(),
+    expandable,
   };
+
+  useEffect(() => {
+    if (selection !== 'single') return;
+    if (table.options.enableMultiRowSelection !== false) {
+      warnDevelopment(
+        'single-selection-config',
+        'DataTable selection="single" works best with enableMultiRowSelection: false on the table instance.',
+      );
+    }
+    const selectedKeys = Object.entries(state.rowSelection)
+      .filter(([, selected]) => selected)
+      .map(([key]) => key);
+    if (selectedKeys.length <= 1) return;
+    warnDevelopment(
+      'single-selection-state',
+      'DataTable selection="single" received multiple selected rows; only the most recently requested key is kept.',
+    );
+    table.setRowSelection({ [selectedKeys.at(-1) as string]: true });
+  }, [selection, state.rowSelection, table]);
+
+  useEffect(() => {
+    if (layout !== undefined || !hasCustomChildren) return;
+    warnDevelopment(
+      `implicit-custom-layout:${id}`,
+      'DataTable children implicitly replace the automatic layout. Pass layout="custom" explicitly, or use layout="auto" to render the built-in layout and ignore children.',
+    );
+  }, [hasCustomChildren, id, layout]);
+
+  useEffect(() => {
+    for (const column of table.getAllLeafColumns()) {
+      if (
+        typeof column.columnDef.header === 'function' &&
+        !(column.columnDef.meta as DataTableColumnMeta | undefined)?.label
+      ) {
+        warnDevelopment(
+          `column-header-label:${column.id}`,
+          `DataTable column "${column.id}" uses a function header without meta.label; sorting, visibility and resizing controls need a plain-text label.`,
+        );
+      }
+    }
+  }, [table]);
+
+  useEffect(() => {
+    if (!automaticLayout) return;
+    if (hasConfiguredDefaults(toolbarDefaults) && toolbar != null && toolbar !== false) {
+      warnDevelopment(
+        'automatic-toolbar-defaults',
+        'Automatic DataTable toolbar ignores DataTableToolbar defaults. Configure components.DataTable.toolbar or render DataTable.Toolbar explicitly.',
+      );
+    }
+    if (hasConfiguredDefaults(contentDefaults)) {
+      warnDevelopment(
+        'automatic-content-defaults',
+        'Automatic DataTable content ignores DataTableContent defaults. Configure components.DataTable or render DataTable.Content explicitly.',
+      );
+    }
+    if (hasConfiguredDefaults(footerDefaults) && automaticPagination) {
+      warnDevelopment(
+        'automatic-footer-defaults',
+        'Automatic DataTable footer ignores DataTableFooter defaults. Render DataTable.Footer explicitly.',
+      );
+    }
+    if (hasConfiguredDefaults(paginationDefaults) && automaticPagination) {
+      warnDevelopment(
+        'automatic-pagination-defaults',
+        'Automatic DataTable pagination ignores DataTablePagination defaults. Configure components.DataTable.pagination or render DataTable.Pagination explicitly.',
+      );
+    }
+    if (pagination !== false && !paginationAvailable) {
+      warnDevelopment(
+        'automatic-pagination-capability',
+        'Automatic DataTable pagination needs getPaginationRowModel() or manualPagination: true; the footer was not rendered.',
+      );
+    }
+    if (renderExpandedRow && !expansionAvailable) {
+      warnDevelopment(
+        'automatic-expansion-capability',
+        'DataTable renderExpandedRow needs getExpandedRowModel() or manualExpanding: true.',
+      );
+    }
+  }, [
+    automaticLayout,
+    automaticPagination,
+    contentDefaults,
+    expansionAvailable,
+    footerDefaults,
+    pagination,
+    paginationAvailable,
+    paginationDefaults,
+    renderExpandedRow,
+    toolbar,
+    toolbarDefaults,
+  ]);
+
   return (
     <DataTableContext.Provider value={value}>
       <FieldScope>
@@ -259,15 +421,22 @@ function DataTableRoot<TData>({
               }
             }}
           >
-            {children ?? (
+            {automaticLayout ? (
               <>
+                {toolbar != null && toolbar !== false && (
+                  <DataTableToolbarControl>{toolbar}</DataTableToolbarControl>
+                )}
                 <DataTableContentControl />
-                {pagination && (
+                {automaticPagination && (
                   <DataTableFooterControl>
-                    <DataTablePaginationControl />
+                    <DataTablePaginationControl
+                      {...(typeof pagination === 'object' ? pagination : {})}
+                    />
                   </DataTableFooterControl>
                 )}
               </>
+            ) : (
+              children
             )}
           </ReorderScope>
         </div>
@@ -277,7 +446,11 @@ function DataTableRoot<TData>({
 }
 
 export function DataTableToolbar(rawProps: HTMLAttributes<HTMLDivElement>) {
-  const { className, ...props } = useComponentProps('DataTableToolbar', rawProps);
+  const props = useComponentProps('DataTableToolbar', rawProps);
+  return <DataTableToolbarControl {...props} />;
+}
+
+function DataTableToolbarControl({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div {...props} className={classes('leaf-data-table__toolbar', className)} />;
 }
 
@@ -287,10 +460,29 @@ export function DataTableFooterControl({ className, ...props }: HTMLAttributes<H
 
 export function DataTableSearch(rawProps: DataTableSearchProps) {
   const { columnId, className, ...props } = useComponentProps('DataTableSearch', rawProps);
-  const { table, loading, size } = useDataTable();
+  const { table, loading, size } = useDataTableContext();
   const t = useText();
   const column = columnId ? table.getColumn(columnId) : undefined;
+  const filteringAvailable = hasFilteringModel(table);
   const value = columnId ? column?.getFilterValue() : table.getState().globalFilter;
+  useEffect(() => {
+    if (!filteringAvailable) {
+      warnDevelopment(
+        'search-filter-model',
+        'DataTable.Search needs getFilteredRowModel() or manualFiltering: true.',
+      );
+    } else if (columnId && !column) {
+      warnDevelopment(
+        `search-column:${columnId}`,
+        `DataTable.Search columnId "${columnId}" does not match any visible or hidden column.`,
+      );
+    } else if (columnId && !column?.getCanFilter()) {
+      warnDevelopment(
+        `search-column-filter:${columnId}`,
+        `DataTable.Search cannot filter column "${columnId}"; enable filtering for that column.`,
+      );
+    }
+  }, [column, columnId, filteringAvailable]);
   return (
     <InputControl
       aria-label={t('dataTable.searchTable')}
@@ -299,7 +491,12 @@ export function DataTableSearch(rawProps: DataTableSearchProps) {
       allowClear
       size={size}
       {...props}
-      disabled={props.disabled || loading || Boolean(columnId && !column?.getCanFilter())}
+      disabled={
+        props.disabled ||
+        loading ||
+        !filteringAvailable ||
+        Boolean(columnId && !column?.getCanFilter())
+      }
       className={classes('leaf-data-table__search', className)}
       value={typeof value === 'string' || typeof value === 'number' ? String(value) : ''}
       onChange={(event) => {
@@ -320,7 +517,7 @@ function columnLabel(column: Column<unknown, unknown>) {
 
 export function DataTableColumnVisibility(rawProps: DataTableColumnVisibilityProps) {
   const { children, label } = useComponentProps('DataTableColumnVisibility', rawProps);
-  const { table, loading, size } = useDataTable();
+  const { table, loading, size } = useDataTableContext();
   const t = useText();
   const title = label ?? t('dataTable.columns');
   return (
@@ -376,7 +573,7 @@ function pinProps(column: Column<unknown, unknown>) {
 }
 
 function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
-  const { table, loading } = useDataTable();
+  const { table, loading } = useDataTableContext();
   const { direction } = useLeafConfig();
   const format = useFormattedText();
   const column = header.column;
@@ -415,7 +612,7 @@ function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
 }
 
 function SelectionHeader() {
-  const { table, selection, selectAllMode, loading } = useDataTable();
+  const { table, selection, selectAllMode, loading } = useDataTableContext();
   const t = useText();
   if (selection !== 'multiple')
     return <span className="leaf-table__sr-only">{t('dataTable.selectRows')}</span>;
@@ -447,6 +644,7 @@ function MotionCell({ children, ...props }: DataTableCellProps) {
 function DataRow({
   row,
   rowIndex,
+  stripeIndex = rowIndex,
   ariaRowIndex,
   measureRef,
   collapsed = false,
@@ -455,13 +653,14 @@ function DataRow({
 }: {
   row: Row<unknown>;
   rowIndex: number;
+  stripeIndex?: number;
   ariaRowIndex?: number;
   measureRef?: (node: HTMLTableRowElement | null) => void;
   collapsed?: boolean;
   animate?: boolean;
   lastVisible?: boolean;
 }) {
-  const config = useDataTable();
+  const config = useDataTableContext();
   const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
     config;
   const format = useFormattedText();
@@ -507,6 +706,7 @@ function DataRow({
         }}
         data-index={rowIndex}
         data-row-id={row.id}
+        data-striped={stripeIndex % 2 === 1 || undefined}
         data-last-visible={lastVisible || undefined}
         hidden={hidden || undefined}
         aria-hidden={collapsed || undefined}
@@ -544,9 +744,11 @@ function DataRow({
         {expandable && (
           <Cell className="leaf-data-table__utility">
             {row.getCanExpand() && (
-              <button
-                type="button"
+              <ButtonControl
+                variant="text"
+                size="sm"
                 className="leaf-data-table__expand"
+                startIcon={<ChevronRight className="leaf-data-table__expand-icon" />}
                 aria-label={format(
                   row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow',
                   { label },
@@ -556,9 +758,7 @@ function DataRow({
                 disabled={loading}
                 onClick={row.getToggleExpandedHandler()}
                 style={{ marginInlineStart: row.depth * 12 }}
-              >
-                <ChevronRight size={16} aria-hidden="true" />
-              </button>
+              />
             )}
           </Cell>
         )}
@@ -570,8 +770,8 @@ function DataRow({
             <Cell
               key={cell.id}
               align={meta?.align}
-              {...pinProps(cell.column)}
               {...props}
+              {...pinProps(cell.column)}
               className={classes(meta?.cellClassName, props?.className)}
             >
               {cell.getIsPlaceholder()
@@ -623,7 +823,7 @@ function VirtualRows({
   focusedRowId?: string;
   rowIndexes: number[];
 }) {
-  const { virtual, table, maxHeight } = useDataTable();
+  const { virtual, table, maxHeight } = useDataTableContext();
   const options = typeof virtual === 'object' ? virtual : {};
   const headerHeight = useRef(headerCount * 44);
   const focusedIndex = focusedRowId ? rows.findIndex((row) => row.id === focusedRowId) : -1;
@@ -728,19 +928,9 @@ function ordinaryRows(rows: Row<unknown>[]) {
 }
 
 export function DataTableContentControl({ className, ...props }: DataTableContentProps) {
-  const config = useDataTable();
-  const {
-    table,
-    caption,
-    tableRef,
-    loading,
-    error,
-    emptyContent,
-    onRetry,
-    selection,
-    resizable,
-    virtual,
-  } = config;
+  const config = useDataTableContext();
+  const { table, tableRef, loading, error, emptyContent, onRetry, selection, resizable, virtual } =
+    config;
   const t = useText();
   const format = useFormattedText();
   const viewport = useRef<HTMLDivElement>(null);
@@ -753,6 +943,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
     ...table.getRightVisibleLeafColumns(),
   ];
   const headers = table.getHeaderGroups();
+  const sortingAvailable = hasSortingModel(table);
   const expandable = config.expandable;
   const utilityCount =
     Number(Boolean(selection)) + Number(expandable) + Number(config.rowReordering);
@@ -781,7 +972,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
     return { indexes, count };
   }, [virtual, rows, headers.length, expanded, config.renderExpandedRow]);
   return (
-    <div {...props} className={className}>
+    <div {...props} className={classes('leaf-data-table__content', className)}>
       <Table
         ref={(node) => {
           assignRef(element, node);
@@ -793,16 +984,16 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
         aria-busy={loading || undefined}
         aria-rowcount={virtual && !status ? virtualRows.count : undefined}
         size={config.size}
-        bordered={config.bordered}
+        variant={config.variant}
+        columnDividers={config.columnDividers}
         striped={config.striped}
-        stickyHeader={config.stickyHeader}
         maxHeight={config.maxHeight}
         minWidth={config.minWidth ?? totalWidth}
+        pinnedWidth={table.getLeftTotalSize() + table.getRightTotalSize()}
         tableLayout="fixed"
         tableStyle={{ width: `max(100%, ${totalWidth}px)` }}
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
-        {caption != null && <Table.Caption>{caption}</Table.Caption>}
         <colgroup>
           {config.rowReordering && <col style={{ width: 44 }} />}
           {selection && <col style={{ width: 44 }} />}
@@ -844,7 +1035,10 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
                   const meta = column.columnDef.meta as DataTableColumnMeta | undefined;
                   const sorted = column.getIsSorted();
                   const canSort =
-                    !header.isPlaceholder && !column.columns.length && column.getCanSort();
+                    sortingAvailable &&
+                    !header.isPlaceholder &&
+                    !column.columns.length &&
+                    column.getCanSort();
                   const SortIcon =
                     sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ArrowUpDown;
                   const nextSort = column.getNextSortingOrder();
@@ -877,7 +1071,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
                           : undefined
                       }
                     >
-                      <div className="leaf-data-table__heading">
+                      <div className="leaf-data-table__heading" data-align={meta?.align}>
                         {config.reorderColumns && !header.isPlaceholder && (
                           <ReorderHandle
                             label={format('dataTable.reorderColumn', {
@@ -960,11 +1154,12 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
               kind="row"
               ids={config.onRowReorder ? rows.map((row) => row.id) : []}
             >
-              {renderedRows.map(({ row, rowIndex, collapsed, animate }) => (
+              {renderedRows.map(({ row, rowIndex, collapsed, animate }, stripeIndex) => (
                 <DataRow
                   key={row.id}
                   row={row}
                   rowIndex={rowIndex}
+                  stripeIndex={stripeIndex}
                   collapsed={collapsed}
                   animate={animate}
                   lastVisible={!collapsed && row.id === rows.at(-1)?.id}
@@ -983,19 +1178,45 @@ export function DataTablePaginationControl({
   hasNextPage,
   ...props
 }: DataTablePaginationProps) {
-  const { table, loading, size } = useDataTable();
+  const { table, loading, size } = useDataTableContext();
   const { pageIndex, pageSize } = table.getState().pagination;
+  const { direction } = useLeafConfig();
   const t = useText();
+  const paginationAvailable = hasPaginationModel(table);
+  useEffect(() => {
+    if (!paginationAvailable) {
+      warnDevelopment(
+        'pagination-capability',
+        'DataTable.Pagination needs getPaginationRowModel() or manualPagination: true.',
+      );
+    }
+  }, [paginationAvailable]);
+  if (!paginationAvailable) return null;
   const pages = table.getPageCount();
   if (pages < 0) {
+    const navProps = { ...props };
+    for (const key of [
+      'showSizeChanger',
+      'pageSizeOptions',
+      'showQuickJumper',
+      'showTotal',
+      'simple',
+      'disabled',
+      'hideOnSinglePage',
+      'size',
+      'variant',
+    ] as const)
+      delete navProps[key];
     return (
       <nav
-        aria-label={t('pagination.label')}
+        {...navProps}
+        dir={props.dir ?? direction}
+        aria-label={props['aria-label'] ?? t('pagination.label')}
         className={classes('leaf-data-table__pagination', className)}
       >
         <ButtonControl
           size={props.size ?? size}
-          variant={props.variant ?? 'outline'}
+          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
@@ -1004,7 +1225,7 @@ export function DataTablePaginationControl({
         <span>{pageIndex + 1}</span>
         <ButtonControl
           size={props.size ?? size}
-          variant={props.variant ?? 'outline'}
+          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !(hasNextPage ?? table.getCanNextPage())}
           onClick={() => table.nextPage()}
         >
@@ -1035,45 +1256,87 @@ export function DataTablePaginationControl({
   );
 }
 
+export function useDataTable<TData>({
+  data,
+  columns,
+  rowKey,
+  options,
+  localPagination,
+  pagination = true,
+}: UseDataTableOptions<TData>): TanStackTable<TData> {
+  const { direction } = useLeafConfig();
+  const records = useMemo(() => [...data], [data]);
+  const columnDefinitions = useMemo(() => [...columns], [columns]);
+  const localSlicing = localPagination ?? pagination;
+  const manualPagination = localSlicing ? options?.manualPagination : true;
+  return useReactTable({
+    data: records,
+    columns: columnDefinitions,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: (row) => Boolean(row.subRows.length),
+    columnResizeMode: 'onChange',
+    columnResizeDirection: direction,
+    ...options,
+    enableSorting: options?.enableSorting ?? false,
+    // TanStack caches row-model factories; manualPagination bypasses slicing without
+    // changing the cached model identity. Keep auto reset independent of that toggle so
+    // filtering still returns to page one while local pagination is temporarily off.
+    manualPagination,
+    autoResetPageIndex:
+      options?.autoResetPageIndex ??
+      (options?.manualPagination !== true && options?.manualSorting !== true),
+    getRowId: (row, index) => {
+      const key = typeof rowKey === 'function' ? rowKey(row, index) : row[rowKey];
+      if (typeof key !== 'string' && (typeof key !== 'number' || !Number.isFinite(key)))
+        throw new Error('DataTable rowKey must resolve to a stable string or number.');
+      return String(key);
+    },
+  });
+}
+
 function ManagedDataTable<TData>({
   data,
   columns,
   rowKey,
   options,
+  localPagination,
+  pagination = true,
   ...props
 }: DataTableDataProps<TData>) {
-  const { direction } = useLeafConfig();
-  const records = useMemo(() => [...data], [data]);
-  const table = useReactTable({
-    data: records,
+  const table = useDataTable({
+    data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: props.pagination === false ? undefined : getPaginationRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    enableMultiRowSelection: props.selection !== 'single',
-    getRowCanExpand: (row) => Boolean(props.renderExpandedRow || row.subRows.length),
-    columnResizeMode: 'onChange',
-    columnResizeDirection: direction,
-    ...options,
-    getRowId: (row, index) => {
-      const key = typeof rowKey === 'function' ? rowKey(row, index) : row[rowKey];
-      if (typeof key !== 'string' && typeof key !== 'number')
-        throw new Error('DataTable rowKey must resolve to a stable string or number.');
-      return String(key);
+    rowKey,
+    localPagination: localPagination ?? pagination !== false,
+    options: {
+      enableMultiRowSelection: props.selection !== 'single',
+      getRowCanExpand: (row) => Boolean(props.renderExpandedRow || row.subRows.length),
+      ...options,
     },
   });
-  return <DataTableRoot {...props} table={table} />;
+  return <DataTableRoot {...props} pagination={pagination} table={table} />;
 }
 
-function DataTableComponent<TData>(rawProps: DataTableProps<TData> | DataTableDataProps<TData>) {
-  const props = mergeComponentProps<DataTableProps<TData> | DataTableDataProps<TData>>(
+function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
+  const merged = mergeComponentProps<DataTableProps<TData>>(
     useGenericComponentDefaults('DataTable'),
     rawProps,
   );
+  // Removed options from JavaScript consumers must not leak to the DOM.
+  const {
+    stickyHeader: _stickyHeader,
+    caption: _caption,
+    ...props
+  } = merged as typeof merged & {
+    stickyHeader?: unknown;
+    caption?: unknown;
+  };
   return props.table ? (
-    <DataTableRoot {...(props as DataTableProps<TData>)} />
+    <DataTableRoot {...(props as DataTableInstanceProps<TData>)} />
   ) : (
     <ManagedDataTable {...(props as DataTableDataProps<TData>)} />
   );

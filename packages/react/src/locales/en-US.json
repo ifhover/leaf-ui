@@ -13,7 +13,8 @@
     "placeholder": "Select a date",
     "clear": "Clear date",
     "label": "Choose a date",
-    "selectDate": "Choose date"
+    "selectDate": "Choose date",
+    "presets": "Presets"
   },
   "timePicker": {
     "placeholder": "Select a time",
@@ -57,6 +58,7 @@
   },
   "common": {
     "confirm": "OK",
+    "next": "Next",
     "cancel": "Cancel",
     "close": "Close",
     "start": "Start",
@@ -154,6 +156,8 @@
   },
   "tabs": {
     "moreTabs": "More tabs",
+    "scrollLeft": "Scroll tabs left",
+    "scrollRight": "Scroll tabs right",
     "addTab": "Add tab",
     "reorder": "Reorder tab {label}",
     "closeLabel": "Close tab {label}"
@@ -171,14 +175,6 @@
     "goTo": "Go to {index}",
     "slide": "slide",
     "role": "carousel"
-  },
-  "commandPalette": {
-    "commandSearch": "Command search",
-    "placeholder": "Search commands…",
-    "searchCommands": "Search commands",
-    "commands": "Commands",
-    "navigate": "Navigate",
-    "run": "Run"
   },
   "errorBoundary": {
     "title": "This content could not be displayed",
@@ -221,7 +217,12 @@
     "scrollThumbnailsForward": "Scroll thumbnails forward",
     "image": "Image",
     "position": "{index} of {total}",
-    "viewImage": "View image {index}{alt}"
+    "viewImage": "View image {index}{alt}",
+    "noImage": "No image",
+    "actualSize": "Actual size (1:1)",
+    "fitToWindow": "Fit to window",
+    "rotateCounterclockwise": "Rotate counterclockwise",
+    "rotateClockwise": "Rotate clockwise"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "Loading failed. Retry",

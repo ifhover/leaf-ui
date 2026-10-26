@@ -10,7 +10,6 @@ export function RadioBasic() {
         { label: 'Light', value: 'light' },
         { label: 'Dark', value: 'dark' },
         { label: 'System', value: 'system' },
-        { label: 'Custom (unavailable)', value: 'custom', disabled: true },
       ]}
     />
   );

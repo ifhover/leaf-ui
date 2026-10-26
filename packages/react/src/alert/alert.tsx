@@ -3,24 +3,27 @@ import { type HTMLAttributes, type ReactNode, useRef, useState } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { type FeedbackTypeInput, normalizeFeedbackType } from '../shared/feedback';
 import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
-export type FeedbackType = 'success' | 'info' | 'warning' | 'error';
+
+export type { FeedbackType, FeedbackTypeInput } from '../shared/feedback';
 export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   description?: ReactNode;
-  type?: FeedbackType;
+  type?: FeedbackTypeInput;
   icon?: ReactNode;
   showIcon?: boolean;
   closable?: boolean;
   onClose?: () => void;
 }
-export function FeedbackIcon({ type }: { type: FeedbackType | 'loading' }) {
+export function FeedbackIcon({ type: rawType }: { type: FeedbackTypeInput | 'loading' }) {
+  const type = rawType === 'loading' ? rawType : normalizeFeedbackType(rawType);
   const Icon = {
     success: CheckCircle2,
     info: Info,
     warning: TriangleAlert,
-    error: CircleX,
+    danger: CircleX,
     loading: LoaderCircle,
   }[type];
   return (
@@ -43,12 +46,13 @@ export function Alert(rawProps: AlertProps) {
     className,
     ...props
   } = useComponentProps('Alert', rawProps);
+  const normalizedType = normalizeFeedbackType(type);
   const { messages } = useLeafConfig();
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const present = usePresence(!closed, root);
-  useContentTransition(content, type);
+  useContentTransition(content, normalizedType);
   if (!present) return null;
   return (
     <div
@@ -58,12 +62,15 @@ export function Alert(rawProps: AlertProps) {
       data-state={closed ? 'closing' : undefined}
       data-description={description ? '' : undefined}
       aria-hidden={closed || props['aria-hidden']}
-      role={props.role ?? (type === 'error' || type === 'warning' ? 'alert' : 'status')}
-      className={classes('leaf-alert', `leaf-alert--${type}`, className)}
+      role={
+        props.role ??
+        (normalizedType === 'danger' || normalizedType === 'warning' ? 'alert' : 'status')
+      }
+      className={classes('leaf-alert', `leaf-alert--${normalizedType}`, className)}
     >
       {showIcon && (
         <span className="leaf-alert__icon" aria-hidden="true">
-          {icon ?? <FeedbackIcon type={type} />}
+          {icon ?? <FeedbackIcon type={normalizedType} />}
         </span>
       )}
       <div className="leaf-alert__content" ref={content}>

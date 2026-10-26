@@ -1,63 +1,121 @@
-import { RadioCards } from '../../src/examples/radio/surfaces';
-import { RadioList } from '../../src/examples/radio/surfaces';
 import { ComponentExample } from '../../src/components/component-example';
-import { RadioBasic, RadioControlled } from '../../src/components/form-examples';
+import { RadioBasic } from '../../src/examples/radio/basic';
+import { RadioControlled } from '../../src/examples/radio/controlled';
+import { RadioVertical } from '../../src/examples/radio/vertical';
+import { RadioCards } from '../../src/examples/radio/surfaces';
+import { RadioList } from '../../src/examples/radio/list';
+
+export const leafDoc = { component: 'Radio', primaryApi: 'RadioProps' };
 
 # Radio 单选框
 
-用于从一组选项中选择一项。
+从一组选项中选择一项。
 
-## 分组选项
+{/* leaf:section basic */}
 
-通过 `options` 设置选项，`label` 为选项分组提供名称。
+## 基础用法
 
-<ComponentExample title="分组选项" preview={<RadioBasic />} fileName="basic.tsx">
+通过 `RadioGroup.options` 定义选项，使用 `label`、`aria-label` 或 `aria-labelledby` 为分组提供名称。
+
+<ComponentExample exampleId="basic" preview={<RadioBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/radio/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 受控与纵向排列
+{/* leaf:section examples */}
 
-通过 value / onChange 管理选择结果，direction="vertical" 设置纵向排列。
+## 示例
 
-<ComponentExample title="受控与纵向排列" preview={<RadioControlled />} fileName="controlled.tsx" width={360}>
+### 受控选择
+
+通过 `value` 控制选中的字符串，在 `onChange` 中读取 `event.target.value`。
+
+<ComponentExample exampleId="controlled" preview={<RadioControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/radio/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## 卡片选项
+### 纵向排列
 
-用图标和说明帮助用户选择一个方案。
+设置 `direction="vertical"` 纵向排列选项。
 
-<ComponentExample title="卡片选项" preview={<RadioCards />} fileName="surfaces.tsx">
+<ComponentExample exampleId="vertical" preview={<RadioVertical />} fileName="vertical.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/radio/vertical.tsx"
+```
+
+</ComponentExample>
+
+<a id="进阶用法"></a>
+
+### 卡片选项
+
+设置 `variant="card"`，展示包含图标和说明的选项。
+
+<ComponentExample exampleId="surfaces" preview={<RadioCards />} fileName="surfaces.tsx">
 
 ```tsx lineNumbers file="../../src/examples/radio/surfaces.tsx"
 ```
 
 </ComponentExample>
 
-## 成组选项
+### 成组选项
 
-同组选项放在一个列表中，保留原生方向键操作。
+使用 `variant="list"` 展示成组列表。`extra` 只放非交互状态，不放按钮或链接。
 
-<ComponentExample title="成组选项" preview={<RadioList />} fileName="surfaces.tsx">
+<ComponentExample exampleId="list" preview={<RadioList />} fileName="list.tsx">
 
-```tsx lineNumbers file="../../src/examples/radio/surfaces.tsx"
+```tsx lineNumbers file="../../src/examples/radio/list.tsx"
 ```
 
 </ComponentExample>
 
-## RadioGroup API
+#### 表单提交与重置
+
+通过 `name` 提交选中项的 `value`，未选中或禁用的选项不提交。单独组合 `Radio` 时，同组使用相同的 `name` 和互不重复的值。
+
+非受控选项组在表单重置时恢复 `defaultValue`；受控组需要同步重置应用状态。
+
+{/* leaf:section api */}
+
+## API
+
+### Radio API
+
+配置单个单选框的选中状态、提交值和禁用状态。
+
+单个 `Radio` 支持原生 radio 属性。`className` 和 `style` 作用于标签容器。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `options` | `readonly `[`RadioOption`](#radiooption)`[]` | 必填 | 必需。选项列表 |
-| `value` | `string` | — | 受控值 / 非受控初始值 |
-| `defaultValue` | `string` | — | 受控值 / 非受控初始值 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 单选框尺寸 |
+| `variant` | `'plain' \| 'card'` | `'plain'` | 普通选项或整块可点击的卡片选项。 |
+| `description` | `ReactNode` | — | 补充说明。 |
+| `icon` | `ReactNode` | — | 图标内容。 |
+| `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |
+| `checked` | `boolean` | — | 受控的选中状态。 |
+| `defaultChecked` | `boolean` | — | 非受控模式的初始选中状态。 |
+| `value` | `string \| number \| readonly string[]` | — | 该单选框在表单中提交的值，不是选中状态；选中状态使用 checked。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 从 event.target.value 读取所选值。 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `required` | `boolean` | `false` | 要求同名的单选框中至少选中一项。 |
+| `children` | `ReactNode` | — | 可点击的选项标签。 |
+| `ref` | `Ref<HTMLInputElement>` | — | 单选框引用 |
+
+### RadioGroup API
+
+管理一组选项的单选值和选项布局。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `options` | `readonly `[`RadioOption`](#radiooption)`[]` | 必填 | 选项列表 |
+| `value` | `string` | — | 受控的选中项 value；省略时使用内部非受控值。 |
+| `defaultValue` | `string` | — | 非受控模式的初始选中值；支持表单重置。 |
 | `name` | `string` | 自动生成 | 同组的字段名；提交表单时建议指定 |
 | `label` | `ReactNode` | — | 分组名称 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 同组控件尺寸 |
@@ -68,61 +126,15 @@ import { RadioBasic, RadioControlled } from '../../src/components/form-examples'
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `ref` | `Ref<HTMLFieldSetElement>` | — | 分组引用 |
 
-## Radio API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 单选框尺寸 |
-| `variant` | `'plain' \| 'card'` | `'plain'` | 普通选项或整块可点击的卡片选项。 |
-| `description` | `ReactNode` | — | 补充说明。 |
-| `icon` | `ReactNode` | — | 图标内容。 |
-| `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |
-| `checked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
-| `defaultChecked` | `boolean` | — | 受控选中状态 / 非受控初始状态 |
-| `value` | `string \| number \| readonly string[]` | — | 受控值。 |
-| `name` | `string` | — | 原生 FormData 中的字段名。 |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | 值发生变化时调用。 |
-| `disabled` | `boolean` | `false` | 禁用交互。 |
-| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
-| `children` | `ReactNode` | — | 子内容；嵌套数据类型表示子节点。 |
-| `ref` | `Ref<HTMLInputElement>` | — | 单选框引用 |
-
-支持其他 radio 属性。`className` 和 `style` 作用于标签容器。
-
-RadioGroup 的 label、aria-label 或 aria-labelledby 应至少提供一种分组名称。选项 label 与 value 建议保持稳定；value 使用不重复的字符串。
-
-## 类型
-
-[`RadioProps`](#radio-api) 和 [`RadioGroupProps`](#radiogroup-api) 用于定义组件属性。单独组装选项列表时，可以使用 [`RadioOption`](#radiooption)：
-
-```ts
-import type { RadioProps, RadioGroupProps, RadioOption, ControlSize } from '@ifhover/leaf-ui';
-
-const options: RadioOption[] = [
-  { label: '浅色', value: 'light' },
-  { label: '深色', value: 'dark' },
-];
-```
-
 ### RadioOption
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `label` | `string` | 必填 | 选项文字 |
-| `value` | `string` | 必填 | 选项值，同组内应唯一 |
-| `disabled` | `boolean` | `false` | 禁用该选项 |
-
-## 外观与丰富内容
-
-Radio 和 RadioGroup 支持图标、补充说明与状态标签。RadioGroup 的 variant="card" 自动排列卡片，variant="list" 使用成组列表。description 与 extra 作为辅助描述，extra 不应包含按钮或链接。单选组保留方向键切换、禁用选项跳过与原生表单提交。
-
-## RadioOption
+传入选项组的单个选项，包含提交值与显示内容。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | 必需。展示文字或内容。 |
-| `description` | `ReactNode` | — | 补充说明。 |
-| `icon` | `ReactNode` | — | 图标内容。 |
+| `label` | `ReactNode` | 必填 | 选项的显示内容。 |
+| `description` | `ReactNode` | — | 选项下方的补充说明。 |
+| `icon` | `ReactNode` | — | 选项前的图标内容。 |
 | `extra` | `ReactNode` | — | 补充状态文字或标签；不要放置交互控件。 |
-| `value` | `string` | — | 必需。受控值。 |
-| `disabled` | `boolean` | — | 禁用交互。 |
+| `value` | `string` | 必填 | 选项值；同一组内应唯一。 |
+| `disabled` | `boolean` | `false` | 禁用该选项。 |

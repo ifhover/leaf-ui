@@ -29,7 +29,7 @@ export function NeutralAlerts({ english = false }: { english?: boolean }) {
         )}
       />
       <Alert
-        type="error"
+        type="danger"
         title={t('连接失败', 'Connection failed')}
         description={t('请检查连接信息后重试。', 'Check the connection settings and retry.')}
       />

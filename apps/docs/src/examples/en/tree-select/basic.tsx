@@ -1,21 +1,34 @@
-import { Space, Text, TreeSelect } from '@ifhover/leaf-ui';
-import { useState } from 'react';
-import { treeOptions } from './options';
+import { TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+
+const treeOptions: readonly TreeSelectOption[] = [
+  {
+    value: 'design',
+    label: 'Design team',
+    selectable: false,
+    children: [
+      { value: 'visual', label: 'Visual design' },
+      { value: 'product', label: 'Product design' },
+      { value: 'archive', label: 'Archived team', disabled: true },
+    ],
+  },
+  {
+    value: 'engineering',
+    label: 'Engineering team',
+    selectable: false,
+    children: [
+      { value: 'web', label: 'Frontend development' },
+      { value: 'server', label: 'Backend development' },
+    ],
+  },
+];
+
 export function TreeSelectBasic() {
-  const [value, setValue] = useState<string | null>(null);
   return (
-    <Space direction="vertical" align="stretch">
-      <TreeSelect
-        options={treeOptions}
-        value={value}
-        onChange={setValue}
-        defaultExpandAll
-        aria-label="Team"
-        placeholder="Select a team"
-      />
-      <output>
-        <Text tone="muted">Current value: {typeof value === 'string' ? value : 'None'}</Text>
-      </output>
-    </Space>
+    <TreeSelect
+      aria-label="Team"
+      options={treeOptions}
+      defaultExpandAll
+      placeholder="Select a team"
+    />
   );
 }

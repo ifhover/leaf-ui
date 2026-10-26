@@ -1,58 +1,92 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { InputMaskBasic } from '../../src/examples/input-mask/basic';
+import { InputMaskControlled } from '../../src/examples/input-mask/controlled';
+import { InputMaskPlaceholder } from '../../src/examples/input-mask/placeholder';
 import { InputMaskFormats } from '../../src/examples/input-mask/advanced';
+
+export const leafDoc = { component: 'InputMask', primaryApi: 'InputMaskProps' };
 
 # InputMask 格式输入
 
 按照指定格式填写信息。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<InputMaskBasic />} fileName="basic.tsx" width={360}>
+## 基础用法
+
+`0` 表示数字，`a` 表示字母，`*` 表示字母或数字。格式输入只限制字符形态，手机号等业务规则由应用校验。
+
+<ComponentExample exampleId="basic" preview={<InputMaskBasic />} width={360} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input-mask/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<InputMaskFormats />} fileName="advanced.tsx" width={360}>
+## 示例
+
+### 未格式化值
+
+`unmask` 使 `value`、`defaultValue` 和 `onChange` 的第一个参数使用未格式化值，第二个参数始终是显示值。清除后返回空字符串。
+
+<ComponentExample exampleId="controlled" preview={<InputMaskControlled />} width={360} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-mask/controlled.tsx"
+```
+
+</ComponentExample>
+
+设置 `name` 后，原生表单提交的仍是显示值。非受控表单重置恢复 `defaultValue`；受控值由应用重置。外部更新值不会触发用户输入或完成回调。
+
+### 固定占位
+
+设置 `lazy={false}`，让尚未填写的位置也显示占位字符。
+
+<ComponentExample exampleId="placeholder" preview={<InputMaskPlaceholder />} width={360} fileName="placeholder.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-mask/placeholder.tsx"
+```
+
+</ComponentExample>
+
+### 自定义规则
+
+通过 `definitions` 添加格式字符规则。这里的 `A` 只接受大写字母。
+
+<ComponentExample exampleId="advanced" preview={<InputMaskFormats />} width={360} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input-mask/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+`onComplete` 只表示格式已填满，不表示业务校验通过；其参数同样受 `unmask` 影响。
 
-格式字符 0 为数字、a 为字母、* 为字母或数字。格式输入只限制字符形态，业务校验由应用处理。unmask 影响组件值与回调；原生表单提交显示值。
+{/* leaf:section api */}
 
-## 类型
+## API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
+### InputMaskProps API
 
-```ts
-import type { InputMaskProps } from '@ifhover/leaf-ui';
-```
-
-## InputMaskProps API
+输入格式、受控值、格式化结果与完成事件的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
+| `mask` | `string` | 必填 | 格式模式：0 为数字，a 为字母，* 为字母或数字 |
+| `value` | `string` | — | 受控值；unmask 决定使用原始值还是格式化显示值。 |
+| `defaultValue` | `string` | `''` | 非受控初始值，格式遵循 unmask，表单重置时恢复。 |
+| `onChange` | `(value: string, formatted: string) => void` | — | 返回组件值与格式化显示值；第一个参数受 unmask 影响，第二个始终是显示值。 |
+| `onComplete` | `(value: string) => void` | — | 用户输入使格式完整时触发，值格式遵循 unmask；不代表通过业务校验。 |
+| `unmask` | `boolean` | `false` | value、defaultValue 及回调的组件值使用未格式化值，不改变原生表单提交的显示值。 |
+| `lazy` | `boolean` | `true` | 隐藏未填写位置的占位字符；false 时始终显示。 |
+| `definitions` | `Record<string, RegExp>` | — | 自定义格式字符规则 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框尺寸。 |
 | `status` | `'error' \| 'warning'` | — | 显示状态 |
+| `allowClear` | `boolean` | `false` | 显示清除按钮 |
 | `prefix` | `ReactNode` | — | 前置内容 |
 | `suffix` | `ReactNode` | — | 后置内容 |
-| `allowClear` | `boolean` | `false` | 显示清除按钮 |
 | `onClear` | `() => void` | — | 清除输入后触发 |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | 显示字数，可自定义渲染 |
 | `onPressEnter` | `KeyboardEventHandler<HTMLInputElement>` | — | 按下 Enter 时触发 |
-| `mask` | `string` | 必填 | 格式模式：0 为数字，a 为字母，* 为字母或数字 |
-| `definitions` | `Record<string, RegExp>` | — | 自定义格式字符规则 |
-| `lazy` | `boolean` | `true` | 按需显示占位字符 |
-| `unmask` | `boolean` | `false` | 组件值与回调使用不含格式符的值 |
-| `value` | `string` | — | 受控值 |
-| `defaultValue` | `string` | `''` | 初始值；非受控表单 reset 时恢复 |
-| `onChange` | `(value: string, formatted: string) => void` | — | 值变化回调 |
-| `onComplete` | `(value: string) => void` | — | 完整输入后触发 |

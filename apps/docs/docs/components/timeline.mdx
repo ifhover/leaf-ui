@@ -1,56 +1,76 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TimelineBasic } from '../../src/examples/timeline/basic';
 import { TimelineAlternate } from '../../src/examples/timeline/advanced';
+import { TimelinePending } from '../../src/examples/timeline/pending';
+
+export const leafDoc = { component: 'Timeline', primaryApi: 'TimelineProps' };
 
 # Timeline 时间线
 
 按顺序展示事件与进展。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<TimelineBasic />} fileName="basic.tsx" width="100%">
+## 基础用法
+
+`children` 是事件内容，`label` 用于时间等补充信息。组件按 `items` 的顺序展示，不会根据标签自动排序；`reverse` 可反转事件顺序。
+
+<ComponentExample exampleId="basic" preview={<TimelineBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/timeline/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
+## 示例
+
+### 交替排布
+
+`mode="alternate"` 将事件交替放在两侧。窄容器内仍保持交替排布；内容较长时优先使用默认的单侧布局。所有事件靠右排列时使用 `mode="right"`。
+
+<ComponentExample exampleId="advanced" preview={<TimelineAlternate />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/timeline/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 待办事件
 
-items 按事件顺序展示内容，可分别指定颜色与图标。mode 控制内容排列，reverse 反转顺序，pending 表示后续事件仍在处理中。
+`pending` 在列表末尾追加等待内容，不会启动请求或自动完成。此例由应用添加完成事件，并把 `pending` 设为 `null` 来移除等待项；使用 `reverse` 时，等待项仍位于末尾。
 
-## 类型
+<ComponentExample exampleId="pending" preview={<TimelinePending />} fileName="pending.tsx" width="100%">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { TimelineItem, TimelineProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/timeline/pending.tsx"
 ```
 
-## TimelineItem API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### TimelineProps API
+
+配置时间线条目、排列方式和待办内容。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`TimelineItem`](#timelineitem-api)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | 时间线的排布方式：左侧、右侧或交替。 |
+| `pending` | `ReactNode` | — | 末尾待办内容；传 null 或 undefined 不显示，false 和空字符串仍保留节点。 |
+| `reverse` | `boolean` | `false` | 反转 items 顺序；pending 仍追加在末尾。 |
+
+### TimelineItem API
+
+描述单个事件的内容、标记与颜色。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 唯一且稳定的标识 |
-| `label` | `ReactNode` | — | 显示内容 |
-| `children` | `ReactNode` | 必填 | 内容或下级项目 |
-| `dot` | `ReactNode` | — | 自定义时间线节点 |
-| `color` | `'primary' \| 'success' \| 'warning' \| 'error' \| 'info' \| (string & {})` | — | 颜色 |
-
-## TimelineProps API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `items` | [`readonly TimelineItem[]`](#timelineitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
-| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | 展示模式或允许的字符 |
-| `reverse` | `boolean` | `false` | 反向排列 |
-| `pending` | `ReactNode` | — | 末尾等待内容 |
+| `children` | `ReactNode` | 必填 | 事件主体内容。 |
+| `label` | `ReactNode` | — | 次要说明，通常为时间。 |
+| `color` | `'primary' \| FeedbackType \| 'error' \| (string & {})` | — | 颜色；`error` 为兼容别名 |
+| `dot` | `ReactNode` | — | 装饰性自定义节点；重要状态须在正文中用文字说明。 |

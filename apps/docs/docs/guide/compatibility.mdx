@@ -34,8 +34,8 @@ import { withBase } from '@rspress/core/runtime';
 </ConfigProvider>
 ```
 
-颜色支持具体 hex、rgb、hsl 和命名色，推荐通过 `theme` / `tokens` 配置。JS 无法在服务端解析 CSS 变量；使用 `var(...)` 时，浏览器在挂载后解析并生成派生值，祖先的 class/style 变化会重新同步。需要严格一致的 SSR 首屏时应传入具体颜色。不要只改 CSS 中的基础色而期望所有派生色自动重新计算。
+通过 `theme` 和 `tokens` 配置颜色。实底字色默认白色，可通过 `on*Color` 改为黑色；CSS 表达式保持原样，不在挂载后回算数值或监听 class/style。
 
 ## 验证范围
 
-CI 已配置 Chromium、Firefox、WebKit 行为测试，以及 React 18/19、SSR 和包导出检查。WebKit 的通过不代表已经在真实 Safari 或 iOS 设备验收。当前本机 Firefox 启动存在环境问题（`spawn UNKNOWN`），不能将其列为通过；具体已执行记录见仓库 `packages/react/ACCESSIBILITY.md`。
+兼容性目标与自动化覆盖不等于每台设备均已验收。自动化使用 Chromium、Firefox 和 WebKit 引擎，并检查 React 18/19、SSR 与包导出；WebKit 不等同于真实 Safari 或 iOS，实际项目仍应在目标设备验收。

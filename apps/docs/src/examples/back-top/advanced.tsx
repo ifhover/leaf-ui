@@ -1,20 +1,20 @@
-import { BackTop, ScrollArea } from '@ifhover/leaf-ui';
+import { BackTop, Paragraph, ScrollArea } from '@ifhover/leaf-ui';
 import { useRef } from 'react';
+
 export function BackTopCustom() {
-  const root = useRef<HTMLDivElement>(null);
+  const viewport = useRef<HTMLDivElement>(null);
   return (
     <div style={{ position: 'relative' }}>
-      <ScrollArea ref={root} height={180} aria-label="自定义返回按钮">
-        <div style={{ height: 620, padding: 16 }}>滚动查看返回按钮。</div>
+      <ScrollArea ref={viewport} height={200} aria-label="演示滚动区域">
+        {Array.from({ length: 12 }, (_, index) => (
+          <Paragraph key={String(index)}>滚动内容 {index + 1}</Paragraph>
+        ))}
       </ScrollArea>
       <BackTop
-        target={() => root.current}
-        visibilityHeight={80}
-        behavior="auto"
-        style={{ position: 'absolute', right: 16, bottom: 16 }}
-      >
-        返回顶部
-      </BackTop>
+        target={() => viewport.current}
+        visibilityHeight={100}
+        style={{ position: 'absolute', left: 16, bottom: 16 }}
+      />
     </div>
   );
 }

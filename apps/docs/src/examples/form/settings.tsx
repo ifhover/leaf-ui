@@ -3,10 +3,10 @@ import { Form, FormField, Select, Switch, Textarea } from '@ifhover/leaf-ui';
 export function FormSettings() {
   return (
     <Form layout="settings">
-      <FormField label="自动保存" description="编辑时自动保存你的更改。">
+      <FormField label="自动保存" description="编辑时自动保存更改。">
         <Switch name="autoSave" defaultChecked />
       </FormField>
-      <FormField label="回复语言" description="选择新对话默认使用的语言。">
+      <FormField label="界面语言" description="选择应用的显示语言。">
         <Select
           name="language"
           defaultValue="zh-CN"
@@ -17,12 +17,12 @@ export function FormSettings() {
         />
       </FormField>
       <FormField
-        label="自定义指令"
-        description="告诉助手你偏好的回复方式。"
+        label="个人简介"
+        description="向其他成员介绍自己。"
         layout="vertical"
-        help="此设置用于后续的新对话。"
+        help="最多 120 个字符。"
       >
-        <Textarea name="instructions" rows={3} placeholder="例如：回答简洁，优先提供示例。" />
+        <Textarea name="biography" rows={3} maxLength={120} />
       </FormField>
     </Form>
   );

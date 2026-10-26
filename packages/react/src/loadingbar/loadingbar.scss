@@ -23,6 +23,7 @@
     display: block;
     height: 100%;
     background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    // The glow is an effect layered over the semantic progress indicator.
     box-shadow: 0 0 8px var(--leaf-color-primary-alpha-55);
     border-radius: 0 100px 100px 0;
     transition:

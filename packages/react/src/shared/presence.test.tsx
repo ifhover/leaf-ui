@@ -17,7 +17,8 @@ it('preserves the last list contents and position during a selection transition'
   );
   await userEvent.click(screen.getByRole('combobox'));
   await userEvent.type(screen.getByRole('combobox'), 'Al');
-  const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+  const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+  if (!panel) throw new Error('Select popup missing');
   panel.style.transitionDuration = '160ms';
   const position = panel.style.transform;
   await userEvent.click(screen.getByRole('option', { name: 'Alpha' }));
@@ -31,7 +32,8 @@ it('preserves the last list contents and position during a selection transition'
 it('keeps a closing panel inert until its animation completes, and cancels removal on reopen', async () => {
   render(<Select aria-label="Choice" options={[{ value: 'a', label: 'Alpha' }]} />);
   await userEvent.click(screen.getByRole('combobox'));
-  const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+  const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+  if (!panel) throw new Error('Select popup missing');
   panel.style.animationDuration = '160ms';
   vi.useFakeTimers();
   fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Escape' });

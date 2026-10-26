@@ -1,39 +1,25 @@
-import { Button, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
-import { useRef, useState } from 'react';
+import { Button, Flex, type TabItem, Tabs, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+
+const initialItems: TabItem[] = [
+  { key: 'one', label: '标签一', children: '内容一' },
+  { key: 'two', label: '标签二', children: '内容二' },
+  { key: 'three', label: '标签三', children: '内容三' },
+];
+
 export function ExtensionDemo() {
-  const count = useRef(7);
-  const [items, setItems] = useState<TabItem[]>(
-    Array.from({ length: 6 }, (_, i) => ({
-      key: String(i),
-      label: `项目 ${i + 1}`,
-      children: `项目 ${i + 1} 内容`,
-      closable: true,
-    })),
-  );
-  const addTab = () => {
-    const id = String(count.current++);
-    setItems((current) => [
-      ...current,
-      { key: id, label: `项目 ${id}`, children: '新项目', closable: true },
-    ]);
-  };
+  const [items, setItems] = useState(initialItems);
   return (
-    <Space direction="vertical" align="stretch">
-      <Tabs
-        aria-label="可排序标签页"
-        items={items}
-        sortable
-        onReorder={setItems}
-        onAdd={addTab}
-        onClose={(key) => setItems((current) => current.filter((item) => item.key !== key))}
-      />
-      {items.length === 0 && (
-        <Space>
-          <Button variant="outline" onClick={addTab}>
-            新增标签页
-          </Button>
-        </Space>
-      )}
-    </Space>
+    <Flex direction="column" gap="md">
+      <Tabs aria-label="可排序标签页" items={items} sortable onReorder={setItems} />
+      <Text role="status" tone="muted">
+        当前顺序：{items.map((item) => item.label).join('、')}
+      </Text>
+      <Flex>
+        <Button variant="outline" onClick={() => setItems(initialItems)}>
+          恢复顺序
+        </Button>
+      </Flex>
+    </Flex>
   );
 }

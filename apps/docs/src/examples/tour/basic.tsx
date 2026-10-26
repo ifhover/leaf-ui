@@ -1,27 +1,23 @@
-import { Button, Card, Space, Tour } from '@ifhover/leaf-ui';
+import { Button, Space, Text, Tour } from '@ifhover/leaf-ui';
 import { useRef, useState } from 'react';
-export function TourBasic({ english = false }: { english?: boolean }) {
-  const [open, setOpen] = useState(false),
-    [current, setCurrent] = useState(0);
-  const create = useRef<HTMLButtonElement>(null),
-    settings = useRef<HTMLButtonElement>(null);
+
+export function TourBasic() {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const title = useRef<HTMLSpanElement>(null);
+  const visibility = useRef<HTMLSpanElement>(null);
   return (
-    <Card title={english ? 'Your workspace' : '你的工作区'}>
-      <Space wrap>
-        <Button ref={create}>{english ? 'Create project' : '新建项目'}</Button>
-        <Button ref={settings} variant="outline">
-          {english ? 'Settings' : '工作区设置'}
-        </Button>
-        <Button
-          variant="soft"
-          onClick={() => {
-            setCurrent(0);
-            setOpen(true);
-          }}
-        >
-          {english ? 'Start tour' : '开始引导'}
-        </Button>
-      </Space>
+    <Space direction="vertical" align="start">
+      <Text ref={title}>文档：快速开始</Text>
+      <Text ref={visibility}>可见范围：仅自己</Text>
+      <Button
+        onClick={() => {
+          setCurrent(0);
+          setOpen(true);
+        }}
+      >
+        开始引导
+      </Button>
       <Tour
         open={open}
         current={current}
@@ -29,45 +25,19 @@ export function TourBasic({ english = false }: { english?: boolean }) {
         onClose={() => setOpen(false)}
         steps={[
           {
-            key: 'create',
-            title: english ? 'Create your first project' : '创建第一个项目',
-            description: english
-              ? 'Keep related tasks in one place.'
-              : '把相关任务放在同一个项目中。',
-            target: () => create.current,
+            key: 'title',
+            title: '文档标题',
+            description: '当前文档的名称显示在这里。',
+            target: () => title.current,
           },
           {
-            key: 'settings',
-            title: english ? 'Make it yours' : '按团队习惯设置',
-            description: english
-              ? 'Adjust preferences in workspace settings.'
-              : '在工作区设置中调整团队偏好。',
-            target: () => settings.current,
+            key: 'visibility',
+            title: '可见范围',
+            description: '分享前，先确认谁可以查看这份文档。',
+            target: () => visibility.current,
           },
         ]}
       />
-    </Card>
-  );
-}
-export function TourCentered({ english = false }: { english?: boolean }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        {english ? 'Show welcome' : '查看欢迎说明'}
-      </Button>
-      <Tour
-        open={open}
-        onClose={() => setOpen(false)}
-        steps={[
-          {
-            title: english ? 'Welcome to Leaf' : '欢迎来到 Leaf',
-            description: english
-              ? 'A step without a target is displayed in the center.'
-              : '未指定目标的说明会显示在页面中央。',
-          },
-        ]}
-      />
-    </>
+    </Space>
   );
 }

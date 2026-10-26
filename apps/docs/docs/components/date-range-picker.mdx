@@ -1,110 +1,243 @@
-import { Capabilities } from '../../src/examples/date-range-picker/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { DateRangePickerBasic } from '../../src/examples/date-range-picker/basic';
+import { DateRangePickerControlled } from '../../src/examples/date-range-picker/controlled';
 import { DateRangePickerModes } from '../../src/examples/date-range-picker/modes';
+import { DateRangePickerDateTime } from '../../src/examples/date-range-picker/datetime';
+import { DisabledDates } from '../../src/examples/date-range-picker/disabled-dates';
+import { OpenEnd } from '../../src/examples/date-range-picker/open-end';
+import { Presets } from '../../src/examples/date-range-picker/presets';
+import { DateRangePickerTime } from '../../src/examples/date-range-picker/time';
+import { DateRangePickerOvernight } from '../../src/examples/date-range-picker/overnight';
+import { DateRangePickerForm } from '../../src/examples/date-range-picker/form';
+
+export const leafDoc = { component: 'DateRangePicker', primaryApi: 'DateRangePickerProps' };
 
 # DateRangePicker 日期区间选择器
 
-选择起止日期或时间，限定一个区间。
+选择起止日期、日期时间或时间区间。日期模式使用本地 `Date` 元组，纯时间模式使用字符串元组；选择单值使用 [DatePicker](/components/date-picker)。
 
-## 受控区间
+{/* leaf:section basic */}
 
-<ComponentExample title="受控区间" preview={<DateRangePickerBasic />} fileName="basic.tsx" width={360}>
+## 基础用法
+
+先选起点，再选终点，完整区间会提交并收起。日期模式支持逆序选择，结果按起止顺序排列；`defaultValue` 设置非受控初始区间。
+
+<ComponentExample exampleId="basic" preview={<DateRangePickerBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/date-range-picker/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 选择粒度
+{/* leaf:section examples */}
 
-<ComponentExample title="选择粒度" preview={<DateRangePickerModes />} fileName="modes.tsx">
+## 示例
+
+### 受控值与选择过程
+
+`onChange` 接收提交后的区间和两个格式化字符串，清除时为 `null` 和 `['', '']`。`onCalendarChange` 用于观察面板选择草稿和当前端点，不代表整个区间已经提交，也不覆盖文本输入或快捷区间的所有变化。受控重置由应用更新状态。
+
+<ComponentExample exampleId="controlled" preview={<DateRangePickerControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+### 选择粒度
+
+通过 `picker` 选择年、季度、月或周区间，两个 `Date` 都表示对应周期的起点。周起点由 [ConfigProvider](/components/config-provider) 的 `weekStartsOn` 设置，默认星期一。
+
+<ComponentExample exampleId="modes" preview={<DateRangePickerModes />} fileName="modes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/date-range-picker/modes.tsx"
 ```
 
 </ComponentExample>
 
-## 季度、预设与开放端点
+### 日期时间区间
 
-<ComponentExample title="季度、预设与开放端点" preview={<Capabilities />} fileName="capabilities.tsx">
+设置 `picker="datetime"`，选择开始日期和时间，点击“下一步”进入结束端，再点击“确定”提交。日期时间面板需要结束值不早于开始值；`defaultTime` 只提供新选端点的初始时间，不是初始区间。
 
-```tsx lineNumbers file="../../src/examples/date-range-picker/capabilities.tsx"
+<ComponentExample exampleId="datetime" preview={<DateRangePickerDateTime />} fileName="datetime.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/datetime.tsx"
 ```
 
 </ComponentExample>
 
-## 显示格式与提交值
+此模式默认 `needConfirm={true}`，点击外部会放弃尚未确定的区间。其他日期模式默认选完终点即提交，也可以设置 `needConfirm` 要求确认；`Escape` 放弃当前编辑。清除或选择有效快捷区间会直接提交。
 
-`format` 改变显示文字和 `onChange` 的字符串参数；FormData 保持日期或周期的稳定序列化格式。方括号可以转义固定文字，例如 `YYYY-[Q]Q`。使用函数格式化时，请同时提供 `parse`。Date 表示本地日历值，业务时区在应用的数据边界完成转换。周起点通过 ConfigProvider 的 `weekStartsOn` 设置。
+### 限制可选端点
 
-## DateRangePicker API
+`minDate` / `maxDate` 包含边界，`disabledDate` 可按 `position` 区分起点和终点。下面只允许十月内的端点，周日不能作为端点；区间中间仍可经过周日，需要整段可用性校验时由应用处理。
+
+<ComponentExample exampleId="disabled-dates" preview={<DisabledDates />} fileName="disabled-dates.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/disabled-dates.tsx"
+```
+
+</ComponentExample>
+
+限制同时用于输入和面板，不会自动清除已有值。日期时间边界按完整时间戳比较，`disabledTime` 接收时间部分、端点位置和当前日期。`inputReadOnly` 只禁止输入，`readOnly` 才禁止修改。
+
+### 开放端点
+
+`allowEmpty` 可逐位允许端点为空。示例使用 `[false, true]` 保留必需的开始日期和可空的结束日期，值类型为从根入口导入的 `OpenDateRange`。至少需要一个非空端点；整个控件清空使用 `null`，不是 `[null, null]`。
+
+<ComponentExample exampleId="open-end" preview={<OpenEnd />} fileName="open-end.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/open-end.tsx"
+```
+
+</ComponentExample>
+
+允许的端点可通过面板底部操作清空，缺失端点的回调字符串为 `''`。只有开始值时，再次打开面板会继续编辑结束端。
+
+### 时间区间
+
+`picker="time"` 的值和回调为 `['HH:mm', 'HH:mm']` 或 `null`，开启 `showSeconds` 时使用 `HH:mm:ss`。`use12Hours` 只改变显示，值仍使用 24 小时制；`minTime` / `maxTime` 对两个端点生效。纯时间不支持 `allowEmpty`。
+
+<ComponentExample exampleId="time" preview={<DateRangePickerTime />} fileName="time.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/time.tsx"
+```
+
+</ComponentExample>
+
+### 跨越午夜
+
+默认要求结束时间不早于开始时间。设置 `allowOvernight` 后可以提交 `22:00` 到次日 `06:00`，不交换两个端点。时间模式默认离开时提交有效调整，需要明确确认时设置 `needConfirm`。
+
+<ComponentExample exampleId="overnight" preview={<DateRangePickerOvernight />} fileName="overnight.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/overnight.tsx"
+```
+
+</ComponentExample>
+
+### 快捷区间
+
+<a id="进阶用法"></a>
+
+`presets` 提供常用区间，悬停或聚焦时预览，点击有效区间后立即提交并收起。`value` 可以是区间或同步返回区间的函数，不接收 Promise；函数可能多次求值，应保持无副作用。
+
+<ComponentExample exampleId="presets" preview={<Presets />} fileName="presets.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/presets.tsx"
+```
+
+</ComponentExample>
+
+### 显示格式与表单提交
+
+`format` 改变显示及 `onChange` 的字符串元组，FormData 仍使用规范格式，以 `start/end` 连接。示例显示 `DD/MM/YYYY`，提交如 `2026-10-05/2026-10-09`；开放尾端为 `2026-10-05/`，全空为空字符串。非受控重置恢复 `defaultValue`。
+
+<ComponentExample exampleId="form" preview={<DateRangePickerForm />} fileName="form.tsx">
+
+```tsx lineNumbers file="../../src/examples/date-range-picker/form.tsx"
+```
+
+</ComponentExample>
+
+周期与日期时间的规范格式及自定义 `parse` 见 [DatePicker：显示格式与表单提交](/components/date-picker#显示格式与表单提交)。日期是本地日历值，业务时区转换由应用处理。更多表单配置见 [Form](/components/form)。
+
+日期区间可完整粘贴以 `~` 或“至”分隔的两个值。`Enter` 提交有效输入，无效或未完成输入在离开整个控件时恢复已提交值，`Escape` 放弃编辑；更多分段输入方式见 [DatePicker：输入与确认](/components/date-picker#输入与确认)。
+
+{/* leaf:section api */}
+
+## API
+
+### DateRangePicker API
+
+主表覆盖日期与纯时间分支，参数并非所有模式都适用：`allowEmpty`、`format`、`parse`、`presets`、日期边界及日历配置属于日期分支；`allowOvernight`、`minTime` / `maxTime` 属于纯时间分支。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime' \| 'time'` | `'date'` | 选择日期、时间、日期时间、周、月、季度或年。 |
+| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| readonly [string, string]` | — | 受控区间；日期模式使用 Date 元组，allowEmpty 允许空端点；纯时间使用 24 小时制字符串元组。整个空值为 null。 |
+| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| readonly [string, string]` | `null` | 非受控初始区间，类型由 picker 决定；表单重置时恢复。 |
+| `onChange` | `(((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void)) \| (((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)) \| ((value: readonly [string, string] \| null) => void)` | — | 提交整个区间时调用；日期模式返回 Date 元组和字符串元组，纯时间返回字符串元组，清空为 null。 |
+| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | 日期面板草稿、时间或端点清除变化时调用，不代表提交；文本输入和快捷项不保证触发。 |
+| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | 明确允许空的起止端点。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `allowClear` | `boolean` | `true` | 展示清除按钮 |
+| `minDate` | `Date` | — | 最早 / 最晚可选边界 |
+| `maxDate` | `Date` | — | 最早 / 最晚可选边界 |
+| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | 限制可选端点，不检查区间内的每一天；position 区分开始与结束。 |
+| `minTime` | `string` | — | 最早可选时间（含边界），格式为 HH:mm 或 HH:mm:ss。 |
+| `maxTime` | `string` | — | 最晚可选时间（含边界），格式为 HH:mm 或 HH:mm:ss。 |
+| `disabledTime` | `((parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean) \| ((parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end') => boolean)` | — | 限制端点时间；日期时间模式还接收该端点的 Date。 |
+| `allowOvernight` | `boolean` | `false` | 允许时间区间跨越午夜。 |
+| `needConfirm` | `boolean` | `picker === "datetime"` | 要求点击确定或按 Enter 提交；开启后失焦放弃草稿。 |
+| `showSeconds` | `boolean` | `false` | 日期时间区间展示秒，关闭时秒为 0 |
+| `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
+| `minuteStep` | `number` | `1` | 分钟段步进与分钟列间隔，保留已有的非步长值。 |
+| `secondStep` | `number` | `1` | 秒段步进与秒列间隔，保留已有的非步长值。 |
+| `defaultTime` | `readonly [string, string]` | `['00:00:00', '23:59:59']` | datetime 模式下新选开始、结束日期使用的时间，格式为 HH:mm[:ss]。 |
+| `format` | `string \| ((date: Date) => string)` | — | 显示格式；日期支持 YYYY、MM、DD、HH、mm、ss、Q。 |
+| `parse` | `(text: string) => Date \| null` | — | 自定义文本解析，失败时返回 null。 |
+| `presets` | `readonly `[`DatePreset`](date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | 快捷选项；value 可以动态计算。 |
+| `panelValue` | `Date` | — | 受控的日历显示日期。 |
+| `onPanelChange` | `(date: Date) => void` | — | 日历显示的周期改变时调用。 |
+| `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
+| `name` | `string` | — | 原生 FormData 中的字段名。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
+| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
-| `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `allowClear` | `boolean` | `true` | 展示清除按钮 |
-| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
-| `open` | `boolean` | — | 控制面板是否展开。 |
-| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
-| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | 选择粒度 |
-| `minDate` | `Date` | — | 最早 / 最晚可选边界 |
-| `maxDate` | `Date` | — | 最早 / 最晚可选边界 |
-| `use12Hours` | `boolean` | `false` | 使用 12 小时制展示及上午、下午选项 |
-| `showSeconds` | `boolean` | `true` | 日期时间区间展示秒，关闭时秒为 0 |
-| `minuteStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
-| `secondStep` | `number` | `1` | 分钟 / 秒间隔，1–60 的整数 |
-| `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
-| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | 按业务规则禁用日期。 |
-| `disabledTime` | `(parts: `[`TimeParts`](../components/time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | 按业务规则禁用时间，输入和面板选择使用同一规则。 |
-| `format` | `string \| ((date: Date) => string)` | — | 显示格式；日期支持 YYYY、MM、DD、HH、mm、ss、Q。 |
-| `parse` | `(text: string) => Date \| null` | — | 自定义文本解析，失败时返回 null。 |
-| `presets` | `readonly `[`DatePreset`](../components/date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | 快捷选项；value 可以动态计算。 |
-| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | 选择过程中的日期变化，包含当前起止位置。 |
-| `panelValue` | `Date` | — | 受控的日历显示日期。 |
-| `onPanelChange` | `(date: Date) => void` | — | 日历显示的周期改变时调用。 |
-| `cellRender` | `(date: Date) => ReactNode` | — | 自定义日历单元格内容。 |
-| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | 明确允许空的起止端点。 |
-| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | 受控区间 / 初始区间 |
-| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | 受控区间 / 初始区间 |
-| `onChange` | `((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void) \| ((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)` | — | 完成选择后返回有序区间与字符串；清除返回 null |
-| `disabled` | `boolean` | `false` | 禁用交互。 |
-| `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
-| `name` | `string` | — | 原生 FormData 中的字段名。 |
-| `form` | `string` | — | 关联的原生表单 ID。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
-## DateRange
+原生 input 属性和 `aria-*` 传给输入框，`className` / `style` 作用于外层。共享浮层配置见 [PopupOptions](/api/popup-options)。
+
+### DateRange
+
+非开放日期区间的类型是 `readonly [Date, Date]`；设置 `allowEmpty` 时使用根入口导出的 `OpenDateRange`，即 `readonly [Date | null, Date | null]`。快捷项类型见 [DatePreset](date-picker#datepreset)。
+
+| 属性 | 类型   | 默认值 | 说明                     |
+| ---- | ------ | ------ | ------------------------ |
+| `0`  | `Date` | 必填   | 起始值，早于或等于终止值 |
+| `1`  | `Date` | 必填   | 终止值                   |
+
+### TimeRangePickerMode API
+
+`picker="time"` 的属性；值类型 `TimeRange` 为 `readonly [string, string]`。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `0` | `Date` | 必填 | 起始值，早于或等于终止值 |
-| `1` | `Date` | 必填 | 终止值 |
-
-## 类型
-
-定义组件属性或组装变量时可导入相关类型。
-
-```ts
-import type { DateRangePickerProps, DateRange } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-`DateRange` 是 `readonly [Date, Date]`，可导入它组装变量。年取 1 月 1 日，月取当月 1 日，周从星期一开始并使用 ISO 周编号。日期使用本地时间。
-
-两个日历联动导航。选好起点后，悬停年份、月份、周或日期即可预览区间；选好终点立即完成，所有模式都没有底部确定按钮。逆序选择会自动排列。
-
-日期时间区间通过两个日历右上角的时间按钮分别调整起止时间，再返回日期面板选择日期。请在选定结束日期前调整时间。“当前时间”设置该端点的时间。
-
-已有完整区间时，调整任一端点的时间会直接更新有效区间，无需重新选择日期。
-
-也可以输入以 ` ~ ` 分隔的两个值，按 Enter 或移走焦点提交。格式依次为 `YYYY`、`YYYY-MM`、`YYYY-Www`、`YYYY-MM-DD`、`YYYY-MM-DD HH:mm:ss`；关闭秒时省略秒。无效或越界输入不会提交，Escape 放弃未完成的输入。
-
-FormData 使用 `start/end` 格式提交对应字符串。非受控组件支持表单 reset；受控组件需同步重置自己的状态。
+| `picker` | `'time'` | 必填 | 纯时间区间模式，必须传 time。 |
+| `value` | `readonly [string, string] \| null` | — | 受控的 24 小时制字符串元组；整个空值为 null。 |
+| `defaultValue` | `readonly [string, string] \| null` | `null` | 初始值；非受控模式支持表单重置。 |
+| `onChange` | `(value: readonly [string, string] \| null) => void` | — | 提交时返回 24 小时制字符串元组；清空返回 null。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `status` | `'error' \| 'warning'` | — | 显示错误或警告的校验外观，不执行校验。 |
+| `allowClear` | `boolean` | `true` | 展示清除操作。 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `minTime` | `string` | — | 最早可选时间（含边界），格式为 HH:mm 或 HH:mm:ss。 |
+| `maxTime` | `string` | — | 最晚可选时间（含边界），格式为 HH:mm 或 HH:mm:ss。 |
+| `disabledTime` | `(parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end') => boolean` | — | 按业务规则禁用时间，输入和面板选择使用同一规则。 |
+| `allowOvernight` | `boolean` | `false` | 允许时间区间跨越午夜。 |
+| `needConfirm` | `boolean` | `false` | 要求点击确定或按 Enter 提交；开启后失焦放弃草稿。 |
+| `showSeconds` | `boolean` | `false` | 显示并编辑秒，关闭时秒为 0。 |
+| `use12Hours` | `boolean` | `false` | 使用 12 小时制与上午 / 下午。 |
+| `minuteStep` | `number` | `1` | 分钟段步进与分钟列间隔，保留已有的非步长值。 |
+| `secondStep` | `number` | `1` | 秒段步进与秒列间隔，保留已有的非步长值。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起时调用。 |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | 面板外观；card 在柔和画布上以内嵌内容卡呈现。 |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |

@@ -1,76 +1,114 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TransferBasic } from '../../../src/examples/en/transfer/basic';
+import { TransferControlled } from '../../../src/examples/en/transfer/controlled';
+import { TransferOneWay } from '../../../src/examples/en/transfer/one-way';
 import { TransferVirtual } from '../../../src/examples/en/transfer/advanced';
+
+export const leafDoc = { component: 'Transfer', primaryApi: 'TransferProps' };
 
 # Transfer
 
 Select and move items between two lists.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<TransferBasic />} fileName="basic.tsx" width="100%">
+Check items, then use the middle buttons to move them to the other panel. Built-in search filters labels and descriptions. Select-all affects only enabled items in the current filtered results; checked items hidden by search still move.
+
+<ComponentExample exampleId="basic" preview={<TransferBasic />} fileName="basic.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/transfer/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
+## Examples
+
+### Controlled value and selection
+
+`value` contains items already in the right panel. `selectedKeys` contains checked items pending a move across both panels; checking alone does not move an item. Synchronize them with `onChange` and `onSelectionChange`. A move also clears the moved items from the checked selection.
+
+<ComponentExample exampleId="controlled" preview={<TransferControlled />} fileName="controlled.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/transfer/controlled.tsx"
+```
+
+</ComponentExample>
+
+### One-way transfer
+
+`oneWay` keeps only the move-to-right action. The right panel, its search and its checkboxes remain available.
+
+<ComponentExample exampleId="one-way" preview={<TransferOneWay />} fileName="one-way.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/transfer/one-way.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Virtual list
+
+Enable `virtual` for large lists. This example has 2,000 items; `height` sets the scrollable height of the list content.
+
+<ComponentExample exampleId="advanced" preview={<TransferVirtual />} fileName="advanced.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/transfer/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+Set `name` to submit right-panel keys as a JSON array string; empty values submit an empty string. Uncontrolled values support form reset; reset controlled application state yourself. See [Form](/en/components/form) for labels and errors, and [ConfigProvider](/en/components/config-provider) for built-in translations.
 
-value contains the keys in the right panel, while selectedKeys contains the checked items. Search, bulk transfer, one-way transfer and virtualization are supported. name submits a JSON array string.
+{/* leaf:section api */}
 
-## Types
+## API
 
-Import these types for data, callbacks and refs.
+### TransferProps API
 
-```ts
-import type { TransferChangeInfo, TransferItem, TransferProps } from '@ifhover/leaf-ui';
-```
-
-## TransferChangeInfo API
+Configure list data, target values and transfer events.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `direction` | `'left' \| 'right'` | Required | Layout or movement direction |
-| `movedKeys` | `string[]` | Required | Moved keys |
+| `items` | `readonly `[`TransferItem`](#transferitem-api)`[]` | Required | Items; keep keys unique and stable |
+| `value` | `readonly string[]` | — | Controlled right-panel item keys, not the checked items pending a move. |
+| `defaultValue` | `readonly string[]` | `[]` | Initial right-panel keys for uncontrolled usage, restored on form reset without resetting searches or pending checks. |
+| `onChange` | `(keys: string[], info: `[`TransferChangeInfo`](#transferchangeinfo-api)`) => void` | — | Return right-panel keys after a move, with direction and movedKeys in info. |
+| `selectedKeys` | `readonly string[]` | — | Controlled pending checked keys across both panels; checking does not move items. |
+| `onSelectionChange` | `(keys: string[]) => void` | — | Return pending checked keys after checks change or moved keys are removed from the checks. |
+| `titles` | `readonly [ReactNode, ReactNode]` | — | Left and right titles |
+| `disabled` | `boolean` | — | Disable interaction. |
+| `searchable` | `boolean` | `true` | Show search inputs |
+| `filterOption` | `(query: string, item: `[`TransferItem`](#transferitem-api)`) => boolean` | — | Custom search rule |
+| `oneWay` | `boolean` | `false` | Hide the move-left button; the right panel remains searchable and checkable. |
+| `renderItem` | `(item: `[`TransferItem`](#transferitem-api)`) => ReactNode` | — | Custom item renderer |
+| `virtual` | `boolean` | `false` | Render visible items only |
+| `height` | `number` | `180` | Height of each scrollable list area, excluding the heading and search field. |
+| `name` | `string` | — | Native FormData field name; nonempty values submit a JSON array and empty values submit an empty string. |
+| `form` | `string` | — | Associated form ID |
+| `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
 
-## TransferItem API
+### TransferItem API
+
+An individual data item that can be transferred between lists.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique stable identifier |
 | `label` | `ReactNode` | Required | Display label |
 | `description` | `string` | — | Supporting description |
-| `disabled` | `boolean` | — | Disable interactions |
+| `disabled` | `boolean` | — | Disable interaction. |
 | `searchLabel` | `string` | — | Plain-text search label |
 
-## TransferProps API
+### TransferChangeInfo API
+
+Describe the direction and affected items of a transfer.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly TransferItem[]`](#transferitem-api) | Required | Items; keep keys unique and stable |
-| `value` | `readonly string[]` | — | Controlled value |
-| `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
-| `onChange` | [`(keys: string[], info: TransferChangeInfo) => void`](#transferchangeinfo-api) | — | Value change callback |
-| `selectedKeys` | `readonly string[]` | — | Selected items to move |
-| `onSelectionChange` | `(keys: string[]) => void` | — | Selection changes |
-| `titles` | `readonly [ReactNode, ReactNode]` | — | Left and right titles |
-| `searchable` | `boolean` | `true` | Show search inputs |
-| `filterOption` | [`(query: string, item: TransferItem) => boolean`](#transferitem-api) | — | Custom search rule |
-| `renderItem` | [`(item: TransferItem) => ReactNode`](#transferitem-api) | — | Custom item renderer |
-| `disabled` | `boolean` | — | Disable interactions |
-| `height` | `number` | `180` | Height, numbers are in pixels |
-| `virtual` | `boolean` | `false` | Render visible items only |
-| `name` | `string` | — | Form field name |
-| `form` | `string` | — | Associated form ID |
-| `required` | `boolean` | — | Required form validation |
-| `oneWay` | `boolean` | `false` | Allow moving right only |
+| `direction` | `'left' \| 'right'` | Required | Move direction: 'left' moves to the left list, 'right' to the right list. |
+| `movedKeys` | `string[]` | Required | Moved keys |

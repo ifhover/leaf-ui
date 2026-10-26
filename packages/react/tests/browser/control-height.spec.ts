@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 
 for (const [suffix, base] of [
-  ['', 36],
+  ['', 34],
   ['&compact=1', 30],
   ['&tokens=1', 44],
-  ['&theme=dark', 36],
-  ['&rtl=1', 36],
+  ['&theme=dark', 34],
+  ['&rtl=1', 34],
 ] as const) {
   test(`control and popup geometry follows the ${base}px region ${suffix || 'default'}`, async ({
     page,
@@ -40,7 +40,17 @@ for (const [suffix, base] of [
       const height = base + (metric.size === 'sm' ? -6 : metric.size === 'lg' ? 6 : 0);
       expect.soft(metric.height, `${metric.name} ${metric.size}`).toBeCloseTo(height, 0);
     }
-    const rowHeight = base - 4;
+    const button = page.locator('.leaf-button').first();
+    await expect(button).toHaveCSS('font-size', '13px');
+    await expect(page.getByTestId('controls-md').getByRole('button', { name: 'Action' })).toHaveCSS(
+      'font-size',
+      '14px',
+    );
+    await expect(page.getByTestId('controls-lg').getByRole('button', { name: 'Action' })).toHaveCSS(
+      'font-size',
+      '16px',
+    );
+    expect(await button.evaluate((node) => getComputedStyle(node).lineHeight)).toBe('20px');
     for (const name of [
       'Select md',
       'AutoComplete md',
@@ -48,6 +58,7 @@ for (const [suffix, base] of [
       'TreeSelect md',
       'Time md',
     ]) {
+      const rowHeight = name !== 'Time md' ? base : base - 4;
       await page.getByRole('combobox', { name, exact: true }).click();
       const panel = page.locator('.leaf-floating[data-state="open"]');
       await expect(panel).toBeVisible();

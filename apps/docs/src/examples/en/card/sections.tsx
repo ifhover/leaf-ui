@@ -10,16 +10,15 @@ export function CardSections() {
         The heading, description and body form natural sections.
       </Card>
       <Card
-        divided
         title="Content sections"
         footer={
           <Flex justify="end" gap="sm" wrap>
             <Button variant="outline">Cancel</Button>
-            <Button>Confirm</Button>
+            <Button variant="solid">Confirm</Button>
           </Flex>
         }
       >
-        Enable divided to separate the heading, body and footer actions.
+        The heading, body and footer actions are grouped with spacing.
       </Card>
     </Space>
   );

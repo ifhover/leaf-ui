@@ -15,6 +15,7 @@ export interface LocaleMessages {
     readonly clear: string;
     readonly label: string;
     readonly selectDate: string;
+    readonly presets: string;
   };
   readonly timePicker: {
     readonly placeholder: string;
@@ -58,6 +59,7 @@ export interface LocaleMessages {
   };
   readonly common: {
     readonly confirm: string;
+    readonly next: string;
     readonly cancel: string;
     readonly close: string;
     readonly start: string;
@@ -155,6 +157,8 @@ export interface LocaleMessages {
   };
   readonly tabs: {
     readonly moreTabs: string;
+    readonly scrollLeft: string;
+    readonly scrollRight: string;
     readonly addTab: string;
     readonly reorder: string;
     readonly closeLabel: string;
@@ -172,14 +176,6 @@ export interface LocaleMessages {
     readonly goTo: string;
     readonly slide: string;
     readonly role: string;
-  };
-  readonly commandPalette: {
-    readonly commandSearch: string;
-    readonly placeholder: string;
-    readonly searchCommands: string;
-    readonly commands: string;
-    readonly navigate: string;
-    readonly run: string;
   };
   readonly errorBoundary: {
     readonly title: string;
@@ -223,6 +219,11 @@ export interface LocaleMessages {
     readonly image: string;
     readonly position: string;
     readonly viewImage: string;
+    readonly noImage: string;
+    readonly actualSize: string;
+    readonly fitToWindow: string;
+    readonly rotateCounterclockwise: string;
+    readonly rotateClockwise: string;
   };
   readonly infiniteScroll: {
     readonly loadingFailedRetry: string;

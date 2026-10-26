@@ -202,7 +202,6 @@ export function DocsNav({
             {afterNavMenu}
             <Button
               className="leaf-docs-nav__menu"
-              variant="soft"
               aria-label={t('打开导航菜单', 'Open navigation menu')}
               aria-haspopup="dialog"
               aria-expanded={open}

@@ -1,52 +1,114 @@
-import { Capabilities } from '../../../src/examples/color-picker/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ColorPickerBasic } from '../../../src/examples/en/color-picker/basic';
 import { ColorPickerFormats } from '../../../src/examples/en/color-picker/formats';
+import { ColorPickerAlpha } from '../../../src/examples/en/color-picker/alpha';
 import { ColorPickerPresets } from '../../../src/examples/en/color-picker/presets';
+import { ColorPickerStates } from '../../../src/examples/en/color-picker/states';
+import { ColorPickerGradient } from '../../../src/examples/en/color-picker/gradient';
+import { ColorPickerControlled } from '../../../src/examples/en/color-picker/controlled';
+
+export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps' };
 
 # ColorPicker
 
-Choose colors for content and branding.
+Choose solid colors or linear gradients.
 
-## Choose a color
+{/* leaf:section basic */}
 
-Click the swatch, color value or any empty area of the control to open the picker.
+## Basic usage
 
-<ComponentExample title="Choose a color" preview={<ColorPickerBasic />} fileName="basic.tsx" width={360}>
+Click the swatch to open the panel and choose a color.
+
+<ComponentExample exampleId="basic" preview={<ColorPickerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/color-picker/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Formats and transparency
+{/* leaf:section examples */}
 
-<ComponentExample title="Formats and transparency" preview={<ColorPickerFormats />} fileName="formats.tsx">
+## Examples
+
+### Color formats
+
+Show the color text with `showText` and set its initial format with `defaultFormat`. Switching formats preserves the current value; the next adjustment uses the new format.
+
+<ComponentExample exampleId="formats" preview={<ColorPickerFormats />} fileName="formats.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/color-picker/formats.tsx"
 ```
 
 </ComponentExample>
 
-## Presets and states
+### Opacity
 
-<ComponentExample title="Presets and states" preview={<ColorPickerPresets />} fileName="presets.tsx">
+Opacity is supported by default, so HEX values may contain eight digits. Set `disableAlpha` to hide the opacity control and output opaque colors.
+
+<ComponentExample exampleId="alpha" preview={<ColorPickerAlpha />} fileName="alpha.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/alpha.tsx"
+```
+
+</ComponentExample>
+
+### Preset colors
+
+Provide grouped colors with `presets` for quick selection.
+
+<ComponentExample exampleId="presets" preview={<ColorPickerPresets />} fileName="presets.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/color-picker/presets.tsx"
 ```
 
 </ComponentExample>
 
-## Gradients
+### Control states
 
-<ComponentExample title="Gradients" preview={<Capabilities english />} fileName="capabilities.tsx">
+`disabled` disables interaction, `readOnly` locks the value, and `status` displays a validation appearance without performing validation.
 
-```tsx lineNumbers file="../../../src/examples/color-picker/capabilities.tsx"
+<ComponentExample exampleId="states" preview={<ColorPickerStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/states.tsx"
 ```
 
 </ComponentExample>
 
-## ColorPicker API
+### Gradients
+
+Set `mode="gradient"` to edit the angle and color stops. The value is a `linear-gradient(...)` string.
+
+<ComponentExample exampleId="gradient" preview={<ColorPickerGradient />} fileName="gradient.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/gradient.tsx"
+```
+
+</ComponentExample>
+
+For structured stops, `gradientString` converts a [`ColorGradient`](#colorgradient) into a string. `parseGradient` parses supported linear gradients and returns `null` for values it cannot parse.
+
+### Controlled value and clearing
+
+<a id="advanced-usage"></a>
+
+Manage the color with `value` and `onChange`. `allowClear` clears the value to an empty string. `onChange` fires while dragging; use `onChangeComplete` when you only need the final value.
+
+<ComponentExample exampleId="controlled" preview={<ColorPickerControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+Color text is submitted on Enter or blur; invalid input displays an error. Set `name` for native form submission. Uncontrolled fields support form reset; reset controlled application state yourself.
+
+{/* leaf:section api */}
+
+## API
+
+### ColorPicker API
+
+Configuration for color values, output formats, presets and panel interactions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -55,10 +117,10 @@ Click the swatch, color value or any empty area of the control to open the picke
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `value` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
-| `defaultValue` | `string` | `'#20834a'` | Controlled / initial color. Accepts HEX, RGB, HSL or CSS named colors |
-| `onChange` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
-| `onChangeComplete` | `(color: string) => void` | — | Live change / end of an adjustment; clearing returns an empty string |
+| `value` | `string` | — | Controlled color; accepts HEX, RGB, HSL and CSS named colors, or a linear-gradient string in gradient mode. |
+| `defaultValue` | `string` | `'#1e964f'` | Initial uncontrolled color, restored when the form resets. |
+| `onChange` | `(color: string) => void` | — | Fires continuously while adjusting; clearing returns an empty string. |
+| `onChangeComplete` | `(color: string) => void` | — | Fires once when an adjustment ends; clearing returns an empty string. |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Color text format, applied to each stop in gradient mode. |
 | `defaultFormat` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Initial color text format. |
 | `onFormatChange` | `(format: 'hex' \| 'rgb' \| 'hsl') => void` | — | Called when the color text format changes. |
@@ -80,38 +142,30 @@ Click the swatch, color value or any empty area of the control to open the picke
 | `name` | `string` | — | Field name in native FormData. |
 | `form` | `string` | — | ID of the associated native form. |
 
-## ColorPreset
+### ColorPreset
+
+The title and color values of a preset color group.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `label` | `ReactNode` | — | Required. Group heading |
-| `colors` | `readonly string[]` | — | Required. Color values in the group |
+| `label` | `ReactNode` | Required | Group heading |
+| `colors` | `readonly string[]` | Required | Color values in the group |
 
-## Types
+### ColorGradient
 
-Import these types to define props or prepare data.
-
-```ts
-import type { ColorPickerProps, ColorPreset } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Colors are strings; HEX may contain eight digits when opacity is enabled. Changing format preserves the submitted value; the next adjustment outputs the selected format. `onChange` reports live changes, while `onChangeComplete` reports pointer release, keyboard adjustment, input submission or preset selection.
-
-Use arrow keys in the color plane, with Shift for larger steps. Left/right adjust saturation; up/down adjust brightness. Enter or blur submits color text; invalid text displays an error. Supports FormData, required validation and uncontrolled form reset. Reset controlled state in your application.
-
-## ColorGradient
+A color value describing gradient direction and stops.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `angle` | `number` | — | Required. Gradient angle in degrees. |
-| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | — | Required. Color stops in the gradient. |
+| `angle` | `number` | Required | Gradient angle in degrees. |
+| `stops` | `readonly `[`ColorGradientStop`](#colorgradientstop)`[]` | Required | Color stops in the gradient. |
 
-## ColorGradientStop
+### ColorGradientStop
+
+A color and its position within a gradient.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
-| `color` | `string` | — | Required. Color or semantic tone. |
-| `offset` | `number` | — | Required. Offset; color stops use a percentage from 0 to 100. |
+| `color` | `string` | Required | Color or semantic tone. |
+| `offset` | `number` | Required | Offset; color stops use a percentage from 0 to 100. |

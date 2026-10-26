@@ -223,7 +223,7 @@ export function TreeDragRow({
           {...attributes}
           {...listeners}
           ref={setActivatorNodeRef}
-          variant="ghost"
+          variant="text"
           size="sm"
           disabled={node.disabled}
           className="leaf-tree__drag-handle"

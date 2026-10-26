@@ -9,9 +9,6 @@ export interface DataTableRowProps extends HTMLAttributes<HTMLTableRowElement> {
 
 export interface DataTableCellProps extends Omit<TdHTMLAttributes<HTMLTableCellElement>, 'align'> {
   align?: 'start' | 'center' | 'end';
-  pinned?: 'start' | 'end';
-  pinOffset?: number;
-  pinEdge?: boolean;
 }
 
 export interface DataTableVirtualOptions {
@@ -22,12 +19,25 @@ export interface DataTableVirtualOptions {
 /** Shared presentation props do not depend on TanStack or the caller's row type. */
 export interface DataTablePresentationProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  /**
+   * Explicitly choose the built-in layout or a fully custom composition.
+   * Omitting it keeps the legacy behavior where children replace the automatic layout.
+   */
+  layout?: 'auto' | 'custom';
+  /** Custom composition rendered by `layout="custom"`, or implicitly by legacy children. */
   children?: ReactNode;
-  caption?: ReactNode;
+  /** Content for the toolbar in the automatic layout. */
+  toolbar?: ReactNode;
   size?: ControlSize;
+  /** Simple uses a single rounded header without a frame, shadows, stripes or column dividers. */
+  variant?: 'layered' | 'simple';
+  /** Adds body/footer column dividers in the layered variant; ignored in simple. */
+  columnDividers?: boolean;
+  /** @deprecated Use `columnDividers` instead. */
   bordered?: boolean;
+  /** Alternating row backgrounds in the layered variant; ignored in simple. */
   striped?: boolean;
-  stickyHeader?: boolean;
+  /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];
   minWidth?: CSSProperties['minWidth'];
   loading?: boolean;
@@ -39,7 +49,8 @@ export interface DataTablePresentationProps
   resizable?: boolean;
   columnReordering?: boolean;
   virtual?: boolean | DataTableVirtualOptions;
-  pagination?: boolean;
+  /** Controls the default pagination UI only; local row slicing is a data/Hook option. */
+  pagination?: boolean | DataTablePaginationProps;
   tableRef?: Ref<HTMLTableElement>;
 }
 

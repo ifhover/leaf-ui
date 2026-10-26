@@ -3,7 +3,7 @@ import { CalendarDays, Check, ChevronDown, ChevronRight, Clock3, Search } from '
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const colors = { green: '#20834a', border: '#e5e5e8', text: '#202024', muted: '#68686f' };
+const colors = { green: '#1e964f', border: '#e5e5e8', text: '#202024', muted: '#68686f' };
 const rect = (x, y, width, height, fill = '#fff', stroke = colors.border, radius = 6) =>
   `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="${fill}" stroke="${stroke}"/>`;
 const text = (x, y, value, color = colors.text, fontSize = 10) =>

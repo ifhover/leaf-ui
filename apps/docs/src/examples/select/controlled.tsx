@@ -1,33 +1,35 @@
-import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
+import { Button, Form, FormField, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
-
 export function SelectControlled() {
   const [value, setValue] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const error = submitted && !value;
   return (
-    <Form layout="vertical">
-      <FormField label="项目可见性">
+    <Form
+      layout="vertical"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSubmitted(true);
+      }}
+    >
+      <FormField label="项目可见性" error={error ? '请选择可见性' : undefined}>
         <Select
-          aria-label="项目可见性"
+          name="visibility"
           value={value}
-          placeholder="选择可见性"
-          allowClear
           onChange={setValue}
+          allowClear
+          status={error ? 'error' : undefined}
+          placeholder="请选择"
           options={[
-            { label: '公开', value: 'public' },
-            { label: '团队', value: 'team' },
-            { label: '私密', value: 'private' },
+            { value: 'public', label: '公开' },
+            { value: 'team', label: '团队' },
+            { value: 'private', label: '私密' },
           ]}
         />
       </FormField>
-      <Text tone="muted">当前值：{value || '尚未选择'}</Text>
-      <FormField label="未设置团队 · 错误">
-        <Select
-          aria-label="未设置团队"
-          status="error"
-          placeholder="请选择所属团队"
-          options={[{ label: '设计团队', value: 'design' }]}
-        />
-      </FormField>
+      <Button type="submit">提交</Button>
+      {submitted && value && <Text role="status">已提交：{value}</Text>}
     </Form>
   );
 }

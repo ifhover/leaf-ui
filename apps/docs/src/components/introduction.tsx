@@ -24,7 +24,7 @@ export function IntroductionHero({ children }: { children: ReactNode }) {
         <img src={withBase('/leaf.svg')} width={72} height={72} alt="" />
         <p className="leaf-intro-hero__name">Leaf UI</p>
         <p className="leaf-intro-hero__tagline">
-          {t('轻盈 · 自然 · 可定制', 'Lightweight · Natural · Customizable')}
+          {t('安静 · 一致 · 易读', 'Quiet · Consistent · Readable')}
         </p>
         <div className="leaf-intro-hero__description">{children}</div>
         <Flex gap={8} justify="center" wrap className="leaf-intro-hero__badges">

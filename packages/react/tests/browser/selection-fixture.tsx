@@ -1,26 +1,53 @@
 import {
-  BottomNavigation,
   Breadcrumb,
   Button,
   CheckableTag,
   ColorPicker,
   ConfigProvider,
+  DatePicker,
   Dropdown,
   Input,
   InputNumber,
+  Menu,
   Pagination,
   Select,
   Switch,
   Textarea,
-  TimePicker,
   Transfer,
+  Tree,
+  TreeSelect,
 } from '@ifhover/leaf-ui';
 
 export function SelectionFixture() {
+  const custom = new URLSearchParams(location.search).has('custom');
   return (
-    <ConfigProvider theme={{ primaryColor: '#1265f5', motion: false }}>
+    <ConfigProvider
+      theme={{
+        primaryColor: '#1265f5',
+        motion: false,
+        ...(custom
+          ? {
+              tokens: { textColor: '#234568', surfaceColor: '#f3eadc' },
+              components: {
+                Menu: { color: '#305a43' },
+                Select: { color: '#305a43' },
+                Tree: { color: '#305a43' },
+                TreeSelect: { color: '#305a43' },
+              },
+            }
+          : {}),
+      }}
+    >
       <h1>Selection and focus</h1>
       <div style={{ display: 'grid', gap: 16, maxWidth: 500 }}>
+        <Menu
+          aria-label="Palette reference"
+          selectedKey="alice"
+          items={[
+            { key: 'alice', label: 'Menu Alice' },
+            { key: 'bob', label: 'Menu Bob' },
+          ]}
+        />
         <Input aria-label="Focused input" />
         <Textarea aria-label="Focused textarea" />
         <InputNumber aria-label="Focused number" />
@@ -39,7 +66,23 @@ export function SelectionFixture() {
             { value: 'disabled', label: 'Disabled', disabled: true },
           ]}
         />
-        <TimePicker aria-label="Selected time" defaultValue="09:00" />
+        <TreeSelect
+          aria-label="Selected tree person"
+          defaultValue="alice"
+          options={[
+            { value: 'alice', label: 'Tree Alice' },
+            { value: 'bob', label: 'Tree Bob' },
+          ]}
+        />
+        <Tree
+          aria-label="Selected tree"
+          defaultSelectedKeys={['alice']}
+          data={[
+            { key: 'alice', title: 'Tree Alice' },
+            { key: 'bob', title: 'Tree Bob' },
+          ]}
+        />
+        <DatePicker picker="time" aria-label="Selected time" defaultValue="09:00" />
         <Dropdown
           items={[
             { key: 'saved', label: 'Saved filter', type: 'checkbox', checked: true },
@@ -58,13 +101,6 @@ export function SelectionFixture() {
           ]}
         />
         <CheckableTag defaultChecked>Design</CheckableTag>
-        <BottomNavigation
-          aria-label="Sections"
-          items={[
-            { key: 'home', label: 'Home' },
-            { key: 'inbox', label: 'Inbox' },
-          ]}
-        />
         <Transfer
           items={[
             { key: 'alice', label: 'Transfer Alice' },

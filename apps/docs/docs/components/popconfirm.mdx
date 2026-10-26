@@ -1,84 +1,98 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { PopconfirmBasic } from '../../src/examples/popconfirm/basic';
 import { PopconfirmAsync } from '../../src/examples/popconfirm/advanced';
+import { PopconfirmRetry } from '../../src/examples/popconfirm/retry';
+
+export const leafDoc = { component: 'Popconfirm', primaryApi: 'PopconfirmProps' };
 
 # Popconfirm 气泡确认
 
-在操作位置附近确认重要操作。
+在触发器旁确认简单操作；需要详细说明的决策使用 [Confirm](/components/confirm)，编辑内容使用 [Modal](/components/modal)。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<PopconfirmBasic />} fileName="basic.tsx" width="fit-content">
+## 基础用法
+
+<a id="基本用法"></a>
+
+将需要确认的操作放在 Popconfirm 内，在 `onConfirm` 中处理确认结果。
+
+<ComponentExample exampleId="basic" preview={<PopconfirmBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popconfirm/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 更多用法
+{/* leaf:section examples */}
 
-<ComponentExample title="更多用法" preview={<PopconfirmAsync />} fileName="advanced.tsx" width="fit-content">
+## 示例
+
+### 异步确认
+
+`onConfirm` 可返回 Promise。等待期间显示加载，取消按钮不可用；重复确认、点击外部和 Escape 不会打断操作，成功后自动关闭。受控模式下，应用仍可主动修改 `open`。
+
+<ComponentExample exampleId="advanced" preview={<PopconfirmAsync />} fileName="advanced.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popconfirm/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 失败与重试
 
-onConfirm 可返回 Promise；等待期间显示加载并阻止重复提交。成功后关闭，失败时保持打开，可通过 onError 展示错误。触发元素应支持 ref 与按钮交互。
+失败时保持打开并显示内置错误提示，可再次确认以重试。通过 `onError` 补充应用需要的错误信息；本例模拟首次失败、重试成功。
 
-## 类型
+<ComponentExample exampleId="retry" preview={<PopconfirmRetry />} fileName="retry.tsx" width="fit-content">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { PopconfirmProps, ButtonProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/popconfirm/retry.tsx"
 ```
 
-## PopconfirmProps API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### PopconfirmProps API
+
+配置确认气泡的内容、触发方式与确认操作。
+
+触发元素需支持 ref 和按钮交互。确认与取消按钮的其他属性见 [Button](button#button-api)，共享浮层参数见 [PopupOptions](/api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发确认浮层的元素。 |
+| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作，可返回 Promise；成功关闭，失败时保留浮层并显示内置重试提示。 |
+| `onCancel` | `() => void` | — | 取消操作 |
+| `onError` | `(error: unknown) => void` | — | 确认失败后调用，可补充应用反馈；组件仍显示内置错误提示。 |
+| `type` | `FeedbackType \| 'error' \| 'default'` | `'warning'` | 确认框的状态样式；`error` 为兼容别名。 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+| `confirmText` | `ReactNode` | — | 确认按钮内容 |
+| `cancelText` | `ReactNode` | — | 取消按钮内容 |
+| `showCancel` | `boolean` | `true` | 展示取消按钮 |
+| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 确认按钮属性 |
+| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 取消按钮属性 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `open` | `boolean` | — | 受控展示状态 |
+| `defaultOpen` | `boolean` | `false` | 初始展示状态 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
+| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 显示位置 |
+| `aria-label` | `string` | — | 确认浮层的可访问名称；默认使用字符串标题或当前语言的确认名称。 |
+| `width` | `number \| string` | `'max-content'` | 宽度，数字按像素计算 |
+| `maxWidth` | `number \| string` | `320` | 浮层最大宽度 |
+| `enterDelay` | `number` | `100` | 指针进入后的打开延迟，单位毫秒 |
+| `leaveDelay` | `number` | `100` | 指针离开后的关闭延迟，单位毫秒 |
+| `className` | `string` | — | 容器类名 |
+| `style` | `CSSProperties` | — | 容器内联样式 |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 必需。内容或下级项目 |
-| `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 显示位置 |
-| `open` | `boolean` | — | 受控展示状态 |
-| `defaultOpen` | `boolean` | `false` | 初始展示状态 |
-| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
-| `disabled` | `boolean` | — | 禁用交互。 |
-| `enterDelay` | `number` | `100` | 指针进入后的打开延迟，单位毫秒 |
-| `leaveDelay` | `number` | `100` | 指针离开后的关闭延迟，单位毫秒 |
-| `width` | `number \| string` | — | 宽度，数字按像素计算 |
-| `maxWidth` | `number \| string` | — | 浮层最大宽度 |
-| `className` | `string` | — | 容器类名 |
-| `style` | `CSSProperties` | — | 容器内联样式 |
-| `aria-label` | `string` | — | 无可见标题时的可访问名称 |
-| `title` | `ReactNode` | 必填 | 必需。标题内容 |
-| `description` | `ReactNode` | — | 补充说明 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error' \| 'default'` | `'warning'` | 显示或选项类型 |
-| `icon` | `ReactNode` | — | 自定义图标 |
-| `confirmText` | `ReactNode` | — | 确认按钮内容 |
-| `cancelText` | `ReactNode` | — | 取消按钮内容 |
-| `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 确认按钮属性 |
-| `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 取消按钮属性 |
-| `showCancel` | `boolean` | `true` | 展示取消按钮 |
-| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作，支持异步等待 |
-| `onCancel` | `() => void` | — | 取消操作 |
-| `onError` | `(error: unknown) => void` | — | 异常回调 |
 
-## ButtonProps API
+### ButtonProps API
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'soft' \| 'link'` | `'solid'` | 按钮样式 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸或间距预设 |
-| `danger` | `boolean` | `false` | 危险操作颜色 |
-| `loading` | `boolean` | `false` | 加载状态 |
-| `fullWidth` | `boolean` | `false` | 占满宽度 |
-| `startIcon` | `ReactNode` | — | 前置图标 |
-| `endIcon` | `ReactNode` | — | 后置图标 |
+按钮属性见 [Button API](button#button-api)。

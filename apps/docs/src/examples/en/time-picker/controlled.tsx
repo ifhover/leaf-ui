@@ -1,4 +1,4 @@
-import { Form, FormField, Text, TimePicker } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function TimePickerControlled() {
@@ -6,11 +6,18 @@ export function TimePickerControlled() {
   return (
     <Form layout="vertical">
       <FormField label="Meeting time">
-        <TimePicker aria-label="Meeting time" value={time} onChange={setTime} minuteStep={15} />
+        <DatePicker
+          picker="time"
+          aria-label="Meeting time"
+          value={time}
+          onChange={setTime}
+          minuteStep={15}
+        />
       </FormField>
       <Text tone="muted">15-minute steps. Current:{time || 'Not selected'}</Text>
       <FormField label="Preserved time">
-        <TimePicker
+        <DatePicker
+          picker="time"
           aria-label="Preserved time"
           defaultValue="08:07"
           minuteStep={15}

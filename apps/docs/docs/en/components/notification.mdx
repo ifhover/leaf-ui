@@ -1,86 +1,152 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { NotificationBasic } from '../../../src/examples/en/notification/basic';
-import { NotificationOptions } from '../../../src/examples/en/notification/advanced';
+import { NotificationStates } from '../../../src/examples/en/notification/states';
+import { NotificationPlacement } from '../../../src/examples/en/notification/placement';
+import { NotificationActions } from '../../../src/examples/en/notification/actions';
+import { NotificationAsync } from '../../../src/examples/en/notification/async';
+
+export const leafDoc = { component: 'Notification', primaryApi: 'NotificationProps' };
 
 # Notification
 
-Present notifications and actions in a page corner.
+Present detailed feedback or follow-up actions in a page corner. Use [Message](/en/components/message) for brief feedback.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<NotificationBasic />} fileName="basic.tsx" width="fit-content">
+Wrap the application in [ConfigProvider](/en/components/config-provider), then call `useNotification()` in a child component. Applications already using it need no additional provider.
+
+```tsx
+import { ConfigProvider } from '@ifhover/leaf-ui';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
+<ComponentExample exampleId="basic" preview={<NotificationBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/notification/basic.tsx"
 ```
 
 </ComponentExample>
 
-## More examples
+{/* leaf:section examples */}
 
-<ComponentExample title="More examples" preview={<NotificationOptions />} fileName="advanced.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/en/notification/advanced.tsx"
+### Semantic states
+
+Use the shortcut methods to show notifications for different statuses.
+
+<ComponentExample exampleId="states" preview={<NotificationStates />} fileName="states.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/notification/states.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Placement
 
-Place ConfigProvider at the root and call useNotification() in descendants. Use NotificationProvider for a standalone scope. Matching keys update notifications; `duration={0}` persists.
+Use `placement` to choose where notifications appear.
 
-## Types
+<ComponentExample exampleId="placement" preview={<NotificationPlacement />} fileName="placement.tsx" width="fit-content">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { NotificationApi, NotificationOptions, NotificationProps, NotificationProviderProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/notification/placement.tsx"
 ```
 
-## NotificationApi API
+</ComponentExample>
+
+### Follow-up actions
+
+Use `duration: 0` to keep an action available until the notification is closed. An action should call `close(key)` for its own notification; calling `close()` would dismiss all notifications in the shared queue.
+
+<ComponentExample exampleId="actions" preview={<NotificationActions />} fileName="actions.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/notification/actions.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Async updates
+
+Reuse the returned key to replace a notification with the result. A matching key replaces the options rather than merging them, and restarts the timer. Here the result omits `duration: 0`, so it returns to automatic dismissal.
+
+<ComponentExample exampleId="async" preview={<NotificationAsync />} fileName="async.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/notification/async.tsx"
+```
+
+</ComponentExample>
+{/* leaf:section api */}
+
+## API
+
+### NotificationProps API
+
+For declarative rendering, handle `onClose` by setting `open` to `false`. `afterClose` runs after the exit animation.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `open` | [`(options: NotificationOptions) => string`](#notificationoptions-api) | Required | Open a notification and return its key |
-| `success` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show success |
-| `info` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show information |
-| `warning` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show warning |
-| `error` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | Required | Show an error notification |
-| `close` | `(key?: string) => void` | Required | Close a key, or all when omitted |
-
-## NotificationOptions API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `key` | `string` | — | Unique stable identifier |
-| `title` | `ReactNode` | Required | Title content |
-| `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
-| `icon` | `ReactNode` | — | Custom icon |
-| `actions` | `ReactNode` | — | Notification actions |
-| `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |
-| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
-| `closable` | `boolean` | `true` | Show close action |
-| `onClose` | `() => void` | — | Called when closed |
-
-## NotificationProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `title` | `ReactNode` | Required | Title content |
-| `description` | `ReactNode` | — | Supporting description |
-| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` | Visual or item type |
-| `icon` | `ReactNode` | — | Custom icon |
-| `actions` | `ReactNode` | — | Notification actions |
-| `duration` | `number` | `4.5` | Seconds before dismissal; 0 persists |
-| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
-| `closable` | `boolean` | `true` | Show close action |
-| `onClose` | `() => void` | — | Called when closed |
 | `open` | `boolean` | Required | Controlled visibility |
-| `afterClose` | `() => void` | — | Closing animation completes |
+| `title` | `ReactNode` | Required | Title content |
+| `description` | `ReactNode` | — | Supporting description |
+| `type` | `FeedbackType \| 'error'` | `'info'` | Notification status style; `error` is a compatibility alias. |
+| `actions` | `ReactNode` | — | Follow-up actions; the application performs the work and closes this notification by its key. |
+| `duration` | `number` | `4.5` | Seconds before automatic closing; zero or negative values keep it open. Hover or focus pauses the remaining time. |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
+| `closable` | `boolean` | `true` | Show close action |
+| `onClose` | `() => void` | — | Called when closing is requested; declarative Notification requires the application to set open to false. |
+| `afterClose` | `() => void` | — | Called after the closing animation and content unmount; does not replace updating controlled state in onClose. |
+| `icon` | `ReactNode` | — | Custom icon |
 
-## NotificationProviderProps API
+### NotificationApi API
+
+`useNotification()` returns this API directly. Nested `ConfigProvider` regions share a queue; each notification uses the theme and language of its calling component. Notifications remain after that component unmounts, but unmounting the entry provider clears them and their timers.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Content or child items |
-| `maxCount` | `number` | `5` | Maximum number of notifications |
+| `open` | `(options: `[`NotificationOptions`](#notificationoptions-api)`) => string` | Required | Open or replace a notification by key, returning its key. |
+| `success` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | Required | Show success |
+| `info` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | Required | Show information |
+| `warning` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | Required | Show warning |
+| `danger` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | Required | Show a danger notification; `error` remains as a compatibility method |
+| `error` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | Required | Content displayed instead of data rows after a request failure. |
+| `close` | `(key?: string) => void` | Required | Close a key; omitting it closes every notification in the same Provider, not only this caller's notifications. |
+
+### NotificationOptions API
+
+Timers pause while the pointer or focus is inside a notification, then resume with the remaining duration.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | Title content |
+| `description` | `ReactNode` | — | Supporting description |
+| `type` | `FeedbackType \| 'error'` | `'info'` | Notification status style; `error` is a compatibility alias. |
+| `actions` | `ReactNode` | — | Follow-up actions; the application performs the work and closes this notification by its key. |
+| `duration` | `number` | `4.5` | Seconds before automatic closing; zero or negative values keep it open. Hover or focus pauses the remaining time. |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Placement |
+| `closable` | `boolean` | `true` | Show close action |
+| `key` | `string` | Generated | Unique key within a Provider; opening the same key replaces that notification and restarts its dismissal timer instead of appending. |
+| `onClose` | `() => void` | — | Called when closing is requested; declarative Notification requires the application to set open to false. |
+| `icon` | `ReactNode` | — | Custom icon |
+
+### NotificationProviderProps API
+
+Use `NotificationProvider` instead of `ConfigProvider` for standalone notifications, or add it explicitly to create an independent queue. `maxCount` applies across all placements; exceeding it closes the oldest notifications. Set it when mounting the provider; changing it later does not reconfigure the queue.
+
+```tsx
+import { NotificationProvider } from '@ifhover/leaf-ui';
+
+export function Root() {
+  return <NotificationProvider maxCount={3}><App /></NotificationProvider>;
+}
+```
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Contents sharing this independent notification queue; ConfigProvider already supplies one, reused by nested ConfigProviders. |
+| `maxCount` | `number` | `5` | Maximum visible notifications in this queue, set on mount; exceeding it closes the oldest notifications. |

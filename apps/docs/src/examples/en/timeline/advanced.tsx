@@ -4,10 +4,10 @@ export function TimelineAlternate() {
   return (
     <Timeline
       mode="alternate"
-      pending="Waiting for the next step"
       items={[
-        { key: 'one', label: '2026-10-01', children: 'Requirements approved' },
-        { key: 'two', label: '2026-10-03', children: 'Design started', color: 'warning' },
+        { key: 'create', label: '09:00', children: 'Project created' },
+        { key: 'review', label: '10:30', children: 'Review complete' },
+        { key: 'release', label: '12:00', children: 'Published' },
       ]}
     />
   );

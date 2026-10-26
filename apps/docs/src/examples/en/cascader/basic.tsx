@@ -1,6 +1,6 @@
-import { Cascader, Form, FormField } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField } from '@ifhover/leaf-ui';
 
-const options = [
+const options: CascaderOption[] = [
   {
     value: 'design',
     label: 'Design',
@@ -24,17 +24,7 @@ export function CascaderBasic() {
   return (
     <Form layout="vertical">
       <FormField label="Project category">
-        <Cascader aria-label="Project category" options={options} placeholder="Choose a category" />
-      </FormField>
-      <FormField label="Default category">
-        <Cascader
-          aria-label="Default category"
-          options={options}
-          defaultValue={['design', 'interface']}
-        />
-      </FormField>
-      <FormField label="Disabled category">
-        <Cascader aria-label="Disabled category" options={options} disabled />
+        <Cascader options={options} placeholder="Choose a category" />
       </FormField>
     </Form>
   );

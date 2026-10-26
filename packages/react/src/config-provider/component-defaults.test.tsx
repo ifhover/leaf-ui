@@ -6,7 +6,6 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import {
   Button,
-  CommandPalette,
   Form,
   FormField,
   Input,
@@ -136,7 +135,7 @@ describe('ConfigProvider component defaults', () => {
     const input = screen.getByRole('textbox', { name: 'Local name' });
     expect(input).not.toHaveAttribute('readonly');
     expect(screen.getByRole('button', { name: 'Built in again' })).toHaveClass(
-      'leaf-button--solid',
+      'leaf-button--outline',
     );
     await userEvent.type(input, ' edit');
     rerender(example('Updated shared'));
@@ -249,41 +248,6 @@ describe('ConfigProvider component defaults', () => {
     expect(search).not.toHaveBeenCalled();
   });
 
-  it('keeps command search functional without leaking default type, readonly, IDs or events', async () => {
-    const change = vi.fn();
-    render(
-      <ConfigProvider
-        components={{
-          Input: {
-            type: 'password',
-            readOnly: true,
-            required: true,
-            id: 'shared-id',
-            onChange: change,
-          },
-        }}
-      >
-        <CommandPalette
-          open
-          shortcut={false}
-          items={[
-            { key: 'copy', label: 'Copy' },
-            { key: 'save', label: 'Save' },
-          ]}
-        />
-      </ConfigProvider>,
-    );
-    const search = screen.getByRole('combobox');
-    expect(search).toHaveAttribute('type', 'text');
-    expect(search).not.toHaveAttribute('readonly');
-    expect(search).not.toHaveAttribute('required');
-    expect(search.id).not.toBe('shared-id');
-    await userEvent.type(search, 'copy');
-    expect(search).toHaveValue('copy');
-    expect(screen.getByRole('option', { name: 'Copy' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Save' })).toBeNull();
-    expect(change).not.toHaveBeenCalled();
-  });
   it('respects instance, inner, outer and builtin precedence including false and undefined', () => {
     render(
       <>
@@ -292,7 +256,7 @@ describe('ConfigProvider component defaults', () => {
           <Button>Outer</Button>
           <ConfigProvider components={{ Button: { size: 'lg', danger: false } }}>
             <Button size={undefined}>Inner</Button>
-            <Button size="md" variant="soft">
+            <Button size="md" variant="link">
               Instance
             </Button>
           </ConfigProvider>
@@ -303,7 +267,7 @@ describe('ConfigProvider component defaults', () => {
       </>,
     );
     expect(screen.getByRole('button', { name: 'Built in' })).toHaveClass(
-      'leaf-button--solid',
+      'leaf-button--outline',
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Outer' })).toHaveClass(
@@ -317,7 +281,7 @@ describe('ConfigProvider component defaults', () => {
     );
     expect(screen.getByRole('button', { name: 'Inner' })).not.toHaveClass('leaf-button--danger');
     expect(screen.getByRole('button', { name: 'Instance' })).toHaveClass(
-      'leaf-button--soft',
+      'leaf-button--link',
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Inherited' })).toHaveClass('leaf-button--sm');
@@ -534,7 +498,8 @@ describe('ConfigProvider component defaults', () => {
     );
     const { rerender } = render(example('sm'));
     await userEvent.click(screen.getByRole('combobox'));
-    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]')!;
+    const panel = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+    if (!panel) throw new Error('Select popup missing');
     expect(panel.style.color).toBe('blue');
     expect(panel.style.background).toBe('');
     rerender(example('lg'));

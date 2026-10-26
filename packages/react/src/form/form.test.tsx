@@ -177,11 +177,11 @@ describe('Form', () => {
     );
     const { container, rerender } = render(fields(true));
     expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
-      '136px',
+      'min(136px, 40%)',
     );
     rerender(fields(false));
     expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
-      '40px',
+      'min(40px, 40%)',
     );
     rerender(
       <Form labelWidth={120}>
@@ -265,11 +265,11 @@ describe('Form', () => {
     const { container, rerender } = render(fields('vertical'));
     const width = () =>
       container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width');
-    expect(width()).toBe('40px');
+    expect(width()).toBe('min(40px, 40%)');
     rerender(fields('horizontal'));
-    expect(width()).toBe('184px');
+    expect(width()).toBe('min(184px, 40%)');
     rerender(fields('vertical'));
-    expect(width()).toBe('40px');
+    expect(width()).toBe('min(40px, 40%)');
   });
   it('inherits region layout defaults and keeps explicit field overrides', () => {
     const { container } = render(

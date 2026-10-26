@@ -1,24 +1,34 @@
-import { Button, Modal } from '@ifhover/leaf-ui';
-import { Save } from 'lucide-react';
-import { useState } from 'react';
+import { Button, Form, FormField, Input, Modal } from '@ifhover/leaf-ui';
+import { Pencil } from 'lucide-react';
+import { useId, useState } from 'react';
 
 export function ModalDescription() {
   const [open, setOpen] = useState(false);
+  const formId = useId();
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Icon and description
-      </Button>
+      <Button onClick={() => setOpen(true)}>Rename file</Button>
       <Modal
         open={open}
-        title="Save settings"
-        description="Your changes take effect immediately after saving."
-        icon={<Save />}
+        title="Rename file"
+        description="The new name will appear in the file list and downloads."
+        icon={<Pencil />}
         confirmText="Save"
         onClose={() => setOpen(false)}
-        onConfirm={() => setOpen(false)}
+        confirmButtonProps={{ type: 'submit', form: formId }}
       >
-        Save the current settings?
+        <Form
+          id={formId}
+          layout="vertical"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setOpen(false);
+          }}
+        >
+          <FormField label="File name" required>
+            <Input name="filename" defaultValue="Design notes.md" />
+          </FormField>
+        </Form>
       </Modal>
     </>
   );

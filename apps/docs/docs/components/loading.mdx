@@ -2,41 +2,73 @@ import { ComponentExample } from '../../src/components/component-example';
 import { LoadingBasic } from '../../src/examples/loading/basic';
 import { LoadingSizes } from '../../src/examples/loading/sizes';
 import { LoadingOverlay } from '../../src/examples/loading/overlay';
+import { LoadingDelay } from '../../src/examples/loading/delay';
+
+export const leafDoc = { component: 'Loading', primaryApi: 'LoadingProps' };
 
 # Loading 加载
 
 提示内容正在加载或操作正在进行。
 
-## 加载提示
+{/* leaf:section basic */}
 
-<ComponentExample title="加载提示" preview={<LoadingBasic />} fileName="basic.tsx">
+## 基础用法
+
+在等待内容或操作完成时显示加载指示器。
+
+<ComponentExample exampleId="basic" preview={<LoadingBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 不同尺寸
+{/* leaf:section examples */}
 
-<ComponentExample title="不同尺寸" preview={<LoadingSizes />} fileName="sizes.tsx">
+## 示例
+
+### 尺寸
+
+通过 `size` 选择加载指示器的尺寸。
+
+<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width="fit-content" fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## 区域加载
+### 区域加载
 
-加载时覆盖内容区域，完成后恢复操作。
+传入 `children` 后覆盖内容区域，加载层可见时阻止子内容交互。通过 `spinning` 控制加载状态，使用 `tip` 补充提示。
 
-<ComponentExample title="区域加载" preview={<LoadingOverlay />} fileName="overlay.tsx">
+<ComponentExample exampleId="overlay" preview={<LoadingOverlay />} fileName="overlay.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading/overlay.tsx"
 ```
 
 </ComponentExample>
 
-## Loading API
+### 延迟显示
+
+经过 `delay` 毫秒后，若 `spinning` 仍为 `true`，才显示加载提示；在此之前结束加载则不显示。
+
+`delay` 不会延迟请求，也不会在等待期间阻止内容交互。需要立即禁用的操作应单独处理。
+
+<ComponentExample exampleId="delay" preview={<LoadingDelay />} width="fit-content" fileName="delay.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading/delay.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Loading API
+
+加载状态、提示内容与延迟显示的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -44,17 +76,4 @@ import { LoadingOverlay } from '../../src/examples/loading/overlay';
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 图标尺寸 |
 | `tip` | `ReactNode` | — | 提示文字 |
 | `delay` | `number` | `0` | 延迟显示，单位毫秒 |
-| `children` | `ReactNode` | — | 覆盖的内容 |
-
-
-## 类型
-
-可导入以下类型定义属性、组装数据或处理回调。
-
-```ts
-import type { LoadingProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-独立使用展示加载提示；传入 `children` 后覆盖所在区域，并在显示加载层时阻止操作。`delay` 可避免短暂请求造成闪现。
+| `children` | `ReactNode` | — | 被加载遮罩覆盖的内容。 |

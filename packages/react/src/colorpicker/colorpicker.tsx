@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { defaultColors } from '../colors';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
@@ -23,6 +24,7 @@ import {
   usePopupState,
 } from '../shared/floating';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { TabsControl } from '../tabs/tabs';
 import { GradientColorPicker } from './gradient';
 
 export interface ColorPreset {
@@ -60,9 +62,10 @@ export interface ColorPickerProps
 }
 type HSV = { h: number; s: number; v: number; a: number };
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
+const formatItems = ['hex', 'rgb', 'hsl'].map((key) => ({ key, label: key.toUpperCase() }));
 export function SolidColorPicker({
   value,
-  defaultValue = '#20834a',
+  defaultValue = defaultColors.light.primary,
   onChange,
   onChangeComplete,
   format: formatProp,
@@ -113,8 +116,8 @@ export function SolidColorPicker({
     defaultOpen,
   );
   const id = `${useId()}-color`;
-  const color = new TinyColor(current || '#20834a');
-  const hsv = color.isValid ? color.toHsv() : new TinyColor('#20834a').toHsv();
+  const color = new TinyColor(current || defaultColors.light.primary);
+  const hsv = color.isValid ? color.toHsv() : new TinyColor(defaultColors.light.primary).toHsv();
   const [rememberedHue, setRememberedHue] = useState(hsv.h);
   const [coordinates, setCoordinates] = useState<{ value: string; hsv: HSV }>();
   const activeHsv = {
@@ -206,6 +209,9 @@ export function SolidColorPicker({
         data-disabled={disabled || undefined}
         data-readonly={readOnly || undefined}
         data-open={open || undefined}
+        data-format={format}
+        data-show-text={Boolean(showText) || undefined}
+        data-clearable={clearable || undefined}
         onMouseDown={(event) => {
           if (!disabled && event.target === event.currentTarget) event.preventDefault();
         }}
@@ -275,6 +281,7 @@ export function SolidColorPicker({
         />
       </span>
       <FloatingPanel
+        resetSurfaceGeometry
         open={open}
         triggerRef={trigger}
         panelRef={panel}
@@ -365,21 +372,21 @@ export function SolidColorPicker({
             )}
           </div>
         </div>
-        <fieldset className="leaf-color-picker__formats" aria-label={messages.colorPicker.value}>
-          {(['hex', 'rgb', 'hsl'] as const).map((next) => (
-            <button
-              type="button"
-              key={next}
-              aria-pressed={format === next}
-              onClick={() => {
-                if (formatProp === undefined) setFormat(next);
-                onFormatChange?.(next);
-              }}
-            >
-              {next.toUpperCase()}
-            </button>
-          ))}
-        </fieldset>
+        <TabsControl
+          className="leaf-color-picker__formats"
+          aria-label={messages.colorPicker.value}
+          type="segmented"
+          size="sm"
+          block
+          overflow={false}
+          items={formatItems}
+          activeKey={format}
+          onChange={(next) => {
+            if (next !== 'hex' && next !== 'rgb' && next !== 'hsl') return;
+            if (formatProp === undefined) setFormat(next);
+            onFormatChange?.(next);
+          }}
+        />
         <input
           className="leaf-color-picker__input"
           aria-label={messages.colorPicker.value}
@@ -408,7 +415,7 @@ export function SolidColorPicker({
             {
               label: messages.colorPicker.presets,
               colors: [
-                '#20834a',
+                defaultColors.light.primary,
                 '#13a8a8',
                 '#1677ff',
                 '#7654c6',

@@ -113,7 +113,9 @@ for (const format of ['esm', 'cjs']) {
     const relative = file.replaceAll(path.sep, '/');
     const folder = relative.split('/')[0];
     let owner = relative === `shared/calendar.${extension}` ? 'shared-calendar' : null;
-    if (styled.has(folder) && !relative.endsWith(`/index.${extension}`)) {
+    // The always-mounted image scope must not preload its lazy renderer's stylesheet.
+    const stylelessScope = relative === `image/provider.${extension}`;
+    if (styled.has(folder) && !relative.endsWith(`/index.${extension}`) && !stylelessScope) {
       try {
         const tsx = relative.replace(new RegExp(`\\.${extension}$`), '.tsx');
         if ((await stat(path.join(source, tsx))).isFile()) owner = folder;

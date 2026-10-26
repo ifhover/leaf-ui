@@ -1,4 +1,4 @@
-import { AutoComplete, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { AutoComplete, Flex, Form, FormField, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const options = [
@@ -11,29 +11,23 @@ const options = [
 export function AutoCompleteBasic() {
   const [value, setValue] = useState('');
   const [selected, setSelected] = useState('');
+
   return (
     <Form layout="vertical">
       <FormField label="Project name">
         <AutoComplete
           aria-label="Project name"
-          placeholder="Type Leaf or enter any text"
           options={options}
+          placeholder="Type Leaf or enter any text"
           value={value}
           onChange={setValue}
           onSelect={setSelected}
         />
       </FormField>
-      <Text tone="muted">
-        Input:{value || 'Empty'} · Last selection:{selected || 'None'}
-      </Text>
-      <FormField label="Disabled suggestions">
-        <AutoComplete
-          aria-label="Disabled suggestions"
-          options={options}
-          disabled
-          defaultValue="Leaf Garden"
-        />
-      </FormField>
+      <Flex direction="column" gap={8} role="status">
+        <Text tone="muted">Input: {value || 'Empty'}</Text>
+        <Text tone="muted">Last selection: {selected || 'None'}</Text>
+      </Flex>
     </Form>
   );
 }

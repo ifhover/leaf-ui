@@ -38,6 +38,7 @@ export function Rate(rawProps: RateProps) {
     size = 'md',
     color,
     colorByValue = false,
+    // Rating colors stay API-driven and distinct from warning feedback.
     colors = ['#ef5350', '#f49b23', '#ffc53d'],
     name,
     form,

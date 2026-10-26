@@ -404,7 +404,7 @@ test('a dialog uses its current constrained height after a viewport resize', asy
   const dialog = page.getByRole('dialog', { name: 'Morphing modal' });
   await expect(dialog).toBeVisible();
   await page.setViewportSize({ width: 1100, height: 500 });
-  await expect(dialog).toHaveCSS('height', '452px');
+  await expect(dialog).toHaveCSS('height', '396px');
   expect(
     await dialog
       .locator('.leaf-modal__viewport')
@@ -412,8 +412,8 @@ test('a dialog uses its current constrained height after a viewport resize', asy
   ).toBe(true);
   const heights = await changeModalStep(dialog);
   expect(heights.start).toBeCloseTo(heights.before, 0);
-  expect(heights.start).toBeCloseTo(452, 0);
-  expect(heights.end).toBeLessThan(heights.start - 40);
+  expect(heights.start).toBeCloseTo(396, 0);
+  expect(heights.end).toBeLessThanOrEqual(heights.start - 40);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(dialog).toHaveCSS('height', `${heights.end}px`);
   await page.keyboard.press('Escape');

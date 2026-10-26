@@ -1,4 +1,4 @@
-import { Button, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Text } from '@ifhover/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 
 export function ButtonLoading() {
@@ -15,11 +15,13 @@ export function ButtonLoading() {
   }
 
   return (
-    <Space wrap>
+    <Flex direction="column" gap="md" align="start">
       <Button loading={status === 'loading'} onClick={save}>
-        {status === 'loading' ? 'Saving' : status === 'saved' ? 'Save again' : 'Save changes'}
+        {status === 'saved' ? 'Save again' : 'Save changes'}
       </Button>
-      <span role="status">{status === 'saved' ? 'Changes saved.' : 'Try saving changes.'}</span>
-    </Space>
+      <Text tone="muted" role="status">
+        {status === 'saved' ? 'Changes saved' : 'Not saved yet'}
+      </Text>
+    </Flex>
   );
 }

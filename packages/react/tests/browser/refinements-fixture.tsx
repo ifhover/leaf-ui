@@ -7,6 +7,8 @@ import {
   Progress,
   Select,
   Space,
+  Tree,
+  TreeSelect,
 } from '@ifhover/leaf-ui';
 
 const people = [
@@ -22,6 +24,36 @@ export function RefinementsFixture() {
       <h1>Refined feedback and popups</h1>
       <Space direction="vertical" align="stretch" size={24} style={{ maxWidth: 800 }}>
         <Select aria-label="Animated select" options={people} defaultValue="alice" />
+        <TreeSelect aria-label="Animated tree select" options={people} defaultValue="alice" />
+        <TreeSelect aria-label="Empty tree select" options={people} />
+        <Tree
+          aria-label="Animated tree"
+          data={people.map(({ value, label, disabled }) => ({
+            key: value,
+            title: label,
+            disabled,
+          }))}
+          defaultSelectedKeys={[params.has('disabled-selection') ? 'disabled' : 'alice']}
+        />
+        <Select
+          aria-label="Custom option height select"
+          optionHeight={48}
+          options={people}
+          defaultValue="alice"
+        />
+        <Select
+          aria-label="Long option select"
+          style={{ width: 280 }}
+          options={[
+            { value: 'first', label: 'First compact option' },
+            { value: 'second', label: 'Second compact option' },
+            {
+              value: 'long',
+              label:
+                'A deliberately long option label that must wrap onto another line without being clipped by the row height, and this additional sentence ensures the row needs more than one line at the narrow test width',
+            },
+          ]}
+        />
         <Cascader
           aria-label="Animated cascader"
           options={[
@@ -51,6 +83,27 @@ export function RefinementsFixture() {
           ]}
         >
           <Button variant="outline">Animated menu</Button>
+        </Dropdown>
+        <Dropdown
+          items={[
+            { key: 'open', label: 'Open', extra: <span>Ctrl O</span> },
+            {
+              key: 'more',
+              label: 'More',
+              extra: <span>Ctrl M</span>,
+              children: [{ key: 'archive', label: 'Archive' }],
+            },
+            {
+              key: 'status',
+              label: 'Status',
+              extra: <span>Awaiting a long-running export to finish</span>,
+            },
+          ]}
+        >
+          <Button variant="outline">Trailing menu</Button>
+        </Dropdown>
+        <Dropdown popupWidth={160} items={[{ key: 'compact', label: 'Compact menu' }]}>
+          <Button variant="outline">Narrow menu</Button>
         </Dropdown>
         <Alert title="One-line notice" />
         <Alert

@@ -1,48 +1,81 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { StatisticBasic, StatisticCountdown } from '../../../src/examples/statistic/basic';
-import { StatisticAnimation } from '../../../src/examples/statistic/animation';
+import { StatisticBasic } from '../../../src/examples/en/statistic/basic';
+import { StatisticFormatting } from '../../../src/examples/en/statistic/formatting';
+import { StatisticCountdown } from '../../../src/examples/en/statistic/countdown';
+import { StatisticAnimation } from '../../../src/examples/en/statistic/animation';
+
+export const leafDoc = { component: 'Statistic', primaryApi: 'StatisticProps' };
 
 # Statistic
 
-Display metrics and countdowns. Numbers initially count up or down from 0 to the target. Later changes animate from the currently displayed value to the new target.
+Display metrics and countdowns.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<StatisticBasic english />} fileName="basic.tsx">
+Use `title` and `value` to display a metric name and value.
 
-```tsx lineNumbers file="../../../src/examples/statistic/basic.tsx"
+<ComponentExample exampleId="basic" preview={<StatisticBasic />} fileName="basic.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/statistic/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Value animation
+{/* leaf:section examples */}
 
-Set `initialValue` to choose the starting number for the first animation. The default duration is 1000 milliseconds; use `duration` to adjust it. Repeated increases or decreases continue from the currently displayed value. Replay remounts the example to start again from 1,000.
+## Examples
 
-<ComponentExample title="Value animation" preview={<StatisticAnimation english />} fileName="animation.tsx">
+### Number formatting
 
-```tsx lineNumbers file="../../../src/examples/statistic/animation.tsx"
+<ComponentExample exampleId="formatting" preview={<StatisticFormatting />} fileName="formatting.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/statistic/formatting.tsx"
 ```
 
 </ComponentExample>
 
-Set `animation={false}` or `duration={0}` to display the target immediately. Animation follows the regional motion speed, `ConfigProvider`'s `theme.motion`, and the system reduced-motion preference. Counting starts after `loading` ends. Only finite `number` values animate; strings and nonfinite numbers display immediately. `formatter` receives the intermediate numbers. Server rendering outputs the target, and animation starts after the client mounts. Countdown updates remain immediate.
+Numbers use the current locale; strings display as provided. When supplying `formatter`, handle the formatting in that callback.
 
-## Countdown
+### Value animation
 
-<ComponentExample title="Countdown" preview={<StatisticCountdown english />} fileName="basic.tsx">
+Numbers start from 0 by default; later changes continue from the currently displayed value. Use `initialValue` for the initial starting point and `duration` for the timing. Set `animation={false}` or `duration={0}` for immediate updates.
 
-```tsx lineNumbers file="../../../src/examples/statistic/basic.tsx"
+<ComponentExample exampleId="animation" preview={<StatisticAnimation />} fileName="animation.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/statistic/animation.tsx"
 ```
 
 </ComponentExample>
 
-## Statistic API
+Only finite `number` values animate, and `formatter` receives intermediate values during the animation. Counting starts after loading ends and respects reduced-motion preferences.
+
+### Countdown
+
+`value` is a deadline as a `Date` or millisecond timestamp, not a remaining duration. Each run lasts 10 seconds and updates the completion feedback through `onFinish`. The component does not automatically announce every numeric update.
+
+<ComponentExample exampleId="countdown" preview={<StatisticCountdown />} fileName="countdown.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/statistic/countdown.tsx"
+```
+
+</ComponentExample>
+
+For server rendering, pass the same `initialRemaining` on the server and client to keep the first render consistent. After mounting, the countdown follows the actual deadline.
+
+{/* leaf:section api */}
+
+## API
+
+### Statistic API
+
+Configure the metric name, value format and change animation.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | Title content. |
-| `value` | `number \| string` | — | Required. Controlled value. |
+| `value` | `number \| string` | Required | Number or text to display. |
 | `precision` | `number` | — | Decimal precision. |
 | `grouping` | `boolean` | `true` | Use localized digit grouping. |
 | `prefix` | `ReactNode` | — | Leading content. |
@@ -53,7 +86,9 @@ Set `animation={false}` or `duration={0}` to display the target immediately. Ani
 | `initialValue` | `number` | `0` | Starting value for the first animation; later changes start from the current displayed value. |
 | `duration` | `number` | `1000` | Animation duration in milliseconds at the default motion speed, scaled by the regional motion duration; 0 updates immediately. |
 
-## Countdown API
+### Countdown API
+
+Configure the countdown target time and completion feedback.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -61,18 +96,8 @@ Set `animation={false}` or `duration={0}` to display the target immediately. Ani
 | `prefix` | `ReactNode` | — | Leading content. |
 | `suffix` | `ReactNode` | — | Trailing content. |
 | `loading` | `boolean` | — | Show a loading state. |
-| `value` | `number \| Date` | — | Required. Deadline as a Date or a millisecond timestamp. |
+| `value` | `number \| Date` | Required | Deadline as a Date or a millisecond timestamp. |
 | `format` | `string` | `'HH:mm:ss'` | Format using DD, HH, mm, ss, SSS; HH can show total hours. |
-| `onFinish` | `() => void` | — | Called once on completion. |
-| `onChange` | `(remaining: number) => void` | — | Called when the value changes. |
+| `onFinish` | `() => void` | — | Called once for the current deadline; the application provides completion feedback. |
+| `onChange` | `(remaining: number) => void` | — | Called with remaining milliseconds on each update, or 0 when finished. |
 | `initialRemaining` | `number` | — | Remaining milliseconds for SSR; updates from the deadline after mounting. |
-
-## Types and interaction
-
-Import the props and data types when creating reusable configuration.
-
-```ts
-import type { StatisticProps, CountdownProps } from '@ifhover/leaf-ui';
-```
-
-Provide accessible labels for icon-only actions. Interactive controls support keyboard navigation and respect ConfigProvider themes and reduced motion.

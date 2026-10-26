@@ -1,12 +1,13 @@
-import { Form, FormField, TimePicker } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
 export function TimePickerTwelveHours() {
   return (
     <Form layout="vertical">
       <FormField label="12-hour clock">
-        <TimePicker aria-label="12-hour clock" use12Hours defaultValue="14:30" />
+        <DatePicker picker="time" aria-label="12-hour clock" use12Hours defaultValue="14:30" />
       </FormField>
       <FormField label="Include seconds">
-        <TimePicker
+        <DatePicker
+          picker="time"
           aria-label="Include seconds"
           use12Hours
           showSeconds

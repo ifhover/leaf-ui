@@ -1,15 +1,15 @@
 import { componentCatalog } from './component-catalog';
 
 const colors: Record<string, string> = {
-  '#20834a': 'var(--leaf-color-primary)',
-  '#eaf4ed': 'var(--leaf-color-primary-surface-9)',
-  '#e8f4ec': 'var(--leaf-color-primary-surface-9)',
-  '#edf6ee': 'var(--leaf-color-primary-surface-9)',
-  '#eff7f1': 'var(--leaf-color-primary-surface-9)',
-  '#eff5f0': 'var(--leaf-color-primary-surface-9)',
-  '#e9f3ed': 'var(--leaf-color-primary-surface-9)',
-  '#e4f1e8': 'var(--leaf-color-primary-surface-9)',
-  '#bddcc7': 'var(--leaf-color-primary-border-30)',
+  '#1e964f': 'var(--leaf-color-primary)',
+  '#eaf4ed': 'var(--leaf-color-primary-soft)',
+  '#e8f4ec': 'var(--leaf-color-primary-soft)',
+  '#edf6ee': 'var(--leaf-color-primary-soft)',
+  '#eff7f1': 'var(--leaf-color-primary-soft)',
+  '#eff5f0': 'var(--leaf-color-primary-soft)',
+  '#e9f3ed': 'var(--leaf-color-primary-soft)',
+  '#e4f1e8': 'var(--leaf-color-primary-soft)',
+  '#bddcc7': 'var(--leaf-color-primary-border)',
   '#202024': 'var(--leaf-color-text)',
   '#24372c': 'var(--leaf-color-text)',
   '#68686f': 'var(--leaf-color-text-muted)',
@@ -23,24 +23,24 @@ const colors: Record<string, string> = {
   '#eeeef0': 'var(--leaf-color-divider)',
   '#f6f6f7': 'var(--leaf-color-surface-muted)',
   '#fafafb': 'var(--leaf-color-surface-muted)',
-  '#e7ece8': 'var(--leaf-color-border-surface-35)',
-  '#e9efeb': 'var(--leaf-color-border-surface-35)',
-  '#edf1ee': 'var(--leaf-color-border-surface-35)',
+  '#e7ece8': 'var(--leaf-color-surface-muted)',
+  '#e9efeb': 'var(--leaf-color-surface-muted)',
+  '#edf1ee': 'var(--leaf-color-surface-muted)',
   '#f4f7f5': 'var(--leaf-color-surface-muted)',
   '#f5f7f6': 'var(--leaf-color-surface-muted)',
   '#f0f4f1': 'var(--leaf-color-surface-muted)',
-  '#c83c3c': 'var(--leaf-color-danger)',
-  '#e8adad': 'var(--leaf-color-danger-border-30)',
-  '#fff1f1': 'var(--leaf-color-danger-surface-9)',
+  '#dd3f2e': 'var(--leaf-color-danger)',
+  '#e0b1ab': 'var(--leaf-color-danger-border)',
+  '#fceeec': 'var(--leaf-color-danger-soft)',
   '#1677ff': 'var(--leaf-color-info)',
-  '#edf5ff': 'var(--leaf-color-info-surface-9)',
-  '#eff5ff': 'var(--leaf-color-info-surface-9)',
-  '#e8effb': 'var(--leaf-color-info-surface-9)',
-  '#faad14': 'var(--leaf-color-warning)',
+  '#edf5ff': 'var(--leaf-color-info-soft)',
+  '#eff5ff': 'var(--leaf-color-info-soft)',
+  '#e8effb': 'var(--leaf-color-info-soft)',
+  '#d38b11': 'var(--leaf-color-warning)',
   '#ffc53d': 'var(--leaf-color-warning)',
-  '#8d671c': 'var(--leaf-color-warning-text-80)',
-  '#fff6e9': 'var(--leaf-color-warning-surface-9)',
-  '#f6eedb': 'var(--leaf-color-warning-surface-9)',
+  '#8d671c': 'var(--leaf-color-warning-ink)',
+  '#fff6e9': 'var(--leaf-color-warning-soft)',
+  '#f6eedb': 'var(--leaf-color-warning-soft)',
   '#f4effb': 'color-mix(in srgb, #7654c6 8%, var(--leaf-color-surface))',
   '#f1edf9': 'color-mix(in srgb, #7654c6 8%, var(--leaf-color-surface))',
   '#d9cdee': 'color-mix(in srgb, #7654c6 25%, var(--leaf-color-surface))',
@@ -49,23 +49,23 @@ const colors: Record<string, string> = {
 };
 
 // Decorative green illustration shades follow the primary color, too.
-const shades: Record<string, number> = {
-  '#387b56': 85,
-  '#79b68c': 60,
-  '#81b58f': 60,
-  '#8ebfa3': 50,
-  '#8aa693': 50,
-  '#91ae99': 45,
-  '#9cab9f': 40,
-  '#a3c7ae': 35,
-  '#bdcdbf': 25,
-  '#becac2': 25,
-  '#c1d2c5': 25,
-  '#c5dfce': 20,
-  '#d7ebe0': 15,
-  '#d9eddf': 15,
-  '#dae3dc': 15,
-  '#e1e9e3': 10,
+const shades: Record<string, string> = {
+  '#387b56': 'var(--leaf-color-primary-dark-1)',
+  '#79b68c': 'var(--leaf-color-primary-light-3)',
+  '#81b58f': 'var(--leaf-color-primary-light-3)',
+  '#8ebfa3': 'var(--leaf-color-primary-light-3)',
+  '#8aa693': 'var(--leaf-color-primary-light-3)',
+  '#91ae99': 'var(--leaf-color-primary-light-3)',
+  '#9cab9f': 'var(--leaf-color-primary-light-7)',
+  '#a3c7ae': 'var(--leaf-color-primary-light-7)',
+  '#bdcdbf': 'var(--leaf-color-primary-light-7)',
+  '#becac2': 'var(--leaf-color-primary-light-7)',
+  '#c1d2c5': 'var(--leaf-color-primary-light-7)',
+  '#c5dfce': 'var(--leaf-color-primary-light-7)',
+  '#d7ebe0': 'var(--leaf-color-primary-light-9)',
+  '#d9eddf': 'var(--leaf-color-primary-light-9)',
+  '#dae3dc': 'var(--leaf-color-primary-light-9)',
+  '#e1e9e3': 'var(--leaf-color-primary-light-9)',
 };
 
 function prepareThumbnail(source: string, slug: string) {
@@ -78,19 +78,19 @@ function prepareThumbnail(source: string, slug: string) {
         // White labels/checkmarks stay distinct from theme-aware panel surfaces.
         if (color === '#fff' || color === '#ffffff' || color === 'white') {
           if (element.startsWith('<rect ')) return `${attr}="var(--leaf-color-surface)"`;
-          if (element.startsWith('<text ')) return `${attr}="var(--leaf-color-on-primary)"`;
+          if (element.startsWith('<text ')) {
+            // Tooltip uses the inverse text/surface pair, not the solid-action foreground.
+            const foreground =
+              slug === 'tooltip' ? 'var(--leaf-color-surface)' : 'var(--leaf-color-on-primary)';
+            return `${attr}="${foreground}"`;
+          }
           return paint;
         }
         // Success glyphs carry meaning independently of the selected site color.
-        if (color === '#20834a' && attr === 'stroke' && (slug === 'alert' || slug === 'result')) {
+        if (color === '#1e964f' && attr === 'stroke' && (slug === 'alert' || slug === 'result')) {
           return `${attr}="var(--leaf-color-success)"`;
         }
-        const shade = shades[color];
-        const replacement =
-          colors[color] ??
-          (shade === undefined
-            ? undefined
-            : `color-mix(in srgb, var(--leaf-color-primary) ${shade}%, var(--leaf-color-surface))`);
+        const replacement = colors[color] ?? shades[color];
         return replacement ? `${attr}="${replacement}"` : paint;
       }),
     );

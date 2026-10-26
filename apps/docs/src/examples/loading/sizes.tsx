@@ -1,19 +1,23 @@
-import { Flex, Loading, Text } from '@ifhover/leaf-ui';
+import { Flex, Grid, Loading, Text } from '@ifhover/leaf-ui';
+import { Fragment } from 'react';
+
+const sizes = [
+  { value: 'sm', label: '小' },
+  { value: 'md', label: '中（默认）' },
+  { value: 'lg', label: '大' },
+] as const;
+
 export function LoadingSizes() {
   return (
-    <Flex gap="md" align="center" wrap justify="center">
-      <Flex direction="column" gap="sm" align="start">
-        <Text>小尺寸</Text>
-        <Loading size="sm" />
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>默认尺寸</Text>
-        <Loading />
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>大尺寸</Text>
-        <Loading size="lg" />
-      </Flex>
-    </Flex>
+    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+      {sizes.map(({ value, label }) => (
+        <Fragment key={value}>
+          <Text tone="muted">{label}</Text>
+          <Flex>
+            <Loading size={value} />
+          </Flex>
+        </Fragment>
+      ))}
+    </Grid>
   );
 }

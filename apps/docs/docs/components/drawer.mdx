@@ -1,84 +1,115 @@
-import { DrawerSections } from '../../src/examples/drawer/sections';
-import { Capabilities } from '../../src/examples/drawer/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { DrawerBasic } from '../../src/examples/drawer/basic';
+import { DrawerPlacement } from '../../src/examples/drawer/placement';
+import { DrawerSections } from '../../src/examples/drawer/sections';
+import { DrawerResize } from '../../src/examples/drawer/resize';
+import { DrawerNested } from '../../src/examples/drawer/nested';
+
+export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 # Drawer 抽屉
 
 从页面边缘展开内容，查看详情或完成操作。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<DrawerBasic />} fileName="basic.tsx">
+通过 `onClose` 响应关闭请求并更新 `open`。没有 `title` 时，使用 `aria-label` 提供名称。
+
+<ComponentExample exampleId="basic" preview={<DrawerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 调整宽度与嵌套推移
+{/* leaf:section examples */}
 
-<ComponentExample title="调整宽度与嵌套推移" preview={<Capabilities />} fileName="capabilities.tsx" width="fit-content">
+## 示例
 
-```tsx lineNumbers file="../../src/examples/drawer/capabilities.tsx"
+### 展开方向
+
+左右方向使用 `width`，上下方向使用 `height`。
+
+<ComponentExample exampleId="placement" preview={<DrawerPlacement />} fileName="placement.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/drawer/placement.tsx"
 ```
 
 </ComponentExample>
 
-## 通知偏好
+### 底部提交
 
-标题、内容与底部操作分区，适合较长的设置流程。
+通过按钮的 `form` 属性关联抽屉内的表单，保留原生校验；提交与关闭都由应用处理。
 
-<ComponentExample title="通知偏好" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
+<ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/sections.tsx"
 ```
 
 </ComponentExample>
 
-## Drawer API
+### 调整尺寸
+
+<a id="进阶用法"></a>
+
+启用 `resizable` 后，可拖动边缘，或聚焦分隔条后使用方向键调整。`minSize` 与 `maxSize` 限制 `onResize` 返回的调整值，实际可见尺寸仍受视口限制；修改 `width` 或 `height` 会重置手动调整值。
+
+<ComponentExample exampleId="resize" preview={<DrawerResize />} fileName="resize.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/drawer/resize.tsx"
+```
+
+</ComponentExample>
+
+### 嵌套推移
+
+在子抽屉上设置 `push`，打开时推移最近的父弹层；`true` 对应 40px，也可直接传入距离。Escape 仅关闭最上层抽屉，关闭后焦点回到对应触发按钮。父抽屉关闭时同时重置子抽屉的 `open`，避免下次打开时子层仍展开。
+
+<ComponentExample exampleId="nested" preview={<DrawerNested />} fileName="nested.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/drawer/nested.tsx"
+```
+
+</ComponentExample>
+
+内容保留与焦点配置参见 [Modal 的进阶用法](/components/modal#进阶用法)。
+
+{/* leaf:section api */}
+
+## API
+
+### Drawer API
+
+抽屉的受控打开状态、展开方向、内容区域与关闭行为配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
-| `open` | `boolean` | 必填 | 必需。是否展开 |
-| `title` | `ReactNode` | — | 标题 |
+| `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
+| `title` | `ReactNode` | — | 抽屉标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
-| `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
-| `footer` | `ReactNode` | — | 底部内容 |
-| `extra` | `ReactNode` | — | 标题旁的操作内容 |
+| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
 | `width` | `number \| string` | `380` | 左右抽屉宽度 |
 | `height` | `number \| string` | `300` | 上下抽屉高度 |
-| `closable` | `boolean` | `true` | 关闭按钮 / 点击遮罩 / Escape 关闭 |
-| `maskClosable` | `boolean` | `true` | 关闭按钮 / 点击遮罩 / Escape 关闭 |
-| `keyboard` | `boolean` | `true` | 关闭按钮 / 点击遮罩 / Escape 关闭 |
-| `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
-| `afterClose` | `() => void` | — | 关闭过渡结束后触发 |
-| `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
-| `destroyOnClose` | `boolean` | `false` | 关闭过渡完成后卸载内容；默认保留。 |
-| `preserve` | `boolean` | — | 显式控制关闭后是否保留内容，优先于 destroyOnClose。 |
-| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 自定义挂载或滚动容器。 |
-| `push` | `boolean \| number` | `false` | 打开嵌套抽屉时推动父弹层，可指定距离。 |
+| `footer` | `ReactNode` | — | 底部内容 |
+| `extra` | `ReactNode` | — | 标题旁的操作内容 |
+| `variant` | `'plain' \| 'card'` | `'card'` | 内容外观；card 将正文分为独立的内容面。 |
+| `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
+| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
+| `closable` | `boolean` | `true` | 显示关闭按钮。 |
+| `maskClosable` | `boolean` | `true` | 点击遮罩时请求关闭。 |
+| `keyboard` | `boolean` | `true` | 允许按 Escape 请求关闭。 |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
 | `resizable` | `boolean` | `false` | 允许拖动和使用方向键调整大小。 |
 | `minSize` | `number` | `240` | 最小尺寸，单位为像素。 |
 | `maxSize` | `number` | `900` | 最大尺寸，单位为像素。 |
-| `onResize` | `(size: number) => void` | — | 大小改变时调用。 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { DrawerProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-通过 footer 放置取消、提交等操作；表单提交按钮可使用 form 属性关联抽屉内的表单。标题为空时请使用 aria-label 提供名称。支持嵌套弹窗和抽屉，关闭后焦点会回到打开位置。
-
-## 外观与丰富内容
-
-`description` 与 `icon` 用于说明当前任务。默认标题和底部操作有浅分隔线，底部使用淡灰辅助面；`divided={false}` 使用留白分区。
+| `onResize` | `(size: number) => void` | — | 用户拖动或键盘调整时返回新尺寸；width 或 height 改变会重置手动尺寸。 |
+| `push` | `boolean \| number` | `false` | 推动最近的父弹层；true 使用 40px，数字指定距离。 |
+| `afterClose` | `() => void` | — | 关闭过渡结束后触发 |
+| `destroyOnClose` | `boolean` | `false` | 关闭后卸载内容；preserve 优先，forceRender 会保持挂载。 |
+| `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
+| `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |

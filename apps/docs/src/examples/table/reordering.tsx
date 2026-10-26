@@ -1,66 +1,29 @@
-import { Avatar, Space, Tag } from '@ifhover/leaf-ui';
 import { DataTable } from '@ifhover/leaf-ui/table';
-import type { ColumnDef } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', status: 'active' },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', status: 'active' },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', status: 'invited' },
+  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
+  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
+  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
 ];
-type Member = (typeof members)[number];
+const columns = [
+  { accessorKey: 'name', header: '成员' },
+  { accessorKey: 'team', header: '团队' },
+  { accessorKey: 'projects', header: '项目数' },
+];
 
-export function TableReordering({ english = false }: { english?: boolean }) {
+export function TableReordering() {
   const [data, setData] = useState(members);
-  const columns = useMemo<ColumnDef<Member>[]>(
-    () => [
-      {
-        accessorKey: 'name',
-        header: english ? 'Member' : '成员',
-        size: 220,
-        cell: ({ row }) => (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Avatar size="sm">{row.original.name[0]}</Avatar>
-            <strong>{row.original.name}</strong>
-          </div>
-        ),
-      },
-      { accessorKey: 'team', header: english ? 'Team' : '团队' },
-      {
-        accessorKey: 'status',
-        header: english ? 'Status' : '状态',
-        cell: ({ getValue }) => (
-          <Tag color={getValue() === 'active' ? 'success' : 'default'}>
-            {getValue() === 'active'
-              ? english
-                ? 'Active'
-                : '活跃'
-              : english
-                ? 'Invited'
-                : '已邀请'}
-          </Tag>
-        ),
-      },
-    ],
-    [english],
-  );
   return (
-    <Space direction="vertical" align="stretch">
-      <p>
-        {english ? 'Use the handles to reorder rows or columns.' : '使用行首和表头的手柄调整顺序。'}
-      </p>
-      <DataTable
-        data={data}
-        columns={columns}
-        rowKey="id"
-        caption={english ? 'Team priorities' : '团队顺序'}
-        aria-label={english ? 'Reorderable team' : '可排序团队'}
-        getRowLabel={(row) => row.original.name}
-        options={{ enableSorting: false }}
-        pagination={false}
-        columnReordering
-        onRowReorder={({ rows }) => setData(rows.map((row) => row.original))}
-      />
-    </Space>
+    <DataTable
+      data={data}
+      columns={columns}
+      rowKey="id"
+      aria-label="可排序团队"
+      getRowLabel={(row) => row.original.name}
+      pagination={false}
+      columnReordering
+      onRowReorder={({ rows }) => setData(rows.map((row) => row.original))}
+    />
   );
 }

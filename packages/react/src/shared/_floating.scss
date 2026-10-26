@@ -13,6 +13,8 @@ $include-field-styles: true !default;
   --leaf-floating-option-radius: var(--leaf-surface-inner-radius);
   --leaf-popup-x: 0px;
   --leaf-popup-y: -4px;
+  --leaf-popup-scale: 0.985;
+  --leaf-popup-scale-closing: 0.98;
   --leaf-popup-origin-x: center;
   --leaf-popup-origin-y: top;
   box-sizing: border-box;
@@ -29,7 +31,7 @@ $include-field-styles: true !default;
   color: var(--leaf-component-floating-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
-  line-height: 1.5;
+  line-height: var(--leaf-line-height);
   background: var(
     --leaf-component-floating-background,
     var(--leaf-color-surface-raised, var(--leaf-color-surface))
@@ -66,19 +68,19 @@ $include-field-styles: true !default;
   @starting-style {
     opacity: 0;
     translate: var(--leaf-popup-x) var(--leaf-popup-y);
-    scale: 0.985;
+    scale: var(--leaf-popup-scale);
   }
   &[data-positioned='false'] {
     opacity: 0;
     translate: var(--leaf-popup-x) var(--leaf-popup-y);
-    scale: 0.985;
+    scale: var(--leaf-popup-scale);
   }
 
   &[data-state='closing'] {
     pointer-events: none;
     opacity: 0;
     translate: var(--leaf-popup-x) var(--leaf-popup-y);
-    scale: 0.98;
+    scale: var(--leaf-popup-scale-closing);
     transition-duration: var(--leaf-motion-duration);
     transition-timing-function: var(--leaf-motion-easing);
   }
@@ -130,20 +132,20 @@ $include-field-styles: true !default;
   padding: var(--leaf-density-option-padding) var(--leaf-density-field-padding);
   padding-block: min(
     var(--leaf-density-option-padding),
-    max(0px, calc((var(--leaf-density-option-height) - 1.4em) / 2))
+    max(0px, calc((var(--leaf-density-option-height) - var(--leaf-line-height-sm)) / 2))
   );
   border: 0;
   border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
   color: inherit;
   background: transparent;
   font: inherit;
-  line-height: 1.4;
+  line-height: var(--leaf-line-height-sm);
   text-align: start;
   cursor: pointer;
   transition:
-    color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing);
+    color var(--leaf-motion-color) var(--leaf-motion-easing),
+    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
 
   & + & {
     margin-top: 2px;
@@ -171,9 +173,9 @@ $include-field-styles: true !default;
 
   @if $include-field-styles {
     &[aria-selected='true'] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-text);
       font-weight: var(--leaf-font-weight);
-      background: var(--leaf-color-primary-surface-9);
+      background: var(--leaf-color-option-hover);
     }
   }
 
@@ -185,7 +187,7 @@ $include-field-styles: true !default;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    outline: 2px solid var(--leaf-color-text-muted);
     outline-offset: -2px;
   }
 }
@@ -215,7 +217,7 @@ $include-field-styles: true !default;
   width: var(--leaf-option-highlight-width, 0px);
   height: var(--leaf-option-highlight-height, var(--leaf-density-option-height));
   translate: var(--leaf-option-highlight-x, 0px) var(--leaf-option-highlight-y, 0px);
-  border: 1px solid var(--leaf-color-border-alpha-55);
+  border: 1px solid var(--leaf-color-divider);
   border-radius: var(--leaf-floating-option-radius);
   background: var(--leaf-color-option-hover);
   pointer-events: none;
@@ -223,15 +225,15 @@ $include-field-styles: true !default;
     translate var(--leaf-motion-duration) var(--leaf-motion-spring),
     height var(--leaf-motion-fast) var(--leaf-motion-easing),
     width var(--leaf-motion-fast) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+    border-color var(--leaf-motion-color) var(--leaf-motion-easing);
   &[data-ready='false'],
   &[data-hidden] {
     visibility: hidden;
   }
   &[data-selected] {
-    background: var(--leaf-color-primary-surface-9);
-    border-color: var(--leaf-color-primary-alpha-15);
+    background: var(--leaf-color-option-hover);
+    border-color: transparent;
   }
 }
 .leaf-floating[data-hover-motion] .leaf-floating__option {
@@ -243,19 +245,6 @@ $include-field-styles: true !default;
   &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
     background: transparent;
   }
-}
-// Suggestion listboxes announce the active candidate with aria-selected; it is not a saved value.
-.leaf-floating[data-selection='candidate'] .leaf-floating__option[aria-selected='true'] {
-  color: inherit;
-  font-weight: inherit;
-  background: transparent;
-  &:not(:disabled):not([aria-disabled='true']) {
-    background: var(--leaf-color-option-hover);
-  }
-}
-.leaf-floating[data-selection='candidate'][data-hover-motion]
-  .leaf-floating__option[aria-selected='true']:not(:disabled):not([aria-disabled='true']) {
-  background: transparent;
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-floating__highlight {

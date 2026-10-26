@@ -51,14 +51,19 @@ export function ComponentOverview() {
                     // biome-ignore lint/security/noDangerouslySetInnerHtml: Only repository-owned static SVG markup is inlined.
                     dangerouslySetInnerHTML={{
                       __html: (componentThumbnails[component.slug] ?? '').replace(
-                        '>#20834A<',
+                        '>#1e964f<',
                         `>${color.toUpperCase()}<`,
                       ),
                     }}
                   />
                   <div className="leaf-component-card__body">
                     <h3>
-                      {component.name} {!english && <span>{component.label}</span>}
+                      <span className="leaf-component-card__title">
+                        {component.name}{' '}
+                        {!english && (
+                          <span className="leaf-component-card__label">{component.label}</span>
+                        )}
+                      </span>
                       <ArrowUpRight size={15} aria-hidden="true" />
                     </h3>
                     <p>{component.description}</p>

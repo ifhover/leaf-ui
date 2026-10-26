@@ -1,4 +1,8 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-anchor {
+  @include mixins.accent-soft-feedback-family;
+
   position: relative;
   isolation: isolate;
   font: var(--leaf-component-anchor-font-size, var(--leaf-font-size)) var(--leaf-font-family);
@@ -48,10 +52,14 @@
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:hover,
+    &:hover:not([aria-current]) {
+      color: var(--leaf-color-primary-ink);
+      background: var(--leaf-color-option-hover);
+    }
     &[aria-current] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: var(--leaf-color-primary-alpha-4);
+      color: var(--leaf-color-primary-ink);
+      border-inline-start-color: var(--leaf-accent-soft-border);
+      background: var(--leaf-accent-soft-background);
     }
     &:focus-visible {
       outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));

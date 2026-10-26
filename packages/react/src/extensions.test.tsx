@@ -102,26 +102,20 @@ describe('Extended inputs and form integration', () => {
     expect(change).toHaveBeenLastCalledWith('123', '123');
     expect(screen.getByRole('textbox')).toHaveValue('12');
   });
-  it('enforces CheckboxGroup limits while retaining checked values in native submission', async () => {
+  it('submits only currently checked CheckboxGroup values without limiting selections', async () => {
     const { container } = render(
       <form>
-        <CheckboxGroup
-          name="choice"
-          options={['A', 'B', 'C']}
-          defaultValue={['A']}
-          minCount={1}
-          maxCount={2}
-        />
+        <CheckboxGroup name="choice" options={['A', 'B', 'C']} defaultValue={['A']} />
       </form>,
     );
     await userEvent.click(screen.getByRole('checkbox', { name: 'A' }));
-    expect(screen.getByRole('checkbox', { name: 'A' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'A' })).not.toBeChecked();
     await userEvent.click(screen.getByRole('checkbox', { name: 'B' }));
     await userEvent.click(screen.getByRole('checkbox', { name: 'C' }));
-    expect(screen.getByRole('checkbox', { name: 'C' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'C' })).toBeChecked();
     expect(
       new FormData(container.querySelector('form') as HTMLFormElement).getAll('choice'),
-    ).toEqual(['A', 'B']);
+    ).toEqual(['B', 'C']);
   });
   it('searches once with Enter and respects a prevented Enter event', async () => {
     const search = vi.fn();
@@ -161,8 +155,10 @@ describe('Extended inputs and form integration', () => {
     await userEvent.type(input, '2026-Q2{Enter}');
     expect(change).toHaveBeenLastCalledWith(new Date(2026, 3, 1), '2026-Q2');
     await userEvent.clear(input);
+    expect(change).toHaveBeenLastCalledWith(null, '');
+    change.mockClear();
     await userEvent.type(input, '2026-Q5{Enter}');
-    expect(change).toHaveBeenCalledOnce();
+    expect(change).not.toHaveBeenCalled();
   });
   it('counts textarea characters and restores the count after reset', async () => {
     const { container } = render(
@@ -283,7 +279,6 @@ describe('Extended inputs and form integration', () => {
   it('uses left/right keys for inline Menu hierarchy navigation', async () => {
     render(
       <Menu
-        mode="inline"
         items={[
           { key: 'parent', label: 'Projects', children: [{ key: 'child', label: 'Design' }] },
           { key: 'other', label: 'Settings' },

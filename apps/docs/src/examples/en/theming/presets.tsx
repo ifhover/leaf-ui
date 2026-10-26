@@ -3,6 +3,7 @@ import {
   Card,
   ColorPicker,
   ConfigProvider,
+  Flex,
   Input,
   type LeafTheme,
   Select,
@@ -48,7 +49,7 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
       components: {
         Card: {
           headerBackground:
-            'linear-gradient(180deg, var(--leaf-color-primary-surface-28), var(--leaf-color-primary-surface-8) 48%, var(--leaf-color-primary-surface-14))',
+            'linear-gradient(180deg, color-mix(in srgb, var(--leaf-color-primary) 28%, var(--leaf-color-surface)), color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface)) 48%, color-mix(in srgb, var(--leaf-color-primary) 14%, var(--leaf-color-surface)))',
         },
         Button: {
           active: { shadow: 'inset 1px 2px 3px rgb(0 0 0 / 0.25)' },
@@ -97,10 +98,10 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
 
 export function ThemePresets() {
   const [preset, setPreset] = useState<ThemeStyle>('illustration');
-  const [color, setColor] = useState('#20834a');
+  const [color, setColor] = useState('#1e964f');
   return (
     <ConfigProvider theme={createExampleTheme(preset, color)}>
-      <Space direction="vertical" style={{ width: '100%' }}>
+      <Flex direction="column" gap="md">
         <Tabs
           type="card"
           aria-label="Theme style"
@@ -123,7 +124,7 @@ export function ThemePresets() {
           showText
         />
         <Card title="Your next good idea">
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Flex direction="column" gap="md">
             <Input aria-label="Project name" placeholder="Name your project" />
             <Select
               aria-label="Project type"
@@ -137,9 +138,9 @@ export function ThemePresets() {
               <Button>Create project</Button>
               <Button variant="outline">Maybe later</Button>
             </Space>
-          </Space>
+          </Flex>
         </Card>
-      </Space>
+      </Flex>
     </ConfigProvider>
   );
 }

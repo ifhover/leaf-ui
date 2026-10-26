@@ -1,35 +1,93 @@
-import { Capabilities } from '../../../src/examples/input-number/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputNumberBasic } from '../../../src/examples/en/input-number/basic';
+import { InputNumberUnits } from '../../../src/examples/en/input-number/units';
+import { InputNumberStates } from '../../../src/examples/en/input-number/states';
+import { InputNumberFormatting } from '../../../src/examples/en/input-number/formatting';
+import { InputNumberExact } from '../../../src/examples/en/input-number/exact';
+
+export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps' };
 
 # InputNumber
 
 Enter numeric values such as quantities or prices.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<InputNumberBasic />} fileName="basic.tsx" width={360}>
+Set bounds with `min` and `max`. `onChange` returns a number, or `null` when cleared. Partial minus signs and decimal points are preserved while typing; blur or Enter normalizes bounds and precision.
+
+<ComponentExample exampleId="basic" preview={<InputNumberBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Formatting and exact decimals
+{/* leaf:section examples */}
 
-<ComponentExample title="Formatting and exact decimals" preview={<Capabilities english />} fileName="capabilities.tsx" width={360}>
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/input-number/capabilities.tsx"
+### Units and decimals
+
+Display units with `prefix` and `suffix`, and set the step and decimal places with `step` and `precision`. Use `controls={false}` to hide step buttons.
+
+<ComponentExample exampleId="units" preview={<InputNumberUnits />} fileName="units.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/units.tsx"
 ```
 
 </ComponentExample>
 
-## InputNumber API
+### Read only and disabled
+
+Read-only fields retain their value without allowing edits; disabled fields cannot be interacted with.
+
+<ComponentExample exampleId="states" preview={<InputNumberStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/states.tsx"
+```
+
+</ComponentExample>
+
+### Display formatting
+
+<a id="advanced-usage"></a>
+
+Use `grouping` for localized digit grouping. For custom formats, `formatter` controls display and `parser` converts the entered text back into a value. Formatting does not change the canonical value submitted by a native form.
+
+<ComponentExample exampleId="formatting" preview={<InputNumberFormatting />} fileName="formatting.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/formatting.tsx"
+```
+
+</ComponentExample>
+
+### Exact decimal values
+
+Use `stringMode` for values beyond JavaScript Number precision. Pass strings for `value`, `defaultValue`, `step`, `min` and `max`; `onChange` returns a string or `null`. Do not convert these values to Number first.
+
+<ComponentExample exampleId="exact" preview={<InputNumberExact />} fileName="exact.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/exact.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### InputNumber API
+
+#### Forms
+
+Set `name` to submit the canonical value through FormData. Uncontrolled fields support form reset; reset controlled values in application state. Native attributes such as `required` and `form` reach the input. See [Form](/en/components/form) for form integration.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `number \| null \| string \| null` | `null` | Controlled / initial value; null is empty |
-| `defaultValue` | `number \| null \| string \| null` | `null` | Controlled / initial value; null is empty |
+| `value` | `number \| null \| string` | — | Controlled number, or string in stringMode; null represents an empty field. |
+| `defaultValue` | `number \| null \| string` | `null` | Initial uncontrolled value, a string in stringMode; restored on form reset. |
 | `onChange` | `((value: number \| null) => void) \| ((value: string \| null) => void)` | — | Called for a valid number or clearing |
 | `min` | `number \| string` | Unbounded | Allowed number range |
 | `max` | `number \| string` | Unbounded | Allowed number range |
@@ -50,19 +108,9 @@ Enter numeric values such as quantities or prices.
 | `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
 | `ref` | `Ref<HTMLInputElement>` | — | Input element ref |
 
-## Types
+### NumericInputNumber API
 
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { InputNumberProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Partial minus signs and decimal points are preserved during typing. Blur or Enter normalizes the range and precision; stepping avoids common decimal accumulation errors. Use name for FormData submission. required, form and autoComplete reach the input, and form reset is supported. className and style apply to the wrapper.
-
-## NumericInputNumber API
+Only mode-specific type differences are listed here; see the main API table for shared props.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -71,39 +119,23 @@ Partial minus signs and decimal points are preserved during typing. Blur or Ente
 | `onChange` | `(value: number \| null) => void` | — | Called when the value changes. |
 | `min` | `number` | — | Minimum allowed value. |
 | `max` | `number` | — | Maximum allowed value. |
-| `step` | `number` | `1` | Step; Slider uses only marked values when null. |
-| `precision` | `number` | — | Decimal precision. |
-| `controls` | `boolean` | `true` | Configure controls. |
-| `keyboard` | `boolean` | `true` | Configure keyboard. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `status` | `'error' \| 'warning'` | — | Configure status. |
-| `prefix` | `ReactNode` | — | Leading content. |
-| `suffix` | `ReactNode` | — | Trailing content. |
-| `stringMode` | `false` | — | Use strings for exact values, steps and bounds. |
+| `step` | `number` | `1` | Increment and decrement step. |
+| `stringMode` | `false` | — | Numeric mode; omit or pass false. Values and callbacks use numbers. |
 | `formatter` | `( value: number \| string \| null, info: { userTyping: boolean; input: string }, ) => string` | — | Format displayed text without changing the canonical form value. |
 | `parser` | `(text: string) => number \| string` | — | Parse displayed text back into a value. |
-| `grouping` | `boolean` | — | Use localized digit grouping. |
-| `locale` | `string` | — | Locale for language or numeric formatting. |
 
-## StringInputNumber API
+### StringInputNumber API
+
+Only mode-specific type differences are listed here; see the main API table for shared props.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `precision` | `number` | — | Decimal precision. |
-| `controls` | `boolean` | `true` | Configure controls. |
-| `keyboard` | `boolean` | `true` | Configure keyboard. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `status` | `'error' \| 'warning'` | — | Configure status. |
-| `prefix` | `ReactNode` | — | Leading content. |
-| `suffix` | `ReactNode` | — | Trailing content. |
 | `formatter` | `( value: number \| string \| null, info: { userTyping: boolean; input: string }, ) => string` | — | Format displayed text without changing the canonical form value. |
 | `parser` | `(text: string) => number \| string` | — | Parse displayed text back into a value. |
-| `grouping` | `boolean` | — | Use localized digit grouping. |
-| `locale` | `string` | — | Locale for language or numeric formatting. |
-| `stringMode` | `true` | — | Required. Use strings for exact values, steps and bounds. |
+| `stringMode` | `true` | Required | High-precision string mode; pass true and use strings for values, steps and bounds. |
 | `value` | `string \| null` | — | Controlled value. |
 | `defaultValue` | `string \| null` | `null` | Initial value; uncontrolled fields support native form reset. |
 | `onChange` | `(value: string \| null) => void` | — | Called when the value changes. |
 | `min` | `string` | — | Minimum allowed value. |
 | `max` | `string` | — | Maximum allowed value. |
-| `step` | `string` | `'1'` | Step; Slider uses only marked values when null. |
+| `step` | `string` | `'1'` | Increment and decrement step. |

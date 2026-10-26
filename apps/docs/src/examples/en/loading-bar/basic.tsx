@@ -1,12 +1,22 @@
 import { Button, useLoadingBar } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
 export function LoadingBarBasic() {
   const bar = useLoadingBar();
+  const [pending, setPending] = useState(false);
+
   return (
     <Button
-      onClick={() => {
+      loading={pending}
+      onClick={async () => {
         const done = bar.start();
-        setTimeout(done, 1600);
+        setPending(true);
+        try {
+          await new Promise<void>((resolve) => setTimeout(resolve, 1600));
+        } finally {
+          done();
+          setPending(false);
+        }
       }}
     >
       Simulate page loading

@@ -21,6 +21,7 @@ type PublicComponentName = {
 type InfrastructureOrAlias =
   | 'ConfigProvider'
   | 'ConfirmProvider'
+  | 'ImagePreviewProvider'
   | 'MessageProvider'
   | 'NotificationProvider'
   | 'LoadingBarProvider'
@@ -41,7 +42,7 @@ export const completeComponentDefaultsCoverage: [MissingDefaults, UnknownDefault
 // Compile-only contracts; required JSX props and mode-specific types stay instance-owned.
 export function componentDefaultsTypeContracts() {
   const root: LeafComponentDefaults = {
-    Button: { variant: 'soft' },
+    Button: { variant: 'outline' },
     Input: { value: '', defaultValue: 'Leaf', onChange: (event) => event.currentTarget.value },
     Select: { showSearch: true, onSearch: (query) => query },
     Modal: { footer: null },
@@ -84,6 +85,10 @@ export function componentDefaultsTypeContracts() {
   const removedButtonVariant = <Button variant="ghost" />;
   // @ts-expect-error Regional defaults use the same public Button appearances.
   const removedButtonDefault: LeafComponentDefaults = { Button: { variant: 'ghost' } };
+  // @ts-expect-error Soft is no longer a public Button appearance.
+  const removedSoftButtonVariant = <Button variant="soft" />;
+  // @ts-expect-error Regional defaults use the same public Button appearances.
+  const removedSoftButtonDefault: LeafComponentDefaults = { Button: { variant: 'soft' } };
   const multi = <Select multiple options={[]} onChange={(values) => values.map(String)} />;
   const single = <Select options={[]} onChange={(value) => value.toUpperCase()} />;
   return {
@@ -104,6 +109,8 @@ export function componentDefaultsTypeContracts() {
     missingGroupTitle,
     removedButtonVariant,
     removedButtonDefault,
+    removedSoftButtonVariant,
+    removedSoftButtonDefault,
     multi,
     single,
   };
@@ -132,7 +139,7 @@ export function expandedComponentDefaultsContracts() {
   const defaults: LeafComponentDefaults = {
     Pagination: { variant: 'outline', showTotal: true },
     Tabs: { size: 'sm' },
-    DataTable: { size: 'sm', striped: true },
+    DataTable: { size: 'sm', variant: 'simple', striped: true },
     DataTableSearch: { allowClear: true },
     VirtualList: { estimateSize: 36 },
     FormList: { className: 'rows' },
@@ -151,7 +158,7 @@ export function expandedComponentDefaultsContracts() {
   const number: LeafComponentDefaults = { InputNumber: { stringMode: true } };
   // @ts-expect-error Range mode remains visible to the Slider instance's type checker.
   const range: LeafComponentDefaults = { Slider: { range: true } };
-  // @ts-expect-error Multiple mode remains visible to DatePicker's type checker.
+  // @ts-expect-error Multi-date selection has been removed.
   const multiple: LeafComponentDefaults = { DatePicker: { multiple: true } };
   const list: LeafComponentDefaults = {
     // @ts-expect-error A generic list's data and callbacks cannot be shared across item types.
@@ -183,9 +190,13 @@ export function expandedComponentDefaultsContracts() {
   const provider: LeafComponentDefaults = { ConfigProvider: { components: {} } };
   const decimal = <InputNumber stringMode onChange={(value) => value?.toUpperCase()} />;
   const numeric = <InputNumber onChange={(value) => value?.toFixed()} />;
-  const dates = (
-    <DatePicker multiple onChange={(values) => values.map((value) => value.getTime())} />
-  );
+  const dates = <DatePicker onChange={(value) => value?.getTime()} />;
+  // @ts-expect-error Multi-date selection is not a DatePicker mode.
+  const removedMultipleDates = <DatePicker multiple />;
+  // @ts-expect-error DatePicker no longer accepts date arrays.
+  const removedDateArray = <DatePicker value={[new Date()]} />;
+  // @ts-expect-error There is no multi-date selection limit.
+  const removedDateLimit = <DatePicker maxCount={3} />;
   const slider = <Slider range onChange={(values) => values.map((value) => value.toFixed())} />;
   const tree = <TreeSelect treeCheckable options={[]} onChange={(values) => values.map(String)} />;
   const virtual = (
@@ -222,6 +233,9 @@ export function expandedComponentDefaultsContracts() {
     decimal,
     numeric,
     dates,
+    removedMultipleDates,
+    removedDateArray,
+    removedDateLimit,
     slider,
     tree,
     virtual,

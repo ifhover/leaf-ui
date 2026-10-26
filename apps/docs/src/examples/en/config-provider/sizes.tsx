@@ -1,33 +1,32 @@
-import { Button, ConfigProvider, Form, FormField, Slider, Space, Text } from '@ifhover/leaf-ui';
-import { useState } from 'react';
+import { Button, ConfigProvider, Flex, FormField, Grid, Slider, Text } from '@ifhover/leaf-ui';
+import { Fragment, useState } from 'react';
 
 export function ConfigProviderSizes() {
-  const [height, setHeight] = useState(36);
+  const [height, setHeight] = useState(34);
   return (
-    <Space direction="vertical" align="stretch" size="lg">
-      <Form>
-        <FormField label={`Base height: ${height}px`}>
-          <Slider min={28} max={44} value={height} onChange={setHeight} showValue={false} />
-        </FormField>
-      </Form>
+    <Flex direction="column" gap="lg">
+      <FormField label="Base height">
+        <Slider min={28} max={44} value={height} onChange={setHeight} showValue={false} />
+      </FormField>
+      <Text tone="muted">Current height: {height}px</Text>
       <ConfigProvider theme={{ controlHeight: height }}>
-        <Space wrap align="end" size="lg">
+        <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
           {(
             [
               ['sm', 'Small'],
-              ['md', 'Default'],
+              ['md', 'Medium'],
               ['lg', 'Large'],
             ] as const
           ).map(([size, label]) => (
-            <Space key={size} direction="vertical" size="sm">
+            <Fragment key={size}>
               <Text tone="muted">{label}</Text>
-              <Button size={size} variant="outline">
-                Button
-              </Button>
-            </Space>
+              <Flex align="start">
+                <Button size={size}>Button</Button>
+              </Flex>
+            </Fragment>
           ))}
-        </Space>
+        </Grid>
       </ConfigProvider>
-    </Space>
+    </Flex>
   );
 }

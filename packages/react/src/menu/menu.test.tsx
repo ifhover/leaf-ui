@@ -23,9 +23,74 @@ const items: MenuItem[] = [
 ];
 
 describe('Menu transitions', () => {
+  it('uses raised by default and allows regional and instance appearance overrides', () => {
+    const { rerender } = render(<Menu items={items} />);
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--raised');
+    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--raised');
+
+    rerender(
+      <ConfigProvider components={{ Menu: { variant: 'default' } }}>
+        <Menu items={items} />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+
+    rerender(
+      <ConfigProvider components={{ Menu: { variant: 'primary' } }}>
+        <Menu items={items} variant="default" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+  });
+
+  it('renders item extra inline and in collapsed navigation without changing the item label', async () => {
+    const data: MenuItem[] = [
+      {
+        key: 'projects',
+        label: 'Projects',
+        extra: <span>3</span>,
+        children: [{ key: 'design', label: 'Design', extra: <span>New</span> }],
+      },
+    ];
+    const { rerender } = render(<Menu items={data} defaultOpenKeys={['projects']} />);
+    expect(screen.getByRole('menuitem', { name: 'Projects 3' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'Design New' })).toBeInTheDocument();
+    rerender(<Menu items={data} collapsed />);
+    expect(screen.queryByText('3')).not.toBeInTheDocument();
+    const parent = screen.getByRole('menuitem', { name: 'Projects' });
+    if (parent.getAttribute('aria-expanded') !== 'true') await userEvent.click(parent);
+    expect(screen.getByRole('menuitem', { name: 'Design New' })).toBeInTheDocument();
+    expect(renderToString(<Menu items={[{ key: 'zero', label: 'Zero', extra: 0 }]} />)).toContain(
+      'leaf-menu__extra',
+    );
+  });
+
+  it('inherits the raised variant and lets an instance restore the default without resetting selection', async () => {
+    const view = (variant?: 'default' | 'raised' | 'primary') => (
+      <ConfigProvider components={{ Menu: { variant: 'raised' } }}>
+        <Menu items={items} variant={variant} defaultSelectedKey="settings" />
+      </ConfigProvider>
+    );
+    const { rerender } = render(view());
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--raised');
+    expect(screen.getByRole('navigation')).not.toHaveAttribute('variant');
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Projects' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Design' }));
+    rerender(view('primary'));
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--primary');
+    expect(screen.getByRole('navigation')).not.toHaveClass('leaf-menu--raised');
+    rerender(view('default'));
+    expect(screen.getByRole('navigation')).not.toHaveClass('leaf-menu--raised');
+    expect(screen.getByRole('menuitem', { name: 'Design' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(renderToString(<Menu items={items} variant="raised" />)).toContain('leaf-menu--raised');
+  });
+
   it('retains opened content for closing transitions and skips closed items by keyboard', async () => {
     const onOpenChange = vi.fn();
-    render(<Menu mode="inline" items={items} onOpenChange={onOpenChange} />);
+    render(<Menu items={items} onOpenChange={onOpenChange} />);
     const trigger = screen.getByRole('menuitem', { name: 'Projects' });
     expect(screen.queryByText('Design')).toBeNull();
 
@@ -218,54 +283,50 @@ describe('Menu groups', () => {
 });
 
 describe('Menu popup navigation', () => {
-  it.each(['horizontal', 'collapsed'] as const)(
-    'keeps selected links and nested navigation in the %s popup',
-    async (variant) => {
-      const onSelect = vi.fn();
-      render(
-        <Menu
-          mode={variant === 'horizontal' ? 'horizontal' : 'vertical'}
-          collapsed={variant === 'collapsed'}
-          defaultSelectedKey="design"
-          onSelect={onSelect}
-          items={[
-            {
-              key: 'resources',
-              label: 'Resources',
-              children: [
-                { key: 'design', label: 'Design', href: '#design' },
-                {
-                  key: 'more',
-                  label: 'More',
-                  children: [{ key: 'templates', label: 'Templates' }],
-                },
-              ],
-            },
-          ]}
-        />,
-      );
-      const trigger = screen.getByRole('menuitem', { name: 'Resources' });
-      await userEvent.click(trigger);
-      expect(screen.getByRole('menuitem', { name: 'Design' })).toHaveAttribute(
-        'aria-current',
-        'page',
-      );
-      expect(trigger).not.toHaveAttribute('data-selected');
-      expect(trigger).not.toHaveAttribute('data-active-parent');
-      await userEvent.keyboard('{ArrowDown}{ArrowRight}');
-      expect(screen.getByRole('menuitem', { name: 'Templates' })).toHaveFocus();
-      await userEvent.keyboard('{Enter}');
-      expect(onSelect).toHaveBeenCalledWith(
-        'templates',
-        expect.objectContaining({ key: 'templates' }),
-      );
-      expect(trigger).toHaveFocus();
-      expect(trigger).not.toHaveAttribute('data-selected');
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-      await userEvent.click(trigger);
-      await userEvent.keyboard('{Escape}');
-      expect(trigger).toHaveFocus();
-      expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    },
-  );
+  it('keeps selected links and nested navigation in the collapsed popup', async () => {
+    const onSelect = vi.fn();
+    render(
+      <Menu
+        collapsed
+        defaultSelectedKey="design"
+        onSelect={onSelect}
+        items={[
+          {
+            key: 'resources',
+            label: 'Resources',
+            children: [
+              { key: 'design', label: 'Design', href: '#design' },
+              {
+                key: 'more',
+                label: 'More',
+                children: [{ key: 'templates', label: 'Templates' }],
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+    const trigger = screen.getByRole('menuitem', { name: 'Resources' });
+    await userEvent.click(trigger);
+    expect(screen.getByRole('menuitem', { name: 'Design' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(trigger).not.toHaveAttribute('data-selected');
+    expect(trigger).not.toHaveAttribute('data-active-parent');
+    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+    expect(screen.getByRole('menuitem', { name: 'Templates' })).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    expect(onSelect).toHaveBeenCalledWith(
+      'templates',
+      expect.objectContaining({ key: 'templates' }),
+    );
+    expect(trigger).toHaveFocus();
+    expect(trigger).not.toHaveAttribute('data-selected');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Escape}');
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
 });

@@ -40,6 +40,7 @@ export function PaginationFixture() {
           {pagination.current}/{pagination.pageSize} ({changes})
         </output>
         <Button variant="outline">Outside</Button>
+        <Button variant="text">Text reference</Button>
         <Pagination aria-label="Simple pages" total={120} defaultCurrent={2} simple />
         <Pagination
           aria-label="Disabled pages"

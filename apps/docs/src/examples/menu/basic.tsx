@@ -1,39 +1,19 @@
-import { Menu, Tag } from '@ifhover/leaf-ui';
-import { FolderKanban, House, Settings, Users } from 'lucide-react';
+import { Menu } from '@ifhover/leaf-ui';
 export function MenuBasic() {
   return (
     <Menu
-      mode="inline"
-      defaultSelectedKey="design"
-      defaultOpenKeys={['projects']}
-      itemRender={(item, content) => (
-        <>
-          {content}
-          {item.key === 'release' && (
-            <Tag size="sm" color="primary">
-              新
-            </Tag>
-          )}
-          {item.key === 'team' && (
-            <Tag size="sm" color="info">
-              12
-            </Tag>
-          )}
-        </>
-      )}
+      defaultSelectedKey="home"
       items={[
-        { key: 'home', label: '工作台', icon: <House /> },
+        { key: 'home', label: '首页' },
         {
           key: 'projects',
-          label: '项目管理',
-          icon: <FolderKanban />,
+          label: '项目',
           children: [
             { key: 'design', label: '设计资源' },
-            { key: 'release', label: '发布管理' },
+            { key: 'release', label: '发布记录' },
           ],
         },
-        { key: 'team', label: '团队成员', icon: <Users /> },
-        { key: 'settings', label: '设置', icon: <Settings /> },
+        { key: 'settings', label: '设置' },
       ]}
     />
   );

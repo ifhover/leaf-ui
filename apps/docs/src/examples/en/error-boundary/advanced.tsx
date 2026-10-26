@@ -1,33 +1,35 @@
+import { Alert, Button, ErrorBoundary, Flex, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+
 function Content({ broken }: { broken: boolean }) {
   if (broken) throw new Error('Demo rendering error');
-  return <span>The fallback replaces only the failed section.</span>;
+  return <Text>Content is displayed normally.</Text>;
 }
 
-import { Alert, Button, ErrorBoundary, Space } from '@ifhover/leaf-ui';
-import { useState } from 'react';
 export function ErrorBoundaryCustom() {
   const [broken, setBroken] = useState(false);
   return (
-    <Space direction="vertical" align="stretch">
-      <Button variant="outline" onClick={() => setBroken(true)}>
-        Test fallback
-      </Button>
+    <Flex direction="column" gap="md">
+      <Flex>
+        <Button onClick={() => setBroken(true)}>Test fallback</Button>
+      </Flex>
       <ErrorBoundary
         fallback={({ reset }) => (
-          <Alert
-            title="This section is unavailable"
-            description={
-              <Button size="sm" variant="soft" onClick={reset}>
-                Try again
-              </Button>
-            }
-          />
+          <Flex direction="column" gap="md">
+            <Alert
+              type="danger"
+              title="This section is unavailable"
+              description="Try loading the content again."
+            />
+            <Flex>
+              <Button onClick={reset}>Try again</Button>
+            </Flex>
+          </Flex>
         )}
         onReset={() => setBroken(false)}
-        resetKeys={[broken]}
       >
         <Content broken={broken} />
       </ErrorBoundary>
-    </Space>
+    </Flex>
   );
 }

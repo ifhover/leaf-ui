@@ -25,13 +25,13 @@ const initial: TabItem[] = [
 export function TabsFixture() {
   const params = new URLSearchParams(location.search);
   const size = params.get('size') === 'sm' ? 'sm' : params.get('size') === 'lg' ? 'lg' : 'md';
-  const placement = params.get('vertical') ? 'left' : 'top';
+  const type = params.get('line') ? 'line' : params.get('segmented') ? 'segmented' : 'card';
   const [items, setItems] = useState(initial);
   if (params.has('view'))
     return (
       <Tabs
         data-testid="view-tabs"
-        type="card"
+        type={type}
         size={size}
         block
         aria-label="View"
@@ -48,8 +48,7 @@ export function TabsFixture() {
       <Tabs
         data-testid="motion-tabs"
         aria-label="Closable projects"
-        type={params.get('line') ? 'line' : 'card'}
-        placement={placement}
+        type={type}
         size={size}
         items={items}
         style={{

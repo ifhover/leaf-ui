@@ -1,14 +1,11 @@
-import { Space, Tag } from '@ifhover/leaf-ui';
+import { Button, Space } from '@ifhover/leaf-ui';
 
 export function SpaceVertical() {
   return (
-    <Space direction="vertical" size={12} align="start">
-      <Tag>待处理</Tag>
-      <Tag color="success">已完成</Tag>
-      <Space split={<span>·</span>} size={8}>
-        <span>Leaf UI</span>
-        <span>React</span>
-      </Space>
+    <Space direction="vertical" align="start">
+      <Button>保存</Button>
+      <Button>取消</Button>
+      <Button>更多</Button>
     </Space>
   );
 }

@@ -2,10 +2,10 @@ import { Button, Space } from '@ifhover/leaf-ui';
 
 export function SpaceBasic() {
   return (
-    <Space size="md" wrap>
+    <Space wrap>
       <Button>Save</Button>
-      <Button variant="outline">Cancel</Button>
-      <Button variant="soft">More</Button>
+      <Button>Cancel</Button>
+      <Button>More</Button>
     </Space>
   );
 }

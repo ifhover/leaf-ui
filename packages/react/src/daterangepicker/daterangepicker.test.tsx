@@ -1,29 +1,34 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { DateRangePicker } from './daterangepicker';
 
 describe('DateRangePicker', () => {
-  it('updates endpoint times on an existing complete range without another date click', async () => {
+  it('edits the ending time in the field in datetime mode and commits with OK', async () => {
     const change = vi.fn();
     render(
       <ConfigProvider locale="en-US">
         <DateRangePicker
           picker="datetime"
+          needConfirm
           defaultValue={[new Date(2026, 0, 8, 9), new Date(2026, 0, 20, 10)]}
           onChange={change}
         />
       </ConfigProvider>,
     );
     await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.click(screen.getByRole('button', { name: 'End Choose time' }));
-    await userEvent.click(
-      within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '11' }),
-    );
-    expect(change).toHaveBeenCalledOnce();
-    expect(change.mock.calls[0]?.[1]).toEqual(['2026-01-08 09:00:00', '2026-01-20 11:00:00']);
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(document.querySelectorAll('.leaf-calendar')).toHaveLength(1);
+    const end = screen.getByRole('button', { name: 'End' });
+    await userEvent.click(end);
+    expect(end).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.keyboard('{End}{ArrowLeft}11');
+    expect(change).not.toHaveBeenCalled();
+    expect(screen.getByRole('combobox')).toHaveValue('2026-01-08 09:00 ~ 2026-01-20 11:00');
+    await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    expect(change.mock.calls[0]?.[1]).toEqual(['2026-01-08 09:00', '2026-01-20 11:00']);
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
   it.each(['year', 'month', 'week', 'date'] as const)(
     'selects and orders %s ranges across two calendars',
@@ -66,14 +71,17 @@ describe('DateRangePicker', () => {
       expect(container.querySelector('input[type="date"]')).toBeNull();
     },
   );
-  it('previews a cross-month range and paints the hovered endpoint as selected', async () => {
+  it('previews a cross-month range with a soft hovered endpoint', async () => {
     render(<DateRangePicker minDate={new Date(2026, 0, 1)} />);
     await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.click(screen.getByRole('button', { name: '2026-01-28' }));
+    const start = screen.getByRole('button', { name: '2026-01-28' });
+    await userEvent.click(start);
+    expect(start).toHaveClass('leaf-date-picker__day--selected');
     const end = screen.getByRole('button', { name: '2026-02-04' });
     await userEvent.hover(end);
     expect(end).toHaveAttribute('data-range-hover', 'true');
-    expect(end).toHaveClass('leaf-date-picker__day--selected');
+    expect(end).toHaveClass('leaf-date-picker__day--preview');
+    expect(end).not.toHaveClass('leaf-date-picker__day--selected');
     expect(screen.getByRole('button', { name: '2026-01-31' }).parentElement).toHaveClass(
       'leaf-calendar__cell--range',
     );
@@ -82,41 +90,112 @@ describe('DateRangePicker', () => {
     );
     expect(screen.queryByRole('button', { name: '确定' })).toBeNull();
   });
-  it('sets independent times before selecting the end date and commits without a footer confirmation', async () => {
+  it('confirms the start before requesting the end, applying default times to both', async () => {
     const change = vi.fn();
     render(
       <ConfigProvider locale="en-US">
-        <DateRangePicker picker="datetime" minDate={new Date(2026, 0, 1)} onChange={change} />
+        <DateRangePicker
+          picker="datetime"
+          needConfirm
+          minDate={new Date(2026, 0, 1)}
+          defaultTime={['09:00', '18:30']}
+          onChange={change}
+        />
       </ConfigProvider>,
     );
     await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.click(screen.getByRole('button', { name: 'Start Choose time' }));
-    expect(
-      within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '00' }),
-    ).toHaveFocus();
-    await userEvent.click(
-      within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '09' }),
-    );
-    await userEvent.click(screen.getByRole('button', { name: 'Choose date' }));
-    expect(screen.getByRole('button', { name: '2026-01-01' })).toHaveFocus();
-    await userEvent.click(screen.getByRole('button', { name: '2026-01-20' }));
-    await userEvent.click(screen.getByRole('button', { name: 'End Choose time' }));
-    await userEvent.click(
-      within(screen.getByRole('listbox', { name: 'Hours' })).getByRole('option', { name: '10' }),
-    );
-    await userEvent.click(
-      within(screen.getByRole('listbox', { name: 'Seconds' })).getByRole('option', { name: '30' }),
-    );
-    expect(change).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Choose date' }));
+    expect(screen.getByRole('button', { name: /^Start/ })).toHaveAttribute('aria-pressed', 'true');
     await userEvent.click(screen.getByRole('button', { name: '2026-01-08' }));
-    const range = change.mock.calls[0]?.[0] as [Date, Date];
-    expect(range[0].getDate()).toBe(8);
-    expect(range[0].getHours()).toBe(10);
-    expect(range[0].getSeconds()).toBe(30);
-    expect(range[1].getDate()).toBe(20);
-    expect(range[1].getHours()).toBe(9);
+    expect(screen.getByRole('button', { name: /^Start/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.getByRole('button', { name: /^End/ })).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-20' }));
+    expect(change).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /^Start/ }));
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.keyboard('{Home}{ArrowRight}{ArrowRight}{ArrowRight}10');
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(change).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'OK' }));
+    const range = change.mock.calls[0]?.[0] as [Date, Date];
+    expect(change.mock.calls[0]?.[1]).toEqual(['2026-01-08 10:00', '2026-01-20 18:30']);
+    expect(range[0].getDate()).toBe(8);
+  });
+  it('commits a completed draft on outside click and keeps it with needConfirm until OK', async () => {
+    const change = vi.fn();
+    const { rerender } = render(
+      <>
+        <DateRangePicker
+          picker="datetime"
+          needConfirm={false}
+          defaultValue={[new Date(2026, 0, 8, 9), new Date(2026, 0, 20, 10)]}
+          onChange={change}
+        />
+        <button type="button">Outside</button>
+      </>,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-10' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Outside' }));
+    expect(change.mock.calls[0]?.[1]).toEqual(['2026-01-10 09:00', '2026-01-20 10:00']);
+    rerender(
+      <>
+        <DateRangePicker
+          needConfirm
+          defaultValue={[new Date(2026, 0, 8), new Date(2026, 0, 20)]}
+          onChange={change}
+        />
+        <button type="button">Outside</button>
+      </>,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-02' }));
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-05' }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Outside' }));
+    expect(change).toHaveBeenCalledOnce();
+  });
+  it('previews presets on hover and marks the matching preset', async () => {
+    const week = [new Date(2026, 0, 5), new Date(2026, 0, 11)] as const;
+    render(
+      <DateRangePicker
+        defaultValue={[new Date(2026, 0, 20), new Date(2026, 0, 22)]}
+        presets={[{ label: 'First week', value: week }]}
+      />,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    const preset = screen.getByRole('button', { name: 'First week' });
+    expect(preset).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.hover(preset);
+    expect(screen.getByRole('button', { name: '2026-01-08' }).parentElement).toHaveClass(
+      'leaf-calendar__cell--range',
+    );
+    expect(screen.getByRole('button', { name: '2026-01-21' }).parentElement).not.toHaveClass(
+      'leaf-calendar__cell--range',
+    );
+    await userEvent.click(preset);
+    expect(screen.getByRole('combobox')).toHaveValue('2026-01-05 ~ 2026-01-11');
+    await userEvent.click(screen.getByRole('combobox'));
+    expect(screen.getByRole('button', { name: 'First week' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+  it('follows weekStartsOn for week periods while keeping ISO week numbers', async () => {
+    const change = vi.fn();
+    render(
+      <ConfigProvider weekStartsOn={0}>
+        <DateRangePicker picker="week" minDate={new Date(2026, 0, 1)} onChange={change} />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-08' }));
+    await userEvent.click(screen.getByRole('button', { name: '2026-01-21' }));
+    const range = change.mock.calls[0]?.[0] as [Date, Date];
+    expect(range[0].getDay()).toBe(0);
+    expect(range[0].getDate()).toBe(4);
+    expect(change.mock.calls[0]?.[1]).toEqual(['2026-W02', '2026-W04']);
   });
   it('discards incomplete ranges and accepts strict text input with bounds', async () => {
     const change = vi.fn();
@@ -133,14 +212,17 @@ describe('DateRangePicker', () => {
     await userEvent.click(screen.getByRole('button', { name: '2026-01-06' }));
     await userEvent.keyboard('{Escape}');
     expect(change).not.toHaveBeenCalled();
-    await userEvent.type(input, '2026-01-06 ~ 2026-02-08{Enter}');
+    await userEvent.paste('2026-01-06 ~ 2026-02-08');
+    await userEvent.keyboard('{Enter}');
     expect(change).toHaveBeenCalledOnce();
     await userEvent.clear(input);
+    expect(change).toHaveBeenLastCalledWith(null, ['', '']);
+    change.mockClear();
     await userEvent.type(input, '2026-01-06 ~ 2026-02-30{Enter}');
-    expect(change).toHaveBeenCalledOnce();
+    expect(change).not.toHaveBeenCalled();
     expect(input).toHaveAttribute('aria-invalid', 'true');
   });
-  it('navigates individual days in week mode without losing input focus until ArrowDown', async () => {
+  it('navigates individual days in week mode without losing input focus until Alt+ArrowDown', async () => {
     render(
       <DateRangePicker
         picker="week"
@@ -149,7 +231,7 @@ describe('DateRangePicker', () => {
     );
     await userEvent.click(screen.getByRole('combobox'));
     expect(screen.getByRole('combobox')).toHaveFocus();
-    await userEvent.keyboard('{ArrowDown}{ArrowRight}');
+    await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}{ArrowRight}');
     expect(screen.getByRole('button', { name: '2026-01-09' })).toHaveFocus();
   });
 });

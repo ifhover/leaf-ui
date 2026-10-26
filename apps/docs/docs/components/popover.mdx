@@ -1,63 +1,96 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { PopoverBasic } from '../../src/examples/popover/basic';
+import { PopoverHover } from '../../src/examples/popover/hover';
 import { PopoverControlled } from '../../src/examples/popover/controlled';
 import { PopoverPlacements } from '../../src/examples/popover/placements';
+
+export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 
 # Popover 气泡卡片
 
 在元素附近展示说明或补充操作。
 
-## 触发方式
+{/* leaf:section basic */}
 
-<ComponentExample title="触发方式" preview={<PopoverBasic />} fileName="basic.tsx">
+## 基础用法
+
+点击触发器打开，Escape、点击外部或将焦点移出时关闭。
+
+<ComponentExample exampleId="basic" preview={<PopoverBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 受控编辑
+{/* leaf:section examples */}
 
-<ComponentExample title="受控编辑" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
+## 示例
+
+### 悬停提示
+
+悬停模式适合说明文字，也支持键盘聚焦。含表单或按钮的内容使用默认点击模式。
+
+<ComponentExample exampleId="hover" preview={<PopoverHover />} fileName="hover.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/popover/hover.tsx"
+```
+
+</ComponentExample>
+
+### 受控编辑
+
+通过 `open` 与 `onOpenChange` 控制显示。示例保存后更新项目名称，未保存就关闭时，下次打开会恢复已保存的值。点击模式默认将焦点移入浮层，保存或按 Escape 关闭后返回触发器。
+
+<ComponentExample exampleId="controlled" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## 浮层位置
+### 浮层位置
 
-<ComponentExample title="浮层位置" preview={<PopoverPlacements />} fileName="placements.tsx">
+通过 `placement` 设置期望位置，空间不足时会自动调整。
+
+<ComponentExample exampleId="placements" preview={<PopoverPlacements />} fileName="placements.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/placements.tsx"
 ```
 
 </ComponentExample>
 
-## Popover API
+{/* leaf:section api */}
+
+## API
+
+### Popover API
+
+配置浮层内容、触发方式和受控展开状态。
+
+触发元素需透传 ref 与事件。没有 `title` 时，通过 `aria-label` 为浮层提供名称。Tab 可以离开浮层，不会将焦点限制在其中。共享浮层参数见 [PopupOptions](/api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactElement` | 必填 | 触发元素，需要支持 ref 与事件 |
-| `title / content` | `ReactNode` | — / 必填 | 标题 / 内容 |
+| `title` | `ReactNode` | `—` | 浮层标题。 |
+| `content` | `ReactNode` | 必填 | 浮层内容；交互内容使用点击模式。 |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发元素，需要支持 ref 与事件 |
 | `trigger` | `'click' \| 'hover'` | `'click'` | 触发方式 |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 浮层方向 |
-| `open / defaultOpen` | `boolean` | `false` | 受控 / 初始展开状态 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `open` | `boolean` | — | 受控的展开状态。 |
+| `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |
 | `onOpenChange` | `(open: boolean) => void` | — | 展开状态变化 |
-| `disabled` | `boolean` | `false` | 禁止展开 |
-| `autoFocus` | `boolean` | `true` | 点击展开后聚焦第一个操作 |
-| `enterDelay / leaveDelay` | `number` | `100` | 悬停展开 / 收起延迟，毫秒 |
-| `width / maxWidth` | `number \| string` | `'max-content' / 320` | 宽度 / 最大宽度 |
-| `className / style` | `string / CSSProperties` | — | 作用于浮层 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { PopoverProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-点击浮层适合放置交互内容；悬停浮层适合说明文字。Escape、点击外部和移走焦点会收起浮层，交互内容中的 Tab 顺序保持可用。没有标题时请使用 aria-label 提供名称。
+| `autoFocus` | `boolean` | `true` | 点击模式打开后聚焦首个可聚焦元素，没有时聚焦面板；悬停模式不移动焦点。 |
+| `aria-label` | `string` | — | 没有可见标题时，提供浮层的可访问名称。 |
+| `width` | `number \| string` | `'max-content'` | 浮层宽度；数字为像素。 |
+| `maxWidth` | `number \| string` | `320` | 浮层最大宽度；数字为像素。 |
+| `enterDelay` | `number` | `100` | 悬停后等待多少毫秒再打开。 |
+| `leaveDelay` | `number` | `100` | 指针离开后等待多少毫秒再关闭。 |
+| `className` | `string` | — | 浮层面板的 CSS 类名。 |
+| `style` | `CSSProperties` | — | 浮层面板的内联样式。 |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
+| `popupClassName` | `string` | — | 浮层的自定义类名。 |
+| `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |

@@ -1,20 +1,40 @@
-import { Space, Text, Tree } from '@ifhover/leaf-ui';
+import { Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
-import { treeData } from './data';
+
+const treeData: TreeNode[] = [
+  {
+    key: 'design',
+    title: 'Design resources',
+    children: [
+      { key: 'components', title: 'Component guidelines' },
+      { key: 'colors', title: 'Brand colors' },
+      { key: 'archive', title: 'Archived resources (disabled)', disabled: true },
+    ],
+  },
+  {
+    key: 'engineering',
+    title: 'Engineering',
+    children: [
+      { key: 'web', title: 'Website' },
+      { key: 'mobile', title: 'Mobile app' },
+    ],
+  },
+];
+
 export function TreeBasic() {
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   return (
     <Space direction="vertical" align="stretch">
       <Tree
+        aria-label="Design resources"
         data={treeData}
         defaultExpandedKeys={['design']}
-        showIcon
         selectedKeys={selected}
         onSelect={setSelected}
       />
-      <output>
-        <Text tone="muted">Selected: {selected.join(', ') || 'None'}</Text>
-      </output>
+      <Text role="status" tone="muted">
+        Selected keys: {selected.join(', ') || 'None'}
+      </Text>
     </Space>
   );
 }

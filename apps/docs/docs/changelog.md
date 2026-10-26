@@ -7,6 +7,52 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.9.0 - 2026-10-27
+
+### 新增
+
+- DatePicker 与 DateRangePicker 统一提供日期、日期时间和纯时间模式，支持分段输入、键盘步进、时间上下界、开放区间与确认草稿；原有日期模式继续可用。
+- Image 新增 `useImagePreview().preview(images, options)` 与独立的 ImagePreviewProvider，ConfigProvider 自动提供预览服务，图片实现与样式按需加载。关闭函数幂等，调用组件卸载时关闭所属预览；同一 Provider 同时展示一组图片。
+- Card 新增 `variant="layered"` 与 `selected`，Menu 提供 `default` / `raised` / `primary` 外观，Dropdown 新增 `size="sm | md | lg"`，Scrollbar 新增 `size` 与 `persistent`。
+- 中英文组件文档统一为简介、完整基础用法、独立示例和主组件优先的 API。新增“界面设计与组合”指南，集中说明页面组合、字号字重、间距、密度、尺寸与主题颜色角色，不要求复制固定色板。
+- Leaf UI Skill 1.1.1 提供精确版本的结构化组件查询：默认返回完整基础用法、API 和示例索引，重复 `--examples` 可一次查询多个完整示例；`--guide design-standards` 返回同版指南原文。查询仅依赖 Node.js，不预下载所有版本，也不回退到 latest。
+
+### 改进与修复
+
+- 统一按钮、字段、选项与内容表面的共享视觉配方，保持中性反馈和稳定的交互几何。AutoComplete、Cascader、TreeSelect、ColorPicker、Textarea、Mentions、InputNumber 聚焦或展开时采用与 Select 一致的主题色边框，无额外外圈；错误、警告、禁用和显式覆盖仍优先。
+- 重写 Calendar 的完整月历、年视图和紧凑布局；日期时间弹层采用单日历配时间列，纯日历区间保留双日历。时间行采用中性悬停与勾选、小号常驻滚动条；“今天”“当前时间”和清空端点使用小号描边按钮，“确定”保留实底。
+- 重整 FileList 的紧凑清单、文件类型回退、图片卡片和状态底栏，保留安全媒体 / 文档 URL 检查；Transfer 改为中性底板和内缩内容面。修复 card Drawer 横向越界、图库导航到边界后失焦导致 Escape 无效、表格列宽拖动柄无法命中，以及窄屏远程错误反馈被裁切。
+- DataTable 两侧固定列总宽度超过滚动视口时，临时跟随横向滚动以保持列与拖柄可达；空间恢复后自动固定，不改变应用的 `columnPinning` 状态。
+- Image 的空图和失败占位按空间显示图标 / 提示；加载中、失败和无图片时不触发预览。预览增加双向旋转、原始像素 1:1、最高 20 倍原始尺寸缩放、百分比恢复适应窗口和可操作的缩略图滚动，顶部只显示图片计数。
+- ColorPicker 使用分段 Tabs 切换格式，修复色标焦点裁切和角度字段溢出；文字 / 色块按起始侧对齐，文字格式具有稳定默认宽度。Pagination 内部操作复用按钮控件；Carousel 箭头取消缩放、描边和阴影，并相对内容视口居中。
+- AvatarGroup 的文字头像按顺序循环使用五组浅底 / 可读文字角色，独立 Avatar、图片、默认图标和 +N 保持原配色。同步双语示例、AI 文档导出、设计 token、SVG 与 Figma 插件资源。
+
+### 迁移说明
+
+- 本次 `0.x` 次版本包含公共 API、默认行为和外观变化，请按实际使用范围迁移。
+- 移除 AppBar、Toolbar、BottomNavigation、CommandPalette 及其类型、ConfigProvider 默认参数、组件和样式子路径。页面结构使用 Layout / Flex / Menu / Button 等组合；命令面板在应用层实现或接入专用方案。
+- Button 外观为 `solid` / `outline` / `text` / `link`，默认从 `solid` 改为 `outline`，移除 `soft`；次要操作可省略 variant，原无边框操作改用 `text`。SplitButton、FloatButton 和按钮属性插槽沿用此公共类型。
+- Tag 移除 `solid`，保留 `soft` / `outline`，默认使用主题色，显式 `color="default"` 也映射到主题色。新增默认开启的 6px 圆点，纯文字设置 `dot={false}`；CheckableTag / TagGroup 未选中为 outline、选中为 soft。三者移除 `bold`，字重使用区域 fontWeight（默认 500），圆角使用 small；需要其他字重时显式设置样式。
+- Badge 移除 `status` / `text`。状态文案改用 Tag，角标使用 `count` 或 `dot` 配合 `color`。CheckboxGroup 移除 `minCount` / `maxCount`，数量限制由受控 `value/onChange` 和业务表单校验负责。
+- `FeedbackType` 使用 `danger` 替代 `error`；兼容旧输入时使用 `FeedbackTypeInput`。反馈组件仍接受旧 `error` 输入，但归一为 danger 并输出对应 DOM 类名；依赖 `--error` 类的样式 / 测试需迁移。Form 校验、Progress 和 Steps 的错误状态名仍为 `error`。
+- Card 移除 `divided`，用间距组织各区；默认仍为 default，分层需显式设置 `variant="layered"`，该模式不展示 description。Menu 只保留纵向布局，移除横向 / inline 用法，默认外观从 default 改为 raised；需要平面外观显式设置 `variant="default"`，折叠子菜单同步使用浮起外观。
+- Tabs 只保留顶部 / 底部布局，移除左右纵向标签；溢出使用两侧描边箭头。`type="card"` 改为无外轨的浅灰选中面；需要灰色轨道和内容面滑块时使用 `type="segmented"`。
+- Modal 与 Drawer 的 `divided` 默认从 true 改为 false，Drawer 默认 `variant="card"`；需要分割线时显式传 divided。Modal、Drawer 与 Confirm 默认不再模糊遮罩，使用 `<ConfigProvider maskBlur>` 恢复。
+- DataTable 移除 `stickyHeader`（表头始终固定）与 `caption`，旧 JS 传值被忽略；`bordered` 为弃用别名，改用 `columnDividers`。默认分层、斑马纹、无列分割线；`striped={false}` 显示行分割线。快捷数据模式和 useDataTable 默认关闭排序，需要显式 `options.enableSorting: true`；列级可关闭，manualSorting 不隐式开启排序，受控排序仍需 state.sorting / onSortingChange。直接传入的 TanStack 实例保持自身配置。
+- 移除 TimePicker、DateTimePicker、TimeRangePicker 及其类型、区域默认参数、独立组件和样式入口，分别改用 `<DatePicker picker="time" />`、`<DatePicker picker="datetime" />`、`<DateRangePicker picker="time" />`。纯时间值仍为字符串，日期 / 日期时间仍为 Date；移除 multiple、maxCount 和 MultipleDatePickerProps，不再接受多日期数组，区间使用 DateRangePicker。
+- 日期 / 时间输入改为分段：数字输满自动换段，Tab / 空格下一段、Shift + Tab 上一段，左右切段、上下步进，末段 Tab / 首段 Shift + Tab 离开字段；Alt + 下键进入面板。Backspace / Delete 清空当前段，全选删除直接清空已提交值。原生输入和输入法按段分配数字并保留选区；函数型或无 token 的 format 保留文本输入。
+- 有效输入实时同步浮层而不提前提交其它草稿；无效、未完成、越界或业务禁用草稿离开整个选择器时取消并恢复已提交值，不触发 onChange，Enter 失败仍可继续修正。纯时间默认在外部点击 / Tab 离开时提交有效草稿，needConfirm 时仅确定 / Enter 提交；日期时间默认 needConfirm=true，外部关闭放弃草稿。Escape 始终放弃（全选删除除外），日历区间默认选完终点提交；inputReadOnly 只禁止字段输入，不禁止面板编辑。
+- 纯时间新增含边界的 minTime / maxTime（HH:mm[:ss]），minuteStep 默认 5 改为 1；日期时间区间新增 defaultTime，默认 `['00:00:00', '23:59:59']`。日期时间 showSeconds 默认 true 改为 false，关闭时 Date 秒为 0，显示 / FormData 不含秒。datetime 区间先选开始端再选结束端；所有模式 panelVariant 默认 plain 改为 card，需要普通面板显式设置 plain。
+- 日期解析新增 `/`、`.`、YYYYMMDD、年月日、季度、周和全角字符等输入，时间接受 `9:30`、`930`、`14时5分`；不存在的日期仍拒绝。weekStartsOn 现在也决定周值起始日，周编号仍按 ISO；设为 0 时周值是周日。区间悬停类名改为 `leaf-date-picker__day--preview`，不再添加 selected 类。
+- 独立字段默认宽度从 100% 改为 240px（Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect、单值日期 / 时间）；日期区间 300px、日期时间区间 380px，显示秒 / 时段为 440px；长格式单值日期时间 280px，长格式时间区间 300px。最大宽度始终受容器约束，FormField 内仍铺满，Textarea 仍为 100%；需要独立铺满时设置 `style.width='100%'`。ColorPicker 文字格式默认 HEX 144px、RGB 272px、HSL 296px、渐变 160px，实例 width 优先。
+- 默认宽松控件高度 30 / 36 / 42px 改为 28 / 34 / 40px，紧凑为 24 / 30 / 36px；需要原尺寸可设置 theme.controlHeight。默认正文行高由 1.6 倍改为 20px，小 / 大号为 13px/18px 与 16px/22px；lineHeight 数字在 (0,4] 仍表示倍数，其余按像素，字符串按 CSS 长度。
+- fontWeight 与 headingWeight 只接受 400 / 500 / 700，将 600 改为普通标签 500 或强标题 700。普通组件标题使用 fontWeight；Card / CardTitle 标题为 14/20、16/22、18/24px，small / default 使用 500，大号使用 headingWeight。标签最小 12px、步骤指示至少 24px（大号 28px）。基础圆角 10px 改为 8px，small / medium / large 为基础的 0.5 / 1.5 / 2 倍。
+- 默认 Card 新增 shadow-xs，分层 Card / DataTable 只在内层用 shadow-sm，浮层用 shadow-md；Button 水平内边距按实际高度 ×0.42 派生，显式组件内边距优先。Form 默认间距 comfortable 24→16px、compact 16→12px，自动标签宽度上限为 40%；需要原布局时显式设置 gap / labelWidth。
+- 颜色改用浅深外观共享的基色及用途角色。实底 on-* 前景统一默认白色，不再自动选黑白；很浅的自定义底色应显式配置 `tokens.onPrimaryColor` / onSuccessColor / onDangerColor / onWarningColor / onInfoColor。需要派生颜色时更新 ConfigProvider 的 JS 配置，DOM style / class 改变不再触发 JS 重算；CSS 表达式继续按 CSS 使用。
+- 移除未消费的百分比颜色变量，按用途将旧 `*-surface-*` / `*-text-*` / `*-border-*` 替换为 `*-soft` / `*-ink` / `*-border`；中性结构使用 text-subtle、surface-raised、border-hover、divider 等对应角色。这些不是像素等价别名。中性色保留 100..900，显式语义色带使用 light-3/7/9 与 dark-1/3/7/9；同步迁移自定义 CSS、Tailwind 和设计资源，不在页面复制默认色值。
+- 依赖内部 DOM 的样式需检查：Calendar 改为 `leaf-calendar-view__*`，选中状态为 gridcell 的 aria-selected，不再输出旧日期单元格类 / aria-pressed；FileList 状态移入 meta 并增加 main / footer / empty-icon；Transfer 增加 body；Pagination 按钮增加内部内容包装；Carousel 箭头移入 viewport。ColorPicker 格式按钮变为 role=tab / aria-selected，旧 aria-pressed 选择器需迁移。公开属性不受这些 DOM 变更影响。
+- Scrollbar 的 persistent 默认 false，开启后轨道常驻并独占空间；scrollbar="always" 仍为覆盖式，hidden 不留空间。时间列使用 sm / persistent。Confirm 语义图标不再有背景底座，放在粗体标题旁，无标题时放在正文旁。
+
 ## 0.8.1 - 2026-10-20
 
 ### 改进

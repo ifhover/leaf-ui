@@ -1,39 +1,81 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { SkeletonBasic } from '../../../src/examples/en/skeleton/basic';
+import { SkeletonContent } from '../../../src/examples/en/skeleton/content';
+import { SkeletonShapes } from '../../../src/examples/en/skeleton/shapes';
+import { SkeletonRows } from '../../../src/examples/en/skeleton/rows';
+
+export const leafDoc = { component: 'Skeleton', primaryApi: 'SkeletonProps' };
 
 # Skeleton
 
 Show a content placeholder while loading.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<SkeletonBasic />} fileName="basic.tsx">
+Show the default skeleton placeholder while content is loading.
+
+<ComponentExample exampleId="basic" preview={<SkeletonBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/skeleton/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Skeleton API
+{/* leaf:section examples */}
+
+## Examples
+
+### Show loaded content
+
+Your application controls `loading`. Children are not rendered while loading; they appear when `loading` becomes `false`. Use [Loading](/en/components/loading) instead if the existing content must remain mounted.
+
+<ComponentExample exampleId="content" preview={<SkeletonContent />} fileName="content.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/skeleton/content.tsx"
+```
+
+</ComponentExample>
+
+### Avatar and rounded rows
+
+Use `avatar` for an avatar placeholder. `round` rounds the title and body rows; it does not change the avatar.
+
+<ComponentExample exampleId="shapes" preview={<SkeletonShapes />} fileName="shapes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/skeleton/shapes.tsx"
+```
+
+</ComponentExample>
+
+### Row count and widths
+
+Set `rows` for the number of body rows and `rowWidths` for their widths. Unspecified widths retain the default.
+
+<ComponentExample exampleId="rows" preview={<SkeletonRows />} fileName="rows.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/skeleton/rows.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Skeleton API
+
+Configure placeholder rows, shapes and animation.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `loading / active` | `boolean` | `true` | Show placeholder / animate |
-| `avatar / round` | `boolean` | `false` | Avatar placeholder / round rows |
+| `loading` | `boolean` | `true` | Show placeholders; children render only when false. |
+| `active` | `boolean` | `true` | Animate the placeholders. |
+| `avatar` | `boolean` | `false` | Show an avatar placeholder. |
 | `title` | `boolean` | `true` | Title placeholder |
 | `titleWidth` | `number \| string` | `'38%'` | Title width |
 | `rows` | `number` | `3` | Body rows, up to 20 |
 | `rowWidths` | `readonly (number \| string)[]` | — | Widths of each row |
-| `children` | `ReactNode` | — | Loaded content |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { SkeletonProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-When loading is false, render children. Reduced motion preferences and ConfigProvider motion settings control the animation.
+| `round` | `boolean` | `false` | Use pill-shaped title and body placeholders; the avatar is unchanged. |
+| `children` | `ReactNode` | — | Content shown after loading finishes. |
