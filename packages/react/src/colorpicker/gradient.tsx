@@ -149,6 +149,9 @@ export function GradientColorPicker({
         data-disabled={disabled || undefined}
         data-readonly={readOnly || undefined}
         data-open={open || undefined}
+        data-format="gradient"
+        data-show-text={Boolean(showText) || undefined}
+        data-clearable={(allowClear && Boolean(current) && !disabled && !readOnly) || undefined}
         onMouseDown={(event) => {
           if (!disabled && event.target === event.currentTarget) event.preventDefault();
         }}

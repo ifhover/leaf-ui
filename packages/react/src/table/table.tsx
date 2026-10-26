@@ -1,28 +1,36 @@
-import { CircleAlert, Inbox } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 import {
   type CSSProperties,
+  createContext,
   forwardRef,
   type HTMLAttributes,
   type ReactNode,
   type Ref,
   type TableHTMLAttributes,
   type ThHTMLAttributes,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { ButtonControl } from '../button/button';
 import { LoadingControl as Loading } from '../loading/loading';
+import { ResultControl as Result } from '../result/result';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
-import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/defaults';
+import type {
+  DataTableCellProps,
+  DataTablePresentationProps,
+  DataTableRowProps,
+} from '../tabletanstack/defaults';
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
+  variant?: DataTablePresentationProps['variant'];
   columnDividers?: boolean;
   striped?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
@@ -32,6 +40,13 @@ export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   scrollRef?: Ref<HTMLDivElement>;
   loading?: boolean;
 }
+
+interface TableRootProps extends TableProps {
+  // Only the DataTable adapter opts into automatic pinning overflow presentation.
+  pinnedWidth?: number;
+}
+
+const PinningOverflowContext = createContext(false);
 
 export type TableRowProps = DataTableRowProps;
 export type TableCellProps = DataTableCellProps & {
@@ -57,9 +72,10 @@ export interface TableErrorProps extends TableStateProps {
   onRetry?: () => void;
 }
 
-const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function TableRootControl(
+const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function TableRootControl(
   {
     size = 'md',
+    variant = 'layered',
     columnDividers = false,
     striped = true,
     maxHeight,
@@ -68,11 +84,12 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
     tableStyle,
     scrollRef,
     loading = false,
+    pinnedWidth,
     className,
     style,
     children,
     ...props
-  }: TableProps,
+  }: TableRootProps,
   ref,
 ) {
   const t = useText();
@@ -80,8 +97,10 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
   const tableRef = useMergedRef(element, ref);
   const viewport = useRef<HTMLDivElement>(null);
   const viewportRef = useMergedRef(viewport, scrollRef);
+  const [viewportWidth, setViewportWidth] = useState<number>();
+  const pinningOverflow =
+    pinnedWidth !== undefined && viewportWidth !== undefined && pinnedWidth > viewportWidth;
   const [headerHeight, setHeaderHeight] = useState(0);
-  const [captionHeight, setCaptionHeight] = useState(0);
   const [verticalOverflow, setVerticalOverflow] = useState(false);
   const [scrollEdges, setScrollEdges] = useState({ start: true, end: true });
   useEffect(() => {
@@ -96,6 +115,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
         start: maximum <= 1 || offset <= 1,
         end: maximum <= 1 || offset >= maximum - 1,
       };
+      setViewportWidth(node.clientWidth || undefined);
       setVerticalOverflow(node.scrollHeight > node.clientHeight + 1);
       setScrollEdges((previous) =>
         previous.start === next.start && previous.end === next.end ? previous : next,
@@ -154,22 +174,18 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
     const table = element.current;
     if (!table) return;
     const measure = () => {
-      const caption = table.caption?.getBoundingClientRect().height ?? 0;
-      setCaptionHeight(caption);
-      setHeaderHeight(caption + (table.tHead?.getBoundingClientRect().height ?? 0));
+      setHeaderHeight(table.tHead?.getBoundingClientRect().height ?? 0);
     };
     measure();
     const observer =
       typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
     observer?.observe(table);
     if (table.tHead) observer?.observe(table.tHead);
-    if (table.caption) observer?.observe(table.caption);
     const mutation =
       typeof MutationObserver === 'undefined'
         ? undefined
         : new MutationObserver(() => {
             if (table.tHead) observer?.observe(table.tHead);
-            if (table.caption) observer?.observe(table.caption);
             measure();
           });
     mutation?.observe(table, { childList: true });
@@ -183,21 +199,24 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
       className={classes(
         'leaf-table',
         `leaf-table--${size}`,
-        columnDividers && 'leaf-table--column-dividers',
-        striped && 'leaf-table--striped',
+        variant === 'simple' && 'leaf-table--simple',
+        variant !== 'simple' && columnDividers && 'leaf-table--column-dividers',
+        variant !== 'simple' && striped && 'leaf-table--striped',
         className,
       )}
       style={
         {
           ...style,
           '--leaf-table-header-height': `${headerHeight}px`,
-          '--leaf-table-caption-height': `${captionHeight}px`,
+          '--leaf-table-viewport-width':
+            viewportWidth === undefined ? undefined : `${viewportWidth}px`,
         } as CSSProperties
       }
       data-loading={loading || undefined}
       data-scroll-start={scrollEdges.start || undefined}
       data-scroll-end={scrollEdges.end || undefined}
       data-vertical-overflow={verticalOverflow || undefined}
+      data-pinning-overflow={pinningOverflow || undefined}
     >
       {/* A stationary frame clips the scrolling rows without splitting the native table. */}
       <div className="leaf-table__panel" aria-hidden="true" />
@@ -220,7 +239,9 @@ const TableRootControl = forwardRef<HTMLTableElement, TableProps>(function Table
           style={{ tableLayout, ...tableStyle }}
           aria-busy={loading || props['aria-busy'] || undefined}
         >
-          {children}
+          <PinningOverflowContext.Provider value={pinningOverflow}>
+            {children}
+          </PinningOverflowContext.Provider>
         </table>
       </Scrollbar>
       {loading && (
@@ -277,13 +298,18 @@ function cellStyle(
   align: TableCellProps['align'],
   pinned: TableCellProps['pinned'],
   pinOffset: number,
+  pinningOverflow: boolean,
 ): CSSProperties {
   return {
     textAlign: align,
     ...style,
-    ...(pinned ? { position: 'sticky' as const } : {}),
-    ...(pinned === 'start' ? { insetInlineStart: pinOffset } : {}),
-    ...(pinned === 'end' ? { insetInlineEnd: pinOffset } : {}),
+    ...(pinned
+      ? {
+          position: pinningOverflow ? ('relative' as const) : ('sticky' as const),
+          insetInlineStart: !pinningOverflow && pinned === 'start' ? pinOffset : 'auto',
+          insetInlineEnd: !pinningOverflow && pinned === 'end' ? pinOffset : 'auto',
+        }
+      : {}),
   };
 }
 
@@ -292,6 +318,7 @@ export const TableCellControl = forwardRef<HTMLTableCellElement, TableCellProps>
     { align, pinned, pinOffset = 0, pinEdge, className, style, ...props }: TableCellProps,
     ref,
   ) {
+    const pinningOverflow = useContext(PinningOverflowContext);
     return (
       <td
         {...props}
@@ -299,7 +326,7 @@ export const TableCellControl = forwardRef<HTMLTableCellElement, TableCellProps>
         className={classes('leaf-table__cell', className)}
         data-pinned={pinned}
         data-pin-edge={pinEdge || undefined}
-        style={cellStyle(style, align, pinned, pinOffset)}
+        style={cellStyle(style, align, pinned, pinOffset, pinningOverflow)}
       />
     );
   },
@@ -319,6 +346,7 @@ export const TableColumnHeaderControl = forwardRef<HTMLTableCellElement, TableCo
     }: TableColumnHeaderProps,
     ref,
   ) {
+    const pinningOverflow = useContext(PinningOverflowContext);
     return (
       <th
         {...props}
@@ -327,30 +355,22 @@ export const TableColumnHeaderControl = forwardRef<HTMLTableCellElement, TableCo
         className={classes('leaf-table__cell', 'leaf-table__column-header', className)}
         data-pinned={pinned}
         data-pin-edge={pinEdge || undefined}
-        style={cellStyle(style, align, pinned, pinOffset)}
+        style={cellStyle(style, align, pinned, pinOffset, pinningOverflow)}
       />
     );
   },
 );
 
-export const TableCaptionControl = forwardRef<
-  HTMLTableCaptionElement,
-  HTMLAttributes<HTMLTableCaptionElement>
->(function TableCaptionControl(
-  { className, ...props }: HTMLAttributes<HTMLTableCaptionElement>,
-  ref,
-) {
-  return <caption {...props} ref={ref} className={classes('leaf-table__caption', className)} />;
-});
-
 export function TableEmptyControl({ colSpan = 1, children }: TableStateProps) {
   const t = useText();
   return (
     <TableRowControl className="leaf-table__state-row">
-      <TableCellControl colSpan={colSpan}>
-        <div className="leaf-table__state" role="status">
-          <Inbox size={28} aria-hidden="true" />
-          {children ?? t('common.noData')}
+      <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
+        <div className="leaf-table__state-content">
+          <div className="leaf-table__state" role="status">
+            <Inbox size={28} aria-hidden="true" />
+            {children ?? t('common.noData')}
+          </div>
         </div>
       </TableCellControl>
     </TableRowControl>
@@ -361,9 +381,11 @@ export function TableLoadingControl({ colSpan = 1, children }: TableStateProps) 
   const t = useText();
   return (
     <TableRowControl className="leaf-table__state-row">
-      <TableCellControl colSpan={colSpan}>
-        <div className="leaf-table__state">
-          <Loading tip={children ?? t('common.loading')} />
+      <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
+        <div className="leaf-table__state-content">
+          <div className="leaf-table__state">
+            <Loading tip={children ?? t('common.loading')} />
+          </div>
         </div>
       </TableCellControl>
     </TableRowControl>
@@ -374,15 +396,21 @@ export function TableErrorControl({ colSpan = 1, children, onRetry }: TableError
   const t = useText();
   return (
     <TableRowControl className="leaf-table__state-row">
-      <TableCellControl colSpan={colSpan}>
-        <div className="leaf-table__state leaf-table__state--error" role="alert">
-          <CircleAlert size={28} aria-hidden="true" />
-          {children ?? t('table.loadError')}
-          {onRetry && (
-            <ButtonControl size="sm" variant="outline" onClick={onRetry}>
-              {t('common.retry')}
-            </ButtonControl>
-          )}
+      <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
+        <div className="leaf-table__state-content">
+          <Result
+            status="danger"
+            size="sm"
+            role="alert"
+            title={children ?? t('table.loadError')}
+            extra={
+              onRetry && (
+                <ButtonControl size="sm" variant="outline" onClick={onRetry}>
+                  {t('common.retry')}
+                </ButtonControl>
+              )
+            }
+          />
         </div>
       </TableCellControl>
     </TableRowControl>
@@ -397,7 +425,6 @@ export const TableControl = Object.assign(TableRootControl, {
   Row: TableRowControl,
   ColumnHeader: TableColumnHeaderControl,
   Cell: TableCellControl,
-  Caption: TableCaptionControl,
   Empty: TableEmptyControl,
   Loading: TableLoadingControl,
   Error: TableErrorControl,

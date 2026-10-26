@@ -6,7 +6,6 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import {
   Button,
-  CommandPalette,
   Form,
   FormField,
   Input,
@@ -249,41 +248,6 @@ describe('ConfigProvider component defaults', () => {
     expect(search).not.toHaveBeenCalled();
   });
 
-  it('keeps command search functional without leaking default type, readonly, IDs or events', async () => {
-    const change = vi.fn();
-    render(
-      <ConfigProvider
-        components={{
-          Input: {
-            type: 'password',
-            readOnly: true,
-            required: true,
-            id: 'shared-id',
-            onChange: change,
-          },
-        }}
-      >
-        <CommandPalette
-          open
-          shortcut={false}
-          items={[
-            { key: 'copy', label: 'Copy' },
-            { key: 'save', label: 'Save' },
-          ]}
-        />
-      </ConfigProvider>,
-    );
-    const search = screen.getByRole('combobox');
-    expect(search).toHaveAttribute('type', 'text');
-    expect(search).not.toHaveAttribute('readonly');
-    expect(search).not.toHaveAttribute('required');
-    expect(search.id).not.toBe('shared-id');
-    await userEvent.type(search, 'copy');
-    expect(search).toHaveValue('copy');
-    expect(screen.getByRole('option', { name: 'Copy' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Save' })).toBeNull();
-    expect(change).not.toHaveBeenCalled();
-  });
   it('respects instance, inner, outer and builtin precedence including false and undefined', () => {
     render(
       <>

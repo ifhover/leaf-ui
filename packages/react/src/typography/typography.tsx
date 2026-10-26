@@ -54,6 +54,8 @@ function TextContent({
     [editing, setEditing] = useState(false),
     [draft, setDraft] = useState('');
   const text = typeof children === 'string' || typeof children === 'number' ? String(children) : '';
+  const content = useRef<HTMLSpanElement>(null);
+  const visibleText = () => content.current?.textContent ?? text;
   const rows = typeof ellipsis === 'object' ? (ellipsis.rows ?? 1) : 1;
   const session = useRef(false);
   const input = useRef<HTMLInputElement>(null);
@@ -97,6 +99,7 @@ function TextContent({
   return (
     <>
       <span
+        ref={content}
         className={classes(
           'leaf-text__content',
           ellipsis && !expanded && 'leaf-text__content--ellipsis',
@@ -126,7 +129,8 @@ function TextContent({
           startIcon={copied ? <Check size={14} /> : <Copy size={14} />}
           aria-label={t('typography.copyText')}
           onClick={async () => {
-            const value = typeof copyable === 'object' ? (copyable.text ?? text) : text;
+            const value =
+              typeof copyable === 'object' ? (copyable.text ?? visibleText()) : visibleText();
             try {
               await navigator.clipboard.writeText(value);
               setCopied(true);
@@ -144,7 +148,7 @@ function TextContent({
           startIcon={<Pencil size={14} />}
           aria-label={t('typography.editText')}
           onClick={() => {
-            setDraft(editable.text ?? text);
+            setDraft(editable.text ?? visibleText());
             session.current = true;
             setEditing(true);
           }}

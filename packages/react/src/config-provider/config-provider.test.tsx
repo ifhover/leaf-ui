@@ -4,7 +4,7 @@ import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { defaultColors } from '../colors';
-import { Button, DatePicker, Drawer, Input, Modal, Pagination, Select, TimePicker } from '../index';
+import { Button, DatePicker, Drawer, Input, Modal, Pagination, Select } from '../index';
 import { useText } from '../shared/use-text';
 import { ConfigProvider, type ConfigProviderProps, useLeafConfig } from './config-provider';
 
@@ -107,7 +107,7 @@ describe('ConfigProvider', () => {
       '30px',
     );
     expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-density-form-gap')).toBe(
-      '16px',
+      '12px',
     );
     expect(screen.getByTestId('reset').style.getPropertyValue('--leaf-control-height')).toBe(
       '40px',
@@ -125,7 +125,7 @@ describe('ConfigProvider', () => {
     );
     expect(screen.getByText('comfortable')).toBeInTheDocument();
   });
-  it('defaults mask blur on and inherits overrides in portalled dialogs', () => {
+  it('defaults mask blur off and inherits overrides in portalled dialogs', () => {
     function BlurValue() {
       return <output data-testid="default-blur">{String(useLeafConfig().maskBlur)}</output>;
     }
@@ -145,7 +145,7 @@ describe('ConfigProvider', () => {
       );
     }
     const { rerender } = render(<Example blur={false} />);
-    expect(screen.getByTestId('default-blur')).toHaveTextContent('true');
+    expect(screen.getByTestId('default-blur')).toHaveTextContent('false');
     const modalMask = screen.getByRole('dialog', { name: 'Inherited blur' }).parentElement;
     const drawerMask = screen.getByRole('dialog', { name: 'Enabled blur' }).parentElement;
     expect(modalMask).toHaveAttribute('data-blur', 'off');
@@ -287,7 +287,7 @@ describe('ConfigProvider', () => {
     const { rerender } = render(
       <ConfigProvider locale="en-US">
         <Select aria-label="Choice" options={[]} />
-        <TimePicker aria-label="Time" use12Hours defaultValue="00:00" />
+        <DatePicker picker="time" aria-label="Time" use12Hours defaultValue="00:00" />
       </ConfigProvider>,
     );
     await userEvent.click(screen.getByRole('combobox', { name: 'Choice' }));
@@ -299,7 +299,7 @@ describe('ConfigProvider', () => {
     ).toHaveAttribute('aria-selected', 'true');
     rerender(
       <ConfigProvider locale="zh-CN">
-        <TimePicker aria-label="Time" />
+        <DatePicker picker="time" aria-label="Time" />
       </ConfigProvider>,
     );
     expect(screen.getByRole('combobox')).toHaveValue('');
@@ -311,7 +311,7 @@ describe('ConfigProvider', () => {
         <ConfigProvider locale={locale}>
           <Select aria-label="Choice" options={[]} />
           <DatePicker aria-label="Date" defaultValue={new Date(2026, 9, 16)} />
-          <TimePicker aria-label="Time" use12Hours defaultValue="14:30" />
+          <DatePicker picker="time" aria-label="Time" use12Hours defaultValue="14:30" />
           <Pagination total={24} showTotal />
         </ConfigProvider>
       );
@@ -340,13 +340,15 @@ describe('ConfigProvider', () => {
     expect(screen.getByRole('button', { name: '오늘' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     await userEvent.clear(time);
-    await userEvent.type(time, '3:45 오후{Enter}');
+    await userEvent.paste('3:45 오후');
+    await userEvent.keyboard('{Enter}');
     expect(time).toHaveValue('03:45 오후');
 
     rerender(<View locale="ja-JP" />);
     expect(time).toHaveValue('03:45 午後');
     await userEvent.clear(time);
-    await userEvent.type(time, '午前 9:15{Enter}');
+    await userEvent.paste('午前 9:15');
+    await userEvent.keyboard('{Enter}');
     expect(time).toHaveValue('09:15 午前');
   });
   it.each([

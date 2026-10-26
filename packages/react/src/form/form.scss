@@ -1,6 +1,7 @@
 @use '../styles/mixins' as mixins;
 .leaf-form {
   display: grid;
+  container: leaf-form / inline-size;
   gap: var(--leaf-component-form-gap, var(--leaf-density-form-gap));
   color: var(--leaf-component-form-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
@@ -11,7 +12,7 @@
   gap: 12px;
   min-width: 0;
   &--horizontal {
-    grid-template-columns: var(--leaf-form-label-width, auto) minmax(0, 1fr);
+    grid-template-columns: var(--leaf-form-label-width, 40%) minmax(0, 1fr);
     > .leaf-form-field__body {
       grid-column: 2;
     }
@@ -41,8 +42,8 @@
     line-height: var(--leaf-line-height);
   }
   &__label > span {
-    width: max-content;
-    white-space: nowrap;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
   &--horizontal.leaf-form-field--right &__label {
     justify-content: flex-end;
@@ -66,7 +67,10 @@
     min-width: 0;
   }
   &__body > .leaf-input,
+  &__body > .leaf-input-search,
+  &__body > .leaf-input-number,
   &__body > .leaf-select,
+  &__body > .leaf-tree-select,
   &__body > .leaf-date-picker,
   &__body > .leaf-time-picker,
   &__body > .leaf-cascader,
@@ -112,6 +116,22 @@
   }
 }
 
+@container leaf-form (max-width: 420px) {
+  .leaf-form-field--horizontal,
+  .leaf-form-field--settings {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    > .leaf-form-field__body {
+      grid-column: 1;
+      justify-self: stretch;
+    }
+    .leaf-form-field__label {
+      min-height: 0;
+      justify-content: flex-start;
+    }
+  }
+}
+
 .leaf-form--settings,
 .leaf-form-group.leaf-form-group--settings,
 .leaf-form--settings > .leaf-form-list,
@@ -123,9 +143,9 @@
     margin-block-start: var(--leaf-component-form-gap, var(--leaf-density-form-gap));
   }
   > .leaf-form-field--settings-row {
-    padding-block: var(--leaf-component-form-gap, var(--leaf-spacing-md));
+    padding-block: var(--leaf-component-form-gap, calc(var(--leaf-density-form-gap) * 0.75));
     + .leaf-form-field--settings-row {
-      border-block-start: 1px solid var(--leaf-color-divider);
+      border-block-start: 1px dashed var(--leaf-color-divider);
     }
     &:first-child {
       padding-block-start: 0;
@@ -186,7 +206,4 @@
       outline: 2px solid currentColor;
     }
   }
-}
-.leaf-calendar[data-view='quarter'] .leaf-calendar__cells {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }

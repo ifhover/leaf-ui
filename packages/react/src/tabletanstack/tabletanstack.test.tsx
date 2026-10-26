@@ -20,7 +20,12 @@ import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
 import { useDataTableSelection } from './selection';
-import { DataTable, type DataTableInstanceProps, useDataTable } from './tabletanstack';
+import {
+  DataTable,
+  type DataTableDataProps,
+  type DataTableInstanceProps,
+  useDataTable,
+} from './tabletanstack';
 
 interface Person {
   id: string;
@@ -113,6 +118,28 @@ const bodyNames = () =>
   );
 
 describe('DataTable TanStack adapter', () => {
+  it('removes caption in both modes without leaking legacy options to the DOM', () => {
+    expectTypeOf<DataTableInstanceProps<Person>>().not.toHaveProperty('caption');
+    expectTypeOf<DataTableDataProps<Person>>().not.toHaveProperty('caption');
+    const legacyOptions = { caption: 'Obsolete caption' };
+    const view = render(
+      <DataTable
+        {...legacyOptions}
+        data={data}
+        columns={columns}
+        rowKey="id"
+        aria-label="People"
+      />,
+    );
+    expect(screen.getByRole('table', { name: 'People' })).not.toHaveAttribute('caption');
+    expect(view.container.querySelector('[caption], caption')).toBeNull();
+    expect(screen.queryByText('Obsolete caption')).not.toBeInTheDocument();
+    view.rerender(<Harness {...legacyOptions} aria-label="People" />);
+    expect(screen.getByRole('table', { name: 'People' })).not.toHaveAttribute('caption');
+    expect(view.container.querySelector('[caption], caption')).toBeNull();
+    expect(screen.queryByText('Obsolete caption')).not.toBeInTheDocument();
+  });
+
   it('does not expose or forward the obsolete fixed-header switch', () => {
     expectTypeOf<DataTableInstanceProps<Person>>().not.toHaveProperty('stickyHeader');
     const legacyOptions = { stickyHeader: false };
@@ -140,6 +167,7 @@ describe('DataTable TanStack adapter', () => {
           rowKey="id"
           selection="multiple"
           options={{
+            enableSorting: true,
             initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
             enableRowSelection: (row) => !row.original.disabled,
           }}
@@ -152,6 +180,105 @@ describe('DataTable TanStack adapter', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
     expect(bodyNames()).toEqual(['Dana', 'Bob']);
     expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeDisabled();
+  });
+
+  it.each([undefined, {}, { enableSorting: undefined }, { enableSorting: false }])(
+    'leaves headers and data unsorted until explicitly enabled (%j)',
+    (options) => {
+      render(
+        <ConfigProvider locale="en-US">
+          <DataTable
+            data={data}
+            columns={columns}
+            rowKey="id"
+            pagination={false}
+            options={options}
+          />
+        </ConfigProvider>,
+      );
+      expect(screen.queryByRole('button', { name: /Sort/ })).not.toBeInTheDocument();
+      expect(screen.getAllByRole('columnheader')).toHaveLength(3);
+      expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+    },
+  );
+
+  it('updates sorting opt-in on the stable hook instance and respects column exclusions', async () => {
+    let instance: TanStackTable<Person> | undefined;
+    const sortColumns = columns.map((column) => ({
+      ...column,
+      enableSorting: 'accessorKey' in column && column.accessorKey === 'age',
+    }));
+    function HookTable({ enabled }: { enabled?: boolean }) {
+      const table = useDataTable({
+        data,
+        columns: sortColumns,
+        rowKey: 'id',
+        localPagination: false,
+        options: { enableSorting: enabled },
+      });
+      instance = table;
+      return <DataTable table={table} pagination={false} />;
+    }
+    const view = (enabled?: boolean) => (
+      <ConfigProvider locale="en-US">
+        <HookTable enabled={enabled} />
+      </ConfigProvider>
+    );
+    const { rerender } = render(view());
+    const original = instance;
+    expect(screen.queryByRole('button', { name: /Sort/ })).not.toBeInTheDocument();
+    expect(instance?.options.enableSorting).toBe(false);
+    rerender(view(true));
+    expect(instance).toBe(original);
+    expect(screen.getAllByRole('button', { name: /Sort/ })).toHaveLength(1);
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort descending' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Alice', 'Dana', 'Bob']);
+    rerender(view(false));
+    expect(screen.queryByRole('button', { name: /Sort/ })).not.toBeInTheDocument();
+    expect(instance?.getState().sorting).toEqual([{ id: 'age', desc: true }]);
+    rerender(view(true));
+    expect(instance).toBe(original);
+    expect(screen.getByRole('button', { name: 'Age: Sort ascending' })).toBeInTheDocument();
+  });
+
+  it('requires sorting opt-in for manual mode and leaves data order to its owner', async () => {
+    let instance: TanStackTable<Person> | undefined;
+    function ManualTable({ enabled }: { enabled?: boolean }) {
+      const [sorting, setSorting] = useState<SortingState>([]);
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        localPagination: false,
+        options: {
+          enableSorting: enabled,
+          manualSorting: true,
+          state: { sorting },
+          onSortingChange: setSorting,
+        },
+      });
+      instance = table;
+      return <DataTable table={table} pagination={false} />;
+    }
+    const view = (enabled?: boolean) => (
+      <ConfigProvider locale="en-US">
+        <ManualTable enabled={enabled} />
+      </ConfigProvider>
+    );
+    const { rerender } = render(view());
+    expect(screen.queryByRole('button', { name: /Sort/ })).not.toBeInTheDocument();
+    rerender(view(true));
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort descending' }));
+    expect(instance?.getState().sorting).toEqual([{ id: 'age', desc: true }]);
+    expect(screen.getByRole('columnheader', { name: /Age/ })).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    );
+    expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort ascending' }));
+    expect(instance?.getState().sorting).toEqual([{ id: 'age', desc: false }]);
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Clear sorting' }));
+    expect(instance?.getState().sorting).toEqual([]);
   });
 
   it('separates local slicing from default pagination visibility', () => {
@@ -406,6 +533,58 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByText('Explicit custom layout')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+
+  it('supports simple regional defaults and explicit layered overrides without replacing rows', async () => {
+    const { rerender } = render(
+      <ConfigProvider
+        components={{ DataTable: { variant: 'simple', striped: true, bordered: true } }}
+      >
+        <Harness pagination={false} selection="multiple" />
+      </ConfigProvider>,
+    );
+    const table = screen.getByRole('table');
+    const root = table.closest('.leaf-table');
+    expect(root).toHaveClass('leaf-table--simple');
+    expect(root).not.toHaveClass('leaf-table--striped');
+    expect(root).not.toHaveClass('leaf-table--column-dividers');
+    expect(table.closest('.leaf-data-table')).not.toHaveAttribute('variant');
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Alice' }));
+    rerender(
+      <ConfigProvider
+        components={{ DataTable: { variant: 'simple', striped: true, bordered: true } }}
+      >
+        <Harness variant="layered" pagination={false} selection="multiple" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('table')).toBe(table);
+    expect(root).not.toHaveClass('leaf-table--simple');
+    expect(root).toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
+    expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
+  });
+
+  it('ignores explicit stripe and divider props in simple data mode and server output', () => {
+    const props = {
+      data,
+      columns,
+      rowKey: 'id',
+      variant: 'simple',
+      striped: true,
+      columnDividers: true,
+      bordered: true,
+      pagination: false,
+    } as const;
+    render(<DataTable {...props} />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--simple');
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
+      'leaf-table--column-dividers',
+    );
+    const html = renderToString(<DataTable {...props} />);
+    expect(html).toContain('leaf-table--simple');
+    expect(html).not.toContain('leaf-table--striped');
+    expect(html).not.toContain('leaf-table--column-dividers');
+    expect(html).not.toContain('variant=');
   });
 
   it('prefers columnDividers over the deprecated bordered alias', () => {
@@ -875,7 +1054,10 @@ describe('DataTable TanStack adapter', () => {
         columns,
         rowKey: (row) => row.age,
         pagination,
-        options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
+        options: {
+          enableSorting: true,
+          initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
+        },
       });
       instance = table;
       return (

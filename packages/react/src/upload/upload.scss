@@ -47,14 +47,10 @@
     transition:
       border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       background: var(--leaf-color-surface-raised);
-    }
-    &:active:not(:disabled) {
-      transform: scale(0.99);
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -81,17 +77,12 @@
     box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__dropzone:hover:not(:disabled) &__symbol,
   &[data-dragging] &__symbol {
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     background: var(--leaf-accent-soft-background);
-    transform: translateY(-2px);
-  }
-  &__dropzone:active:not(:disabled) &__symbol {
-    transform: translateY(-1px) scale(0.98);
   }
   &__title {
     font-weight: var(--leaf-font-weight);

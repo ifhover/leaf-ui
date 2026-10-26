@@ -228,6 +228,7 @@ export function resolveColorRoles(
       4.5,
     );
     assign(`${family}-ink`, ink.value, ink.source);
+    // Solid labels default to white; on*Color tokens are the only way to switch them.
     assign(`on-${family}`, solidForeground.white, 'white');
 
     if (family === 'primary') {

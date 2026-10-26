@@ -65,6 +65,8 @@
 }
 .leaf-drawer {
   @include dialog-sections.sections(drawer);
+  @include mixins.panel-canvas-family;
+  --leaf-drawer-inset: calc(var(--leaf-spacing) * 0.75);
   --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
   position: relative;
   box-sizing: border-box;
@@ -113,6 +115,49 @@
       --leaf-component-drawer-padding,
       var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
     );
+  }
+  &__heading h2 {
+    font-size: var(--leaf-font-size);
+    line-height: var(--leaf-line-height-lg);
+  }
+  &__close {
+    width: 24px;
+    height: 24px;
+    padding: 3px;
+    border-radius: var(--leaf-radius-sm);
+    > svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &--card {
+    background: var(--leaf-panel-canvas-background);
+    > .leaf-drawer__header {
+      padding-block: calc(var(--leaf-spacing) * 1.5) 0;
+      padding-inline: calc(var(--leaf-drawer-inset) + var(--leaf-spacing-md))
+        calc(var(--leaf-drawer-inset) + var(--leaf-spacing));
+    }
+    > .leaf-drawer__body {
+      // Let flex stretch account for the card margins instead of Scrollbar's full width.
+      width: auto;
+      margin: calc(var(--leaf-spacing) * 1.5) var(--leaf-drawer-inset)
+        calc(var(--leaf-spacing) * 1.25);
+      background: var(--leaf-component-drawer-background, var(--leaf-color-surface));
+      border-radius: max(
+        0px,
+        calc(var(--leaf-component-drawer-radius, var(--leaf-radius-lg)) - var(--leaf-drawer-inset))
+      );
+    }
+    .leaf-drawer__viewport {
+      border-radius: inherit;
+    }
+    .leaf-drawer__content {
+      padding: var(--leaf-component-drawer-padding, var(--leaf-spacing-md));
+    }
+    > .leaf-drawer__footer {
+      padding: 0 var(--leaf-drawer-inset) calc(var(--leaf-spacing) * 1.25);
+      background: var(--leaf-component-drawer-footer-background, transparent);
+    }
   }
 }
 .leaf-drawer-mask[data-state='closing'] .leaf-drawer {

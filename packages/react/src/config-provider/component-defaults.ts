@@ -2,7 +2,6 @@ import type { HTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 import type { AlertProps } from '../alert/alert';
 import type { AffixProps, AnchorProps } from '../anchor/anchor';
-import type { AppBarProps, BottomNavigationProps, ToolbarProps } from '../appbar/appbar';
 import type { AutoCompleteProps } from '../autocomplete/autocomplete';
 import type { AvatarProps } from '../avatar/avatar';
 import type { AvatarGroupProps } from '../avatar/group';
@@ -20,11 +19,9 @@ import type { CheckboxProps } from '../checkbox/checkbox';
 import type { CheckboxGroupProps } from '../checkbox/group';
 import type { CollapseProps } from '../collapse/collapse';
 import type { ColorPickerProps } from '../colorpicker/colorpicker';
-import type { CommandPaletteProps } from '../commandpalette/commandpalette';
 import type { ConfirmOptions } from '../confirm/confirm';
 import type { DatePickerProps } from '../datepicker/datepicker';
 import type { DateRangePickerProps } from '../daterangepicker/daterangepicker';
-import type { DateTimePickerProps } from '../datetimepicker/datetimepicker';
 import type { DescriptionsProps } from '../descriptions/descriptions';
 import type { DividerProps } from '../divider/divider';
 import type { DrawerProps } from '../drawer/drawer';
@@ -88,8 +85,6 @@ import type { CheckableTagProps, TagGroupProps } from '../tag/group';
 import type { TagProps } from '../tag/tag';
 import type { TextareaProps } from '../textarea/textarea';
 import type { TimelineProps } from '../timeline/timeline';
-import type { TimePickerProps } from '../timepicker/timepicker';
-import type { TimeRangePickerProps } from '../timerangepicker/timerangepicker';
 import type { TooltipProps } from '../tooltip/tooltip';
 import type { TourProps } from '../tour/tour';
 import type { TransferProps } from '../transfer/transfer';
@@ -113,13 +108,11 @@ interface ComponentPropsMap {
   Affix: AffixProps;
   Alert: AlertProps;
   Anchor: AnchorProps;
-  AppBar: AppBarProps;
   AutoComplete: AutoCompleteProps;
   Avatar: AvatarProps;
   AvatarGroup: AvatarGroupProps;
   BackTop: BackTopProps;
   Badge: BadgeProps;
-  BottomNavigation: BottomNavigationProps;
   Breadcrumb: BreadcrumbProps;
   Button: ButtonProps;
   ButtonGroup: ButtonGroupProps;
@@ -134,7 +127,6 @@ interface ComponentPropsMap {
   Col: ColProps;
   Collapse: CollapseProps;
   ColorPicker: ColorPickerProps;
-  CommandPalette: CommandPaletteProps;
   Confirm: ConfirmOptions;
   Countdown: CountdownProps;
   DataTableColumnVisibility: DataTableColumnVisibilityProps;
@@ -145,7 +137,6 @@ interface ComponentPropsMap {
   DataTableToolbar: HTMLAttributes<HTMLDivElement>;
   DatePicker: DatePickerProps;
   DateRangePicker: DateRangePickerProps;
-  DateTimePicker: DateTimePickerProps;
   Descriptions: DescriptionsProps;
   Divider: DividerProps;
   Drawer: DrawerProps;
@@ -214,10 +205,7 @@ interface ComponentPropsMap {
   Text: TextProps;
   Textarea: TextareaProps;
   Timeline: TimelineProps;
-  TimePicker: TimePickerProps;
-  TimeRangePicker: TimeRangePickerProps;
   Title: TitleProps;
-  Toolbar: ToolbarProps;
   Tooltip: TooltipProps;
   Tour: TourProps;
   Transfer: TransferProps;
@@ -232,13 +220,11 @@ export interface LeafComponentDefaults {
   Affix?: Partial<Omit<AffixProps, 'key' | 'ref'>> | null;
   Alert?: Partial<Omit<AlertProps, 'key' | 'ref' | 'title'>> | null;
   Anchor?: Partial<Omit<AnchorProps, 'key' | 'ref' | 'items'>> | null;
-  AppBar?: Partial<Omit<AppBarProps, 'key' | 'ref'>> | null;
   AutoComplete?: Partial<Omit<AutoCompleteProps, 'key' | 'ref' | 'options'>> | null;
   Avatar?: Partial<Omit<AvatarProps, 'key' | 'ref'>> | null;
   AvatarGroup?: Partial<Omit<AvatarGroupProps, 'key' | 'ref'>> | null;
   BackTop?: Partial<Omit<BackTopProps, 'key' | 'ref'>> | null;
   Badge?: Partial<Omit<BadgeProps, 'key' | 'ref'>> | null;
-  BottomNavigation?: Partial<Omit<BottomNavigationProps, 'key' | 'ref' | 'items'>> | null;
   Breadcrumb?: Partial<Omit<BreadcrumbProps, 'key' | 'ref' | 'items'>> | null;
   Button?: Partial<Omit<ButtonProps, 'key' | 'ref'>> | null;
   ButtonGroup?: Partial<Omit<ButtonGroupProps, 'key' | 'ref'>> | null;
@@ -258,7 +244,6 @@ export interface LeafComponentDefaults {
   Col?: Partial<Omit<ColProps, 'key' | 'ref'>> | null;
   Collapse?: Partial<Omit<CollapseProps, 'key' | 'ref' | 'items'>> | null;
   ColorPicker?: Partial<Omit<ColorPickerProps, 'key' | 'ref'>> | null;
-  CommandPalette?: Partial<Omit<CommandPaletteProps, 'key' | 'ref' | 'items'>> | null;
   Confirm?: Partial<Omit<ConfirmOptions, 'key' | 'ref'>> | null;
   Countdown?: Partial<Omit<CountdownProps, 'key' | 'ref' | 'value'>> | null;
   DataTable?: Partial<Omit<DataTablePresentationProps, 'tableRef'>> | null;
@@ -269,10 +254,9 @@ export interface LeafComponentDefaults {
   DataTableSearch?: Partial<Omit<DataTableSearchProps, 'key' | 'ref'>> | null;
   DataTableToolbar?: Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' | 'ref'>> | null;
   DatePicker?: Partial<
-    Omit<DatePickerProps, 'key' | 'ref' | 'multiple' | 'value' | 'defaultValue' | 'onChange'>
+    Omit<DatePickerProps, 'key' | 'ref' | 'value' | 'defaultValue' | 'onChange'>
   > | null;
   DateRangePicker?: Partial<Omit<DateRangePickerProps, 'key' | 'ref'>> | null;
-  DateTimePicker?: Partial<Omit<DateTimePickerProps, 'key' | 'ref'>> | null;
   Descriptions?: Partial<Omit<DescriptionsProps, 'key' | 'ref' | 'items'>> | null;
   Divider?: Partial<Omit<DividerProps, 'key' | 'ref'>> | null;
   Drawer?: Partial<Omit<DrawerProps, 'key' | 'ref' | 'open'>> | null;
@@ -364,10 +348,7 @@ export interface LeafComponentDefaults {
   Text?: Partial<Omit<TextProps, 'key' | 'ref'>> | null;
   Textarea?: Partial<Omit<TextareaProps, 'key' | 'ref'>> | null;
   Timeline?: Partial<Omit<TimelineProps, 'key' | 'ref' | 'items'>> | null;
-  TimePicker?: Partial<Omit<TimePickerProps, 'key' | 'ref'>> | null;
-  TimeRangePicker?: Partial<Omit<TimeRangePickerProps, 'key' | 'ref'>> | null;
   Title?: Partial<Omit<TitleProps, 'key' | 'ref'>> | null;
-  Toolbar?: Partial<Omit<ToolbarProps, 'key' | 'ref'>> | null;
   Tooltip?: Partial<Omit<TooltipProps, 'key' | 'ref' | 'content' | 'children'>> | null;
   Tour?: Partial<Omit<TourProps, 'key' | 'ref' | 'open' | 'steps'>> | null;
   Transfer?: Partial<Omit<TransferProps, 'key' | 'ref' | 'items'>> | null;

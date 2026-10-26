@@ -48,13 +48,13 @@
     padding: max(0px, calc(2px - var(--leaf-switch-border-width)));
     --leaf-switch-track-border: var(
       --leaf-component-switch-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+      var(--leaf-frame-border-color, var(--leaf-switch-track-background))
     );
     border: var(--leaf-switch-border-width) solid var(--leaf-switch-track-border);
     border-radius: 999px;
     --leaf-switch-track-background: var(
       --leaf-component-switch-background,
-      var(--leaf-color-option-hover)
+      light-dark(var(--leaf-color-text-muted), var(--leaf-color-option-hover))
     );
     --leaf-switch-track-shadow: var(
       --leaf-component-switch-shadow,
@@ -65,6 +65,7 @@
     pointer-events: none;
     transition:
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__thumb {
@@ -74,11 +75,13 @@
     width: var(--leaf-switch-thumb);
     height: var(--leaf-switch-thumb);
     border-radius: 999px;
-    color: var(--leaf-color-surface);
-    background: var(--leaf-color-text-muted);
+    color: light-dark(var(--leaf-color-text-muted), var(--leaf-color-surface));
+    background: light-dark(var(--leaf-color-surface), var(--leaf-color-text));
     box-shadow: var(--leaf-shadow-xs);
     transition:
       transform var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      color var(--leaf-motion-duration) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__input:checked + &__track {
@@ -145,7 +148,7 @@
   &__spinner {
     width: 10px;
     height: 10px;
-    color: var(--leaf-color-primary);
+    color: currentColor;
     animation: var(
       --leaf-motion-animation,
       leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
@@ -167,12 +170,14 @@
       background: Canvas;
     }
     &__thumb {
+      color: Canvas;
       background: ButtonText;
     }
     & &__control > &__input:checked + &__track {
       background: Highlight;
     }
     &__input:checked + &__track &__thumb {
+      color: Highlight;
       background: HighlightText;
     }
     &__input:focus-visible + &__track {

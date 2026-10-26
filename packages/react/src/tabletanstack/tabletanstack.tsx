@@ -194,8 +194,8 @@ function DataTableRoot<TData>({
   layout,
   children,
   toolbar,
-  caption,
   size = 'md',
+  variant = 'layered',
   columnDividers,
   bordered = false,
   striped = true,
@@ -255,8 +255,8 @@ function DataTableRoot<TData>({
     id,
     label,
     labelledBy,
-    caption,
     size,
+    variant,
     columnDividers: dividers,
     striped,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
@@ -929,18 +929,8 @@ function ordinaryRows(rows: Row<unknown>[]) {
 
 export function DataTableContentControl({ className, ...props }: DataTableContentProps) {
   const config = useDataTableContext();
-  const {
-    table,
-    caption,
-    tableRef,
-    loading,
-    error,
-    emptyContent,
-    onRetry,
-    selection,
-    resizable,
-    virtual,
-  } = config;
+  const { table, tableRef, loading, error, emptyContent, onRetry, selection, resizable, virtual } =
+    config;
   const t = useText();
   const format = useFormattedText();
   const viewport = useRef<HTMLDivElement>(null);
@@ -994,15 +984,16 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
         aria-busy={loading || undefined}
         aria-rowcount={virtual && !status ? virtualRows.count : undefined}
         size={config.size}
+        variant={config.variant}
         columnDividers={config.columnDividers}
         striped={config.striped}
         maxHeight={config.maxHeight}
         minWidth={config.minWidth ?? totalWidth}
+        pinnedWidth={table.getLeftTotalSize() + table.getRightTotalSize()}
         tableLayout="fixed"
         tableStyle={{ width: `max(100%, ${totalWidth}px)` }}
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
-        {caption != null && <Table.Caption>{caption}</Table.Caption>}
         <colgroup>
           {config.rowReordering && <col style={{ width: 44 }} />}
           {selection && <col style={{ width: 44 }} />}
@@ -1080,7 +1071,7 @@ export function DataTableContentControl({ className, ...props }: DataTableConten
                           : undefined
                       }
                     >
-                      <div className="leaf-data-table__heading">
+                      <div className="leaf-data-table__heading" data-align={meta?.align}>
                         {config.reorderColumns && !header.isPlaceholder && (
                           <ReorderHandle
                             label={format('dataTable.reorderColumn', {
@@ -1290,6 +1281,7 @@ export function useDataTable<TData>({
     columnResizeMode: 'onChange',
     columnResizeDirection: direction,
     ...options,
+    enableSorting: options?.enableSorting ?? false,
     // TanStack caches row-model factories; manualPagination bypasses slicing without
     // changing the cached model identity. Keep auto reset independent of that toggle so
     // filtering still returns to page one while local pagination is temporarily off.
@@ -1334,9 +1326,14 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     useGenericComponentDefaults('DataTable'),
     rawProps,
   );
-  // Old JavaScript consumers cannot disable the fixed header or leak this prop to the DOM.
-  const { stickyHeader: _stickyHeader, ...props } = merged as typeof merged & {
+  // Removed options from JavaScript consumers must not leak to the DOM.
+  const {
+    stickyHeader: _stickyHeader,
+    caption: _caption,
+    ...props
+  } = merged as typeof merged & {
     stickyHeader?: unknown;
+    caption?: unknown;
   };
   return props.table ? (
     <DataTableRoot {...(props as DataTableInstanceProps<TData>)} />

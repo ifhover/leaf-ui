@@ -4,14 +4,14 @@
   position: relative;
   display: inline-flex;
   max-width: 100%;
-  --leaf-otp-size: var(--leaf-control-height);
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size) var(--leaf-font-family);
+  --leaf-otp-size: var(--leaf-component-input-otp-height, var(--leaf-control-height));
+  color: var(--leaf-component-input-otp-color, var(--leaf-color-text));
+  font: var(--leaf-component-input-otp-font-size, var(--leaf-font-size)) var(--leaf-font-family);
   &--sm {
-    --leaf-otp-size: var(--leaf-control-height-sm);
+    --leaf-otp-size: var(--leaf-component-input-otp-height-sm, var(--leaf-control-height-sm));
   }
   &--lg {
-    --leaf-otp-size: var(--leaf-control-height-lg);
+    --leaf-otp-size: var(--leaf-component-input-otp-height-lg, var(--leaf-control-height-lg));
   }
 }
 .leaf-input-otp__input {
@@ -34,18 +34,19 @@
 }
 .leaf-input-otp__slots {
   display: flex;
-  gap: 8px;
+  gap: var(--leaf-component-input-otp-gap, 8px);
   pointer-events: none;
 }
 .leaf-input-otp__item {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--leaf-component-input-otp-gap, 8px);
 }
 .leaf-input-otp__slot {
   box-sizing: border-box;
   width: var(--leaf-otp-size);
   height: var(--leaf-otp-size);
+  padding: var(--leaf-component-input-otp-padding, 0);
   display: grid;
   place-items: center;
   border: var(--leaf-component-input-otp-border-width, var(--leaf-border-width, 1px)) solid
@@ -53,8 +54,8 @@
       --leaf-component-input-otp-border-color,
       var(--leaf-frame-border-color, var(--leaf-color-border))
     );
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface);
+  border-radius: var(--leaf-component-input-otp-radius, var(--leaf-radius));
+  background: var(--leaf-component-input-otp-background, var(--leaf-color-surface));
   box-shadow: var(
     --leaf-component-input-otp-shadow,
     var(--leaf-control-shadow, var(--leaf-shadow-xs))
@@ -64,10 +65,9 @@
   transition:
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   &[data-filled] {
-    background: var(--leaf-color-surface-raised);
+    background: var(--leaf-component-input-otp-background, var(--leaf-color-surface-raised));
     border-color: var(--leaf-color-border-hover);
   }
   &[data-active] {
@@ -78,7 +78,6 @@
     );
     outline: 3px solid var(--leaf-color-focus, var(--leaf-accent-halo-color));
     outline-offset: 0;
-    transform: translateY(-1px);
   }
 }
 .leaf-input-otp__character {
@@ -90,11 +89,9 @@
 @keyframes leaf-otp-enter {
   from {
     opacity: 0;
-    transform: translateY(4px) scale(0.8);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 .leaf-input-otp[data-status='error'] .leaf-input-otp__slot {

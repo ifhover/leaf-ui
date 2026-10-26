@@ -94,6 +94,11 @@
   &__close {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    margin-block: -3px;
     padding: 2px;
     margin-inline-end: -4px;
     border: 0;

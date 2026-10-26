@@ -40,7 +40,7 @@ describe('Modal and Confirm', () => {
     expect(dialog.querySelector('.leaf-modal__icon')).toHaveAttribute('aria-hidden', 'true');
     expect(dialog).not.toHaveAttribute('divided');
   });
-  it('places a custom confirmation icon beside the explanation, outside its accessible name', () => {
+  it('places a custom confirmation icon beside the title, outside its accessible name', () => {
     render(
       <ConfirmDialog
         open
@@ -59,10 +59,29 @@ describe('Modal and Confirm', () => {
       'aria-hidden',
       'true',
     );
-    expect(screen.getByText('Lock').closest('.leaf-modal__header')).toBeNull();
-    expect(screen.getByText('Lock').closest('.leaf-confirm__body')).not.toBeNull();
+    expect(screen.getByText('Lock').closest('.leaf-modal__header')).not.toBeNull();
+    expect(screen.getByText('Lock').closest('.leaf-confirm__body')).toBeNull();
     expect(screen.getByRole('alertdialog')).not.toHaveClass('leaf-modal--divided');
     expect(screen.getByRole('alertdialog').querySelector('.leaf-modal__close')).toBeNull();
+  });
+  it('keeps an untitled confirmation icon beside its content and supports hiding it', () => {
+    const { rerender } = render(
+      <ConfirmDialog open type="warning" onClose={() => {}}>
+        Continue with these settings?
+      </ConfirmDialog>,
+    );
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog.querySelector('.leaf-confirm__body > .leaf-confirm__icon')).not.toBeNull();
+    expect(dialog.querySelector('.leaf-modal__header')).toBeNull();
+    rerender(
+      <ConfirmDialog open type="warning" title="Continue" icon={null} onClose={() => {}}>
+        Continue with these settings?
+      </ConfirmDialog>,
+    );
+    expect(screen.getByRole('alertdialog', { name: 'Continue' })).not.toHaveClass(
+      'leaf-confirm--titled-icon',
+    );
+    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
   });
   it.each(['modal', 'confirm'] as const)(
     'ignores a stale async %s error after closing and reopening',
@@ -150,14 +169,14 @@ describe('Modal and Confirm', () => {
         </ConfigProvider>,
       );
       const dialog = screen.getByRole('alertdialog');
-      expect(dialog.querySelector('.leaf-confirm__body > .leaf-confirm__icon svg') !== null).toBe(
+      expect(dialog.querySelector('.leaf-modal__header .leaf-confirm__icon svg') !== null).toBe(
         type !== 'default',
       );
       if (type === 'danger')
         expect(dialog.querySelector('.leaf-confirm__icon .lucide-circle-alert')).not.toBeNull();
       expect(dialog.querySelector('.leaf-modal__header .leaf-modal__icon')).toBeNull();
       const title = screen.getByRole('heading', { name: 'Continue' });
-      expect(title.querySelector('svg')).toBeNull();
+      expect(title.querySelector('svg') !== null).toBe(type !== 'default');
       expect(title.closest('.leaf-modal__header')).not.toBeNull();
       expect(screen.getByText('Notice').closest('.leaf-modal__body')).not.toBeNull();
       expect(dialog).toHaveAccessibleName('Continue');

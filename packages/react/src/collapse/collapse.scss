@@ -1,7 +1,12 @@
 @use '../styles/mixins' as mixins;
 .leaf-collapse {
   @include mixins.control-size;
+  @include mixins.softened-frame-color(
+    collapse,
+    var(--leaf-component-collapse-background, var(--leaf-color-surface))
+  );
   min-width: 0;
+  overflow: clip;
   border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius-md));
   color: var(--leaf-component-collapse-color, var(--leaf-color-text));
   background: var(--leaf-component-collapse-background, var(--leaf-color-surface));
@@ -11,12 +16,20 @@
     border: var(--leaf-component-collapse-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-collapse-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-border))
+        var(--leaf-frame-border-color, var(--leaf-collapse-frame-color))
       );
     box-shadow: var(--leaf-component-collapse-shadow, var(--leaf-surface-shadow, none));
   }
   &__item + &__item {
-    border-top: 1px solid var(--leaf-color-divider);
+    border-top: 1px solid var(--leaf-collapse-frame-color);
+  }
+  &__item:first-child {
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+  &__item:last-child {
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
   }
   &__header {
     display: flex;
@@ -31,8 +44,13 @@
     flex: 1;
     min-width: 0;
     min-height: var(--leaf-current-control-height);
-    padding: 10px 16px;
+    box-sizing: border-box;
+    padding: var(
+      --leaf-component-collapse-padding,
+      max(0px, calc((var(--leaf-current-control-height) - var(--leaf-line-height)) / 2)) 12px
+    );
     border: 0;
+    border-radius: inherit;
     background: transparent;
     color: inherit;
     font: var(--leaf-font-weight) 1em var(--leaf-font-family);
@@ -85,7 +103,7 @@
     overflow: hidden;
   }
   &__body {
-    padding: 4px 16px 18px 42px;
+    padding: 6px 12px 12px 38px;
     color: var(--leaf-color-text-muted);
     transform: translateY(-5px);
     transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);

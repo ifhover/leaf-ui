@@ -6,7 +6,7 @@
   min-width: 0;
   margin: 0;
   color: var(--leaf-color-text);
-  font: var(--leaf-heading-weight, 700) var(--leaf-card-title-font-size) var(--leaf-font-family);
+  font: var(--leaf-font-weight, 500) var(--leaf-card-title-font-size) var(--leaf-font-family);
   line-height: var(--leaf-card-title-line-height);
   overflow-wrap: anywhere;
   &--sm {
@@ -14,6 +14,7 @@
     --leaf-card-title-line-height: var(--leaf-line-height);
   }
   &--lg {
+    font-weight: var(--leaf-heading-weight, 700);
     --leaf-card-title-font-size: calc(var(--leaf-font-size) + 4px);
     --leaf-card-title-line-height: calc(var(--leaf-line-height-lg) + 2px);
   }

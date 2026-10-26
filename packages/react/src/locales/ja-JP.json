@@ -13,7 +13,8 @@
     "placeholder": "日付を選択",
     "clear": "日付をクリア",
     "label": "日付を選択",
-    "selectDate": "日付を選択"
+    "selectDate": "日付を選択",
+    "presets": "プリセット"
   },
   "timePicker": {
     "placeholder": "時刻を選択",
@@ -57,6 +58,7 @@
   },
   "common": {
     "confirm": "確認",
+    "next": "次へ",
     "cancel": "キャンセル",
     "close": "閉じる",
     "start": "開始",
@@ -174,14 +176,6 @@
     "slide": "スライド",
     "role": "カルーセル"
   },
-  "commandPalette": {
-    "commandSearch": "コマンド検索",
-    "placeholder": "コマンドを検索…",
-    "searchCommands": "コマンドを検索",
-    "commands": "コマンド",
-    "navigate": "移動",
-    "run": "実行"
-  },
   "errorBoundary": {
     "title": "このコンテンツを表示できませんでした",
     "description": "再試行するか、しばらくしてからもう一度お試しください。"
@@ -223,7 +217,12 @@
     "scrollThumbnailsForward": "サムネイルを次へスクロール",
     "image": "画像",
     "position": "{total}枚中{index}枚目",
-    "viewImage": "画像{index}を表示{alt}"
+    "viewImage": "画像{index}を表示{alt}",
+    "noImage": "画像なし",
+    "actualSize": "実際のサイズ（1:1）",
+    "fitToWindow": "画面に合わせる",
+    "rotateCounterclockwise": "反時計回りに回転",
+    "rotateClockwise": "時計回りに回転"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "読み込みに失敗しました。再試行",

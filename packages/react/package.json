@@ -1,6 +1,6 @@
 {
   "name": "@ifhover/leaf-ui",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -86,27 +86,6 @@
       }
     },
     "./anchor/style.css": "./dist/esm/styles/anchor.css",
-    "./app-bar": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/appbar/index.d.ts",
-          "default": "./dist/esm/browser/appbar.js"
-        },
-        "require": {
-          "types": "./dist/cjs/appbar/index.d.cts",
-          "default": "./dist/cjs/browser/appbar.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/appbar/index.d.ts",
-        "default": "./dist/esm/appbar/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/appbar/index.d.cts",
-        "default": "./dist/cjs/appbar/index.cjs"
-      }
-    },
-    "./app-bar/style.css": "./dist/esm/styles/appbar.css",
     "./auto-complete": {
       "browser": {
         "import": {
@@ -380,27 +359,6 @@
       }
     },
     "./color-picker/style.css": "./dist/esm/styles/colorpicker.css",
-    "./command-palette": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/commandpalette/index.d.ts",
-          "default": "./dist/esm/browser/commandpalette.js"
-        },
-        "require": {
-          "types": "./dist/cjs/commandpalette/index.d.cts",
-          "default": "./dist/cjs/browser/commandpalette.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/commandpalette/index.d.ts",
-        "default": "./dist/esm/commandpalette/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/commandpalette/index.d.cts",
-        "default": "./dist/cjs/commandpalette/index.cjs"
-      }
-    },
-    "./command-palette/style.css": "./dist/esm/styles/commandpalette.css",
     "./config-provider": {
       "browser": {
         "import": {
@@ -485,27 +443,6 @@
       }
     },
     "./date-range-picker/style.css": "./dist/esm/styles/daterangepicker.css",
-    "./date-time-picker": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/datetimepicker/index.d.ts",
-          "default": "./dist/esm/browser/datetimepicker.js"
-        },
-        "require": {
-          "types": "./dist/cjs/datetimepicker/index.d.cts",
-          "default": "./dist/cjs/browser/datetimepicker.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/datetimepicker/index.d.ts",
-        "default": "./dist/esm/datetimepicker/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/datetimepicker/index.d.cts",
-        "default": "./dist/cjs/datetimepicker/index.cjs"
-      }
-    },
-    "./date-time-picker/style.css": "./dist/esm/styles/datetimepicker.css",
     "./descriptions": {
       "browser": {
         "import": {
@@ -1516,48 +1453,6 @@
       }
     },
     "./textarea/style.css": "./dist/esm/styles/textarea.css",
-    "./time-picker": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/timepicker/index.d.ts",
-          "default": "./dist/esm/browser/timepicker.js"
-        },
-        "require": {
-          "types": "./dist/cjs/timepicker/index.d.cts",
-          "default": "./dist/cjs/browser/timepicker.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/timepicker/index.d.ts",
-        "default": "./dist/esm/timepicker/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/timepicker/index.d.cts",
-        "default": "./dist/cjs/timepicker/index.cjs"
-      }
-    },
-    "./time-picker/style.css": "./dist/esm/styles/timepicker.css",
-    "./time-range-picker": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/timerangepicker/index.d.ts",
-          "default": "./dist/esm/browser/timerangepicker.js"
-        },
-        "require": {
-          "types": "./dist/cjs/timerangepicker/index.d.cts",
-          "default": "./dist/cjs/browser/timerangepicker.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/timerangepicker/index.d.ts",
-        "default": "./dist/esm/timerangepicker/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/timerangepicker/index.d.cts",
-        "default": "./dist/cjs/timerangepicker/index.cjs"
-      }
-    },
-    "./time-range-picker/style.css": "./dist/esm/styles/timerangepicker.css",
     "./timeline": {
       "browser": {
         "import": {
@@ -1800,7 +1695,7 @@
   ],
   "scripts": {
     "build": "node scripts/generate-palette.mjs --check && node scripts/generate-locale.mjs --check && rslib build && node scripts/build-tailwind.mjs && node scripts/build-locales.mjs && node scripts/build-component-styles.mjs && node scripts/build-browser-entries.mjs",
-    "generate:locale": "node scripts/generate-locale.mjs",
+    "generate:locale": "node scripts/generate-locale.mjs && biome format --write src/locales/zh-TW.json src/locales/schema.json src/locales/messages.ts",
     "generate:palette": "node scripts/generate-palette.mjs",
     "dev": "rslib build --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.test.json",

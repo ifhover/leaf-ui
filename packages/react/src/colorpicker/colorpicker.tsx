@@ -24,6 +24,7 @@ import {
   usePopupState,
 } from '../shared/floating';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { TabsControl } from '../tabs/tabs';
 import { GradientColorPicker } from './gradient';
 
 export interface ColorPreset {
@@ -61,6 +62,7 @@ export interface ColorPickerProps
 }
 type HSV = { h: number; s: number; v: number; a: number };
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
+const formatItems = ['hex', 'rgb', 'hsl'].map((key) => ({ key, label: key.toUpperCase() }));
 export function SolidColorPicker({
   value,
   defaultValue = defaultColors.light.primary,
@@ -207,6 +209,9 @@ export function SolidColorPicker({
         data-disabled={disabled || undefined}
         data-readonly={readOnly || undefined}
         data-open={open || undefined}
+        data-format={format}
+        data-show-text={Boolean(showText) || undefined}
+        data-clearable={clearable || undefined}
         onMouseDown={(event) => {
           if (!disabled && event.target === event.currentTarget) event.preventDefault();
         }}
@@ -367,21 +372,21 @@ export function SolidColorPicker({
             )}
           </div>
         </div>
-        <fieldset className="leaf-color-picker__formats" aria-label={messages.colorPicker.value}>
-          {(['hex', 'rgb', 'hsl'] as const).map((next) => (
-            <button
-              type="button"
-              key={next}
-              aria-pressed={format === next}
-              onClick={() => {
-                if (formatProp === undefined) setFormat(next);
-                onFormatChange?.(next);
-              }}
-            >
-              {next.toUpperCase()}
-            </button>
-          ))}
-        </fieldset>
+        <TabsControl
+          className="leaf-color-picker__formats"
+          aria-label={messages.colorPicker.value}
+          type="segmented"
+          size="sm"
+          block
+          overflow={false}
+          items={formatItems}
+          activeKey={format}
+          onChange={(next) => {
+            if (next !== 'hex' && next !== 'rgb' && next !== 'hsl') return;
+            if (formatProp === undefined) setFormat(next);
+            onFormatChange?.(next);
+          }}
+        />
         <input
           className="leaf-color-picker__input"
           aria-label={messages.colorPicker.value}

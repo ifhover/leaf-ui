@@ -10,7 +10,7 @@ export interface ConfirmOptions extends DialogFocusOptions {
   title?: ReactNode;
   /** A short explanation of the action being confirmed. */
   children?: ReactNode;
-  /** Bare semantic icon beside the content. Use null to hide it. */
+  /** Bare semantic icon beside the title, or content when untitled. Use null to hide it. */
   icon?: ReactNode;
   type?: 'default' | 'danger' | 'success' | 'warning' | 'info';
   showCancel?: boolean;
@@ -109,7 +109,18 @@ export function ConfirmDialog({
     <ModalBase
       {...props}
       open={open}
-      title={title}
+      title={
+        title != null && contentIcon != null ? (
+          <>
+            <span className="leaf-confirm__icon" aria-hidden="true">
+              {contentIcon}
+            </span>
+            <span className="leaf-confirm__title">{title}</span>
+          </>
+        ) : (
+          title
+        )
+      }
       width={props.width ?? 420}
       divided={false}
       confirmLoading={pending || confirmLoading}
@@ -119,6 +130,7 @@ export function ConfirmDialog({
       className={[
         'leaf-confirm',
         `leaf-confirm--${type}`,
+        title != null && contentIcon != null && 'leaf-confirm--titled-icon',
         (icon != null || (icon === undefined && type !== 'default')) && 'leaf-confirm--has-icon',
         props.className,
       ]
@@ -163,7 +175,7 @@ export function ConfirmDialog({
     >
       {(contentIcon != null || children != null || error != null) && (
         <div className="leaf-confirm__body">
-          {contentIcon != null && (
+          {title == null && contentIcon != null && (
             <span className="leaf-confirm__icon" aria-hidden="true">
               {contentIcon}
             </span>

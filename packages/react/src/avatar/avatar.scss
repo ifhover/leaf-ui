@@ -13,6 +13,13 @@
   color: var(--leaf-component-avatar-color, var(--leaf-color-text-muted));
   background: var(--leaf-component-avatar-background, var(--leaf-color-surface-muted));
   font: var(--leaf-font-weight) 15px/1 var(--leaf-font-family);
+  // Identity colors reuse theme roles without implying a member's status.
+  @each $tone, $family in (0: primary, 1: info, 2: warning, 3: danger) {
+    &[data-text-fallback][data-avatar-tone='#{$tone}'] {
+      color: var(--leaf-component-avatar-color, var(--leaf-color-#{$family}-ink));
+      background: var(--leaf-component-avatar-background, var(--leaf-color-#{$family}-soft));
+    }
+  }
   &--circle {
     border-radius: 50%;
   }

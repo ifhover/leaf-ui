@@ -13,8 +13,21 @@
     );
   }
   display: flex;
+  &.leaf-floating:not(.leaf-menu__popup) {
+    width: max-content;
+  }
   flex-direction: column;
   gap: var(--leaf-component-dropdown-gap, 0px);
+  // Resolve sizes inside the portal snapshot, independently of the trigger Button.
+  @each $size, $suffix in (sm: '-sm', md: '', lg: '-lg') {
+    &--#{$size} > .leaf-floating__viewport {
+      --leaf-current-control-height: var(
+        --leaf-component-dropdown-height#{$suffix},
+        var(--leaf-control-height#{$suffix})
+      );
+      --leaf-current-font-size: var(--leaf-font-size#{$suffix});
+    }
+  }
   &__divider {
     width: 100%;
     margin: 5px 4px;
@@ -27,11 +40,25 @@
   }
   &:not(.leaf-menu__popup) .leaf-floating__option {
     @include mixins.choice-option;
-    @include mixins.choice-option-size(var(--leaf-control-height));
+    @include mixins.choice-option-size(var(--leaf-current-control-height));
     z-index: 1;
-    gap: var(--leaf-component-dropdown-gap, 12px);
+    gap: var(--leaf-component-dropdown-gap, calc(var(--leaf-current-font-size) - 2px));
+    padding-inline: max(0px, calc((var(--leaf-current-control-height) - 4px) / 3));
     justify-content: flex-start;
-    font-size: var(--leaf-font-size);
+    font-size: var(--leaf-component-dropdown-font-size, var(--leaf-current-font-size));
+    line-height: max(var(--leaf-line-height-sm), 1.25em);
+    > svg {
+      flex-shrink: 0;
+      width: calc(1em + 1px);
+      height: calc(1em + 1px);
+    }
+    > .leaf-dropdown__check {
+      flex-basis: calc(1em + 1px);
+      &[fill='currentColor'] {
+        width: 0.6em;
+        height: 0.6em;
+      }
+    }
     &[aria-expanded='true'] {
       color: var(--leaf-color-text);
     }
@@ -52,18 +79,17 @@
   }
   &__label {
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
     overflow-wrap: anywhere;
   }
   &__extra {
     display: block;
-    width: 0;
-    min-width: 50%;
+    min-width: 0;
     max-width: 50%;
-    flex: none;
+    flex: 0 1 auto;
     overflow: hidden;
     color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size-sm);
+    font-size: max(12px, calc(var(--leaf-current-font-size) - 1px));
     line-height: var(--leaf-line-height-sm);
     text-align: end;
     text-overflow: ellipsis;
@@ -83,7 +109,8 @@
 
 .leaf-dropdown__group {
   @include mixins.section-label;
-  padding: 8px 10px 4px;
+  padding: 8px max(0px, calc((var(--leaf-current-control-height) - 4px) / 3)) 4px;
+  font-size: max(12px, calc(var(--leaf-current-font-size) - 2px));
 }
 .leaf-dropdown__arrow {
   margin-inline-start: auto;

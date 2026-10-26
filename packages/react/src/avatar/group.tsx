@@ -32,9 +32,13 @@ export function AvatarGroup(rawProps: AvatarGroupProps) {
   const t = useText();
   const format = useFormattedText();
   const root = useRef<HTMLDivElement>(null);
-  const items = Children.toArray(children).map((child) =>
-    isValidElement<AvatarProps>(child)
-      ? cloneElement(child, { size: child.props.size ?? size, shape: child.props.shape ?? shape })
+  const items = Children.toArray(children).map((child, index) =>
+    isValidElement<AvatarProps & { 'data-avatar-tone'?: number }>(child)
+      ? cloneElement(child, {
+          size: child.props.size ?? size,
+          shape: child.props.shape ?? shape,
+          'data-avatar-tone': index % 5,
+        })
       : child,
   );
   const visible = items.slice(0, Math.max(0, maxCount));

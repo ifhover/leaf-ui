@@ -36,6 +36,7 @@
     transition-duration: var(--leaf-motion-duration);
   }
   #{$mask}[data-blur='off'] & {
+    background: $fallback;
     animation-name: leaf-backdrop-fade;
     backdrop-filter: none;
     transition-property: opacity;

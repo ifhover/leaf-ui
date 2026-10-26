@@ -28,12 +28,14 @@ export interface DataTablePresentationProps
   children?: ReactNode;
   /** Content for the toolbar in the automatic layout. */
   toolbar?: ReactNode;
-  caption?: ReactNode;
   size?: ControlSize;
-  /** Adds body/footer column dividers; short header separators are always shown. */
+  /** Simple uses a single rounded header without a frame, shadows, stripes or column dividers. */
+  variant?: 'layered' | 'simple';
+  /** Adds body/footer column dividers in the layered variant; ignored in simple. */
   columnDividers?: boolean;
   /** @deprecated Use `columnDividers` instead. */
   bordered?: boolean;
+  /** Alternating row backgrounds in the layered variant; ignored in simple. */
   striped?: boolean;
   /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];

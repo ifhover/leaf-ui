@@ -71,7 +71,7 @@ export function Popconfirm(rawProps: PopconfirmProps) {
           setOpen(next);
         }
       }}
-      autoFocus={false}
+      autoFocus
       aria-label={
         props['aria-label'] ?? (typeof title === 'string' ? title : messages.common.confirm)
       }

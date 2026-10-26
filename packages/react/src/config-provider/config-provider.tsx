@@ -1,6 +1,7 @@
 import { type HTMLAttributes, useContext, useMemo } from 'react';
 import { ConfirmScope } from '../confirm/provider';
 import { type LeafDensity, leafDensityVariables } from '../density';
+import { ImagePreviewScope } from '../image/provider';
 import { LoadingBarScope } from '../loadingbar/loadingbar';
 import { localeChain, mergeTranslations, resolveTranslations } from '../locales/resolve';
 import type { LeafTranslations } from '../locales/types';
@@ -30,7 +31,7 @@ export interface ConfigProviderProps extends HTMLAttributes<HTMLDivElement> {
   direction?: LeafDirection;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   getPopupContainer?: () => Element | DocumentFragment;
-  /** Enable the background blur on Modal and Drawer masks. Defaults to true. */
+  /** Enable the background blur on Modal and Drawer masks. Defaults to false. */
   maskBlur?: boolean;
   /** Inherited spacing preset; explicit theme and component sizes take precedence. */
   density?: LeafDensity;
@@ -125,7 +126,9 @@ export function ConfigProvider({
           <MessageScope>
             <ConfirmScope>
               <NotificationScope>
-                <LoadingBarScope>{children}</LoadingBarScope>
+                <LoadingBarScope>
+                  <ImagePreviewScope>{children}</ImagePreviewScope>
+                </LoadingBarScope>
               </NotificationScope>
             </ConfirmScope>
           </MessageScope>

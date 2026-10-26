@@ -1,14 +1,28 @@
 @use '../styles/mixins' as mixins;
-@use '../styles/geometry' as geometry;
 .leaf-color-picker {
   @include mixins.field('color-picker');
   display: inline-flex;
   flex: none;
   align-items: center;
-  width: auto;
+  width: var(--leaf-current-control-height);
   height: var(--leaf-current-control-height);
   vertical-align: middle;
   cursor: pointer;
+  &[data-clearable] {
+    width: calc(var(--leaf-current-control-height) + 28px);
+  }
+  &[data-show-text] {
+    width: 144px;
+    &[data-format='rgb'] {
+      width: 272px;
+    }
+    &[data-format='hsl'] {
+      width: 296px;
+    }
+    &[data-format='gradient'] {
+      width: 160px;
+    }
+  }
   &[data-readonly]:not([data-disabled]) {
     cursor: default;
   }
@@ -16,9 +30,10 @@
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
-    min-width: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
+    flex: 1;
+    min-width: 0;
     height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
     padding: 0 5px;
     border: 0;
@@ -39,8 +54,11 @@
     }
   }
   &__text {
+    min-width: 0;
     padding-inline-end: 5px;
+    overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
   }
   &__swatch {
     display: inline-flex;
@@ -51,7 +69,6 @@
     border-radius: 4px;
     background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
     box-shadow: inset 0 0 0 1px rgb(0 0 0 / 8%);
-    transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
     i {
       width: 100%;
       height: 100%;
@@ -62,9 +79,6 @@
       border-radius: var(--leaf-radius-sm);
     }
   }
-  &__trigger:active:not(:disabled) &__swatch {
-    transform: scale(0.88);
-  }
   &--sm &__swatch {
     width: 16px;
     height: 16px;
@@ -74,6 +88,7 @@
     height: 26px;
   }
   &__clear {
+    flex: none;
     display: grid;
     place-items: center;
     width: 24px;
@@ -87,7 +102,11 @@
   }
   &__panel {
     box-sizing: border-box;
-    padding: 14px;
+    padding: 0;
+    // Keep handles and preset outlines inside the scroll viewport's padding.
+    > .leaf-floating__viewport {
+      padding: 14px;
+    }
   }
   &__area {
     position: relative;
@@ -111,13 +130,10 @@
     box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
     transform: translate(-50%, -50%);
     pointer-events: none;
-    transition:
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-spring);
+    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__area:active &__handle,
   &__area:focus-visible &__handle {
-    scale: 1.25;
     box-shadow:
       0 0 0 4px rgb(255 255 255 / 18%),
       0 0 3px 1px rgb(0 0 0 / 25%);
@@ -149,7 +165,6 @@
         border-radius: 50%;
         background: transparent;
         box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
-        transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
       }
       &::-moz-range-thumb {
         width: 10px;
@@ -158,15 +173,6 @@
         border-radius: 50%;
         background: transparent;
         box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
-        transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
-      }
-      &:hover::-webkit-slider-thumb,
-      &:active::-webkit-slider-thumb {
-        transform: scale(1.15);
-      }
-      &:hover::-moz-range-thumb,
-      &:active::-moz-range-thumb {
-        transform: scale(1.15);
       }
       &:focus-visible {
         outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
@@ -183,42 +189,10 @@
       repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
   }
   &__formats {
-    @include mixins.segmented-surface-family;
-    @include geometry.nested-surface(color-picker-formats, var(--leaf-radius-sm), 3px, 1px);
-    display: inline-flex;
-    gap: 4px;
-    border: 1px solid var(--leaf-segmented-border);
-    background: var(--leaf-segmented-background);
-    margin: 0 0 8px;
-    button {
-      padding: 3px 8px;
-      border: 0;
-      border-radius: var(--leaf-surface-inner-radius);
-      background: transparent;
-      color: var(--leaf-color-text-muted);
-      font: inherit;
-      font-size: 11px;
-      cursor: pointer;
-      transition:
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-        transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-      &:hover {
-        color: var(--leaf-color-text);
-      }
-      &:active {
-        transform: scale(0.95);
-      }
-      &[aria-pressed='true'] {
-        background: var(--leaf-segmented-selected-background);
-        color: var(--leaf-color-text);
-        box-shadow: var(--leaf-shadow-xs);
-      }
-    }
+    margin-block-end: 8px;
   }
   &__input {
-    @include mixins.field('color-picker', 'primary');
+    @include mixins.field('color-picker');
     --leaf-field-shadow: var(
       --leaf-component-color-picker-shadow,
       var(--leaf-control-shadow, var(--leaf-shadow-xs))
@@ -258,21 +232,15 @@
   &__preset {
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 1px solid rgb(0 0 0 / 8%);
     border-radius: 5px;
     cursor: pointer;
-    transition:
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not([aria-pressed='true']) {
-      transform: translateY(-2px) scale(1.06);
       box-shadow: var(--leaf-shadow-sm);
-    }
-    &:active {
-      transform: scale(0.9);
     }
     &[aria-pressed='true'] {
       outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
@@ -286,7 +254,11 @@
 }
 
 .leaf-color-picker__gradient {
-  padding: 16px;
+  padding: 0;
+  // Keep stop outlines inside the scroll viewport, as in the solid panel.
+  > .leaf-floating__viewport {
+    padding: 16px;
+  }
 }
 .leaf-color-picker__gradient-preview {
   height: 64px;
@@ -306,15 +278,7 @@
     border-radius: 50%;
     box-shadow: 0 0 0 1px var(--leaf-color-border);
     cursor: pointer;
-    transition:
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
-    &:hover:not([aria-pressed='true']) {
-      transform: translateY(-2px);
-    }
-    &:active {
-      transform: scale(0.9);
-    }
+    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &[aria-pressed='true'] {
       box-shadow: 0 0 0 2px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
@@ -329,7 +293,6 @@
   .leaf-color-picker__swatch,
   .leaf-color-picker__clear,
   .leaf-color-picker__handle,
-  .leaf-color-picker__formats button,
   .leaf-color-picker__input,
   .leaf-color-picker__preset,
   .leaf-color-picker__stops > button {
@@ -344,13 +307,14 @@
 }
 .leaf-color-picker__gradient-field {
   display: grid;
-  grid-template-columns: 48px 1fr;
+  grid-template-columns: 48px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   margin-block: 12px;
   font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
 }
-.leaf-color-picker__gradient .leaf-color-picker {
+.leaf-color-picker__gradient-field > .leaf-color-picker,
+.leaf-color-picker__gradient-field > .leaf-input-number {
   width: 100%;
 }
 

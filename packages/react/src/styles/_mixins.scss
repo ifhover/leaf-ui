@@ -15,7 +15,7 @@
 @mixin choice-option($candidate: false) {
   position: relative;
   isolation: isolate;
-  color: neutral-option-color(70%);
+  color: inherit;
   background: transparent;
   transition: color var(--leaf-motion-color) var(--leaf-motion-easing);
   &::before {
@@ -395,7 +395,13 @@
   border-color: var(--leaf-field-color);
 }
 
-@mixin field($component: field, $focus: neutral) {
+@mixin field-width($width: 240px) {
+  width: $width;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@mixin field($component: field, $focus: primary) {
   @include control-size;
   @if $focus == primary {
     --leaf-field-color: var(--leaf-color-primary);
@@ -429,8 +435,7 @@
     var(--leaf-control-shadow, 0 0 0 0 transparent)
   );
   box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
+  @include field-width;
   border: var(--leaf-field-border-width) solid
     var(
       --leaf-component-#{$component}-border-color,

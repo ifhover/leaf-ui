@@ -1,4 +1,4 @@
-import { Check, Inbox, Info, TriangleAlert, X } from 'lucide-react';
+import { Check, CircleAlert, Inbox, Info, TriangleAlert } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
@@ -18,7 +18,7 @@ const icons = {
   empty: Inbox,
   success: Check,
   warning: TriangleAlert,
-  danger: X,
+  danger: CircleAlert,
   info: Info,
 };
 export function ResultControl({

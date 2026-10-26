@@ -173,7 +173,7 @@
     }
   }
   &:is(&--link) {
-    --leaf-button-rest-color: var(--leaf-button-color);
+    --leaf-button-rest-color: var(--leaf-button-ink);
     --leaf-button-rest-background: transparent;
     --leaf-button-rest-border: transparent;
     --leaf-button-rest-shadow: none;
@@ -181,6 +181,10 @@
     --leaf-button-active-color: var(--leaf-button-ink-active);
     --leaf-button-active-background: transparent;
     --leaf-button-active-border: transparent;
+    &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
   &:is(&--text) {
     @include mixins.text-action-family;

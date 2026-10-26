@@ -23,6 +23,26 @@ const items: MenuItem[] = [
 ];
 
 describe('Menu transitions', () => {
+  it('uses raised by default and allows regional and instance appearance overrides', () => {
+    const { rerender } = render(<Menu items={items} />);
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--raised');
+    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--raised');
+
+    rerender(
+      <ConfigProvider components={{ Menu: { variant: 'default' } }}>
+        <Menu items={items} />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+
+    rerender(
+      <ConfigProvider components={{ Menu: { variant: 'primary' } }}>
+        <Menu items={items} variant="default" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+  });
+
   it('renders item extra inline and in collapsed navigation without changing the item label', async () => {
     const data: MenuItem[] = [
       {

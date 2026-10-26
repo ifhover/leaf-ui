@@ -27,7 +27,7 @@
       cursor: not-allowed;
     }
     &:focus-visible {
-      @include mixins.focus-ring;
+      outline: none;
     }
     > svg {
       flex: 0 0 auto;
@@ -57,6 +57,9 @@
   }
   &__search {
     margin: 0 var(--leaf-cascader-column-padding, 4px) 8px;
+    > .leaf-input {
+      width: 100%;
+    }
   }
   &__panel {
     width: max-content;

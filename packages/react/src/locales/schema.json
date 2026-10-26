@@ -63,6 +63,10 @@
         "selectDate": {
           "type": "string",
           "description": "English: Choose date"
+        },
+        "presets": {
+          "type": "string",
+          "description": "English: Presets"
         }
       }
     },
@@ -227,6 +231,10 @@
         "confirm": {
           "type": "string",
           "description": "English: OK"
+        },
+        "next": {
+          "type": "string",
+          "description": "English: Next"
         },
         "cancel": {
           "type": "string",
@@ -660,36 +668,6 @@
         }
       }
     },
-    "commandPalette": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "commandSearch": {
-          "type": "string",
-          "description": "English: Command search"
-        },
-        "placeholder": {
-          "type": "string",
-          "description": "English: Search commands…"
-        },
-        "searchCommands": {
-          "type": "string",
-          "description": "English: Search commands"
-        },
-        "commands": {
-          "type": "string",
-          "description": "English: Commands"
-        },
-        "navigate": {
-          "type": "string",
-          "description": "English: Navigate"
-        },
-        "run": {
-          "type": "string",
-          "description": "English: Run"
-        }
-      }
-    },
     "errorBoundary": {
       "type": "object",
       "additionalProperties": false,
@@ -851,6 +829,26 @@
         "viewImage": {
           "type": "string",
           "description": "English: View image {index}{alt}"
+        },
+        "noImage": {
+          "type": "string",
+          "description": "English: No image"
+        },
+        "actualSize": {
+          "type": "string",
+          "description": "English: Actual size (1:1)"
+        },
+        "fitToWindow": {
+          "type": "string",
+          "description": "English: Fit to window"
+        },
+        "rotateCounterclockwise": {
+          "type": "string",
+          "description": "English: Rotate counterclockwise"
+        },
+        "rotateClockwise": {
+          "type": "string",
+          "description": "English: Rotate clockwise"
         }
       }
     },

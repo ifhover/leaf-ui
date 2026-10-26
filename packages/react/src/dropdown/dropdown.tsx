@@ -23,6 +23,7 @@ import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import type { PopupOptions } from '../shared/floating';
 import { FloatingPanel } from '../shared/floating';
+import type { ControlSize } from '../shared/types';
 export interface DropdownItem {
   key: string;
   label?: ReactNode;
@@ -46,6 +47,7 @@ export interface DropdownProps extends PopupOptions {
     ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> }
   >;
   disabled?: boolean;
+  size?: ControlSize;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -76,6 +78,7 @@ export function DropdownControl({
   items,
   children,
   disabled,
+  size = 'md',
   open: controlled,
   defaultOpen = false,
   onOpenChange,
@@ -106,7 +109,7 @@ export function DropdownControl({
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const inactive = disabled || children.props.disabled;
   const open = !inactive && (controlled ?? internal);
-  const minimumWidth = popupWidth === undefined ? 'min(220px, calc(100vw - 24px))' : undefined;
+  const minimumWidth = popupWidth === undefined ? 'min(160px, calc(100vw - 24px))' : undefined;
   const panels = useRef(new Set<HTMLDivElement>());
   const register = useCallback((node: HTMLDivElement | null) => {
     if (node) panels.current.add(node);
@@ -242,6 +245,7 @@ export function DropdownControl({
         },
       })}
       <MenuPanel
+        size={size}
         navigation={navigation}
         items={items}
         open={open}
@@ -272,6 +276,7 @@ export function DropdownControl({
   );
 }
 interface PanelProps extends PopupOptions {
+  size: ControlSize;
   navigation?: NavigationMenu;
   items: readonly DropdownItem[];
   open: boolean;
@@ -295,6 +300,7 @@ interface PanelProps extends PopupOptions {
   itemRender?: (item: DropdownItem) => ReactNode;
 }
 function MenuPanel({
+  size,
   navigation,
   items,
   open,
@@ -405,7 +411,9 @@ function MenuPanel({
   return (
     <>
       <FloatingPanel
-        sideFallback={Boolean(navigation)}
+        sideFallback={
+          Boolean(navigation) || placement === 'right-start' || placement === 'left-start'
+        }
         resetSurfaceGeometry
         open={open}
         triggerRef={trigger}
@@ -418,6 +426,7 @@ function MenuPanel({
         className={classes(
           'leaf-floating',
           'leaf-dropdown',
+          !navigation && `leaf-dropdown--${size}`,
           navigation && 'leaf-menu__popup',
           navigation && `leaf-menu__popup--${navigation.variant ?? 'default'}`,
           popupClassName,
@@ -526,6 +535,7 @@ function MenuPanel({
       </FloatingPanel>
       {child?.children && (
         <MenuPanel
+          size={size}
           navigation={
             navigation
               ? { selectedKey: navigation.selectedKey, variant: navigation.variant }

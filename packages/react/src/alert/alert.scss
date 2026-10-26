@@ -118,7 +118,7 @@
   );
   box-shadow: var(
     --leaf-component-confirm-shadow,
-    var(--leaf-component-modal-shadow, var(--leaf-surface-shadow, var(--leaf-shadow-lg)))
+    var(--leaf-component-modal-shadow, var(--leaf-surface-shadow, var(--leaf-modal-default-shadow)))
   );
   --leaf-feedback-color: var(--leaf-color-text);
   &--danger {
@@ -133,9 +133,27 @@
   &--info {
     --leaf-feedback-color: var(--leaf-color-info);
   }
-  // Confirm is a compact decision, with a bare glyph beside its explanation.
-  > .leaf-modal__body .leaf-modal__content {
-    padding-block: 12px 20px;
+  > .leaf-modal__header .leaf-modal__heading h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--leaf-component-confirm-font-size, var(--leaf-font-size-lg));
+    font-weight: var(--leaf-heading-weight);
+    line-height: var(--leaf-line-height-lg);
+  }
+  &__title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  &--titled-icon > .leaf-modal__body .leaf-confirm__body {
+    padding-inline-start: 36px;
+  }
+  // Keep the explanation in the same text column as the heading.
+  &.leaf-modal:not(.leaf-modal--card)
+    > .leaf-modal__header
+    + .leaf-modal__body
+    .leaf-modal__content {
+    padding-block-start: 8px;
   }
   &__body {
     display: flex;
@@ -172,7 +190,7 @@
   }
 }
 .leaf-confirm-description {
-  font-size: var(--leaf-component-confirm-font-size, calc(var(--leaf-font-size) + 1px));
+  font-size: var(--leaf-component-confirm-font-size, var(--leaf-font-size));
   color: var(--leaf-component-confirm-color, var(--leaf-color-text-muted));
   line-height: var(--leaf-line-height);
   overflow-wrap: anywhere;

@@ -2,6 +2,7 @@
 
 .leaf-textarea {
   @include mixins.field('textarea');
+  width: 100%;
   display: block;
   min-height: calc(var(--leaf-current-control-height) * 2);
   padding: var(

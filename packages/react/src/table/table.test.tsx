@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { renderToString } from 'react-dom/server';
@@ -9,12 +9,24 @@ import { TableControl as Table } from './table';
 describe('Table', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('preserves native table semantics, header scopes, spans, caption and refs', () => {
+  it('ignores stripes and column dividers in simple mode and restores them when switched back', () => {
+    const { rerender } = render(<Table variant="simple" striped columnDividers />);
+    const root = screen.getByRole('table').closest('.leaf-table');
+    expect(root).toHaveClass('leaf-table--simple');
+    expect(root).not.toHaveClass('leaf-table--striped');
+    expect(root).not.toHaveClass('leaf-table--column-dividers');
+    expect(screen.getByRole('table')).not.toHaveAttribute('variant');
+    rerender(<Table variant="layered" striped columnDividers />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
+    expect(root).not.toHaveClass('leaf-table--simple');
+    expect(root).toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
+  });
+
+  it('preserves native table semantics, header scopes, spans and refs', () => {
     const ref = createRef<HTMLTableElement>();
     const scrollRef = createRef<HTMLDivElement>();
     render(
       <Table ref={ref} scrollRef={scrollRef} aria-label="People" minWidth={640} maxHeight={280}>
-        <Table.Caption>Team members</Table.Caption>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader colSpan={2} scope="colgroup">
@@ -69,6 +81,54 @@ describe('Table', () => {
     expect(cell).toHaveAttribute('data-pinned', 'end');
     expect(cell).toHaveStyle({ insetInlineEnd: '80px', textAlign: 'end', color: 'rgb(255, 0, 0)' });
     expect(cell).not.toHaveAttribute('align');
+  });
+
+  it('temporarily scrolls adapter pins when they no longer fit without changing native pins', async () => {
+    const scrollRef = createRef<HTMLDivElement>();
+    const content = (
+      <>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader pinned="start">Name</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell pinned="end" pinOffset={80}>
+              Pinned
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </>
+    );
+    const { rerender } = render(
+      <Table scrollRef={scrollRef} pinnedWidth={300}>
+        {content}
+      </Table>,
+    );
+    const viewport = scrollRef.current;
+    if (!viewport) throw new Error('Missing table viewport');
+    let width = 283;
+    Object.defineProperty(viewport, 'clientWidth', { get: () => width });
+    fireEvent(window, new Event('resize'));
+    const header = screen.getByRole('columnheader', { name: 'Name' });
+    const cell = screen.getByRole('cell', { name: 'Pinned' });
+    await waitFor(() => expect(cell).toHaveStyle({ position: 'relative', insetInlineEnd: 'auto' }));
+    expect(header).toHaveStyle({ position: 'relative' });
+    expect(cell).toHaveAttribute('data-pinned', 'end');
+    width = 500;
+    fireEvent(window, new Event('resize'));
+    await waitFor(() => expect(cell).toHaveStyle({ position: 'sticky', insetInlineEnd: '80px' }));
+    expect(header).toHaveStyle({ position: 'sticky', insetInlineStart: '0px' });
+    rerender(
+      <Table scrollRef={scrollRef} pinnedWidth={600}>
+        {content}
+      </Table>,
+    );
+    expect(cell).toHaveStyle({ position: 'relative' });
+    rerender(<Table scrollRef={scrollRef}>{content}</Table>);
+    expect(cell).toHaveStyle({ position: 'sticky', insetInlineEnd: '80px' });
+    expect(header).toHaveStyle({ position: 'sticky' });
   });
 
   it('contains overflowing boundary wheels in older browsers without hijacking other scrolling', () => {
@@ -163,6 +223,7 @@ describe('Table', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
     expect(retry).toHaveBeenCalledOnce();
     expect(screen.getByRole('alert')).toHaveTextContent('Unable to load data');
+    expect(screen.getByRole('alert')).toHaveClass('leaf-result', 'leaf-result--danger');
   });
 
   it('keeps existing rows during loading and blocks their interactions', () => {

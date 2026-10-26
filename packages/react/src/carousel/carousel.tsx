@@ -99,31 +99,55 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
       aria-roledescription={t('carousel.role')}
       aria-label={props['aria-label'] ?? t('carousel.carousel')}
       className={classes('leaf-carousel', className)}
-      onPointerEnter={() => {
-        if (pauseOnHover) setPaused(true);
+      onPointerEnter={(event) => {
+        props.onPointerEnter?.(event);
+        if (!event.defaultPrevented && pauseOnHover) setPaused(true);
       }}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
+      onPointerLeave={(event) => {
+        props.onPointerLeave?.(event);
+        if (!event.defaultPrevented) setPaused(false);
+      }}
+      onFocus={(event) => {
+        props.onFocus?.(event);
+        if (!event.defaultPrevented) setPaused(true);
+      }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
+        props.onBlur?.(event);
+        if (!event.defaultPrevented && !event.currentTarget.contains(event.relatedTarget))
+          setPaused(false);
       }}
       onPointerDown={(event) => {
-        if (!(event.target as HTMLElement).closest('button,a,input'))
+        props.onPointerDown?.(event);
+        if (
+          !event.defaultPrevented &&
+          !(event.target as HTMLElement).closest('button,a,input,textarea,select,[contenteditable]')
+        )
           pointer.current = event.clientX;
       }}
       onPointerUp={(event) => {
+        props.onPointerUp?.(event);
+        if (event.defaultPrevented) {
+          pointer.current = undefined;
+          return;
+        }
         if (pointer.current === undefined) return;
         const distance = event.clientX - pointer.current;
         pointer.current = undefined;
         if (Math.abs(distance) > 40)
           go(index + (distance < 0 ? 1 : -1) * (config.direction === 'rtl' ? -1 : 1));
       }}
-      onPointerCancel={() => {
+      onPointerCancel={(event) => {
+        props.onPointerCancel?.(event);
         pointer.current = undefined;
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event);
-        if (event.defaultPrevented || (event.target as HTMLElement).matches('input,textarea'))
+        if (
+          event.defaultPrevented ||
+          (event.target as HTMLElement).closest(
+            'input,textarea,select,[contenteditable],[role="combobox"],[role="slider"],[role="spinbutton"]',
+          )
+        )
           return;
         if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
           event.preventDefault();
@@ -158,24 +182,28 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
             </fieldset>
           ))}
         </div>
+        {arrows &&
+          count > 1 &&
+          [-1, 1].map((direction) => (
+            <button
+              key={direction}
+              type="button"
+              className={classes(
+                'leaf-carousel__arrow',
+                direction === -1 ? 'leaf-carousel__arrow--previous' : 'leaf-carousel__arrow--next',
+              )}
+              disabled={!infinite && (direction === -1 ? index === 0 : index === count - 1)}
+              aria-label={direction === -1 ? t('carousel.previousSlide') : t('carousel.nextSlide')}
+              onClick={() => go(index + direction)}
+            >
+              {direction === -1 ? (
+                <ChevronLeft size={20} aria-hidden="true" />
+              ) : (
+                <ChevronRight size={20} aria-hidden="true" />
+              )}
+            </button>
+          ))}
       </div>
-      {arrows &&
-        count > 1 &&
-        [-1, 1].map((direction) => (
-          <button
-            key={direction}
-            type="button"
-            className={classes(
-              'leaf-carousel__arrow',
-              direction === -1 ? 'leaf-carousel__arrow--previous' : 'leaf-carousel__arrow--next',
-            )}
-            disabled={!infinite && (direction === -1 ? index === 0 : index === count - 1)}
-            aria-label={direction === -1 ? t('carousel.previousSlide') : t('carousel.nextSlide')}
-            onClick={() => go(index + direction)}
-          >
-            {direction === -1 ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-          </button>
-        ))}
       {dots && count > 1 && (
         <div className="leaf-carousel__dots">
           {slides.map((slide, position) => (

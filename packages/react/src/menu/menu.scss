@@ -42,6 +42,10 @@
 @mixin row-feedback {
   color: var(--leaf-menu-item-color, var(--leaf-menu-unselected-color));
   background: transparent;
+  // Floating options also have a shared hover fill; Menu paints only its own layer.
+  &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']) {
+    background: transparent;
+  }
   &::before {
     content: '';
     position: absolute;
@@ -321,6 +325,7 @@
 
 .leaf-menu__popup.leaf-dropdown {
   @include mixins.floating-paint(menu);
+  color: var(--leaf-component-menu-color, var(--leaf-color-text));
   background: var(--leaf-component-menu-background, var(--leaf-menu-canvas));
   --leaf-surface-radius: var(--leaf-component-menu-radius, var(--leaf-radius));
   --leaf-surface-padding: var(--leaf-component-menu-padding, 6px);
@@ -371,7 +376,7 @@
   }
   .leaf-dropdown__arrow {
     flex: none;
-    color: var(--leaf-color-text-muted);
+    color: inherit;
   }
   .leaf-dropdown__group {
     padding: 10px 10px 5px;

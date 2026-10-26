@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { DatePicker, Select, TimePicker } from '../index';
+import { DatePicker, Select } from '../index';
 
 // jsdom has no layout; preserve tabbable's disabled/tabIndex checks while omitting visibility geometry.
 vi.mock('tabbable', async (importOriginal) => {
@@ -47,12 +47,18 @@ describe('Floating field focus', () => {
     const onOpenChange = vi.fn();
     render(
       <>
-        <TimePicker aria-label="时间" allowClear={false} onOpenChange={onOpenChange} />
+        <DatePicker
+          picker="time"
+          aria-label="时间"
+          allowClear={false}
+          onOpenChange={onOpenChange}
+        />
         <button type="button">下一个字段</button>
       </>,
     );
     await userEvent.click(screen.getByRole('combobox'));
-    await userEvent.keyboard('{ArrowDown}');
+    await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
+    expect(screen.getByRole('option', { name: '09', selected: true })).toHaveFocus();
     await userEvent.tab();
     expect(screen.getByRole('option', { name: '00', selected: true })).toHaveFocus();
     await userEvent.tab();

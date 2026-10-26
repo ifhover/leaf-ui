@@ -4,6 +4,22 @@ import { classes } from '../shared/classes';
 import { useMotionEnabled } from '../shared/motion';
 import { useControllable } from '../shared/use-controllable';
 import { useMovingIndicator } from '../tabs/use-moving-indicator';
+
+function anchorTarget(href: string) {
+  try {
+    const url = new URL(href, window.location.href);
+    if (
+      url.origin !== location.origin ||
+      url.pathname !== location.pathname ||
+      url.search !== location.search ||
+      !url.hash
+    )
+      return null;
+    return document.getElementById(decodeURIComponent(url.hash.slice(1)));
+  } catch {
+    return null;
+  }
+}
 export interface AnchorItem {
   key: string;
   title: ReactNode;
@@ -46,7 +62,7 @@ export function Anchor(rawProps: AnchorProps) {
         let key = '';
         const visit = (entries: readonly AnchorItem[]) => {
           for (const item of entries) {
-            const target = document.getElementById(decodeURIComponent(item.href.replace(/^#/, '')));
+            const target = anchorTarget(item.href);
             if (target && target.getBoundingClientRect().top - top <= offset + 24) key = item.key;
             if (item.children) visit(item.children);
           }
@@ -72,9 +88,31 @@ export function Anchor(rawProps: AnchorProps) {
           data-leaf-indicator-item=""
           aria-current={active === item.key ? 'location' : undefined}
           onClick={(event) => {
-            const target = document.getElementById(decodeURIComponent(item.href.replace(/^#/, '')));
+            if (
+              event.button !== 0 ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey ||
+              event.defaultPrevented
+            )
+              return;
+            const target = anchorTarget(item.href);
             if (!target) return;
             event.preventDefault();
+            const url = new URL(item.href, window.location.href);
+            if (url.hash !== location.hash) history.pushState(null, '', url);
+            if (!target.hasAttribute('tabindex') && target.tabIndex < 0) {
+              target.setAttribute('tabindex', '-1');
+              target.addEventListener(
+                'blur',
+                () => {
+                  if (target.getAttribute('tabindex') === '-1') target.removeAttribute('tabindex');
+                },
+                { once: true },
+              );
+            }
+            target.focus({ preventScroll: true });
             const scroll = container?.() ?? window;
             const top =
               target.getBoundingClientRect().top -

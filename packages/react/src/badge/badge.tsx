@@ -13,6 +13,14 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   color?: string;
 }
 
+const familyForegrounds: Record<string, string> = {
+  primary: 'var(--leaf-color-on-primary)',
+  success: 'var(--leaf-color-on-success)',
+  danger: 'var(--leaf-color-on-danger)',
+  warning: 'var(--leaf-color-on-warning)',
+  info: 'var(--leaf-color-on-info)',
+};
+
 export function Badge(rawProps: BadgeProps) {
   const {
     count,
@@ -26,6 +34,9 @@ export function Badge(rawProps: BadgeProps) {
     style,
     ...props
   } = useComponentProps('Badge', rawProps);
+  const family = color?.match(/^var\(--leaf-color-(primary|success|danger|warning|info)\)$/)?.[1];
+  // Semantic family colors follow their own on*Color; custom colors use the primary foreground.
+  const foreground = (family && familyForegrounds[family]) || 'var(--leaf-color-on-primary)';
   const attached = Children.toArray(children).length > 0;
   const number = useRef<HTMLSpanElement>(null);
   const hasCount = count !== undefined && count !== '' && (count !== 0 || showZero);
@@ -43,7 +54,7 @@ export function Badge(rawProps: BadgeProps) {
       data-placement={placement}
       style={{
         ...(color ? { '--leaf-badge-color': color } : {}),
-        ...(color ? { '--leaf-badge-on-color': 'var(--leaf-color-on-primary)' } : {}),
+        ...(color ? { '--leaf-badge-on-color': foreground } : {}),
         ...style,
       }}
     >

@@ -1,5 +1,6 @@
 @use '../styles/mixins' as *;
 @use '../scrollbar/scrollbar';
+@use '../result/result';
 
 .leaf-table {
   @include table-family(table);
@@ -129,7 +130,7 @@
 
   &__header {
     position: sticky;
-    inset-block-start: var(--leaf-table-caption-height);
+    inset-block-start: 0;
     z-index: 3;
   }
 
@@ -225,14 +226,48 @@
     --leaf-table-row-background: var(--leaf-table-selected-background);
   }
 
-  &__caption {
+  &--simple {
+    --leaf-table-radius: var(--leaf-component-table-radius, var(--leaf-radius));
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: var(--leaf-table-surface);
+  }
+
+  &--simple &__panel {
+    display: none;
+  }
+
+  &--simple &__header {
+    // Clip the entire header, including grouped and pinned cells, as one rounded surface.
+    clip-path: inset(0 round var(--leaf-table-radius));
+  }
+
+  &--simple &__column-header {
+    padding-block: var(--leaf-table-heading-gap);
+    &::before {
+      display: none;
+    }
+  }
+
+  &--simple &__cell[data-pin-edge]::after {
+    content: none;
+  }
+
+  &__state-cell {
+    padding: 0;
+  }
+
+  &__state-content {
     position: sticky;
-    inset-block-start: 0;
-    z-index: 3;
-    padding: var(--leaf-table-padding-block) var(--leaf-table-padding-inline);
-    text-align: start;
-    font-weight: var(--leaf-font-weight);
-    background: var(--leaf-table-header-background);
+    inset-inline-start: 0;
+    box-sizing: border-box;
+    width: var(--leaf-table-viewport-width, 100%);
+    max-width: 100%;
+    padding: var(
+      --leaf-component-table-padding,
+      var(--leaf-table-padding-block) var(--leaf-table-padding-inline)
+    );
   }
 
   &__state {
@@ -243,9 +278,6 @@
     flex-direction: column;
     gap: 10px;
     color: var(--leaf-color-text-muted);
-    &--error > svg {
-      color: var(--leaf-color-danger);
-    }
   }
 
   &__overlay {
@@ -263,6 +295,16 @@
   &[data-scroll-start] &__cell[data-pinned='start'][data-pin-edge]::after,
   &[data-scroll-end] &__cell[data-pinned='end'][data-pin-edge]::after {
     background: none;
+  }
+
+  &[data-pinning-overflow] &__cell[data-pin-edge]::after {
+    display: none;
+  }
+
+  &[data-pinning-overflow]
+    &__column-header[data-pinned='end'][data-pin-edge]:not(:first-child)::before {
+    inset-inline-start: auto;
+    border-inline-start-width: 0;
   }
 }
 

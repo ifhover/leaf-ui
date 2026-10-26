@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
@@ -141,14 +142,16 @@ export function PaginationControl({
             : format('pagination.total', { total: count })}
         </span>
       )}
-      <button
+      <ButtonControl
+        size={size}
+        variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
         disabled={disabled || page === 1}
         aria-label={messages.pagination.previousPage}
         onClick={() => choose(page - 1)}
       >
         <ChevronLeft size={16} aria-hidden="true" />
-      </button>
+      </ButtonControl>
       {simple ? (
         <span className="leaf-pagination__simple">
           {page} / {pages}
@@ -159,16 +162,20 @@ export function PaginationControl({
             {index > 0 &&
               number - (candidates[index - 1] ?? 0) > 1 &&
               (number - (candidates[index - 1] ?? 0) === 2 ? (
-                <button
+                <ButtonControl
+                  size={size}
+                  variant={variant === 'outline' ? 'outline' : 'text'}
                   type="button"
                   disabled={disabled}
                   aria-label={format('pagination.pageLabel', { page: number - 1 })}
                   onClick={() => choose(number - 1)}
                 >
                   {number - 1}
-                </button>
+                </ButtonControl>
               ) : (
-                <button
+                <ButtonControl
+                  size={size}
+                  variant={variant === 'outline' ? 'outline' : 'text'}
                   type="button"
                   className="leaf-pagination__jump"
                   disabled={disabled}
@@ -183,9 +190,11 @@ export function PaginationControl({
                   ) : (
                     <ChevronsLeft size={16} aria-hidden="true" />
                   )}
-                </button>
+                </ButtonControl>
               ))}
-            <button
+            <ButtonControl
+              size={size}
+              variant={variant === 'outline' ? 'outline' : 'text'}
               type="button"
               aria-label={format('pagination.pageLabel', { page: number })}
               aria-current={number === page ? 'page' : undefined}
@@ -194,18 +203,20 @@ export function PaginationControl({
               onClick={() => choose(number)}
             >
               {number}
-            </button>
+            </ButtonControl>
           </span>
         ))
       )}
-      <button
+      <ButtonControl
+        size={size}
+        variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
         disabled={disabled || page === pages}
         aria-label={messages.pagination.nextPage}
         onClick={() => choose(page + 1)}
       >
         <ChevronRight size={16} aria-hidden="true" />
-      </button>
+      </ButtonControl>
       {showSizeChanger && (
         <SelectControl
           size={size}

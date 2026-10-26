@@ -4,7 +4,7 @@
 :host {
   @include palette.light;
   --leaf-control-height: 34px;
-  --leaf-density-form-gap: 24px;
+  --leaf-density-form-gap: 16px;
   --leaf-density-label-gap: 6px;
   --leaf-density-row-padding: 12px;
   --leaf-density-option-height: max(24px, calc(var(--leaf-control-height) - 4px));

@@ -1,123 +1,108 @@
 @use '../styles/mixins' as mixins;
 
+// Calm ledger rows for lists and framed contact-sheet cards for media galleries.
+// Icons rest in neutral ink; semantic color appears only on active upload or error states.
 .leaf-file-list {
-  @include mixins.accent-soft-feedback-family;
-  @include mixins.danger-soft-feedback-family;
+  @include mixins.softened-frame-color(
+    file-list,
+    var(--leaf-component-file-list-background, var(--leaf-color-surface))
+  );
 
-  --leaf-file-visual-size: 40px;
+  --leaf-file-radius: var(--leaf-component-file-list-radius, var(--leaf-radius-md));
+  --leaf-file-border: var(--leaf-component-file-list-border-width, var(--leaf-border-width, 1px));
+  --leaf-file-inner-radius: max(0px, calc(var(--leaf-file-radius) - var(--leaf-file-border)));
+  --leaf-file-surface: var(--leaf-component-file-list-background, var(--leaf-color-surface));
+  --leaf-file-hover: #{mixins.choice-option-background()};
+  --leaf-file-visual-size: 36px;
+  --leaf-file-visual-radius: max(0px, calc(var(--leaf-radius) - 2px));
   --leaf-file-action-size: var(--leaf-control-height-sm);
+  --leaf-file-row-block: min(10px, var(--leaf-density-row-padding, 12px));
+  --leaf-file-row-inline: 14px;
+  --leaf-file-gap: 12px;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+  container: leaf-file-list / inline-size;
+  color: var(--leaf-component-file-list-color, var(--leaf-color-text));
+  font: var(--leaf-component-file-list-font-size, var(--leaf-font-size))/var(--leaf-line-height)
+    var(--leaf-font-family);
   &__items {
     margin: 0;
     padding: 0;
     list-style: none;
-    border: var(--leaf-component-file-list-border-width, var(--leaf-border-width, 1px)) solid
+    border: var(--leaf-file-border) solid
       var(
         --leaf-component-file-list-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-border))
+        var(--leaf-frame-border-color, var(--leaf-file-list-frame-color))
       );
     box-shadow: var(--leaf-component-file-list-shadow, var(--leaf-surface-shadow, none));
-    border-radius: var(--leaf-radius-md);
-    background: var(--leaf-color-surface);
+    border-radius: var(--leaf-file-radius);
+    background: var(--leaf-file-surface);
   }
   &__item {
     box-sizing: border-box;
     position: relative;
     display: grid;
-    grid-template-columns: var(--leaf-file-visual-size) minmax(0, 1fr) auto;
-    column-gap: 12px;
+    grid-template-columns: var(--leaf-file-visual-size) minmax(0, 1fr);
+    column-gap: var(--leaf-file-gap);
     align-items: center;
     min-width: 0;
-    padding: var(--leaf-density-row-padding, 12px) 16px;
-    transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    padding: var(
+      --leaf-component-file-list-padding,
+      var(--leaf-file-row-block) var(--leaf-file-row-inline)
+    );
+    transition:
+      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-color) var(--leaf-motion-easing);
     &:first-child {
-      border-start-start-radius: max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
-      );
-      border-start-end-radius: max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
-      );
+      border-start-start-radius: var(--leaf-file-inner-radius);
+      border-start-end-radius: var(--leaf-file-inner-radius);
     }
     &:last-child {
-      border-end-start-radius: max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
+      border-end-start-radius: var(--leaf-file-inner-radius);
+      border-end-end-radius: var(--leaf-file-inner-radius);
+    }
+    // Inset divider aligns with the filename column, keeping the leading icon gutter clean.
+    & + &::before {
+      content: '';
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: calc(
+        var(--leaf-file-row-inline) + var(--leaf-file-visual-size) + var(--leaf-file-gap)
       );
-      border-end-end-radius: max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
-      );
+      inset-inline-end: 0;
+      height: 1px;
+      background: var(--leaf-file-list-frame-color);
+      pointer-events: none;
+      transition: opacity var(--leaf-motion-color) var(--leaf-motion-easing);
     }
-    & + & {
-      border-top: 1px solid var(--leaf-color-border);
+  }
+  &:not([data-disabled]) &__item {
+    &:is(:hover, :focus-within) {
+      background: var(--leaf-file-hover);
     }
-    &:hover,
-    &:focus-within {
-      background: var(--leaf-color-option-hover);
-    }
-    &:not(:has(.leaf-file-list__actions:not(:empty))) {
-      grid-template-columns: var(--leaf-file-visual-size) minmax(0, 1fr);
+    &:is(:hover, :focus-within)::before,
+    &:is(:hover, :focus-within) + .leaf-file-list__item::before {
+      opacity: 0;
     }
   }
   &__icon {
     --leaf-file-accent: var(--leaf-color-text-muted);
     position: relative;
-    grid-column: 1;
-    grid-row: 1;
-    display: grid;
-    place-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     inline-size: var(--leaf-file-visual-size);
     block-size: var(--leaf-file-visual-size);
-    box-sizing: border-box;
-    border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius-sm);
+    border: 1px solid var(--leaf-file-list-frame-color);
+    border-radius: var(--leaf-file-visual-radius);
     background: var(--leaf-color-surface-muted);
     color: var(--leaf-file-accent);
     overflow: hidden;
-    &[data-kind='image'],
-    &[data-kind='sheet'] {
-      @include mixins.status-ink-family(primary);
-      --leaf-file-accent: var(--leaf-status-ink);
-    }
-    &[data-kind='document'],
-    &[data-kind='video'] {
-      @include mixins.status-ink-family(info);
-      --leaf-file-accent: var(--leaf-status-ink);
-    }
-    &[data-kind='audio'],
-    &[data-kind='archive'] {
-      @include mixins.status-ink-family(warning);
-      --leaf-file-accent: var(--leaf-status-ink);
-    }
-    &[data-extension='pdf'] {
-      @include mixins.status-ink-family(danger);
-      --leaf-file-accent: var(--leaf-status-ink);
+    &[data-thumbnail] {
+      border-color: transparent;
     }
     img {
       position: absolute;
@@ -126,10 +111,54 @@
       height: 100%;
       object-fit: cover;
     }
+    // A hairline inside the thumbnail keeps light images from bleeding into the surface.
+    &[data-thumbnail]::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--leaf-file-list-frame-color);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+  }
+  &__item[data-status='uploading'] &__icon:not([data-thumbnail]) {
+    @include mixins.status-ink-family(primary);
+    --leaf-file-accent: var(--leaf-status-ink);
+  }
+  &__item[data-error] &__icon:not([data-thumbnail]) {
+    @include mixins.status-label-family(danger);
+    --leaf-file-accent: var(--leaf-status-ink);
+    background: var(--leaf-status-label-background);
+    border-color: var(--leaf-color-danger-border);
+  }
+  &__item[data-error] &__icon[data-thumbnail]::after {
+    border-color: var(--leaf-color-danger-border);
+  }
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    > svg {
+      display: block;
+    }
+  }
+  &__extension {
+    color: var(--leaf-color-text-muted);
+    font-size: 12px;
+    font-weight: var(--leaf-font-weight);
+    line-height: 16px;
+    letter-spacing: 0.04em;
+  }
+  &__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--leaf-file-gap);
+    min-height: var(--leaf-file-visual-size);
+    min-width: 0;
   }
   &__details {
-    grid-column: 2;
-    grid-row: 1;
+    flex: 1 1 auto;
     min-width: 0;
   }
   &__name {
@@ -140,15 +169,20 @@
     font-weight: var(--leaf-font-weight);
     line-height: var(--leaf-line-height);
   }
+  &__item[data-status='cancelled'] &__name {
+    color: var(--leaf-color-text-muted);
+  }
   &__meta {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    column-gap: 8px;
+    column-gap: 6px;
+    row-gap: 2px;
+    min-width: 0;
     margin-top: 2px;
     color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size-sm);
-    line-height: var(--leaf-line-height-sm);
+    font-size: 12px;
+    line-height: 16px;
     font-variant-numeric: tabular-nums;
     > span {
       display: inline-flex;
@@ -157,24 +191,43 @@
     }
     > span + span::before {
       content: '';
-      inline-size: 3px;
-      block-size: 3px;
-      margin-inline-end: 8px;
+      flex: none;
+      inline-size: 2.5px;
+      block-size: 2.5px;
+      margin-inline-end: 6px;
       border-radius: 50%;
       background: var(--leaf-color-text-muted);
-      opacity: 0.55;
+      opacity: 0.45;
     }
   }
   &__type {
+    font-weight: var(--leaf-font-weight);
     letter-spacing: 0.03em;
   }
+  &__status {
+    gap: 3px;
+    > svg {
+      flex: none;
+    }
+    &[data-status='done'] {
+      @include mixins.status-ink-family(success);
+      color: var(--leaf-status-ink);
+    }
+    &[data-status='error'] {
+      @include mixins.status-ink-family(danger);
+      color: var(--leaf-status-ink);
+    }
+    &[data-status='uploading'] {
+      @include mixins.status-ink-family(primary);
+      color: var(--leaf-status-ink);
+    }
+  }
   &__actions {
-    grid-column: 3;
-    grid-row: 1 / span 4;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 4px;
+    gap: 2px;
     margin-inline-end: -4px;
     &:empty {
       display: none;
@@ -197,6 +250,11 @@
     border-radius: var(--leaf-radius-sm);
     text-decoration: none;
     vertical-align: middle;
+    .leaf-button__icon,
+    .leaf-button__spinner {
+      width: 15px;
+      height: 15px;
+    }
     &[aria-disabled='true'] {
       opacity: 0.45;
       cursor: not-allowed;
@@ -205,42 +263,30 @@
       cursor: default;
     }
   }
+  // Row actions rest in muted ink so repeated icons stay quiet; interaction restores
+  // full text color, and removal reveals its danger ink only on interaction.
   a#{&}__action {
     @include mixins.text-action;
+    --leaf-text-action-color: var(--leaf-color-text-muted);
+    &:is(:hover, :focus-visible):not([aria-disabled='true']) {
+      --leaf-text-action-color: var(--leaf-color-text);
+    }
   }
-  &__status {
-    grid-column: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 4px;
-    min-width: 0;
-    color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size-sm);
-    line-height: var(--leaf-line-height-sm);
-    font-variant-numeric: tabular-nums;
-    > svg {
-      flex: none;
+  & &__actions > .leaf-button.leaf-button--text {
+    --leaf-button-rest-color: var(--leaf-color-text-muted);
+    &:is(:hover, :focus-visible):not(:disabled):not([data-loading]) {
+      --leaf-button-rest-color: var(--leaf-color-text);
     }
-    &[data-status='done'] {
-      @include mixins.status-ink-family(success);
-      color: var(--leaf-status-ink);
-    }
-    &[data-status='error'] {
-      @include mixins.status-ink-family(danger);
-      color: var(--leaf-status-ink);
-    }
-    &[data-status='uploading'] {
-      @include mixins.status-ink-family(primary);
-      color: var(--leaf-status-ink);
+    &.leaf-file-list__remove:is(:hover, :focus-visible, [data-loading]):not(:disabled) {
+      --leaf-button-rest-color: var(--leaf-color-danger-ink);
     }
   }
   &__progress {
     grid-column: 2;
-    margin-top: 7px;
+    margin-top: 8px;
     height: 3px;
-    border-radius: 3px;
-    background: var(--leaf-color-border);
+    border-radius: 999px;
+    background: var(--leaf-color-surface-muted);
     overflow: hidden;
     > span {
       display: block;
@@ -254,10 +300,10 @@
     @include mixins.status-ink-family(danger);
     grid-column: 2;
     min-width: 0;
-    margin: 4px 0 0;
-    font-size: var(--leaf-font-size-sm);
-    line-height: var(--leaf-line-height-sm);
+    margin: 6px 0 0;
     color: var(--leaf-status-ink);
+    font-size: 12px;
+    line-height: 16px;
     overflow-wrap: anywhere;
   }
   &__empty {
@@ -265,14 +311,30 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 10px;
-    padding: 32px 16px;
-    border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius-md);
-    background: var(--leaf-color-surface);
+    gap: 8px;
+    padding: 24px 16px;
+    border: var(--leaf-file-border) dashed
+      var(
+        --leaf-component-file-list-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    border-radius: var(--leaf-file-radius);
+    background: var(--leaf-file-surface);
     text-align: center;
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
+    line-height: var(--leaf-line-height-sm);
+  }
+  &__empty-icon {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--leaf-file-list-frame-color);
+    border-radius: var(--leaf-radius);
+    background: var(--leaf-color-surface-muted);
   }
   &__media-modal {
     video {
@@ -289,13 +351,46 @@
     }
   }
 }
+
 .leaf-file-list--picture {
-  --leaf-file-visual-size: 52px;
+  --leaf-file-visual-size: 44px;
+  --leaf-file-visual-radius: var(--leaf-radius);
 }
+
+// Text lists present a compact single-line ledger in wide containers and stack cleanly when narrow.
+@container leaf-file-list (min-width: 481px) {
+  .leaf-file-list--text {
+    --leaf-file-visual-size: 28px;
+    --leaf-file-row-block: min(8px, var(--leaf-density-row-padding, 12px));
+    .leaf-file-list__details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .leaf-file-list__name {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .leaf-file-list__meta {
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      margin-top: 0;
+    }
+  }
+}
+
+// Contact-sheet cards: an inset 16:10 media stage, full-width filename, and aligned footer bar.
 .leaf-file-list--picture-card {
+  --leaf-file-card-inset: 6px;
+  --leaf-file-action-size: max(24px, calc(var(--leaf-control-height-sm) - 2px));
+  --leaf-file-media-radius: max(
+    0px,
+    calc(var(--leaf-file-radius) - var(--leaf-file-card-inset) - var(--leaf-file-border))
+  );
   .leaf-file-list__items {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr));
     gap: 12px;
     border: 0;
     box-shadow: none;
@@ -305,97 +400,123 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 0;
-    border: var(--leaf-component-file-list-border-width, var(--leaf-border-width, 1px)) solid
+    padding: var(--leaf-file-card-inset);
+    border: var(--leaf-file-border) solid
       var(
         --leaf-component-file-list-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-border))
+        var(--leaf-frame-border-color, var(--leaf-file-list-frame-color))
       );
     box-shadow: var(--leaf-component-file-list-shadow, var(--leaf-surface-shadow, none));
-    border-radius: var(--leaf-radius-md);
-    background: var(--leaf-color-surface);
+    border-radius: var(--leaf-file-radius);
+    background: var(--leaf-file-surface);
+    & + .leaf-file-list__item::before {
+      display: none;
+    }
+  }
+  &:not([data-disabled]) .leaf-file-list__item:is(:hover, :focus-within) {
+    background: var(--leaf-file-surface);
+    border-color: var(
+      --leaf-component-file-list-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+    );
   }
   .leaf-file-list__icon {
     inline-size: 100%;
     block-size: auto;
     aspect-ratio: 16 / 10;
-    border: 0;
-    border-bottom: 1px solid var(--leaf-color-border);
-    border-radius: max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
-      )
-      max(
-        0px,
-        calc(
-          var(--leaf-radius-md) - var(
-              --leaf-component-file-list-border-width,
-              var(--leaf-border-width, 1px)
-            )
-        )
-      )
-      0 0;
-    background: var(--leaf-color-surface-muted);
-    > svg {
-      width: 32px;
-      height: 32px;
+    gap: 6px;
+    border-radius: var(--leaf-file-media-radius);
+    &:not([data-thumbnail]) .leaf-file-list__glyph {
+      box-sizing: border-box;
+      width: 40px;
+      height: 44px;
+      border: 1px solid var(--leaf-file-list-frame-color);
+      border-radius: max(0px, calc(var(--leaf-radius) - 2px));
+      background: var(--leaf-file-surface);
+      box-shadow: var(--leaf-shadow-xs);
     }
   }
-  .leaf-file-list__details {
-    padding: 12px 12px 0;
+  .leaf-file-list__item[data-error]
+    .leaf-file-list__icon:not([data-thumbnail])
+    .leaf-file-list__glyph {
+    border-color: var(--leaf-color-danger-border);
   }
-  .leaf-file-list__status,
+  .leaf-file-list__details {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 4px;
+    box-sizing: border-box;
+    padding: 8px 6px 2px;
+  }
+  .leaf-file-list__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 0;
+    min-height: var(--leaf-file-action-size);
+    margin-top: auto;
+  }
+  .leaf-file-list__meta {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    margin-top: 0;
+    overflow: hidden;
+    > .leaf-file-list__status {
+      min-width: 0;
+      overflow: hidden;
+      > bdi {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+  .leaf-file-list__actions {
+    margin-inline-start: auto;
+  }
   .leaf-file-list__progress,
   .leaf-file-list__error {
-    margin-inline: 12px;
-  }
-  .leaf-file-list__actions {
-    align-self: stretch;
-    margin: auto 0 0;
-    padding: 8px;
-  }
-  .leaf-file-list__item:not(:has(.leaf-file-list__actions:not(:empty))) {
-    padding-bottom: 12px;
+    margin-top: 2px;
   }
 }
-@media (max-width: 480px) {
+
+@container leaf-file-list (max-width: 480px) {
   .leaf-file-list {
-    --leaf-file-visual-size: 36px;
+    --leaf-file-visual-size: 32px;
     --leaf-file-action-size: max(30px, var(--leaf-control-height-sm));
+    --leaf-file-row-inline: 12px;
+    --leaf-file-gap: 10px;
   }
   .leaf-file-list--picture {
-    --leaf-file-visual-size: 44px;
+    --leaf-file-visual-size: 40px;
   }
-  .leaf-file-list__item {
-    column-gap: 10px;
-    padding-inline: 12px;
-  }
-  .leaf-file-list__actions {
-    flex-wrap: wrap;
-    max-width: calc(var(--leaf-file-action-size) * 2 + 4px);
-  }
-  .leaf-file-list--picture-card .leaf-file-list__actions {
-    max-width: none;
+  .leaf-file-list--picture-card {
+    --leaf-file-action-size: max(30px, var(--leaf-control-height-sm));
+    .leaf-file-list__icon {
+      aspect-ratio: 16 / 9;
+    }
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .leaf-file-list__item,
+  .leaf-file-list__item::before,
   .leaf-file-list__action,
   .leaf-file-list__actions > .leaf-button--icon-only,
   .leaf-file-list__progress > span {
     transition: none;
   }
 }
+
 @media (forced-colors: active) {
   .leaf-file-list__icon,
   .leaf-file-list__status,
   .leaf-file-list__error {
     color: CanvasText;
+  }
+  .leaf-file-list__icon {
+    border: 1px solid CanvasText;
   }
   .leaf-file-list__progress {
     border: 1px solid CanvasText;

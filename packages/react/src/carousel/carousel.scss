@@ -1,8 +1,11 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-carousel {
   position: relative;
   border-radius: var(--leaf-radius-md);
   color: var(--leaf-color-text);
   &__viewport {
+    position: relative;
     overflow: hidden;
     border-radius: inherit;
   }
@@ -31,35 +34,46 @@
     }
   }
   &__arrow {
+    @include mixins.text-action-family;
+    @include mixins.action-transition;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    border: 1px solid var(--leaf-color-border);
+    border: 0;
     border-radius: 50%;
     width: var(--leaf-control-height);
     height: var(--leaf-control-height);
     display: grid;
     place-items: center;
-    background: var(--leaf-color-surface-raised);
-    color: var(--leaf-color-text);
-    box-shadow: var(--leaf-shadow-sm);
+    background: var(--leaf-color-surface-muted);
+    color: var(--leaf-text-action-color);
+    box-shadow: none;
     cursor: pointer;
     z-index: 2;
-    transition:
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: transparent;
+      pointer-events: none;
+      @include mixins.action-transition;
+    }
+    > svg {
+      position: relative;
+    }
     &:hover:not(:disabled) {
-      transform: translateY(-50%) scale(1.08);
-      border-color: var(--leaf-color-border-hover);
-      box-shadow: var(--leaf-shadow-md);
+      &::before {
+        background: var(--leaf-text-action-background);
+      }
     }
     &:active:not(:disabled) {
-      transform: translateY(-50%) scale(0.94);
+      &::before {
+        background: var(--leaf-text-action-active-background);
+      }
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      outline-offset: 3px;
+      @include mixins.focus-ring;
     }
     &:disabled {
       opacity: 0.4;
@@ -108,6 +122,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-carousel__arrow,
+  .leaf-carousel__arrow::before,
   .leaf-carousel__dots button {
     transition: none;
   }

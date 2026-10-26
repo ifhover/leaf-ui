@@ -7,7 +7,7 @@ export const densityTokens = {
   comfortable: {
     'control-height': 34,
     spacing: 8,
-    'density-form-gap': 24,
+    'density-form-gap': 16,
     'density-label-gap': 6,
     'density-row-padding': 12,
     'density-option-height': 30,
@@ -20,7 +20,7 @@ export const densityTokens = {
   compact: {
     'control-height': 30,
     spacing: 6,
-    'density-form-gap': 16,
+    'density-form-gap': 12,
     'density-label-gap': 4,
     'density-row-padding': 8,
     'density-option-height': 26,

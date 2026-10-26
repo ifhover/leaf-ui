@@ -155,8 +155,10 @@ describe('Extended inputs and form integration', () => {
     await userEvent.type(input, '2026-Q2{Enter}');
     expect(change).toHaveBeenLastCalledWith(new Date(2026, 3, 1), '2026-Q2');
     await userEvent.clear(input);
+    expect(change).toHaveBeenLastCalledWith(null, '');
+    change.mockClear();
     await userEvent.type(input, '2026-Q5{Enter}');
-    expect(change).toHaveBeenCalledOnce();
+    expect(change).not.toHaveBeenCalled();
   });
   it('counts textarea characters and restores the count after reset', async () => {
     const { container } = render(

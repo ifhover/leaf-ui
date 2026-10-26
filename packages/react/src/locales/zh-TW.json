@@ -13,7 +13,8 @@
     "placeholder": "請選擇日期",
     "clear": "清除日期",
     "label": "選擇日期",
-    "selectDate": "選擇日期"
+    "selectDate": "選擇日期",
+    "presets": "快捷選項"
   },
   "timePicker": {
     "placeholder": "請選擇時間",
@@ -57,6 +58,7 @@
   },
   "common": {
     "confirm": "確定",
+    "next": "下一步",
     "cancel": "取消",
     "close": "關閉",
     "start": "開始",
@@ -174,14 +176,6 @@
     "slide": "幻燈片",
     "role": "輪播"
   },
-  "commandPalette": {
-    "commandSearch": "命令搜尋",
-    "placeholder": "搜尋命令…",
-    "searchCommands": "搜尋命令",
-    "commands": "命令",
-    "navigate": "選擇",
-    "run": "執行"
-  },
   "errorBoundary": {
     "title": "內容暫時無法顯示",
     "description": "請重試，或稍後返回。"
@@ -223,7 +217,12 @@
     "scrollThumbnailsForward": "向後滾動縮圖",
     "image": "圖片",
     "position": "第 {index} 張，共 {total} 張",
-    "viewImage": "檢視第 {index} 張圖片{alt}"
+    "viewImage": "檢視第 {index} 張圖片{alt}",
+    "noImage": "暫無圖片",
+    "actualSize": "原始尺寸（1:1）",
+    "fitToWindow": "適應視窗",
+    "rotateCounterclockwise": "逆時針旋轉",
+    "rotateClockwise": "順時針旋轉"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "載入失敗，重試",

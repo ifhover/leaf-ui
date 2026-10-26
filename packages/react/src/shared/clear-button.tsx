@@ -5,14 +5,17 @@ export function ClearButton({
   label,
   onClear,
   beforeArrow = false,
+  tabIndex,
 }: {
   label: string;
   onClear: () => void;
   beforeArrow?: boolean;
+  tabIndex?: number;
 }) {
   return (
     <button
       type="button"
+      tabIndex={tabIndex}
       aria-label={label}
       className={classes('leaf-picker-clear', beforeArrow && 'leaf-picker-clear--before-arrow')}
       onClick={onClear}
