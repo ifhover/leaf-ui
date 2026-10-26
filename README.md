@@ -5,8 +5,8 @@
 
   <h1>Leaf UI</h1>
 
-  <p><strong>轻盈 · 自然 · 可定制</strong></p>
-  <p>一个以绿色为起点的 React UI 组件库，让界面保留你的个性。</p>
+  <p><strong>安静 · 一致 · 易读</strong></p>
+  <p>一个面向工具与数据界面的 React UI 组件库，让内容成为界面的主角。</p>
 
   <p>
     <a href="https://www.npmjs.com/package/@ifhover/leaf-ui"><img src="https://img.shields.io/npm/v/@ifhover/leaf-ui?style=flat-square&amp;logo=npm&amp;logoColor=white&amp;color=1e964f" alt="npm 版本" /></a>
@@ -28,8 +28,8 @@
 
 ## ✨ 特性
 
-- 🍃 **轻盈自然** — 绿色默认主题、清晰的交互状态，覆盖输入、表单、布局、导航与反馈。
-- 🎨 **随心定制** — 通过 ConfigProvider 调整颜色、圆角、字体、控件高度和明暗外观，支持区域主题与 CSS 变量。
+- 🍃 **安静克制** — 中性表面、细边框和轻阴影构成层次，交互反馈只改变颜色；覆盖输入、表单、布局、导航与反馈。
+- 🎨 **主题一致** — 通过 ConfigProvider 接入品牌色、明暗外观与紧凑密度，相关状态自动派生，支持区域主题与 CSS 变量。
 - 🛡️ **类型完备** — 使用 TypeScript 编写，提供类型声明，保留原生 HTML 属性、DOM ref 与表单语义。
 - 🌍 **多语言** — 提供中英文文档，支持内置语言、自定义翻译、嵌套语言配置与 RTL 方向。
 - ⌨️ **细致交互** — 支持键盘操作、焦点管理，以及系统的减少动态效果偏好。

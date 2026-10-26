@@ -1,13 +1,13 @@
 # 颜色系统与组件用色规范
 
-本文是颜色定义、组件开发和 AI 协作的强制约定。发布仍遵守 [开发流程](DEVELOPMENT-WORKFLOW.md)，现有视觉行为以 [设计标准](DESIGN-STANDARDS.md) 为准。新增组件前先确定用途角色，并复用现有视觉家族实现；不从色板中凭感觉挑选近似色或色阶。
+本文是颜色定义、组件开发和 AI 协作的强制约定。发布仍遵守 [开发流程](DEVELOPMENT-WORKFLOW.md)，整体方向见 [设计风格](DESIGN-STYLE.md)，现有视觉行为以 [设计标准](DESIGN-STANDARDS.md) 为准。新增组件前先确定用途角色，并复用现有视觉家族实现；不从色板中凭感觉挑选近似色或色阶。
 
 ## 目标与边界
 
 - 同一种角色使用同一份默认配方；不因新增组件而新增一组全局颜色。
 - 不按 HEX 相同或接近判断合并。品牌与成功、边框与分隔线等不同语义保留独立入口，默认值允许共享。
 - 调色入口是 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`；业务 CSS 读取结果，不能承诺直接改基础 CSS 变量会重新运行派生算法。
-- 本规范不授权改变既定交互：Input / Select 聚焦或展开使用主题色边框；其他字段保留现有中性聚焦。普通选项使用中性反馈，Button 实底与链接仅按下变色，描边悬停加深边框、按下仅将背景轻微变灰。
+- 本规范不授权改变既定交互：输入和选择类字段（含 Textarea、Mentions、InputNumber）聚焦或展开统一使用主题色边框。普通选项使用中性反馈，Button 实底与链接仅按下变色，描边悬停加深边框、按下仅将背景轻微变灰。
 
 ## 三层颜色架构
 
@@ -48,7 +48,7 @@
 - 中性文字、表面、边框和选项反馈共用中性色阶；显式不透明 surface 按实际亮暗选择配套文字与边界，未指定 surface 时按 appearance 选择。显式文字和其他角色覆盖仍优先。
 - `soft` 默认浅底取 `light-9`、暗底取 `dark-9`；`soft-hover` / `soft-active` 与 `border` 默认取 `light-7` / `dark-7`。显式自定义表面按实际亮暗选择，不能只按 `appearance` 猜测。
 - `ink` 先尝试原色，相对实际 surface、surface-muted 与 soft 背景都达到 4.5:1 就直接保留；不足时在已生成派生色中优先按表面方向从小到大调整，必要时回退纯黑或纯白。表达式与半透明输入无法可靠比较时保留原色，不猜测或监听 DOM，应用自行验收。
-- `on-*` 始终默认纯白，不按对比度选择黑白；五种 `on*Color` token 可手动设为纯黑或其他显式颜色。它不与浅底文字 `ink` 合并。
+- `on-*`（实底上的文字 / 图标）始终默认纯白，不按对比度选择黑白；五种 `on*Color` token 可由应用显式设为纯黑或其他颜色。它不与浅底文字 `ink` 合并。组件消费共享 `on-*`，不硬编码白色或自动黑白判断。固定白色可能使部分基色组合低于 4.5:1：这是已确认的产品契约，验收时如实报告失败组合与 `on*Color` 定制方式，不自动改黑、不调暗基色，也不关闭 axe 对比度检查；库不保证固定白字或显式覆盖满足文字对比度。本条是实底前景规则的唯一出处，其他文档只链接这里。
 - `primary-indicator` 独立选择：原 primary 对当前表面达到 3:1 时可继续使用，否则从明暗派生色选择满足 3:1 的指示色。`primary-focus` 与选中控件的必要边界复用该结果，不用于给实底 Button 自动补边框。
 - Checkbox、Radio 和 Switch 的选中实底使用原 primary，内容使用 `on-primary`；`primary-indicator` 可用于边界或独立指示，不得把它用作实底却沿用原 primary 对应的内容色。
 - 组件不得自行挑选语义明暗派生档或中性 `100`–`900`。常规状态使用映射后的 `*-soft`、`*-border`、`*-ink`、中性角色或显式组件覆盖；确需新增选阶逻辑时，先进入共享映射并补齐测试。
@@ -57,17 +57,17 @@
 
 ### 字段外壳
 
-Input、Select、Textarea、InputNumber、TreeSelect、Cascader 与日期 / 时间等字段使用 `styles/_mixins.scss` 的 `field` / `field-states`；不得在组件中复制一套默认边框色或自行混合近似灰色。
+Input、Select、AutoComplete、Textarea、InputNumber、TreeSelect、Cascader、ColorPicker 与日期 / 时间等字段使用 `styles/_mixins.scss` 的 `field` / `field-states`；不得在组件中复制一套默认边框色或自行混合近似灰色。
 
 | 状态        | 默认契约                                                                                                             |
 | ----------- | -------------------------------------------------------------------------------------------------------------------- |
 | 普通        | 共用正文、内容表面、边框；组件未显式覆盖时，Input 与 Select 最终边框一致                                             |
 | 悬停 / 按下 | 保持静止外观；显式状态覆盖除外                                                                                       |
-| 聚焦 / 展开 | Input 与 Select 使用同一主题色配方、无外圈；其他字段使用共享的中性聚焦配方，这是已有行为的明确例外，不由组件临时决定 |
+| 聚焦 / 展开 | 所有输入和选择类字段使用共享的主题色默认配方、无外圈；Mentions 通过内部 Textarea 继承 |
 | 校验        | error 使用 danger，warning 使用 warning；校验语义不被普通聚焦覆盖                                                    |
 | 禁用        | 共用禁用背景、静止边框和不可交互规则；保留既有透明度行为                                                             |
 
-字段的主题色聚焦变体由共享配方提供，Input 与 Select 只声明使用这一变体，不能各自重写颜色公式。其他家族差异也必须先进入公共配方，再由组件选择。
+字段的主题色聚焦由共享 field 配方默认提供，各字段只传入组件名称，不再逐个声明 primary 变体，也不能各自重写颜色公式。Mentions、InputSearch、InputMask 与日期 / 时间组合字段通过内部 Textarea、Input 或 DateInput 继承。日期 / 时间分段的原生选区复用 info 蓝色与 on-info 前景，不新增全局变量。其他家族差异也必须先进入公共配方，再由组件选择。
 
 字段文件里的内层原生控件 `border: 0`、分栏线、步进按钮分隔线、色板对比边框和浮层移动层透明边框，不等于字段外壳重复配色。审计按实际绘制职责登记；不能为了降低债务数字删除必要的内部边界或把它们都改成外框色。
 
@@ -77,7 +77,7 @@ Input、Select、Textarea、InputNumber、TreeSelect、Cascader 与日期 / 时�
 
 普通选项的候选、悬停和按下使用 `--leaf-color-option-hover`。使用独立候选背景的其他列表共用这一角色；有移动背景时只能由移动层绘制一次。下列 Select 风格选项使用共享的浅色逐行配方。危险操作、日历、分页等明确设计例外不能被机械替换成普通选项。
 
-Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader 和 Dropdown 的选项行共用 `choice-option` 配方：从 `neutral-option-background()` 取一半强度的中性反馈，普通文字为 70% 继承色与区域 surface 混合，选中、悬停与键盘候选恢复完整继承色。每行只对自身背景颜色作过渡，不使用移动背景或几何出入动画；已保存值以勾选标记表达，不永久绘制选中底色。AutoComplete / Mentions 的 ARIA 选中表示当前候选，因此保留候选背景。Menu 默认外观继续独立消费完整中性背景与 80% 继承色，三种皮肤不受此配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围 / 时间选中态保留各自语义，不扩大字段聚焦变体。
+Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和时间列的选项行共用 `choice-option` 配方：从 `neutral-option-background()` 取一半强度的中性反馈，未选中、选中、悬停与键盘候选均使用完整继承文字色，不因未选中而淡化。每行只对自身背景颜色作过渡，不使用移动背景或几何出入动画；已保存值以勾选标记表达，不永久绘制选中底色。AutoComplete / Mentions 的 ARIA 选中表示当前候选，因此保留候选背景。Menu 默认外观继续独立消费完整中性背景与 80% 继承色，三种皮肤不受此配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围选中态保留各自语义，不扩大字段聚焦变体。
 
 ### 内容表面与动作
 
@@ -87,36 +87,38 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 
 ### 共享底板与内容表面
 
-分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card 与 DataTable 的外层底板、Modal 与卡片式日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card、Transfer 与 DataTable 的外层底板、卡片式 Modal 与日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
-Tabs 选中滑块与 Card / DataTable / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
+Tabs 选中滑块与 Card / Transfer / DataTable / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
 ### 跨组件的有限配方
 
 | 配方 | 责任与实际消费者 |
 | --- | --- |
-| `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、时间选择、导航、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中 |
+| `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、导航、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中。分页当前页属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认 |
 | `danger-soft-feedback-family` | 危险浅底反馈，供 Dropdown / Menu 危险操作、Form / Confirm 错误摘要、FileList 动作复用 |
 | `status-ink-family` / `status-label-family` | 五种语义的可读文字、浅底标签和实底前景；Typography / FileList / Tag 不再自行选择 `text-80` |
-| `panel-canvas-family` | Modal 与日期面板共用柔和画布 |
+| `panel-canvas-family` | 卡片式 Modal 与日期面板共用柔和画布；普通 Modal 使用 surface |
 | `segmented-surface-family` | Tabs 与 ColorPicker 格式切换共用轨道、选中底和弱文字 |
-| `overlay-family(dialog / spotlight)` | Modal / Drawer 共用普通遮罩与无模糊回退；Tour 保留更强的聚光遮罩 |
+| `overlay-family(dialog / spotlight)` | Modal / Drawer 默认共用无模糊灰色遮罩，可显式开启模糊；Tour 保留更强的无模糊聚光遮罩 |
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
-| `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈 |
+| `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。链接按钮使用主题基色，危险语义和显式覆盖保留。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。链接按钮使用可读的 `primary-ink` / `danger-ink`（按下使用 `primary-ink-active`），不使用主题基色；危险语义和显式覆盖保留。
 
-配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色；Switch 未选中滑块使用弱文字色，选中滑块使用 `on-primary`，不能固定白色或机械使用暗色表面。
+配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色。
+
+Switch 关闭态使用中性灰轨道与亮色滑块：浅色区域分别消费 `text-muted` / `surface`，深色区域分别消费 `option-hover` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式全局 / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
 
 ### 可读颜色与兼容性
 
-五个语义 family 都具有基色、共享色阶和用途角色。普通表面及浅底上的语义文字 `ink` 仍以 4.5:1 为目标；实底前景 `on-*` 默认固定白色，不再自动比较对比度。应用为浅色实底选择黑字时使用对应 `on*Color`。显式字色及组件覆盖优先，库不保证固定白字或显式覆盖达到文字对比度要求。
+五个语义 family 都具有基色、共享色阶和用途角色。普通表面及浅底上的语义文字 `ink` 以 4.5:1 为目标；实底前景见 [角色映射与选阶](#角色映射与选阶)。显式字色及组件覆盖优先。
 
 浅色 / 深色表示运行模式，不是要求每个角色必须有两个不同色值。基色、语义明暗派生和中性色带跨模式共享，只有用途映射随实际表面切换。`*-ink` 是普通表面上的彩色文字，`on-*` 是实色背景上的文字 / 图标，二者不可合并。
 
 CSS 表达式在服务端与客户端保持相同表达，不读取 DOM、canvas 或 color-scheme 推断颜色和模式。不透明具体颜色支持色阶和 ink 对比计算；表达式、半透明颜色和冲突表面需应用自行验收。无消费者的旧比例变量在 0.9.0 退役，迁移使用全局用途角色；保留的光学配方只服务现有光晕、遮罩和插画，不作为新增用途 token 的模板。
 
-Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和局部遮片有独立绘制责任，保留精确的局部例外。不能把相似颜色都抽成全局 token。Badge / Tag 的默认白字应消费共享 `on-*` 或相应自定义色前景配置，不能另写硬编码白色或自动黑白判断；普通控件的重复混色也不能当作局部例外。逐组件责任见 [迁移清单](packages/react/COLOR-MIGRATION.md)，实际静态结果见 [审计报告](packages/react/COLOR-AUDIT.md)。
+Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和局部遮片有独立绘制责任，保留精确的局部例外。不能把相似颜色都抽成全局 token。实色标签前景消费共享 `on-*` 或相应自定义色前景配置；普通控件的重复混色不能当作局部例外。逐组件责任见 [迁移清单](packages/react/COLOR-MIGRATION.md)，实际静态结果见 [审计报告](packages/react/COLOR-AUDIT.md)。
 
 ## 新增组件的用色流程
 
@@ -147,7 +149,7 @@ Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和�
 }
 ```
 
-字段示例默认选择现有中性聚焦家族；不能因为新组件也叫“字段”，就自行套用仅 Input / Select 已确认采用的主题色聚焦行为。真实组件还需实现相应语义、尺寸、状态与覆盖，不能只复制这段颜色代码。
+字段示例默认采用共享主题色聚焦行为；中性聚焦仅作为显式、经审查的例外，不作为新字段的默认值。真实组件还需实现相应语义、尺寸、状态与覆盖，不能只复制这段颜色代码。
 
 ## 修改已有组件的用色流程
 
@@ -212,7 +214,7 @@ Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和�
 - `styles/tokens.scss` 的固定色阴影也按精确例外预算检查，不能通过把表达式搬到全局文件规避检查。修改公式、文件或次数时重新说明职责，不直接重建基线放行。
 - 静态检查不等于视觉验收。浏览器比较 Input / Select 在普通、悬停、聚焦 / 展开、校验和禁用时的最终边框；覆盖浅深主题、自定义基础色、嵌套主题和显式组件 / 状态覆盖，确认覆盖不会泄漏到同类组件。
 - 颜色生成器验证 CSS 表达式、SSR、对比度与兼容变量；修改默认生成结果时同步静态 palette 和设计 / Figma 导出。
-- 颜色使用者页面只展示六组全局色带、具体基色值与变量名，以及用 ConfigProvider 修改六组基色和实底白字 / 黑字的可运行示例。不添加用途映射、场景矩阵或高级参考；公共参数详情留在独立 API 参考，内部算法与迁移债务留在维护文档。
+- `guide/colors` 颜色页只展示六组全局色带、具体基色值与变量名，以及用 ConfigProvider 修改六组基色和实底前景（`on*Color`）的可运行示例，不添加用途映射、场景矩阵或高级参考。页面组合需要的颜色角色用法统一放在[界面设计指南](apps/docs/docs/guide/design-standards.mdx)，以公开变量和组件参数表达，不复制固定色板或派生算法；公共参数详情留在独立 API 参考，内部算法与迁移债务留在维护文档。
 
 ### 按改动范围同步
 
@@ -228,7 +230,7 @@ Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和�
 
 设计资源检查使用 `pnpm --filter @ifhover/leaf-ui exec node scripts/verify-design-resources.mjs` 与 `node --check design/figma/code.js`。`pnpm check:colors` 只检查，不写报告或自动接受登记。需要更新报告时，从 `packages/react/scripts/color-contract.mjs` 调用 `scanColorContract`、`evaluateColorContract` 和 `renderAuditReport`，使用已审查的登记并确认检查通过后写入 `COLOR-AUDIT.md`。不能把自动接受基线作为修复。
 
-固定白色实底前景可能使部分组合不满足 4.5:1。保留这一已确认产品契约，不自动改黑或改暗基色，也不关闭 axe 对比度检查来制造通过；报告具体失败组合和显式 `on*Color` 定制方式。静态扫描、算法测试和真实浏览器绘制分别验收，不能互相替代。
+静态扫描、算法测试和真实浏览器绘制分别验收，不能互相替代；实底前景的对比度报告要求见 [角色映射与选阶](#角色映射与选阶)。
 
 ## 迁移方式
 
