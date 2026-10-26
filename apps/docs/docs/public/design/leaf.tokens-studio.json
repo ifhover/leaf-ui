@@ -891,7 +891,7 @@
       },
       "density-form-gap": {
         "type": "dimension",
-        "value": "24px"
+        "value": "16px"
       },
       "density-label-gap": {
         "type": "dimension",
@@ -939,7 +939,7 @@
       },
       "density-form-gap": {
         "type": "dimension",
-        "value": "16px"
+        "value": "12px"
       },
       "density-label-gap": {
         "type": "dimension",
