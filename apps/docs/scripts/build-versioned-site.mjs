@@ -136,6 +136,19 @@ async function cleanSnapshots(staging, buildError) {
   }
 }
 
+async function adaptSnapshotAiGuide(source, target) {
+  for (const extension of ['md', 'mdx']) {
+    try {
+      await readFile(path.join(path.dirname(target), `design-standards.${extension}`));
+      return source;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+  // Old releases keep their own guides; only unlink the unavailable infrastructure reference.
+  return source.replace(/\[([^\]\r\n]+)\]\(\/(?:en\/)?guide\/design-standards\)/g, '$1');
+}
+
 export async function installPlatform(snapshot) {
   const docs = path.join(snapshot, 'apps/docs');
   const { name } = JSON.parse(
@@ -161,7 +174,11 @@ export async function installPlatform(snapshot) {
     ) {
       // Infrastructure overlays must use the package present in this published snapshot.
       const source = await readFile(path.join(repository, file), 'utf8');
-      await writeFile(target, source.replaceAll(currentPackage, name));
+      const localized = source.replaceAll(currentPackage, name);
+      await writeFile(
+        target,
+        file.endsWith('/guide/ai.md') ? await adaptSnapshotAiGuide(localized, target) : localized,
+      );
     } else {
       await cp(path.join(repository, file), target);
     }

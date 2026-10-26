@@ -1107,3 +1107,79 @@ test('historical platform overlays resolve components and installation instructi
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('AI infrastructure links use only design guides available in each snapshot locale', async (t) => {
+  const repository = path.resolve(import.meta.dirname, '../../..');
+  for (const scenario of [
+    { name: 'old bilingual snapshot without design guides', guides: {} },
+    { name: 'snapshot with both MDX guides', guides: { '': 'mdx', 'en/': 'mdx' } },
+    { name: 'snapshot with both Markdown guides', guides: { '': 'md', 'en/': 'md' } },
+    { name: 'snapshot with only the Chinese guide', guides: { '': 'mdx' } },
+    { name: 'snapshot with only the English guide', guides: { 'en/': 'md' } },
+    { name: 'Chinese-only snapshot', guides: {}, english: false },
+  ]) {
+    await t.test(scenario.name, async () => {
+      const snapshot = await mkdtemp(path.join(tmpdir(), 'leaf-ui-guide-overlay-test-'));
+      try {
+        const docs = path.join(snapshot, 'apps/docs');
+        await mkdir(path.join(snapshot, 'packages/react'), { recursive: true });
+        await mkdir(path.join(docs, 'theme'), { recursive: true });
+        await writeFile(
+          path.join(snapshot, 'packages/react/package.json'),
+          JSON.stringify({ name: '@sudden3/leaf-ui', version: '0.3.0' }),
+        );
+        await writeFile(path.join(docs, 'rspress.config.ts'), 'export default {};');
+        await writeFile(
+          path.join(docs, 'theme/index.tsx'),
+          'export function Layout() { return null; }',
+        );
+        if (scenario.english !== false) {
+          await mkdir(path.join(docs, 'docs/en'), { recursive: true });
+          await writeFile(path.join(docs, 'docs/en/index.mdx'), '# Leaf UI');
+        }
+        for (const [locale, extension] of Object.entries(scenario.guides)) {
+          const guide = path.join(docs, `docs/${locale}guide/design-standards.${extension}`);
+          await mkdir(path.dirname(guide), { recursive: true });
+          await writeFile(guide, `# Original ${locale || 'Chinese'} release guide\n`);
+        }
+        await installPlatform(snapshot);
+        for (const [locale, label] of [
+          ['', '界面设计与组合'],
+          ['en/', 'Interface design and composition'],
+        ]) {
+          const relative = `apps/docs/docs/${locale}guide/ai.md`;
+          const target = path.join(snapshot, relative);
+          if (locale && scenario.english === false) {
+            await assert.rejects(readFile(target), { code: 'ENOENT' });
+            continue;
+          }
+          const source = (await readFile(path.join(repository, relative), 'utf8')).replaceAll(
+            '@ifhover/leaf-ui',
+            '@sudden3/leaf-ui',
+          );
+          const link = `[${label}](/${locale}guide/design-standards)`;
+          assert.ok(source.includes(link));
+          const extension = scenario.guides[locale];
+          assert.equal(
+            await readFile(target, 'utf8'),
+            extension ? source : source.replaceAll(link, label),
+          );
+          for (const candidate of ['md', 'mdx']) {
+            const guide = path.join(docs, `docs/${locale}guide/design-standards.${candidate}`);
+            if (candidate === extension) {
+              assert.equal(
+                await readFile(guide, 'utf8'),
+                `# Original ${locale || 'Chinese'} release guide\n`,
+              );
+            } else await assert.rejects(readFile(guide), { code: 'ENOENT' });
+          }
+        }
+        assert.ok(
+          !(await readFile(path.join(docs, 'rspress.config.ts'), 'utf8')).includes('deadLinks'),
+        );
+      } finally {
+        await rm(snapshot, { recursive: true, force: true });
+      }
+    });
+  }
+});
