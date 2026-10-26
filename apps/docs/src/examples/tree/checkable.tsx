@@ -1,7 +1,7 @@
 import { Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-const treeData: readonly TreeNode[] = [
+const treeData: TreeNode[] = [
   {
     key: 'design',
     title: '设计资源',
@@ -22,21 +22,28 @@ const treeData: readonly TreeNode[] = [
 ];
 
 export function TreeCheckable() {
-  const [checked, setChecked] = useState<readonly string[]>(['components']);
+  const [checked, setChecked] = useState<string[]>(['components']);
+  const [halfChecked, setHalfChecked] = useState<readonly string[]>(['design']);
   return (
     <Space direction="vertical" align="stretch">
       <Tree
+        aria-label="设计资源"
         data={treeData}
         checkable
         selectable={false}
         defaultExpandAll
-        showLine
         checkedKeys={checked}
-        onCheck={setChecked}
+        onCheck={(keys, info) => {
+          setChecked(keys);
+          setHalfChecked(info.halfCheckedKeys);
+        }}
       />
-      <output>
-        <Text tone="muted">勾选节点: {checked.join(', ') || '暂无'}</Text>
-      </output>
+      <Text role="status" tone="muted">
+        勾选节点：{checked.join(', ') || '暂无'}
+      </Text>
+      <Text role="status" tone="muted">
+        半选节点：{halfChecked.join(', ') || '暂无'}
+      </Text>
     </Space>
   );
 }

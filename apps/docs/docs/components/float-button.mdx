@@ -1,72 +1,98 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { FloatButtonBasic } from '../../src/examples/float-button/basic';
 import { FloatButtonActions } from '../../src/examples/float-button/actions';
+import { FloatButtonControlled } from '../../src/examples/float-button/controlled';
+
+export const leafDoc = { component: 'FloatButton', primaryApi: 'FloatButtonProps' };
 
 # FloatButton 悬浮按钮
 
-提供随时可用的快捷操作。
+提供随时可用的快捷操作。属于正文流程的操作使用普通 [Button](/components/button)。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<FloatButtonBasic />} fileName="basic.tsx">
+默认固定在视口右下角。此例用定位包含块限定预览范围，用于页面时可移除该容器。仅展示图标的按钮需提供 `aria-label`，`tooltip` 不能替代它。
+
+<ComponentExample exampleId="basic" preview={<FloatButtonBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/float-button/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 快捷操作组
+{/* leaf:section examples */}
 
-<ComponentExample title="快捷操作组" preview={<FloatButtonActions />} fileName="actions.tsx">
+## 示例
+
+### 快捷操作组
+
+设置 `fixed={false}` 后，操作组参与普通文档流。选择操作后会收起展开组，点击组外或按 Escape 也会收起。
+
+<ComponentExample exampleId="actions" preview={<FloatButtonActions />} fileName="actions.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/float-button/actions.tsx"
 ```
 
 </ComponentExample>
 
-## FloatButton API
+### 受控展开
+
+<a id="进阶用法"></a>
+
+外部按钮可以通过 `open` 展开或收起操作组。同时在 `onOpenChange` 中同步状态，响应组内操作、组外点击和 Escape 的关闭请求。
+
+<ComponentExample exampleId="controlled" preview={<FloatButtonControlled />} fileName="controlled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/float-button/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### FloatButton API
+
+悬浮操作的提示内容、定位与按钮状态配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 设置 variant。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `danger` | `boolean` | `false` | 设置 danger。 |
-| `loading` | `boolean` | `false` | 展示加载状态。 |
-| `fullWidth` | `boolean` | `false` | 设置 fullWidth。 |
-| `startIcon` | `ReactNode` | — | 设置 startIcon。 |
-| `endIcon` | `ReactNode` | — | 设置 endIcon。 |
 | `tooltip` | `ReactNode` | — | 悬浮或聚焦时展示的提示内容。 |
 | `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'solid'` | 按钮外观，默认使用实底。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `danger` | `boolean` | `false` | 使用危险语义颜色，不改变按钮行为。 |
+| `loading` | `boolean` | `false` | 展示加载状态。 |
+| `startIcon` | `ReactNode` | — | 按钮文字前的图标；仅图标按钮还需 aria-label。 |
+| `endIcon` | `ReactNode` | — | 按钮文字后的图标。 |
+| `fullWidth` | `boolean` | `false` | 让按钮填满所在容器的宽度。 |
 
-## FloatButtonAction
+### FloatButtonGroup API
+
+设置 `expandable={false}` 后，操作始终显示且不提供展开按钮。操作的字符串 `label` 同时作为图标按钮的可访问名称。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | 必填 | 按数组顺序排列的操作；点击后调用对应 onClick，可展开的组随后关闭。 |
+| `open` | `boolean` | — | 受控的展开状态，配合 onOpenChange 更新。 |
+| `defaultOpen` | `boolean` | `false` | 面板初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 触发器、组外点击、Escape 或操作项请求改变展开状态时调用。 |
+| `expandable` | `boolean` | `true` | 提供展开操作组的按钮。 |
+| `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
+| `icon` | `ReactNode` | — | 图标内容。 |
+| `className` | `string` | — | 添加到组件外层的 CSS 类名。 |
+
+### FloatButtonAction
+
+悬浮操作组中的单个操作数据。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 稳定且唯一的标识。 |
-| `label` | `ReactNode` | 必填 | 展示文字或内容。 |
+| `label` | `ReactNode` | 必填 | 操作提示；字符串也作为按钮的可访问名称，其他内容使用 key 作为名称。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `onClick` | `() => void` | — | 点击时调用。 |
 | `disabled` | `boolean` | — | 禁用交互。 |
-
-## FloatButtonGroup API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | 必填 | 条目操作区。 |
-| `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
-| `expandable` | `boolean` | `true` | 提供展开操作组的按钮。 |
-| `icon` | `ReactNode` | — | 图标内容。 |
-| `open` | `boolean` | — | 控制面板是否展开。 |
-| `defaultOpen` | `boolean` | `false` | 面板初始展开状态。 |
-| `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起时调用。 |
-| `className` | `string` | — | 设置 className。 |
-
-## 类型与交互
-
-组装可复用配置时，可导入对应的属性和数据类型。
-
-```ts
-import type { FloatButtonProps, FloatButtonAction, FloatButtonGroupProps } from '@ifhover/leaf-ui';
-```
-
-仅展示图标的按钮需提供 aria-label；展开组支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。

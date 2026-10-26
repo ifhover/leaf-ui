@@ -1,72 +1,98 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { FloatButtonBasic } from '../../../src/examples/float-button/basic';
-import { FloatButtonActions } from '../../../src/examples/float-button/actions';
+import { FloatButtonBasic } from '../../../src/examples/en/float-button/basic';
+import { FloatButtonActions } from '../../../src/examples/en/float-button/actions';
+import { FloatButtonControlled } from '../../../src/examples/en/float-button/controlled';
+
+export const leafDoc = { component: 'FloatButton', primaryApi: 'FloatButtonProps' };
 
 # FloatButton
 
-Keep quick actions within reach.
+Keep quick actions within reach. Use a regular [Button](/en/components/button) for actions that belong in the page content.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<FloatButtonBasic english />} fileName="basic.tsx">
+The button is fixed at the viewport's bottom-end corner by default. A positioned containing block bounds this preview; remove that wrapper for page-level placement. Icon-only buttons need an `aria-label`; `tooltip` does not replace it.
 
-```tsx lineNumbers file="../../../src/examples/float-button/basic.tsx"
+<ComponentExample exampleId="basic" preview={<FloatButtonBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/float-button/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Action group
+{/* leaf:section examples */}
 
-<ComponentExample title="Action group" preview={<FloatButtonActions english />} fileName="actions.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/float-button/actions.tsx"
+### Action group
+
+`fixed={false}` keeps the group in the normal document flow. Selecting an action closes the expandable group; clicking outside or pressing Escape also closes it.
+
+<ComponentExample exampleId="actions" preview={<FloatButtonActions />} fileName="actions.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/float-button/actions.tsx"
 ```
 
 </ComponentExample>
 
-## FloatButton API
+### Controlled expansion
+
+<a id="advanced-usage"></a>
+
+External buttons can expand or collapse the group through `open`. Update the state in `onOpenChange` as well to handle action selection, outside clicks and Escape dismissal.
+
+<ComponentExample exampleId="controlled" preview={<FloatButtonControlled />} fileName="controlled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/float-button/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### FloatButton API
+
+Configuration for floating-action tooltips, positioning and button state.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Configure variant. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `danger` | `boolean` | `false` | Configure danger. |
-| `loading` | `boolean` | `false` | Show a loading state. |
-| `fullWidth` | `boolean` | `false` | Configure full width. |
-| `startIcon` | `ReactNode` | — | Configure start icon. |
-| `endIcon` | `ReactNode` | — | Configure end icon. |
 | `tooltip` | `ReactNode` | — | Tooltip content shown on hover or focus. |
 | `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'solid'` | Button appearance; solid by default. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `danger` | `boolean` | `false` | Use destructive-action colors without changing button behavior. |
+| `loading` | `boolean` | `false` | Show a loading state. |
+| `startIcon` | `ReactNode` | — | Icon before the label; icon-only buttons also need aria-label. |
+| `endIcon` | `ReactNode` | — | Icon after the label. |
+| `fullWidth` | `boolean` | `false` | Stretch the button to its container width. |
 
-## FloatButtonAction
+### FloatButtonGroup API
+
+Set `expandable={false}` to keep the actions visible without an expansion trigger. String action labels also provide accessible names for the icon buttons.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | Required | Actions in array order; activating one calls its onClick, then closes an expandable group. |
+| `open` | `boolean` | — | Controlled expanded state; update with onOpenChange. |
+| `defaultOpen` | `boolean` | `false` | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the trigger, outside pointer, Escape or an action requests an expanded-state change. |
+| `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
+| `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
+| `icon` | `ReactNode` | — | Icon content. |
+| `className` | `string` | — | CSS class added to the component root. |
+
+### FloatButtonAction
+
+Data for an individual action in a floating action group.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Stable, unique identifier. |
-| `label` | `ReactNode` | Required | Visible label or content. |
+| `label` | `ReactNode` | Required | Action tooltip; strings also label the button accessibly, while other content uses key as the accessible name. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `onClick` | `() => void` | — | Called on click. |
 | `disabled` | `boolean` | — | Disable interaction. |
-
-## FloatButtonGroup API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `actions` | `readonly `[`FloatButtonAction`](#floatbuttonaction)`[]` | Required | Actions for the item. |
-| `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
-| `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
-| `icon` | `ReactNode` | — | Icon content. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | `false` | Initial open state. |
-| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
-| `className` | `string` | — | Configure class name. |
-
-## Types and interaction
-
-Import the props and data types when creating reusable configuration.
-
-```ts
-import type { FloatButtonProps, FloatButtonAction, FloatButtonGroupProps } from '@ifhover/leaf-ui';
-```
-
-Provide an aria-label for icon-only buttons. The expanded group is keyboard operable and follows ConfigProvider themes and reduced motion.

@@ -1,13 +1,30 @@
-import { Button, Flex, Tooltip } from '@ifhover/leaf-ui';
+import { Button, Flex, Grid, Text, Tooltip } from '@ifhover/leaf-ui';
+
+const states = [
+  { disabled: false, label: '默认' },
+  { disabled: true, label: '禁用提示' },
+];
+
 export function TooltipDisabled() {
   return (
-    <Flex gap="md" align="center" wrap>
-      <Tooltip content="已禁用的提示" disabled>
-        <Button variant="outline">禁用提示</Button>
-      </Tooltip>
-      <Tooltip content="可用的提示">
-        <Button variant="outline">可用提示</Button>
-      </Tooltip>
+    <Flex direction="column" gap="md">
+      {states.map(({ disabled, label }) => (
+        <Grid
+          key={label}
+          role="group"
+          aria-label={label}
+          columns={{ xs: 1, sm: 2 }}
+          gap="8px"
+          align="center"
+        >
+          <Text tone="muted">{label}</Text>
+          <Flex align="start">
+            <Tooltip content="保存当前项目的修改" disabled={disabled}>
+              <Button variant="outline">保存</Button>
+            </Tooltip>
+          </Flex>
+        </Grid>
+      ))}
     </Flex>
   );
 }

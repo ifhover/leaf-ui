@@ -1,60 +1,78 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { LayoutBasic } from '../../src/examples/layout/basic';
+import { LayoutManual } from '../../src/examples/layout/manual';
 import { LayoutResponsive } from '../../src/examples/layout/advanced';
+
+export const leafDoc = { component: 'Layout', primaryApi: 'LayoutProps' };
 
 # Layout 布局
 
-组织页面的头部、侧栏、内容与底部。
+组织页面的头部、侧栏、内容与底部。只需排列控件时，使用 [Flex](/components/flex)、[Space](/components/space) 或 [Grid](/components/grid)。
 
-## 基本用法
+{/* leaf:section basic */}
 
-用 Header、Sider、Content 和 Footer 组合页面，横向嵌套区域负责排列侧栏与内容。
+## 基础用法
 
-<ComponentExample title="基本用法" preview={<LayoutBasic />} fileName="basic.tsx" width="100%">
+嵌套横向的 `Layout`，将侧栏与正文并排放置。
+
+<ComponentExample exampleId="basic" preview={<LayoutBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/layout/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 响应式侧栏
+{/* leaf:section examples */}
 
-侧栏支持手动折叠，在窄屏上自动收起；菜单同步切换为图标导航。
+## 示例
 
-<ComponentExample title="响应式侧栏" preview={<LayoutResponsive />} fileName="advanced.tsx" width="100%">
+### 折叠侧栏
+
+使用 `collapsed` 与 `onCollapse` 控制侧栏，并将相同状态传给菜单。
+
+<ComponentExample exampleId="manual" preview={<LayoutManual />} fileName="manual.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/layout/manual.tsx"
+```
+
+</ComponentExample>
+
+### 响应式侧栏
+
+`breakpoint` 监听视口宽度，而不是示例容器宽度。进入窄屏后，侧栏保持收起并隐藏手动折叠按钮，不修改受控值，也不触发 `onCollapse`。
+
+示例按默认 `sm` 断点同步菜单状态；修改主题的该断点时，也需同步调整侧栏阈值。
+
+<ComponentExample exampleId="advanced" preview={<LayoutResponsive />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/layout/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+{/* leaf:section api */}
 
-用 Layout.Header、Layout.Sider、Layout.Content、Layout.Footer 组合页面；横向区域使用 direction="horizontal"。侧栏可受控折叠，也可通过 breakpoint 自动收起。
+## API
 
-## 类型
+### LayoutProps API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { LayoutProps, LayoutSiderProps } from '@ifhover/leaf-ui';
-```
-
-## LayoutProps API
+布局容器中子元素的排列方向。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `direction` | `'horizontal' \| 'vertical'` | `'vertical'` | 子元素的排列方向。 |
 
-## LayoutSiderProps API
+### LayoutSiderProps API
+
+视口重新变宽后，侧栏恢复手动或受控的折叠状态。`trigger` 仅替换内置折叠按钮的内容，点击处理和可访问名称仍由组件提供。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `collapsed` | `boolean` | — | 受控的手动折叠状态；断点仍可强制折叠。 |
+| `defaultCollapsed` | `boolean` | `false` | 非受控模式的初始手动折叠状态。 |
+| `onCollapse` | `(collapsed: boolean) => void` | — | 手动切换时返回下一状态；响应断点不触发此回调。 |
 | `width` | `number \| string` | `220` | 宽度，数字按像素计算 |
 | `collapsedWidth` | `number \| string` | `64` | 收起后的宽度 |
-| `collapsed` | `boolean` | — | 受控收起状态 |
-| `defaultCollapsed` | `boolean` | `false` | 初始收起状态 |
 | `collapsible` | `boolean` | `false` | 显示收起操作 |
-| `breakpoint` | `number` | — | 自动收起的屏幕宽度阈值 |
-| `onCollapse` | `(collapsed: boolean) => void` | — | 收起状态变化 |
 | `trigger` | `ReactNode` | — | 自定义触发内容 |
+| `breakpoint` | `number` | — | 视口宽度不大于此像素值时折叠并隐藏内置触发器，不修改手动状态。 |

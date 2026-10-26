@@ -1,4 +1,4 @@
-import { Flex, Image } from '@ifhover/leaf-ui';
+import { Image } from '@ifhover/leaf-ui';
 
 const landscape = (background: string) =>
   `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
@@ -6,16 +6,5 @@ const landscape = (background: string) =>
   )}`;
 
 export function ImageBasic() {
-  return (
-    <Flex gap="md" align="center" wrap justify="center">
-      <Image src={landscape('#b9d3bf')} width={240} height={160} alt="绿色山谷" />
-      <Image
-        src="data:image/png;base64,invalid"
-        width={140}
-        height={160}
-        alt="加载失败示例"
-        fallback={<span>暂无图片</span>}
-      />
-    </Flex>
-  );
+  return <Image src={landscape('#b9d3bf')} width="100%" height={240} alt="绿色山谷" />;
 }

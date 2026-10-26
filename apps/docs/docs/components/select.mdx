@@ -1,267 +1,271 @@
-import { SingleLine } from '../../src/examples/select/single-line';
-import { ControlledPopup } from '../../src/examples/select/controlled-popup';
-import { CreateOption } from '../../src/examples/select/create-option';
-import { CustomTags } from '../../src/examples/select/custom-tags';
-import { GroupedOptions } from '../../src/examples/select/grouped-options';
-import { LabelRender } from '../../src/examples/select/label-render';
-import { PopupAction } from '../../src/examples/select/popup-action';
-import { ResponsiveTags } from '../../src/examples/select/responsive-tags';
-import { VirtualList } from '../../src/examples/select/virtual-list';
-import { SelectPopup } from '../../src/examples/select/popup';
-import { SelectSearch } from '../../src/examples/select/search';
 import { ComponentExample } from '../../src/components/component-example';
-import { SelectBasic, SelectControlled, ControlSizes } from '../../src/components/form-examples';
+import { SelectBasic } from '../../src/examples/select/basic';
+import { SelectControlled } from '../../src/examples/select/controlled';
+import { ControlSizes } from '../../src/examples/guide/control-sizes';
+import { SelectSearch } from '../../src/examples/select/search';
+import { SelectMultiple } from '../../src/examples/select/multiple';
+import { SelectStates } from '../../src/examples/select/states';
+import { GroupedOptions } from '../../src/examples/select/grouped-options';
+import { SelectLimits } from '../../src/examples/select/limits';
+import { SingleLine } from '../../src/examples/select/single-line';
+import { CreateOption } from '../../src/examples/select/create-option';
+import { VirtualList } from '../../src/examples/select/virtual-list';
+import { SelectRichOptions } from '../../src/examples/select/rich-options';
+import { CustomTags } from '../../src/examples/select/custom-tags';
+import { SelectPopup } from '../../src/examples/select/popup';
+import { PopupAction } from '../../src/examples/select/popup-action';
+
+export const leafDoc = { component: 'Select', primaryApi: 'SelectProps' };
 
 # Select 选择器
 
-用于从下拉列表中选择一项或多项。展开时只加深现有的中性边框，不添加主题色外圈；已选中选项使用灰色背景、正文色和勾选标记。
+从平铺选项中选择一项或多项；层级选项使用 [TreeSelect](tree-select)。
 
-## 基础选择
+{/* leaf:section basic */}
 
-通过 options 传入选项；placeholder 在空值时提示选择，单个选项可以禁用。
+## 基础用法
 
-<ComponentExample title="基础选择" preview={<SelectBasic />} fileName="basic.tsx" width={360}>
+<a id="基础选择"></a>
+
+选项的 `value` 使用唯一的非空字符串。为控件提供关联标签或 `aria-label`。
+
+<ComponentExample exampleId="basic" preview={<SelectBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 受控与校验
+{/* leaf:section examples */}
 
-value / onChange 管理选择结果，回调直接返回字符串值和选项对象。`allowClear` 显示清除按钮；status="error" 同时提供错误外观与 aria-invalid。
+## 示例
 
-<ComponentExample title="受控与校验" preview={<SelectControlled />} fileName="controlled.tsx" width={360}>
+### 受控与校验
+
+<a id="常用能力"></a>
+
+通过 `value` 和 `onChange` 管理选择结果。单选清除时回调返回 `""` 和 `undefined`；受控字段响应表单重置时，也需要重置应用状态。
+
+<ComponentExample exampleId="controlled" preview={<SelectControlled />} fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## 尺寸对齐
+### 控件尺寸
 
-<ComponentExample title="尺寸对齐" preview={<ControlSizes />} fileName="control-sizes.tsx">
+通过 `size` 设置控件尺寸。
+
+<ComponentExample exampleId="control-sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/guide/control-sizes.tsx"
 ```
 
 </ComponentExample>
 
+### 搜索
 
-## 搜索与多选
+`showSearch` 开启本地筛选。`label` 是 React 节点时，使用 `searchLabel` 提供搜索文字；远程筛选可设置 `filterOption={false}`，再通过 `onSearch` 更新选项。
 
-showSearch 只筛选已有选项；multiple 使用数组值并在选择后保持展开，可移除标签。
-
-<ComponentExample title="搜索与多选" preview={<SelectSearch />} fileName="search.tsx" width={360}>
+<ComponentExample exampleId="search" preview={<SelectSearch />} fileName="search.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/search.tsx"
 ```
 
 </ComponentExample>
 
-## 浮层宽度与内容
+### 多选
 
-浮层默认与选择器等宽。设置 `popupWidth="auto"` 按内容定宽，`popupWidth={300}` 固定为 300px；使用 `popupMaxWidth` 单独限制最大宽度，默认不设置最大宽度。浮层仍会在视口边缘避让。
+多选使用字符串数组，清除返回 `[]`。设置 `name` 后，原生表单在同一字段名下提交多个值，使用 `formData.getAll(name)` 读取。搜索文字为空时，Backspace 可移除最后一个未禁用标签。
 
-<ComponentExample title="浮层宽度与内容" preview={<SelectPopup />} fileName="popup.tsx" width={360}>
+<ComponentExample exampleId="multiple" preview={<SelectMultiple />} fileName="multiple.tsx">
 
-```tsx lineNumbers file="../../src/examples/select/popup.tsx"
+```tsx lineNumbers file="../../src/examples/select/multiple.tsx"
 ```
 
 </ComponentExample>
 
-## 分组选项
+### 状态
 
-`options` 支持分组：带有 `options` 的项渲染为分组标题，组内选项照常参与搜索和选择。
+`loading` 用于选项请求中的状态；没有可选项时，可以通过 `notFoundContent` 提供提示。
 
-<ComponentExample title="按专业分组" preview={<GroupedOptions />} fileName="grouped-options.tsx" width={360}>
+<ComponentExample exampleId="states" preview={<SelectStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/states.tsx"
+```
+
+</ComponentExample>
+
+### 分组选项
+
+分组标题用于组织选项，不能被选择。组内选项照常参与搜索。
+
+<ComponentExample exampleId="grouped-options" preview={<GroupedOptions />} fileName="grouped-options.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/grouped-options.tsx"
 ```
 
 </ComponentExample>
 
-## 创建选项
+### 限制选择数量
 
-设置 `allowCreate` 后，搜索没有匹配项时可以把输入内容作为新选项加入，通常与 `multiple` 搭配。
+`maxCount` 限制可选数量，达到上限后仍可取消已选项。
 
-<ComponentExample title="输入即创建" preview={<CreateOption />} fileName="create-option.tsx" width={360}>
+<ComponentExample exampleId="limits" preview={<SelectLimits />} fileName="limits.tsx">
 
-```tsx lineNumbers file="../../src/examples/select/create-option.tsx"
+```tsx lineNumbers file="../../src/examples/select/limits.tsx"
 ```
 
 </ComponentExample>
 
-## 虚拟滚动
+### 标签换行
 
-选项达到数百条时设置 `virtual`，浮层只渲染可视区域内的选项；配合 `showSearch` 可以在大列表里快速筛选。
+默认允许标签换行。设置 `tagWrap={false}` 后，放不下的标签合并为 `+N`；`maxTagCount` 只限制显示数量，不限制实际选择。`maxTagCount="responsive"` 同样按可用宽度单行折叠。
 
-<ComponentExample title="5000 个选项" preview={<VirtualList />} fileName="virtual-list.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/select/virtual-list.tsx"
-```
-
-</ComponentExample>
-
-## 响应式标签
-
-`maxTagCount="responsive"` 会根据可用宽度自动折叠多余标签，合并为 `+N`。
-
-<ComponentExample title="自动折叠" preview={<ResponsiveTags />} fileName="responsive-tags.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/select/responsive-tags.tsx"
-```
-
-</ComponentExample>
-
-## 自定义标签
-
-`tagRender` 接收选项和移除函数，返回自定义标签节点；示例给每个标签加了关闭按钮。
-
-<ComponentExample title="自定义标签" preview={<CustomTags />} fileName="custom-tags.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/select/custom-tags.tsx"
-```
-
-</ComponentExample>
-
-## 选中内容渲染
-
-`labelRender` 自定义选中值的展示，示例把文字加粗。
-
-<ComponentExample title="加粗选中值" preview={<LabelRender />} fileName="label-render.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/select/label-render.tsx"
-```
-
-</ComponentExample>
-
-## 受控浮层
-
-`open` 与 `onOpenChange` 把浮层的展开状态交给外部控制，示例用按钮显式开关。
-
-<ComponentExample title="外部按钮控制" preview={<ControlledPopup />} fileName="controlled-popup.tsx">
-
-```tsx lineNumbers file="../../src/examples/select/controlled-popup.tsx"
-```
-
-</ComponentExample>
-
-## 附加操作
-
-`popupRender` 可以包装或追加浮层内容，示例在选项下方加了一个“完成”按钮。
-
-<ComponentExample title="浮层内操作" preview={<PopupAction />} fileName="popup-action.tsx" width={360}>
-
-```tsx lineNumbers file="../../src/examples/select/popup-action.tsx"
-```
-
-</ComponentExample>
-
-## 单行多选
-
-设置 `tagWrap={false}` 后，已选项始终展示在一行内。长文字自动省略，放不下的选项合并为 `+N`；空间很窄时只显示数量，打开浮层可查看和修改选择。`maxTagCount` 可进一步限制标签数量，`maxTagCount="responsive"` 也会启用单行自动折叠。
-
-<ComponentExample title="单行多选" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+<ComponentExample exampleId="single-line" preview={<SingleLine />} fileName="single-line.tsx">
 
 ```tsx lineNumbers file="../../src/examples/select/single-line.tsx"
 ```
 
 </ComponentExample>
 
-## Select API
+### 创建选项
+
+<a id="进阶用法"></a>
+
+设置 `allowCreate` 后，输入内容与已有选项的值或搜索文字不完全相同时，会出现创建候选；选择候选才创建选项。需要在应用中保留新选项时，通过 `onCreate` 更新 `options`。
+
+<ComponentExample exampleId="create-option" preview={<CreateOption />} fileName="create-option.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/create-option.tsx"
+```
+
+</ComponentExample>
+
+### 大列表
+
+选项超过 100 个时自动启用虚拟滚动，无需额外设置 `virtual`。需要关闭时传入 `virtual={false}`。
+
+<ComponentExample exampleId="virtual-list" preview={<VirtualList />} fileName="virtual-list.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/virtual-list.tsx"
+```
+
+</ComponentExample>
+
+### 自定义选项内容
+
+使用 `optionRender` 补充选项内容，选中值仍使用 `label`。
+
+<ComponentExample exampleId="rich-options" preview={<SelectRichOptions />} fileName="rich-options.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/rich-options.tsx"
+```
+
+</ComponentExample>
+
+### 自定义标签
+
+自定义标签的关闭操作应调用 `tagRender` 提供的 `remove`，由组件处理移除。
+
+<ComponentExample exampleId="custom-tags" preview={<CustomTags />} fileName="custom-tags.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/custom-tags.tsx"
+```
+
+</ComponentExample>
+
+### 浮层宽度
+
+浮层默认跟随控件宽度；`popupWidth="auto"` 按内容定宽，数字指定固定像素宽度。需要最大宽度时设置 `popupMaxWidth`，各种模式均受可用视口宽度限制。
+
+<ComponentExample exampleId="popup" preview={<SelectPopup />} fileName="popup.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/popup.tsx"
+```
+
+</ComponentExample>
+
+### 控制浮层与附加操作
+
+`open` 与 `onOpenChange` 控制展开状态。使用 `popupRender` 追加操作时，保留传入的 `content`，不要替换选项列表。
+
+<ComponentExample exampleId="popup-action" preview={<PopupAction />} fileName="popup-action.tsx">
+
+```tsx lineNumbers file="../../src/examples/select/popup-action.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Select API
+
+Select 的组件参数。
+
+`name`、`required`、`form` 与非受控重置参与[表单](form)接入；其余原生 input 属性及 `aria-*` 传递给输入框，`className` 与 `style` 作用于外层容器。共享浮层参数见 [PopupOptions](../api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | 必填 | 选项列表 |
+| `value` | `string \| readonly string[]` | — | 受控值；省略时使用内部非受控值。 |
+| `defaultValue` | `string \| readonly string[]` | `multiple ? [] : ''` | 非受控初始值；单选默认为空字符串，多选默认为空数组，表单重置时恢复。 |
+| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | 单选返回值和选项，清除时为 '' 和 undefined；多选返回值数组和选项数组，清除时均为空数组。 |
+| `multiple` | `false \| true` | `false` | 多选时值为数组，默认 [] |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
+| `status` | `'error' \| 'warning'` | — | 校验状态 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `allowClear` | `boolean` | `false` | 展示清除按钮 |
+| `showSearch` | `boolean` | `false` | 允许输入搜索选项 |
+| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | 自定义筛选，false 用于外部筛选 |
+| `onSearch` | `(query: string) => void` | — | 搜索文字变化 |
+| `loading` | `boolean` | `false` | 加载提示 |
+| `notFoundContent` | `ReactNode` | — | 没有选项时的内容 |
+| `maxCount` | `number` | — | 多选数量上限，已选项可继续取消 |
+| `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
+| `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
+| `allowCreate` | `boolean` | `false` | 允许选择新建项；查询文字与已有 value 或搜索文字完全相同时不出现新建项，同时启用搜索。 |
+| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | 选择新建项后返回该选项；组件内部保留它，需要持久保存时由应用更新 options。 |
+| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选中值的展示。 |
+| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选项内容 |
+| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | 自定义选中标签；通过 remove 请求移除。 |
+| `open` | `boolean` | — | 控制面板是否展开。 |
+| `defaultOpen` | `boolean` | `false` | 面板初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开或收起选项面板 |
+| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
+| `virtual` | `boolean` | 选项超过 100 时启用 | 仅渲染可见项目 |
+| `listHeight` | `number` | `248` | 列表高度 |
+| `optionHeight` | `number` | 由主题和密度计算 | 虚拟列表的预估行高；默认由主题和密度计算，实际行会被测量。 |
+| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
+| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | 浮层滚动事件，可用来加载下一页。 |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
 | `popupClassName` | `string` | — | 浮层样式 |
 | `popupStyle` | `CSSProperties` | — | 浮层样式 |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | 必填 | 选项列表 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 选择器尺寸 |
-| `status` | `'error' \| 'warning'` | — | 校验状态 |
-| `allowClear` | `boolean` | `false` | 展示清除按钮 |
-| `showSearch` | `boolean` | `false` | 允许输入搜索选项 |
-| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | 自定义筛选，false 用于外部筛选 |
-| `onSearch` | `(query: string) => void` | — | 搜索文字变化 |
-| `onOpenChange` | `(open: boolean) => void` | — | 展开或收起选项面板 |
-| `open` | `boolean` | — | 控制面板是否展开。 |
-| `defaultOpen` | `boolean` | — | 面板初始展开状态。 |
-| `inputReadOnly` | `boolean` | — | 只禁止手动输入，仍可在面板中选择。 |
-| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选中值的展示。 |
-| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | 自定义选中标签；通过 remove 请求移除。 |
-| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | 浮层滚动事件，可用来加载下一页。 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
-| `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
-| `loading` | `boolean` | `false` | 加载提示 |
-| `notFoundContent` | `ReactNode` | — | 没有选项时的内容 |
-| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | 自定义选项内容 |
-| `maxCount` | `number` | — | 多选数量上限，已选项可继续取消 |
-| `maxTagCount` | `number \| 'responsive'` | — | 最多展示的标签数；responsive 根据可用宽度自动折叠。 |
-| `tagWrap` | `boolean` | `true` | 允许多选标签换行；false 单行显示并自动折叠溢出项。 |
-| `allowCreate` | `boolean` | `false` | 允许创建未匹配的选项 |
-| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | 新选项创建回调 |
-| `virtual` | `boolean` | 选项超过 100 时启用 | 仅渲染可见项目 |
-| `listHeight` | `number` | `248` | 列表高度 |
-| `optionHeight` | `number` | 当前控件高度 | 虚拟列表的预估行高；默认等于 Select 本体高度，实际行会被测量。 |
-| `multiple` | `false \| true` | `false` | 多选时值为数组，默认 [] |
-| `value` | `string \| readonly string[]` | `''` | 受控值；省略时使用内部非受控值。 |
-| `defaultValue` | `string \| readonly string[]` | `''` | 非受控模式的初始值；支持表单重置。 |
-| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | 返回值与选项；清除时返回空字符串和 `undefined` |
-| `disabled` | `boolean` | `false` | 禁用交互。 |
 | `name` | `string` | — | 原生 FormData 中的字段名。 |
 | `form` | `string` | — | 关联的原生表单 ID。 |
 | `required` | `boolean` | `false` | 要求整体值非空，复合控件只校验一次。 |
 | `ref` | `Ref<HTMLInputElement>` | — | 输入框引用 |
 
-|
-
-支持 name、required、form 和非受控表单 reset；其余原生 input 属性及 aria-* 透传至输入框。className 与 style 作用于外层容器。选项 value 应唯一，不要将空字符串用作业务选项值。
-
-## 类型
-
-[`SelectProps`](#select-api) 用于定义组件属性。单独组装选项列表时，可以使用 [`SelectOption`](#selectoption)：
-
-```ts
-import type { SelectProps, SelectOption, ControlSize, ControlStatus } from '@ifhover/leaf-ui';
-
-const options: SelectOption[] = [
-  { label: '设计团队', value: 'design' },
-  { label: '研发团队', value: 'engineering' },
-];
-```
-
 ### SelectOption
+
+通过 options 传入的选项；value 用于标识选项。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `value` | `string` | 必填 | 唯一选项值；不能使用空字符串。 |
 | `label` | `ReactNode` | 必填 | 选项内容，可以是文字或 React 节点。 |
 | `disabled` | `boolean` | `false` | 禁用该选项。 |
-| `searchLabel` | `string` | — | 复杂 label 的搜索纯文本；省略时使用可读文字或 value。 |
+| `searchLabel` | `string` | — | 搜索纯文本；省略时使用字符串或数字 label，其他内容使用 value。 |
 
-|
+### SelectOptionGroup API
 
-## 使用说明
-
-为选择器提供 label 或 aria-label。FormData 提交选项的字符串 value，清除后为空字符串；受控组件的表单重置需同步重置自己的状态。
-
-Enter、空格或方向键打开面板，↑ / ↓ 移动高亮并跳过禁用选项，Home / End 跳至首尾，Enter 或空格确认。Escape 收起，Tab 继续访问后续控件。点击外部或移走焦点会收起。
-
-浮层随页面滚动定位，并在视口边缘避让；长列表可滚动。选项之间没有额外空隙，默认行高与 Select 本体一致（舒适 34px、紧凑 30px）；文字超出可用宽度时自然换行并增高。切换选中项时，框内文字直接更新，不播放位移动画。支持单选、多选及搜索，适用于选项数量适中的场景。
-
-多选清除返回 `[]`；FormData 在同一个 name 下提交多个值，通过 `formData.getAll(name)` 读取。搜索文字为空时，Backspace 移除最后一个可用标签。离开控件会清空搜索文字，默认不创建选项；设置 allowCreate 可创建未匹配的选项。label 为 React 节点时，用 searchLabel 指定搜索文字。ref 与原生 input 属性作用于输入框。
-
-控件保持页面中的布局宽度，浮层默认与控件等宽（`popupWidth="trigger"`）。设置 `popupWidth="auto"` 后，浮层仅按选项内容定宽，也可以比控件窄；通过 `popupWidth={300}` 固定为 300px，或传入 CSS 长度。`popupMaxWidth` 默认未设置，可按需指定最大宽度；所有宽度模式仍受可用视口宽度限制，内容超出实际浮层宽度时换行。
-
-## 扩展类型
-
-```ts
-import type { SelectOptionGroup } from '@ifhover/leaf-ui';
-```
-
-## SelectOptionGroup API
+包含分组标题和选项列表的选项分组。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |

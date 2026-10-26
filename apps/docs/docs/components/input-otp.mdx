@@ -1,52 +1,96 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { InputOTPBasic } from '../../src/examples/input-otp/basic';
 import { InputOTPOptions } from '../../src/examples/input-otp/advanced';
+import { InputOTPSeparator } from '../../src/examples/input-otp/separator';
+import { InputOTPMask } from '../../src/examples/input-otp/mask';
+import { InputOTPDisabled } from '../../src/examples/input-otp/disabled';
+
+export const leafDoc = { component: 'InputOTP', primaryApi: 'InputOTPProps' };
 
 # InputOTP 验证码输入
 
 输入和粘贴验证码。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<InputOTPBasic />} fileName="basic.tsx" width={360}>
+## 基础用法
+
+默认输入 6 位数字，支持整串粘贴与 one-time-code 自动填充，不符合当前模式的字符会被过滤。`onComplete` 仅表示字符已填满，验证码有效性仍须由服务端验证。
+
+<ComponentExample exampleId="basic" preview={<InputOTPBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input-otp/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 字母数字、掩码与分隔符
+设置 `name` 可将验证码加入 FormData。非受控表单重置恢复 `defaultValue`；受控值由应用重置。
 
-<ComponentExample title="字母数字、掩码与分隔符" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
+{/* leaf:section examples */}
+
+## 示例
+
+### 字母与数字
+
+`mode="alphanumeric"` 接受 ASCII 字母与数字，并保留字母大小写。
+
+<ComponentExample exampleId="advanced" preview={<InputOTPOptions />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/input-otp/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 分隔符
 
-保留一个输入控件以支持粘贴和 one-time-code 自动填充。onComplete 表示字符完整；验证码有效性由服务端验证。
+回调索引从 0 开始，在对应字符后插入内容。索引为 2 时返回分隔符，可将验证码分为两组。
 
-## 类型
+<ComponentExample exampleId="separator" preview={<InputOTPSeparator />} width="fit-content" fileName="separator.tsx">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { InputOTPProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/input-otp/separator.tsx"
 ```
 
-## InputOTPProps API
+</ComponentExample>
+
+### 隐藏字符
+
+`mask` 只隐藏显示字符，不改变组件值和原生表单提交值；它不是密码输入框。
+
+<ComponentExample exampleId="mask" preview={<InputOTPMask />} width="fit-content" fileName="mask.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-otp/mask.tsx"
+```
+
+</ComponentExample>
+
+### 禁用状态
+
+设置 `disabled` 禁止编辑验证码。
+
+<ComponentExample exampleId="disabled" preview={<InputOTPDisabled />} width="fit-content" fileName="disabled.tsx">
+
+```tsx lineNumbers file="../../src/examples/input-otp/disabled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### InputOTPProps API
+
+验证码长度、输入字符、受控值与完成事件的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `length` | `number` | `6` | 验证码字符数量 |
-| `value` | `string` | — | 受控值 |
-| `defaultValue` | `string` | `''` | 初始值；非受控表单 reset 时恢复 |
-| `onChange` | `(value: string) => void` | — | 值变化回调 |
-| `onComplete` | `(value: string) => void` | — | 完整输入后触发 |
+| `length` | `number` | `6` | 验证码长度，取整后限制在 1–32。 |
+| `value` | `string` | — | 受控的验证码文本。 |
+| `defaultValue` | `string` | `''` | 非受控初始文本，表单重置时恢复。 |
+| `onChange` | `(value: string) => void` | — | 用户编辑后返回经过字符过滤与长度限制的文本。 |
+| `onComplete` | `(value: string) => void` | — | 用户输入达到指定长度时触发；服务端仍须验证验证码。 |
 | `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | 允许输入数字或字母数字。 |
-| `mask` | `boolean \| string` | `false` | 隐藏字符，可自定义替代字符 |
-| `separator` | `(index: number) => ReactNode` | — | 按位置插入分隔内容 |
+| `mask` | `boolean \| string` | `false` | 隐藏可见格子的字符；true 使用圆点，字符串使用指定字符，不改变输入值或表单提交值。 |
+| `separator` | `(index: number) => ReactNode` | — | 在零起始索引对应的字符后插入分隔内容；最后一个字符后不调用。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入格尺寸。 |
 | `status` | `'error' \| 'warning'` | — | 显示状态 |

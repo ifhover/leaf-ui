@@ -129,39 +129,15 @@ export const additions = [
     '不同的前缀',
     'Different prefixes',
   ],
-  [
-    'CommandPalette',
-    '命令面板',
-    'command-palette',
-    '导航',
-    'Navigation',
-    '快速搜索并执行操作。',
-    'Search and run actions quickly.',
-    'CommandPaletteBasic',
-    'CommandPaletteFailure',
-    '异步操作',
-    'Async actions',
-  ],
-  [
-    'AppBar',
-    '应用导航',
-    'app-bar',
-    '导航',
-    'Navigation',
-    '组织应用顶部和底部的导航。',
-    'Organize navigation at the top and bottom of an application.',
-    'AppBarBasic',
-    'AppBarNavigation',
-    '底部导航',
-    'Bottom navigation',
-  ],
 ];
 
 export const updatedPages = new Set([
+  'image',
   'button',
   'float-button',
   'popconfirm',
   'alert',
+  'result',
   'card',
   'checkbox',
   'radio',
@@ -218,7 +194,10 @@ export function documentationPage(entry, availablePages) {
   if (entry.module === './shared/floating') return 'guide/control-contracts';
   if (entry.module === './shared/dialog') return 'components/modal';
   if (entry.module === './shared/date-format') return 'components/date-picker';
-  if (entry.module === './shared/time') return 'components/time-picker';
+  if (entry.module === './shared/time')
+    return availablePages?.has('components/time-picker')
+      ? 'components/time-picker'
+      : 'components/date-picker';
   const module = entry.module.split('/').filter(Boolean)[1];
   const names = {
     tabletanstack: 'table',
@@ -237,13 +216,13 @@ export function documentationPage(entry, availablePages) {
     infinitescroll: 'infinite-scroll',
     loadingbar: 'loading-bar',
     scrollarea: 'scroll-area',
-    timepicker: 'time-picker',
-    timerangepicker: 'time-range-picker',
+    timepicker: availablePages?.has('components/time-picker') ? 'time-picker' : 'date-picker',
+    timerangepicker: availablePages?.has('components/time-range-picker')
+      ? 'time-range-picker'
+      : 'date-range-picker',
     treeselect: 'tree-select',
     virtuallist: 'virtual-list',
     qrcode: 'qr-code',
-    commandpalette: 'command-palette',
-    appbar: 'app-bar',
     empty: 'result',
   };
   return `components/${names[module] ?? module}`;

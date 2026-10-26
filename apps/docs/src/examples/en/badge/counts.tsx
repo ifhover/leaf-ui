@@ -1,20 +1,21 @@
-import { Badge, Button, Flex, Space, Text } from '@ifhover/leaf-ui';
+import { Badge, Button, Flex, Grid, Text } from '@ifhover/leaf-ui';
 import { Bell } from 'lucide-react';
+
 export function BadgeCounts() {
   return (
-    <Space wrap size={32}>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Count limit</Text>
-        <Badge count={120}>
-          <Button variant="outline" startIcon={<Bell />} aria-label="Notifications" />
+    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+      <Text tone="muted">Over limit</Text>
+      <Flex align="center" wrap>
+        <Badge count={120} aria-label="120 unread notifications">
+          <Button startIcon={<Bell />} aria-label="Notifications" />
         </Badge>
       </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Show zero</Text>
-        <Badge count={0} showZero>
-          <Button variant="outline" startIcon={<Bell />} aria-label="Notifications" />
+      <Text tone="muted">Show zero</Text>
+      <Flex align="center" wrap>
+        <Badge count={0} showZero aria-label="0 unread notifications">
+          <Button startIcon={<Bell />} aria-label="Notifications" />
         </Badge>
       </Flex>
-    </Space>
+    </Grid>
   );
 }

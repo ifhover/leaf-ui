@@ -1,15 +1,9 @@
 import { Upload } from '@ifhover/leaf-ui';
 
-export function Paste({ english = false }) {
+export function Paste() {
   return (
-    <Upload
-      customRequest={async () => {
-        await new Promise((resolve) => setTimeout(resolve, 700));
-        return {};
-      }}
-      paste
-    >
-      {english ? 'Paste an image to upload' : '粘贴图片即可上传'}
+    <Upload paste multiple>
+      选择或粘贴文件
     </Upload>
   );
 }

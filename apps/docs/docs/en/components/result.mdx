@@ -1,66 +1,84 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ResultBasic } from '../../../src/examples/en/result/basic';
 import { ResultStates } from '../../../src/examples/en/result/states';
+import { ResultSizes } from '../../../src/examples/en/result/sizes';
 import { ResultCustom } from '../../../src/examples/en/result/custom';
+
+export const leafDoc = { component: 'Result', primaryApi: 'ResultProps' };
 
 # Result
 
 Present operation results, empty content and other states.
 
-## Operation results
+{/* leaf:section basic */}
 
-<ComponentExample title="Operation results" preview={<ResultBasic />} fileName="basic.tsx">
+## Basic usage
+
+Set `status` for the result and provide follow-up actions with `extra`.
+
+<ComponentExample exampleId="basic" preview={<ResultBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/result/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Empty content and other states
+{/* leaf:section examples */}
 
-<ComponentExample title="Empty content and other states" preview={<ResultStates />} fileName="states.tsx">
+## Examples
+
+### Result states
+
+Use `status="empty"` for empty content, or choose `success`, `warning`, `danger` or `info`. `error` is a compatibility alias for `danger`.
+
+<ComponentExample exampleId="states" preview={<ResultStates />} fileName="states.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/result/states.tsx"
 ```
 
 </ComponentExample>
 
-## Custom content
+### Sizes
 
-<ComponentExample title="Custom content" preview={<ResultCustom />} fileName="custom.tsx">
+Use `size="sm"` in compact areas. The default is `md`.
+
+<ComponentExample exampleId="sizes" preview={<ResultSizes />} fileName="sizes.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/result/sizes.tsx"
+```
+
+</ComponentExample>
+
+### Custom content
+
+Replace the icon with `icon` and add result details through `children`.
+
+<ComponentExample exampleId="custom" preview={<ResultCustom />} fileName="custom.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/result/custom.tsx"
 ```
 
 </ComponentExample>
 
-## Result API
+{/* leaf:section api */}
+
+## API
+
+### Result API
+
+Configure result status, title, description and follow-up actions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `status` | `'empty' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'empty'` | Result status; `error` is a compatibility alias |
-| `title / description` | `ReactNode` | Localized title / — | Title / description; null hides them |
+| `status` | `'empty' \| 'success' \| 'info' \| 'warning' \| 'danger' \| 'error'` | `'empty'` | Result status; `error` is a compatibility alias |
+| `title` | `ReactNode` | — | Result title; defaults to the current status and locale. Set null to hide it. |
+| `description` | `ReactNode` | — | Supporting description; omitted when unset or null. |
 | `icon` | `ReactNode` | Status icon | Custom icon; null hides it |
 | `extra` | `ReactNode` | — | Action buttons or links |
-| `children` | `ReactNode` | — | Additional information |
 | `size` | `'sm' \| 'md'` | `'md'` | Content spacing and icon size |
+| `children` | `ReactNode` | — | Additional result details. |
 
-
-## Types
-
-Import these types to define props or prepare data.
-
-```ts
-import type { EmptyProps, ResultProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Use `status="empty"` for empty content. Success, warning, danger and information have matching icons and colors. Use `danger` in new code; `error` is still normalized to `danger`. Customize `icon`, `title`, `description` and `extra` as needed.
-
-The original `Empty` remains as a compatibility entry. Migrate to `Result`: rename `image` to `icon`, `description` to `title`, and move action buttons to `extra`.
-
-## Empty API
+### Empty API
 
 Compatibility component; prefer `Result` for new code. `EmptyProps` also accepts native `div` attributes.
 
@@ -69,4 +87,4 @@ Compatibility component; prefer `Result` for new code. `EmptyProps` also accepts
 | `image` | `ReactNode` | Empty state icon | Custom icon; `null` hides it. |
 | `description` | `ReactNode` | Localized title | Empty state description; `null` hides it. |
 | `size` | `'sm' \| 'md'` | `'md'` | Content spacing and icon size. |
-| `children` | `ReactNode` | — | Actions below the description. |
+| `children` | `ReactNode` | — | Actions below the empty message. |

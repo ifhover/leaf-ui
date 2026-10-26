@@ -1,4 +1,4 @@
-import { Button, Space } from '@ifhover/leaf-ui';
+import { Button, Flex, Text } from '@ifhover/leaf-ui';
 import { useEffect, useRef, useState } from 'react';
 
 export function ButtonLoading() {
@@ -15,11 +15,13 @@ export function ButtonLoading() {
   }
 
   return (
-    <Space wrap>
+    <Flex direction="column" gap="md" align="start">
       <Button loading={status === 'loading'} onClick={save}>
-        {status === 'loading' ? '正在保存' : status === 'saved' ? '再次保存' : '保存更改'}
+        {status === 'saved' ? '再次保存' : '保存更改'}
       </Button>
-      <span role="status">{status === 'saved' ? '更改已保存。' : '点击试试保存操作。'}</span>
-    </Space>
+      <Text tone="muted" role="status">
+        {status === 'saved' ? '更改已保存' : '尚未保存'}
+      </Text>
+    </Flex>
   );
 }

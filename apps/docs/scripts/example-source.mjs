@@ -1,7 +1,11 @@
 import { parse } from '@babel/parser';
 import traverseModule from '@babel/traverse';
+import remarkMdx from 'remark-mdx';
+import remarkParse from 'remark-parse';
+import { unified } from 'unified';
 
 const traverse = traverseModule.default ?? traverseModule;
+const mdxParser = unified().use(remarkParse).use(remarkMdx);
 
 function walk(node, visitor, parent, key) {
   if (!node || typeof node !== 'object') return;
@@ -199,17 +203,18 @@ export function extractExampleSource(source, names, options = {}) {
   }
   if (!selected.size) throw new Error(`Example export not found: ${pending.join(', ')}`);
   const output = [];
+  const importLines = [];
   for (const statement of ast.program.body) {
     if (statement.type === 'ImportDeclaration') {
       if (!statement.specifiers.length) {
-        output.push(source.slice(statement.start, statement.end));
+        importLines.push(source.slice(statement.start, statement.end));
         continue;
       }
       const specifiers = statement.specifiers.filter((specifier) => used.has(specifier.local.name));
       if (!specifiers.length) continue;
       const head = specifiers.filter((item) => item.type !== 'ImportSpecifier');
       const named = specifiers.filter((item) => item.type === 'ImportSpecifier');
-      output.push(
+      importLines.push(
         `import ${statement.importKind === 'type' ? 'type ' : ''}${[
           ...head.map((item) => source.slice(item.start, item.end)),
           ...(named.length
@@ -230,7 +235,7 @@ export function extractExampleSource(source, names, options = {}) {
       );
     else output.push(source.slice(statement.start, statement.end));
   }
-  return `${output.join('\n\n')}\n`;
+  return `${[importLines.join('\n'), ...output].filter(Boolean).join('\n\n')}\n`;
 }
 
 function previewNames(value, aliases = new Map()) {
@@ -238,6 +243,36 @@ function previewNames(value, aliases = new Map()) {
     (match) => aliases.get(match[1]) ?? match[1],
   );
   return [...new Set(names)];
+}
+
+function previewEnglish(value) {
+  if (!value.trim()) return false;
+  const ast = parse(`(${value})`, { plugins: ['typescript', 'jsx'] });
+  const languages = new Set();
+  walk(ast, (node) => {
+    if (node.type !== 'JSXOpeningElement') return;
+    const attributes = node.attributes.filter((attribute) => attribute.name?.name === 'english');
+    if (
+      node.attributes.some((attribute) => attribute.type === 'JSXSpreadAttribute') ||
+      attributes.length > 1
+    )
+      throw new Error('Example preview cannot use spread or duplicate english attributes.');
+    const attribute = attributes[0];
+    if (!attribute) {
+      languages.add(false);
+      return;
+    }
+    if (
+      attribute.value &&
+      (attribute.value.type !== 'JSXExpressionContainer' ||
+        attribute.value.expression.type !== 'BooleanLiteral')
+    )
+      throw new Error('Example preview english must be shorthand or a literal boolean.');
+    languages.add(attribute.value ? attribute.value.expression.value : true);
+  });
+  if (languages.size > 1)
+    throw new Error('Example preview cannot mix different english values in one code sample.');
+  return languages.values().next().value ?? false;
 }
 
 function importAliases(source) {
@@ -278,28 +313,37 @@ export function remarkExampleSource() {
       const value = preview?.value?.value ?? '';
       const names = previewNames(value, aliases);
       if (!names.length) return;
+      const english = previewEnglish(value);
       for (const code of node.children.filter((child) => child.type === 'code'))
         if (/\bfile=/.test(code.meta ?? '') && ['tsx', 'ts', 'jsx', 'js'].includes(code.lang))
-          code.value = extractExampleSource(code.value, names, {
-            english: /\benglish(?:\s|[=/}>])/.test(value),
-          });
+          code.value = extractExampleSource(code.value, names, { english });
     });
   };
 }
 
 export function extractExampleMarkdown(markdown, mdx) {
   const aliases = importAliases(mdx);
-  const examples = [...mdx.matchAll(/<ComponentExample\b([\s\S]*?)<\/ComponentExample>/g)].flatMap(
-    (match) => {
-      const preview = match[1].match(/preview=\{([\s\S]*?)\}\s*(?:fileName|>)/)?.[1];
-      const names = previewNames(preview ?? '', aliases);
-      return [...match[1].matchAll(/```(?:tsx|ts|jsx|js)[^\n]*\bfile="([^"]+)"/g)].map((fence) => ({
-        file: fence[1],
-        names,
-        english: /\benglish(?:\s|[=/}>])/.test(preview ?? ''),
-      }));
-    },
-  );
+  const examples = [];
+  walk(mdxParser.parse(mdx), (node) => {
+    if (
+      !['mdxJsxFlowElement', 'mdxJsxTextElement'].includes(node.type) ||
+      node.name !== 'ComponentExample'
+    )
+      return;
+    const preview = node.attributes.find((attribute) => attribute.name === 'preview');
+    const value = preview?.value?.value ?? '';
+    const names = previewNames(value, aliases);
+    const english = previewEnglish(value);
+    for (const code of node.children.filter((child) => child.type === 'code')) {
+      const file = code.meta?.match(/\bfile="([^"]+)"/)?.[1];
+      if (file && ['tsx', 'ts', 'jsx', 'js'].includes(code.lang))
+        examples.push({
+          file,
+          names,
+          english,
+        });
+    }
+  });
   const queue = new Map();
   for (const example of examples) {
     const items = queue.get(example.file) ?? [];

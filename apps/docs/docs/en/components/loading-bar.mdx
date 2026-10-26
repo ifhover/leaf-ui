@@ -2,50 +2,51 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { LoadingBarBasic } from '../../../src/examples/en/loading-bar/basic';
 import { LoadingBarProgress } from '../../../src/examples/en/loading-bar/advanced';
 
+export const leafDoc = { component: 'LoadingBar', primaryApi: 'LoadingBarProps' };
+
 # LoadingBar
 
-Show page or task loading progress.
+Show page or task loading progress at the edge of the viewport.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<LoadingBarBasic />} fileName="basic.tsx" width="fit-content">
+Call `useLoadingBar()` inside [ConfigProvider](/en/components/config-provider). If one is already present, do not add another wrapper. Use `LoadingBarProvider` when you need an independent bar; nesting ConfigProvider reuses the existing bar.
+
+`start()` returns a completion function for that task. Call it in `finally` whether the request succeeds or fails. Concurrent tasks keep the bar active until all finish.
+
+<ComponentExample exampleId="basic" preview={<LoadingBarBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading-bar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Control progress manually
+`reset()` clears every task in the current provider, not just the calling component's task. Use the function returned by `start()` to finish one specific task, including when cancelling a request or cleaning it up on unmount.
 
-<ComponentExample title="Control progress manually" preview={<LoadingBarProgress />} fileName="advanced.tsx">
+{/* leaf:section examples */}
+
+## Examples
+
+### Control progress manually
+
+For a known percentage, render `LoadingBar` directly with `active` and `progress`. Progress ranges from 0 to 100; set `active` to `false` when the task finishes. The bar does not start or stop the underlying task.
+
+<ComponentExample exampleId="advanced" preview={<LoadingBarProgress />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading-bar/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-ConfigProvider provides the bar. start() returns the completion function for that task; call it in finally. Concurrent tasks keep the bar active until all finish.
+## API
 
-## Types
+### LoadingBarProps API
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@ifhover/leaf-ui';
-```
-
-## LoadingBarApi API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `start` | `() => () => void` | Required | Start a task; returns its completion function |
-| `finish` | `() => void` | Required | Finish one task; hide after all finish |
-| `set` | `(progress: number) => void` | Required | Set displayed progress |
-| `reset` | `() => void` | Required | Reset or retry |
-
-## LoadingBarProps API
+Props for loading state, progress and indicator placement.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -57,7 +58,20 @@ import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@i
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |
 
-## LoadingBarProviderProps API
+### LoadingBarApi API
+
+The task tracking and progress control interface returned by `useLoadingBar`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `start` | `() => () => void` | Required | Start a task and return its completion function; call it in finally or cancellation cleanup. |
+| `finish` | `() => void` | Required | Complete the oldest pending task and hide once all finish; prefer the function returned by start. |
+| `set` | `(progress: number) => void` | Required | Set displayed progress from 0 to 100 without starting or completing a task. |
+| `reset` | `() => void` | Required | Clear all tasks and progress in the current provider without cancelling requests. |
+
+### LoadingBarProviderProps API
+
+Props for the container and presentation of an independent loading bar context.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -66,4 +80,4 @@ import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@i
 | `position` | `'top' \| 'bottom'` | `'top'` | Display or insertion position |
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |
-| `children` | `ReactNode` | — | Content shown below the progress bar. |
+| `children` | `ReactNode` | — | Children sharing this loading bar task scope. |

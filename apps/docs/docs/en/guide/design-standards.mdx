@@ -1,72 +1,156 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { FoundationPreview } from '../../../src/examples/en/design-standards/foundations';
+import { ContentRegion } from '../../../src/examples/en/design-standards/content-region';
+import { DataRegion } from '../../../src/examples/en/design-standards/data-region';
 
-# Visual and interaction standard
+<span id="visual-design-and-interaction" />
 
-Use only weights 400 / 500 / 700: body copy is 400, controls and ordinary labels are 500, and strong text and prominent headings are 700. Default small / control / content / floating radii are 4 / 8 / 12 / 16px.
+# Interface design and composition
 
-Semantic colors, dimensions and spacing keep components consistent across light/dark appearance and comfortable/compact density. The full standard lives in `DESIGN-STANDARDS.md` in the repository.
+For tools, management interfaces and data-dense pages, build hierarchy with neutral surfaces and a slight sense of physical depth: compact controls, clear container spacing and quiet headings keep content and data in front. Preserve an existing project's design system instead of turning every page into the same dashboard template.
 
-The foundation uses white and neutral gray surfaces, fine borders and soft corners. Ordinary fields stay flat; outlined buttons use one subtle downward resting shadow, while Cards and tables use the lightest resting shadow, offset downward. Stronger shadows are reserved primarily for floating layers. The primary color primarily emphasizes key actions and can be freely replaced; Input focus and open Select popups use the theme border color, while selected popup options remain neutral. Single-line controls default to 34px, with 28 / 40px small and large sizes.
+This guide covers component composition and the scales for custom page layouts. Numbers describe defaults without theme overrides, not CSS values to hard-code again. Explicit component props, regional density and user theme overrides take precedence. See [Theming](/en/guide/theming) and [Theme tokens](/en/api/theme-tokens) for complete configuration.
 
-Focused inputs and open selectors deepen their existing neutral border without an outer ring. Error and warning states retain semantic colors, and forced colors retain visible focus.
+## Read the visual language through components
 
-Switch the primary color and regional appearance below to compare basic controls and dialogs.
+| Component | Current appearance | Page composition |
+| --- | --- | --- |
+| [Menu](/en/components/menu) | Defaults to `raised`: a selected content surface, fine border and light shadow on a muted canvas. | Retain the selected surface instead of adding another indicator or a large brand-colored background. `default` and `primary` are other explicit appearances. |
+| [Button](/en/components/button) | Defaults to `outline`: a neutral content surface and border with a slight resting shadow. | Keep ordinary actions neutral; reserve `solid` for important actions rather than emphasizing every button. |
+| [Card](/en/components/card) | `variant="layered"` puts a small muted heading on the canvas and content on an inner surface. Card itself still defaults to `default`. | Use `layered` for independent tasks needing a heading/content separation. It does not display `description`; put important explanations in the body or a standalone CardTitle. |
+| [DataTable](/en/components/table) | Defaults to `layered`: a quiet header and inner data surface share the layered Card relationship. | Place the main table and its toolbar directly, usually without another layered Card around them. Consider `simple` when embedding a table in an existing content surface. |
 
-<ComponentExample title="Foundation appearance" preview={<FoundationPreview />} fileName="foundations.tsx" width={700}>
+Canvas and content surface are roles, not fixed light gray and pure white. Preserve their grouping when users change surface colors or switch to dark appearance. Retain each component's selected surface, checkmark, border or indicator; do not impose either "selection never has a background" or another page-level brand highlight.
 
-```tsx lineNumbers file="../../../src/examples/en/design-standards/foundations.tsx"
+## Organize the page
 
+- Establish the page heading, task sections and data regions before choosing containers. Let the page heading carry the main hierarchy; not every section needs a large bold heading. Keep actions near their content.
+- Separate navigation, page header, toolbar and content responsibilities. Use Menu for navigation, Flex / Grid for peers, Card for an independent task, and DataTable directly for data.
+- Use spacing to show relationships. Do not add cards, dividers and shadows to every paragraph or field. Separate page-level and row-level actions; prefer one primary action per task region.
+- Compact controls do not require crowded content. Keep spacing consistent within groups and wider between sections. Wrap long labels instead of shrinking text and hit targets to fit.
+
+## Type size and weight
+
+| Text role | Default size / line height | Usage |
+| --- | --- | --- |
+| Body | 14px / 20px | `--leaf-font-size` / `--leaf-line-height`; regular body weight is 400. |
+| Secondary, small text | 13px / 18px | `--leaf-font-size-sm` / `--leaf-line-height-sm`. `Text tone="muted"` changes color only, not size. |
+| Large text | 16px / 22px | `--leaf-font-size-lg` / `--leaf-line-height-lg`. Do not enlarge every label. |
+| Controls and ordinary section headings | Default weight 500 | `--leaf-font-weight`; use Button, CardTitle and other existing components, not an extra 600 override. |
+| Strong text and prominent headings | Default weight 700 | `Text strong` or heading components; headings use `--leaf-heading-weight`. Do not make all body text bold. |
+
+Prefer Typography, Text, Paragraph, CardTitle and Title. Custom page roots should inherit `--leaf-font-family`, `--leaf-font-size` and `--leaf-line-height`; ConfigProvider supplies variables but does not automatically apply library typography to arbitrary native text. The default family starts with Inter and includes system and Chinese fallbacks. Continue inheriting `theme.fontFamily` rather than adding a display font.
+
+CardTitle defaults for `sm / md / lg` are 14/20, 16/22 and 18/24px, with heading weight for the large size. Title's `level={1..6}` determines both semantics and default size: 2.3, 1.85, 1.5, 1.25, 1.1 and 1 times the base font size, with line height 1.3. This is not a rounded integer-pixel scale. Choose a meaningful heading level rather than using a large heading as a regular label.
+
+## Spacing and density
+
+| Spacing variable | Comfortable default | Compact default | Typical use |
+| --- | --- | --- | --- |
+| `--leaf-spacing-xs` | 4px | 3px | Closely related content such as a heading and short description. |
+| `--leaf-spacing-sm` | 8px | 6px | Adjacent actions and compact control groups. |
+| `--leaf-spacing-md` | 16px | 12px | Groups within one content region. |
+| `--leaf-spacing-lg` | 24px | 18px | Independent sections and page padding. |
+| `--leaf-spacing-xl` | 32px | 24px | Larger section separation, not arbitrary padding on every item. |
+
+Base spacing `--leaf-spacing` defaults to 8px in comfortable density and 6px in compact density. The rows above are 0.5, 1, 2, 3 and 4 times the base. Set regional density with `ConfigProvider density="compact"` or configure the base with `theme.spacing`; explicit theme and component settings take precedence. Compact density does not shrink body text.
+
+Flex's `gap="sm|md|lg"` and Space's `size="sm|md|lg"` read these variables. Grid's `gap` does not resolve these names: use `gap="var(--leaf-spacing-md)"`. Pass CSS variables for xs / xl as well. Do not invent a slightly different pixel scale for each section.
+
+## Dimensions, radii and shadows
+
+| Geometry role | Comfortable default | Compact default | Usage |
+| --- | --- | --- | --- |
+| Control `sm / md / lg` height | 28 / 34 / 40px | 24 / 30 / 36px | Choose a local `size`; custom layouts read `--leaf-control-height-sm`, `--leaf-control-height` and `--leaf-control-height-lg`. |
+| Form row / label gap | 16 / 6px | 12 / 4px | Let Form / FormField handle these; variables are `--leaf-density-form-gap` / `--leaf-density-label-gap`. |
+| List row vertical padding | 12px | 8px | Let component density handle it; do not clip multiline content with a fixed row height. |
+| Floating option minimum height | 30px | 26px | Follows control height; retain the component's keyboard and hit-target behavior. |
+| Dialog block / inline padding | 20 / 24px | 16 / 20px | Retain the Modal / Drawer structure instead of inventing another dialog spacing scale. |
+
+Size and density are separate dimensions. Use consistent `size` values in one row and ConfigProvider for regional density instead of scaling each control. Provide more generous touch targets rather than shrinking all actions to match a compact table.
+
+Use `--leaf-radius-sm`, `--leaf-radius`, `--leaf-radius-md` and `--leaf-radius-lg`: defaults are 4 / 8 / 12 / 16px, derived from the base at 0.5 / 1 / 1.5 / 2 times. Components normally handle their own nested geometry; do not override internal `.leaf-*` radii.
+
+Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: outlined buttons and default Card have the lightest resting feedback, layered Card / Table use a light inner-surface shadow, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
+
+Input, InputNumber, InputSearch, Select, AutoComplete, Cascader, TreeSelect and single-value pickers default to 240px and do not resize after selection. Date ranges use 300px and datetime ranges 380px; allow more width for longer formats. Fields shrink in narrow containers and fill FormField; `style.width` overrides the default. Textarea remains full-width. Page layouts must not depend on these default widths remaining fixed.
+
+## Use color roles, not fixed values
+
+| Page purpose | Theme variables / component usage |
+| --- | --- |
+| Body and supporting text | `--leaf-color-text`, `--leaf-color-text-muted`; Text / Paragraph `tone`. Do not replace text roles with opacity on a whole paragraph. |
+| Content surface, muted canvas, raised surface | `--leaf-color-surface`, `--leaf-color-surface-muted`, `--leaf-color-surface-raised`. A "white card" does not mean hard-coded white. |
+| Frame, interactive border, divider | `--leaf-color-border`, `--leaf-color-border-hover`, `--leaf-color-divider`; do not use the frame color for every divider. |
+| Brand-colored text on ordinary surfaces | `--leaf-color-primary-ink`, or `Text tone="primary"` / Link; do not use the raw brand color for small text. |
+| Solid brand fill and its foreground | Pair `--leaf-color-primary` with `--leaf-color-on-primary`; prefer `Button variant="solid"` rather than manually specifying white text. |
+| Success, warning, danger, information | Use the corresponding status component. Custom semantic text uses the family's `*-ink`, soft fills use `*-soft`, and solid fills pair with `on-*`. Status colors convey meaning, not section decoration. |
+
+Change the brand color with `theme.primaryColor`; configure neutrals, surfaces and other semantic colors through `theme.tokens`, for example `neutralColor`, `surfaceColor`, `mutedSurfaceColor` and `dangerColor`. Page CSS reads the regional results. Do not copy defaults using fixed HEX values, numbered neutral shades or manual color mixing, or add a `:root` palette that overrides user configuration.
+
+Preserve the existing theme, nested ConfigProvider and light/dark appearance. Overriding a base CSS color variable does not rerun JS derivation: update ConfigProvider configuration when related colors must change together. Default solid foregrounds do not guarantee readability for every custom fill; check actual text contrast after changing base colors and explicitly configure `onPrimaryColor` or other foregrounds when necessary.
+
+Read the same variables in custom page classes rather than overriding component internals:
+
+```css
+.page-shell {
+  min-width: 0;
+  padding: var(--leaf-spacing-lg);
+  background: var(--leaf-color-surface-muted);
+  color: var(--leaf-color-text);
+  font: 400 var(--leaf-font-size) / var(--leaf-line-height) var(--leaf-font-family);
+}
+
+.page-note {
+  color: var(--leaf-color-text-muted);
+  font-size: var(--leaf-font-size-sm);
+  line-height: var(--leaf-line-height-sm);
+}
+```
+
+Place the page within the current ConfigProvider region. These styles need not be redefined when users change the font size, base spacing or surface colors.
+
+## Choose an appearance
+
+- Use default outlined buttons for ordinary actions and `variant="solid"` for primary actions. Use `text` for quieter local actions, `link` for inline link-style actions, and `danger` for destructive actions.
+- Do not add hover lifts, pressed scaling, colored halos or decorative gradients. Preserve component feedback instead of redesigning every state in page CSS.
+- Input and picker fields use a primary-colored border on focus or while open, without an outer halo. Textarea, Mentions and InputNumber follow the same rule. Error, warning and disabled states retain their feedback; buttons retain a neutral keyboard focus outline.
+
+## Minimal compositions
+
+### Content section
+
+A standalone heading carries the description while the layered Card retains a short section name. Use existing typography, spacing and actions without adding a card skin.
+
+<ComponentExample title="Content section" preview={<ContentRegion />} fileName="content-region.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/design-standards/content-region.tsx"
 ```
 
 </ComponentExample>
 
-Card's small, default and large sizes adjust spacing, heading typography and heading height together, and both Card and standalone CardTitle default to an h3. Embedded Tabs follow the card size by default. Tabs share the heading area: they sit beneath a title or fill the entire heading height with vertically centered labels when no title is provided. The divider runs only below the entire tab bar, and the selected underline overlays it with the same thickness as standalone line tabs. Labels and content share the Card content edge and insets, and footer actions are grouped with spacing.
+### Data region
 
-Warnings use a bright amber consistently for icons, field borders and status fills, with independently derived readable text colors. Customize the warning color through ConfigProvider's `theme.tokens.warningColor`.
+DataTable already provides a layered surface; supply its tools through `toolbar`. This three-row example disables pagination. For larger datasets, retain component pagination rather than squeezing everything into a fixed height. DataTable uses the separate `/table` entry and requires its optional TanStack dependency; see [Table setup](/en/components/table).
 
-Select, Tree, TreeSelect, Cascader, AutoComplete, Mentions and Dropdown share pale hover and keyboard feedback with persistent selection checks. Menu appearances and date, range and time selections remain independent. Form popup corners follow their fields, including local theme overrides.
+<ComponentExample title="Data region" preview={<DataRegion />} fileName="data-region.tsx" width={600}>
 
-Select, TreeSelect and Cascader share selected-tag sizes and spacing. Tags wrap by default; `tagWrap={false}` keeps one line and collapses overflow into `+N`. Long labels truncate while preserving room for search and actions. Folding affects presentation only, never selected values.
+```tsx lineNumbers file="../../../src/examples/en/design-standards/data-region.tsx"
+```
 
-| Foundation                            | Comfortable        | Compact            |
-| ------------------------------------- | ------------------ | ------------------ |
-| Control height                        | 34px               | 30px               |
-| Popup option minimum height           | 30px               | 26px               |
-| Body text / line height               | 14px / 20px        | 14px / 20px        |
-| Secondary text                        | 13px / 18px        | 13px / 18px        |
-| Large text                            | 16px / 22px        | 16px / 22px        |
-| Spacing unit                          | 8px                | 6px                |
-| Form row gap                          | 24px               | 16px               |
-| Dialog block / inline padding         | 20px / 24px        | 16px / 20px        |
-| Radius: small / base / medium / large | 4 / 8 / 12 / 16px | 4 / 8 / 12 / 16px |
+</ComponentExample>
 
-Select-like options, Tree and Dropdown rows follow the regional control height (34 / 30px in comfortable / compact density), without extra gaps between options. Dropdown icons and labels have a 12px gap.
+## Themes and accessibility
 
-Buttons have no activation waves or theme-colored pointer focus halos. Outline is the default appearance. Solid buttons deepen on press and primary link buttons deepen their text on press; danger links retain readable ink and underline while pressed; solid and link appearances keep their resting paint on hover. Outlined buttons deepen their border on hover and only add a subtle neutral gray background while pressed, restored on release. Feedback transitions smoothly without changing text, border, shadow or position on press; danger actions retain semantic colors. Keyboard focus retains a neutral outline. Menus and tabs use color, opacity, borders and shadows for feedback; selected indicators may move to the selected item. Drawers slide smoothly; feedback enters as a unit without separate icon/text springs. System reduced motion takes precedence over regional motion settings.
+Configure colors, light/dark appearance and local themes with ConfigProvider. Inspect [Colors](/en/guide/colors) and consult [Theme tokens](/en/api/theme-tokens) for individual settings.
 
-Radius, borders and type build the hierarchy together. Radii step down from the outside in: dialogs, drawers and general-purpose popups use the large radius; form popups follow their field and Dropdown uses the base radius; content surfaces such as cards, alerts and choice cards use the medium radius; buttons, fields and table frames use the base radius; checkboxes and other small elements, including status tags, use the small radius. Content surfaces are separated by hairline borders and muted fills; Card and Table add the lightest resting shadow, offset downward, while other content surfaces stay flat, and stronger shadows are reserved for layers that actually float, such as popups, dialogs, dragged items and slider handles. Card and Table frames and Card's internal section lines use a softened divider (70% divider mixed with the surface), staying lighter than standalone dividers. Type hierarchy comes from size, line height and color: 14px / 20px body, 13px / 18px secondary text, 16px / 22px large text, weight 700 for Card titles and document headings, and 500 for other component titles, labels and buttons. Option group headings use a 12px minimum with tracked muted styling.
+On narrow screens, wrap control groups and turn columns into a single column in content order. Let tables scroll within their own region rather than overflowing the entire page. Do not clip descriptions, long labels or focus outlines with fixed heights.
 
-Default geometry follows a whole-pixel grid. Body, secondary and large line boxes are 20 / 18 / 22px; the 28 / 34 / 40px controls, Card title line boxes (18 / 20 / 22px), popup rows and step indicators resolve to whole pixels. Steps indicators use at least 24px and 28px at the large size. Explicit fractional tokens, custom font sizes, relative widths and SVG-internal coordinates can still produce fractional geometry; do not clip or forcibly round application content merely to hide its own layout.
+Label form fields and icon-only buttons. Retain keyboard focus and error feedback; motion respects the system reduced-motion preference.
 
-Inset backgrounds use nested curves: `inner radius = max(0px, outer radius - padding - border width)`. A general-purpose popup with a 16px outer radius, 6px padding and a 1px border has a 9px inner curve; Select-like options and Dropdown use the field/popup radius minus 2px, clamped at zero. Feedback layers share their row curve and follow theme changes. Other nested surfaces account for unequal padding and additional insets. Independent controls, calendar cells, tags and icons keep their semantic radii.
+## Before delivery
 
-Menu is vertical-only, with layout and keyboard semantics independent of appearance. `variant` accepts `default`, `raised` and `primary`. Each appearance supplies a complete state palette, border, shadow and entry/exit timing; inline and floating navigation share one state painter instead of overriding default selection rules after the fact. `default` retains 8% black hover, press and selection fills, 80% inherited text mixed with the regional surface for unselected rows, and full text color for selection. `raised` uses a muted canvas, a selected theme surface, a 1px neutral border and `0 2px 3px -1px rgb(0 0 0 / 0.08)` shadow clipped by `inset(0 0 -4px)` to overflow only below the row; hover only deepens text, and press uses 4% black. `primary` uses readable primary ink and a 10% primary fill for selection, the same ink without a background on hover, and a 4% primary press fill, with no selection border or shadow. The latter two appearances enter over 1.2 times the standard duration (240ms by default) and clear previous selection immediately without a gray exit. All appearances preserve danger semantics, disabled behavior, keyboard outlines, reduced/disabled motion and system forced colors. Only the current page is highlighted, never its ancestors. Row radius is base radius minus 2px (6px by default), and popup frames use the base radius. Top-level height is control height plus 2px (36 / 32px), submenu height follows options (30 / 26px), and 16px icons occupy 20px slots with a 12px label gap. Inline children reserve 8px after the guide rail while keeping label alignment. Feedback never moves row geometry, labels or icons; submenus and popups retain their shared reveal motion.
-
-Pagination defaults to outlined buttons, with a borderless alternative. Both follow control-height tokens and retain their geometry on press, with a moving selection background. Outlined controls deepen only the border on press, leaving text and background unchanged; ghost controls use neutral fills.
-
-Card tabs use a light rounded selected surface without an outer container, 4 px between options, lighter unselected labels and 28 / 34 / 40 px sizes. Segmented tabs use a muted rounded track with 3 px padding and gaps, plus a surface-colored moving selection surface with a light shadow. Tab and indicator radii are derived from the track radius minus its actual padding and border, clamped at zero. Line tabs show only a short rounded indicator beneath the selected label. The bar fits its labels while content panels retain the available width; set `block` for equal widths and omit item content for a header-only view switcher. Pressing never scales a tab, and the selected indicator may move to the new option.
-
-Tag provides soft and outline appearances, with an optional built-in 6px semantic dot enabled by default. Outline uses a neutral surface, border, body text and pill radius; soft retains the small radius. Labels keep weight 500. Custom icons replace the dot. Checkable tags use outline when unchecked and soft when checked.
-
-Acceptance covers default, hover, pressed, focus-visible, selected, disabled, loading, error and empty states. Text or ARIA must also express state. Icon-only actions need accessible names. Align icons with labels and dialog form edges with footer actions.
-
-Compact density suits pointer/keyboard interfaces and keeps body text readable. Prefer comfortable or larger explicit controls on touch; essential targets should be at least 24px, preferably 44px. Local component settings and explicit theme dimensions override density and defaults.
-
-Button inline padding follows its actual height, and component-level `padding` applies to every size. Small Steps keep body-size labels; card and list choice groups share a quiet section heading. Card headings have equal top and bottom insets, without duplicate spacing where they meet the body. Modal uses a muted canvas (`#f9f9f9` by default in light) with spacing-based sections, and its heading and footer share the same inline padding, with an outlined default cancel action; `divided` enables subtle section borders and a muted footer. `variant="card"` keeps that canvas and places the body on a 6px inset, borderless content card. Its 14px heading uses heading weight and a 22px line box, aligned with the content text start edge; the close target remains 8px inside the content card's right edge while footer actions align with the card. The header uses a 12px top inset, followed by a single 12px section gap before the content card and a 10px gap from the content card to footer buttons; footer top padding is zero to avoid doubling that gap, the bottom inset is 10px, and heading text is offset 2px downward within its text column; body padding independently controls the distance from content to the card edge. The 24px close target contains a 16px body-colored icon, with a transparent resting background, a deeper standard neutral hover background and the small radius (4px by default). Date and time pickers reuse that hierarchy through `panelVariant="card"`. Dialog backdrops use a soft veil and background blur, which ConfigProvider's `maskBlur={false}` disables. Confirm is a compact API prompt with a bare icon beside its explanation and spacing-based sections. Headers without a description have less vertical space; divided Modal and Drawer actions share compact footer spacing; Confirm uses the same bottom inset.
-
-The full Calendar uses an editorial, borderless grid. A large localized month name carries the heading, with the year as a lighter companion and Today plus paired navigation controls at the trailing edge. Date, month and year views use open 7-, 4- and 3-column layouts; date cells never draw individual frames. Selection fills the whole date cell with a quiet primary tint and marks the numeral with a solid circular label. Today uses primary-colored text and a small dot instead of an outline. `cellRender` content sits below the numeral in one truncated line. Compact calendars keep a 32px borderless date grid without changing the surrounding picker structure.
-
-Steps labels have transparent backgrounds, with horizontal connectors placed after the text. Avatars use a single 2px surface-colored border, including overlapping groups, without an extra outline shadow. DataTable enables stripes by default and always uses the base radius, an untinted header surface, a 1px header divider, and the same softened frame and downward resting shadow as Card. `bordered` adds column dividers only; headers use a slightly muted body color. Stripes mix 2% table text into the current surface and hide row dividers, while `striped={false}` restores fine row dividers. Hover uses one opaque 3% primary mix with the table surface for ordinary and striped rows, with a light primary selected fill taking precedence. Pinned-column shadows disappear at the corresponding logical scroll edge.
-
-Link buttons have no background, border, padding or fixed control height. Hover keeps the resting appearance; press deepens primary text or underlines readable danger text without a wave. Use Link for navigation and the Button link variant for text actions.
+- Use existing components and public tokens, without creating a second type, spacing, color or radius scale for the same purpose.
+- Group by task and content, without meaningless nested cards, duplicate shadows or equally prominent headings everywhere.
+- Preserve user theme and density overrides. Check hierarchy and actual text contrast in light/dark appearance and with custom brand/canvas colors.
+- Wrap control groups on narrow screens, keep data scrolling local, and provide understandable loading, empty and failure feedback.
+- Match the installed package's APIs. Query component documentation for behavior; this guide is not a complete API manual.

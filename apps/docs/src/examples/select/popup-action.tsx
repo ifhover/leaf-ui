@@ -1,31 +1,41 @@
-import type { SelectOption } from '@ifhover/leaf-ui';
-import { Button, Select } from '@ifhover/leaf-ui';
+import { Button, Flex, Select } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-const roles = (english: boolean): SelectOption[] => [
-  { value: 'design', label: english ? 'Design' : '设计' },
-  { value: 'engineering', label: english ? 'Engineering' : '工程' },
-  { value: 'marketing', label: english ? 'Marketing' : '市场' },
-  { value: 'operations', label: english ? 'Operations' : '运营' },
+const options = [
+  { value: 'design', label: '设计工作室' },
+  { value: 'product', label: '产品团队' },
+  { value: 'engineering', label: '工程团队' },
+  { value: 'archived', label: '归档项目', disabled: true },
 ];
 
-export function PopupAction({ english = false }) {
+export function PopupAction() {
   const [open, setOpen] = useState(false);
   return (
-    <Select
-      aria-label={english ? 'Role' : '角色'}
-      onOpenChange={setOpen}
-      open={open}
-      options={roles(english)}
-      placeholder={english ? 'Select a role' : '选择角色'}
-      popupRender={(content) => (
-        <>
-          {content}
-          <Button onClick={() => setOpen(false)} size="sm">
-            {english ? 'Done' : '完成'}
-          </Button>
-        </>
-      )}
-    />
+    <Flex direction="column" gap="sm">
+      <Select
+        aria-label="选择团队并完成"
+        multiple
+        defaultValue={['design']}
+        open={open}
+        onOpenChange={setOpen}
+        options={options}
+        placeholder="选择团队"
+        popupRender={(content) => (
+          <>
+            {content}
+            <Flex justify="end">
+              <Button onClick={() => setOpen(false)} size="sm">
+                完成
+              </Button>
+            </Flex>
+          </>
+        )}
+      />
+      <Flex>
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          打开选项
+        </Button>
+      </Flex>
+    </Flex>
   );
 }

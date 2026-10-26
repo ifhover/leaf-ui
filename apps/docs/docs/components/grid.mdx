@@ -1,42 +1,105 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { GridBasic } from '../../src/examples/grid/basic';
 import { GridColumns } from '../../src/examples/grid/advanced';
+import { GridResponsive } from '../../src/examples/grid/responsive';
+import { GridOffset } from '../../src/examples/grid/offset';
+import { GridResponsiveSpans } from '../../src/examples/grid/responsive-spans';
+
+export const leafDoc = { component: 'Grid', primaryApi: 'GridProps' };
 
 # Grid 栅格
 
-根据屏幕宽度排列内容。
+用等宽列或 24 栅格排列内容。只需排列一组元素时使用 [Flex](/components/flex) 或 [Space](/components/space)。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<GridBasic />} fileName="basic.tsx" width="100%">
+## 基础用法
+
+`Grid` 默认分为三列，通过 `columns` 设置等宽列数。
+
+<ComponentExample exampleId="basic" preview={<GridBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/grid/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 24 栅格与响应式列宽
+{/* leaf:section examples */}
 
-<ComponentExample title="24 栅格与响应式列宽" preview={<GridColumns />} fileName="advanced.tsx" width="100%">
+## 示例
+
+### 响应式列数
+
+`columns` 接受断点配置。响应式按浏览器视口宽度生效，不取决于容器宽度；未配置的较大断点继承较小断点的值。
+
+<ComponentExample exampleId="responsive" preview={<GridResponsive />} fileName="responsive.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/grid/responsive.tsx"
+```
+
+</ComponentExample>
+
+### 栅格跨度
+
+<a id="24-栅格与响应式列宽"></a>
+
+`Row` 与 `Col` 配合使用，`span` 表示一列占 24 栅格中的几份，`gutter` 设置列间距。
+
+<ComponentExample exampleId="advanced" preview={<GridColumns />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/grid/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 列偏移
 
-Grid 使用 columns 设置等宽列；Row / Col 使用 24 栅格跨度与 offset。响应式配置按浏览器宽度生效，较大断点继承较小断点的设置。
+`offset` 在当前列前留出指定跨度，不改变该列的 `span`。下面在两列之间空出 8 份。
 
-## 类型
+<ComponentExample exampleId="offset" preview={<GridOffset />} fileName="offset.tsx" width="100%">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { ColProps, GridProps, RowProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/grid/offset.tsx"
 ```
 
-## ColProps API
+</ComponentExample>
+
+### 响应式跨度与隐藏
+
+`Col` 的断点属性设置对应宽度下的跨度，`0` 表示隐藏。下面在视口小于 768px 时隐藏补充内容，主要内容占满一行；达到 `md` 后两列各占一半。
+
+<ComponentExample exampleId="responsive-spans" preview={<GridResponsiveSpans />} fileName="responsive-spans.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/grid/responsive-spans.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### GridProps API
+
+`Grid`、`Row` 和 `Col` 均支持原生 `div` 属性和 DOM ref。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | 列数；较大断点继承较小断点 |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | 间距；数组为 [纵向, 横向] |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
+
+### RowProps API
+
+24 栅格行的对齐和列间距参数。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
+| `gutter` | [`GridProps`](#gridprops-api)`['gap']` | `16` | 栅格间距；数组为 [纵向, 横向] |
+
+### ColProps API
+
+24 栅格列的跨度、偏移与响应式配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -47,18 +110,3 @@ import type { ColProps, GridProps, RowProps } from '@ifhover/leaf-ui';
 | `md` | `number` | — | ≥ 768px 配置 |
 | `lg` | `number` | — | ≥ 992px 配置 |
 | `xl` | `number` | — | ≥ 1200px 配置 |
-
-## GridProps API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | 列数；较大断点继承较小断点 |
-| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | 间距；数组为 [纵向, 横向] |
-| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
-
-## RowProps API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | 对齐方式 |
-| `gutter` | [`GridProps['gap']`](#gridprops-api) | `16` | 栅格间距；数组为 [纵向, 横向] |

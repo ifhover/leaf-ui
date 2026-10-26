@@ -1,86 +1,152 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { NotificationBasic } from '../../src/examples/notification/basic';
-import { NotificationOptions } from '../../src/examples/notification/advanced';
+import { NotificationStates } from '../../src/examples/notification/states';
+import { NotificationPlacement } from '../../src/examples/notification/placement';
+import { NotificationActions } from '../../src/examples/notification/actions';
+import { NotificationAsync } from '../../src/examples/notification/async';
+
+export const leafDoc = { component: 'Notification', primaryApi: 'NotificationProps' };
 
 # Notification 通知提醒
 
-在页面角落展示通知与后续操作。
+在页面角落展示详细反馈或后续操作。短暂的操作反馈使用 [Message](/components/message)。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<NotificationBasic />} fileName="basic.tsx" width="fit-content">
+## 基础用法
+
+在应用入口放置 [ConfigProvider](/components/config-provider)，再在子组件中调用 `useNotification()`。已有该配置时无需重复添加。
+
+```tsx
+import { ConfigProvider } from '@ifhover/leaf-ui';
+
+export function Root() {
+  return <ConfigProvider><App /></ConfigProvider>;
+}
+```
+
+<ComponentExample exampleId="basic" preview={<NotificationBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/notification/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 位置、时长与更新通知
+{/* leaf:section examples */}
 
-<ComponentExample title="位置、时长与更新通知" preview={<NotificationOptions />} fileName="advanced.tsx">
+## 示例
 
-```tsx lineNumbers file="../../src/examples/notification/advanced.tsx"
+### 状态提示
+
+通过快捷方法显示不同状态的通知。
+
+<ComponentExample exampleId="states" preview={<NotificationStates />} fileName="states.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/notification/states.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 显示位置
 
-在应用外层放置 ConfigProvider 后，在子组件直接调用 useNotification()。单独使用时放置 NotificationProvider。相同 key 更新通知，`duration={0}` 持续展示。
+通过 `placement` 指定通知出现的位置。
 
-## 类型
+<ComponentExample exampleId="placement" preview={<NotificationPlacement />} fileName="placement.tsx" width="fit-content">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { NotificationApi, NotificationOptions, NotificationProps, NotificationProviderProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/notification/placement.tsx"
 ```
 
-## NotificationApi API
+</ComponentExample>
+
+### 后续操作
+
+设置 `duration: 0`，让操作保留到通知被关闭。操作按钮应通过 `close(key)` 关闭本条通知，避免用 `close()` 误关共享队列中的其他通知。
+
+<ComponentExample exampleId="actions" preview={<NotificationActions />} fileName="actions.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/notification/actions.tsx"
+```
+
+</ComponentExample>
+
+<a id="进阶用法"></a>
+
+### 异步更新
+
+复用返回的 `key`，将通知替换为操作结果。相同 `key` 会替换整组配置，而不是合并旧配置，并重新计时。结果配置不再传入 `duration: 0`，因此恢复自动关闭。
+
+<ComponentExample exampleId="async" preview={<NotificationAsync />} fileName="async.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/notification/async.tsx"
+```
+
+</ComponentExample>
+{/* leaf:section api */}
+
+## API
+
+### NotificationProps API
+
+直接渲染时，由应用响应 `onClose` 并设置 `open=false`；`afterClose` 在离场动画结束后触发。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `open` | [`(options: NotificationOptions) => string`](#notificationoptions-api) | 必填 | 显示通知并返回标识 |
-| `success` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示成功通知 |
-| `info` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示信息通知 |
-| `warning` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示警告通知 |
-| `danger` | [`(options: Omit<NotificationOptions, 'type'>) => string`](#notificationoptions-api) | 必填 | 显示危险通知；`error` 保留为兼容方法 |
-| `close` | `(key?: string) => void` | 必填 | 关闭指定标识；省略则关闭全部 |
-
-## NotificationOptions API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `key` | `string` | — | 唯一且稳定的标识 |
-| `title` | `ReactNode` | 必填 | 标题内容 |
-| `description` | `ReactNode` | — | 补充说明 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | 通知的状态样式；`error` 为兼容别名。 |
-| `icon` | `ReactNode` | — | 自定义图标 |
-| `actions` | `ReactNode` | — | 通知操作 |
-| `duration` | `number` | `4.5` | 显示秒数，0 表示持续展示 |
-| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
-| `closable` | `boolean` | `true` | 显示关闭操作 |
-| `onClose` | `() => void` | — | 关闭时触发 |
-
-## NotificationProps API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `title` | `ReactNode` | 必填 | 标题内容 |
-| `description` | `ReactNode` | — | 补充说明 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger'` | `'info'` | 通知的状态样式；`error` 为兼容别名。 |
-| `icon` | `ReactNode` | — | 自定义图标 |
-| `actions` | `ReactNode` | — | 通知操作 |
-| `duration` | `number` | `4.5` | 显示秒数，0 表示持续展示 |
-| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
-| `closable` | `boolean` | `true` | 显示关闭操作 |
-| `onClose` | `() => void` | — | 关闭时触发 |
 | `open` | `boolean` | 必填 | 受控展示状态 |
-| `afterClose` | `() => void` | — | 离场动画结束 |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `type` | `FeedbackType \| 'error'` | `'info'` | 通知的状态样式；`error` 为兼容别名。 |
+| `actions` | `ReactNode` | — | 通知内的后续操作；应用负责执行业务并按当前 key 关闭通知。 |
+| `duration` | `number` | `4.5` | 自动关闭的秒数；0 或负数不自动关闭。悬停或焦点进入时暂停，离开后继续剩余时间。 |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
+| `closable` | `boolean` | `true` | 显示关闭操作 |
+| `onClose` | `() => void` | — | 关闭请求时调用；声明式 Notification 须由应用将 open 设为 false。 |
+| `afterClose` | `() => void` | — | 关闭动画结束、内容卸载后调用，不代替 onClose 更新受控值。 |
+| `icon` | `ReactNode` | — | 自定义图标 |
 
-## NotificationProviderProps API
+### NotificationApi API
+
+`useNotification()` 直接返回此 API。嵌套的 `ConfigProvider` 共享队列，每条通知使用调用组件所在区域的主题和语言。调用组件卸载后，已有通知继续保留；入口 provider 卸载后，通知和计时器一起清理。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 内容或下级项目 |
-| `maxCount` | `number` | `5` | 最多同时展示的通知数 |
+| `open` | `(options: `[`NotificationOptions`](#notificationoptions-api)`) => string` | 必填 | 打开或按 key 替换通知，返回该通知的 key。 |
+| `success` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | 必填 | 显示成功通知 |
+| `info` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | 必填 | 显示信息通知 |
+| `warning` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | 必填 | 显示警告通知 |
+| `danger` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | 必填 | 显示危险通知；`error` 保留为兼容方法 |
+| `error` | `(options: Omit<`[`NotificationOptions`](#notificationoptions-api)`, 'type'>) => string` | 必填 | 请求失败时显示的内容，替代数据行。 |
+| `close` | `(key?: string) => void` | 必填 | 关闭指定 key；不传 key 会关闭同一 Provider 内的全部通知，不限于当前调用组件。 |
+
+### NotificationOptions API
+
+鼠标停留或焦点位于通知内部时暂停计时，离开后按剩余时长继续。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | 必填 | 标题内容 |
+| `description` | `ReactNode` | — | 补充说明 |
+| `type` | `FeedbackType \| 'error'` | `'info'` | 通知的状态样式；`error` 为兼容别名。 |
+| `actions` | `ReactNode` | — | 通知内的后续操作；应用负责执行业务并按当前 key 关闭通知。 |
+| `duration` | `number` | `4.5` | 自动关闭的秒数；0 或负数不自动关闭。悬停或焦点进入时暂停，离开后继续剩余时间。 |
+| `placement` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | 显示位置 |
+| `closable` | `boolean` | `true` | 显示关闭操作 |
+| `key` | `string` | 自动生成 | 同一 Provider 内的唯一标识；重复 open 会替换该条通知并重启关闭计时，不追加新通知。 |
+| `onClose` | `() => void` | — | 关闭请求时调用；声明式 Notification 须由应用将 open 设为 false。 |
+| `icon` | `ReactNode` | — | 自定义图标 |
+
+### NotificationProviderProps API
+
+单独使用通知时，可用 `NotificationProvider` 代替 `ConfigProvider`；显式添加它也可建立独立队列。`maxCount` 统计所有位置的通知，超出时关闭最早的通知。请在 provider 挂载时设置，之后修改不会重设队列。
+
+```tsx
+import { NotificationProvider } from '@ifhover/leaf-ui';
+
+export function Root() {
+  return <NotificationProvider maxCount={3}><App /></NotificationProvider>;
+}
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | 共享此独立通知队列的内容；ConfigProvider 已提供队列，嵌套 ConfigProvider 复用上层队列。 |
+| `maxCount` | `number` | `5` | 此队列的最大同时显示数量；挂载时设置，超过时关闭最早的通知。 |

@@ -1,53 +1,99 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { QRCodeBasic } from '../../src/examples/qr-code/basic';
 import { QRCodeStatus } from '../../src/examples/qr-code/advanced';
+import { QRCodeRefresh } from '../../src/examples/qr-code/refresh';
+import { QRCodeDownload } from '../../src/examples/qr-code/download';
+import { QRCodeLogo } from '../../src/examples/qr-code/logo';
+
+export const leafDoc = { component: 'QRCode', primaryApi: 'QRCodeProps' };
 
 # QRCode 二维码
 
-将文本和链接展示为二维码。
+将文本或链接编码为二维码。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<QRCodeBasic />} fileName="basic.tsx">
+## 基础用法
+
+<a id="基本用法"></a>
+
+`value` 是要编码的内容。通过 `aria-label` 说明二维码的用途。
+
+<ComponentExample exampleId="basic" preview={<QRCodeBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/qr-code/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 状态与刷新
+<a id="状态与下载"></a>
 
-<ComponentExample title="状态与刷新" preview={<QRCodeStatus />} fileName="advanced.tsx" width={360}>
+{/* leaf:section examples */}
+
+## 示例
+
+### 加载状态
+
+`status="loading"` 显示加载提示，但不会自动获取或更新编码内容。
+
+<ComponentExample exampleId="advanced" preview={<QRCodeStatus />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/qr-code/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 过期后刷新
 
-value 为编码内容；status 可显示加载或过期状态。onRefresh 处理刷新操作，downloadable 提供 SVG 下载。
+`status="expired"` 显示刷新按钮。`onRefresh` 只通知应用处理刷新，不会自动改变 `value` 或 `status`。示例每次生成一个新的演示令牌；接入接口时，由应用管理请求、失败反馈和状态切换。
 
-## 类型
+<ComponentExample exampleId="refresh" preview={<QRCodeRefresh />} width="fit-content" fileName="refresh.tsx">
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { QRCodeProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/qr-code/refresh.tsx"
 ```
 
-## QRCodeProps API
+</ComponentExample>
+
+### 下载 SVG
+
+启用 `downloadable` 显示下载操作，通过 `fileName` 指定包含扩展名的文件名。
+
+<ComponentExample exampleId="download" preview={<QRCodeDownload />} width="fit-content" fileName="download.tsx">
+
+```tsx lineNumbers file="../../src/examples/qr-code/download.tsx"
+```
+
+</ComponentExample>
+
+### 中央标志
+
+通过 `logo` 添加标志，`level` 设置纠错等级。添加标志或调整配色后，应使用实际扫码设备验证识别效果；提高纠错等级不能替代扫码验证。
+
+<ComponentExample exampleId="logo" preview={<QRCodeLogo />} width="fit-content" fileName="logo.tsx">
+
+```tsx lineNumbers file="../../src/examples/qr-code/logo.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### QRCodeProps API
+
+配置编码内容、二维码状态和下载操作。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value` | `string` | 必填 | 受控值 |
-| `size` | `number` | `160` | 二维码像素宽度。 |
-| `color` | `string` | `'var(--leaf-color-text)'` | 颜色 |
-| `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | 背景颜色 |
+| `value` | `string` | 必填 | 二维码编码的文本或链接。 |
+| `size` | `number` | `160` | 正方形二维码的像素尺寸，最小 64。 |
+| `status` | `'active' \| 'loading' \| 'expired'` | `'active'` | 展示正常、加载或过期状态；不自动加载或计算过期时间。 |
+| `onRefresh` | `() => void` | — | 点击过期状态的刷新按钮时调用；应用负责更新 value 和 status。 |
+| `downloadable` | `boolean` | `false` | 显示下载操作，导出 SVG 文件。 |
+| `fileName` | `string` | `'qrcode.svg'` | 下载文件名，包含扩展名。 |
 | `level` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | 二维码纠错等级 |
 | `logo` | `string` | — | 中央标志地址 |
 | `logoSize` | `number` | `32` | 中央标志尺寸 |
-| `status` | `'active' \| 'loading' \| 'expired'` | `'active'` | 显示状态 |
-| `onRefresh` | `() => void` | — | 刷新过期二维码 |
-| `downloadable` | `boolean` | `false` | 显示下载操作 |
-| `fileName` | `string` | `'qrcode.svg'` | 下载文件名 |
+| `color` | `string` | `'var(--leaf-color-text)'` | 颜色 |
+| `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | 背景颜色 |

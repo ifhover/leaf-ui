@@ -1,42 +1,74 @@
 import { Capabilities } from '../../src/examples/breadcrumb/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
+import { BreadcrumbSeparator } from '../../src/examples/breadcrumb/separator';
+
+export const leafDoc = { component: 'Breadcrumb', primaryApi: 'BreadcrumbProps' };
 
 # Breadcrumb 面包屑
 
 展示当前页面在导航层级中的位置。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<BreadcrumbBasic />} fileName="basic.tsx">
+最后一项表示当前页面，可以省略 `href`。如果 `title` 已经是路由框架的 Link，也不要再传 `href`，避免嵌套链接。
+
+<ComponentExample exampleId="basic" preview={<BreadcrumbBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/breadcrumb/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 折叠长路径
+{/* leaf:section examples */}
 
-<ComponentExample title="折叠长路径" preview={<Capabilities />} fileName="capabilities.tsx">
+## 示例
+
+### 分隔符
+
+通过 `separator` 设置路径层级之间的分隔内容。
+
+<ComponentExample exampleId="separator" preview={<BreadcrumbSeparator />} width="fit-content" fileName="separator.tsx">
+
+```tsx lineNumbers file="../../src/examples/breadcrumb/separator.tsx"
+```
+
+</ComponentExample>
+
+### 折叠长路径
+
+通过 `maxItems` 折叠较长路径。点击省略按钮后，仍可访问被折叠的中间链接。
+
+<ComponentExample exampleId="capabilities" preview={<Capabilities />} width="fit-content" fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/breadcrumb/capabilities.tsx"
 ```
 
 </ComponentExample>
 
-## Breadcrumb API
+{/* leaf:section api */}
+
+## API
+
+### Breadcrumb API
+
+路径层级、分隔内容与中间路径折叠的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | 必填 | 路径列表 |
 | `separator` | `ReactNode` | ChevronRight | 分隔内容 |
-| `maxItems` | `number` | — | 路径折叠前最多展示的项数。 |
+| `maxItems` | `number` | `Infinity` | 超过此项数时折叠中间路径；最小阈值为 3，默认不折叠。 |
 | `itemsBeforeCollapse` | `number` | `1` | 折叠后保留的起始项数。 |
 | `itemsAfterCollapse` | `number` | `1` | 折叠后保留的末尾项数。 |
 | `itemRender` | `(item: `[`BreadcrumbItem`](#breadcrumbitem)`, index: number) => ReactNode` | — | 自定义条目内容。 |
 | `aria-label` | `string` | 语言默认值 | 导航名称 |
 
-## BreadcrumbItem
+### BreadcrumbItem
+
+通过 `items` 定义的路径层级。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -45,16 +77,4 @@ import { BreadcrumbBasic } from '../../src/examples/breadcrumb/basic';
 | `icon` | `ReactNode` | — | 前置图标 |
 | `menu` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | — | 该路径项的下拉菜单。 |
 | `href` | `string` | — | 链接目标。 |
-| `target` | `string` | — | 目标的选择器或返回元素的函数；省略时居中。 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { BreadcrumbProps, BreadcrumbItem } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-最后一项标记为当前页面。BreadcrumbItem 继承原生链接属性，可通过 title 传入路由框架的 Link；没有 href 时不会生成多余的链接。
+| `target` | `string` | — | 链接的打开目标，遵循原生 a 元素的 target。 |

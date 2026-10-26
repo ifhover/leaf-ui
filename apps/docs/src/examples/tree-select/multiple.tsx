@@ -1,4 +1,4 @@
-import { Form, FormField, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+import { TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
 
 const treeOptions: readonly TreeSelectOption[] = [
   {
@@ -24,27 +24,13 @@ const treeOptions: readonly TreeSelectOption[] = [
 
 export function TreeSelectMultiple() {
   return (
-    <Form layout="vertical">
-      <FormField label="多选 · 逐项选择">
-        <TreeSelect options={treeOptions} multiple defaultValue={['visual']} defaultExpandAll />
-      </FormField>
-      <FormField label="勾选联动 · 提交子节点">
-        <TreeSelect
-          options={treeOptions}
-          treeCheckable
-          defaultValue={['visual']}
-          defaultExpandAll
-        />
-      </FormField>
-      <FormField label="勾选联动 · 合并显示父节点">
-        <TreeSelect
-          options={treeOptions}
-          treeCheckable
-          showCheckedStrategy="parent"
-          defaultValue={['design']}
-          defaultExpandAll
-        />
-      </FormField>
-    </Form>
+    <TreeSelect
+      aria-label="选择多个团队"
+      options={treeOptions}
+      multiple
+      defaultValue={['visual']}
+      defaultExpandAll
+      placeholder="选择团队"
+    />
   );
 }

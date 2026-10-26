@@ -1,87 +1,191 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ImageBasic } from '../../../src/examples/en/image/basic';
+import { ImageDisplay } from '../../../src/examples/en/image/display';
+import { ImageFit } from '../../../src/examples/en/image/fit';
+import { ImageStates } from '../../../src/examples/en/image/states';
 import { ImageGallery } from '../../../src/examples/en/image/advanced';
+import { ImageControlled } from '../../../src/examples/en/image/controlled';
+import { ImageService } from '../../../src/examples/en/image/service';
+
+export const leafDoc = { component: 'Image', primaryApi: 'ImageProps' };
 
 # Image
 
-Display images and explore galleries.
+Display images and optionally open a preview of one image or a gallery.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<ImageBasic />} fileName="basic.tsx">
+Provide meaningful `alt` text. Clicking an image opens its preview by default; loading or failed images cannot open it.
+
+<ComponentExample exampleId="basic" preview={<ImageBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/image/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Gallery and preview
+{/* leaf:section examples */}
 
-<ComponentExample title="Gallery and preview" preview={<ImageGallery />} fileName="advanced.tsx">
+## Examples
+
+### Display-only images
+
+<a id="common-usage"></a>
+
+Set `preview={false}` when the image does not need an enlarged preview.
+
+<ComponentExample exampleId="display" preview={<ImageDisplay />} fileName="display.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/display.tsx"
+```
+
+</ComponentExample>
+
+### Image fitting
+
+Within a fixed display area, `cover` fills the area and crops the excess, while `contain` keeps the entire image visible.
+
+<ComponentExample exampleId="fit" preview={<ImageFit />} fileName="fit.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/fit.tsx"
+```
+
+</ComponentExample>
+
+### Empty and failed images
+
+A placeholder appears when an image is missing or fails to load. Use `fallback` to replace the default content for these two states, not the loading indicator.
+
+<ComponentExample exampleId="states" preview={<ImageStates />} fileName="states.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/states.tsx"
+```
+
+</ComponentExample>
+
+### Gallery and preview
+
+`ImagePreviewGroup` collects child Images with preview enabled and a `src`. Click an image to browse the group. Use `previewSrc` on an Image when its enlarged preview needs a separate high-resolution URL.
+
+<ComponentExample exampleId="advanced" preview={<ImageGallery />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/image/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Controlled preview
 
-Supports keyboard navigation, touch swiping, zoom, thumbnails and fullscreen. ImagePreviewGroup collects child Images or accepts items and controlled open / index. Use `preview={false}` for display-only images.
+<a id="advanced-usage"></a>
 
-## Types
+Use `ImagePreview` directly when no image trigger is needed. Keep `open` and `index` in application state: set `open` to `false` when closing is requested and synchronize the index when the image changes. Closing does not reset the index; the application decides when to return to the first image.
 
-Import these types for data, callbacks and refs.
+<ComponentExample exampleId="controlled" preview={<ImageControlled />} fileName="controlled.tsx">
 
-```ts
-import type { ImagePreviewGroupProps, ImagePreviewItem, ImagePreviewProps, ImageProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/image/controlled.tsx"
 ```
 
-## ImagePreviewGroupProps API
+</ComponentExample>
+
+### Imperative preview
+
+Call `useImagePreview()` inside [ConfigProvider](./config-provider) without rendering an Image first. If ConfigProvider is not used, wrap the caller in `ImagePreviewProvider`. The `preview` method accepts a URL, an image object, or an array of either; `index` starts at zero.
+
+<ComponentExample exampleId="service" preview={<ImageService />} width="fit-content" fileName="service.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/image/service.tsx"
+```
+
+</ComponentExample>
+
+`preview` returns an idempotent close function. Opening another preview in the same Provider replaces the current gallery. Closing it, replacing it, or unmounting its caller invokes that gallery's `onClose`.
+
+{/* leaf:section api */}
+
+## API
+
+### ImageProps API
+
+Also supports native image attributes such as `src`, `alt`, `width`, `height`, `loading`, `onLoad`, and `onError`. The default `loading` value is `lazy`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Content overlaid on the image. |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | — | Images in display order |
-| `open` | `boolean` | — | Controlled visibility |
-| `defaultOpen` | `boolean` | `false` | Initial visibility |
+| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | Image fitting mode |
+| `fallback` | `ReactNode` | — | Missing or failed image content; defaults to an adaptive icon and one line of text, or only the icon in small containers. |
+| `preview` | `boolean` | `true` | Allow enlarged preview |
+| `previewSrc` | `string` | — | Higher-resolution preview URL |
+
+### ImagePreviewGroupProps API
+
+Props for grouping images and managing the active preview state.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Collect preview-enabled Images with src; srcSet-only images are not included. |
+| `items` | `readonly `[`ImagePreviewItem`](#imagepreviewitem-api)`[]` | — | Explicit image list, taking precedence over images collected from children. |
+| `open` | `boolean` | — | Controlled preview open state. |
+| `defaultOpen` | `boolean` | `false` | Initial preview open state for uncontrolled usage. |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
-| `index` | `number` | — | Current index, starting at zero |
-| `defaultIndex` | `number` | `0` | Initial index |
+| `index` | `number` | — | Controlled zero-based image index; write onIndexChange results back to it. |
+| `defaultIndex` | `number` | `0` | Initial zero-based image index for uncontrolled usage. |
 | `onIndexChange` | `(index: number) => void` | — | Active image changes |
 | `thumbnails` | `boolean` | `true` | Thumbnail navigation |
 | `downloadable` | `boolean` | `false` | Show download action |
 
-## ImagePreviewItem API
+### ImagePreviewProps API
+
+Props for the image list and controlled state of a standalone image preview.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`ImagePreviewItem`](#imagepreviewitem-api)`[]` | Required | Images in display order |
+| `open` | `boolean` | Required | Controlled visibility |
+| `onClose` | `() => void` | Required | Close request; the application must set controlled open to false. |
+| `index` | `number` | `0` | Current zero-based image index; write onIndexChange results back to it. |
+| `onIndexChange` | `(index: number) => void` | — | Active image changes |
+| `thumbnails` | `boolean` | `true` | Thumbnail navigation |
+| `downloadable` | `boolean` | `false` | Show download action |
+
+### ImagePreviewItem API
+
+Enable `downloadable` on the preview to offer downloads; set an item's `download` to `false` to hide its download action. Cross-origin download URLs must allow CORS. If downloading fails, the viewer provides an original-image link for saving it separately.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `src` | `string` | Required | Image URL |
 | `thumbnailSrc` | `string` | — | Optional thumbnail URL; falls back to src |
 | `alt` | `string` | `''` | Image description |
-| `width` | `number` | — | Width, numbers are in pixels |
-| `height` | `number` | — | Height, numbers are in pixels |
-| `download` | `string \| boolean` | — | Download URL, or whether downloads are allowed |
+| `width` | `number` | — | Original image width in pixels for preview layout. |
+| `height` | `number` | — | Original image height in pixels for preview layout. |
+| `download` | `string \| boolean` | — | With downloadable enabled, false disables this download, a string overrides its URL, otherwise src is used. Cross-origin downloads require CORS. |
 | `downloadName` | `string` | — | Optional filename for the downloaded image |
 
-## ImagePreviewProps API
+### ImagePreviewApi
+
+The preview invocation interface returned by `useImagePreview`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | [`readonly ImagePreviewItem[]`](#imagepreviewitem-api) | Required | Images in display order |
-| `open` | `boolean` | Required | Controlled visibility |
-| `index` | `number` | `0` | Current index, starting at zero |
-| `onClose` | `() => void` | Required | Called when closed |
-| `onIndexChange` | `(index: number) => void` | — | Active image changes |
-| `thumbnails` | `boolean` | `true` | Thumbnail navigation |
-| `downloadable` | `boolean` | `false` | Show download action |
+| `preview` | `( images: string \| `[`ImagePreviewItem`](#imagepreviewitem-api)` \| readonly (string \| `[`ImagePreviewItem`](#imagepreviewitem-api)`)[], options?: `[`ImagePreviewOptions`](#imagepreviewoptions)`, ) => () => void` | Required | Preview one image or a gallery with an initial index and options; returns an idempotent close function. |
 
-## ImageProps API
+### ImagePreviewOptions
+
+Presentation and close settings for an imperative image preview.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `preview` | `boolean` | `true` | Allow enlarged preview |
-| `previewSrc` | `string` | — | Higher-resolution preview URL |
-| `fallback` | `ReactNode` | — | Loading error content |
-| `fit` | `'cover' \| 'contain' \| 'fill' \| 'none' \| 'scale-down'` | `'cover'` | Image fitting mode |
+| `index` | `number` | — | Initial image index, starting at zero. |
+| `onIndexChange` | `(index: number) => void` | — | Called when the current image changes. |
+| `thumbnails` | `boolean` | — | Show gallery thumbnails; defaults to true. |
+| `downloadable` | `boolean` | — | Show the download action; defaults to false. |
+| `onClose` | `() => void` | — | Called when preview ends, including user closing, the returned close function, replacement in the same Provider and caller unmount. |
 
-Image supports native image attributes such as src, alt, width, height, loading, onLoad and onError.
+### ImagePreviewProvider API
+
+Props for supplying context to imperative image previews.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Content that can call useImagePreview; ConfigProvider already provides this service. |

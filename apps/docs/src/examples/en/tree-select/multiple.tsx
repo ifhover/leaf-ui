@@ -1,9 +1,9 @@
-import { Form, FormField, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+import { TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
 
 const treeOptions: readonly TreeSelectOption[] = [
   {
     value: 'design',
-    label: 'Design',
+    label: 'Design team',
     selectable: false,
     children: [
       { value: 'visual', label: 'Visual design' },
@@ -13,38 +13,24 @@ const treeOptions: readonly TreeSelectOption[] = [
   },
   {
     value: 'engineering',
-    label: 'Engineering',
+    label: 'Engineering team',
     selectable: false,
     children: [
-      { value: 'web', label: 'Frontend' },
-      { value: 'server', label: 'Backend' },
+      { value: 'web', label: 'Frontend development' },
+      { value: 'server', label: 'Backend development' },
     ],
   },
 ];
 
 export function TreeSelectMultiple() {
   return (
-    <Form layout="vertical">
-      <FormField label="Multiple · Select individual items">
-        <TreeSelect options={treeOptions} multiple defaultValue={['visual']} defaultExpandAll />
-      </FormField>
-      <FormField label="Linked checks · Child values">
-        <TreeSelect
-          options={treeOptions}
-          treeCheckable
-          defaultValue={['visual']}
-          defaultExpandAll
-        />
-      </FormField>
-      <FormField label="Linked checks · Parent values">
-        <TreeSelect
-          options={treeOptions}
-          treeCheckable
-          showCheckedStrategy="parent"
-          defaultValue={['design']}
-          defaultExpandAll
-        />
-      </FormField>
-    </Form>
+    <TreeSelect
+      aria-label="Choose teams"
+      options={treeOptions}
+      multiple
+      defaultValue={['visual']}
+      defaultExpandAll
+      placeholder="Select teams"
+    />
   );
 }

@@ -1,63 +1,96 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { PopoverBasic } from '../../../src/examples/en/popover/basic';
+import { PopoverHover } from '../../../src/examples/en/popover/hover';
 import { PopoverControlled } from '../../../src/examples/en/popover/controlled';
 import { PopoverPlacements } from '../../../src/examples/en/popover/placements';
+
+export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 
 # Popover
 
 Show details or actions next to an element.
 
-## Triggers
+{/* leaf:section basic */}
 
-<ComponentExample title="Triggers" preview={<PopoverBasic />} fileName="basic.tsx">
+## Basic usage
+
+Click the trigger to open. Escape, an outside click or focus leaving dismisses the panel.
+
+<ComponentExample exampleId="basic" preview={<PopoverBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled editing
+{/* leaf:section examples */}
 
-<ComponentExample title="Controlled editing" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
+## Examples
+
+### Hover details
+
+Hover mode is for descriptive content and also supports keyboard focus. Use the default click mode for forms or buttons.
+
+<ComponentExample exampleId="hover" preview={<PopoverHover />} fileName="hover.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/popover/hover.tsx"
+```
+
+</ComponentExample>
+
+### Controlled editing
+
+Control visibility with `open` and `onOpenChange`. Saving updates the project name; reopening after an unsaved close restores the saved value. Click mode moves focus into the panel by default; saving or pressing Escape returns it to the trigger.
+
+<ComponentExample exampleId="controlled" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Panel placement
+### Panel placement
 
-<ComponentExample title="Panel placement" preview={<PopoverPlacements />} fileName="placements.tsx">
+Set the preferred position with `placement`; it adjusts when space is limited.
+
+<ComponentExample exampleId="placements" preview={<PopoverPlacements />} fileName="placements.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/placements.tsx"
 ```
 
 </ComponentExample>
 
-## Popover API
+{/* leaf:section api */}
+
+## API
+
+### Popover API
+
+Configure popup content, triggers and controlled visibility.
+
+The trigger must forward its ref and events. Provide `aria-label` when there is no `title`. Tab can leave the panel; focus is not trapped. See [PopupOptions](/en/api/popup-options) for shared popup options.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactElement` | Required | Trigger element, with ref and event support |
-| `title / content` | `ReactNode` | — / Required | Title / content |
+| `title` | `ReactNode` | `—` | Popover title. |
+| `content` | `ReactNode` | Required | Popover content; use click mode for interactive content. |
+| `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Trigger element, with ref and event support |
 | `trigger` | `'click' \| 'hover'` | `'click'` | Trigger mode |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Popup placement |
-| `open / defaultOpen` | `boolean` | `false` | Controlled / initial open state |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `open` | `boolean` | — | Controlled open state. |
+| `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |
 | `onOpenChange` | `(open: boolean) => void` | — | Open state change |
-| `disabled` | `boolean` | `false` | Disable opening |
-| `autoFocus` | `boolean` | `true` | Focus the first action on click opening |
-| `enterDelay / leaveDelay` | `number` | `100` | Hover enter / leave delay in ms |
-| `width / maxWidth` | `number \| string` | `'max-content' / 320` | Width / maximum width |
-| `className / style` | `string / CSSProperties` | — | Applied to the popup |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { PopoverProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Use click mode for interactive content and hover mode for descriptions. Escape, outside click and focus leaving dismiss the popup. Tab keeps interactive content accessible. Supply aria-label when there is no title.
+| `autoFocus` | `boolean` | `true` | In click mode, focus the first focusable element or the panel if none exists; hover mode does not move focus. |
+| `aria-label` | `string` | — | Accessible name for a popover without a visible title. |
+| `width` | `number \| string` | `'max-content'` | Popover width; numbers are pixels. |
+| `maxWidth` | `number \| string` | `320` | Maximum popover width; numbers are pixels. |
+| `enterDelay` | `number` | `100` | Delay in milliseconds before opening on hover. |
+| `leaveDelay` | `number` | `100` | Delay in milliseconds before closing after pointer leave. |
+| `className` | `string` | — | CSS class applied to the popover panel. |
+| `style` | `CSSProperties` | — | Inline styles applied to the popover panel. |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |

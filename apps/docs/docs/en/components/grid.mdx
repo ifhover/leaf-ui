@@ -1,42 +1,105 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { GridBasic } from '../../../src/examples/en/grid/basic';
 import { GridColumns } from '../../../src/examples/en/grid/advanced';
+import { GridResponsive } from '../../../src/examples/en/grid/responsive';
+import { GridOffset } from '../../../src/examples/en/grid/offset';
+import { GridResponsiveSpans } from '../../../src/examples/en/grid/responsive-spans';
+
+export const leafDoc = { component: 'Grid', primaryApi: 'GridProps' };
 
 # Grid
 
-Arrange content for different screen widths.
+Arrange content in equal-width columns or a 24-column grid. Use [Flex](/en/components/flex) or [Space](/en/components/space) for a simple group of elements.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<GridBasic />} fileName="basic.tsx" width="100%">
+`Grid` defaults to three columns. Set `columns` to change the number of equal-width columns.
+
+<ComponentExample exampleId="basic" preview={<GridBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/grid/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 24-column grid and responsive widths
+{/* leaf:section examples */}
 
-<ComponentExample title="24-column grid and responsive widths" preview={<GridColumns />} fileName="advanced.tsx" width="100%">
+## Examples
+
+### Responsive column counts
+
+`columns` accepts breakpoint values. Breakpoints follow browser viewport width, not container width. Unspecified larger breakpoints inherit values from smaller ones.
+
+<ComponentExample exampleId="responsive" preview={<GridResponsive />} fileName="responsive.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/grid/responsive.tsx"
+```
+
+</ComponentExample>
+
+### Column spans
+
+<a id="24-column-grid-and-responsive-widths"></a>
+
+Use `Row` with `Col`. Each `span` occupies that many of the 24 grid units, and `gutter` sets the spacing between columns.
+
+<ComponentExample exampleId="advanced" preview={<GridColumns />} fileName="advanced.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/grid/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Column offsets
 
-Grid uses columns for equal-width columns. Row / Col use a 24-column span and offset. Responsive values follow viewport width and inherit values from smaller breakpoints.
+`offset` leaves empty grid units before a column without changing its `span`. This example leaves eight units between the two columns.
 
-## Types
+<ComponentExample exampleId="offset" preview={<GridOffset />} fileName="offset.tsx" width="100%">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { ColProps, GridProps, RowProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/grid/offset.tsx"
 ```
 
-## ColProps API
+</ComponentExample>
+
+### Responsive spans and visibility
+
+Use breakpoint props on `Col` to set its span at each width; `0` hides the column. Below 768px, this example hides supplementary content and lets the main content fill the row. At `md` and above, both columns take half the row.
+
+<ComponentExample exampleId="responsive-spans" preview={<GridResponsiveSpans />} fileName="responsive-spans.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/grid/responsive-spans.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### GridProps API
+
+`Grid`, `Row` and `Col` support native `div` attributes and DOM refs.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | Columns; unspecified breakpoints inherit smaller ones |
+| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | Gap; tuples use [vertical, horizontal] |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
+
+### RowProps API
+
+Props for alignment and column spacing in a 24-column grid row.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
+| `gutter` | [`GridProps`](#gridprops-api)`['gap']` | `16` | Grid gap; tuples use [vertical, horizontal] |
+
+### ColProps API
+
+Props for spans, offsets and responsive settings in a 24-column grid.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -47,18 +110,3 @@ import type { ColProps, GridProps, RowProps } from '@ifhover/leaf-ui';
 | `md` | `number` | — | At 768px and above |
 | `lg` | `number` | — | At 992px and above |
 | `xl` | `number` | — | At 1200px and above |
-
-## GridProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `3` | Columns; unspecified breakpoints inherit smaller ones |
-| `gap` | `number \| string \| readonly [number \| string, number \| string]` | `16` | Gap; tuples use [vertical, horizontal] |
-| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
-
-## RowProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `align` | `'start' \| 'center' \| 'end' \| 'stretch'` | `'stretch'` | Alignment |
-| `gutter` | [`GridProps['gap']`](#gridprops-api) | `16` | Grid gap; tuples use [vertical, horizontal] |

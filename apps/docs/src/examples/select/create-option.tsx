@@ -1,21 +1,24 @@
-import type { SelectOption } from '@ifhover/leaf-ui';
-import { Select } from '@ifhover/leaf-ui';
+import { Select, type SelectOption } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
-const roles = (english: boolean): SelectOption[] => [
-  { value: 'design', label: english ? 'Design' : '设计' },
-  { value: 'engineering', label: english ? 'Engineering' : '工程' },
-  { value: 'marketing', label: english ? 'Marketing' : '市场' },
+const initialOptions: SelectOption[] = [
+  { value: 'design', label: '设计' },
+  { value: 'engineering', label: '工程' },
 ];
 
-export function CreateOption({ english = false }) {
+export function CreateOption() {
+  const [options, setOptions] = useState(initialOptions);
+  const [value, setValue] = useState<string[]>(['design']);
   return (
     <Select
-      allowCreate
-      aria-label={english ? 'Tags' : '标签'}
+      aria-label="项目标签"
       multiple
-      options={roles(english)}
-      placeholder={english ? 'Select or type to create' : '选择或输入创建'}
-      showSearch
+      allowCreate
+      options={options}
+      value={value}
+      onChange={setValue}
+      onCreate={(option) => setOptions((current) => [...current, option])}
+      placeholder="选择或输入新标签"
     />
   );
 }

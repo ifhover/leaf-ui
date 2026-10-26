@@ -3,21 +3,27 @@ import { EmptyBasic } from '../../src/examples/empty/basic';
 
 # Empty 空状态
 
-空状态已整合至 [Result 结果](/components/result)，请优先使用 `Result` 的 `status="empty"`；`Empty` 作为兼容入口继续可用，属性会映射到 `Result`：`image` → `icon`、`description` → `title`、`children` → `extra`。
+`Empty` 是兼容入口。新增空状态请使用 [Result 结果](/components/result) 的 `status="empty"`。
 
-<ComponentExample title="空状态与兼容入口" preview={<EmptyBasic />} fileName="basic.tsx">
+## 兼容用法
+
+<ComponentExample title="兼容用法" preview={<EmptyBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/empty/basic.tsx"
 ```
 
 </ComponentExample>
 
-迁移时把 `Empty` 替换为 `Result`，并保留原有的状态样式与主题配置：
+## 迁移到 Result
+
+将 `image` 改为 `icon`、`description` 改为 `title`，并把 `children` 中的操作移到 `extra`。
 
 ```diff
 - import { Empty } from '@ifhover/leaf-ui';
 + import { Result } from '@ifhover/leaf-ui';
 
-- <Empty description="暂无数据" />
-+ <Result status="empty" title="暂无数据" />
+- <Empty description="暂无项目" />
++ <Result status="empty" title="暂无项目" />
 ```
+
+完整参数见 [Empty API](/components/result#empty-api)。

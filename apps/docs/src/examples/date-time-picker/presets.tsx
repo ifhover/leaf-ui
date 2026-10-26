@@ -1,4 +1,4 @@
-import { DateTimePicker } from '@ifhover/leaf-ui';
+import { DatePicker } from '@ifhover/leaf-ui';
 
 const tomorrowAtTen = () => {
   const date = new Date();
@@ -9,7 +9,8 @@ const tomorrowAtTen = () => {
 
 export function Presets({ english = false }) {
   return (
-    <DateTimePicker
+    <DatePicker
+      picker="datetime"
       aria-label={english ? 'Reminder time' : '提醒时间'}
       placeholder={english ? 'Pick a reminder time' : '选择提醒时间'}
       presets={[{ label: english ? 'Tomorrow at 10' : '明天十点', value: tomorrowAtTen }]}

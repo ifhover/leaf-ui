@@ -1,84 +1,115 @@
-import { DrawerSections } from '../../../src/examples/drawer/sections';
-import { Capabilities } from '../../../src/examples/drawer/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DrawerBasic } from '../../../src/examples/en/drawer/basic';
+import { DrawerPlacement } from '../../../src/examples/en/drawer/placement';
+import { DrawerSections } from '../../../src/examples/en/drawer/sections';
+import { DrawerResize } from '../../../src/examples/en/drawer/resize';
+import { DrawerNested } from '../../../src/examples/en/drawer/nested';
+
+export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 # Drawer
 
-Open content from a page edge to view details or complete actions.
+Open content from a page edge to view details or complete an action.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<DrawerBasic />} fileName="basic.tsx">
+Handle `onClose` and update `open` in the application. Provide `aria-label` when omitting `title`.
+
+<ComponentExample exampleId="basic" preview={<DrawerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Resize and nested push
+{/* leaf:section examples */}
 
-<ComponentExample title="Resize and nested push" preview={<Capabilities english />} fileName="capabilities.tsx" width="fit-content">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/drawer/capabilities.tsx"
+### Placement
+
+Use `width` for left and right drawers, and `height` for top and bottom drawers.
+
+<ComponentExample exampleId="placement" preview={<DrawerPlacement />} fileName="placement.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/placement.tsx"
 ```
 
 </ComponentExample>
 
-## Notification preferences
+### Footer submission
 
-Separate the heading, settings and footer actions.
+Associate the footer submit button with the form using its `form` attribute to retain native validation. Submission and closing are handled by the application.
 
-<ComponentExample title="Notification preferences" preview={<DrawerSections english />} fileName="sections.tsx" width="fit-content">
+<ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/drawer/sections.tsx"
+```tsx lineNumbers file="../../../src/examples/en/drawer/sections.tsx"
 ```
 
 </ComponentExample>
 
-## Drawer API
+### Resizing
+
+<a id="advanced-usage"></a>
+
+Enable `resizable` to drag the edge or focus the separator and use arrow keys. `minSize` and `maxSize` limit the resize value reported by `onResize`; the visible size remains constrained by the viewport. Changing `width` or `height` resets the manual adjustment.
+
+<ComponentExample exampleId="resize" preview={<DrawerResize />} fileName="resize.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/resize.tsx"
+```
+
+</ComponentExample>
+
+### Nested push
+
+Set `push` on the child drawer to shift its nearest parent overlay. `true` means 40px, or pass a distance directly. Escape closes only the topmost drawer, then focus returns to its opener. Reset the child's `open` when closing the parent to avoid reopening both layers.
+
+<ComponentExample exampleId="nested" preview={<DrawerNested />} fileName="nested.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/nested.tsx"
+```
+
+</ComponentExample>
+
+For content preservation and focus configuration, see [Modal advanced usage](/en/components/modal#advanced-usage).
+
+{/* leaf:section api */}
+
+## API
+
+### Drawer API
+
+Configuration for controlled visibility, placement, content regions and dismissal.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
-| `open` | `boolean` | Required | Whether the drawer is open |
-| `title` | `ReactNode` | — | Title |
+| `open` | `boolean` | Required | Controlled open state, updated by the application. |
+| `title` | `ReactNode` | — | Drawer title. |
 | `description` | `ReactNode` | — | Additional description. |
-| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
-| `footer` | `ReactNode` | — | Footer content |
-| `extra` | `ReactNode` | — | Actions beside the title |
+| `onClose` | `() => void` | — | Close request; update open in application state |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
 | `width` | `number \| string` | `380` | Width for left and right drawers |
 | `height` | `number \| string` | `300` | Height for top and bottom drawers |
-| `closable` | `boolean` | `true` | Close button / backdrop click / Escape |
-| `maskClosable` | `boolean` | `true` | Close button / backdrop click / Escape |
-| `keyboard` | `boolean` | `true` | Close button / backdrop click / Escape |
-| `onClose` | `() => void` | — | Close request; update open in application state |
-| `afterClose` | `() => void` | — | Called after the closing transition |
-| `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
-| `destroyOnClose` | `boolean` | `false` | Unmount content after the closing transition; preserved by default. |
-| `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
-| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
-| `push` | `boolean \| number` | `false` | Push the parent overlay when a nested drawer opens; accepts a distance. |
+| `footer` | `ReactNode` | — | Footer content |
+| `extra` | `ReactNode` | — | Actions beside the title |
+| `variant` | `'plain' \| 'card'` | `'card'` | Content appearance; card places the body on a separate surface. |
+| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
+| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
+| `closable` | `boolean` | `true` | Show the close button. |
+| `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |
+| `keyboard` | `boolean` | `true` | Allow Escape to request closing. |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
 | `resizable` | `boolean` | `false` | Allow resizing by dragging or arrow keys. |
 | `minSize` | `number` | `240` | Minimum size in pixels. |
 | `maxSize` | `number` | `900` | Maximum size in pixels. |
-| `onResize` | `(size: number) => void` | — | Called while resizing. |
-
-## Types
-
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { DrawerProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Place actions in footer. A submit button can use its form attribute to target a form inside the drawer. Provide aria-label if there is no title. Nested dialogs are supported, and focus returns to the opener after closing.
-
-## Surfaces and rich content
-
-Use `description` and `icon` to explain the current task. The heading and muted footer have subtle dividers by default; `divided={false}` groups content with spacing.
+| `onResize` | `(size: number) => void` | — | Return the new size on pointer or keyboard resizing; changing width or height resets the manual size. |
+| `push` | `boolean \| number` | `false` | Push the nearest parent overlay; true uses 40px and a number specifies the distance. |
+| `afterClose` | `() => void` | — | Called after the closing transition |
+| `destroyOnClose` | `boolean` | `false` | Unmount contents after closing; preserve takes precedence and forceRender keeps contents mounted. |
+| `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
+| `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |

@@ -1,21 +1,20 @@
-import type { SelectOption } from '@ifhover/leaf-ui';
 import { Select, Tag } from '@ifhover/leaf-ui';
 
-const roles = (english: boolean): SelectOption[] => [
-  { value: 'design', label: english ? 'Design' : '设计' },
-  { value: 'engineering', label: english ? 'Engineering' : '工程' },
-  { value: 'marketing', label: english ? 'Marketing' : '市场' },
-  { value: 'operations', label: english ? 'Operations' : '运营' },
+const options = [
+  { value: 'design', label: '设计工作室' },
+  { value: 'product', label: '产品团队' },
+  { value: 'engineering', label: '工程团队' },
+  { value: 'archived', label: '归档项目', disabled: true },
 ];
 
-export function CustomTags({ english = false }) {
+export function CustomTags() {
   return (
     <Select
-      aria-label={english ? 'Roles' : '角色'}
-      defaultValue={['design', 'engineering']}
+      aria-label="自定义团队标签"
       multiple
-      options={roles(english)}
-      placeholder={english ? 'Select roles' : '选择角色'}
+      defaultValue={['design', 'product']}
+      options={options}
+      placeholder="选择团队"
       tagRender={(option, remove) => (
         <Tag closable onClose={remove}>
           {option.label}

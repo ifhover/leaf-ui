@@ -1,52 +1,96 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputOTPBasic } from '../../../src/examples/en/input-otp/basic';
 import { InputOTPOptions } from '../../../src/examples/en/input-otp/advanced';
+import { InputOTPSeparator } from '../../../src/examples/en/input-otp/separator';
+import { InputOTPMask } from '../../../src/examples/en/input-otp/mask';
+import { InputOTPDisabled } from '../../../src/examples/en/input-otp/disabled';
+
+export const leafDoc = { component: 'InputOTP', primaryApi: 'InputOTPProps' };
 
 # InputOTP
 
 Enter and paste verification codes.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<InputOTPBasic />} fileName="basic.tsx" width={360}>
+The default code contains six digits. Paste the entire code or use one-time-code autofill; characters outside the selected mode are removed. `onComplete` only indicates that the code is filled. Validate it on your server.
+
+<ComponentExample exampleId="basic" preview={<InputOTPBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/input-otp/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Alphanumeric, masked and separated input
+Set `name` to include the code in FormData. Uncontrolled form reset restores `defaultValue`; controlled values must be reset in application state.
 
-<ComponentExample title="Alphanumeric, masked and separated input" preview={<InputOTPOptions />} fileName="advanced.tsx" width={360}>
+{/* leaf:section examples */}
+
+## Examples
+
+### Letters and digits
+
+`mode="alphanumeric"` accepts ASCII letters and digits and preserves letter case.
+
+<ComponentExample exampleId="advanced" preview={<InputOTPOptions />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/input-otp/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Separator
 
-Preserves one input for paste and one-time-code autofill. onComplete indicates complete input; validate the code on your server.
+The callback index starts at 0 and inserts content after that character. Return a separator at index 2 to divide the code into two groups.
 
-## Types
+<ComponentExample exampleId="separator" preview={<InputOTPSeparator />} width="fit-content" fileName="separator.tsx">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { InputOTPProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/input-otp/separator.tsx"
 ```
 
-## InputOTPProps API
+</ComponentExample>
+
+### Masked characters
+
+`mask` only hides the displayed characters. The value and native form submission remain unchanged; this is not a password input.
+
+<ComponentExample exampleId="mask" preview={<InputOTPMask />} width="fit-content" fileName="mask.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-otp/mask.tsx"
+```
+
+</ComponentExample>
+
+### Disabled
+
+Set `disabled` to prevent editing the verification code.
+
+<ComponentExample exampleId="disabled" preview={<InputOTPDisabled />} width="fit-content" fileName="disabled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/input-otp/disabled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### InputOTPProps API
+
+Configuration for code length, accepted characters, controlled values and completion events.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `length` | `number` | `6` | Code character count |
-| `value` | `string` | — | Controlled value |
-| `defaultValue` | `string` | `''` | Initial value, restored by uncontrolled form resets |
-| `onChange` | `(value: string) => void` | — | Value change callback |
-| `onComplete` | `(value: string) => void` | — | Called when input is complete |
+| `length` | `number` | `6` | Code length, rounded down and constrained to 1–32. |
+| `value` | `string` | — | Controlled verification-code text. |
+| `defaultValue` | `string` | `''` | Initial uncontrolled text, restored on form reset. |
+| `onChange` | `(value: string) => void` | — | Return filtered, length-limited text after user editing. |
+| `onComplete` | `(value: string) => void` | — | Called when user input reaches the specified length; the server must still verify the code. |
 | `mode` | `'numeric' \| 'alphanumeric'` | `'numeric'` | Accept digits or alphanumeric characters. |
-| `mask` | `boolean \| string` | `false` | Mask displayed characters |
-| `separator` | `(index: number) => ReactNode` | — | Separator by position |
+| `mask` | `boolean \| string` | `false` | Hide visible slot characters with dots for true or the specified string; input and submitted values remain unchanged. |
+| `separator` | `(index: number) => ReactNode` | — | Insert separator content after the character at a zero-based index; not called after the last character. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input cell size. |
 | `status` | `'error' \| 'warning'` | — | Display state |

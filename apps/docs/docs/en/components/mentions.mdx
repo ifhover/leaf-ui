@@ -1,83 +1,107 @@
-import { MentionsPopup } from '../../../src/examples/mentions/popup';
 import { ComponentExample } from '../../../src/components/component-example';
-import { MentionsBasic } from '../../../src/examples/mentions/basic';
-import { MentionsPrefixes } from '../../../src/examples/mentions/prefixes';
+import { MentionsBasic } from '../../../src/examples/en/mentions/basic';
+import { MentionsControlled } from '../../../src/examples/en/mentions/controlled';
+import { MentionsPrefixes } from '../../../src/examples/en/mentions/prefixes';
+import { MentionsPopup } from '../../../src/examples/en/mentions/popup';
+
+export const leafDoc = { component: 'Mentions', primaryApi: 'MentionsProps' };
 
 # Mentions
 
-Insert people or references into text.
+Insert people or content references into multiline text.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<MentionsBasic english />} fileName="basic.tsx">
+Type `@` to show suggestions. A prefix must occur at the start of the text or after whitespace; the query cannot contain whitespace.
 
-```tsx lineNumbers file="../../../src/examples/mentions/basic.tsx"
+<ComponentExample exampleId="basic" preview={<MentionsBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/mentions/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Different prefixes
+{/* leaf:section examples */}
 
-<ComponentExample title="Different prefixes" preview={<MentionsPrefixes english />} fileName="prefixes.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/mentions/prefixes.tsx"
+### Controlled text and insertion
+
+`onChange` returns the full text; `onSelect` returns the option and prefix. Insertion combines the prefix, option `value` and `split`, which defaults to one trailing space. `label` is only for suggestions. Existing text after the caret is preserved.
+
+<ComponentExample exampleId="controlled" preview={<MentionsControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/mentions/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Popup width
+### Different prefixes
 
-The popup matches the field width by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to fit the content, which may be narrower than the field, or `popupWidth={300}` for a fixed 300px width; CSS lengths are also supported. `popupMaxWidth` is unset by default. The example below fits the content with an explicit maximum width. Viewport edge avoidance still applies.
+Use the `prefix` passed to `onSearch` to choose a suggestion source. This example uses `@` for people and `#` for topics.
 
-<ComponentExample title="Popup width" preview={<MentionsPopup english />} fileName="popup.tsx">
+<ComponentExample exampleId="prefixes" preview={<MentionsPrefixes />} fileName="prefixes.tsx">
 
-```tsx lineNumbers file="../../../src/examples/mentions/popup.tsx"
+```tsx lineNumbers file="../../../src/examples/en/mentions/prefixes.tsx"
 ```
 
 </ComponentExample>
 
-## MentionOption
+### Popup width
+
+The popup matches the textarea by default. Use `popupWidth="auto"` to fit its content and `popupMaxWidth` to cap the width.
+
+<ComponentExample exampleId="popup" preview={<MentionsPopup />} fileName="popup.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/mentions/popup.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Mentions API
+
+Configure mention text, suggestions and insertion behavior.
+
+Inherits native form props, read-only behavior and auto-sizing from [Textarea](textarea). Disabled or read-only controls do not show suggestions. See [PopupOptions](../api/popup-options) for shared popup settings.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Controlled value. |
-| `label` | `ReactNode` | — | Visible label or content. |
-| `searchLabel` | `string` | — | Plain text used for searching. |
-| `disabled` | `boolean` | — | Disable interaction. |
-
-## Mentions API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
+| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | Required | Available options. |
+| `value` | `string` | — | Controlled full text. |
+| `defaultValue` | `string` | `''` | Initial uncontrolled text, restored on form reset. |
+| `onChange` | `(value: string) => void` | — | Return the full text after editing or selecting an option, not a native event. |
+| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | Called with the selected option and matched prefix. |
+| `prefixes` | `readonly string[]` | `['@']` | Text prefixes that trigger suggestions. |
+| `split` | `string` | `' '` | Separator appended after inserting a reference. |
+| `onSearch` | `(query: string, prefix: string) => void` | — | Called with the query and prefix when a mention is matched before the caret. |
+| `loading` | `boolean` | — | Show loading feedback when no option matches; existing matches remain selectable. |
+| `notFoundContent` | `ReactNode` | — | Content when no options match. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `status` | `'error' \| 'warning'` | — | Configure status. |
-| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | Configure resize. |
-| `autoSize` | `boolean \| `[`TextareaAutoSize`](textarea#textareaautosize-api) | `false` | Configure auto size. |
-| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Configure show count. |
+| `status` | `'error' \| 'warning'` | — | Show an error or warning appearance without performing validation. |
+| `resize` | `'none' \| 'vertical' \| 'both'` | `'vertical'` | Allowed textarea resize directions; none disables resizing. |
+| `autoSize` | `boolean \| `[`TextareaAutoSize`](textarea#textareaautosize-api) | `false` | Resize height to the text, optionally bounded by minimum and maximum rows. |
+| `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Show the character count or customize it with a function. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `value` | `string` | — | Controlled value. |
-| `defaultValue` | `string` | `''` | Initial value; uncontrolled fields support native form reset. |
-| `onChange` | `(value: string) => void` | — | Called when the value changes. |
-| `onSearch` | `(query: string, prefix: string) => void` | — | Called when the search text changes. |
-| `onSelect` | `(option: `[`MentionOption`](#mentionoption)`, prefix: string) => void` | — | Called when an item is selected. |
-| `options` | `readonly `[`MentionOption`](#mentionoption)`[]` | Required | Available options. |
-| `prefixes` | `readonly string[]` | — | Text prefixes that trigger suggestions. |
-| `split` | `string` | `' '` | Separator appended after inserting a reference. |
-| `loading` | `boolean` | — | Show a loading state. |
-| `notFoundContent` | `ReactNode` | — | Content when no options match. |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 
-## Types and interaction
+### MentionOption
 
-Import the props and data types when creating reusable configuration.
+A mention suggestion supplied through `options`.
 
-```ts
-import type { MentionOption, MentionsProps } from '@ifhover/leaf-ui';
-```
-
-Suggestions support arrow keys and Enter; the input stays focusable and follows ConfigProvider themes and reduced motion.
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | `string` | Required | Text inserted after the matched prefix and before split. |
+| `label` | `ReactNode` | — | Visible label or content. |
+| `searchLabel` | `string` | — | Plain text used for searching. |
+| `disabled` | `boolean` | — | Disable interaction. |

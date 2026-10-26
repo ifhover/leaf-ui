@@ -1,188 +1,215 @@
-import { SingleLine } from '../../../src/examples/en/tree-select/single-line';
-import { Expanded } from '../../../src/examples/tree-select/expanded';
-import { LazyLoad } from '../../../src/examples/tree-select/lazy';
-import { NodeRender } from '../../../src/examples/tree-select/node-render';
-import { PopupWidth } from '../../../src/examples/tree-select/popup-width';
-import { Search } from '../../../src/examples/tree-select/search';
-import { SelectLimit } from '../../../src/examples/tree-select/select-limit';
-import { TagLimit } from '../../../src/examples/tree-select/tag-limit';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TreeSelectBasic } from '../../../src/examples/en/tree-select/basic';
+import { TreeSelectControlled } from '../../../src/examples/en/tree-select/controlled';
 import { TreeSelectMultiple } from '../../../src/examples/en/tree-select/multiple';
+import { TreeSelectChecks } from '../../../src/examples/en/tree-select/checked';
 import { TreeSelectStates } from '../../../src/examples/en/tree-select/states';
+import { SelectLimit } from '../../../src/examples/en/tree-select/select-limit';
+import { TagLimit } from '../../../src/examples/en/tree-select/tag-limit';
+import { SingleLine } from '../../../src/examples/en/tree-select/single-line';
+import { LazyLoad } from '../../../src/examples/en/tree-select/lazy';
+import { Expanded } from '../../../src/examples/en/tree-select/expanded';
+import { PopupWidth } from '../../../src/examples/en/tree-select/popup-width';
+
+export const leafDoc = { component: 'TreeSelect', primaryApi: 'TreeSelectProps' };
 
 # TreeSelect
 
-Choose one or more values from hierarchical data.
+Choose one or more values from hierarchical options. Use [Select](select) for a flat list.
 
-## Selection and search
+{/* leaf:section basic */}
 
-<ComponentExample title="Selection and search" preview={<TreeSelectBasic />} fileName="basic.tsx" width={360}>
+## Basic usage
+
+<a id="basic-selection-and-search"></a>
+
+Search and clearing are enabled by default. Use unique, stable values. Categories with `selectable={false}` cannot be selected; clicking the row expands the branch.
+
+<ComponentExample exampleId="basic" preview={<TreeSelectBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Multiple selection and checks
+<a id="common-usage"></a>
 
-<ComponentExample title="Multiple selection and checks" preview={<TreeSelectMultiple />} fileName="multiple.tsx" width={360}>
+{/* leaf:section examples */}
+
+## Examples
+
+### Controlled value and reset
+
+Single selection uses `string | null`; clearing returns `null`. The application must update controlled values and reset its own state when a form is reset.
+
+<ComponentExample exampleId="controlled" preview={<TreeSelectControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/controlled.tsx"
+```
+
+</ComponentExample>
+
+### Multiple selection
+
+With `multiple`, items are selected individually and the value is a string array. Native forms submit repeated values under the same `name`; read them with `formData.getAll(name)`.
+
+<ComponentExample exampleId="multiple" preview={<TreeSelectMultiple />} fileName="multiple.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/multiple.tsx"
 ```
 
 </ComponentExample>
 
-## States and panel width
+### Linked checks and output values
 
-<ComponentExample title="States and panel width" preview={<TreeSelectStates />} fileName="states.tsx" width={360}>
+`treeCheckable` enables multiple selection with linked parent and child checks. `showCheckedStrategy` affects tags, callbacks and form values: the default `child` outputs children, `parent` consolidates fully checked branches, and `all` outputs every checked node. Use `checkStrictly` for independent parent and child checks.
+
+<ComponentExample exampleId="checked" preview={<TreeSelectChecks />} fileName="checked.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/checked.tsx"
+```
+
+</ComponentExample>
+
+### States
+
+`status` provides a validation appearance without performing validation. Existing disabled selections are preserved by clearing and linked checks.
+
+<ComponentExample exampleId="states" preview={<TreeSelectStates />} fileName="states.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/states.tsx"
 ```
 
 </ComponentExample>
 
-## Loading branches
+### Selection limit
 
-`loadData` runs when an unloaded node expands; the returned nodes are merged into that branch. `virtual` keeps long lists to the visible rows.
+`maxCount` checks the final output value count. If a linked check would exceed the limit, the entire change is rejected rather than partially applied.
 
-<ComponentExample title="Load members on expand" preview={<LazyLoad english />} fileName="lazy.tsx">
+<ComponentExample exampleId="select-limit" preview={<SelectLimit />} fileName="select-limit.tsx">
 
-```tsx lineNumbers file="../../../src/examples/tree-select/lazy.tsx"
+```tsx lineNumbers file="../../../src/examples/en/tree-select/select-limit.tsx"
 ```
 
 </ComponentExample>
 
-## Selection limit
+### Tag limit
 
-`maxCount` limits how many nodes can be checked and `treeCheckable` enables checkboxes; once the limit is reached the remaining nodes can no longer be checked.
+`maxTagCount` limits visible tags, not the number of selected values.
 
-<ComponentExample title="Choose up to two" preview={<SelectLimit english />} fileName="select-limit.tsx" width={360}>
+<ComponentExample exampleId="tag-limit" preview={<TagLimit />} fileName="tag-limit.tsx">
 
-```tsx lineNumbers file="../../../src/examples/tree-select/select-limit.tsx"
+```tsx lineNumbers file="../../../src/examples/en/tree-select/tag-limit.tsx"
 ```
 
 </ComponentExample>
 
-## Tag limit
+### Single-line tags
 
-`maxTagCount` only limits how many tags are displayed; it does not limit how many values can be selected.
+Set `tagWrap={false}` to collapse tags that do not fit into `+N`. Open the popup to review or change all selections.
 
-<ComponentExample title="Show a single tag" preview={<TagLimit english />} fileName="tag-limit.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/tree-select/tag-limit.tsx"
-```
-
-</ComponentExample>
-
-## Custom node content
-
-`nodeRender` receives the node data and returns custom content; the example makes node labels bold.
-
-<ComponentExample title="Bold node labels" preview={<NodeRender english />} fileName="node-render.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/tree-select/node-render.tsx"
-```
-
-</ComponentExample>
-
-## Search matching
-
-`showSearch` shows the search field and `filterTreeNode` decides whether a node matches the query.
-
-<ComponentExample title="Custom matching" preview={<Search english />} fileName="search.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/tree-select/search.tsx"
-```
-
-</ComponentExample>
-
-## Controlled expansion
-
-`treeExpandedKeys` and `onExpand` control which branches are expanded, which suits restoring a saved expansion state.
-
-<ComponentExample title="Keep branches expanded" preview={<Expanded english />} fileName="expanded.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/tree-select/expanded.tsx"
-```
-
-</ComponentExample>
-
-## Panel width
-
-The popup matches the field width by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to fit the content, which may be narrower than the field, or `popupWidth={300}` for a fixed 300px width; CSS lengths are also supported. `popupMaxWidth` is unset by default. The example below fits the content with an explicit maximum width. Viewport edge avoidance still applies.
-
-<ComponentExample title="Fit the content" preview={<PopupWidth english />} fileName="popup-width.tsx">
-
-```tsx lineNumbers file="../../../src/examples/tree-select/popup-width.tsx"
-```
-
-</ComponentExample>
-
-
-## Single-line selections
-
-Set `tagWrap={false}` to keep selected values on one line. Long labels truncate; extra values collapse into `+N`. In very narrow controls, only the count is shown. Open the popup to review or change selections. `maxTagCount` can further limit the visible tags; `maxTagCount="responsive"` also enables automatic single-line collapsing.
-
-Reopening preserves the expanded branches. Click a category that cannot be selected to expand it; in checkbox mode, click anywhere on a row or press Enter / Space to check it. The arrow only expands or collapses the branch. Search temporarily reveals matching branches without changing the saved expansion.
-
-<ComponentExample title="Single-line selections" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+<ComponentExample exampleId="single-line" preview={<SingleLine />} fileName="single-line.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tree-select/single-line.tsx"
 ```
 
 </ComponentExample>
 
-## TreeSelect API
+<a id="advanced-usage"></a>
+
+### Loading branches asynchronously
+
+`loadData` requests children when an unloaded branch expands and caches the result. This example simulates a request with a delay and checks cancellation before returning; pass `signal` to `fetch` for a real request. Handle failures with `onLoadError`; expanding again retries. Change `cacheKey` when the data version changes to clear caches and cancel stale requests.
+
+<ComponentExample exampleId="lazy" preview={<LazyLoad />} fileName="lazy.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/lazy.tsx"
+```
+
+</ComponentExample>
+
+### Controlled expansion
+
+Keep expansion state with `treeExpandedKeys` and `onExpand`. Reopening preserves expanded branches. Search temporarily reveals matching paths without replacing the saved expansion state.
+
+<ComponentExample exampleId="expanded" preview={<Expanded />} fileName="expanded.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/expanded.tsx"
+```
+
+</ComponentExample>
+
+### Popup width
+
+The popup matches the field by default. Set `popupWidth="auto"` to fit its content and `popupMaxWidth` to cap the width. A number sets a fixed pixel width.
+
+<ComponentExample exampleId="popup-width" preview={<PopupWidth />} fileName="popup-width.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tree-select/popup-width.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### TreeSelect API
+
+Configure tree options, selected values, search and lazy loading.
+
+Single and multiple modes constrain the types of `value`, `defaultValue` and `onChange`. Uncontrolled fields respond to native form reset. In checkbox mode, clicking a row or pressing Enter / Space toggles its check; the arrow only controls expansion. See [PopupOptions](../api/popup-options) for shared popup settings.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | Required | Hierarchical options |
+| `value` | `string \| null \| readonly string[]` | — | Controlled value; use a string or null in single mode and an array with multiple or treeCheckable. |
+| `defaultValue` | `string \| null \| readonly string[]` | `null` | Initial uncontrolled value, restored on form reset; no option is selected when omitted. |
+| `onChange` | `((value: string \| null) => void) \| ((value: readonly string[]) => void)` | — | Return a string or null in single mode, or an array in multiple mode; checked results follow showCheckedStrategy. Clearing retains disabled entries that cannot be removed. |
+| `multiple` | `boolean` | `false` | Whether multiple values can be selected. |
+| `treeCheckable` | `boolean` | `false` | Whether checkbox mode is enabled; it implies multiple selection. |
+| `checkStrictly` | `boolean` | `false` | Check parents and children independently |
+| `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | Output child, parent or all checked nodes in linked mode, affecting tags, callbacks and form values; ignored with checkStrictly. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `allowClear` | `boolean` | `true` | Allow clearing enabled selections |
+| `showSearch` | `boolean` | `true` | Filter nodes by typing |
+| `onSearch` | `(query: string) => void` | — | Search changes |
+| `filterTreeNode` | `(option: `[`TreeSelectOption`](#treeselectoption)`, query: string) => boolean` | — | Customize search matching for nodes. |
+| `notFoundContent` | `ReactNode` | No options | Content when no options match |
+| `maxCount` | `number` | `Infinity` | Maximum number of output values; a linked action that exceeds it is rejected as a whole. |
+| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
+| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
+| `defaultExpandAll` | `boolean` | `false` | Expand all initially |
+| `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | Values expanded initially |
+| `treeExpandedKeys` | `readonly string[]` | — | Controlled expanded nodes. |
+| `onExpand` | `(keys: string[]) => void` | — | Called when expanded nodes change. |
+| `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | Load children on expansion; signal supports cancellation |
+| `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | Loading failed; expand again to retry |
+| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `nodeRender` | `(option: `[`TreeSelectOption`](#treeselectoption)`) => ReactNode` | — | Customize node content. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | `false` | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `virtual` | `boolean` | `false` | Render visible items only |
+| `listHeight` | `number` | `256` | List height |
+| `itemHeight` | `number` | Theme and density dependent | Estimated virtual row height, calculated from the theme and density by default. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `options` | `readonly `[`TreeSelectOption`](#treeselectoption)`[]` | Required | Hierarchical options |
-| `checkStrictly` | `boolean` | `false` | Check parents and children independently |
-| `showCheckedStrategy` | `'child' \| 'parent' \| 'all'` | `'child'` | Display and output children, consolidated parents or all checked nodes |
-| `showSearch` | `boolean` | `true` | Filter nodes by typing |
-| `onSearch` | `(query: string) => void` | — | Search changes |
-| `allowClear` | `boolean` | `true` | Allow clearing enabled selections |
-| `defaultExpandAll` | `boolean` | `false` | Expand all initially |
-| `treeDefaultExpandedKeys` | `readonly string[]` | `[]` | Values expanded initially |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation status |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
-| `notFoundContent` | `ReactNode` | No options | Content when no options match |
-| `onOpenChange` | `(open: boolean) => void` | — | Open state changes |
-| `loadData` | `( option: `[`TreeSelectOption`](#treeselectoption)`, signal: AbortSignal, ) => Promise<readonly `[`TreeSelectOption`](#treeselectoption)`[]>` | — | Load children on expansion; signal supports cancellation |
-| `onLoadError` | `(error: unknown, option: `[`TreeSelectOption`](#treeselectoption)`) => void` | — | Loading failed; expand again to retry |
-| `virtual` | `boolean` | `false` | Render visible items only |
-| `listHeight` | `number` | `256` | List height |
-| `itemHeight` | `number` | `34` | Estimated virtual row height following the regional height and density. Actual rows are measured. |
-| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
-| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
-| `maxCount` | `number` | — | Maximum selection count. |
-| `treeExpandedKeys` | `readonly string[]` | — | Controlled expanded nodes. |
-| `onExpand` | `(keys: string[]) => void` | — | Called when expanded nodes change. |
-| `filterTreeNode` | `(option: `[`TreeSelectOption`](#treeselectoption)`, query: string) => boolean` | — | Customize search matching for nodes. |
-| `nodeRender` | `(option: `[`TreeSelectOption`](#treeselectoption)`) => ReactNode` | — | Customize node content. |
-| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
-| `multiple` | `false \| true \| boolean` | `false` | Whether multiple values can be selected. |
-| `treeCheckable` | `false \| boolean \| true` | `false` | Whether checkbox mode is enabled; it implies multiple selection. |
-| `value` | `string \| null \| readonly string[] \| readonly string[]` | `null` | Controlled / initial value; use an array for multiple selection |
-| `defaultValue` | `string \| null \| readonly string[] \| readonly string[]` | `null` | Controlled / initial value; use an array for multiple selection |
-| `onChange` | `(((value: string \| null) => void) \| ((value: readonly string[]) => void)) \| ((value: readonly string[]) => void)` | — | Selection changes; clearing returns null for single mode or [] for multiple |
-| `disabled` | `boolean` | `false` | Disable interaction. |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `name` | `string` | — | Field name in native FormData. |
 | `form` | `string` | — | ID of the associated native form. |
 
-## TreeSelectOption
+### TreeSelectOption
+
+Describe a tree-select node and its children.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -195,21 +222,3 @@ Reopening preserves the expanded branches. Click a category that cannot be selec
 | `icon` | `ReactNode` | — | Node icon |
 | `searchLabel` | `string` | — | Search and accessible text for non-text labels |
 | `isLeaf` | `boolean` | — | Identify a leaf node, including in lazy data. |
-
-## Types
-
-Import these types to define props or prepare data.
-
-```ts
-import type { TreeSelectProps, TreeSelectOption, TreeSelectValue } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Option values must be unique and stable. The full option data is included in the basic example.
-
-`TreeSelectValue` is `string | readonly string[] | null` and can be used for controlled state. Checkbox mode submits checked leaves by default; `showCheckedStrategy` controls both display and callback values. Disabled existing selections are preserved by clear and linked checks.
-
-Options share Select's pale hover and keyboard feedback, starting on the selected or first available row while preserving selection checks.
-
-ArrowDown enters the tree, Enter selects, Space checks and Escape closes. With an empty search in multiple mode, Backspace removes the last enabled selection. FormData submits repeated values under one field name; use `getAll(name)` to read them. Uncontrolled fields respond to form reset.

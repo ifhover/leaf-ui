@@ -1,61 +1,100 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { TourBasic } from '../../../src/examples/tour/basic';
-import { TourCentered } from '../../../src/examples/tour/centered';
+import { TourBasic } from '../../../src/examples/en/tour/basic';
+import { TourCentered } from '../../../src/examples/en/tour/centered';
+import { TourMissing } from '../../../src/examples/en/tour/missing';
+import { TourMaskless } from '../../../src/examples/en/tour/maskless';
+
+export const leafDoc = { component: 'Tour', primaryApi: 'TourProps' };
 
 # Tour
 
-Introduce features in a sequence of steps.
+Introduce page features in a sequence of steps.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<TourBasic english />} fileName="basic.tsx">
+Point each step at an element with `target`. Handle `onClose` by updating `open` in the application. This example controls `current` and resets it to the first step every time the tour starts.
 
-```tsx lineNumbers file="../../../src/examples/tour/basic.tsx"
+<ComponentExample exampleId="basic" preview={<TourBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tour/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Welcome step
+{/* leaf:section examples */}
 
-<ComponentExample title="Welcome step" preview={<TourCentered english />} fileName="centered.tsx" width="fit-content">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/tour/centered.tsx"
+### Centered step
+
+Omit `target` to show a centered step with the default `missingTarget="center"`.
+
+<ComponentExample exampleId="centered" preview={<TourCentered />} fileName="centered.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tour/centered.tsx"
 ```
 
 </ComponentExample>
 
-## TourStep
+<a id="advanced-usage"></a>
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `key` | `string` | — | Stable, unique identifier. |
-| `title` | `ReactNode` | Required | Title content. |
-| `description` | `ReactNode` | — | Additional description. |
-| `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or element getter; omit to center the step. |
-| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | — | Popup placement relative to the target. |
+### Missing targets
 
-## Tour API
+`missingTarget` determines whether to center the step, skip it or request closure. If the last step is missing, `skip` also requests closure. An omitted `target` follows the same policy.
+
+Wait until the target is mounted before starting the tour. Inserting an element later does not automatically trigger another target lookup for the current step.
+
+<ComponentExample exampleId="missing" preview={<TourMissing />} fileName="missing.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tour/missing.tsx"
+```
+
+</ComponentExample>
+
+### Background interaction
+
+Set `mask={false}` to let users interact with the page during the tour. This also disables the default scroll lock and focus trap, so the field below remains editable.
+
+<ComponentExample exampleId="maskless" preview={<TourMaskless />} fileName="maskless.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tour/maskless.tsx"
+```
+
+</ComponentExample>
+{/* leaf:section api */}
+
+## API
+
+### Tour API
+
+Escape and the close button request `onClose`; clicking the mask does not. The finish button calls `onFinish` followed by `onClose`. The application must update `open` to close the tour.
+
+`defaultCurrent` is only an initial value; closing does not reset the step. Control `current` when you need a different restart position. With the default mask, focus stays inside the panel; closing returns focus to the trigger.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `open` | `boolean` | Required | Control whether the panel is open. |
 | `steps` | `readonly `[`TourStep`](#tourstep)`[]` | Required | Steps in the guided tour. |
-| `current` | `number` | — | Controlled current step index. |
-| `defaultCurrent` | `number` | `0` | Initial step index. |
+| `current` | `number` | — | Controlled zero-based step index; write onChange results back to it. Reopening does not automatically reset it. |
+| `defaultCurrent` | `number` | `0` | Initial zero-based step index for uncontrolled usage. |
 | `onChange` | `(current: number) => void` | — | Called when the value changes. |
-| `onClose` | `() => void` | — | Called when closing is requested. |
-| `onFinish` | `() => void` | — | Called once on completion. |
-| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | Center, skip or close when a target is missing. |
-| `mask` | `boolean` | `true` | Show a tour mask. |
-| `padding` | `number` | `8` | Padding for content or a highlighted target. |
+| `onClose` | `() => void` | — | Close request from the close button, Escape, finishing or missing-target policy; the application must set open to false. |
+| `onFinish` | `() => void` | — | Called when Finish is clicked on the last step, followed by onClose. |
+| `missingTarget` | `'center' \| 'skip' \| 'close'` | `'center'` | When entering a step without a target: center displays it centrally, skip advances or requests closing at the last step, and close requests closing immediately. |
+| `mask` | `boolean` | `true` | Show a mask and restrict background interaction; false keeps the page interactive. |
+| `padding` | `number` | `8` | Gap in pixels between the target element and its highlighted area. |
 | `getPopupContainer` | [`PopupOptions`](../api/popup-options#popupoptions)`['getPopupContainer']` | — | Return a popup container, including a ShadowRoot. |
 
-## Types and interaction
+### TourStep
 
-Import the props and data types when creating reusable configuration.
+Use a valid CSS selector or an element getter for `target`. A getter returning `null` is treated as a missing target.
 
-```ts
-import type { TourStep, TourProps } from '@ifhover/leaf-ui';
-```
-
-The tour uses role="dialog"; Escape closes it, focus stays inside the overlay, and it follows ConfigProvider themes and reduced motion.
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `ReactNode` | Required | Title content. |
+| `description` | `ReactNode` | — | Additional description. |
+| `target` | `string \| (() => HTMLElement \| null)` | — | Target selector or function returning an element; when omitted, missingTarget policy applies. |
+| `placement` | [`PopupOptions`](../api/popup-options#popupoptions)`['popupPlacement']` | `'bottom'` | Popup placement relative to the target. |
+| `key` | `string` | — | Stable, unique identifier. |

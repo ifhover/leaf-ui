@@ -1,131 +1,160 @@
-import { ModalDescription } from '../../../src/examples/en/modal/description';
-import { Capabilities } from '../../../src/examples/modal/capabilities';
-import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ComponentExample } from '../../../src/components/component-example';
 import { ModalBasic } from '../../../src/examples/en/modal/basic';
 import { ModalCard } from '../../../src/examples/en/modal/card';
+import { ModalDescription } from '../../../src/examples/en/modal/description';
+import { ModalFooter } from '../../../src/examples/en/modal/footer';
+import { ModalDestroy } from '../../../src/examples/en/modal/destroy';
+import { ModalFocus } from '../../../src/examples/en/modal/focus';
+import { ModalAsync } from '../../../src/examples/en/modal/async';
+
+export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 # Modal
 
-Display content or complete an action in a dialog.
+View or edit content in a dialog.
 
-## Edit content
+Use [Confirm](/en/components/confirm) for a brief decision, or [Popconfirm](/en/components/popconfirm) for a confirmation beside a trigger.
 
-<ComponentExample title="Edit content" preview={<ModalBasic />} fileName="basic.tsx" width="fit-content">
+{/* leaf:section basic */}
+
+## Basic usage
+
+<a id="edit-content"></a>
+
+Associate the default confirm button with the form using `type="submit"` and a form ID to retain native validation. Update `open` in the form's `onSubmit` handler.
+
+<ComponentExample exampleId="basic" preview={<ModalBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/basic.tsx"
-
 ```
 
 </ComponentExample>
 
-## Card surface
+{/* leaf:section examples */}
 
-Both `plain` and `card` use the same muted canvas. `variant="card"` places the body on a borderless inset content surface 6px from the Modal frame. Its heading uses 14px type at weight 700 with a 22px line box and aligns with the content text start. The 24px close target contains a 16px icon using the stronger body text color and sits 8px inside the content card's right edge; its background is transparent at rest and gains a deeper standard neutral hover background, with the small radius (4px by default). The header uses a 12px top inset, with a single 12px section gap before the content surface and a 10px gap from the content card to footer buttons. Footer top padding is zero to avoid doubling that gap; the bottom inset is 10px, and heading text is offset 2px downward within its text column; body padding independently controls the distance from content to the card edge.
+## Examples
 
-<ComponentExample title="Card surface" preview={<ModalCard />} fileName="card.tsx" width="fit-content">
+### Card surface
+
+Set `variant="card"` to present content in a layered card modal.
+
+<ComponentExample exampleId="card" preview={<ModalCard />} fileName="card.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/card.tsx"
-
 ```
 
 </ComponentExample>
 
-## Custom footer
+### Icon and description
 
-<ComponentExample title="Custom footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
+Use `icon` and `description` to add an icon and supporting description to the modal.
 
-```tsx lineNumbers file="../../../src/examples/en/modal/footer.tsx"
-
-```
-
-</ComponentExample>
-
-## Destroying state and initial focus
-
-<ComponentExample title="Destroying state and initial focus" preview={<Capabilities english />} fileName="capabilities.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/modal/capabilities.tsx"
-
-```
-
-</ComponentExample>
-
-## Icon and description
-
-Use `icon` and `description` to explain the action.
-
-<ComponentExample title="Icon and description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
+<ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/description.tsx"
-
 ```
 
 </ComponentExample>
 
-The body uses Scrollbar; long content scrolls while the heading and actions remain visible. Headers without a description and the footer use compact vertical spacing.
+### Custom footer
 
-## Modal API
+A `footer` function receives the default buttons, so extra actions can retain their confirmation and cancellation behavior. Set `footer={null}` to hide the footer.
+
+<ComponentExample exampleId="footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/footer.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Destroy content on close
+
+Content is preserved after the first opening by default. `destroyOnClose` unmounts it after the closing transition, so uncontrolled inputs return to their initial values when reopened. `preserve` takes precedence over `destroyOnClose`, while `forceRender` keeps content mounted. Controlled state held outside the dialog must still be reset by the application.
+
+<ComponentExample exampleId="destroy" preview={<ModalDestroy />} fileName="destroy.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/destroy.tsx"
+```
+
+</ComponentExample>
+
+### Initial focus
+
+Focus moves to the first focusable control by default. Use `initialFocus` to choose a different target. Closing restores the previously focused element; `returnFocus` can specify another destination.
+
+<ComponentExample exampleId="focus" preview={<ModalFocus />} fileName="focus.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/focus.tsx"
+```
+
+</ComponentExample>
+
+### Async submission
+
+Return a Promise to show loading and prevent duplicate actions. Default cancellation, close-button, backdrop and Escape dismissal are blocked while it is pending. The application must still update `open` after `onConfirm` succeeds; rejection keeps the dialog open and displays the error.
+
+<ComponentExample exampleId="async" preview={<ModalAsync />} fileName="async.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/async.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Modal API
+
+Control modal visibility, content and footer actions.
+
+Provide `aria-label` when omitting `title`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
-| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
-| `open` | `boolean` | Required | Whether the dialog is visible |
-| `variant` | `'plain' \| 'card'` | `'plain'` | Dialog shell; both use a muted canvas, and card adds an inset content surface. |
-| `title` | `ReactNode` | — | Title / content |
+| `open` | `boolean` | Required | Controlled open state, updated by the application. |
+| `title` | `ReactNode` | — | Dialog title. |
 | `description` | `ReactNode` | — | Additional description. |
-| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
-| `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
+| `onClose` | `() => void` | — | Requests closure; update open in the application |
+| `onConfirm` | `() => void \| Promise<void>` | — | Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success. |
+| `onCancel` | `() => void` | — | Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose. |
 | `confirmText` | `ReactNode` | Locale default | Button labels |
 | `cancelText` | `ReactNode` | Locale default | Button labels |
 | `confirmLoading` | `boolean` | `false` | Confirm loading state |
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
-| `onConfirm` | `() => void \| Promise<void>` | — | Application controls open; rejection displays an error |
-| `onCancel` | `() => void` | — | Cancel or dismiss; falls back to onClose |
+| `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
+| `variant` | `'plain' \| 'card'` | `'plain'` | Content appearance; card places the body on a separate surface. |
+| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
+| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
 | `width` | `number \| string` | `480` | Width; numbers are pixels |
-| `closable` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
-| `maskClosable` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
-| `keyboard` | `boolean` | `true` | Close button / backdrop dismissal / Escape dismissal |
-| `onClose` | `() => void` | — | Requests closure; update open in the application |
+| `closable` | `boolean` | `true` | Show the close button. |
+| `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |
+| `keyboard` | `boolean` | `true` | Allow Escape to request closing. |
+| `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus; defaults to the first focusable element, which may be the close button. |
+| `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
 | `afterClose` | `() => void` | — | Called after the closing animation finishes |
+| `destroyOnClose` | `boolean` | `false` | Unmount contents after closing; preserve takes precedence and forceRender keeps contents mounted. |
+| `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
-| `destroyOnClose` | `boolean` | `false` | Unmount content after the closing transition; preserved by default. |
-| `preserve` | `boolean` | — | Explicitly preserve closed content; overrides destroyOnClose. |
-| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Custom portal or scroll container. |
+| `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
 
-## ModalFooterActions
+### ModalFooterActions
+
+The default confirm and cancel buttons received by the footer render function.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `confirmButton` | `ReactNode` | Required | Default confirm button with loading state |
 | `cancelButton` | `ReactNode` | Required | Default cancel button |
 
-## Types
+### DialogFocusOptions
 
-Import types when defining reusable component props or assembling options.
-
-```ts
-import type { ModalProps, ModalFooterActions } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Focus moves into the dialog when opened and returns to the trigger on dismissal. Tab stays within the dialog. Use maskClosable and keyboard to control backdrop and Escape dismissal. Supply aria-label when omitting title.
-
-Customize footer actions or place a Form inside the body. Picker overlays inside a dialog retain its regional theme.
-
-The default footer has an outlined Cancel followed by OK. With onConfirm, update open after the action; without it, OK calls onClose. Promises show loading and prevent duplicates. Submit forms with requestSubmit() in onConfirm or a submit type and form ID in confirmButtonProps. Native validation still applies. A footer function extends default buttons; `footer={null}` hides the footer.
-
-## DialogFocusOptions
+Configure focus handling when a dialog opens or closes.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
-
-## Surfaces and rich content
-
-Use `description` for supporting text and `icon` for a decorative heading icon. Dialogs use a muted canvas and spacing between sections by default, with matching heading and footer inline spacing and an outlined cancel button; set `divided` for subtle dividers and a muted footer. The soft, blurred backdrop follows the regional light or dark appearance; set `ConfigProvider`'s `maskBlur={false}` to disable blur. A `footer` function can add status text on the left. Group its buttons with `Space` so they wrap together and stay aligned to the right on narrow screens.

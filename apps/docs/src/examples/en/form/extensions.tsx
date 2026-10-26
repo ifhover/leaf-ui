@@ -1,54 +1,46 @@
-import {
-  Button,
-  Flex,
-  Form,
-  FormErrorSummary,
-  FormField,
-  FormGroup,
-  FormList,
-  Input,
-  Space,
-} from '@ifhover/leaf-ui';
+import { Button, Flex, Form, FormField, FormGroup, FormList, Input } from '@ifhover/leaf-ui';
+
 export function ExtensionDemo() {
   return (
-    <Form layout="vertical" onSubmit={(e) => e.preventDefault()}>
-      <FormErrorSummary />
-      <FormGroup legend="Contacts" description="Add, remove or reorder contacts.">
+    <Form onSubmit={(event) => event.preventDefault()}>
+      <FormGroup legend="Contacts">
         <FormList name="contacts" defaultValue={['']}>
-          {(fields, ops) => (
+          {(fields, operations) => (
             <>
               {fields.map((field) => (
-                <FormField key={field.key} label={`Contact ${field.index + 1}`} required>
-                  <Flex gap="sm" align="start">
+                <FormField key={field.key} label={`Contact ${field.index + 1}`}>
+                  <Flex direction="column" gap="sm">
                     <Input
-                      style={{ flex: 1, minWidth: 0 }}
-                      name={`${field.name}.email`}
+                      name={field.name}
                       type="email"
+                      placeholder="hello@example.com"
                       value={field.value}
-                      onChange={(e) => ops.update(field.index, e.target.value)}
+                      onChange={(event) => operations.update(field.index, event.target.value)}
                     />
-                    <Button onClick={() => ops.remove(field.index)}>Remove</Button>
-                    {field.index > 0 && (
-                      <Button onClick={() => ops.move(field.index, field.index - 1)}>
+                    <Flex gap="sm" wrap>
+                      <Button onClick={() => operations.remove(field.index)}>Remove</Button>
+                      <Button
+                        disabled={field.index === 0}
+                        onClick={() => operations.move(field.index, field.index - 1)}
+                      >
                         Move up
                       </Button>
-                    )}
+                    </Flex>
                   </Flex>
                 </FormField>
               ))}
-              <Button variant="outline" onClick={() => ops.add('')}>
-                Add contact
-              </Button>
+              <FormField>
+                <Flex gap="sm" wrap>
+                  <Button onClick={() => operations.add('')}>Add contact</Button>
+                  <Button type="reset" variant="outline">
+                    Reset
+                  </Button>
+                </Flex>
+              </FormField>
             </>
           )}
         </FormList>
       </FormGroup>
-      <Space>
-        <Button type="submit">Validate</Button>
-        <Button type="reset" variant="outline">
-          Reset
-        </Button>
-      </Space>
     </Form>
   );
 }

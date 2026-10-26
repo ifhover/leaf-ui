@@ -1,4 +1,4 @@
-import { Button, Card, Descriptions, Flex, Form, FormField, Input, Tag } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Form, FormField, Input, Text } from '@ifhover/leaf-ui';
 import { useId, useState } from 'react';
 
 export function CardTabsWithTitle() {
@@ -8,8 +8,6 @@ export function CardTabsWithTitle() {
   return (
     <Card
       title="项目设置"
-      description="管理项目资料与团队成员。"
-      extra={<Tag>{saved ? '已保存' : '草稿'}</Tag>}
       tabs={{
         activeKey,
         onChange: setActiveKey,
@@ -30,30 +28,21 @@ export function CardTabsWithTitle() {
                 <FormField label="项目名称">
                   <Input name="name" defaultValue="Leaf 设计系统" required />
                 </FormField>
-                <FormField label="联系邮箱">
-                  <Input name="email" type="email" defaultValue="team@example.com" required />
-                </FormField>
               </Form>
             ),
           },
           {
-            key: 'members',
-            label: '团队成员',
-            children: (
-              <Descriptions
-                columns={1}
-                items={[
-                  { key: 'owner', label: '项目负责人', children: '林若' },
-                  { key: 'designer', label: '设计师', children: '陈安' },
-                ]}
-              />
-            ),
+            key: 'notes',
+            label: '说明',
+            children: <Text>修改项目名称后，在基本信息中保存。</Text>,
           },
-          { key: 'billing', label: '账单', disabled: true, children: null },
         ],
       }}
       footer={
-        <Flex align="center" gap="sm" justify="end">
+        <Flex align="center" gap="sm" justify="space-between" wrap>
+          <Text role="status" tone="muted">
+            {saved ? '已保存' : '尚未保存'}
+          </Text>
           <Button type="submit" form={formId} disabled={activeKey !== 'settings'}>
             保存修改
           </Button>

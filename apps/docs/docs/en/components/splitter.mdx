@@ -1,57 +1,105 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { SplitterBasic } from '../../../src/examples/splitter/basic';
-import { SplitterVertical } from '../../../src/examples/splitter/vertical';
+import { SplitterBasic } from '../../../src/examples/en/splitter/basic';
+import { SplitterVertical } from '../../../src/examples/en/splitter/vertical';
+import { SplitterLimits } from '../../../src/examples/en/splitter/limits';
+import { SplitterCollapsible } from '../../../src/examples/en/splitter/collapsible';
+import { SplitterControlled } from '../../../src/examples/en/splitter/controlled';
+
+export const leafDoc = { component: 'Splitter', primaryApi: 'SplitterProps' };
 
 # Splitter
 
 Resize panels in a workspace.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<SplitterBasic english />} fileName="basic.tsx" width="100%">
+Drag a divider to resize its adjacent panels. Focus the divider and use the arrow keys, holding `Shift` for larger steps. Give each panel a stable `key`; panels start with equal proportions when no sizes are provided.
 
-```tsx lineNumbers file="../../../src/examples/splitter/basic.tsx"
+<ComponentExample exampleId="basic" preview={<SplitterBasic />} fileName="basic.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/splitter/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Vertical panels
+<a id="common-usage"></a>
 
-<ComponentExample title="Vertical panels" preview={<SplitterVertical english />} fileName="vertical.tsx" width="100%">
+{/* leaf:section examples */}
 
-```tsx lineNumbers file="../../../src/examples/splitter/vertical.tsx"
+## Examples
+
+### Vertical panels
+
+Set `direction="vertical"` to stack panels. Give the container a height so the panels have vertical space to share.
+
+<ComponentExample exampleId="vertical" preview={<SplitterVertical />} fileName="vertical.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/splitter/vertical.tsx"
 ```
 
 </ComponentExample>
 
-## SplitterPanel
+### Size limits
+
+`min` and `max` are percentages that constrain dragging and arrow-key resizing. Both adjacent panels' constraints apply. Choose initial proportions that also satisfy these constraints.
+
+<ComponentExample exampleId="limits" preview={<SplitterLimits />} fileName="limits.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/splitter/limits.tsx"
+```
+
+</ComponentExample>
+
+### Collapsible panels
+
+Set `collapsible` to add a button that collapses and restores the panel before the divider. Double-clicking the divider or pressing `Enter` while it is focused does the same. The next panel receives the freed space, and collapsed content leaves the keyboard focus order. The last panel has no following divider and cannot be collapsed this way.
+
+<ComponentExample exampleId="collapsible" preview={<SplitterCollapsible />} fileName="collapsible.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/splitter/collapsible.tsx"
+```
+
+</ComponentExample>
+
+### Controlled proportions
+
+When passing `sizes`, update that state in `onResize`. External controls can update the same state. `defaultSizes` only sets the uncontrolled initial value; it does not reset panels. Proportions are normalized to a total of `100`. Use `onResizeEnd` to save results after dragging, arrow-key resizing, or collapsing and restoring a panel.
+
+<ComponentExample exampleId="controlled" preview={<SplitterControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/splitter/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Splitter API
+
+Configure panel sizes, orientation and resizing behavior.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | Required | Workspace panels. |
+| `sizes` | `readonly number[]` | — | Controlled panel proportions; a valid array is normalized to 100. Update with onResize. |
+| `defaultSizes` | `readonly number[]` | Equal shares | Initial uncontrolled proportions; omitted, mismatched or invalid totals use equal shares. |
+| `onResize` | `(sizes: number[]) => void` | — | Called with new proportions after dragging, arrow keys or collapsing changes sizes. |
+| `onResizeEnd` | `(sizes: number[]) => void` | — | Called after dragging ends, a keyboard adjustment, or collapse/restore. |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrange panels horizontally or vertically. |
+
+### SplitterPanel
+
+Configuration for each item in `panels`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Stable, unique identifier. |
 | `children` | `ReactNode` | Required | Panel content. |
-| `min` | `number` | — | Minimum panel percentage. |
-| `max` | `number` | — | Maximum panel percentage. |
-| `collapsible` | `boolean` | — | Allow collapsing and restoring a panel. |
-| `resizable` | `boolean` | — | Allow resizing by dragging or arrow keys. |
-
-## Splitter API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | Required | Workspace panels. |
-| `sizes` | `readonly number[]` | — | Controlled panel proportions, normalized to 100. |
-| `defaultSizes` | `readonly number[]` | — | Initial panel proportions. |
-| `onResize` | `(sizes: number[]) => void` | — | Called while resizing. |
-| `onResizeEnd` | `(sizes: number[]) => void` | — | Called when resizing ends. |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrange panels horizontally or vertically. |
-
-## Types and interaction
-
-Import the props and data types when creating reusable configuration.
-
-```ts
-import type { SplitterPanel, SplitterProps } from '@ifhover/leaf-ui';
-```
-
-Dividers use role="separator" and expose aria-valuenow; arrow keys resize panels, and the layout follows ConfigProvider themes and reduced motion.
+| `min` | `number` | `5` | Minimum panel percentage. |
+| `max` | `number` | `100` | Maximum panel percentage. |
+| `collapsible` | `boolean` | — | Allow collapse/restore through this panel's following handle, exchanging space with the next panel; the last panel has no handle. |
+| `resizable` | `boolean` | — | False disables handle dragging and removes it from the Tab order. |

@@ -1,8 +1,9 @@
-import { DateTimePicker } from '@ifhover/leaf-ui';
+import { DatePicker } from '@ifhover/leaf-ui';
 
 export function Seconds({ english = false }) {
   return (
-    <DateTimePicker
+    <DatePicker
+      picker="datetime"
       aria-label={english ? 'Log timestamp' : '日志时间'}
       format="YYYY-MM-DD HH:mm:ss"
       showSeconds

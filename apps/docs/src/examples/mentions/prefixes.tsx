@@ -1,14 +1,24 @@
 import { Mentions } from '@ifhover/leaf-ui';
-export function MentionsPrefixes({ english = false }: { english?: boolean }) {
+import { useState } from 'react';
+
+const members = [
+  { value: 'ada', label: 'Ada' },
+  { value: 'lin', label: 'Lin' },
+];
+const topics = [
+  { value: 'design', label: '设计' },
+  { value: 'engineering', label: '工程' },
+];
+
+export function MentionsPrefixes() {
+  const [prefix, setPrefix] = useState('@');
   return (
     <Mentions
+      aria-label="项目备注"
       prefixes={['@', '#']}
-      aria-label={english ? 'Project note' : '项目备注'}
-      placeholder={english ? 'Use @ or # to insert a reference' : '使用 @ 或 # 插入引用'}
-      options={[
-        { value: 'design', label: english ? 'Design' : '设计' },
-        { value: 'engineering', label: english ? 'Engineering' : '工程' },
-      ]}
+      options={prefix === '#' ? topics : members}
+      onSearch={(_query, nextPrefix) => setPrefix(nextPrefix)}
+      placeholder="使用 @ 提及成员，# 引用主题"
     />
   );
 }

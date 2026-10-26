@@ -1,42 +1,74 @@
-import { Capabilities } from '../../../src/examples/breadcrumb/capabilities';
+import { Capabilities } from '../../../src/examples/en/breadcrumb/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { BreadcrumbBasic } from '../../../src/examples/en/breadcrumb/basic';
+import { BreadcrumbSeparator } from '../../../src/examples/en/breadcrumb/separator';
+
+export const leafDoc = { component: 'Breadcrumb', primaryApi: 'BreadcrumbProps' };
 
 # Breadcrumb
 
 Show the current page within a navigation hierarchy.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<BreadcrumbBasic />} fileName="basic.tsx">
+The final item represents the current page and can omit `href`. If `title` is already a router Link, omit `href` to avoid nested links.
+
+<ComponentExample exampleId="basic" preview={<BreadcrumbBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/breadcrumb/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Collapse long paths
+{/* leaf:section examples */}
 
-<ComponentExample title="Collapse long paths" preview={<Capabilities english />} fileName="capabilities.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/breadcrumb/capabilities.tsx"
+### Separator
+
+Use `separator` to set the content between path levels.
+
+<ComponentExample exampleId="separator" preview={<BreadcrumbSeparator />} width="fit-content" fileName="separator.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/breadcrumb/separator.tsx"
 ```
 
 </ComponentExample>
 
-## Breadcrumb API
+### Collapse long paths
+
+Set `maxItems` to collapse a long path. The ellipsis button opens the hidden links.
+
+<ComponentExample exampleId="capabilities" preview={<Capabilities />} width="fit-content" fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/breadcrumb/capabilities.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Breadcrumb API
+
+Configuration for path levels, separators and collapsing intermediate entries.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`BreadcrumbItem`](#breadcrumbitem)`[]` | Required | Path items |
 | `separator` | `ReactNode` | ChevronRight | Separator |
-| `maxItems` | `number` | — | Maximum items before collapsing a path. |
+| `maxItems` | `number` | `Infinity` | Collapse middle entries above this count; the minimum threshold is 3 and entries do not collapse by default. |
 | `itemsBeforeCollapse` | `number` | `1` | Leading items retained after collapse. |
 | `itemsAfterCollapse` | `number` | `1` | Trailing items retained after collapse. |
 | `itemRender` | `(item: `[`BreadcrumbItem`](#breadcrumbitem)`, index: number) => ReactNode` | — | Customize item content. |
 | `aria-label` | `string` | Locale default | Navigation label |
 
-## BreadcrumbItem
+### BreadcrumbItem
+
+A path level defined through `items`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -45,16 +77,4 @@ Show the current page within a navigation hierarchy.
 | `icon` | `ReactNode` | — | Leading icon |
 | `menu` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | — | Dropdown items for a breadcrumb. |
 | `href` | `string` | — | Link destination. |
-| `target` | `string` | — | Target selector or element getter; omit to center the step. |
-
-## Types
-
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { BreadcrumbProps, BreadcrumbItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-The final item is marked as the current page. BreadcrumbItem accepts native anchor attributes. A router Link can be passed as title; omitting href avoids an additional anchor.
+| `target` | `string` | — | Link target, following the native anchor target attribute. |

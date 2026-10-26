@@ -1,104 +1,132 @@
-import { TabsViewSwitcher } from '../../src/examples/tabs/view-switcher';
-import { Capabilities } from '../../src/examples/tabs/capabilities';
-import { ExtensionDemo } from '../../src/examples/tabs/extensions';
-import { TabsClosable } from '../../src/examples/tabs/closable';
 import { ComponentExample } from '../../src/components/component-example';
 import { TabsBasic } from '../../src/examples/tabs/basic';
 import { TabsSizes } from '../../src/examples/tabs/sizes';
 import { TabsAppearances } from '../../src/examples/tabs/appearances';
+import { TabsViewSwitcher } from '../../src/examples/tabs/view-switcher';
+import { TabsPreserved } from '../../src/examples/tabs/preserved';
+import { TabsClosable } from '../../src/examples/tabs/closable';
+import { ExtensionDemo } from '../../src/examples/tabs/extensions';
+import { Capabilities } from '../../src/examples/tabs/capabilities';
+
+export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 # Tabs 标签页
 
 在同一区域切换不同内容。
 
-切换时正文和内容区域高度立即更新，不使用过渡动画。线形标签仅在选中项下方显示短圆角指示条，切换时指示条会移动到新的选中项。
-
-线形标签使用正文色显示选中项、较淡的中性色显示未选中项，不绘制整条底边；选中项下方的短圆角指示条使用主题色。指示条贴着标签底边，高度随尺寸为 2 / 3 / 4px，标签在此基础上下方多留 4px，使文字与指示条之间保持可见的间距。卡片标签使用浅灰圆角选中底，未选中文字颜色进一步减淡，标签栏本身不再增加外层容器。分段标签增加浅灰圆角外轨，以白色移动滑块突出选中项，适合紧凑的视图切换；滑块使用不回弹的标准缓动直接移动到选中项。卡片与分段标签高度为 28 / 34 / 40px，线形标签为 32 / 38 / 44px。设置 `block` 可让标签等宽铺满，正文区域仍使用可用宽度。页签宽度溢出时，可按滚动方向显示描边箭头按钮；按钮仅在悬停标签栏或键盘聚焦时出现。
+{/* leaf:section basic */}
 
 ## 基础用法
 
-基础用法使用默认尺寸与线形标签展示内容切换。
+通过 `items` 定义标签和内容，点击标签切换当前面板。
 
-<ComponentExample title="基础用法" preview={<TabsBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 不同尺寸
+{/* leaf:section examples */}
 
-通过单选项切换小、默认和大尺寸。
+## 示例
 
-<ComponentExample title="不同尺寸" preview={<TabsSizes />} fileName="sizes.tsx">
+### 不同尺寸
+
+通过 `size` 设置标签控件尺寸。
+
+<ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## 不同形态
+### 不同形态
 
-通过单选项在线形、卡片和分段形态之间切换。
+通过 `type` 选择标签页外观。
 
-<ComponentExample title="不同形态" preview={<TabsAppearances />} fileName="appearances.tsx">
+<ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/appearances.tsx"
 ```
 
 </ComponentExample>
 
-## 视图切换
+### 视图切换
 
-省略选项的 `children` 即可只渲染标签栏，由外部状态控制已有视图，不产生空面板或额外留白。`block` 用于等宽铺满。
+省略选项的 `children` 时只显示标签栏，通过 `activeKey` 和 `onChange` 切换组件外的内容。
 
-<ComponentExample title="视图切换" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx" width={360}>
+默认方向键会激活下一个可用标签，Home / End 跳至首尾可用项；设置 `activationMode="manual"` 后，方向键只移动焦点，再按 Enter 或空格激活。
+
+<ComponentExample exampleId="view-switcher" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/view-switcher.tsx"
 ```
 
 </ComponentExample>
 
-## 可关闭标签页
+### 保留输入状态
 
-点击加号新增标签页。全部关闭后组件隐藏，可使用示例中的新增按钮重新打开。
+内容首次访问时挂载，默认保留已访问页面的输入状态；设置 `destroyInactive` 可在切走时卸载内容。
 
-<ComponentExample title="可关闭标签页" preview={<TabsClosable />} fileName="closable.tsx">
+<ComponentExample exampleId="preserved" preview={<TabsPreserved />} fileName="preserved.tsx">
+
+```tsx lineNumbers file="../../src/examples/tabs/preserved.tsx"
+```
+
+</ComponentExample>
+
+### 新增与关闭
+
+`onAdd` 和 `onClose` 只发出操作请求，由应用更新 `items`。列表为空时整个组件（包括添加按钮）都会隐藏，需要保留外部操作以恢复列表。
+
+<ComponentExample exampleId="closable" preview={<TabsClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/closable.tsx"
 ```
 
 </ComponentExample>
 
-## 可增删的标签页
+### 标签排序
 
-<ComponentExample title="可增删的标签页" preview={<ExtensionDemo />} fileName="extensions.tsx">
+设置 `sortable`，将 `onReorder` 返回的列表写回 `items`。拖动手柄可调整顺序；也可聚焦手柄，按空格开始、方向键移动，再按空格确认，Escape 取消。
+
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## 底部标签
+### 底部标签
 
-<ComponentExample title="底部标签" preview={<Capabilities />} fileName="capabilities.tsx">
+设置 `placement="bottom"`，将标签放在内容下方。
+
+<ComponentExample exampleId="capabilities" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/capabilities.tsx"
 ```
 
 </ComponentExample>
 
-## Tabs API
+{/* leaf:section api */}
+
+## API
+
+### Tabs API
+
+配置标签数据、当前标签与面板保留行为。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`TabItem`](#tabitem)`[]` | 必填 | 标签页列表；为空时不渲染组件 |
-| `activeKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
-| `defaultActiveKey` | `string` | 首个可用项 | 受控激活项 / 初始项 |
+| `activeKey` | `string` | — | 受控的当前标签 key，配合 onChange 更新。 |
+| `defaultActiveKey` | `string` | 首个可用项 | 非受控模式的初始标签 key，后续变化不重置选中项。 |
 | `onChange` | `(key: string) => void` | — | 激活项变化 |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | 标签形态 |
 | `placement` | `'top' \| 'bottom'` | `'top'` | 标签栏位置 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签高度（线形 32 / 38 / 44px，卡片与分段 28 / 34 / 40px）与字号 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸。 |
 | `block` | `boolean` | `false` | 标签等宽铺满可用宽度 |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活 / 回车或空格激活 |
 | `destroyInactive` | `boolean` | `false` | 切走时卸载内容 |
@@ -110,7 +138,9 @@ import { TabsAppearances } from '../../src/examples/tabs/appearances';
 | `sortable` | `boolean` | `false` | 启用排序，配合 onReorder 使用 |
 | `onReorder` | `(items: `[`TabItem`](#tabitem)`[]) => void` | — | 返回排序后的页签 |
 
-## TabItem
+### TabItem
+
+定义单个标签的标识、名称和内容。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -120,15 +150,3 @@ import { TabsAppearances } from '../../src/examples/tabs/appearances';
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `icon` | `ReactNode` | — | 前置图标 |
 | `closable` | `boolean` | `false` | 展示关闭按钮，需配合 onClose |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { TabsProps, TabItem } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-内容首次访问时挂载，默认保留访问过的内容和输入状态。方向键会跳过禁用项，Home / End 跳至首尾；manual 模式适合内容切换需要等待的场景。

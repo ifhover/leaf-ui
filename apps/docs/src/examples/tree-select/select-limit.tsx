@@ -1,9 +1,10 @@
-import { TreeSelect } from '@ifhover/leaf-ui';
+import { Flex, Text, TreeSelect } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
-const options = (english: boolean) => [
+const options = [
   {
     value: 'team',
-    label: english ? 'Team' : '团队',
+    label: '团队',
     children: [
       { value: 'alice', label: 'Alice' },
       { value: 'bob', label: 'Bob' },
@@ -12,14 +13,23 @@ const options = (english: boolean) => [
   },
 ];
 
-export function SelectLimit({ english = false }) {
+export function SelectLimit() {
+  const [value, setValue] = useState<readonly string[]>(['alice']);
   return (
-    <TreeSelect
-      aria-label={english ? 'Team members' : '团队成员'}
-      maxCount={2}
-      options={options(english)}
-      placeholder={english ? 'Choose up to two people' : '最多选择两人'}
-      treeCheckable
-    />
+    <Flex direction="column" gap="sm">
+      <TreeSelect
+        aria-label="最多选择两人"
+        treeCheckable
+        maxCount={2}
+        options={options}
+        value={value}
+        onChange={setValue}
+        defaultExpandAll
+        placeholder="最多选择两人"
+      />
+      <Text tone="muted" role="status">
+        已选择：{value.length} / 2
+      </Text>
+    </Flex>
   );
 }

@@ -1,20 +1,10 @@
-import { Space, Tabs } from '@ifhover/leaf-ui';
+import { Tabs } from '@ifhover/leaf-ui';
 
 const items = [
-  { key: 'design', label: 'Design', children: 'Design settings' },
-  { key: 'tokens', label: 'Tokens', children: 'Theme tokens' },
+  { key: 'overview', label: '概览', children: '概览内容' },
+  { key: 'settings', label: '设置', children: '设置内容' },
 ];
-export function Capabilities({ english = false }) {
-  return (
-    <Space direction="vertical" align="stretch">
-      <Space direction="vertical" align="stretch" size="sm">
-        <span>{english ? 'Bottom placement' : '底部标签页'}</span>
-        <Tabs
-          aria-label={english ? 'Bottom tabs' : '底部标签页'}
-          placement="bottom"
-          items={items}
-        />
-      </Space>
-    </Space>
-  );
+
+export function Capabilities() {
+  return <Tabs aria-label="底部标签" placement="bottom" items={items} />;
 }

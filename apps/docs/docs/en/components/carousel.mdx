@@ -1,56 +1,82 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { CarouselBasic } from '../../../src/examples/carousel/basic';
-import { CarouselAutoplay } from '../../../src/examples/carousel/autoplay';
+import { CarouselBasic } from '../../../src/examples/en/carousel/basic';
+import { CarouselControlled } from '../../../src/examples/en/carousel/controlled';
+import { CarouselAutoplay } from '../../../src/examples/en/carousel/autoplay';
+
+export const leafDoc = { component: 'Carousel', primaryApi: 'CarouselProps' };
 
 # Carousel
 
 Browse images or content one slide at a time.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<CarouselBasic english />} fileName="basic.tsx">
+Pass each slide as a child. Previous/next controls and indicators appear by default, and navigation wraps at the ends. Set `infinite={false}` to stop at the boundaries. Give the carousel an `aria-label` that describes its content.
 
-```tsx lineNumbers file="../../../src/examples/carousel/basic.tsx"
+<ComponentExample exampleId="basic" preview={<CarouselBasic />} fileName="basic.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/carousel/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Autoplay
+When the carousel has focus, use the left/right arrow keys to navigate and Home/End to reach the first or last slide. Editing controls retain their own arrow-key behavior. Inactive slides remain mounted but do not participate in focus navigation.
 
-<ComponentExample title="Autoplay" preview={<CarouselAutoplay english />} fileName="autoplay.tsx">
+{/* leaf:section examples */}
 
-```tsx lineNumbers file="../../../src/examples/carousel/autoplay.tsx"
+## Examples
+
+### External controls
+
+When providing `activeIndex`, write the new index back in `onChange`. Indices start at zero. The ref exposes `previous()`, `next()` and `goTo(index)` for external controls. This example replaces the built-in arrows with external buttons and keeps the indicators.
+
+<ComponentExample exampleId="controlled" preview={<CarouselControlled />} fileName="controlled.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/carousel/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## CarouselHandle
+### Autoplay
+
+Set a numeric `autoplay` interval and provide explicit start/stop controls through application state. This example advances every three seconds.
+
+<ComponentExample exampleId="autoplay" preview={<CarouselAutoplay />} fileName="autoplay.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/carousel/autoplay.tsx"
+```
+
+</ComponentExample>
+
+Focus entering the carousel pauses playback; leaving restores it. Pointer entry and exit also pause or restore playback by default; `pauseOnHover` controls only the pointer behavior. Hidden pages do not advance. Autoplay is disabled when the system requests reduced motion or ConfigProvider disables motion; manual navigation remains available.
+
+{/* leaf:section api */}
+
+## API
+
+### Carousel API
+
+Configuration for the active slide, navigation controls and autoplay behavior.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `goTo` | `(index: number) => void` | Required | Go to a slide index. |
-| `next` | `() => void` | Required | Go to the next item. |
-| `previous` | `() => void` | Required | Go to the previous item. |
-
-## Carousel API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `activeIndex` | `number` | — | Controlled slide index. |
-| `defaultActiveIndex` | `number` | `0` | Initial slide index. |
-| `onChange` | `(index: number) => void` | — | Called when the value changes. |
+| `activeIndex` | `number` | — | Controlled zero-based slide index; write onChange results back to it. |
+| `defaultActiveIndex` | `number` | `0` | Initial zero-based index for uncontrolled usage. |
+| `onChange` | `(index: number) => void` | — | Return the requested zero-based slide index. |
 | `arrows` | `boolean` | `true` | Show previous and next controls. |
 | `dots` | `boolean` | `true` | Show slide indicators. |
-| `autoplay` | `boolean \| number` | `false` | Enable autoplay; a number sets the interval in milliseconds. |
 | `infinite` | `boolean` | `true` | Allow cycling through slides. |
-| `pauseOnHover` | `boolean` | `true` | Pause on hover; focus also pauses playback. |
+| `autoplay` | `boolean \| number` | `false` | Autoplay; true uses 4000ms, and a nonzero number sets an interval of at least 500ms. Does not advance with motion disabled or the page hidden. |
+| `pauseOnHover` | `boolean` | `true` | Pause autoplay on hover; focus inside always pauses it regardless of this option. |
 
-## Types and interaction
+### CarouselHandle
 
-Import the props and data types when creating reusable configuration.
+The reference interface for controlling the carousel through `ref`.
 
-```ts
-import type { CarouselHandle, CarouselProps } from '@ifhover/leaf-ui';
-```
-
-Previous and next buttons carry readable names; the carousel is keyboard operable and follows ConfigProvider themes and reduced motion.
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `goTo` | `(index: number) => void` | Required | Navigate to a zero-based index; wraps in infinite mode and clamps to the valid range otherwise. |
+| `next` | `() => void` | Required | Go to the next item. |
+| `previous` | `() => void` | Required | Go to the previous item. |

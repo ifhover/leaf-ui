@@ -1,30 +1,96 @@
-import { Capabilities } from '../../../src/examples/steps/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { StepsBasic } from '../../../src/examples/en/steps/basic';
+import { StepsControlled } from '../../../src/examples/en/steps/controlled';
+import { StepsVertical } from '../../../src/examples/en/steps/vertical';
+import { StepsError } from '../../../src/examples/en/steps/error';
+import { Capabilities } from '../../../src/examples/en/steps/capabilities';
+import { StepsProgress } from '../../../src/examples/en/steps/progress';
+
+export const leafDoc = { component: 'Steps', primaryApi: 'StepsProps' };
 
 # Steps
 
 Show the progress and current step of a task.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<StepsBasic />} fileName="basic.tsx" width="100%">
+The current step index starts at `0`. Unless an item has its own `status`, statuses are derived from `current`.
+
+<ComponentExample exampleId="basic" preview={<StepsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/steps/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Dots and step progress
+{/* leaf:section examples */}
 
-<ComponentExample title="Dots and step progress" preview={<Capabilities english />} fileName="capabilities.tsx" width="100%">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/steps/capabilities.tsx"
+### Controlled steps
+
+Providing `onChange` makes steps selectable. Store the reported index in application state; the component does not advance it automatically.
+
+<ComponentExample exampleId="controlled" preview={<StepsControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Steps API
+### Vertical layout
+
+Set `direction="vertical"` to arrange the steps vertically.
+
+<ComponentExample exampleId="vertical" preview={<StepsVertical />} fileName="vertical.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/vertical.tsx"
+```
+
+</ComponentExample>
+
+### Error state
+
+Use `status="error"` to mark the current step as failed.
+
+<ComponentExample exampleId="error" preview={<StepsError />} fileName="error.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/error.tsx"
+```
+
+</ComponentExample>
+
+### Dot steps
+
+Set `progressDot` to display steps with dot indicators.
+
+<ComponentExample exampleId="capabilities" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/capabilities.tsx"
+```
+
+</ComponentExample>
+
+### Progress within a step
+
+`percent` shows progress inside the current step icon, not overall task progress. It is not shown in dot mode.
+
+<ComponentExample exampleId="progress" preview={<StepsProgress />} fileName="progress.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/steps/progress.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Steps API
+
+Configure the current step, step data and layout.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -36,9 +102,11 @@ Show the progress and current step of a task.
 | `loading` | `boolean` | `false` | Show a spinner for the current step |
 | `onChange` | `(current: number) => void` | — | Makes steps selectable |
 | `progressDot` | `boolean \| ((dot: ReactNode, info: { index: number; status: string }) => ReactNode)` | — | Use progress dots, optionally with custom content. |
-| `percent` | `number` | — | Completion percentage. |
+| `percent` | `number` | — | Progress inside the current step icon (0–100); not displayed in dot mode. |
 
-## StepItem
+### StepItem
+
+Describe an individual step title, status and supporting content.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -48,15 +116,3 @@ Show the progress and current step of a task.
 | `icon` | `ReactNode` | — | Custom icon |
 | `status` | `'wait' \| 'process' \| 'finish' \| 'error'` | — | Override the item status |
 | `disabled` | `boolean` | `false` | Disable interaction. |
-
-## Types
-
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { StepsProps, StepItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Keep current in application state. onChange reports the selected index. Item statuses are derived from current unless explicitly supplied.

@@ -1,50 +1,84 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { SwitchBasic, SwitchControlled } from '../../../src/components/en-form-examples';
+import { SwitchBasic } from '../../../src/examples/en/switch/basic';
+import { SwitchStates } from '../../../src/examples/en/switch/states';
+import { SwitchSizes } from '../../../src/examples/en/switch/sizes';
+import { SwitchControlled } from '../../../src/examples/en/switch/controlled';
+
+export const leafDoc = { component: 'Switch', primaryApi: 'SwitchProps' };
 
 # Switch
 
-Turn a setting on or off.
+Turn a setting on or off immediately.
 
-## Basic states
+{/* leaf:section basic */}
 
-Read event.target.checked in onChange. Loading preserves children and prevents interaction. Give the control a text label or aria-label. Native name, value and required properties support form submission.
+## Basic usage
 
-<ComponentExample title="Basic states" preview={<SwitchBasic />} fileName="basic.tsx">
+Use the switch to toggle on/off state and provide an associated label.
+
+<ComponentExample exampleId="basic" preview={<SwitchBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/switch/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled value and sizes
+{/* leaf:section examples */}
 
-<ComponentExample title="Controlled value and sizes" preview={<SwitchControlled />} fileName="controlled.tsx" width={360}>
+## Examples
+
+### Disabled and loading
+
+`disabled` prevents interaction. Set `loading` while saving to prevent repeated changes; the application performs the async operation.
+
+<ComponentExample exampleId="states" preview={<SwitchStates />} fileName="states.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/switch/states.tsx"
+```
+
+</ComponentExample>
+
+### Sizes
+
+Use `size` to set the switch size.
+
+<ComponentExample exampleId="sizes" preview={<SwitchSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/switch/sizes.tsx"
+```
+
+</ComponentExample>
+
+### Controlled state
+
+Pass `checked` and read the boolean from `event.target.checked` in `onChange`.
+
+<ComponentExample exampleId="controlled" preview={<SwitchControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/switch/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Switch API
+With `name`, an enabled, checked switch submits its `value`. Unchecked, disabled or loading switches are not submitted. Uncontrolled switches return to `defaultChecked` on form reset; reset application state as well for a controlled switch.
+
+{/* leaf:section api */}
+
+## API
+
+### Switch API
+
+Configure checked state, form submission and interaction state.
+
+Supports native checkbox attributes such as `name`, `value`, `required` and `form`. Provide text or `aria-label` as its accessible name. `className` and `style` apply to the label container.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `checked` / `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read event.target.checked |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `loading` | `boolean` | `false` | Show loading and disable interaction |
-| `disabled` | `boolean` | `false` | Disable interaction |
-| `children` | `ReactNode` | — | Clickable text label |
+| `checked` | `boolean` | — | Controlled switch state. |
+| `defaultChecked` | `boolean` | — | Initial switch state for uncontrolled usage. |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read the switch state from event.target.checked. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `children` | `ReactNode` | — | Clickable text label. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
-
-## Types
-
-Import SwitchProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { SwitchProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.

@@ -35,7 +35,11 @@ Install `@ifhover/leaf-ui` in your application, then describe the interface you 
 
 The skill resolves the installed package name and exact version from the target application directory, including legacy Leaf UI packages. Documentation always matches your dependency rather than newer APIs. In a monorepo, specify the application directory you are editing.
 
-Only the required component or guide is retrieved. If an API is missing from that version, the package is not installed, or documentation is unavailable, the assistant reports it and can check the installed TypeScript declarations.
+For new pages or substantial layout work, the skill first queries the same version's [Interface design and composition](/en/guide/design-standards), using the library's type, weight, spacing, density and color roles before retrieving components as needed. Default numbers are references, not replacements for user theme settings. Small API or behavior fixes do not require loading the whole guide.
+
+For versions with structured data, component details return the original introduction, complete basic usage, API and example names. Additional examples are retrieved by index, ID or title, with multiple selections supported in one query. The helper runs on Node.js; it does not require Python or compile documentation on your computer.
+
+If the installed version has no structured data, the result is explicitly labeled as its complete original Markdown page and does not support example selection. Guides and non-component references also retain their full original text. Queries do not add the whole site to the context or switch to a newer version. If an API is missing from that version, the package is not installed, or documentation is unavailable, the assistant reports it and can check the installed TypeScript declarations.
 
 ## Updating and removing
 

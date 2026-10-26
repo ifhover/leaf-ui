@@ -1,4 +1,4 @@
-import { Flex, Image, ImagePreviewGroup } from '@ifhover/leaf-ui';
+import { Grid, Image, ImagePreviewGroup } from '@ifhover/leaf-ui';
 
 const landscape = (background: string) =>
   `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
@@ -8,12 +8,12 @@ const landscapes = ['#b9d3bf', '#dae2eb', '#e1d9ca'].map((fill) => landscape(fil
 
 export function ImageGallery() {
   return (
-    <ImagePreviewGroup thumbnails downloadable>
-      <Flex gap="md" align="center" wrap justify="center">
+    <ImagePreviewGroup>
+      <Grid columns={{ xs: 1, sm: 3 }}>
         {landscapes.map((src, index) => (
-          <Image key={src} src={src} width={180} height={120} alt={`风景 ${index + 1}`} />
+          <Image key={src} src={src} width="100%" height={120} alt={`风景 ${index + 1}`} />
         ))}
-      </Flex>
+      </Grid>
     </ImagePreviewGroup>
   );
 }

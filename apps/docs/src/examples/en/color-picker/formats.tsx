@@ -1,19 +1,13 @@
-import { ColorPicker, Flex, Text } from '@ifhover/leaf-ui';
+import { ColorPicker, Flex, FormField } from '@ifhover/leaf-ui';
+
 export function ColorPickerFormats() {
   return (
-    <Flex gap="md" align="center" wrap justify="center">
-      <Flex direction="column" gap="sm" align="start">
-        <Text>HEX</Text>
-        <ColorPicker defaultValue="#1677ff" showText />
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>RGB · Transparent</Text>
-        <ColorPicker defaultValue="rgba(118, 84, 198, 0.6)" defaultFormat="rgb" showText />
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>HSL · Opaque</Text>
-        <ColorPicker defaultValue="hsl(35, 91%, 55%)" defaultFormat="hsl" disableAlpha showText />
-      </Flex>
+    <Flex direction="column" gap="lg">
+      {(['hex', 'rgb', 'hsl'] as const).map((format) => (
+        <FormField key={format} layout="vertical" label={format.toUpperCase()}>
+          <ColorPicker defaultFormat={format} showText />
+        </FormField>
+      ))}
     </Flex>
   );
 }

@@ -1,32 +1,72 @@
-import { NeutralAlerts } from '../../src/examples/alert/neutral';
 import { ComponentExample } from '../../src/components/component-example';
 import { AlertBasic } from '../../src/examples/alert/basic';
+import { AlertTypes } from '../../src/examples/alert/types';
+import { AlertClosable } from '../../src/examples/alert/closable';
+import { AlertIcons } from '../../src/examples/alert/icons';
+
+export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 
 # Alert 警告提示
 
 在页面中提示操作结果或需要关注的信息。
 
-## 提示类型
+{/* leaf:section basic */}
 
-<ComponentExample title="提示类型" preview={<AlertBasic />} fileName="basic.tsx">
+## 基础用法
+
+使用 `title` 设置提示内容，`description` 补充说明。
+
+<ComponentExample exampleId="basic" preview={<AlertBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 中性提示
+{/* leaf:section examples */}
 
-使用中性背景组织辅助信息，图标仍保留状态颜色。
+## 示例
 
-<ComponentExample title="中性提示" preview={<NeutralAlerts />} fileName="neutral.tsx">
+### 提示类型
 
-```tsx lineNumbers file="../../src/examples/alert/neutral.tsx"
+通过 `type` 区分信息、成功、警告和危险提示。新代码使用 `danger`；`error` 仅作为兼容别名保留。
+
+<ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
+
+```tsx lineNumbers file="../../src/examples/alert/types.tsx"
 ```
 
 </ComponentExample>
 
-## Alert API
+### 可关闭提示
+
+设置 `closable` 显示关闭按钮。关闭后需重新挂载才能再次显示，本例通过改变 `key` 实现。
+
+<ComponentExample exampleId="closable" preview={<AlertClosable />} fileName="closable.tsx">
+
+```tsx lineNumbers file="../../src/examples/alert/closable.tsx"
+```
+
+</ComponentExample>
+
+### 图标
+
+使用 `icon` 替换图标，或设置 `showIcon={false}` 隐藏图标。
+
+<ComponentExample exampleId="icons" preview={<AlertIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../src/examples/alert/icons.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Alert API
+
+提示内容、反馈类型与关闭行为的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -36,20 +76,4 @@ import { AlertBasic } from '../../src/examples/alert/basic';
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `showIcon` | `boolean` | `true` | 展示语义图标 |
 | `closable` | `boolean` | `false` | 允许关闭当前提示 |
-| `onClose` | `() => void` | — | 关闭后触发 |
-
-## 类型
-
-定义组件属性或组装变量时可导入相关类型。
-
-```ts
-import type { AlertProps, FeedbackType, FeedbackTypeInput } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-成功、普通信息、警告和危险使用不同语义颜色。业务文字由应用提供；关闭按钮名称沿用 ConfigProvider 语言。`FeedbackType` 使用 `danger`；`FeedbackTypeInput` 仍接受已弃用的 `error` 并归一化为 `danger`。
-
-## 外观与丰富内容
-
-提示默认使用中性背景，`type` 决定图标颜色和提示语义。`icon` 可以替换默认图标，`showIcon={false}` 隐藏图标。
+| `onClose` | `() => void` | — | 点击关闭按钮时触发。 |

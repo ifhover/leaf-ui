@@ -1,34 +1,86 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { FlexBasic } from '../../src/examples/flex/basic';
 import { FlexAlignment } from '../../src/examples/flex/alignment';
+import { FlexVertical } from '../../src/examples/flex/vertical';
+import { FlexCrossAlignment } from '../../src/examples/flex/cross-alignment';
+import { FlexWrap } from '../../src/examples/flex/wrap';
+
+export const leafDoc = { component: 'Flex', primaryApi: 'FlexProps' };
 
 # Flex 弹性布局
 
-控制内容的排列方向、对齐、间距与换行，不为子元素添加额外容器。
+控制元素的排列方向、对齐与换行。只需统一间距时使用 [Space](/components/space)，等宽分列使用 [Grid](/components/grid)。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-通过 `gap` 设置间距，`wrap` 允许内容在空间不足时换行。
+通过 `gap` 设置相邻元素的间距。
 
-<ComponentExample title="基础用法" preview={<FlexBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<FlexBasic />} fileName="basic.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/flex/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 方向与对齐
+{/* leaf:section examples */}
 
-`direction` 控制排列方向，`align` 控制交叉轴对齐，`justify` 控制主轴对齐；`start` / `end` 跟随对应弹性轴的方向。
+## 示例
 
-<ComponentExample title="方向与对齐" preview={<FlexAlignment />} fileName="alignment.tsx">
+### 纵向排列
+
+<a id="方向与对齐"></a>
+
+设置 `direction="column"` 纵向排列；`align="start"` 保留按钮的自然宽度。反向排列只改变视觉位置，不改变 DOM 阅读顺序和 Tab 顺序。
+
+<ComponentExample exampleId="vertical" preview={<FlexVertical />} fileName="vertical.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/flex/vertical.tsx"
+```
+
+</ComponentExample>
+
+### 主轴对齐
+
+`justify` 控制沿排列方向的对齐。横向排列时，下面分别展示起始、居中、末尾和两端对齐。
+
+<ComponentExample exampleId="alignment" preview={<FlexAlignment />} fileName="alignment.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/flex/alignment.tsx"
 ```
 
 </ComponentExample>
 
-## Flex API
+### 交叉轴对齐
+
+`align` 控制垂直于排列方向的对齐。下面在相同高度的区域中，比较两个不同尺寸按钮的顶部、居中和底部对齐。
+
+<ComponentExample exampleId="cross-alignment" preview={<FlexCrossAlignment />} fileName="cross-alignment.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/flex/cross-alignment.tsx"
+```
+
+</ComponentExample>
+
+### 自动换行
+
+开启 `wrap` 后，放不下的元素进入下一行。`gap` 数组按 `[行间距, 列间距]` 分别设置两个方向的间距。
+
+<ComponentExample exampleId="wrap" preview={<FlexWrap />} fileName="wrap.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/flex/wrap.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Flex API
+
+支持原生 `div` 属性和 DOM ref；显式 `style` 优先于布局属性。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -38,25 +90,3 @@ import { FlexAlignment } from '../../src/examples/flex/alignment';
 | `justify` | `'start' \| 'center' \| 'end' \| 'space-between' \| 'space-around' \| 'space-evenly'` | `'start'` | 主轴对齐。 |
 | `wrap` | `boolean \| 'nowrap' \| 'wrap' \| 'wrap-reverse'` | `false` | 是否换行或具体换行方向。 |
 | `inline` | `boolean` | `false` | 使用行内弹性布局。 |
-
-## 类型
-
-```ts
-import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
-```
-
-`FlexGap` 为 `number | string`。组件支持原生 `div` 属性、`className`、`style` 和 DOM ref；显式 `style` 优先于布局属性。
-
-## 使用说明
-
-简单等间距排列可使用 Space；需要主轴对齐、反向排列或行内布局时使用 Flex；多列布局使用 Grid。Flex 不改变子元素的外观和尺寸。
-
-## 类型与交互
-
-组装可复用配置时，可导入对应的属性和数据类型。
-
-```ts
-import type { FlexGap, FlexProps } from '@ifhover/leaf-ui';
-```
-
-Flex 只负责布局，不改变 DOM 阅读顺序与键盘顺序。

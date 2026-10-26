@@ -1,23 +1,22 @@
-import { FloatButton, Space, useMessage } from '@ifhover/leaf-ui';
-import { Mail, Plus } from 'lucide-react';
-export function FloatButtonBasic({ english = false }: { english?: boolean }) {
-  const { message } = useMessage();
+import { FloatButton, Space, Text } from '@ifhover/leaf-ui';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
+
+export function FloatButtonBasic() {
+  const [count, setCount] = useState(0);
   return (
-    <Space size={16}>
-      <FloatButton
-        fixed={false}
-        startIcon={<Plus size={20} />}
-        tooltip={english ? 'Create' : '新建'}
-        aria-label={english ? 'Create' : '新建'}
-        onClick={() => message.success(english ? 'Created' : '已创建')}
-      />
-      <FloatButton
-        fixed={false}
-        variant="outline"
-        startIcon={<Mail size={20} />}
-        tooltip={english ? 'Inbox' : '收件箱'}
-        aria-label={english ? 'Inbox' : '收件箱'}
-      />
+    <Space direction="vertical" align="stretch">
+      <div style={{ height: 200, position: 'relative', transform: 'translateZ(0)' }}>
+        <FloatButton
+          aria-label="新建"
+          tooltip="新建"
+          startIcon={<Plus />}
+          onClick={() => setCount((value) => value + 1)}
+        />
+      </div>
+      <Text tone="muted" role="status">
+        已创建：{count}
+      </Text>
     </Space>
   );
 }

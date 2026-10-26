@@ -1,21 +1,21 @@
 import { FileList } from '@ifhover/leaf-ui';
 
-const landscape = (background: string) =>
-  `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640"><rect width="960" height="640" fill="${background}"/><circle cx="480" cy="180" r="72" fill="#fff" opacity=".5"/><path d="M0 520L340 250L660 560L960 330V640H0Z" fill="#315242" opacity=".55"/></svg>`,
-  )}`;
+const lake = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100" fill="#c9ded5"/><path d="M0 80L55 25L110 80L160 45V100H0Z" fill="#527763"/></svg>',
+)}`;
+const hill = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100"><rect width="160" height="100" fill="#d9e2ec"/><path d="M0 70L65 35L160 85V100H0Z" fill="#6c849b"/></svg>',
+)}`;
 
 export function FileListCards() {
   return (
-    <div>
-      <FileList
-        listType="picture-card"
-        items={[
-          { uid: 'lake', url: landscape('#b9d3bf'), name: 'Summer landscape.svg' },
-          { uid: 'trail', url: landscape('#dae2eb'), name: 'Mountain trail.svg' },
-          { uid: 'cover', url: landscape('#e1d9ca'), name: 'Homepage cover final.svg' },
-        ]}
-      />
-    </div>
+    <FileList
+      listType="picture-card"
+      items={[
+        { uid: 'lake', name: 'Lakeside.svg', url: lake },
+        { uid: 'hill', name: 'Hills.svg', url: hill },
+        { uid: 'notes', name: 'Project notes.txt', url: 'data:text/plain,Project%20notes' },
+      ]}
+    />
   );
 }

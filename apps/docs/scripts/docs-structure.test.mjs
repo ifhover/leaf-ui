@@ -3,13 +3,13 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { componentPageExceptions } from './export-component-docs.mjs';
 
 const docsRoot = fileURLToPath(new URL('../', import.meta.url));
 const componentDirs = [
   path.join(docsRoot, 'docs/components'),
   path.join(docsRoot, 'docs/en/components'),
 ];
-const SHARED_SOURCE_PAGES = new Set(['table.mdx']);
 const GENERIC_TITLES = [
   '更多用法',
   '扩展用法',
@@ -71,7 +71,6 @@ test('component pages do not use generic example titles', async () => {
 test('each code fence points at its own example source', async () => {
   const problems = [];
   for (const page of await componentPages()) {
-    if (SHARED_SOURCE_PAGES.has(page.name)) continue;
     const counts = new Map();
     for (const match of page.text.matchAll(/file="([^"]+\.tsx)"/g)) {
       counts.set(match[1], (counts.get(match[1]) ?? 0) + 1);
@@ -83,6 +82,19 @@ test('each code fence points at its own example source', async () => {
   assert.deepEqual(problems, [], `Shared example sources:\n${problems.join('\n')}`);
 });
 
+test('component API references follow usage under one API heading', async () => {
+  for (const page of await componentPages()) {
+    if (componentPageExceptions.has(page.name)) continue;
+    const api = /^## API\s*$/mu.exec(page.text);
+    assert.ok(api, `${page.relative}: outer API heading`);
+    assert.doesNotMatch(
+      page.text.slice(api.index + api[0].length),
+      /^## /mu,
+      `${page.relative}: reference sections remain nested under API`,
+    );
+  }
+});
+
 test('color guides show semantic shades and a matching editable surface example', async () => {
   for (const language of ['', 'en/']) {
     const page = await readFile(path.join(docsRoot, `docs/${language}guide/colors.mdx`), 'utf8');
@@ -90,7 +102,12 @@ test('color guides show semantic shades and a matching editable surface example'
     assert.match(page, /<ThemeColors\s*\/>/u);
     assert.match(page, /file="[^"]*theming\/colors.tsx"/u);
     assert.match(page, /44/u);
-    assert.match(page, /rgb\(244,243,239\)/u);
+    const example = await readFile(
+      path.join(docsRoot, `src/examples/${language}theming/colors.tsx`),
+      'utf8',
+    );
+    assert.match(example, /mutedSurfaceColor:\s*colors\.mutedSurface/u);
+    assert.match(example, /onPrimaryColor:\s*foreground/u);
     assert.doesNotMatch(
       page,
       /用途与映射|高级参考|Purpose.*Mapping|Advanced Reference|family="(?:scenes|reference)"/u,
@@ -101,5 +118,23 @@ test('color guides show semantic shades and a matching editable surface example'
     );
     assert.match(tokensPage, /mutedSurfaceColor[^\n]*--leaf-color-surface-muted/u);
     assert.match(tokensPage, /Tabs[^\n]*Card[^\n]*Modal/u);
+  }
+});
+
+test('API directory links resolve to component API headings in both languages', async () => {
+  for (const language of ['', 'en/']) {
+    const directory = await readFile(path.join(docsRoot, `docs/${language}api/index.mdx`), 'utf8');
+    const links = [...directory.matchAll(/\]\(\/(?:en\/)?components\/([^/#]+)#([^)]+)\)/gu)];
+    assert.ok(links.length > 70, 'Component API directory is populated');
+    for (const [, slug, anchor] of links) {
+      const page = await readFile(
+        path.join(docsRoot, `docs/${language}components/${slug}.mdx`),
+        'utf8',
+      );
+      const headings = [...page.matchAll(/^#{2,3} (.*API.*)$/gmu)].map((match) =>
+        match[1].toLowerCase().replaceAll(' ', '-'),
+      );
+      assert.ok(headings.includes(anchor), `${language}${slug}#${anchor} resolves`);
+    }
   }
 });

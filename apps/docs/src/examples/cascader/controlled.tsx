@@ -33,9 +33,11 @@ export function CascaderControlled() {
   return (
     <Form layout="vertical">
       <FormField label="收货地区">
-        <Cascader aria-label="收货地区" options={regions} value={value} onChange={setValue} />
+        <Cascader options={regions} value={value} onChange={setValue} />
       </FormField>
-      <Text tone="muted">选中路径：{value.join(' → ') || '未选择'}</Text>
+      <Text role="status" tone="muted">
+        选中路径：{JSON.stringify(value)}
+      </Text>
     </Form>
   );
 }

@@ -1,41 +1,90 @@
-import { ExtensionDemo } from '../../../src/examples/en/textarea/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
-import { TextareaBasic, TextareaControlled } from '../../../src/components/en-form-examples';
+import { TextareaBasic } from '../../../src/examples/en/textarea/basic';
+import { TextareaStates } from '../../../src/examples/en/textarea/states';
+import { TextareaAutoHeight } from '../../../src/examples/en/textarea/auto-size';
+import { TextareaCount } from '../../../src/examples/en/textarea/count';
+import { TextareaControlled } from '../../../src/examples/en/textarea/controlled';
+
+export const leafDoc = { component: 'Textarea', primaryApi: 'TextareaProps' };
 
 # Textarea
 
-Enter multiple lines of text.
+Enter multiple lines of text, such as a message, description or note.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-Use rows for initial height and resize for manual resizing. Standard maxLength, name, required and form attributes are supported. Controlled values update through onChange. className and style apply to the container.
+Edit multiline text in the textarea and provide an associated field label.
 
-<ComponentExample title="Basic usage" preview={<TextareaBasic />} fileName="basic.tsx" width={360}>
+<ComponentExample exampleId="basic" preview={<TextareaBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/textarea/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled value and length hint
+{/* leaf:section examples */}
 
-<ComponentExample title="Controlled value and length hint" preview={<TextareaControlled />} fileName="controlled.tsx" width={360}>
+## Examples
+
+### States
+
+Use `readOnly`, `disabled` or a `FormField` error to communicate field state.
+
+<ComponentExample exampleId="states" preview={<TextareaStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/states.tsx"
+```
+
+</ComponentExample>
+
+### Automatic height
+
+`autoSize` adjusts height to the content. Bound the row count with `minRows` and `maxRows`; additional content scrolls inside the textarea.
+
+<ComponentExample exampleId="auto-size" preview={<TextareaAutoHeight />} fileName="auto-size.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/auto-size.tsx"
+```
+
+</ComponentExample>
+
+### Character count
+
+Set `showCount` to display the count and `maxLength` to limit input length.
+
+<ComponentExample exampleId="count" preview={<TextareaCount />} fileName="count.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/textarea/count.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Controlled input
+
+Manage content with `value` and `onChange`. The example derives its length hint from the current value.
+
+<ComponentExample exampleId="controlled" preview={<TextareaControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/textarea/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Auto height and character count
+#### Forms
 
-<ComponentExample title="Auto height and character count" preview={<ExtensionDemo />} fileName="extensions.tsx">
+Provide a name with `FormField` or `aria-label`. Set `name` for native form submission. Uncontrolled values support form reset; reset controlled values in application state. See [Form](/en/components/form) for form integration.
 
-```tsx lineNumbers file="../../../src/examples/en/textarea/extensions.tsx"
-```
+{/* leaf:section api */}
 
-</ComponentExample>
+## API
 
-## Textarea API
+### Textarea API
+
+Configure multiline text, length limits and input state.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -50,25 +99,9 @@ Use rows for initial height and resize for manual resizing. Standard maxLength, 
 | `autoSize` | [`boolean \| TextareaAutoSize`](#textareaautosize-api) | `false` | Resize to content with optional row limits |
 | `showCount` | `boolean \| ((value: string, maxLength?: number) => ReactNode)` | `false` | Display count or a custom renderer |
 
-## Types
+### TextareaAutoSize API
 
-Import TextareaProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { TextareaProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## Extension types
-
-```ts
-import type { TextareaAutoSize } from '@ifhover/leaf-ui';
-```
-
-## TextareaAutoSize API
+Limit the minimum and maximum rows used by automatic height adjustment.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

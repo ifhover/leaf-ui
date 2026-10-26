@@ -1,11 +1,16 @@
-import { DateRangePicker } from '@ifhover/leaf-ui';
+import { DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
 
-export function DisabledDates({ english = false }) {
+export function DisabledDates() {
   return (
-    <DateRangePicker
-      aria-label={english ? 'Delivery window, Sundays excluded' : '交付周期，周日不可选'}
-      disabledDate={(date) => date.getDay() === 0}
-      placeholder={english ? 'Sundays are unavailable' : '周日不可选'}
-    />
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="十月交付周期">
+        <DateRangePicker
+          defaultValue={[new Date(2026, 9, 5), new Date(2026, 9, 9)]}
+          minDate={new Date(2026, 9, 1)}
+          maxDate={new Date(2026, 9, 31)}
+          disabledDate={(date) => date.getDay() === 0}
+        />
+      </FormField>
+    </Form>
   );
 }

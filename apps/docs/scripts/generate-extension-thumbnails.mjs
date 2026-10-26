@@ -188,21 +188,25 @@ const images = {
     '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#1e964f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
     t(108, 117, 'Upload files', 11),
   'file-list':
-    r(28, 22, 244, 112) +
-    [0, 1]
-      .map((i) => {
-        const y = 35 + i * 54;
+    r(24, 21, 252, 114, '#fff', '#e5e5e8', 8) +
+    [
+      ['Brand direction.pdf', 'PDF · 2.4 MB'],
+      ['Summer cover.svg', 'SVG · 420 KB'],
+      ['Studio assets.zip', 'ZIP · 7.8 MB'],
+    ]
+      .map(([name, meta], i) => {
+        const cy = 40 + i * 38;
         return (
-          r(42, y, 30, 30, i ? '#eff5ff' : '#fceeec') +
-          t(83, y + 10, i ? 'Project notes.md' : 'Project report.pdf', 11) +
-          t(83, y + 28, i ? 'MD · 4 KB' : 'PDF · 2.4 MB', 9, '#718078') +
-          '<g transform="translate(240 ' +
-          (y + 9) +
-          ')" stroke="#718078" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0V10M-4 6L0 10L4 6M-6 12V15H6V12"/></g>'
+          r(36, cy - 11, 22, 22, '#f6f6f7', '#eeeef0', 5) +
+          `<rect x="43" y="${cy - 6}" width="8" height="12" rx="1.5" stroke="#68686f" stroke-width="1.2"/>` +
+          `<path d="M45.2 ${cy - 1}H48.8M45.2 ${cy + 2}H48" stroke="#68686f" stroke-width="1.2" stroke-linecap="round"/>` +
+          t(68, cy + 3.5, name, 10.5) +
+          `<text x="246" y="${cy + 3}" text-anchor="end" font-size="9" fill="#68686f" font-family="system-ui,sans-serif">${meta}</text>` +
+          `<g transform="translate(260 ${cy - 5})" stroke="#68686f" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><path d="M0 0V7.5M-3 4.5L0 7.5L3 4.5M-4.5 9.5H4.5"/></g>`
         );
       })
       .join('') +
-    '<path d="M28 78H272" stroke="#e5e5e8"/>',
+    '<path d="M68 59H275M68 97H275" stroke="#eeeef0"/>',
 };
 for (const [name, content] of Object.entries(images)) {
   const svg =

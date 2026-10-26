@@ -33,14 +33,11 @@ export function CascaderControlled() {
   return (
     <Form layout="vertical">
       <FormField label="Delivery region">
-        <Cascader
-          aria-label="Delivery region"
-          options={regions}
-          value={value}
-          onChange={setValue}
-        />
+        <Cascader options={regions} value={value} onChange={setValue} />
       </FormField>
-      <Text tone="muted">Selected path:{value.join(' → ') || 'Not selected'}</Text>
+      <Text role="status" tone="muted">
+        Selected path: {JSON.stringify(value)}
+      </Text>
     </Form>
   );
 }

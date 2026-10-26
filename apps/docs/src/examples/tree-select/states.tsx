@@ -1,4 +1,4 @@
-import { Form, FormField, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+import { Flex, Text, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
 
 const treeOptions: readonly TreeSelectOption[] = [
   {
@@ -24,16 +24,20 @@ const treeOptions: readonly TreeSelectOption[] = [
 
 export function TreeSelectStates() {
   return (
-    <Form layout="vertical">
-      <FormField label="禁用">
-        <TreeSelect options={treeOptions} disabled defaultValue="web" />
-      </FormField>
-      <FormField label="校验反馈">
-        <TreeSelect options={treeOptions} status="error" placeholder="请选择一个团队" />
-      </FormField>
-      <FormField label="自定义浮层宽度">
-        <TreeSelect options={treeOptions} popupWidth={320} popupMaxWidth={360} defaultExpandAll />
-      </FormField>
-    </Form>
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">禁用</Text>
+        <TreeSelect aria-label="禁用的团队选择" options={treeOptions} disabled defaultValue="web" />
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">错误</Text>
+        <TreeSelect
+          aria-label="有错误的团队选择"
+          options={treeOptions}
+          status="error"
+          placeholder="选择团队"
+        />
+      </Flex>
+    </Flex>
   );
 }

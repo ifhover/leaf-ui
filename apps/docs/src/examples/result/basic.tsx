@@ -1,16 +1,24 @@
-import { Button, Result, Space } from '@ifhover/leaf-ui';
+import { Button, Result, Space, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+
 export function ResultBasic() {
+  const [feedback, setFeedback] = useState('');
   return (
-    <Result
-      status="success"
-      title="项目已创建"
-      description="一切准备就绪，可以开始你的下一个好想法。"
-      extra={
-        <Space>
-          <Button variant="outline">返回列表</Button>
-          <Button>进入项目</Button>
-        </Space>
-      }
-    />
+    <Space direction="vertical" align="stretch">
+      <Result
+        status="success"
+        title="项目已创建"
+        description="现在可以开始添加项目内容。"
+        extra={
+          <Space wrap>
+            <Button variant="outline" onClick={() => setFeedback('已返回项目列表')}>
+              返回列表
+            </Button>
+            <Button onClick={() => setFeedback('已打开项目')}>进入项目</Button>
+          </Space>
+        }
+      />
+      {feedback && <Text role="status">{feedback}</Text>}
+    </Space>
   );
 }

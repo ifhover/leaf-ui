@@ -1,6 +1,128 @@
 # API 参考
 
-这里提供全局配置的完整字段，方便有进阶需求时查询。常用写法和可运行示例见 [ConfigProvider](/components/config-provider)。
+按组件名称查找参数、默认值和回调；全局主题、默认参数与浮层配置见本页末尾。
+
+## 组件 API
+
+### 布局
+
+| 组件 |
+| --- |
+| [Flex 弹性布局](/components/flex#flex-api) |
+| [Grid 栅格](/components/grid#gridprops-api) |
+| [Layout 布局](/components/layout#layoutprops-api) |
+| [Masonry 瀑布流](/components/masonry#masonryprops-api) |
+| [ScrollArea 滚动区域](/components/scroll-area#scrollareaprops-api) |
+| [Scrollbar 滚动条](/components/scrollbar#scrollbar-api) |
+| [Space 间距](/components/space#spaceprops-api) |
+| [Splitter 分割面板](/components/splitter#splitter-api) |
+
+### 数据展示
+
+| 组件 |
+| --- |
+| [Avatar 头像](/components/avatar#avatar-api) |
+| [Badge 角标](/components/badge#badge-api) |
+| [Card 卡片](/components/card#card-api) |
+| [Collapse 折叠面板](/components/collapse#collapse-api) |
+| [DataTable 表格](/components/table#datatable-api) |
+| [Descriptions 描述列表](/components/descriptions#descriptionsprops-api) |
+| [InfiniteScroll 无限滚动](/components/infinite-scroll#infinitescrollprops-api) |
+| [QRCode 二维码](/components/qr-code#qrcodeprops-api) |
+| [Statistic 统计数值](/components/statistic#statistic-api) |
+| [Tag 标签](/components/tag#tag-api) |
+| [Timeline 时间线](/components/timeline#timelineprops-api) |
+| [Tree 树](/components/tree#tree-api) |
+| [VirtualList 虚拟列表](/components/virtual-list#virtuallistprops-api) |
+
+### 通用
+
+| 组件 |
+| --- |
+| [Button 按钮](/components/button#button-api) |
+| [Divider 分割线](/components/divider#divider-api) |
+| [Typography 排版](/components/typography#typography-api) |
+
+### 导航
+
+| 组件 |
+| --- |
+| [Anchor 锚点与固钉](/components/anchor#anchor-api) |
+| [BackTop 回到顶部](/components/back-top#backtopprops-api) |
+| [Breadcrumb 面包屑](/components/breadcrumb#breadcrumb-api) |
+| [FloatButton 悬浮按钮](/components/float-button#floatbutton-api) |
+| [Menu 菜单](/components/menu#menuprops-api) |
+| [Pagination 分页](/components/pagination#pagination-api) |
+| [Steps 步骤条](/components/steps#steps-api) |
+| [Tabs 标签页](/components/tabs#tabs-api) |
+
+### 数据录入
+
+| 组件 |
+| --- |
+| [AutoComplete 自动完成](/components/auto-complete#autocomplete-api) |
+| [Cascader 级联选择](/components/cascader#cascader-api) |
+| [Checkbox 复选框](/components/checkbox#checkbox-api) |
+| [ColorPicker 颜色选择器](/components/color-picker#colorpicker-api) |
+| [Form 表单](/components/form#form-api) |
+| [Input 输入框](/components/input#input-api) |
+| [InputMask 格式输入](/components/input-mask#inputmaskprops-api) |
+| [InputNumber 数字输入框](/components/input-number#inputnumber-api) |
+| [InputOTP 验证码输入](/components/input-otp#inputotpprops-api) |
+| [Mentions 提及](/components/mentions#mentions-api) |
+| [Radio 单选框](/components/radio#radio-api) |
+| [Rate 评分](/components/rate#rate-api) |
+| [Select 选择器](/components/select#select-api) |
+| [Slider 滑动输入条](/components/slider#slider-api) |
+| [Switch 开关](/components/switch#switch-api) |
+| [Textarea 文本域](/components/textarea#textarea-api) |
+| [Transfer 穿梭框](/components/transfer#transferprops-api) |
+| [TreeSelect 树选择器](/components/tree-select#treeselect-api) |
+| [Upload 文件上传](/components/upload#uploadprops-api) |
+
+### 日期与时间
+
+| 组件 |
+| --- |
+| [Calendar 日历](/components/calendar#calendar-api) |
+| [DatePicker 日期选择器](/components/date-picker#datepicker-api) |
+| [DateRangePicker 日期区间选择器](/components/date-range-picker#daterangepicker-api) |
+
+### 反馈与交互
+
+| 组件 |
+| --- |
+| [Alert 警告提示](/components/alert#alert-api) |
+| [Confirm 确认框](/components/confirm#useconfirm-api) |
+| [Drawer 抽屉](/components/drawer#drawer-api) |
+| [Dropdown 下拉菜单](/components/dropdown#dropdown-api) |
+| [ErrorBoundary 错误边界](/components/error-boundary#errorboundaryprops-api) |
+| [Loading 加载](/components/loading#loading-api) |
+| [LoadingBar 顶部加载条](/components/loading-bar#loadingbarprops-api) |
+| [Message 消息提示](/components/message#message-api) |
+| [Modal 弹窗](/components/modal#modal-api) |
+| [Notification 通知提醒](/components/notification#notificationprops-api) |
+| [Popconfirm 气泡确认](/components/popconfirm#popconfirmprops-api) |
+| [Popover 气泡卡片](/components/popover#popover-api) |
+| [Progress 进度条](/components/progress#progress-api) |
+| [Result 结果](/components/result#result-api) |
+| [Skeleton 骨架屏](/components/skeleton#skeleton-api) |
+| [Tooltip 文字提示](/components/tooltip#tooltip-api) |
+| [Tour 引导](/components/tour#tour-api) |
+
+### 配置
+
+| 组件 |
+| --- |
+| [ConfigProvider 配置](/components/config-provider#configprovider-api) |
+
+### 媒体
+
+| 组件 |
+| --- |
+| [Carousel 轮播](/components/carousel#carousel-api) |
+| [FileList 文件列表](/components/file-list#filelistprops-api) |
+| [Image 图片](/components/image#imageprops-api) |
 
 ## 全局配置
 

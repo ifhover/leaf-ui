@@ -1,58 +1,100 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { PaginationBasic } from '../../../src/examples/en/pagination/basic';
+import { PaginationVariants } from '../../../src/examples/en/pagination/variants';
 import { PaginationSizes } from '../../../src/examples/en/pagination/sizes';
 import { PaginationControlled } from '../../../src/examples/en/pagination/controlled';
+import { PaginationSimple } from '../../../src/examples/en/pagination/simple';
 import { PaginationStates } from '../../../src/examples/en/pagination/states';
+
+export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' };
 
 # Pagination
 
 Browse large datasets one page at a time.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-Buttons use outlines by default. Set `variant="ghost"` for borderless buttons.
+Set `total` to the full result count, not the number of items on the current page. Pages start at 1; uncontrolled pagination manages the current page internally.
 
-<ComponentExample title="Basic usage" preview={<PaginationBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<PaginationBasic />} width={600} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Sizes
+Out-of-range pages are clamped. With `total={0}`, page 1 is still displayed and both arrows are disabled.
 
-Compare small, default and large controls.
+{/* leaf:section examples */}
 
-<ComponentExample title="Sizes" preview={<PaginationSizes />} fileName="sizes.tsx">
+## Examples
+
+### Button appearance
+
+Use `variant` to choose outlined or borderless pagination buttons.
+
+<ComponentExample exampleId="variants" preview={<PaginationVariants />} width={600} fileName="variants.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/variants.tsx"
+```
+
+</ComponentExample>
+
+### Sizes
+
+Use `size` to set the pagination button size.
+
+<ComponentExample exampleId="sizes" preview={<PaginationSizes />} width={600} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled pagination
+### Controlled pagination
 
-Control the page and page size together, with a total, size selector and quick jumper.
+For remote data, control `current` and `pageSize` together and update both in `onChange`. The application sends the data request; this example displays the current page and item range as feedback.
 
-<ComponentExample title="Controlled pagination" preview={<PaginationControlled />} width={720} fileName="controlled.tsx">
+<ComponentExample exampleId="controlled" preview={<PaginationControlled />} width={600} fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Simple and disabled
+Changing page size preserves the current item position where possible: page 3 at 10 items per page becomes page 2 at 20 items per page. Changes to props do not emit `onChange`.
 
-Use `simple` for previous/next controls and a page count. `disabled` blocks all interaction.
+### Simple mode
 
-<ComponentExample title="Simple and disabled" preview={<PaginationStates />} fileName="states.tsx">
+Set `simple` to show the current page and previous/next controls.
+
+<ComponentExample exampleId="simple" preview={<PaginationSimple />} width={600} fileName="simple.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/pagination/simple.tsx"
+```
+
+</ComponentExample>
+
+### Disabled
+
+Use `disabled` to prevent page changes.
+
+<ComponentExample exampleId="states" preview={<PaginationStates />} width={600} fileName="states.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/states.tsx"
 ```
 
 </ComponentExample>
 
-## Pagination API
+{/* leaf:section api */}
+
+## API
+
+### Pagination API
+
+Configure the total item count, current page, page size and pagination interaction.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -73,24 +115,3 @@ Use `simple` for previous/next controls and a page count. `disabled` blocks all 
 | `variant` | `'outline' \| 'ghost'` | `'outline'` | Button appearance: outlined or borderless. |
 
 The component also accepts native `<nav>` attributes such as `aria-label`, `className` and `style`.
-
-## Types
-
-```ts
-import type { PaginationProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Only `total` is required for basic use; uncontrolled pages and page sizes are managed internally. Use `current` and `pageSize` when loading remote data, and update both in `onChange`. Keep `total` equal to the full result count, rather than the number of items on the current page.
-
-Changing page size preserves the current item position where possible. For example, page 3 at 10 items per page becomes page 2 at 20 items per page. Out-of-range pages are clamped; an empty dataset displays page 1 and disables both arrows. Changes to props do not emit `onChange`.
-
-`showTotal` uses the nearest ConfigProvider language. To describe the visible range, pass a render function:
-
-```tsx
-<Pagination
-  total={240}
-  showTotal={(total, [start, end]) => `${start}–${end} / ${total} items`}
-/>
-```

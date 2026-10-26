@@ -1,30 +1,32 @@
-import { Cascader } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField } from '@ifhover/leaf-ui';
 
-const options = [
+const options: CascaderOption[] = [
   {
     value: 'product',
-    label: 'Product',
+    label: 'Product team',
     children: [
-      { value: 'design', label: 'Experience design' },
-      { value: 'web', label: 'Web development' },
+      { value: 'design', label: 'Product experience design' },
+      { value: 'web', label: 'Frontend development' },
       { value: 'mobile', label: 'Mobile development' },
     ],
   },
 ];
 
-export function SingleLine() {
+export function CascaderSingleLine() {
   return (
-    <Cascader
-      aria-label="Product teams"
-      multiple
-      showSearch
-      tagWrap={false}
-      options={options}
-      defaultValue={[
-        ['product', 'design'],
-        ['product', 'web'],
-        ['product', 'mobile'],
-      ]}
-    />
+    <Form layout="vertical">
+      <FormField label="Product team">
+        <Cascader
+          multiple
+          tagWrap={false}
+          options={options}
+          defaultValue={[
+            ['product', 'design'],
+            ['product', 'web'],
+            ['product', 'mobile'],
+          ]}
+        />
+      </FormField>
+    </Form>
   );
 }

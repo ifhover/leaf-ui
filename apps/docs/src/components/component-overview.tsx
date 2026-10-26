@@ -58,7 +58,12 @@ export function ComponentOverview() {
                   />
                   <div className="leaf-component-card__body">
                     <h3>
-                      {component.name} {!english && <span>{component.label}</span>}
+                      <span className="leaf-component-card__title">
+                        {component.name}{' '}
+                        {!english && (
+                          <span className="leaf-component-card__label">{component.label}</span>
+                        )}
+                      </span>
                       <ArrowUpRight size={15} aria-hidden="true" />
                     </h3>
                     <p>{component.description}</p>

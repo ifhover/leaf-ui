@@ -1,47 +1,79 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { SpaceBasic } from '../../../src/examples/en/space/basic';
 import { SpaceVertical } from '../../../src/examples/en/space/advanced';
+import { SpaceSizes } from '../../../src/examples/en/space/sizes';
+import { SpaceSplit } from '../../../src/examples/en/space/split';
+
+export const leafDoc = { component: 'Space', primaryApi: 'SpaceProps' };
 
 # Space
 
-Keep consistent spacing between elements.
+Keep consistent spacing between elements. Use [Flex](/en/components/flex) for main-axis alignment or [Grid](/en/components/grid) for columns.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<SpaceBasic />} fileName="basic.tsx">
+Enable `wrap` to move items onto another line when space runs out.
+
+<ComponentExample exampleId="basic" preview={<SpaceBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/space/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Vertical layout and separators
+{/* leaf:section examples */}
 
-<ComponentExample title="Vertical layout and separators" preview={<SpaceVertical />} fileName="advanced.tsx">
+## Examples
+
+### Spacing sizes
+
+Set `size` to a spacing preset, a pixel value or a `[row gap, column gap]` tuple.
+
+<ComponentExample exampleId="sizes" preview={<SpaceSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/space/sizes.tsx"
+```
+
+</ComponentExample>
+
+### Vertical layout
+
+With `direction="vertical"`, use `align="start"` to keep children at their natural width or `align="stretch"` to fill the container.
+
+<ComponentExample exampleId="advanced" preview={<SpaceVertical />} fileName="advanced.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/space/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Separators
 
-Set size to a preset, pixel value or [vertical, horizontal] gap. Enable wrap for wrapping, and use split to insert separators between items.
+`split` inserts decorative content between adjacent elements. Assistive technology ignores it, so do not place links or buttons inside it.
 
-## Types
+<ComponentExample exampleId="split" preview={<SpaceSplit />} fileName="split.tsx" width="fit-content">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { SpaceProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/space/split.tsx"
 ```
 
-## SpaceProps API
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### SpaceProps API
+
+Configure the direction, spacing and separators of child content.
+
+Native `div` attributes and DOM refs are supported. Explicit `style` takes precedence over layout props.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction of the items. |
-| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | Gap between items; a tuple means [horizontal, vertical]. |
+| `size` | `'sm' \| 'md' \| 'lg' \| number \| readonly [number, number]` | `'md'` | Space between children; numbers are pixels and tuples are [row gap, column gap]. |
 | `align` | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'` | `'center'` | Alignment |
 | `wrap` | `boolean` | `false` | Wrap as needed |
-| `split` | `ReactNode` | — | Separator between elements |
+| `split` | `ReactNode` | — | Decorative content between items; do not place interactive controls here. |

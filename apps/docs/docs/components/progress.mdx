@@ -1,58 +1,128 @@
-import { Capabilities } from '../../src/examples/progress/capabilities';
 import { ComponentExample } from '../../src/components/component-example';
 import { ProgressBasic } from '../../src/examples/progress/basic';
 import { ProgressStates } from '../../src/examples/progress/states';
+import { ProgressIndeterminate } from '../../src/examples/progress/indeterminate';
 import { ProgressCircles } from '../../src/examples/progress/circles';
+import { ProgressControlled } from '../../src/examples/progress/controlled';
+import { ProgressSteps } from '../../src/examples/progress/steps';
+import { ProgressSegments } from '../../src/examples/progress/segments';
+import { ProgressDashboard } from '../../src/examples/progress/dashboard';
+
+export const leafDoc = { component: 'Progress', primaryApi: 'ProgressProps' };
 
 # Progress 进度条
 
 展示任务的完成程度。
 
-## 交互进度
+{/* leaf:section basic */}
 
-<ComponentExample title="交互进度" preview={<ProgressBasic />} fileName="basic.tsx">
+## 基础用法
+
+通过 `percent` 传入完成百分比，并用 `aria-label` 标识具体任务。
+
+<ComponentExample exampleId="basic" preview={<ProgressBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/progress/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 进度状态
+{/* leaf:section examples */}
 
-<ComponentExample title="进度状态" preview={<ProgressStates />} fileName="states.tsx">
+## 示例
+
+### 进度状态
+
+达到 `100` 时自动显示成功状态。任务失败时设置 `status="error"`。
+
+<ComponentExample exampleId="states" preview={<ProgressStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/progress/states.tsx"
 ```
 
 </ComponentExample>
 
-## 圆形进度
+### 不确定进度
 
-<ComponentExample title="圆形进度" preview={<ProgressCircles />} fileName="circles.tsx">
+无法计算总进度时使用 `indeterminate`，此时不显示或提供数值百分比。
+
+<ComponentExample exampleId="indeterminate" preview={<ProgressIndeterminate />} fileName="indeterminate.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/progress/indeterminate.tsx"
+```
+
+</ComponentExample>
+
+### 圆形进度
+
+通过 `type="circle"` 展示圆形进度，`percent` 表示完成比例。
+
+<ComponentExample exampleId="circles" preview={<ProgressCircles />} fileName="circles.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/progress/circles.tsx"
 ```
 
 </ComponentExample>
 
-## 分段与仪表盘
+<a id="进阶用法"></a>
 
-<ComponentExample title="分段与仪表盘" preview={<Capabilities />} fileName="capabilities.tsx">
+### 更新进度
 
-```tsx lineNumbers file="../../src/examples/progress/capabilities.tsx"
+进度由应用更新，组件不会自行推进。设置 `active={false}` 可关闭线形进度的流光。
+
+<ComponentExample exampleId="controlled" preview={<ProgressControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/progress/controlled.tsx"
 ```
 
 </ComponentExample>
 
-未完成的线形进度默认在已填充部分展示流光。设置 `active={false}` 可展示静态进度；完成、错误、不确定进度和分步进度不展示流光。动效遵循系统与 ConfigProvider 的偏好。
+### 分步进度
 
-## Progress API
+通过 `steps` 将进度划分为固定数量的步骤，`percent` 仍使用完成百分比。
+
+<ComponentExample exampleId="steps" preview={<ProgressSteps />} fileName="steps.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/progress/steps.tsx"
+```
+
+</ComponentExample>
+
+### 分段进度
+
+`segments` 的百分比以完整进度条为基准；同时将 `percent` 设置为各段完成量的总和，用于总体读数。
+
+<ComponentExample exampleId="segments" preview={<ProgressSegments />} fileName="segments.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/progress/segments.tsx"
+```
+
+</ComponentExample>
+
+### 仪表盘
+
+为圆形进度设置 `dashboard`，以仪表盘形式展示完成比例。
+
+<ComponentExample exampleId="dashboard" preview={<ProgressDashboard />} fileName="dashboard.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/progress/dashboard.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Progress API
+
+配置进度比例、状态和显示形式。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `percent` | `number` | `0` | 完成百分比，范围 0–100 |
 | `type` | `'line' \| 'circle'` | `'line'` | 直线或圆形进度 |
-| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | 进度状态 |
+| `status` | `'normal' \| 'success' \| 'error'` | `'normal'` | 进度状态；非不确定进度达到 100% 时，normal 自动显示为 success。 |
 | `showInfo` | `boolean` | `true` | 展示百分比或状态图标 |
 | `format` | `(percent: number) => ReactNode` | — | 自定义进度文字 |
 | `strokeWidth` | `number` | — | 进度线宽；直线为像素，圆形为视图单位 |
@@ -66,19 +136,9 @@ import { ProgressCircles } from '../../src/examples/progress/circles';
 | `dashboard` | `boolean` | `false` | 显示仪表盘式进度。 |
 | `successPercent` | `number` | — | 已经成功完成的进度部分。 |
 
-## 类型
+### ProgressSegment
 
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { ProgressProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-达到 100% 时自动使用成功状态。aria-label 可描述具体任务，如“上传进度”；进度本身也会提供给辅助技术。
-
-## ProgressSegment
+描述一段进度的比例与颜色。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |

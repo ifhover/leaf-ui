@@ -1,29 +1,35 @@
-import { Form, FormField, Select } from '@ifhover/leaf-ui';
+import { Flex, Select, Text } from '@ifhover/leaf-ui';
 
 const options = [
-  { value: '0', label: 'A longer design team name' },
-  { value: '1', label: 'Frontend' },
-  { value: '2', label: 'Backend' },
-  { value: '3', label: 'Operations' },
+  { value: 'design', label: 'Product design team with a longer name' },
+  { value: 'web', label: 'Frontend development' },
+  { value: 'server', label: 'Backend development' },
+  { value: 'operations', label: 'Daily operations' },
 ];
 const selected = options.map((option) => option.value);
 
 export function SingleLine() {
   return (
-    <Form layout="vertical">
-      <FormField label="Single line with long labels">
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">Default wrapping</Text>
         <Select
+          aria-label="Wrapping team tags"
           multiple
-          showSearch
-          allowClear
+          options={options}
+          defaultValue={selected}
+        />
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">Single line</Text>
+        <Select
+          aria-label="Single-line team tags"
+          multiple
           tagWrap={false}
           options={options}
           defaultValue={selected}
         />
-      </FormField>
-      <FormField label="Wrapping by default">
-        <Select multiple options={options} defaultValue={selected} />
-      </FormField>
-    </Form>
+      </Flex>
+    </Flex>
   );
 }

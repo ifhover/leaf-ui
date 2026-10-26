@@ -1,34 +1,124 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
 import { TagIcons } from '../../../src/examples/en/tag/icons';
+import { TagColors } from '../../../src/examples/en/tag/colors';
+import { TagVariants } from '../../../src/examples/en/tag/variants';
+import { TagSizes } from '../../../src/examples/en/tag/sizes';
+import { TagCheckable } from '../../../src/examples/en/tag/checkable';
+import { TagSelection } from '../../../src/examples/en/tag/selection';
+import { TagClosable } from '../../../src/examples/en/tag/closable';
+
+export const leafDoc = { component: 'Tag', primaryApi: 'TagProps' };
 
 # Tag
 
 Label content categories or statuses.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-The example shows theme, success, info, warning, danger and custom colors in tinted and outlined variants. Switch tabs to compare the three sizes.
+Use Tag to add a short category or status label to content.
 
-<ComponentExample title="Basic usage" preview={<TagBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<TagBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Icons
+{/* leaf:section examples */}
 
-A small status dot appears by default. Use `dot={false}` to hide it or `icon` to replace it with a custom icon.
+## Examples
 
-<ComponentExample title="Dots and icons" preview={<TagIcons />} fileName="icons.tsx">
+### Dots and icons
+
+A status dot is shown by default. Hide it with `dot={false}` or replace it with `icon`.
+
+<ComponentExample exampleId="icons" preview={<TagIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/icons.tsx"
 ```
 
 </ComponentExample>
 
-## Tag API
+### Colors
+
+`color` accepts a semantic color or a custom color value.
+
+<ComponentExample exampleId="colors" preview={<TagColors />} fileName="colors.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/colors.tsx"
+```
+
+</ComponentExample>
+
+### Appearance
+
+Use `variant` to choose soft or outline appearance.
+
+<ComponentExample exampleId="variants" preview={<TagVariants />} fileName="variants.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/variants.tsx"
+```
+
+</ComponentExample>
+
+### Sizes
+
+Set the size with `size`; the default is `md`.
+
+<ComponentExample exampleId="sizes" preview={<TagSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/sizes.tsx"
+```
+
+</ComponentExample>
+
+<a id="interactive-usage"></a>
+
+### Checkable tag
+
+Use `CheckableTag` for a toggle selection and control it with `checked` and `onChange`.
+
+<ComponentExample exampleId="checkable" preview={<TagCheckable />} fileName="checkable.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/checkable.tsx"
+```
+
+</ComponentExample>
+
+### Tag selection
+
+Use `TagGroup` for multiple options. `value` and `onChange` use an array of strings.
+
+<ComponentExample exampleId="selection" preview={<TagSelection />} fileName="selection.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/selection.tsx"
+```
+
+</ComponentExample>
+
+With `name`, a native form submits the selection as a JSON array string, or an empty string when nothing is selected. Reset application state as well when resetting a controlled tag group.
+
+### Closable tags
+
+Set `closable` to allow removal. Update a dynamic list with `onClose`, or call `event.preventDefault()` to prevent the default removal.
+
+<ComponentExample exampleId="closable" preview={<TagClosable />} fileName="closable.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/closable.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Tag API
+
+Configure tag content, appearance and closing.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -41,21 +131,9 @@ A small status dot appears by default. Use `dot={false}` to hide it or `icon` to
 | `closable` | `boolean` | `false` | Show a close button |
 | `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
 
-## Types
+### CheckableTagProps API
 
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { TagProps, CheckableTagProps, TagGroupProps, TagOption } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Use `soft` for tinted labels or `outline` for a pill-shaped neutral surface with a border and semantic dot; dark mode follows the regional surface. Checkable tags use outline when unchecked and soft when checked.
-
-Call event.preventDefault() to prevent removal. In a dynamic list, onClose can update application state to remove the matching item.
-
-## CheckableTagProps API
+Configure selection state and change events for a checkable tag.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -64,7 +142,9 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `onChange` | `(checked: boolean) => void` | — | Value change callback |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size. |
 
-## TagGroupProps API
+### TagGroupProps API
+
+Manage selected values and presentation for a group of tag options.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -78,7 +158,9 @@ Call event.preventDefault() to prevent removal. In a dynamic list, onClose can u
 | `form` | `string` | — | Associated form ID |
 | `required` | `boolean` | — | Required form validation |
 
-## TagOption API
+### TagOption API
+
+An individual option supplied to a tag group.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

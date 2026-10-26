@@ -1,11 +1,16 @@
-import { DatePicker } from '@ifhover/leaf-ui';
+import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
 
-export function DisabledDates({ english = false }) {
+export function DisabledDates() {
   return (
-    <DatePicker
-      aria-label={english ? 'Weekday delivery date' : '工作日送达日期'}
-      disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
-      placeholder={english ? 'Weekdays only' : '仅可选择工作日'}
-    />
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="十月工作日">
+        <DatePicker
+          defaultValue={new Date(2026, 9, 15)}
+          minDate={new Date(2026, 9, 1)}
+          maxDate={new Date(2026, 9, 31)}
+          disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
+        />
+      </FormField>
+    </Form>
   );
 }

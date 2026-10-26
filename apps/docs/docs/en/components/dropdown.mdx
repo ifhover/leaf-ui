@@ -1,103 +1,166 @@
-import { Capabilities } from '../../../src/examples/dropdown/capabilities';
-import { DropdownExtra } from '../../../src/examples/en/dropdown/extra';
-import { ExtensionDemo } from '../../../src/examples/en/dropdown/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DropdownBasic } from '../../../src/examples/en/dropdown/basic';
+import { DropdownExtra } from '../../../src/examples/en/dropdown/extra';
+import { DropdownSizes } from '../../../src/examples/en/dropdown/sizes';
+import { DropdownHierarchy } from '../../../src/examples/en/dropdown/hierarchy';
+import { DropdownRadio } from '../../../src/examples/en/dropdown/radio';
+import { DropdownCheckbox } from '../../../src/examples/en/dropdown/checkbox';
+import { DropdownHover } from '../../../src/examples/en/dropdown/hover';
+import { DropdownContextMenu } from '../../../src/examples/en/dropdown/context-menu';
+
+export const leafDoc = { component: 'Dropdown', primaryApi: 'DropdownProps' };
 
 # Dropdown
 
-Group additional actions in a menu with the same option feedback as Select.
+Group additional actions in a menu.
 
-## Action menu
+{/* leaf:section basic */}
 
-<ComponentExample title="Action menu" preview={<DropdownBasic />} fileName="basic.tsx" width="fit-content">
+## Basic usage
+
+<a id="action-menu"></a>
+
+Provide menu actions through `items` and use a button as the trigger.
+
+<ComponentExample exampleId="basic" preview={<DropdownBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/dropdown/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Trailing content
+{/* leaf:section examples */}
 
-Without `popupWidth`, the popup starts at a 220px default width and expands naturally with its content. Use an item's `extra` slot for shortcuts, status labels or other custom content at the trailing edge. It remains part of the row's click target, so do not nest buttons or links inside it.
+## Examples
 
-<ComponentExample title="Trailing content" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
+### Trailing content
+
+Use an item's `extra` for shortcuts, labels or other supplementary information. It shares the row's click target; do not nest buttons or links inside it.
+
+<ComponentExample exampleId="extra" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/dropdown/extra.tsx"
 ```
 
 </ComponentExample>
 
-## Grouped, radio and checkbox menus
+### Menu sizes
 
-<ComponentExample title="Grouped, radio and checkbox menus" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
+Set the menu size with Dropdown's `size`; submenus inherit it. The trigger Button has its own `size`.
 
-```tsx lineNumbers file="../../../src/examples/en/dropdown/extensions.tsx"
+<ComponentExample exampleId="sizes" preview={<DropdownSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Hover and context menus
+### Submenus and groups
 
-<ComponentExample title="Hover and context menus" preview={<Capabilities english />} fileName="capabilities.tsx">
+Use `children` for submenus, and `type: 'group'` with `label` for a group heading. `onSelect` runs when an item is selected, not when a submenu opens.
 
-```tsx lineNumbers file="../../../src/examples/dropdown/capabilities.tsx"
+<ComponentExample exampleId="hierarchy" preview={<DropdownHierarchy />} fileName="hierarchy.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/hierarchy.tsx"
 ```
 
 </ComponentExample>
 
-## Dropdown API
+### Radio menu
+
+Set `type: 'radio'` and use the same `group` identifier for mutually exclusive choices. This example manages the view through `checked` and `onCheckedChange`.
+
+<ComponentExample exampleId="radio" preview={<DropdownRadio />} fileName="radio.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/radio.tsx"
+```
+
+</ComponentExample>
+
+### Checkbox menu
+
+Radio and checkbox items keep the menu open after selection by default. Override this with `closeOnSelect`.
+
+<ComponentExample exampleId="checkbox" preview={<DropdownCheckbox />} fileName="checkbox.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/checkbox.tsx"
+```
+
+</ComponentExample>
+
+### Hover trigger
+
+<a id="advanced-usage"></a>
+
+With `trigger="hover"`, pointer hover opens the menu. The focused button still supports opening with arrow keys.
+
+<ComponentExample exampleId="hover" preview={<DropdownHover />} fileName="hover.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/hover.tsx"
+```
+
+</ComponentExample>
+
+### Context menu
+
+With `trigger="contextMenu"`, the menu opens at the right-click position. Keyboard users can focus the button and press Down or Up to open it.
+
+<ComponentExample exampleId="context-menu" preview={<DropdownContextMenu />} fileName="context-menu.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/dropdown/context-menu.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Dropdown API
+
+Use a single button that forwards its ref and events as the trigger. Escape closes the menu and returns focus to it. See [PopupOptions](/en/api/popup-options) for shared popup options.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | Required | Menu entries |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | Required | A single Leaf Button or native button |
+| `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | Trigger mode; Dropdown supports click, hover and context menu. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `open` | `boolean` | — | Controlled open state. |
+| `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |
+| `onOpenChange` | `(open: boolean) => void` | — | Open-state changes |
+| `onSelect` | `(key: string) => void` | — | Called with the activated leaf item key, including radio and checkbox items; opening a submenu does not call it. |
+| `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | Menu placement; popupPlacement takes precedence. |
+| `popupWidth` | `number \| string` | `—` | Popup width; grows with content from a 160px minimum when unset. |
+| `popupMaxWidth` | `number \| string` | `420` | Maximum popup width, still bounded by the viewport. |
+| `itemRender` | `(item: `[`DropdownItem`](#dropdownitem)`) => ReactNode` | — | Customize the item label content, not the whole row. |
+| `mouseEnterDelay` | `number` | `100` | Delay in milliseconds before opening on hover. |
+| `mouseLeaveDelay` | `number` | `150` | Delay in milliseconds before closing after pointer leave. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | Required | Menu entries |
-| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | Required | A single Leaf Button or native button |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `open` | `boolean` | `false` | Controlled / initial open state |
-| `defaultOpen` | `boolean` | `false` | Controlled / initial open state |
-| `onOpenChange` | `(open: boolean) => void` | — | Open-state changes |
-| `onSelect` | `(key: string) => void` | — | Called when an enabled menu entry is selected |
-| `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | Popup placement |
-| `popupWidth` | `number \| string` | `—` | Popup width; defaults to at least 220px when unset. |
-| `popupMaxWidth` | `number \| string` | `420` | Maximum popup width, still bounded by the viewport. |
-| `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | Trigger mode; Dropdown supports click, hover and context menu. |
-| `mouseEnterDelay` | `number` | `100` | Configure mouse enter delay. |
-| `mouseLeaveDelay` | `number` | `150` | Configure mouse leave delay. |
-| `itemRender` | `(item: `[`DropdownItem`](#dropdownitem)`) => ReactNode` | — | Customize item content. |
 
-## DropdownItem
+### DropdownItem
+
+Data for an action, group or submenu in a dropdown menu.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique key |
-| `label` | `ReactNode` | — | Content and icon |
-| `icon` | `ReactNode` | — | Content and icon |
+| `label` | `ReactNode` | — | Item label or group heading. |
+| `icon` | `ReactNode` | — | Icon before the item label. |
 | `extra` | `ReactNode` | — | Trailing item content for shortcuts, status labels or other non-interactive information. |
-| `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | Menu entry or divider |
+| `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | Regular item, divider, group, checkbox or radio item. |
 | `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | Menu entries. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
-| `danger` | `boolean` | `false` | Disabled / danger action |
-| `checked` | `boolean` | — | Configure checked. |
-| `group` | `string` | — | Group heading. |
-| `closeOnSelect` | `boolean` | — | Configure close on select. |
-| `onCheckedChange` | `(checked: boolean) => void` | — | Configure on checked change. |
+| `danger` | `boolean` | `false` | Destructive-action colors without disabling the item. |
+| `checked` | `boolean` | — | Controlled checked state; stored internally when omitted. |
+| `group` | `string` | — | Mutual-exclusion group identifier for radio items. |
+| `closeOnSelect` | `boolean` | — | Whether selection closes the menu; regular items close by default, radio and checkbox items stay open. |
+| `onCheckedChange` | `(checked: boolean) => void` | — | Called with the next checked state when the item is activated. |
 | `href` | `string` | — | Link destination. |
 | `target` | `string` | — | Link target attribute, such as _blank; opens in the current tab when omitted. |
 | `onClick` | `(event: MouseEvent<HTMLElement>) => void` | — | Runs when the item is selected |
-
-## Types
-
-Import types when defining reusable component props or assembling options.
-
-```ts
-import type { DropdownProps, DropdownItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Press Down / Up on the trigger to open. Use arrow keys, Home, End or the first letter to navigate, Enter to select, and Escape to close and restore focus. Disabled entries and dividers are skipped. An item's `extra` shares the row's click target; keep interactive controls outside the menu item.

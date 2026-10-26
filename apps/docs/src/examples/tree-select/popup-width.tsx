@@ -1,9 +1,9 @@
 import { TreeSelect } from '@ifhover/leaf-ui';
 
-const options = (english: boolean) => [
+const options = [
   {
     value: 'team',
-    label: english ? 'Team' : '团队',
+    label: '团队',
     children: [
       { value: 'alice', label: 'Alice' },
       { value: 'bob', label: 'Bob' },
@@ -12,14 +12,15 @@ const options = (english: boolean) => [
   },
 ];
 
-export function PopupWidth({ english = false }) {
+export function PopupWidth() {
   return (
     <TreeSelect
-      aria-label={english ? 'Team members' : '团队成员'}
-      options={options(english)}
-      placeholder={english ? 'The panel fits its content' : '浮层按内容定宽'}
-      popupMaxWidth={320}
+      aria-label="按内容定宽的成员选择"
+      options={options}
       popupWidth="auto"
+      popupMaxWidth={320}
+      defaultExpandAll
+      placeholder="选择成员"
     />
   );
 }

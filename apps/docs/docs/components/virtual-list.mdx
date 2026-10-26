@@ -1,50 +1,76 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { VirtualListBasic } from '../../src/examples/virtual-list/basic';
 import { VirtualListDynamic } from '../../src/examples/virtual-list/advanced';
+import { VirtualListScrollControl } from '../../src/examples/virtual-list/scroll-control';
+import { VirtualListEmpty } from '../../src/examples/virtual-list/empty';
+
+export const leafDoc = { component: 'VirtualList', primaryApi: 'VirtualListProps' };
 
 # VirtualList 虚拟列表
 
-流畅浏览大量列表内容。
+按可见范围渲染长列表。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<VirtualListBasic />} fileName="basic.tsx">
+## 基础用法
+
+`itemKey` 必须返回唯一且稳定的标识，不要使用排序或筛选后会变化的位置。
+
+<ComponentExample exampleId="basic" preview={<VirtualListBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/virtual-list/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 动态高度
+{/* leaf:section examples */}
 
-<ComponentExample title="动态高度" preview={<VirtualListDynamic />} fileName="advanced.tsx">
+## 示例
+
+### 动态高度
+
+`estimateSize` 只用于初始估计，行高会根据内容测量。项目内容变化时保留同一个 key。
+
+<ComponentExample exampleId="advanced" preview={<VirtualListDynamic />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/virtual-list/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+### 滚动控制
 
-itemKey 必须稳定。estimateSize 用于初始估计，之后自动测量行高。SSR 输出确定的初始窗口，挂载后根据容器调整。
+`scrollToIndex` 的索引从 0 开始。
 
-## 类型
+<ComponentExample exampleId="scroll-control" preview={<VirtualListScrollControl />} fileName="scroll-control.tsx" width={600}>
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { VirtualListHandle, VirtualListProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../src/examples/virtual-list/scroll-control.tsx"
 ```
 
-## VirtualListHandle API
+</ComponentExample>
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `element` | `HTMLDivElement \| null` | 必填 | 滚动容器元素 |
-| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | 必填 | 滚动至项目 |
-| `scrollToOffset` | `(offset: number) => void` | 必填 | 滚动至偏移量 |
+### 空列表
 
-## VirtualListProps API
+`items` 为空时展示默认空状态，可通过 `emptyContent` 替换。
+
+<ComponentExample exampleId="empty" preview={<VirtualListEmpty />} fileName="empty.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/virtual-list/empty.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### VirtualListProps API
+
+配置虚拟列表的数据、尺寸和条目渲染方式。
+
+```ts
+import type { VirtualListProps } from '@ifhover/leaf-ui';
+```
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -54,5 +80,19 @@ import type { VirtualListHandle, VirtualListProps } from '@ifhover/leaf-ui';
 | `height` | `number` | `320` | 高度，数字按像素计算 |
 | `estimateSize` | `number \| ((item: T, index: number) => number)` | `40` | 预估项目尺寸，挂载后测量实际尺寸 |
 | `overscan` | `number` | `5` | 可见区域外预渲染数量 |
-| `emptyContent` | `ReactNode` | — | 空列表内容 |
 | `horizontal` | `boolean` | `false` | 横向虚拟列表 |
+| `emptyContent` | `ReactNode` | — | 空列表内容 |
+
+### VirtualListHandle API
+
+通过引用滚动到指定条目或位置。
+
+```ts
+import type { VirtualListHandle } from '@ifhover/leaf-ui';
+```
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `element` | `HTMLDivElement \| null` | 必填 | 滚动容器元素 |
+| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | 必填 | 滚动至项目 |
+| `scrollToOffset` | `(offset: number) => void` | 必填 | 滚动至偏移量 |

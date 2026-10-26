@@ -1,178 +1,217 @@
-import { SingleLine } from '../../../src/examples/en/cascader/single-line';
-import { Cache } from '../../../src/examples/cascader/cache';
-import { Intermediate } from '../../../src/examples/cascader/intermediate';
-import { Lazy } from '../../../src/examples/cascader/lazy';
-import { Multiple } from '../../../src/examples/cascader/multiple';
-import { Popup } from '../../../src/examples/cascader/popup';
-import { Search } from '../../../src/examples/cascader/search';
 import { ComponentExample } from '../../../src/components/component-example';
-import { CascaderBasic, CascaderControlled } from '../../../src/components/en-form-examples';
+import { CascaderBasic } from '../../../src/examples/en/cascader/basic';
+import { CascaderControlled } from '../../../src/examples/en/cascader/controlled';
+import { CascaderSearch } from '../../../src/examples/en/cascader/search';
+import { CascaderMultiple } from '../../../src/examples/en/cascader/multiple';
+import { CascaderSingleLine } from '../../../src/examples/en/cascader/single-line';
+import { CascaderStates } from '../../../src/examples/en/cascader/states';
+import { CascaderIntermediate } from '../../../src/examples/en/cascader/intermediate';
+import { CascaderLazy } from '../../../src/examples/en/cascader/lazy';
+import { CascaderCache } from '../../../src/examples/en/cascader/cache';
+import { CascaderPopup } from '../../../src/examples/en/cascader/popup';
+
+export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 
 # Cascader
 
-Choose a value through a hierarchy of options. Changing a parent updates the next column immediately, without a fade or movement animation. Moving to another branch only clears uncommitted descendants; returning to a selected branch restores its committed path.
+Select hierarchical options such as regions or categories.
 
-## Basic selection
+{/* leaf:section basic */}
 
-`children` defines nested options. Click a parent to open the next column, then click a leaf to commit the full path. `disabled` disables a whole branch, and each node needs a unique, stable `value`.
+## Basic usage
 
-<ComponentExample title="Two levels" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
+<a id="basic-selection"></a>
+
+`children` defines nested options. Expand a parent and select a leaf to commit the full path. `disabled` disables a whole branch.
+
+<ComponentExample exampleId="basic" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled path
+{/* leaf:section examples */}
 
-`value` is the array of values from the root to the leaf, and `onChange` also supplies the full option path. Switching a parent clears uncommitted descendants; returning to the branch of a committed path restores its lower-level selection. Named fields submit a JSON array string.
+## Examples
 
-<ComponentExample title="Three levels" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
+### Controlled path
+
+`value` is an array of values from the root to the selected node. `onChange` also returns the full option path; clearing returns two empty arrays. Expanding a parent only changes the draft path. Returning to the first-level branch of a committed path restores its descendants.
+
+<ComponentExample exampleId="controlled" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Search
+### Search
 
-Set `showSearch` to filter options by typing in the popup. Matches are shown with their hierarchical path, and choosing one still commits the full path.
+`showSearch` displays matching paths. Search covers supplied or already loaded options; it does not fetch remote results.
 
-<ComponentExample title="Search a region" preview={<Search english />} fileName="search.tsx" width={360}>
+<ComponentExample exampleId="search" preview={<CascaderSearch />} fileName="search.tsx" width={360}>
 
-```tsx lineNumbers file="../../../src/examples/cascader/search.tsx"
+```tsx lineNumbers file="../../../src/examples/en/cascader/search.tsx"
 ```
 
 </ComponentExample>
 
-## Multiple selection
+### Multiple selection
 
-Set `multiple` to commit several paths; each selection is shown as a tag. Tag wrapping, collapsing and limits are covered under single-line selections below.
+With `multiple`, `value` is a `string[][]` containing complete paths. Selecting the same path again removes it, and the popup stays open after selection.
 
-<ComponentExample title="Select regions" preview={<Multiple english />} fileName="multiple.tsx" width={480}>
+<ComponentExample exampleId="multiple" preview={<CascaderMultiple />} fileName="multiple.tsx" width={360}>
 
-```tsx lineNumbers file="../../../src/examples/cascader/multiple.tsx"
+```tsx lineNumbers file="../../../src/examples/en/cascader/multiple.tsx"
 ```
 
 </ComponentExample>
 
-## Selecting intermediate levels
+### Single-line selections
 
-Only leaves can be committed by default. With `changeOnSelect`, clicking any level commits the path up to that level, which suits flows that start with a province and narrow down later.
+`tagWrap={false}` keeps tags on one line and collapses overflow into `+N`. Use `maxTagCount` to limit the visible tags. Open the popup to review or change all selections.
 
-<ComponentExample title="Any level" preview={<Intermediate english />} fileName="intermediate.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/cascader/intermediate.tsx"
-```
-
-</ComponentExample>
-
-## Popup width
-
-The popup matches the field width by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to fit the content, which may be narrower than the field, or `popupWidth={300}` for a fixed 300px width; CSS lengths are also supported. `popupMaxWidth` is unset by default. The example below fits the content and caps the maximum width. Viewport edge avoidance still applies.
-
-<ComponentExample title="Fit to content" preview={<Popup english />} fileName="popup.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/cascader/popup.tsx"
-```
-
-</ComponentExample>
-
-## Lazy loading
-
-`loadData` runs when an unloaded node is expanded and returns its child options, which are written back into the tree. It also receives an `AbortSignal`, so a request can be cancelled when the popup closes.
-
-<ComponentExample title="Load on expand" preview={<Lazy english />} fileName="lazy.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/cascader/lazy.tsx"
-```
-
-</ComponentExample>
-
-## Refreshing cached data
-
-When `cacheKey` changes, previously loaded children are treated as stale and fetched again on the next expand. The example uses a version counter as `cacheKey`; the button bumps it to force a reload.
-
-<ComponentExample title="Explicit refresh" preview={<Cache english />} fileName="cache.tsx" width={480}>
-
-```tsx lineNumbers file="../../../src/examples/cascader/cache.tsx"
-```
-
-</ComponentExample>
-
-## Single-line selections
-
-Set `tagWrap={false}` to keep selected values on one line. Long labels truncate; extra values collapse into `+N`. In very narrow controls, only the count is shown. Open the popup to review or change selections. `maxTagCount` can further limit the visible tags; `maxTagCount="responsive"` also enables automatic single-line collapsing.
-
-<ComponentExample title="Single-line selections" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+<ComponentExample exampleId="single-line" preview={<CascaderSingleLine />} fileName="single-line.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/single-line.tsx"
 ```
 
 </ComponentExample>
 
-## Cascader API
+### Disabled and read-only
+
+`disabled` prevents interaction. `readOnly` keeps the trigger focusable but prevents opening the popup, clearing or changing the value.
+
+<ComponentExample exampleId="states" preview={<CascaderStates />} fileName="states.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/states.tsx"
+```
+
+</ComponentExample>
+
+### Intermediate levels
+
+<a id="advanced-usage"></a>
+
+`changeOnSelect` allows committing intermediate paths. Selecting a node with children keeps the popup open so selection can continue down the hierarchy.
+
+<ComponentExample exampleId="intermediate" preview={<CascaderIntermediate />} fileName="intermediate.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/intermediate.tsx"
+```
+
+</ComponentExample>
+
+### Lazy loading
+
+Set `isLeaf={false}` on nodes without `children`; `loadData` returns their children on expansion. Keep `options` and `loadData` references stable, and use values unique across the entire tree.
+
+Respect `AbortSignal`: changing the options, loader or `cacheKey`, or unmounting, cancels pending requests. Closing the popup does not. Use `onLoadError` for failure feedback; expand the node again to retry.
+
+<ComponentExample exampleId="lazy" preview={<CascaderLazy />} fileName="lazy.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/lazy.tsx"
+```
+
+</ComponentExample>
+
+### Refreshing cached data
+
+Update `cacheKey` when the data version changes to clear loaded children and cancel old requests. This example keeps the options and loader unchanged. Expand the category again after refreshing to load the new version.
+
+<ComponentExample exampleId="cache" preview={<CascaderCache />} fileName="cache.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/cache.tsx"
+```
+
+</ComponentExample>
+
+### Popup width
+
+`popupWidth="auto"` fits the content, and `popupMaxWidth` caps its width. Without a width override, the popup matches the trigger. See [shared popup options](/en/api/popup-options) for other popup settings.
+
+<ComponentExample exampleId="popup" preview={<CascaderPopup />} fileName="popup.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/cascader/popup.tsx"
+```
+
+</ComponentExample>
+
+Set `name` to submit the path as a JSON array string; empty values submit an empty string. Uncontrolled values support form reset; reset controlled application state yourself. See [Form](/en/components/form) for labels and errors, and [ConfigProvider](/en/components/config-provider) for built-in translations.
+
+{/* leaf:section api */}
+
+## API
+
+### Cascader API
+
+Other native `button` and `aria-*` attributes reach the trigger. `className` / `style` apply to the outer container.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `options` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | Required | Hierarchical options |
+| `value` | `readonly string[] \| readonly (readonly string[])[]` | — | Controlled path; the internal uncontrolled value is used when omitted. |
+| `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | Initial path for uncontrolled usage; native form reset is supported. |
+| `onChange` | `((value: string[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => void) \| ((value: string[][], selectedOptions: `[`CascaderOption`](#cascaderoption)`[][]) => void)` | — | Return a path and its options in single mode or path and option arrays in multiple mode; called on selection, removal or clearing, with two empty arrays when cleared. |
+| `multiple` | `false \| true` | `false` | Enable multiple selection; value and callback types change accordingly. |
+| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `readOnly` | `boolean` | — | Lock the value against typing, selection, clearing and removal. |
+| `allowClear` | `boolean` | `true` | Clearing returns two empty arrays |
+| `showSearch` | `boolean` | — | Enable search input. |
+| `changeOnSelect` | `boolean` | — | Allow selecting intermediate levels. |
+| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
+| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
+| `displayRender` | `(labels: ReactNode[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => ReactNode` | — | Customize each selected path using its labels and options. |
+| `optionRender` | `(option: `[`CascaderOption`](#cascaderoption)`) => ReactNode` | — | Customize option content. |
+| `loadData` | `(option: `[`CascaderOption`](#cascaderoption)`, signal: AbortSignal) => Promise<readonly `[`CascaderOption`](#cascaderoption)`[]>` | — | Load children when expanding a node with isLeaf false and no supplied children; use signal to handle cancellation. |
+| `onLoadError` | `(error: unknown, option: `[`CascaderOption`](#cascaderoption)`) => void` | — | Called on loading failure, for retry feedback. |
+| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
+| `open` | `boolean` | — | Controlled open state. |
+| `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |
+| `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
+| `name` | `string` | — | Native FormData field name; nonempty values submit JSON paths and empty values submit an empty string. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `options` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | Required | Hierarchical options |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `placeholder` | `string` | Locale default | Placeholder when empty; localized by ConfigProvider |
-| `name` | `string` | — | Field name / associated form ID |
-| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
-| `allowClear` | `boolean` | `true` | Clearing returns two empty arrays |
-| `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `readOnly` | `boolean` | — | Lock the value against typing, selection, clearing and removal. |
-| `showSearch` | `boolean` | — | Enable search input. |
-| `changeOnSelect` | `boolean` | — | Allow selecting intermediate levels. |
-| `displayRender` | `(labels: ReactNode[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => ReactNode` | — | Customize displayed paths. |
-| `optionRender` | `(option: `[`CascaderOption`](#cascaderoption)`) => ReactNode` | — | Customize option content. |
-| `loadData` | `(option: `[`CascaderOption`](#cascaderoption)`, signal: AbortSignal) => Promise<readonly `[`CascaderOption`](#cascaderoption)`[]>` | — | Load child nodes asynchronously and respect AbortSignal. |
-| `onLoadError` | `(error: unknown, option: `[`CascaderOption`](#cascaderoption)`) => void` | — | Called on loading failure, for retry feedback. |
-| `cacheKey` | `string \| number` | — | Changing the data version clears lazy caches and cancels stale requests. |
-| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
-| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
-| `multiple` | `false \| true` | `false` | Enable multiple selection; value and callback types change accordingly. |
-| `value` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | Controlled path; the internal uncontrolled value is used when omitted. |
-| `defaultValue` | `readonly string[] \| readonly (readonly string[])[]` | `[]` | Initial path for uncontrolled usage; native form reset is supported. |
-| `onChange` | `((value: string[], selectedOptions: `[`CascaderOption`](#cascaderoption)`[]) => void) \| ((value: string[][], selectedOptions: `[`CascaderOption`](#cascaderoption)`[][]) => void)` | — | Runs when a leaf is selected or the path is cleared |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
 
 ### CascaderOption
 
+The cascader option data structure, with child options organized through `children`.
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Option value; unique within the same level. |
+| `value` | `string` | Required | Option value; unique among siblings for static data and across the tree for lazy nodes to distinguish caches. |
 | `label` | `ReactNode` | Required | Visible option content. |
 | `searchLabel` | `string` | — | Plain text used to search a rich label. |
 | `isLeaf` | `boolean` | — | Identify a leaf node explicitly, including in lazy data. |
 | `disabled` | `boolean` | `false` | Disable this option and all descendants. |
 | `children` | `readonly `[`CascaderOption`](#cascaderoption)`[]` | — | Child options. |
 
-## Types
+### CascaderFieldNames
 
-Import CascaderProps to describe component props. Option types in the API table link to their detailed fields above.
+Use `mapCascaderOptions(records, fields)` to convert records to `CascaderOption[]`, then pass the result as `options`. `CascaderFieldNames` describes the mapping fields; it is not a `Cascader` prop.
 
 ```ts
-import type { CascaderProps, CascaderOption } from '@ifhover/leaf-ui';
+import { mapCascaderOptions } from '@ifhover/leaf-ui';
+
+const records = [{ id: 'design', name: 'Design', nodes: [{ id: 'interface', name: 'Interface design' }] }];
+const options = mapCascaderOptions(records, {
+  value: 'id',
+  label: 'name',
+  children: 'nodes',
+});
 ```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-### CascaderFieldNames
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

@@ -78,7 +78,12 @@ function prepareThumbnail(source: string, slug: string) {
         // White labels/checkmarks stay distinct from theme-aware panel surfaces.
         if (color === '#fff' || color === '#ffffff' || color === 'white') {
           if (element.startsWith('<rect ')) return `${attr}="var(--leaf-color-surface)"`;
-          if (element.startsWith('<text ')) return `${attr}="var(--leaf-color-on-primary)"`;
+          if (element.startsWith('<text ')) {
+            // Tooltip uses the inverse text/surface pair, not the solid-action foreground.
+            const foreground =
+              slug === 'tooltip' ? 'var(--leaf-color-surface)' : 'var(--leaf-color-on-primary)';
+            return `${attr}="${foreground}"`;
+          }
           return paint;
         }
         // Success glyphs carry meaning independently of the selected site color.

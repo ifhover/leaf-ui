@@ -56,12 +56,12 @@ Default light base colors come from `colors.ts`: primary and success use `#1e964
 | `primaryBorderColor` | `string` | Primary color | Primary border |
 | `dangerHoverColor` | `string` | Danger color | Hover / pressed danger states |
 | `dangerActiveColor` | `string` | Danger color | Hover / pressed danger states |
-| `spacingSm` | `number \| string` | — | Configure spacing sm. |
-| `spacingLg` | `number \| string` | — | Configure spacing lg. |
-| `shadowSm` | `string` | — | Configure shadow sm. |
+| `spacingSm` | `number \| string` | — | Override small spacing; uses the base spacing when omitted. |
+| `spacingLg` | `number \| string` | — | Override large spacing; uses three times the base spacing when omitted. |
+| `shadowSm` | `string` | — | Small surface shadow as a CSS box-shadow value. |
 | `shadowXs` | `string` | — | The lightest surface shadow. |
-| `shadowMd` | `string` | — | Configure shadow md. |
-| `shadowLg` | `string` | — | Configure shadow lg. |
+| `shadowMd` | `string` | — | Medium popup shadow as a CSS box-shadow value. |
+| `shadowLg` | `string` | — | Large shadow as a CSS box-shadow value. |
 | `lineHeight` | `number \| string` | `20` | Body line height; numbers are pixels, `1`–`4` keep the legacy multiplier meaning, and strings are CSS lengths. |
 
 ## Type import
@@ -98,7 +98,7 @@ Pass this object to `<ConfigProvider theme={{ tokens }}>`.
 | `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Keyboard focus overrides; the visible focus outline remains. |
 | `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | Disabled appearance overrides; disabled behavior is unchanged. |
 
-Date, time and range pickers share the `DatePicker` field shell states. For example, use `DatePicker.focus` for a TimePicker's focused field and `TimePicker` for its panel paint. `InputOTP` does not support all four state overrides. States affect the control regions listed here, without recursively restyling all child nodes.
+Date, time and range pickers share the `DatePicker` field shell states. This includes `picker="time"`: use `DatePicker.focus` for the focused field and `DatePicker` for panel paint. `InputOTP` does not support all four state overrides. States affect the control regions listed here, without recursively restyling all child nodes.
 
 ## LeafComponentStateTokens
 

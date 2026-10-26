@@ -1,142 +1,243 @@
-import { DisabledDates } from '../../../src/examples/date-range-picker/disabled-dates';
-import { OpenEnd } from '../../../src/examples/date-range-picker/open-end';
-import { Presets } from '../../../src/examples/date-range-picker/presets';
 import { ComponentExample } from '../../../src/components/component-example';
 import { DateRangePickerBasic } from '../../../src/examples/en/date-range-picker/basic';
+import { DateRangePickerControlled } from '../../../src/examples/en/date-range-picker/controlled';
 import { DateRangePickerModes } from '../../../src/examples/en/date-range-picker/modes';
+import { DateRangePickerDateTime } from '../../../src/examples/en/date-range-picker/datetime';
+import { DisabledDates } from '../../../src/examples/en/date-range-picker/disabled-dates';
+import { OpenEnd } from '../../../src/examples/en/date-range-picker/open-end';
+import { Presets } from '../../../src/examples/en/date-range-picker/presets';
+import { DateRangePickerTime } from '../../../src/examples/en/date-range-picker/time';
+import { DateRangePickerOvernight } from '../../../src/examples/en/date-range-picker/overnight';
+import { DateRangePickerForm } from '../../../src/examples/en/date-range-picker/form';
+
+export const leafDoc = { component: 'DateRangePicker', primaryApi: 'DateRangePickerProps' };
 
 # DateRangePicker
 
-Select start and end dates or times to define a range.
+Choose a date, datetime or time range. Calendar modes use local `Date` tuples; time-only mode uses string tuples. Use [DatePicker](/en/components/date-picker) for a single value.
 
-## Controlled range
+{/* leaf:section basic */}
 
-<ComponentExample title="Controlled range" preview={<DateRangePickerBasic />} fileName="basic.tsx" width={360}>
+## Basic usage
+
+Select the start, then the end to commit a complete range and close the panel. Date mode supports reversed selection and orders the result from start to end. Set an initial uncontrolled range with `defaultValue`.
+
+<ComponentExample exampleId="basic" preview={<DateRangePickerBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-range-picker/basic.tsx"
-
 ```
 
 </ComponentExample>
 
-## Picker modes
+{/* leaf:section examples */}
 
-<ComponentExample title="Picker modes" preview={<DateRangePickerModes />} fileName="modes.tsx">
+## Examples
+
+### Controlled value and selection progress
+
+`onChange` receives the committed range and two formatted strings; clearing returns `null` and `['', '']`. `onCalendarChange` observes panel-selection drafts and the edited endpoint, not a committed range, and does not cover every text or preset change. Update application state when resetting a controlled field.
+
+<ComponentExample exampleId="controlled" preview={<DateRangePickerControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/controlled.tsx"
+```
+
+</ComponentExample>
+
+### Picker modes
+
+Set `picker` to select years, quarters, months or weeks. Both `Date` values represent the start of their period. [ConfigProvider](/en/components/config-provider) sets the first weekday with `weekStartsOn`, defaulting to Monday.
+
+<ComponentExample exampleId="modes" preview={<DateRangePickerModes />} fileName="modes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-range-picker/modes.tsx"
-
 ```
 
 </ComponentExample>
 
-## Open endpoints
+### Date-time ranges
 
-`allowEmpty` controls the start and end independently. The example requires a start date and leaves the end open, which suits a period that is still running.
+With `picker="datetime"`, choose the start date and time, select Next to edit the end, then OK to commit. The datetime panel requires the end not to precede the start. `defaultTime` supplies times for newly picked endpoints, not an initial range.
 
-<ComponentExample title="Open end date" preview={<OpenEnd english />} fileName="open-end.tsx" width={420}>
+<ComponentExample exampleId="datetime" preview={<DateRangePickerDateTime />} fileName="datetime.tsx">
 
-```tsx lineNumbers file="../../../src/examples/date-range-picker/open-end.tsx"
-
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/datetime.tsx"
 ```
 
 </ComponentExample>
 
-## Disabled dates
+This mode defaults to `needConfirm={true}` and discards an unconfirmed range on outside clicks. Other calendar modes commit after choosing an end by default; set `needConfirm` to require confirmation. Escape discards the current edit. Clearing or choosing a valid preset commits directly.
 
-`disabledDate` is called for every visible date; returning `true` prevents it from being used as either endpoint, and existing ranges are kept.
+### Restrict selectable endpoints
 
-<ComponentExample title="Sundays excluded" preview={<DisabledDates english />} fileName="disabled-dates.tsx" width={420}>
+`minDate` / `maxDate` include their boundaries. `disabledDate` receives `position` to distinguish start and end. This example restricts endpoints to October and excludes Sundays as endpoints; a range may still span a Sunday. Validate whole-range availability in the application if required.
 
-```tsx lineNumbers file="../../../src/examples/date-range-picker/disabled-dates.tsx"
+<ComponentExample exampleId="disabled-dates" preview={<DisabledDates />} fileName="disabled-dates.tsx">
 
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/disabled-dates.tsx"
 ```
 
 </ComponentExample>
 
-## Range shortcuts
+Restrictions apply to typing and panel selection without clearing existing values. Datetime bounds compare complete timestamps; `disabledTime` receives time parts, endpoint position and the current date. `inputReadOnly` prevents typing, while `readOnly` prevents changes.
 
-`presets` adds common ranges below the panel. `value` returns `[start, end]` and is applied as soon as the preset is chosen.
+### Open endpoints
 
-<ComponentExample title="Recent 7 days" preview={<Presets english />} fileName="presets.tsx" width={420}>
+`allowEmpty` permits empty endpoints independently. This example uses `[false, true]` for a required start and optional end, with `OpenDateRange` imported from the root entry. At least one endpoint must remain non-empty; use `null`, not `[null, null]`, to clear the whole control.
 
-```tsx lineNumbers file="../../../src/examples/date-range-picker/presets.tsx"
+<ComponentExample exampleId="open-end" preview={<OpenEnd />} fileName="open-end.tsx">
 
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/open-end.tsx"
 ```
 
 </ComponentExample>
 
-## Serialization and dates
+Clear an allowed endpoint with the panel footer action; its callback string is `''`. Opening with only a start continues editing the end.
 
-`format` changes display text and the string argument of `onChange`; FormData keeps the canonical period/date representation described below. Square brackets escape literal text, such as `YYYY-[Q]Q`. Provide `parse` with a function-valued formatter. Dates are local calendar values; convert business timezones explicitly at the application boundary. Configure the first weekday with ConfigProvider's `weekStartsOn`.
+### Time range
 
-## DateRangePicker API
+With `picker="time"`, values and callbacks use `['HH:mm', 'HH:mm']` or `null`, or `HH:mm:ss` with `showSeconds`. `use12Hours` changes display only; values stay in 24-hour format. `minTime` / `maxTime` apply to both endpoints. Time-only mode does not support `allowEmpty`.
+
+<ComponentExample exampleId="time" preview={<DateRangePickerTime />} fileName="time.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/time.tsx"
+```
+
+</ComponentExample>
+
+### Across midnight
+
+By default, the end must not precede the start. Set `allowOvernight` to allow 22:00 to 06:00 the next day without swapping endpoints. Time mode commits valid changes on dismissal by default; set `needConfirm` to require explicit confirmation.
+
+<ComponentExample exampleId="overnight" preview={<DateRangePickerOvernight />} fileName="overnight.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/overnight.tsx"
+```
+
+</ComponentExample>
+
+### Range shortcuts
+
+<a id="advanced-usage"></a>
+
+`presets` provides common ranges, previewed on hover or focus. Choosing a valid range commits it immediately and closes the panel. `value` may be a range or a function returning one synchronously, not a Promise. Functions may run multiple times and must have no side effects.
+
+<ComponentExample exampleId="presets" preview={<Presets />} fileName="presets.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/presets.tsx"
+```
+
+</ComponentExample>
+
+### Display format and form submission
+
+A custom `format` changes display and the string tuple passed to `onChange`. FormData retains canonical formats joined as `start/end`. This example displays `DD/MM/YYYY` and submits a value such as `2026-10-05/2026-10-09`; an open end produces `2026-10-05/`, and clearing produces an empty string. Resetting an uncontrolled field restores `defaultValue`.
+
+<ComponentExample exampleId="form" preview={<DateRangePickerForm />} fileName="form.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-range-picker/form.tsx"
+```
+
+</ComponentExample>
+
+For canonical period/datetime formats and custom `parse`, see [DatePicker: display format and form submission](/en/components/date-picker#display-format-and-form-submission). Dates are local calendar values; handle business timezone conversion in the application. See [Form](/en/components/form) for other form configuration.
+
+Paste a complete date range with endpoints separated by `~`. Enter commits valid input. Invalid or incomplete input reverts when focus leaves the whole control; Escape discards the edit. See [DatePicker: input and confirmation](/en/components/date-picker#input-and-confirmation) for segmented input.
+
+{/* leaf:section api */}
+
+## API
+
+### DateRangePicker API
+
+The main table covers calendar and time-only branches, but not every prop applies to both. `allowEmpty`, `format`, `parse`, `presets`, date bounds and calendar configuration belong to calendar modes; `allowOvernight` and `minTime` / `maxTime` belong to time-only mode.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime' \| 'time'` | `'date'` | Select a date, time, date-time, week, month, quarter or year. |
+| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| readonly [string, string]` | — | Controlled range: a Date tuple for date modes, with nullable endpoints when allowEmpty is enabled; a 24-hour string tuple for time. The empty range is null. |
+| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| readonly [string, string]` | `null` | Initial uncontrolled range matching picker, restored on native form reset. |
+| `onChange` | `(((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void)) \| (((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)) \| ((value: readonly [string, string] \| null) => void)` | — | Called when committing a range: Date and string tuples for date modes, a string tuple for time, null on clear. |
+| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | Called for date-panel draft, time and endpoint-clear changes, not a commit; text input and presets do not necessarily call it. |
+| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | Explicitly allow open range endpoints. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `allowClear` | `boolean` | `true` | Show the clear button |
+| `minDate` | `Date` | — | Earliest / latest allowed values |
+| `maxDate` | `Date` | — | Earliest / latest allowed values |
+| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | Restrict endpoints, not every date inside the range; position identifies start or end. |
+| `minTime` | `string` | — | Earliest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `maxTime` | `string` | — | Latest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `disabledTime` | `((parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean) \| ((parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end') => boolean)` | — | Restrict endpoint times; datetime mode also receives the endpoint Date. |
+| `allowOvernight` | `boolean` | `false` | Allow a time-only range to cross midnight. |
+| `needConfirm` | `boolean` | `picker === "datetime"` | Require OK or Enter to commit; discard the draft on blur when enabled. |
+| `showSeconds` | `boolean` | `false` | Include seconds in date-time ranges; otherwise seconds are zero |
+| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
+| `minuteStep` | `number` | `1` | Minute segment step and column interval, retaining existing off-step values. |
+| `secondStep` | `number` | `1` | Second segment step and column interval, retaining existing off-step values. |
+| `defaultTime` | `readonly [string, string]` | `['00:00:00', '23:59:59']` | Times applied to newly picked start and end dates in datetime mode, as HH:mm[:ss]. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | Presets; value may be computed on demand. |
+| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
+| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
+| `name` | `string` | — | Field name in native FormData. |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Custom class for the popup. |
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `allowClear` | `boolean` | `true` | Show the clear button |
-| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `picker` | `'year' \| 'quarter' \| 'month' \| 'week' \| 'date' \| 'datetime'` | `'date'` | Selection granularity |
-| `minDate` | `Date` | — | Earliest / latest allowed values |
-| `maxDate` | `Date` | — | Earliest / latest allowed values |
-| `use12Hours` | `boolean` | `false` | Display a 12-hour clock with AM/PM options |
-| `showSeconds` | `boolean` | `true` | Include seconds in date-time ranges; otherwise seconds are zero |
-| `minuteStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
-| `secondStep` | `number` | `1` | Minute / second step, an integer from 1 to 60 |
-| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes |
-| `disabledDate` | `(date: Date, position: 'start' \| 'end') => boolean` | — | Disable dates using business rules. |
-| `disabledTime` | `(parts: `[`TimeParts`](time-picker#timeparts)`, position: 'start' \| 'end', date: Date) => boolean` | — | Disable times; typing and panel selection use the same rules. |
-| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
-| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
-| `presets` | `readonly `[`DatePreset`](date-picker#datepreset)`<readonly [Date \| null, Date \| null]>[]` | — | Presets; value may be computed on demand. |
-| `onCalendarChange` | `(range: readonly [Date \| null, Date \| null], info: { position: 'start' \| 'end' }) => void` | — | Changes during selection, including the current start/end position. |
-| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
-| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
-| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
-| `allowEmpty` | `false \| true \| readonly [boolean, boolean]` | `false` | Explicitly allow open range endpoints. |
-| `value` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | Controlled / initial range |
-| `defaultValue` | `readonly [Date, Date] \| null \| readonly [Date \| null, Date \| null] \| null` | `null` | Controlled / initial range |
-| `onChange` | `((value: readonly [Date, Date] \| null, dateStrings: readonly [string, string]) => void) \| ((value: readonly [Date \| null, Date \| null] \| null, dateStrings: readonly [string, string]) => void)` | — | Returns an ordered range and formatted strings; clearing returns null |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
-| `name` | `string` | — | Field name in native FormData. |
-| `form` | `string` | — | ID of the associated native form. |
 | `ref` | `Ref<HTMLInputElement>` | — | Input element reference |
 
-## DateRange
+Native input attributes and `aria-*` target the input; `className` / `style` target the wrapper. See [PopupOptions](/en/api/popup-options) for shared popup configuration.
+
+### DateRange
+
+A complete date range uses `readonly [Date, Date]`. With `allowEmpty`, use `OpenDateRange` from the root entry: `readonly [Date | null, Date | null]`. See [DatePreset](date-picker#datepreset) for preset entries.
 
 | Property | Type   | Default  | Description                  |
 | -------- | ------ | -------- | ---------------------------- |
 | `0`      | `Date` | Required | Start, no later than the end |
 | `1`      | `Date` | Required | End                          |
 
-## Types
+### TimeRangePickerMode API
 
-Import types when defining reusable component props or assembling options.
+Props for `picker="time"`; `TimeRange` is `readonly [string, string]`.
 
-```ts
-import type { DateRangePickerProps, DateRange } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-A DateRange is a `readonly [Date, Date]`. Years use January 1, months use the first day, and weeks default to Monday; configure weekStartsOn on ConfigProvider with ISO week numbers. Dates use local time.
-
-The two calendars navigate together. After choosing the start, hover a year, month, week or date to preview the range. Choosing the end commits immediately in every mode, without a footer confirmation. Reversed selections are sorted.
-
-For date-time ranges, use the top-right time button in each calendar to set that endpoint's time, then return to the calendar and choose dates. Set times before choosing the end date. Now sets the current time for that endpoint.
-
-With an existing complete range, changing either endpoint's time immediately updates the valid range without reselecting dates.
-
-Type endpoints separated by `~` and press Enter or move focus away. Formats are `YYYY`, `YYYY-MM`, `YYYY-Www`, `YYYY-MM-DD` and `YYYY-MM-DD HH:mm:ss` (omit seconds when showSeconds is false). Invalid or out-of-bounds input is not submitted. Escape discards unfinished input.
-
-FormData uses `start/end` with canonical formats. Uncontrolled fields follow form reset; reset controlled values in application state.
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `picker` | `'time'` | Required | Time-only range mode; pass time. |
+| `value` | `readonly [string, string] \| null` | — | Controlled tuple of 24-hour strings; null represents an empty range. |
+| `defaultValue` | `readonly [string, string] \| null` | `null` | Initial value; uncontrolled fields support native form reset. |
+| `onChange` | `(value: readonly [string, string] \| null) => void` | — | Return a tuple of 24-hour strings on commit, or null on clear. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `status` | `'error' \| 'warning'` | — | Show an error or warning appearance without performing validation. |
+| `allowClear` | `boolean` | `true` | Show a clear action. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `minTime` | `string` | — | Earliest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `maxTime` | `string` | — | Latest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `disabledTime` | `(parts: `[`TimeParts`](date-picker#timeparts)`, position: 'start' \| 'end') => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `allowOvernight` | `boolean` | `false` | Allow a time-only range to cross midnight. |
+| `needConfirm` | `boolean` | `false` | Require OK or Enter to commit; discard the draft on blur when enabled. |
+| `showSeconds` | `boolean` | `false` | Display and edit seconds; otherwise seconds are zero. |
+| `use12Hours` | `boolean` | `false` | Use a 12-hour clock with AM/PM. |
+| `minuteStep` | `number` | `1` | Minute segment step and column interval, retaining existing off-step values. |
+| `secondStep` | `number` | `1` | Second segment step and column interval, retaining existing off-step values. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |

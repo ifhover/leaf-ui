@@ -1,32 +1,30 @@
-import type { CascaderOption } from '@ifhover/leaf-ui';
-import { Cascader } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField } from '@ifhover/leaf-ui';
 
-const regions = (english: boolean): CascaderOption[] => [
+const regions: CascaderOption[] = [
   {
     value: 'zhejiang',
-    label: english ? 'Zhejiang' : '浙江',
+    label: '浙江',
     children: [
-      { value: 'hangzhou', label: english ? 'Hangzhou' : '杭州' },
-      { value: 'ningbo', label: english ? 'Ningbo' : '宁波' },
+      { value: 'hangzhou', label: '杭州' },
+      { value: 'ningbo', label: '宁波' },
     ],
   },
   {
     value: 'jiangsu',
-    label: english ? 'Jiangsu' : '江苏',
+    label: '江苏',
     children: [
-      { value: 'nanjing', label: english ? 'Nanjing' : '南京' },
-      { value: 'suzhou', label: english ? 'Suzhou' : '苏州' },
+      { value: 'nanjing', label: '南京' },
+      { value: 'suzhou', label: '苏州' },
     ],
   },
 ];
 
-export function Search({ english = false }) {
+export function CascaderSearch() {
   return (
-    <Cascader
-      aria-label={english ? 'Region' : '地区'}
-      options={regions(english)}
-      placeholder={english ? 'Search a region' : '搜索地区'}
-      showSearch
-    />
+    <Form layout="vertical">
+      <FormField label="地区">
+        <Cascader options={regions} placeholder="选择地区" showSearch />
+      </FormField>
+    </Form>
   );
 }

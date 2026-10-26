@@ -1,116 +1,148 @@
+import { ComponentExample } from '../../../src/components/component-example';
+import { ButtonBasic } from '../../../src/examples/en/button/basic';
+import { ButtonVariants } from '../../../src/examples/en/button/variants';
+import { ButtonSizes } from '../../../src/examples/en/button/sizes';
+import { ButtonDanger } from '../../../src/examples/en/button/danger';
+import { ButtonStates } from '../../../src/examples/en/button/states';
+import { ButtonIcons } from '../../../src/examples/en/button/icons';
+import { ButtonFullWidth } from '../../../src/examples/en/button/full-width';
+import { ButtonLoading } from '../../../src/examples/en/button/loading';
 import { ButtonGroupDemo } from '../../../src/examples/en/button/button-group';
 import { SplitButtonDemo } from '../../../src/examples/en/button/split-button';
-import { ComponentExample } from '../../../src/components/component-example';
-import { ButtonDanger, ButtonVariants, ButtonSizes, ButtonStates, ButtonIcons, ButtonLoading, ButtonFullWidth } from '../../../src/components/en-button-examples';
+
+export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 # Button
 
-Trigger an action, such as saving, submitting or deleting.
+Trigger actions such as saving, submitting or deleting.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-`variant` controls the button appearance. The default is `outline` for ordinary actions; use `solid` for a primary action and `link` for inline actions.
+Use button text that clearly describes the action and handle clicks through `onClick`.
 
-Outline buttons deepen their border on hover. Pressing only adds a subtle neutral gray background, restored on release, without changing text, border, shadow or position. Feedback transitions smoothly. All appearances share the same transition duration and easing for hover, press and recovery. `danger` changes only the semantic palette, not sizing, decoration or motion. Disabled and loading buttons do not respond; explicit component state settings take precedence.
+<ComponentExample exampleId="basic" preview={<ButtonBasic />} fileName="basic.tsx" width="fit-content">
 
-Text buttons (`variant="text"`) keep normal button height and padding, with a transparent resting background and light gray hover feedback and a deeper gray background while pressed. Link buttons use the theme base color.
+```tsx lineNumbers file="../../../src/examples/en/button/basic.tsx"
+```
 
-<ComponentExample title="Variants" preview={<ButtonVariants />} fileName="variants.tsx">
+</ComponentExample>
+
+`type` defaults to `button`, which does not submit a form. Set `type="submit"` for form submission.
+
+{/* leaf:section examples */}
+
+## Examples
+
+### Appearance
+
+Use `variant` for outline (the default), solid, text or inline link appearance.
+
+<ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/variants.tsx"
 ```
 
 </ComponentExample>
 
-## Danger actions
+### Sizes
 
-Set `danger` for destructive actions such as deleting, clearing or revoking. It can be combined with any appearance.
+Set the size with `size`; the default is `md`.
 
-<ComponentExample title="Danger actions" preview={<ButtonDanger />} fileName="danger.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
-```
-
-</ComponentExample>
-
-## Sizes
-
-`sm`, `md` and `lg` are available.
-
-<ComponentExample title="Sizes" preview={<ButtonSizes />} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<ButtonSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Disabled and loading
+### Danger actions
 
-`disabled` disables the button. `loading` shows a spinner, prevents repeated clicks and keeps the existing label.
+Set `danger` for destructive actions such as deleting or clearing. It works with every appearance.
 
-<ComponentExample title="Disabled and loading" preview={<ButtonStates />} fileName="states.tsx">
+<ComponentExample exampleId="danger" preview={<ButtonDanger />} fileName="danger.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
+```
+
+</ComponentExample>
+
+### Disabled and loading
+
+`disabled` disables the button. `loading` shows a spinner and prevents repeated clicks.
+
+<ComponentExample exampleId="states" preview={<ButtonStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/states.tsx"
 ```
 
 </ComponentExample>
 
-## Async actions
+### Icons
 
-Control `loading` with application state. The example completes after 1.2 seconds; replace the timer with your own async operation.
+Add icons with `startIcon` and `endIcon`. An icon-only button needs an `aria-label`.
 
-<ComponentExample title="Async saving" preview={<ButtonLoading />} fileName="loading.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
-```
-
-</ComponentExample>
-
-## Icons
-
-Use `startIcon` and `endIcon` to add icons. Icons are hidden from assistive technology; set `aria-label` when the button has no text.
-
-<ComponentExample title="Icons" preview={<ButtonIcons />} fileName="icons.tsx">
+<ComponentExample exampleId="icons" preview={<ButtonIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
 ```
 
 </ComponentExample>
 
-## Full width
+### Full width
 
-`fullWidth` makes the button fill its container.
+Set `fullWidth` to fill the parent container.
 
-<ComponentExample title="Full width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
+<ComponentExample exampleId="full-width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/full-width.tsx"
 ```
 
 </ComponentExample>
 
-## Button group
+### Async saving
 
-`ButtonGroup` joins adjacent actions into one group and rounds only the outer corners.
+<a id="advanced-usage"></a>
 
-<ComponentExample title="Adjacent actions" preview={<ButtonGroupDemo />} fileName="button-group.tsx">
+Control `loading` with application state. The timer simulates a request; replace it with your async operation.
+
+<ComponentExample exampleId="loading" preview={<ButtonLoading />} fileName="loading.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
+```
+
+</ComponentExample>
+
+### Button group
+
+Use `ButtonGroup` to join adjacent actions and share a size or disabled state.
+
+<ComponentExample exampleId="button-group" preview={<ButtonGroupDemo />} fileName="button-group.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/button-group.tsx"
 ```
 
 </ComponentExample>
 
-## Split button
+### Split button
 
-`SplitButton` pairs a primary action with an action menu, which suits actions such as saving with several save modes.
+`SplitButton` pairs a primary action with related menu actions. Use `onClick` for the primary button and an action for each menu item.
 
-<ComponentExample title="Primary action with more actions" preview={<SplitButtonDemo />} fileName="split-button.tsx">
+<ComponentExample exampleId="split-button" preview={<SplitButtonDemo />} fileName="split-button.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/split-button.tsx"
 ```
 
 </ComponentExample>
 
-## Button API
+{/* leaf:section api */}
+
+## API
+
+### Button API
+
+Supports native `button` attributes such as `onClick`, `name`, `form`, `aria-*` and `data-*`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -125,25 +157,9 @@ Use `startIcon` and `endIcon` to add icons. Icons are hidden from assistive tech
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Native button type |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
 
-## Types
+### ButtonGroupProps API
 
-Import ButtonProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { ButtonProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and keyboard
-
-`type` defaults to `button`, so a button inside a form will not submit accidentally. Set `type="submit"` to submit the form. Native keyboard behavior is preserved.
-
-## Extension types
-
-```ts
-import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
-```
-
-## ButtonGroupProps API
+Props for grouping related buttons.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -151,7 +167,9 @@ import type { ButtonGroupProps, SplitButtonProps } from '@ifhover/leaf-ui';
 | `disabled` | `boolean` | — | Disable interaction. |
 | `attached` | `boolean` | `true` | Join adjacent buttons |
 
-## SplitButtonProps API
+### SplitButtonProps API
+
+Props for a button combining a primary action with dropdown actions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

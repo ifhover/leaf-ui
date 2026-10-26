@@ -43,7 +43,7 @@ These fields all belong inside `theme`. Set only what you want to change.
 | `fontFamily`    | `'Inter, sans-serif'` | Set the font family; your application loads the font files.                                                                  |
 | `motion`        | `false`               | Disable regional animations while keeping interactions available.                                                            |
 
-Unspecified fields inherit the outer configuration. Defaults are light appearance, a 10px base radius, 34px base control height, 14px font size and a 20px body line height.
+Unspecified fields inherit the outer configuration. Defaults are light appearance, an 8px base radius, 34px base control height, 14px font size and a 20px body line height.
 
 See [LeafTheme](/en/components/config-provider#leaftheme) for all theme fields. For individual text colors, backgrounds or sizes, use [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens).
 
@@ -89,7 +89,7 @@ Set `appearance: 'dark'`. Use `'light'` to switch back:
 
 Component text, backgrounds and borders change together. When `primaryColor` is omitted, light and dark modes share the same default semantic bases. An explicit primary color keeps its value: black buttons retain a black fill and white labels in dark mode, with a subtle boundary when needed. Both appearances share the five semantic bands and the neutral scale; only neutral roles and mapped `soft`, `border` and `ink` steps switch.
 
-Primary and status labels use mapped readable ink while solid fills retain their original colors. Input and Select use a primary focus border; other fields retain neutral focus. Explicit foreground, focus and interaction settings take precedence. CSS color expressions participate after browser resolution.
+Primary and status labels use mapped readable ink while solid fills retain their original colors. Input and Select use a primary focus border; other fields retain neutral focus. Explicit foreground, focus and interaction settings take precedence. CSS color expressions are preserved without DOM-based numeric resolution.
 
 ConfigProvider styles the components in its region. It does not add a background to the page's `body`. To update your own page backgrounds and text, use the [CSS variables](#use-the-theme-in-application-css) below.
 
@@ -256,7 +256,7 @@ ConfigProvider exposes `--leaf-*` CSS variables within its region. Your own cont
 | `--leaf-color-<family>-border`                        | Scale-mapped semantic borders.                                                             |
 | `--leaf-color-<family>-ink`                           | Readable semantic text on ordinary surfaces.                                               |
 | `--leaf-color-primary-indicator`                      | Primary selected, progress and outline indicators.                                                                     |
-| `--leaf-color-primary-focus`                          | Available to components using primary focus indicators; ordinary fields and buttons default to neutral focus feedback. |
+| `--leaf-color-primary-focus`                          | Primary focus feedback, used by Input and Select by default; other fields and buttons retain their own focus styles. |
 | `--leaf-color-primary-fill-border`                    | Supporting boundary for primary selections such as dates; solid buttons do not use this role.                            |
 | `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | Content colors on solid fills.                                           |
 | `--leaf-color-text` / `--leaf-color-text-muted`       | Primary and secondary text.                                                                                            |
@@ -277,6 +277,6 @@ For Tailwind CSS, import the package configuration to reuse the theme through ut
 
 Use the same appearance for the server and the client's initial render. To remember a user's choice, read a cookie on the server and supply that initial value. System appearance updates after mounting.
 
-Prefer concrete HEX, RGB or HSL colors. CSS color expressions keep a reactive result in the first HTML and resolve to numeric scales after mounting; expressions the server cannot resolve may not show their final numeric values in the first frame.
+Prefer concrete HEX, RGB or HSL colors. Solid foregrounds default to white; verify their contrast yourself. Expressions remain CSS expressions: they are not resolved to numeric scales after mounting or synchronized from DOM changes.
 
 See [Installation & quick start](/en/guide/getting-started) for setup, [server-side rendering](/en/guide/ssr) for frameworks such as Next.js, and [Browser compatibility](/en/guide/compatibility) for support targets.

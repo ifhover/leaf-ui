@@ -1,32 +1,72 @@
-import { NeutralAlerts } from '../../../src/examples/alert/neutral';
 import { ComponentExample } from '../../../src/components/component-example';
 import { AlertBasic } from '../../../src/examples/en/alert/basic';
+import { AlertTypes } from '../../../src/examples/en/alert/types';
+import { AlertClosable } from '../../../src/examples/en/alert/closable';
+import { AlertIcons } from '../../../src/examples/en/alert/icons';
+
+export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 
 # Alert
 
-Show a result or information that needs attention within a page.
+Show operation results or information that needs attention within a page.
 
-## Feedback types
+{/* leaf:section basic */}
 
-<ComponentExample title="Feedback types" preview={<AlertBasic />} fileName="basic.tsx">
+## Basic usage
+
+Use `title` for the message and `description` for additional details.
+
+<ComponentExample exampleId="basic" preview={<AlertBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Neutral alerts
+{/* leaf:section examples */}
 
-Present supporting information on a neutral surface with semantic icon colors.
+## Examples
 
-<ComponentExample title="Neutral alerts" preview={<NeutralAlerts english />} fileName="neutral.tsx">
+### Feedback types
 
-```tsx lineNumbers file="../../../src/examples/alert/neutral.tsx"
+Use `type` for information, success, warning or danger messages. Use `danger` in new code; `error` remains a compatibility alias.
+
+<ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/alert/types.tsx"
 ```
 
 </ComponentExample>
 
-## Alert API
+### Dismissible alerts
+
+Set `closable` to show a close button. Remount the alert to show it again after dismissal; this example changes its `key`.
+
+<ComponentExample exampleId="closable" preview={<AlertClosable />} fileName="closable.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/alert/closable.tsx"
+```
+
+</ComponentExample>
+
+### Icons
+
+Replace the icon with `icon`, or hide it with `showIcon={false}`.
+
+<ComponentExample exampleId="icons" preview={<AlertIcons />} fileName="icons.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/alert/icons.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Alert API
+
+Configuration for alert content, feedback type and dismissal.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -36,20 +76,4 @@ Present supporting information on a neutral surface with semantic icon colors.
 | `icon` | `ReactNode` | — | Icon content. |
 | `showIcon` | `boolean` | `true` | Show the feedback icon |
 | `closable` | `boolean` | `false` | Allow dismissal |
-| `onClose` | `() => void` | — | Called after dismissal |
-
-## Types
-
-Import types when defining reusable component props or assembling options.
-
-```ts
-import type { AlertProps, FeedbackType, FeedbackTypeInput } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Success, information, warning and danger messages use distinct semantic colors. Supply application text yourself; the close button follows the ConfigProvider language. `FeedbackType` uses `danger`; `FeedbackTypeInput` still accepts the deprecated `error` alias and normalizes it to `danger`.
-
-## Surfaces and rich content
-
-The neutral surface keeps the icon color and announcement semantics of `type`. Override `icon` or use `showIcon={false}` to hide it.
+| `onClose` | `() => void` | — | Called when the close button is activated. |

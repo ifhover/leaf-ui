@@ -51,10 +51,56 @@ export function apiSectionMatches(document, name) {
         matches.push({ match, heading, expression });
     }
   }
-  return matches.sort((left, right) => left.match.index - right.match.index);
+  // A matching ancestor is a wrapper, not a duplicate of its nested API section.
+  return matches
+    .filter(
+      (section) =>
+        !matches.some(
+          (nested) =>
+            nested.match.index > section.match.index &&
+            nested.match.index + nested.match[0].length <=
+              section.match.index + section.match[0].length,
+        ),
+    )
+    .sort((left, right) => left.match.index - right.match.index);
 }
 export function apiSectionMatch(document, name) {
   return apiSectionMatches(document, name)[0] ?? null;
+}
+/** Reorder complete API sections, retaining surrounding prose and refusing overlapping blocks. */
+export function orderApiSections(document, names) {
+  const sections = [];
+  const starts = new Set();
+  for (const name of names) {
+    const found = apiSectionMatch(document, name);
+    if (!found || starts.has(found.match.index)) continue;
+    starts.add(found.match.index);
+    sections.push({ name, match: found.match });
+  }
+  if (sections.length < 2) return document;
+  const positions = [...sections].sort((left, right) => left.match.index - right.match.index);
+  if (
+    positions.some(
+      (section, index) =>
+        index > 0 &&
+        positions[index - 1].match.index + positions[index - 1].match[0].length >
+          section.match.index,
+    )
+  )
+    return document;
+  let cursor = 0;
+  let result = '';
+  for (const [index, section] of positions.entries()) {
+    result += document.slice(cursor, section.match.index) + sections[index].match[0];
+    cursor = section.match.index + section.match[0].length;
+  }
+  result += document.slice(cursor);
+  // Moving a shallower heading must not absorb prose outside the original section slots.
+  return sections.every(
+    (section) => apiSectionMatch(result, section.name)?.match[0] === section.match[0],
+  )
+    ? result
+    : document;
 }
 export function apiDefaultCell({ defaultValue, optional, english, override, previousDefault }) {
   if (override !== undefined) return override;
@@ -187,12 +233,24 @@ const sourceType = (module, node) =>
     .replace(/\s+/gu, ' ')
     .trim()
     .replace(/^\|\s*/u, '');
+function unionMembers(type) {
+  const prefix = 'type Value = ';
+  const ast = parse(`${prefix}${type}`, { plugins: ['typescript'] });
+  const node = ast.program.body[0].typeAnnotation;
+  return node.type === 'TSUnionType'
+    ? node.types.map((member) =>
+        type.slice(member.start - prefix.length, member.end - prefix.length),
+      )
+    : [type];
+}
 function merge(properties, additions) {
   for (const [key, value] of additions) {
     const existing = properties.get(key);
     if (!existing) properties.set(key, value);
     else if (existing.type !== value.type) {
-      const types = [...new Set([existing.type, value.type])].filter((type) => type !== 'never');
+      const types = [...new Set([existing.type, value.type].flatMap(unionMembers))].filter(
+        (type) => type !== 'never',
+      );
       properties.set(key, {
         ...value,
         optional: existing.optional || value.optional,

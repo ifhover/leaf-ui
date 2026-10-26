@@ -1,18 +1,25 @@
 import { Flex, SplitButton, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
 export function SplitButtonDemo() {
+  const [result, setResult] = useState('');
+
   return (
-    <Flex align="center" direction="column" gap="sm">
-      <Text>Primary action with more actions</Text>
+    <Flex direction="column" gap="md" align="start">
       <SplitButton
-        items={[
-          { key: 'copy', label: 'Save a copy' },
-          { key: 'draft', label: 'Save draft' },
-        ]}
         variant="solid"
+        onClick={() => setResult('Saved')}
+        menuLabel="More save options"
+        items={[
+          { key: 'copy', label: 'Save a copy', onClick: () => setResult('Copy saved') },
+          { key: 'draft', label: 'Save draft', onClick: () => setResult('Draft saved') },
+        ]}
       >
         Save
       </SplitButton>
+      <Text tone="muted" role="status">
+        {result}
+      </Text>
     </Flex>
   );
 }

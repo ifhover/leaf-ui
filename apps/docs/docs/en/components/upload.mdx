@@ -1,136 +1,167 @@
-import { Concurrency } from '../../../src/examples/upload/concurrency';
-import { CustomRequest } from '../../../src/examples/upload/custom-request';
-import { ManualUpload } from '../../../src/examples/upload/manual-upload';
-import { Paste } from '../../../src/examples/upload/paste';
-import { PictureCard } from '../../../src/examples/upload/picture-card';
 import { ComponentExample } from '../../../src/components/component-example';
 import { UploadBasic } from '../../../src/examples/en/upload/basic';
+import { UploadRestrictions } from '../../../src/examples/en/upload/restrictions';
 import { UploadDrag } from '../../../src/examples/en/upload/advanced';
+import { ManualUpload } from '../../../src/examples/en/upload/manual-upload';
+import { Concurrency } from '../../../src/examples/en/upload/concurrency';
+import { PictureCard } from '../../../src/examples/en/upload/picture-card';
+import { Paste } from '../../../src/examples/en/upload/paste';
+
+export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
 # Upload
 
-Choose or drop files and follow upload progress.
+Choose files and manage upload progress, cancellation and retries. Use [FileList](./file-list.mdx) to display existing files.
 
-## Choose and validate
+{/* leaf:section basic */}
 
-<ComponentExample title="Choose and validate" preview={<UploadBasic />} fileName="basic.tsx">
+## Basic usage
+
+Without `action` or `customRequest`, files are selected and remain ready; no request is sent.
+
+<ComponentExample exampleId="basic" preview={<UploadBasic />} fileName="basic.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/upload/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Drag, progress and cancellation
+{/* leaf:section examples */}
 
-<ComponentExample title="Drag, progress and cancellation" preview={<UploadDrag />} fileName="advanced.tsx">
+## Examples
+
+### File restrictions
+
+Use `accept`, `maxSize` and `maxCount` to limit formats, per-file size and total file count. Rejections appear below the control and are available in `onReject`. Accepted files from the same batch are still added. Always validate files on the server.
+
+<ComponentExample exampleId="restrictions" preview={<UploadRestrictions />} fileName="restrictions.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/upload/restrictions.tsx"
+```
+
+</ComponentExample>
+
+Validation runs in this order: format, size, count, then `beforeUpload`. Returning `false` or throwing rejects the file. Returning a `File` replaces the upload payload without rechecking its format or size. `multiple={false}` limits each selection to one file; use `maxCount={1}` to limit the entire list to one.
+
+### Drag, progress and cancellation
+
+Set `drag` to accept dropped files. This example simulates uploads locally and sends no requests. Cancel an active upload, then retry cancelled or failed files. A `customRequest` must use `signal` to abort the transport, report progress with `onProgress`, resolve on success and reject on failure.
+
+<ComponentExample exampleId="advanced" preview={<UploadDrag />} fileName="advanced.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/upload/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage notes
+Set `action` to connect a service: `POST` sends `FormData` containing `data` and the file under `fieldName`; `PUT` sends the raw file. A JSON response or `customRequest` result can provide `url` and `name`. If both are configured, `customRequest` takes precedence over `action`.
 
-Without action or customRequest, files remain ready for business-managed submission. action uses XMLHttpRequest for progress: POST sends FormData, PUT sends the raw file. A JSON response may provide url and name; customRequest can return the same fields. Validation applies to chooser and drop; uploads can be cancelled, removed and retried. A custom request must observe signal. Removing files or unmounting cancels requests and releases local preview URLs. Server-side validation is still required.
+### Manual upload
 
-## Types
+`autoUpload={false}` prevents uploads from starting immediately after selection. Call `upload()` on the ref to start. `abort()` cancels active requests and clears the queue without removing files. This example uses a simulated local request.
 
-```ts
-import type { UploadProps, UploadFile, UploadChangeInfo, UploadRejection, UploadRequest, UploadResult, FileItem } from '@ifhover/leaf-ui';
-```
+<ComponentExample exampleId="manual-upload" preview={<ManualUpload />} fileName="manual-upload.tsx" width={480}>
 
-## Manual upload
-
-With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()` on the ref to start and `abort()` to cancel requests in flight.
-
-<ComponentExample title="Choose first, upload later" preview={<ManualUpload english />} fileName="manual-upload.tsx">
-
-```tsx lineNumbers file="../../../src/examples/upload/manual-upload.tsx"
+```tsx lineNumbers file="../../../src/examples/en/upload/manual-upload.tsx"
 ```
 
 </ComponentExample>
 
-## Concurrent uploads
+### Concurrent uploads
 
-`concurrency` limits how many requests run at once; the rest wait in the queue.
+`concurrency` limits active requests while the remaining files wait in a queue. Select at least three files to see at most two uploading at once. Requests are simulated locally.
 
-<ComponentExample title="Two at a time" preview={<Concurrency english />} fileName="concurrency.tsx">
+<ComponentExample exampleId="concurrency" preview={<Concurrency />} fileName="concurrency.tsx" width={480}>
 
-```tsx lineNumbers file="../../../src/examples/upload/concurrency.tsx"
+```tsx lineNumbers file="../../../src/examples/en/upload/concurrency.tsx"
 ```
 
 </ComponentExample>
 
-## Picture cards
+### Picture cards
 
-`listType="picture-card"` shows images in a thumbnail grid, which suits galleries and covers.
+Set `listType="picture-card"` for image thumbnails. This example selects images without uploading them.
 
-<ComponentExample title="Thumbnail grid" preview={<PictureCard english />} fileName="picture-card.tsx">
+<ComponentExample exampleId="picture-card" preview={<PictureCard />} fileName="picture-card.tsx" width={480}>
 
-```tsx lineNumbers file="../../../src/examples/upload/picture-card.tsx"
+```tsx lineNumbers file="../../../src/examples/en/upload/picture-card.tsx"
 ```
 
 </ComponentExample>
 
-## Paste to upload
+### Paste files
 
-`paste` accepts files pasted from the clipboard inside the control.
+With `paste`, focus inside the control and paste files from the clipboard. Plain text is not converted into a file; available file types depend on the clipboard and browser. This example only selects files.
 
-<ComponentExample title="Paste and upload" preview={<Paste english />} fileName="paste.tsx">
+<ComponentExample exampleId="paste" preview={<Paste />} fileName="paste.tsx" width={480}>
 
-```tsx lineNumbers file="../../../src/examples/upload/paste.tsx"
+```tsx lineNumbers file="../../../src/examples/en/upload/paste.tsx"
 ```
 
 </ComponentExample>
 
-## Custom request
+#### List and form integration
 
-`customRequest` takes over the upload; the example simulates a request with a timer and rejects when aborted.
+When providing `fileList`, write the new list back on every `onChange`, including progress, success, failure, cancellation and removal. Use `defaultFileList` for uncontrolled state. Form reset aborts uploads and restores the initial uncontrolled list; reset controlled state in your application.
 
-<ComponentExample title="Custom request" preview={<CustomRequest english />} fileName="custom-request.tsx">
+`name` is the native `FormData` field, distinct from the request’s `fieldName`. Items contribute repeated fields containing their `originFile`, or their URL when no file is available. Items without either are skipped. Ready, failed and cancelled items are not excluded based on status. `required` checks for a non-empty list, not successful uploads.
 
-```tsx lineNumbers file="../../../src/examples/upload/custom-request.tsx"
-```
+Use `onRemove` to check whether a file can be removed; return `false` to keep it. For file display and custom actions, see [FileList](./file-list.mdx).
 
-</ComponentExample>
+{/* leaf:section api */}
 
+## API
 
-## UploadProps API
+### UploadProps API
+
+Configure file selection, upload requests and file-list feedback.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Controlled file list; the internal uncontrolled list is used when omitted. |
+| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | — | Controlled file list; the internal uncontrolled list is used when omitted. |
 | `defaultFileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Initial file list for uncontrolled usage; native form reset is supported. |
 | `onChange` | `(files: `[`UploadFile`](#uploadfile-api)`[], info: `[`UploadChangeInfo`](#uploadchangeinfo-api)`) => void` | — | File list and status changes |
 | `accept` | `string` | — | Accepted MIME types or extensions, e.g. image/*,.pdf |
-| `multiple` | `boolean` | `false` | Whether multiple files can be selected. |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `drag` | `boolean` | `false` | Whether the dropzone is enabled. |
+| `multiple` | `boolean` | `false` | Allow multiple files per selection; use maxCount to limit total entries. |
 | `maxCount` | `number` | — | Maximum total file count |
 | `maxSize` | `number` | — | Maximum bytes per file |
-| `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | Validate before upload; false rejects, File transforms it |
+| `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | Validate or transform before acceptance; false or rejection refuses the file. Replacement files are not rechecked for type and size. |
 | `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | Type, size, count or validation rejections |
-| `action` | `string \| ((file: File) => string \| Promise<string>)` | — | Upload URL; omitted configuration selects files only |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `drag` | `boolean` | `false` | Whether the dropzone is enabled. |
+| `paste` | `boolean` | — | Accept files from the clipboard. |
+| `directory` | `boolean` | — | Choose a directory and its files, subject to browser support. |
+| `autoUpload` | `boolean` | `true` | Start after validation; use ref.upload() when false. |
+| `concurrency` | `number` | `3` | Maximum concurrent upload requests. |
+| `action` | `string \| ((file: File) => string \| Promise<string>)` | — | Upload URL; files are only selected when neither action nor customRequest is configured. |
+| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | Custom transport taking precedence over action; resolve on success, reject on failure and honor signal cancellation. |
 | `method` | `'POST' \| 'PUT'` | `'POST'` | POST sends FormData; PUT sends the raw file |
 | `headers` | `Readonly<Record<string, string>>` | — | Request headers |
 | `data` | `Readonly<Record<string, string \| Blob>>` | — | Additional POST form data |
 | `withCredentials` | `boolean` | `false` | Include credentials in cross-origin requests |
-| `fieldName` | `string` | `'file'` | File field name for POST |
-| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | Custom async upload; use signal for cancellation |
-| `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | Before removal; return false to keep the file |
+| `fieldName` | `string` | `'file'` | File field name in the POST upload request, distinct from native form name. |
 | `showFileList` | `boolean` | `true` | Display the file list |
+| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
+| `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | Called before removal; false or a rejected Promise prevents removal. |
 | `hint` | `ReactNode` | — | Help text below the chooser area. |
 | `children` | `ReactNode` | — | Title of the chooser button or dropzone. |
-| `name` | `string` | — | Field name in native FormData. |
+| `name` | `string` | — | Native FormData field name; entries submit Files or URL strings. Read repeated entries with getAll(). |
 | `form` | `string` | — | ID of the associated native form. |
-| `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
-| `autoUpload` | `boolean` | `true` | Start after validation; use ref.upload() when false. |
-| `concurrency` | `number` | `3` | Maximum concurrent upload requests. |
-| `directory` | `boolean` | — | Choose a directory and its files, subject to browser support. |
-| `paste` | `boolean` | — | Accept files from the clipboard. |
-| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
+| `required` | `boolean` | — | Require at least one list entry, not a successfully uploaded file. |
 
-## UploadFile API
+### UploadHandle
+
+Use the ref to start uploads manually or cancel them.
+
+| Method | Type | Description |
+| --- | --- | --- |
+| `upload` | `(uid?: string) => void` | Start ready, failed or cancelled files with originFile; omit uid to process all eligible files. |
+| `abort` | `(uid?: string) => void` | Abort the request and dequeue the given uid; omit uid to cancel all without clearing the file list. |
+| `focus` | `() => void` | Focus the upload control. |
+
+### UploadFile API
+
+Describe a file key, status and metadata in the upload list.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -138,21 +169,25 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `url` | `string` | — | File URL for download or image preview. |
 | `name` | `string` | — | File name, not the FormData field name. |
 | `size` | `number` | — | File size in bytes. |
-| `type` | `string` | — | MIME type; inferred from the extension when omitted. |
+| `type` | `string` | — | Optional MIME type; display classification also checks originFile.type and the extension without filling this field. |
 | `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Current upload status. |
 | `percent` | `number` | — | Upload progress from 0 to 100. |
 | `error` | `string` | — | Failure message. |
-| `originFile` | `globalThis.File` | — | Original browser File. |
+| `originFile` | `globalThis.File` | — | File used for upload, which may be a replacement returned by beforeUpload. |
 | `response` | `unknown` | — | Raw server response. |
 
-## UploadChangeInfo API
+### UploadChangeInfo API
+
+Current file and list information returned when the upload list changes.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `file` | [`UploadFile`](#uploadfile-api) | — | File affected by this change. |
+| `file` | [`UploadFile`](#uploadfile-api) | — | File associated with this change; for batch addition, the last accepted file. |
 | `reason` | `'add' \| 'progress' \| 'success' \| 'error' \| 'remove' \| 'cancel'` | Required | Reason for the change. |
 
-## UploadRejection API
+### UploadRejection API
+
+Describe a rejected file and the reason it was rejected.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -160,7 +195,9 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `reason` | `'type' \| 'size' \| 'count' \| 'validation'` | Required | Rejection reason. |
 | `message` | `string` | Required | User-readable rejection message. |
 
-## UploadRequest API
+### UploadRequest API
+
+File, progress and cancellation information supplied to a custom upload request.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -168,7 +205,9 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `signal` | `AbortSignal` | Required | Cancellation signal, also triggered by removal or unmount. |
 | `onProgress` | `(percent: number) => void` | Required | Report upload progress. |
 
-## UploadResult API
+### UploadResult API
+
+The file URL and other results returned when a custom request completes.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -176,24 +215,6 @@ With `autoUpload={false}` a chosen file is not sent immediately. Call `upload()`
 | `name` | `string` | — | Uploaded file name. |
 | `response` | `unknown` | — | Original application response. |
 
-## FileItem API
+### FileItem API
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `uid` | `string` | — | Stable identifier, recommended. |
-| `url` | `string` | — | File URL. |
-| `name` | `string` | — | File name, inferred from the URL when omitted. |
-| `size` | `number` | — | Size in bytes; omitted sizes are not displayed. |
-| `type` | `string` | — | MIME type, inferred from the extension when omitted. |
-| `status` | `'ready' \| 'uploading' \| 'done' \| 'error' \| 'cancelled'` | — | Optional upload status. |
-| `percent` | `number` | — | Upload progress from 0 to 100. |
-| `error` | `string` | — | Failure message. |
-| `originFile` | `File` | — | Original browser File. |
-
-## UploadHandle
-
-| Method | Type | Description |
-| --- | --- | --- |
-| `upload` | `(uid?: string) => void` | Start the file with the given uid, or all pending files when uid is omitted. |
-| `abort` | `(uid?: string) => void` | Abort the upload with the given uid, or all uploads when uid is omitted. |
-| `focus` | `() => void` | Focus the upload control. |
+See [FileItem](file-list#fileitem-api) for display fields; UploadFile requires uid and adds response.

@@ -1,20 +1,21 @@
-import { Card, Layout, Menu, useBreakpoint } from '@ifhover/leaf-ui';
-import { Folder, LayoutDashboard } from 'lucide-react';
+import { Layout, Menu, Text, useBreakpoint } from '@ifhover/leaf-ui';
+import { Folder, House } from 'lucide-react';
 import { useState } from 'react';
+
 export function LayoutResponsive() {
   const [collapsed, setCollapsed] = useState(false);
+  const [selected, setSelected] = useState('home');
   const { sm } = useBreakpoint();
   const compact = collapsed || !sm;
-  const [selected, setSelected] = useState('overview');
   const items = [
-    { key: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
-    { key: 'projects', label: 'Projects', icon: <Folder /> },
+    { key: 'home', label: 'Home', icon: <House /> },
+    { key: 'documents', label: 'Documents', icon: <Folder /> },
   ];
   return (
     <Layout direction="horizontal">
       <Layout.Sider
         width={180}
-        collapsedWidth={64}
+        collapsedWidth={84}
         collapsed={collapsed}
         onCollapse={setCollapsed}
         collapsible
@@ -23,9 +24,7 @@ export function LayoutResponsive() {
         <Menu collapsed={compact} selectedKey={selected} onSelect={setSelected} items={items} />
       </Layout.Sider>
       <Layout.Content>
-        <Card title={items.find((item) => item.key === selected)?.label}>
-          Select a navigation item to view its content.
-        </Card>
+        <Text role="status">{items.find((item) => item.key === selected)?.label}</Text>
       </Layout.Content>
     </Layout>
   );

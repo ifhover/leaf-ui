@@ -1,4 +1,4 @@
-import { Form, FormField, TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
+import { TreeSelect, type TreeSelectOption } from '@ifhover/leaf-ui';
 
 const treeOptions: readonly TreeSelectOption[] = [
   {
@@ -6,7 +6,7 @@ const treeOptions: readonly TreeSelectOption[] = [
     label: '设计团队',
     selectable: false,
     children: [
-      { value: 'visual', label: '视觉设计' },
+      { value: 'visual', label: '一个名称比较长的视觉设计团队' },
       { value: 'product', label: '产品设计' },
       { value: 'archive', label: '归档团队', disabled: true },
     ],
@@ -24,16 +24,13 @@ const treeOptions: readonly TreeSelectOption[] = [
 
 export function SingleLine() {
   return (
-    <Form layout="vertical">
-      <FormField label="单行多选">
-        <TreeSelect
-          treeCheckable
-          tagWrap={false}
-          options={treeOptions}
-          defaultValue={['visual', 'product', 'web', 'server']}
-          treeDefaultExpandedKeys={['design']}
-        />
-      </FormField>
-    </Form>
+    <TreeSelect
+      aria-label="单行团队标签"
+      treeCheckable
+      tagWrap={false}
+      options={treeOptions}
+      defaultValue={['visual', 'product', 'web', 'server']}
+      treeDefaultExpandedKeys={['design']}
+    />
   );
 }

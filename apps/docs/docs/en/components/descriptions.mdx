@@ -1,58 +1,90 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { DescriptionsBasic } from '../../../src/examples/en/descriptions/basic';
 import { DescriptionsVertical } from '../../../src/examples/en/descriptions/advanced';
+import { DescriptionsResponsive } from '../../../src/examples/en/descriptions/responsive';
+import { DescriptionsBordered } from '../../../src/examples/en/descriptions/bordered';
+
+export const leafDoc = { component: 'Descriptions', primaryApi: 'DescriptionsProps' };
 
 # Descriptions
 
 Present object details as labels and values.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<DescriptionsBasic />} fileName="basic.tsx">
+Use `items` to provide field labels and their corresponding content.
+
+<ComponentExample exampleId="basic" preview={<DescriptionsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/descriptions/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Vertical field layout
+{/* leaf:section examples */}
 
-<ComponentExample title="Vertical field layout" preview={<DescriptionsVertical />} fileName="advanced.tsx">
+## Examples
+
+### Vertical field layout
+
+Set `layout="vertical"` to place field labels above their content.
+
+<ComponentExample exampleId="advanced" preview={<DescriptionsVertical />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/descriptions/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Responsive columns and spans
 
-Provide field labels and content in items. span controls column spans. Configure columns by viewport width and use layout for horizontal or vertical field arrangement.
+`columns` follows viewport width, not container width. Unspecified breakpoints inherit smaller ones. An item's `span` is capped at the current column count; its minimum is 1, so 0 cannot hide an item.
 
-## Types
+<ComponentExample exampleId="responsive" preview={<DescriptionsResponsive />} fileName="responsive.tsx">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { DescriptionItem, DescriptionsProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/descriptions/responsive.tsx"
 ```
 
-## DescriptionItem API
+</ComponentExample>
+
+### Bordered
+
+Set `bordered` to show a border around the descriptions.
+
+<ComponentExample exampleId="bordered" preview={<DescriptionsBordered />} fileName="bordered.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/descriptions/bordered.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### DescriptionsProps API
+
+Configuration for field entries, column counts and the arrangement of labels and values.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly `[`DescriptionItem`](#descriptionitem-api)`[]` | Required | Items; keep keys unique and stable |
+| `title` | `ReactNode` | — | Title content |
+| `extra` | `ReactNode` | — | Supplementary content or actions |
+| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | `{ xs: 1, md: 2, lg: 3 }` | Column count; responsive settings follow viewport width and inherit smaller breakpoints. |
+| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrangement of labels and values |
+| `bordered` | `boolean` | `false` | Show container outline |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Spacing preset between fields; does not change font size. |
+
+### DescriptionItem API
+
+The label, content and column span for an entry supplied through `items`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique stable identifier |
-| `label` | `ReactNode` | Required | Display label |
-| `children` | `ReactNode` | Required | Content or child items |
-| `span` | `number` | — | Column span; the minimum is 1, so 0 cannot hide a column. |
-
-## DescriptionsProps API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `items` | [`readonly DescriptionItem[]`](#descriptionitem-api) | Required | Items; keep keys unique and stable |
-| `title` | `ReactNode` | — | Title content |
-| `extra` | `ReactNode` | — | Supplementary content or actions |
-| `columns` | `number \| Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Columns; unspecified breakpoints inherit smaller ones |
-| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | Arrangement of labels and values |
-| `bordered` | `boolean` | `false` | Show container outline |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Spacing preset between fields; does not change font size. |
+| `label` | `ReactNode` | Required | Field name. |
+| `children` | `ReactNode` | Required | Field value. |
+| `span` | `number` | `1` | Columns occupied by the field, from 1 up to the current column count. |

@@ -4,12 +4,10 @@ export function DescriptionsVertical() {
   return (
     <Descriptions
       layout="vertical"
-      bordered
-      columns={{ xs: 1, md: 3 }}
       items={[
-        { key: 'plan', label: 'Plan', children: 'Pro' },
-        { key: 'seats', label: 'Seats', children: 12 },
-        { key: 'renew', label: 'Renewal', children: '2026-12-01' },
+        { key: 'name', label: 'Project', children: 'Leaf UI' },
+        { key: 'owner', label: 'Owner', children: 'Alex' },
+        { key: 'status', label: 'Status', children: 'Active' },
       ]}
     />
   );

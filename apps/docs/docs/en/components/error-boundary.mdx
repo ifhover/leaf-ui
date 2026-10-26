@@ -1,54 +1,78 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ErrorBoundaryBasic } from '../../../src/examples/en/error-boundary/basic';
 import { ErrorBoundaryCustom } from '../../../src/examples/en/error-boundary/advanced';
+import { ErrorBoundaryResetKeys } from '../../../src/examples/en/error-boundary/reset-keys';
+
+export const leafDoc = { component: 'ErrorBoundary', primaryApi: 'ErrorBoundaryProps' };
 
 # ErrorBoundary
 
-Provide a fallback when content fails to render.
+Catch descendant rendering errors and replace the failed section with a fallback.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<ErrorBoundaryBasic />} fileName="basic.tsx" width={360}>
+Without `fallback`, the boundary shows its default error view and retry button. Retrying clears the boundary's error state and renders the subtree again; the application must still fix the data or state that caused the error. This example clears its error switch in `onReset`.
+
+Error boundaries do not handle errors from event handlers, ordinary async requests, or server-side rendering. Handle those in the operation or framework.
+
+<ComponentExample exampleId="basic" preview={<ErrorBoundaryBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/error-boundary/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Custom fallback content
+{/* leaf:section examples */}
 
-<ComponentExample title="Custom fallback content" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx" width={360}>
+## Examples
+
+### Custom fallback content
+
+<a id="retry-and-recovery"></a>
+
+A `fallback` function receives `error` and `reset`. Calling `reset` invokes `onReset` and renders the subtree again. Use `onError` for reporting instead of exposing internal error stacks to users.
+
+<ComponentExample exampleId="advanced" preview={<ErrorBoundaryCustom />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/error-boundary/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Recover when the record changes
 
-Catches descendant rendering and lifecycle errors. Handle event, async request and server errors in the operation or framework. Report through onError and avoid exposing internal stacks.
+Put external dependencies such as a record ID in `resetKeys`. A dependency change resets the boundary while it is displaying an error. The application clears the previous record's error state in `onReset` before displaying the new record.
 
-## Types
+<ComponentExample exampleId="reset-keys" preview={<ErrorBoundaryResetKeys />} fileName="reset-keys.tsx">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { ErrorBoundaryFallbackProps, ErrorBoundaryProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/error-boundary/reset-keys.tsx"
 ```
 
-## ErrorBoundaryFallbackProps API
+</ComponentExample>
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `error` | `Error` | Required | Error object or notification |
-| `reset` | `() => void` | Required | Reset or retry |
+{/* leaf:section api */}
 
-## ErrorBoundaryProps API
+## API
+
+### ErrorBoundaryProps API
+
+Configuration for the protected subtree, error fallback and reset behavior.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | `ReactNode` | — | Subtree whose render errors are caught. |
-| `fallback` | [`ReactNode \| ((props: ErrorBoundaryFallbackProps) => ReactNode)`](#errorboundaryfallbackprops-api) | — | Content shown when a child throws while rendering. |
-| `resetKeys` | `readonly unknown[]` | — | Reset errors when these values change |
-| `onError` | `(error: Error, info: ErrorInfo) => void` | — | Error callback |
-| `onReset` | `() => void` | — | Reset callback |
+| `fallback` | `ReactNode \| ((props: `[`ErrorBoundaryFallbackProps`](#errorboundaryfallbackprops-api)`) => ReactNode)` | — | Fallback after a caught error; defaults to an error Result with Retry. The function receives error and reset. |
+| `onReset` | `() => void` | — | Called synchronously on manual or resetKeys resets; repair the failing data in the application. Async results are not awaited. |
+| `resetKeys` | `readonly unknown[]` | — | After an error, shallow-compare entries with Object.is; a changed length or entry resets the boundary. |
+| `onError` | `(error: Error, info: ErrorInfo) => void` | — | Receive the Error and React ErrorInfo after a render or lifecycle error is caught, for reporting. |
+
+### ErrorBoundaryFallbackProps API
+
+The error and retry method passed to a custom `fallback`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `error` | `Error` | Required | Caught Error. |
+| `reset` | `() => void` | Required | Call onReset synchronously, clear the error and rerender the subtree without automatically repeating business requests. |

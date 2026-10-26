@@ -1,256 +1,271 @@
-import { SingleLine } from '../../../src/examples/en/select/single-line';
-import { ControlledPopup } from '../../../src/examples/select/controlled-popup';
-import { CreateOption } from '../../../src/examples/select/create-option';
-import { CustomTags } from '../../../src/examples/select/custom-tags';
-import { GroupedOptions } from '../../../src/examples/select/grouped-options';
-import { LabelRender } from '../../../src/examples/select/label-render';
-import { PopupAction } from '../../../src/examples/select/popup-action';
-import { ResponsiveTags } from '../../../src/examples/select/responsive-tags';
-import { VirtualList } from '../../../src/examples/select/virtual-list';
-import { SelectPopup } from '../../../src/examples/en/select/popup';
-import { SelectSearch } from '../../../src/examples/en/select/search';
 import { ComponentExample } from '../../../src/components/component-example';
-import { SelectBasic, SelectControlled, ControlSizes } from '../../../src/components/en-form-examples';
+import { SelectBasic } from '../../../src/examples/en/select/basic';
+import { SelectControlled } from '../../../src/examples/en/select/controlled';
+import { ControlSizes } from '../../../src/examples/en/guide/control-sizes';
+import { SelectSearch } from '../../../src/examples/en/select/search';
+import { SelectMultiple } from '../../../src/examples/en/select/multiple';
+import { SelectStates } from '../../../src/examples/en/select/states';
+import { GroupedOptions } from '../../../src/examples/en/select/grouped-options';
+import { SelectLimits } from '../../../src/examples/en/select/limits';
+import { SingleLine } from '../../../src/examples/en/select/single-line';
+import { CreateOption } from '../../../src/examples/en/select/create-option';
+import { VirtualList } from '../../../src/examples/en/select/virtual-list';
+import { SelectRichOptions } from '../../../src/examples/en/select/rich-options';
+import { CustomTags } from '../../../src/examples/en/select/custom-tags';
+import { SelectPopup } from '../../../src/examples/en/select/popup';
+import { PopupAction } from '../../../src/examples/en/select/popup-action';
+
+export const leafDoc = { component: 'Select', primaryApi: 'SelectProps' };
 
 # Select
 
-Choose one or several options from a dropdown list. Opening the popup deepens the existing neutral border without a theme-colored outer ring. Selected options use a gray background, ordinary text and a checkmark.
+Choose one or more items from a flat list. Use [TreeSelect](tree-select) for hierarchical options.
 
-## Basic selection
+{/* leaf:section basic */}
 
-Use options with unique nonempty string values. onChange returns the value and option; clearing returns an empty string and undefined. Arrow keys highlight options, Enter selects, Escape closes and Tab moves on.
+## Basic usage
 
-<ComponentExample title="Basic selection" preview={<SelectBasic />} fileName="basic.tsx" width={360}>
+<a id="basic-selection"></a>
+
+Use unique, nonempty strings for option values. Give the control an associated label or an `aria-label`.
+
+<ComponentExample exampleId="basic" preview={<SelectBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/select/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled value and validation
+{/* leaf:section examples */}
 
-<ComponentExample title="Controlled value and validation" preview={<SelectControlled />} fileName="controlled.tsx" width={360}>
+## Examples
+
+### Controlled value and validation
+
+<a id="common-usage"></a>
+
+Manage the selection with `value` and `onChange`. Clearing a single selection returns `""` and `undefined`. For controlled fields, a form reset must also reset application state.
+
+<ComponentExample exampleId="controlled" preview={<SelectControlled />} fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/select/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Control sizes
+### Control sizes
 
-<ComponentExample title="Control sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
+Use `size` to select the control size.
+
+<ComponentExample exampleId="control-sizes" preview={<ControlSizes />} fileName="control-sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/guide/control-sizes.tsx"
 ```
 
 </ComponentExample>
 
+### Search
 
-## Search and multiple selection
+Enable local filtering with `showSearch`. Supply `searchLabel` when `label` is a React node. For remote filtering, set `filterOption={false}` and update the options from `onSearch`.
 
-showSearch filters existing options; multiple accepts an array and keeps the menu open while choosing.
-
-<ComponentExample title="Search and multiple selection" preview={<SelectSearch />} fileName="search.tsx" width={360}>
+<ComponentExample exampleId="search" preview={<SelectSearch />} fileName="search.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/select/search.tsx"
 ```
 
 </ComponentExample>
 
-## Popup width and content
+### Multiple selection
 
-The popup matches the Select width by default. Set `popupWidth="auto"` to fit the content or `popupWidth={300}` for a fixed 300px width. Set `popupMaxWidth` separately when a maximum is needed; it is unset by default. The popup still avoids viewport edges.
+Multiple selection uses a string array; clearing returns `[]`. With `name`, native forms submit repeated values under that field name; read them with `formData.getAll(name)`. With an empty search, Backspace removes the last enabled tag.
 
-<ComponentExample title="Popup width and content" preview={<SelectPopup />} fileName="popup.tsx" width={360}>
+<ComponentExample exampleId="multiple" preview={<SelectMultiple />} fileName="multiple.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/select/popup.tsx"
+```tsx lineNumbers file="../../../src/examples/en/select/multiple.tsx"
 ```
 
 </ComponentExample>
 
-## Grouped options
+### States
 
-`options` supports groups: an entry with `options` renders as a group label, and the nested options keep taking part in search and selection.
+Use `loading` while options are being requested. Customize the empty message with `notFoundContent`.
 
-<ComponentExample title="Group by discipline" preview={<GroupedOptions english />} fileName="grouped-options.tsx" width={360}>
+<ComponentExample exampleId="states" preview={<SelectStates />} fileName="states.tsx">
 
-```tsx lineNumbers file="../../../src/examples/select/grouped-options.tsx"
+```tsx lineNumbers file="../../../src/examples/en/select/states.tsx"
 ```
 
 </ComponentExample>
 
-## Creating options
+### Grouped options
 
-With `allowCreate`, typed text becomes a new option when the search has no match; it is usually combined with `multiple`.
+Group labels organize options and cannot be selected. Options within a group still participate in search.
 
-<ComponentExample title="Type to create" preview={<CreateOption english />} fileName="create-option.tsx" width={360}>
+<ComponentExample exampleId="grouped-options" preview={<GroupedOptions />} fileName="grouped-options.tsx">
 
-```tsx lineNumbers file="../../../src/examples/select/create-option.tsx"
+```tsx lineNumbers file="../../../src/examples/en/select/grouped-options.tsx"
 ```
 
 </ComponentExample>
 
-## Virtual scrolling
+### Selection limit
 
-Set `virtual` for lists with hundreds of options so the popup renders only the visible rows; combine it with `showSearch` to filter a large list quickly.
+`maxCount` limits the number of selected values. Existing selections can still be removed at the limit.
 
-<ComponentExample title="5000 items" preview={<VirtualList english />} fileName="virtual-list.tsx" width={360}>
+<ComponentExample exampleId="limits" preview={<SelectLimits />} fileName="limits.tsx">
 
-```tsx lineNumbers file="../../../src/examples/select/virtual-list.tsx"
+```tsx lineNumbers file="../../../src/examples/en/select/limits.tsx"
 ```
 
 </ComponentExample>
 
-## Responsive tags
+### Tag wrapping
 
-`maxTagCount="responsive"` collapses tags that do not fit into `+N` according to the available width.
+Tags wrap by default. With `tagWrap={false}`, tags that do not fit collapse into `+N`. `maxTagCount` limits visible tags, not selected values; `maxTagCount="responsive"` also collapses tags to a single line based on the available width.
 
-<ComponentExample title="Automatic collapsing" preview={<ResponsiveTags english />} fileName="responsive-tags.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/select/responsive-tags.tsx"
-```
-
-</ComponentExample>
-
-## Custom tags
-
-`tagRender` receives the option and a remove callback and returns a custom tag node; the example adds a close button to each tag.
-
-<ComponentExample title="Custom tag content" preview={<CustomTags english />} fileName="custom-tags.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/select/custom-tags.tsx"
-```
-
-</ComponentExample>
-
-## Selected label
-
-`labelRender` customizes how the selected value is displayed; the example renders it in bold.
-
-<ComponentExample title="Bold selected value" preview={<LabelRender english />} fileName="label-render.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/select/label-render.tsx"
-```
-
-</ComponentExample>
-
-## Controlled popup
-
-`open` and `onOpenChange` hand the popup state to your own code; the example toggles it with a button.
-
-<ComponentExample title="Toggle from outside" preview={<ControlledPopup english />} fileName="controlled-popup.tsx">
-
-```tsx lineNumbers file="../../../src/examples/select/controlled-popup.tsx"
-```
-
-</ComponentExample>
-
-## Extra popup actions
-
-`popupRender` wraps or extends the popup content; the example adds a Done button below the options.
-
-<ComponentExample title="Action inside the popup" preview={<PopupAction english />} fileName="popup-action.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/select/popup-action.tsx"
-```
-
-</ComponentExample>
-
-## Single-line selections
-
-Set `tagWrap={false}` to keep selected values on one line. Long labels truncate; extra values collapse into `+N`. In very narrow controls, only the count is shown. Open the popup to review or change selections. `maxTagCount` can further limit the visible tags; `maxTagCount="responsive"` also enables automatic single-line collapsing.
-
-<ComponentExample title="Single-line selections" preview={<SingleLine />} fileName="single-line.tsx" width={360}>
+<ComponentExample exampleId="single-line" preview={<SingleLine />} fileName="single-line.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/select/single-line.tsx"
 ```
 
 </ComponentExample>
 
-## Select API
+### Creating options
+
+<a id="advanced-usage"></a>
+
+With `allowCreate`, a creation candidate appears when the input has no exact match in an existing value or search label. The option is created only after choosing that candidate. Update `options` in `onCreate` to keep created options in application state.
+
+<ComponentExample exampleId="create-option" preview={<CreateOption />} fileName="create-option.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/create-option.tsx"
+```
+
+</ComponentExample>
+
+### Large lists
+
+Virtual scrolling is enabled automatically above 100 options; no explicit `virtual` is needed. Set `virtual={false}` to opt out.
+
+<ComponentExample exampleId="virtual-list" preview={<VirtualList />} fileName="virtual-list.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/virtual-list.tsx"
+```
+
+</ComponentExample>
+
+### Custom option content
+
+Use `optionRender` to add option details. The selected value still displays its `label`.
+
+<ComponentExample exampleId="rich-options" preview={<SelectRichOptions />} fileName="rich-options.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/rich-options.tsx"
+```
+
+</ComponentExample>
+
+### Custom tags
+
+Call the `remove` callback supplied to `tagRender` when a custom tag closes, so the component handles removal.
+
+<ComponentExample exampleId="custom-tags" preview={<CustomTags />} fileName="custom-tags.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/custom-tags.tsx"
+```
+
+</ComponentExample>
+
+### Popup width
+
+The popup matches the field by default. `popupWidth="auto"` fits the content, and a number sets a fixed pixel width. Set `popupMaxWidth` when a maximum is needed. All modes remain bounded by the available viewport.
+
+<ComponentExample exampleId="popup" preview={<SelectPopup />} fileName="popup.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/popup.tsx"
+```
+
+</ComponentExample>
+
+### Controlled popup and extra actions
+
+Control expansion with `open` and `onOpenChange`. When adding actions with `popupRender`, retain the supplied `content` rather than replacing the option list.
+
+<ComponentExample exampleId="popup-action" preview={<PopupAction />} fileName="popup-action.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/select/popup-action.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Select API
+
+Select component props.
+
+Use `name`, `required`, `form` and uncontrolled reset behavior for [forms](form). Other native input props and `aria-*` reach the input; `className` and `style` apply to the outer container. See [PopupOptions](../api/popup-options) for shared popup settings.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | Required | Options |
+| `value` | `string \| readonly string[]` | — | Controlled value; the internal uncontrolled value is used when omitted. |
+| `defaultValue` | `string \| readonly string[]` | `multiple ? [] : ''` | Initial uncontrolled value; defaults to an empty string in single mode or an empty array in multiple mode, restored on form reset. |
+| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | Single mode returns the value and option, or an empty string and undefined when cleared; multiple mode returns value and option arrays, both empty when cleared. |
+| `multiple` | `false \| true` | `false` | Use arrays for multiple values; default [] |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `status` | `'error' \| 'warning'` | — | Validation appearance |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `allowClear` | `boolean` | `false` | Show a clear button |
+| `showSearch` | `boolean` | `false` | Allow typing to filter options |
+| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | Custom filtering; false supports external filtering |
+| `onSearch` | `(query: string) => void` | — | Search text changes |
+| `loading` | `boolean` | `false` | Loading indicator |
+| `notFoundContent` | `ReactNode` | — | Content when no options match |
+| `maxCount` | `number` | — | Maximum selections; selected items remain removable |
+| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
+| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
+| `allowCreate` | `boolean` | `false` | Allow selecting a new option unless the query exactly matches an existing value or search text; also enables search. |
+| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | Called with a newly selected option; it is kept internally, while the application updates options for persistence. |
+| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Customize the selected value. |
+| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Custom option content |
+| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | Customize selected tags; use remove to request removal. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | `false` | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `virtual` | `boolean` | More than 100 options | Render visible items only |
+| `listHeight` | `number` | `248` | List height |
+| `optionHeight` | `number` | Theme and density dependent | Estimated virtual row height, calculated from the theme and density by default; actual rows are measured. |
+| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
+| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | Popup scroll event, useful for loading another page. |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
 | `popupClassName` | `string` | — | Popup styling |
 | `popupStyle` | `CSSProperties` | — | Popup styling |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `options` | `readonly (`[`SelectOption`](#selectoption)` \| `[`SelectOptionGroup`](#selectoptiongroup-api)`)[]` | Required | Options |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `allowClear` | `boolean` | `false` | Show a clear button |
-| `showSearch` | `boolean` | `false` | Allow typing to filter options |
-| `filterOption` | `boolean \| ((query: string, option: `[`SelectOption`](#selectoption)`) => boolean)` | `true` | Custom filtering; false supports external filtering |
-| `onSearch` | `(query: string) => void` | — | Search text changes |
-| `onOpenChange` | `(open: boolean) => void` | — | Option panel open-state changes |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `labelRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Customize the selected value. |
-| `tagRender` | `(option: `[`SelectOption`](#selectoption)`, remove: () => void) => ReactNode` | — | Customize selected tags; use remove to request removal. |
-| `onPopupScroll` | `(event: React.UIEvent<HTMLDivElement>) => void` | — | Popup scroll event, useful for loading another page. |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
-| `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
-| `loading` | `boolean` | `false` | Loading indicator |
-| `notFoundContent` | `ReactNode` | — | Content when no options match |
-| `optionRender` | `(option: `[`SelectOption`](#selectoption)`) => ReactNode` | — | Custom option content |
-| `maxCount` | `number` | — | Maximum selections; selected items remain removable |
-| `maxTagCount` | `number \| 'responsive'` | — | Maximum visible tags; responsive collapses them to the available width. |
-| `tagWrap` | `boolean` | `true` | Allow selected tags to wrap; false keeps one line and collapses overflow. |
-| `allowCreate` | `boolean` | `false` | Allow creating unmatched search text |
-| `onCreate` | `(option: `[`SelectOption`](#selectoption)`) => void` | — | Created option callback |
-| `virtual` | `boolean` | More than 100 options | Render visible items only |
-| `listHeight` | `number` | `248` | List height |
-| `optionHeight` | `number` | Current field height | Estimated virtual row height; defaults to the Select height. Actual rows are measured. |
-| `multiple` | `false \| true` | `false` | Use arrays for multiple values; default [] |
-| `value` | `string \| readonly string[]` | `''` | Controlled value; the internal uncontrolled value is used when omitted. |
-| `defaultValue` | `string \| readonly string[]` | `''` | Initial value for uncontrolled usage; native form reset is supported. |
-| `onChange` | `((value: string, option?: `[`SelectOption`](#selectoption)`) => void) \| ((value: string[], options: `[`SelectOption`](#selectoption)`[]) => void)` | — | Returns value and option; clearing returns an empty string and undefined |
-| `disabled` | `boolean` | `false` | Disable interaction. |
 | `name` | `string` | — | Field name in native FormData. |
 | `form` | `string` | — | ID of the associated native form. |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
-|
-
 ### SelectOption
+
+An option passed through options; value identifies the option.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `string` | Required | Unique option value; empty strings are reserved. |
 | `label` | `ReactNode` | Required | Option content, as text or a React node. |
 | `disabled` | `boolean` | `false` | Disable the option. |
-| `searchLabel` | `string` | — | Plain search text for a rich label; readable text or value is used when omitted. |
+| `searchLabel` | `string` | — | Plain search text; defaults to a string or numeric label, otherwise value. |
 
-|
+### SelectOptionGroup API
 
-## Types
-
-Import SelectProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { SelectProps, SelectOption } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-In multiple mode, clearing returns []. FormData submits repeated values under the same name; read them with `formData.getAll(name)`. Empty-query Backspace removes the last enabled tag. Leaving clears the query; searches never create values. For node labels, supply searchLabel. The ref and other input attributes target the input.
-
-The field keeps its layout width. The popup matches it by default (`popupWidth="trigger"`). Set `popupWidth="auto"` to size the popup solely from its option content, which may be narrower than the field. Use `popupWidth={300}` for a fixed 300px width or pass a CSS length. `popupMaxWidth` is unset by default and can be supplied when needed. All width modes remain bounded by the available viewport width; content wraps when it exceeds the actual popup width.
-
-Options have no extra vertical gaps. A normal row matches the Select height (34px comfortable, 30px compact), while long labels wrap and grow as needed. Changing the selected value updates the label immediately without an inside-text movement animation.
-
-## Extension types
-
-```ts
-import type { SelectOptionGroup } from '@ifhover/leaf-ui';
-```
-
-## SelectOptionGroup API
+A labeled group containing Select options.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

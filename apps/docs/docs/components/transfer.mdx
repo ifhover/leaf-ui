@@ -1,76 +1,116 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TransferBasic } from '../../src/examples/transfer/basic';
+import { TransferControlled } from '../../src/examples/transfer/controlled';
+import { TransferOneWay } from '../../src/examples/transfer/one-way';
 import { TransferVirtual } from '../../src/examples/transfer/advanced';
+
+export const leafDoc = { component: 'Transfer', primaryApi: 'TransferProps' };
 
 # Transfer 穿梭框
 
 在两个列表之间选择和移动项目。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<TransferBasic />} fileName="basic.tsx" width="100%">
+## 基础用法
+
+<a id="基本用法"></a>
+
+勾选项目后，使用中间的按钮移动到另一栏。内置搜索按名称和描述筛选，“全选”只影响当前筛选结果中的可用项目。已勾选但被搜索隐藏的项目仍会一起移动。
+
+<ComponentExample exampleId="basic" preview={<TransferBasic />} fileName="basic.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/transfer/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 虚拟列表
+{/* leaf:section examples */}
 
-<ComponentExample title="虚拟列表" preview={<TransferVirtual />} fileName="advanced.tsx" width="100%">
+## 示例
+
+### 受控值与勾选
+
+`value` 表示右侧已有的项目，`selectedKeys` 表示两栏中待移动的勾选项；勾选本身不会移动项目。分别通过 `onChange` 和 `onSelectionChange` 同步状态，移动成功后组件会取消这些项目的勾选。
+
+<ComponentExample exampleId="controlled" preview={<TransferControlled />} fileName="controlled.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/transfer/controlled.tsx"
+```
+
+</ComponentExample>
+
+### 单向移入
+
+`oneWay` 只保留移向右侧的操作，不隐藏右侧列表、搜索或勾选功能。
+
+<ComponentExample exampleId="one-way" preview={<TransferOneWay />} fileName="one-way.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/transfer/one-way.tsx"
+```
+
+</ComponentExample>
+
+<a id="进阶用法"></a>
+
+### 虚拟列表
+
+大量项目时启用 `virtual`。此例有 2,000 项，`height` 设置列表内容区域的滚动高度。
+
+<ComponentExample exampleId="advanced" preview={<TransferVirtual />} fileName="advanced.tsx" width={480}>
 
 ```tsx lineNumbers file="../../src/examples/transfer/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+设置 `name` 后，以 JSON 数组字符串提交右侧项目的 key，空值提交为空字符串。非受控值支持表单重置，受控值需同步重置应用状态；标签和错误信息见 [Form](/components/form)。内置文案配置见 [ConfigProvider](/components/config-provider)。
 
-value 表示右侧列表的项目 key，selectedKeys 表示当前勾选项。支持搜索、批量移动、单向移动与虚拟列表；name 提交 JSON 数组字符串。
+{/* leaf:section api */}
 
-## 类型
+## API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
+### TransferProps API
 
-```ts
-import type { TransferChangeInfo, TransferItem, TransferProps } from '@ifhover/leaf-ui';
-```
-
-## TransferChangeInfo API
+配置左右列表的数据、目标值与转移事件。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `direction` | `'left' \| 'right'` | 必填 | 移动方向：'left' 移到左栏，'right' 移到右栏。 |
-| `movedKeys` | `string[]` | 必填 | 本次移动标识 |
+| `items` | `readonly `[`TransferItem`](#transferitem-api)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
+| `value` | `readonly string[]` | — | 受控的右栏项目 key；不是待移动的勾选项。 |
+| `defaultValue` | `readonly string[]` | `[]` | 非受控模式的初始右栏 key，表单重置时恢复；不重置搜索或临时勾选。 |
+| `onChange` | `(keys: string[], info: `[`TransferChangeInfo`](#transferchangeinfo-api)`) => void` | — | 移动后返回右栏 key，info 包含 direction 与 movedKeys。 |
+| `selectedKeys` | `readonly string[]` | — | 受控的待移动勾选 key，可包含两栏项目；勾选本身不会移动项目。 |
+| `onSelectionChange` | `(keys: string[]) => void` | — | 勾选变化或移动后移除已移动的勾选项时，返回当前勾选 key。 |
+| `titles` | `readonly [ReactNode, ReactNode]` | — | 左、右标题 |
+| `disabled` | `boolean` | — | 禁用交互。 |
+| `searchable` | `boolean` | `true` | 显示搜索框 |
+| `filterOption` | `(query: string, item: `[`TransferItem`](#transferitem-api)`) => boolean` | — | 自定义搜索规则 |
+| `oneWay` | `boolean` | `false` | 隐藏移回左栏的按钮，右栏仍可搜索和勾选。 |
+| `renderItem` | `(item: `[`TransferItem`](#transferitem-api)`) => ReactNode` | — | 自定义项目内容 |
+| `virtual` | `boolean` | `false` | 仅渲染可见项目 |
+| `height` | `number` | `180` | 每栏可滚动列表区域的高度，不包含标题和搜索框。 |
+| `name` | `string` | — | 原生 FormData 的字段名；非空值提交 JSON 数组，空值提交空字符串。 |
+| `form` | `string` | — | 关联表单 ID |
+| `required` | `boolean` | — | 要求整体值非空，复合控件只校验一次。 |
 
-## TransferItem API
+### TransferItem API
+
+穿梭框中可转移的单个数据项。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 唯一且稳定的标识 |
 | `label` | `ReactNode` | 必填 | 显示内容 |
 | `description` | `string` | — | 补充说明 |
-| `disabled` | `boolean` | — | 禁止交互 |
+| `disabled` | `boolean` | — | 禁用交互。 |
 | `searchLabel` | `string` | — | 搜索使用的纯文字 |
 
-## TransferProps API
+### TransferChangeInfo API
+
+描述一次转移的方向和受影响的数据项。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly TransferItem[]`](#transferitem-api) | 必填 | 数据项目，保持 key 唯一且稳定 |
-| `value` | `readonly string[]` | — | 受控值 |
-| `defaultValue` | `readonly string[]` | `[]` | 初始值；非受控表单 reset 时恢复 |
-| `onChange` | [`(keys: string[], info: TransferChangeInfo) => void`](#transferchangeinfo-api) | — | 值变化回调 |
-| `selectedKeys` | `readonly string[]` | — | 待移动的勾选项目 |
-| `onSelectionChange` | `(keys: string[]) => void` | — | 待移动项目变化 |
-| `titles` | `readonly [ReactNode, ReactNode]` | — | 左、右标题 |
-| `searchable` | `boolean` | `true` | 显示搜索框 |
-| `filterOption` | [`(query: string, item: TransferItem) => boolean`](#transferitem-api) | — | 自定义搜索规则 |
-| `renderItem` | [`(item: TransferItem) => ReactNode`](#transferitem-api) | — | 自定义项目内容 |
-| `disabled` | `boolean` | — | 禁止交互 |
-| `height` | `number` | `180` | 高度，数字按像素计算 |
-| `virtual` | `boolean` | `false` | 仅渲染可见项目 |
-| `name` | `string` | — | 表单字段名称 |
-| `form` | `string` | — | 关联表单 ID |
-| `required` | `boolean` | — | 表单必填验证 |
-| `oneWay` | `boolean` | `false` | 只允许向右移入 |
+| `direction` | `'left' \| 'right'` | 必填 | 移动方向：'left' 移到左栏，'right' 移到右栏。 |
+| `movedKeys` | `string[]` | 必填 | 本次移动标识 |

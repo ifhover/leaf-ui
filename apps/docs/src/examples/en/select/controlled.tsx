@@ -1,33 +1,35 @@
-import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
+import { Button, Form, FormField, Select, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
-
 export function SelectControlled() {
   const [value, setValue] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const error = submitted && !value;
   return (
-    <Form layout="vertical">
-      <FormField label="Project visibility">
+    <Form
+      layout="vertical"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSubmitted(true);
+      }}
+    >
+      <FormField label="Project visibility" error={error ? 'Select visibility' : undefined}>
         <Select
-          aria-label="Project visibility"
+          name="visibility"
           value={value}
-          placeholder="Select visibility"
-          allowClear
           onChange={setValue}
+          allowClear
+          status={error ? 'error' : undefined}
+          placeholder="Select an option"
           options={[
-            { label: 'Public', value: 'public' },
-            { label: 'Team', value: 'team' },
-            { label: 'Private', value: 'private' },
+            { value: 'public', label: 'Public' },
+            { value: 'team', label: 'Team' },
+            { value: 'private', label: 'Private' },
           ]}
         />
       </FormField>
-      <Text tone="muted">Current:{value || 'Not selected'}</Text>
-      <FormField label="Team required · Error">
-        <Select
-          aria-label="Team required"
-          status="error"
-          placeholder="Select a team"
-          options={[{ label: 'Design team', value: 'design' }]}
-        />
-      </FormField>
+      <Button type="submit">Submit</Button>
+      {submitted && value && <Text role="status">Submitted: {value}</Text>}
     </Form>
   );
 }

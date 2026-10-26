@@ -1,103 +1,166 @@
-import { Capabilities } from '../../src/examples/dropdown/capabilities';
-import { DropdownExtra } from '../../src/examples/dropdown/extra';
-import { ExtensionDemo } from '../../src/examples/dropdown/extensions';
 import { ComponentExample } from '../../src/components/component-example';
 import { DropdownBasic } from '../../src/examples/dropdown/basic';
+import { DropdownExtra } from '../../src/examples/dropdown/extra';
+import { DropdownSizes } from '../../src/examples/dropdown/sizes';
+import { DropdownHierarchy } from '../../src/examples/dropdown/hierarchy';
+import { DropdownRadio } from '../../src/examples/dropdown/radio';
+import { DropdownCheckbox } from '../../src/examples/dropdown/checkbox';
+import { DropdownHover } from '../../src/examples/dropdown/hover';
+import { DropdownContextMenu } from '../../src/examples/dropdown/context-menu';
+
+export const leafDoc = { component: 'Dropdown', primaryApi: 'DropdownProps' };
 
 # Dropdown 下拉菜单
 
-在菜单中收纳更多操作，选项反馈与 Select 保持一致。
+在菜单中收纳更多操作。
 
-## 操作菜单
+{/* leaf:section basic */}
 
-<ComponentExample title="操作菜单" preview={<DropdownBasic />} fileName="basic.tsx" width="fit-content">
+## 基础用法
+
+<a id="操作菜单"></a>
+
+通过 `items` 提供菜单操作，并使用按钮作为触发器。
+
+<ComponentExample exampleId="basic" preview={<DropdownBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/dropdown/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 右侧内容
+{/* leaf:section examples */}
 
-未指定 `popupWidth` 时，浮层以 220px 为默认宽度，并根据内容自然增宽。通过条目的 `extra` 在右侧放置快捷键、状态标签或其他自定义内容；它仍属于整行点击区域，不要再嵌套按钮或链接。
+## 示例
 
-<ComponentExample title="右侧内容" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
+### 右侧内容
+
+通过条目的 `extra` 放置快捷键、标签等补充信息。它属于整行点击区域，不要在其中嵌套按钮或链接。
+
+<ComponentExample exampleId="extra" preview={<DropdownExtra />} fileName="extra.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/dropdown/extra.tsx"
 ```
 
 </ComponentExample>
 
-## 分组、单选与复选菜单
+### 菜单尺寸
 
-<ComponentExample title="分组、单选与复选菜单" preview={<ExtensionDemo />} fileName="extensions.tsx" width="fit-content">
+通过 Dropdown 的 `size` 设置菜单尺寸，子菜单继承该尺寸。触发按钮使用自己的 `size`。
 
-```tsx lineNumbers file="../../src/examples/dropdown/extensions.tsx"
+<ComponentExample exampleId="sizes" preview={<DropdownSizes />} fileName="sizes.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## 悬停与右键
+### 子菜单与分组
 
-<ComponentExample title="悬停与右键" preview={<Capabilities />} fileName="capabilities.tsx">
+`children` 定义子菜单，`type: 'group'` 与 `label` 定义分组标题。只有选择菜单项才触发 `onSelect`，展开子菜单不会触发。
 
-```tsx lineNumbers file="../../src/examples/dropdown/capabilities.tsx"
+<ComponentExample exampleId="hierarchy" preview={<DropdownHierarchy />} fileName="hierarchy.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/hierarchy.tsx"
 ```
 
 </ComponentExample>
 
-## Dropdown API
+### 单选菜单
+
+使用 `type: 'radio'`，相同 `group` 标识同一互斥组。示例通过 `checked` 和 `onCheckedChange` 管理当前视图。
+
+<ComponentExample exampleId="radio" preview={<DropdownRadio />} fileName="radio.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/radio.tsx"
+```
+
+</ComponentExample>
+
+### 复选菜单
+
+单选和复选菜单默认在选择后保持打开。通过 `closeOnSelect` 可覆盖此行为。
+
+<ComponentExample exampleId="checkbox" preview={<DropdownCheckbox />} fileName="checkbox.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/checkbox.tsx"
+```
+
+</ComponentExample>
+
+### 悬停触发
+
+<a id="进阶用法"></a>
+
+设置 `trigger="hover"` 后，指针移入时打开。仍可聚焦按钮并按方向键打开菜单。
+
+<ComponentExample exampleId="hover" preview={<DropdownHover />} fileName="hover.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/hover.tsx"
+```
+
+</ComponentExample>
+
+### 右键菜单
+
+设置 `trigger="contextMenu"` 后，在右键点击处打开。键盘用户可聚焦按钮并按 ↓ 或 ↑ 打开菜单。
+
+<ComponentExample exampleId="context-menu" preview={<DropdownContextMenu />} fileName="context-menu.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/dropdown/context-menu.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Dropdown API
+
+触发器应是支持 ref 与事件的单个按钮。Escape 关闭菜单并返回触发按钮。共享浮层参数见 [PopupOptions](/api/popup-options)。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | 必填 | 菜单项列表 |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | 必填 | 单个按钮，支持 Leaf Button 或 button |
+| `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | 触发方式；下拉菜单支持点击、悬停和右键。 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
+| `open` | `boolean` | — | 受控的展开状态。 |
+| `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |
+| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变更 |
+| `onSelect` | `(key: string) => void` | — | 激活叶菜单项时返回 key，包括单选和复选项；展开子菜单不触发。 |
+| `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | 菜单位置；popupPlacement 优先。 |
+| `popupWidth` | `number \| string` | `—` | 浮层宽度；未设置时最小 160px，并根据内容增宽。 |
+| `popupMaxWidth` | `number \| string` | `420` | 浮层最大宽度，仍受视口限制。 |
+| `itemRender` | `(item: `[`DropdownItem`](#dropdownitem)`) => ReactNode` | — | 自定义菜单项的标签内容，不替换整行。 |
+| `mouseEnterDelay` | `number` | `100` | 悬停触发后等待多少毫秒再打开。 |
+| `mouseLeaveDelay` | `number` | `150` | 鼠标离开后等待多少毫秒再关闭。 |
 | `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | 浮层相对触发控件的位置。 |
 | `popupClassName` | `string` | — | 浮层的自定义类名。 |
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
-| `items` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | 必填 | 菜单项列表 |
-| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | 必填 | 单个按钮，支持 Leaf Button 或 button |
-| `disabled` | `boolean` | `false` | 禁用交互。 |
-| `open` | `boolean` | `false` | 受控 / 初始展开状态 |
-| `defaultOpen` | `boolean` | `false` | 受控 / 初始展开状态 |
-| `onOpenChange` | `(open: boolean) => void` | — | 展开状态变更 |
-| `onSelect` | `(key: string) => void` | — | 选择可用菜单项 |
-| `placement` | `'top-start' \| 'top-end' \| 'bottom-start' \| 'bottom-end'` | `'bottom-start'` | 弹出方向 |
-| `popupWidth` | `number \| string` | `—` | 浮层宽度；未设置时至少有 220px 默认宽度。 |
-| `popupMaxWidth` | `number \| string` | `420` | 浮层最大宽度，仍受视口限制。 |
-| `trigger` | `'click' \| 'hover' \| 'contextMenu' \| readonly ('click' \| 'hover' \| 'contextMenu')[]` | `'click'` | 触发方式；下拉菜单支持点击、悬停和右键。 |
-| `mouseEnterDelay` | `number` | `100` | 设置 mouseEnterDelay。 |
-| `mouseLeaveDelay` | `number` | `150` | 设置 mouseLeaveDelay。 |
-| `itemRender` | `(item: `[`DropdownItem`](#dropdownitem)`) => ReactNode` | — | 自定义条目内容。 |
 
-## DropdownItem
+### DropdownItem
+
+下拉菜单中的操作、分组或子菜单数据。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 唯一标识 |
-| `label` | `ReactNode` | — | 文字与图标 |
-| `icon` | `ReactNode` | — | 文字与图标 |
+| `label` | `ReactNode` | — | 菜单项文字或分组标题。 |
+| `icon` | `ReactNode` | — | 菜单项文字前的图标。 |
 | `extra` | `ReactNode` | — | 条目右侧的附加内容；适合放快捷键、状态标签等非交互信息。 |
-| `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | 菜单项或分割线 |
+| `type` | `'item' \| 'divider' \| 'group' \| 'checkbox' \| 'radio'` | `'item'` | 普通项、分隔线、分组、复选项或单选项。 |
 | `children` | `readonly `[`DropdownItem`](#dropdownitem)`[]` | — | 菜单项列表。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
-| `danger` | `boolean` | `false` | 禁用 / 危险操作 |
-| `checked` | `boolean` | — | 设置 checked。 |
-| `group` | `string` | — | 条目的分组标题。 |
-| `closeOnSelect` | `boolean` | — | 设置 closeOnSelect。 |
-| `onCheckedChange` | `(checked: boolean) => void` | — | 设置 onCheckedChange。 |
+| `danger` | `boolean` | `false` | 危险操作的颜色，不会禁用菜单项。 |
+| `checked` | `boolean` | — | 受控的勾选状态；省略时由菜单内部保存。 |
+| `group` | `string` | — | 单选项所属的互斥组标识。 |
+| `closeOnSelect` | `boolean` | — | 选择后是否关闭；默认普通项关闭，单选和复选项保持打开。 |
+| `onCheckedChange` | `(checked: boolean) => void` | — | 点击勾选项时返回下一勾选状态。 |
 | `href` | `string` | — | 链接目标。 |
 | `target` | `string` | — | 链接的 target 属性，例如 _blank；省略时在当前标签页打开。 |
 | `onClick` | `(event: MouseEvent<HTMLElement>) => void` | — | 点击此项时触发 |
-
-## 类型
-
-定义组件属性或组装变量时可导入相关类型。
-
-```ts
-import type { DropdownProps, DropdownItem } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-按钮按 ↓ / ↑ 打开菜单，菜单中使用方向键、Home、End 或文字首字符定位；Enter 选择，Escape 关闭并恢复按钮焦点。disabled 菜单项与分割线会被跳过。条目的 `extra` 与主标签共享点击区域，可交互内容应放在菜单项之外。

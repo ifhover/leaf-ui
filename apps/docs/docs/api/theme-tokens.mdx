@@ -56,12 +56,12 @@
 | `primaryBorderColor` | `string` | 主题色自动生成 | 主题色边框 |
 | `dangerHoverColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
 | `dangerActiveColor` | `string` | 危险色自动生成 | 危险状态悬停 / 按下 |
-| `spacingSm` | `number \| string` | — | 设置 spacingSm。 |
-| `spacingLg` | `number \| string` | — | 设置 spacingLg。 |
-| `shadowSm` | `string` | — | 设置 shadowSm。 |
+| `spacingSm` | `number \| string` | — | 覆盖小号间距；未指定时使用基础 spacing。 |
+| `spacingLg` | `number \| string` | — | 覆盖大号间距；未指定时为基础 spacing 的 3 倍。 |
+| `shadowSm` | `string` | — | 小号表面阴影，接受 CSS box-shadow 值。 |
 | `shadowXs` | `string` | — | 最轻的表面阴影。 |
-| `shadowMd` | `string` | — | 设置 shadowMd。 |
-| `shadowLg` | `string` | — | 设置 shadowLg。 |
+| `shadowMd` | `string` | — | 中号浮层阴影，接受 CSS box-shadow 值。 |
+| `shadowLg` | `string` | — | 大号阴影，接受 CSS box-shadow 值。 |
 | `lineHeight` | `number \| string` | `20` | 正文行高；数字默认为 px，`1`–`4` 保留旧倍率语义，字符串按 CSS 长度处理。 |
 
 ## 类型导入
@@ -98,7 +98,7 @@ const tokens = {
 | `focus` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 键盘聚焦状态覆盖；保留可见焦点轮廓。 |
 | `disabled` | [`LeafComponentStateTokens`](#leafcomponentstatetokens) | — | 禁用状态覆盖；不改变禁用行为。 |
 
-日期、时间、范围选择器复用 `DatePicker` 的输入外壳状态；例如 TimePicker 的输入聚焦样式通过 `DatePicker.focus` 配置，所属面板的外观通过 `TimePicker` 配置。`InputOTP` 不支持完整的四种状态覆盖。状态用于表中指定的控件区域，不会递归修改组件内部的所有子节点。
+日期、时间、范围选择器复用 `DatePicker` 的输入外壳状态；包括 `picker="time"`：输入聚焦样式通过 `DatePicker.focus` 配置，面板外观通过 `DatePicker` 配置。`InputOTP` 不支持完整的四种状态覆盖。状态用于表中指定的控件区域，不会递归修改组件内部的所有子节点。
 
 ## LeafComponentStateTokens
 

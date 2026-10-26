@@ -2,67 +2,100 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { CalendarBasic } from '../../../src/examples/en/calendar/basic';
 import { CalendarCompact } from '../../../src/examples/en/calendar/compact';
 import { CalendarMonth } from '../../../src/examples/en/calendar/month';
+import { CalendarControlled } from '../../../src/examples/en/calendar/controlled';
+import { CalendarSchedule } from '../../../src/examples/en/calendar/schedule';
+
+export const leafDoc = { component: 'Calendar', primaryApi: 'CalendarProps' };
 
 # Calendar
 
-Browse and select dates, and display schedules.
+Browse and select dates, with optional schedule content.
 
-## Schedule calendar
+{/* leaf:section basic */}
 
-<ComponentExample title="Schedule calendar" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
+## Basic usage
+
+Set the initial selection with `defaultValue`; selecting a date calls `onChange`.
+
+<ComponentExample exampleId="basic" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Compact calendar and disabled dates
+{/* leaf:section examples */}
 
-<ComponentExample title="Compact calendar and disabled dates" preview={<CalendarCompact />} fileName="compact.tsx" width="100%">
+## Examples
+
+### Compact calendar
+
+Set `fullscreen={false}` for a compact calendar. This example excludes weekends with `disabledDate`; click the title to switch to the month view.
+
+<ComponentExample exampleId="compact" preview={<CalendarCompact />} fileName="compact.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/compact.tsx"
 ```
 
 </ComponentExample>
 
-## Choose a month
+### Choose a month
 
-<ComponentExample title="Choose a month" preview={<CalendarMonth />} fileName="month.tsx" width="100%">
+`mode="month"` selects a month and returns a local `Date` for its first day. In this mode, `disabledDate` also receives the first day of the month.
+
+<ComponentExample exampleId="month" preview={<CalendarMonth />} fileName="month.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/calendar/month.tsx"
 ```
 
 </ComponentExample>
 
-## Calendar API
+### Controlled selection and displayed month
+
+<a id="advanced-usage"></a>
+
+`value` controls selection, while `visibleDate` controls the displayed month. Paging or clicking Today changes the displayed month without selecting a date; `onVisibleChange` returns the first day of the new month. The example uses `headerExtra` to return to the selected month.
+
+<ComponentExample exampleId="controlled" preview={<CalendarControlled />} fileName="controlled.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/calendar/controlled.tsx"
+```
+
+</ComponentExample>
+
+### Schedule content
+
+Use `cellRender` for text, icons or Tags. Content is placed inside the date button, so do not nest links, buttons or other interactive elements; provide schedule actions outside the calendar.
+
+<ComponentExample exampleId="schedule" preview={<CalendarSchedule />} fileName="schedule.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/calendar/schedule.tsx"
+```
+
+</ComponentExample>
+
+Dates use local `Date` values; `minDate` / `maxDate` include their boundary days. For SSR, provide the same initial date on the server and client; see [server-side rendering](/en/guide/ssr). Calendar does not provide native form submission or reset behavior; use [DatePicker](/en/components/date-picker) for those features.
+
+{/* leaf:section api */}
+
+## API
+
+### Calendar API
+
+Configuration for the selected date, visible month and selectable date range.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `Date` | — | Controlled / initial selected date |
-| `onChange` | `(date: Date) => void` | — | Date selection |
-| `visibleDate` | `Date` | — | Controlled displayed period |
-| `onVisibleChange` | `(date: Date) => void` | — | Displayed period changes |
+| `value` | `Date` | — | Controlled selected date, independent of visibleDate. |
+| `defaultValue` | `Date` | — | Initial selected date for uncontrolled usage. |
+| `onChange` | `(date: Date) => void` | — | Called on selection; month mode returns the first day of the selected month. |
 | `mode` | `'date' \| 'month'` | `'date'` | Select dates or months |
 | `fullscreen` | `boolean` | `true` | Full calendar layout |
-| `minDate / maxDate` | `Date` | — | Date bounds |
+| `minDate` | `Date` | — | Date bounds |
+| `maxDate` | `Date` | — | Date bounds |
 | `disabledDate` | `(date: Date) => boolean` | — | Disable specific dates |
-| `cellRender` | `(date: Date) => ReactNode` | — | Additional date content |
+| `visibleDate` | `Date` | — | Controlled visible month, not the selected date. |
+| `onVisibleChange` | `(date: Date) => void` | — | Return the first day when the visible month changes, without selecting a date. |
+| `showToday` | `boolean` | `true` | Show navigation to today; changes the visible month without selecting a date. |
+| `cellRender` | `(date: Date) => ReactNode` | — | Customize cell contents inside the selection button; do not nest interactive controls. |
 | `headerExtra` | `ReactNode` | — | Additional header content |
-| `showToday` | `boolean` | `true` | Show a Today button in full layout to navigate to the current month |
-
-
-## Types
-
-Import these types to define props or prepare data.
-
-```ts
-import type { CalendarProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-The full calendar uses an editorial, borderless grid: a large month heading, a lighter year, and trailing Today and navigation controls form the header. Date, month and year views use open 7-, 4- and 3-column layouts. Selection fills the whole date cell with a quiet primary tint and marks the numeral with a solid circular label; Today uses primary-colored text and a small dot instead of an outline.
-
-Use `fullscreen={false}` for a compact calendar with a 32px borderless date grid. `cellRender` content sits below the numeral and truncates to one line; use non-interactive text or icons and avoid nested buttons. A disabled selection stays readable and cannot be selected again.
-
-Use arrow keys to move dates, Home/End to jump within a row and PageUp/PageDown to switch months. Provide consistent initial dates for SSR; see [server-side rendering](/en/guide/ssr).

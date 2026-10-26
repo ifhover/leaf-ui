@@ -1,15 +1,21 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { MessageBasic } from '../../src/examples/message/basic';
-import { MessageStack } from '../../src/examples/message/stack';
+import { MessageStates } from '../../src/examples/message/states';
+import { MessageManual } from '../../src/examples/message/manual';
+import { MessageAsync } from '../../src/examples/message/async';
 import { MessageShared } from '../../src/examples/message/shared';
+
+export const leafDoc = { component: 'Message', primaryApi: 'MessageProps' };
 
 # Message 消息提示
 
-以短暂提示反馈操作结果。
+以短暂提示反馈操作结果。需要标题、详细说明或后续操作时使用 [Notification](/components/notification)。
 
-## 入口配置一次
+{/* leaf:section basic */}
 
-在应用入口使用 `ConfigProvider`，它会自动管理消息。页面和业务组件调用 `useMessage` 后即可显示消息。
+## 基础用法
+
+在应用入口放置 [ConfigProvider](/components/config-provider)，再在子组件中调用 `useMessage()`。已有该配置时无需重复添加。
 
 ```tsx
 import { ConfigProvider } from '@ifhover/leaf-ui';
@@ -19,48 +25,122 @@ export function Root() {
 }
 ```
 
-已经使用 `ConfigProvider` 的应用无需新增配置。`useMessage` 应在它的子组件中调用，返回的 `message` 也可以作为参数传给业务方法。
-
-## 消息与更新
-
-<ComponentExample title="消息与更新" preview={<MessageBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<MessageBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/message/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 跨组件共享
+{/* leaf:section examples */}
 
-下面两个按钮来自不同子组件。相同的 `key` 可以更新同一条消息，页面切换后也能继续反馈操作结果。
+## 示例
 
-<ComponentExample title="跨组件共享" preview={<MessageShared />} fileName="shared.tsx">
+### 状态提示
+
+通过快捷方法显示成功、信息、警告和危险提示。
+
+<ComponentExample exampleId="states" preview={<MessageStates />} fileName="states.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/message/states.tsx"
+```
+
+</ComponentExample>
+
+### 手动关闭
+
+设置 `duration: 0` 持续显示，配合 `closable: true` 提供关闭按钮。
+
+<ComponentExample exampleId="manual" preview={<MessageManual />} fileName="manual.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/message/manual.tsx"
+```
+
+</ComponentExample>
+
+<a id="进阶用法"></a>
+
+### 异步更新
+
+使用 `loading()` 返回的 `key`，将加载消息替换为操作结果。相同 `key` 会替换整组配置，而不是合并旧配置，并按新的时长重新计时。
+
+<ComponentExample exampleId="async" preview={<MessageAsync />} fileName="async.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/message/async.tsx"
+```
+
+</ComponentExample>
+
+### 跨组件共享
+
+下面两个按钮来自不同子组件。同一入口下的组件共享消息队列，可以用相同 `key` 更新消息。嵌套的 `ConfigProvider` 沿用同一队列，每条消息使用调用组件所在区域的主题和语言。
+
+<ComponentExample exampleId="shared" preview={<MessageShared />} fileName="shared.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/message/shared.tsx"
 ```
 
 </ComponentExample>
 
-## 多条消息
+调用组件卸载后，已有消息继续保留，异步任务仍可更新结果；入口 provider 卸载后，其消息和计时器一起清理。
 
-消息关闭时，后续消息会平滑上移。不同高度的内容会按照实际占用空间收起。
+{/* leaf:section api */}
 
-<ComponentExample title="多条消息" preview={<MessageStack />} fileName="stack.tsx" width="fit-content">
+## API
 
-```tsx lineNumbers file="../../src/examples/message/stack.tsx"
-```
+### Message API
 
-</ComponentExample>
+直接渲染时，由应用响应 `onClose` 并设置 `open=false`；`afterClose` 在离场动画结束后触发。
 
-## useMessage API
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `boolean` | 必填 | 受控显示状态 |
+| `content` | `ReactNode` | 必填 | 消息内容 |
+| `type` | `FeedbackType \| 'error' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
+| `duration` | `number` | 普通消息 3；loading 为 0 | 自动关闭的秒数；0 或负数不自动关闭。悬停或焦点进入时暂停，离开后继续剩余时间。 |
+| `closable` | `boolean` | `false` | 关闭按钮 |
+| `onClose` | `() => void` | — | 关闭请求时调用；声明式 Message 须由应用将 open 设为 false。 |
+| `afterClose` | `() => void` | — | 关闭动画结束、内容卸载后调用，不代替 onClose 更新受控值。 |
+
+### useMessage API
+
+获取当前入口托管的消息队列。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `message` | [`MessageApi`](#messageapi) | — | 调用入口托管的消息队列 |
 
-## MessageProvider API
+### MessageApi
 
-未使用 `ConfigProvider` 时，可在入口使用 `MessageProvider`。显式添加它也可以为某个区域建立独立的消息队列。
+`close(key)` 仅关闭指定消息；`close()` 关闭共享队列中的全部消息。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `open` | `(options: `[`MessageOptions`](#messageoptions)`) => string` | 必填 | 打开或按 key 替换消息，返回该消息的 key。 |
+| `success` | `(content: ReactNode, duration?: number) => string` | 必填 | 快捷显示对应类型；`error` 保留为兼容方法 |
+| `info` | `(content: ReactNode, duration?: number) => string` | 必填 | 快捷显示对应类型；`error` 保留为兼容方法 |
+| `warning` | `(content: ReactNode, duration?: number) => string` | 必填 | 快捷显示对应类型；`error` 保留为兼容方法 |
+| `danger` | `(content: ReactNode, duration?: number) => string` | 必填 | 快捷显示对应类型；`error` 保留为兼容方法 |
+| `error` | `(content: ReactNode, duration?: number) => string` | 必填 | 请求失败时显示的内容，替代数据行。 |
+| `loading` | `(content: ReactNode) => string` | 必填 | 显示不自动关闭的加载消息，返回 key；应用负责更新或关闭。 |
+| `close` | `(key?: string) => void` | 必填 | 关闭指定 key；不传 key 会关闭同一 Provider 内的全部消息，不限于当前调用组件。 |
+
+### MessageOptions
+
+鼠标停留或焦点进入消息时暂停计时，恢复后按剩余时长继续。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `content` | `ReactNode` | 必填 | 消息内容 |
+| `type` | `FeedbackType \| 'error' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
+| `duration` | `number` | 普通消息 3；loading 为 0 | 自动关闭的秒数；0 或负数不自动关闭。悬停或焦点进入时暂停，离开后继续剩余时间。 |
+| `closable` | `boolean` | `false` | 展示关闭按钮 |
+| `key` | `string` | 自动生成 | 同一 Provider 内的唯一标识；重复 open 会替换该条消息并重启关闭计时，不追加新消息。 |
+| `onClose` | `() => void` | — | 关闭请求时调用；声明式 Message 须由应用将 open 设为 false。 |
+
+### MessageProvider API
+
+单独使用消息时，可用 `MessageProvider` 代替 `ConfigProvider`；显式添加它也可建立独立队列。不同 React 应用及 SSR 请求各自拥有队列。
 
 ```tsx
 import { MessageProvider } from '@ifhover/leaf-ui';
@@ -72,53 +152,4 @@ export function Root() {
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | 共用此消息队列的组件 |
-
-## MessageApi
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `open` | [`(options: MessageOptions) => string`](#messageoptions) | — | 创建或按 key 更新，返回 key |
-| `success / info / warning / danger` | `(content: ReactNode, duration?: number) => string` | — | 快捷显示对应类型；`error` 保留为兼容方法 |
-| `loading` | `(content: ReactNode) => string` | — | 持续加载消息，返回 key |
-| `close` | `(key?: string) => void` | — | 关闭指定消息，无 key 时关闭全部 |
-
-## MessageOptions
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `key` | `string` | 自动生成 | 相同 key 更新现有消息 |
-| `content` | `ReactNode` | 必填 | 消息内容 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
-| `duration` | `number` | `3` | 自动关闭秒数；0 不自动关闭；loading 默认 0 |
-| `closable` | `boolean` | `false` | 展示关闭按钮 |
-| `onClose` | `() => void` | — | 开始关闭时触发一次 |
-
-## Message API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `open` | `boolean` | 必填 | 受控显示状态 |
-| `content` | `ReactNode` | 必填 | 消息内容 |
-| `type` | `'success' \| 'info' \| 'warning' \| 'danger' \| 'loading'` | `'info'` | 消息类型；`error` 为兼容别名 |
-| `duration` | `number` | `3` | 秒数；0 持续显示；loading 默认 0 |
-| `closable` | `boolean` | `false` | 关闭按钮 |
-| `onClose / afterClose` | `() => void` | — | 请求关闭 / 动画完成 |
-
-## 类型
-
-定义组件属性或组装变量时可导入相关类型。
-
-```ts
-import type { MessageProps, MessageOptions, MessageApi, MessageProviderProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-推荐通过 `useMessage` 使用，同一 `key` 可以把加载消息更新为结果。鼠标停留或焦点位于消息中时暂停计时，离开后按剩余时间继续。
-
-同一入口下的组件共享队列；`close()` 关闭该队列的全部消息，`close(key)` 仅关闭指定消息。嵌套的 `ConfigProvider` 沿用同一个队列，每条消息仍使用调用组件所在区域的主题和语言。
-
-调用组件卸载后，已有消息继续按时关闭，异步任务也可通过同一 `message` 更新结果。入口 provider 卸载后，其消息和计时器一起清理。不同 React 应用及 SSR 请求各自拥有队列。
-
-也支持直接渲染 `Message`；收到 `onClose` 后由应用设置 `open=false`。
+| `children` | `ReactNode` | — | 共享此独立消息队列的内容；ConfigProvider 已提供队列，嵌套 ConfigProvider 复用上层队列。 |

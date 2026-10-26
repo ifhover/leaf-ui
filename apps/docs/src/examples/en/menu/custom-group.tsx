@@ -6,9 +6,6 @@ export function MenuCustomGroup() {
   return (
     <MenuGroup title="Quick actions">
       <Space direction="vertical" align="start">
-        <Text tone="muted">
-          Place descriptions, buttons and other custom content below the title.
-        </Text>
         <Button onClick={() => setCreated(true)}>Create project</Button>
         {created && <Text role="status">Project created</Text>}
       </Space>

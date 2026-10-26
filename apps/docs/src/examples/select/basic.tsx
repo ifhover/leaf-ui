@@ -1,24 +1,12 @@
-import { Form, FormField, Select } from '@ifhover/leaf-ui';
+import { Select } from '@ifhover/leaf-ui';
 
 const options = [
-  { label: '设计工作室', value: 'design' },
-  { label: '产品团队', value: 'product' },
-  { label: '工程团队', value: 'engineering' },
-  { label: '归档项目', value: 'archived', disabled: true },
+  { value: 'design', label: '设计工作室' },
+  { value: 'product', label: '产品团队' },
+  { value: 'engineering', label: '工程团队' },
+  { value: 'archived', label: '归档项目', disabled: true },
 ];
 
 export function SelectBasic() {
-  return (
-    <Form layout="vertical">
-      <FormField label="选择团队">
-        <Select aria-label="选择团队" options={options} placeholder="请选择团队" />
-      </FormField>
-      <FormField label="默认团队">
-        <Select aria-label="默认团队" options={options} defaultValue="design" />
-      </FormField>
-      <FormField label="禁用团队">
-        <Select aria-label="禁用团队" options={options} disabled defaultValue="product" />
-      </FormField>
-    </Form>
-  );
+  return <Select aria-label="选择团队" options={options} placeholder="请选择团队" />;
 }

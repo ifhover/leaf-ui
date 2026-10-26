@@ -1,9 +1,9 @@
 import { TreeSelect } from '@ifhover/leaf-ui';
 
-const options = (english: boolean) => [
+const options = [
   {
     value: 'team',
-    label: english ? 'Team' : '团队',
+    label: '团队',
     children: [
       { value: 'alice', label: 'Alice' },
       { value: 'bob', label: 'Bob' },
@@ -12,14 +12,15 @@ const options = (english: boolean) => [
   },
 ];
 
-export function TagLimit({ english = false }) {
+export function TagLimit() {
   return (
     <TreeSelect
-      aria-label={english ? 'Team members' : '团队成员'}
-      maxTagCount={1}
-      options={options(english)}
-      placeholder={english ? 'Only one tag is shown' : '只展示一个标签'}
+      aria-label="只展示一个成员标签"
       treeCheckable
+      maxTagCount={1}
+      options={options}
+      defaultValue={['alice', 'bob', 'carol']}
+      defaultExpandAll
     />
   );
 }

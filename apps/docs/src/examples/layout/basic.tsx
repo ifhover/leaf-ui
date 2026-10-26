@@ -1,15 +1,22 @@
 import { Layout, Text } from '@ifhover/leaf-ui';
+
 export function LayoutBasic() {
   return (
     <Layout>
       <Layout.Header>
-        <Text>顶部导航</Text>
+        <Text>页头</Text>
       </Layout.Header>
       <Layout direction="horizontal">
-        <Layout.Sider width={140}>侧栏</Layout.Sider>
-        <Layout.Content>正文内容</Layout.Content>
+        <Layout.Sider width={140}>
+          <Text>侧栏</Text>
+        </Layout.Sider>
+        <Layout.Content>
+          <Text>正文内容</Text>
+        </Layout.Content>
       </Layout>
-      <Layout.Footer>底部信息</Layout.Footer>
+      <Layout.Footer>
+        <Text>页脚</Text>
+      </Layout.Footer>
     </Layout>
   );
 }

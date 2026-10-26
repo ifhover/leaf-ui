@@ -1,11 +1,5 @@
-import { Alert, Space } from '@ifhover/leaf-ui';
+import { Alert } from '@ifhover/leaf-ui';
+
 export function AlertBasic() {
-  return (
-    <Space direction="vertical" align="stretch">
-      <Alert title="项目已保存" type="success" />
-      <Alert title="有新的版本可用" description="你可以在方便的时候更新。" closable />
-      <Alert title="请检查当前设置" type="warning" />
-      <Alert title="保存失败" description="请稍后重试，或联系团队管理员。" type="danger" />
-    </Space>
-  );
+  return <Alert title="有新的版本可用" description="刷新页面后即可使用最新版本。" />;
 }

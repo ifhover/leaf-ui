@@ -1,29 +1,48 @@
-import { Button, Form, FormField, Input, Popover } from '@ifhover/leaf-ui';
+import { Button, Flex, Form, FormField, Input, Popover, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function PopoverControlled() {
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState('Leaf Garden');
+  const [draft, setDraft] = useState(name);
   return (
-    <Popover
-      title="Edit project"
-      open={open}
-      onOpenChange={setOpen}
-      width={260}
-      content={
-        <Form
-          layout="vertical"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setOpen(false);
-          }}
-        >
-          <FormField label="Project name">
-            <Input defaultValue="Leaf Garden" />
-          </FormField>
-          <Button type="submit">Save and close</Button>
-        </Form>
-      }
-    >
-      <Button variant="outline">Click to edit</Button>
-    </Popover>
+    <Flex direction="column" gap="md" align="start">
+      <Popover
+        title="Edit project"
+        width={280}
+        open={open}
+        onOpenChange={(next) => {
+          if (next) setDraft(name);
+          setOpen(next);
+        }}
+        content={
+          <Form
+            layout="vertical"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setName(draft.trim());
+              setOpen(false);
+            }}
+          >
+            <FormField label="Project name">
+              <Input
+                name="projectName"
+                value={draft}
+                onChange={(event) => setDraft(event.currentTarget.value)}
+                required
+              />
+            </FormField>
+            <Button type="submit" disabled={!draft.trim()}>
+              Save and close
+            </Button>
+          </Form>
+        }
+      >
+        <Button variant="outline">Edit project</Button>
+      </Popover>
+      <Text role="status" tone="muted">
+        Project name: {name}
+      </Text>
+    </Flex>
   );
 }

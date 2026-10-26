@@ -1,7 +1,6 @@
 import { withBase } from '@rspress/core/runtime';
 
 import { ComponentExample } from '../../../src/components/component-example';
-import { DocsCollapse } from '../../../src/components/docs-collapse';
 import { ConfigProviderBasic } from '../../../src/examples/en/config-provider/basic';
 import { ConfigProviderDefaults } from '../../../src/examples/en/config-provider/defaults';
 import { ConfigProviderModalDefaults } from '../../../src/examples/en/config-provider/modal-defaults';
@@ -12,180 +11,154 @@ import { ConfigProviderTranslations } from '../../../src/examples/en/config-prov
 import { ConfigProviderDensity } from '../../../src/examples/en/config-provider/density';
 import { ConfigProviderSizes } from '../../../src/examples/en/config-provider/sizes';
 
+export const leafDoc = { component: 'ConfigProvider', primaryApi: 'ConfigProviderProps' };
+
 # ConfigProvider
 
-Set a shared theme, language and component defaults for an application or a local region.
+Set a shared language, theme and component defaults for an application or a local region. Nested providers inherit settings that they do not override.
 
-Wrap the application to configure it globally, or nest providers to customize one region.
+{/* leaf:section basic */}
 
-| Configure                                   | Prop                     |
-| ------------------------------------------- | ------------------------ |
-| Built-in text and custom languages          | `locale`, `translations` |
-| Primary color, appearance, size and spacing | `theme`, `density`       |
-| Shared component props                      | `components`             |
+## Basic usage
 
-## Multilingual
+<a id="regional-themes"></a>
 
-`locale` changes built-in text in date panels, empty states and clear actions. Translate business headings, field labels and options in your application.
+<a id="theme-and-appearance"></a>
 
-### Built-in languages
+Use `theme` to configure a region, including its popups. This example changes only the primary color.
 
-These translations are included without importing a language pack. The default is Simplified Chinese when `locale` is not configured.
+<ComponentExample exampleId="basic" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={480}>
 
-| Language                       | `locale` |
-| ------------------------------ | -------- |
-| 简体中文 (Simplified Chinese)  | `zh-CN`  |
-| 繁體中文 (Traditional Chinese) | `zh-TW`  |
-| English                        | `en-US`  |
-| 日本語 (Japanese)              | `ja-JP`  |
-| 한국어 (Korean)                | `ko-KR`  |
+```tsx lineNumbers file="../../../src/examples/en/config-provider/basic.tsx"
+```
 
-For another language, [provide translation resources](#add-your-own-language). A language tag alone does not translate built-in text. Missing entries ultimately fall back to English.
+</ComponentExample>
+
+{/* leaf:section examples */}
+
+## Examples
 
 ### Switch languages
 
-Update `locale` to switch languages. Select a language from the dropdown, then open the date or empty-options control to compare built-in text in all five languages.
+#### Multilingual
 
-<ComponentExample title="Built-in language" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={360}>
+`locale` changes built-in text such as date panels and empty states. Translate application headings, field labels and options separately.
+
+#### Built-in languages
+
+| Language | `locale` |
+| --- | --- |
+| Simplified Chinese | `zh-CN` |
+| Traditional Chinese | `zh-TW` |
+| English | `en-US` |
+| Japanese | `ja-JP` |
+| Korean | `ko-KR` |
+
+The default language is Simplified Chinese, regardless of the documentation language. These five resources are included; other languages need [translation resources](#add-your-own-language).
+
+Update `locale`, then open a date panel or the empty select to inspect the built-in text. Application labels stay unchanged.
+
+<ComponentExample exampleId="locale" preview={<ConfigProviderLocale />} fileName="locale.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/locale.tsx"
-
 ```
 
 </ComponentExample>
 
-Nested regions inherit their parent language unless overridden. `direction` controls text direction; `weekStartsOn` sets the first day of the week. Popups inherit these settings too.
+Nested regions inherit the language unless overridden. `direction` sets text and interaction direction; `weekStartsOn` sets the first day of the week. Popups inherit these settings.
 
 ### Add your own language
 
-Copy the <a href={withBase('/locales/en-US.json')} download>complete English JSON</a>, translate it, and pass your imported file through `translations`. Each key is a language tag. The JSON contains component groups and text only; do not repeat the language tag inside it. Partial resources are supported.
+Pass resources keyed by language tag through `translations`. This example supplies three French entries; missing entries use English. The field labels remain application content.
 
-👽 A small Easter egg: this example uses [“Martian” text](https://en.wikipedia.org/wiki/Martian_language), a playful style of Chinese internet writing that mixes homophones, lookalike characters, and symbols.
-
-Missing entries fall back to English. Application content such as field names and confirmation descriptions remains under your control.
-
-It uses the private-use language tag `zh-CN-x-mars`, so dates and numbers retain Simplified Chinese regional formatting. This is a demonstration, not a built-in language.
-
-<ComponentExample title="Custom Martian translations" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={360}>
+<ComponentExample exampleId="translations" preview={<ConfigProviderTranslations />} fileName="translations.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/translations.tsx"
-
 ```
 
 </ComponentExample>
 
-The example keeps the translation object inline; you can also import it from a JSON file and pass it through `translations`.
+`locale={['fr-FR', 'en-US']}` searches each entry in order, with built-in English as the final fallback. The first tag controls regional date and number formatting. A string is a one-item chain; empty arrays are invalid. Regional fallback such as `fr-CA → fr` is not added automatically.
 
-`locale={['zh-CN-x-mars', 'en-US']}` looks up each missing entry in order, with built-in English as the final fallback. The first tag always controls the current language and regional date and number formatting. A string equals a one-item array; empty arrays are invalid. No implicit `zh-CN-x-mars → zh-CN` or `fr-CA → fr` fallback is added.
-
-Nested `translations` merge by language and entry. An omitted `locale` inherits the chain; an explicit value replaces it. Text supplied through component props or `components` takes precedence. See [Translation resources](/en/api/translations) for types, JSON Schema and validation.
-
-## Theme and appearance
-
-### Regional themes
-
-The theme applies to components and their popups. Usually a primary color or base radius is enough; related styles follow automatically.
-
-<ComponentExample title="Regional theme" preview={<ConfigProviderBasic />} fileName="basic.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/en/config-provider/basic.tsx"
-
-```
-
-</ComponentExample>
+Nested resources merge by language and entry. An omitted `locale` inherits the chain; an explicit value replaces it. Component text props and `components` defaults take precedence. For a complete resource, download the <a href={withBase('/locales/en-US.json')} download>English JSON template</a>. See [Translation resources](/en/api/translations) for types, JSON Schema and validation.
 
 ### Regional density
 
-`density="compact"` reduces control sizes and content spacing for information-heavy interfaces. The default is `comfortable`. Nested regions can choose their own density.
+`density="compact"` reduces control sizes and content spacing; the default is `comfortable`. Explicit theme and component sizes take precedence over the preset.
 
-<ComponentExample title="Comfortable and compact" preview={<ConfigProviderDensity />} fileName="density.tsx" width={360}>
+<ComponentExample exampleId="density" preview={<ConfigProviderDensity />} fileName="density.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/density.tsx"
-
 ```
 
 </ComponentExample>
 
 ### Base height
 
-Set `theme.controlHeight` to change the size baseline. Small and large controls derive their heights automatically, so individual buttons and inputs stay consistent.
+Set `theme.controlHeight` to change the size baseline. Small and large sizes derive from it.
 
-<ComponentExample title="Base height" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={360}>
+<ComponentExample exampleId="sizes" preview={<ConfigProviderSizes />} fileName="sizes.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/sizes.tsx"
-
 ```
 
 </ComponentExample>
 
-For further customization, see [Theming](/en/guide/theming). `theme.components` changes local component styles; `components` below sets default component props. For server rendering, see [SSR](/en/guide/ssr).
+See [Theming](/en/guide/theming) for appearance and tokens, and [SSR](/en/guide/ssr) for server rendering. `theme.components` sets component style tokens; `components` below sets default props.
 
-## Component defaults
+### Shared input defaults
 
-**Set common props once instead of repeating them on every component.** Use `components` to share button styles, input hints and modal closing behavior. Change the configuration once when your conventions change.
+<a id="component-defaults"></a>
 
-Configure the app root to apply defaults throughout the app, or wrap a region to keep them local. Individual components can still override them with their own props.
+Set shared placeholders and clear behavior through `components`. An instance prop overrides its configured default.
 
-### Consistent form defaults
-
-This example shares placeholders, clear buttons and button styles. The end date and Save button override the shared defaults.
-
-<ComponentExample title="Common props, configured once" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={360}>
+<ComponentExample exampleId="defaults" preview={<ConfigProviderDefaults />} fileName="defaults.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/defaults.tsx"
-
 ```
 
 </ComponentExample>
 
-### Prevent accidental dismissal from mask clicks
+### Modal closing behavior
 
-Keep an accidental mask click from interrupting an edit: set `Modal: { maskClosable: false }` once for every Modal in the region. The close button and Esc still work.
+`Modal: { maskClosable: false }` prevents mask clicks from closing modals in the region. The close button, footer actions and Escape still work.
 
-<ComponentExample title="Open the modal and try clicking the mask" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
+<ComponentExample exampleId="modal-defaults" preview={<ConfigProviderModalDefaults />} fileName="modal-defaults.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/modal-defaults.tsx"
-
 ```
 
 </ComponentExample>
 
 ### Inheritance and overrides
 
-Shared defaults leave room for local changes: **instance props > inner configuration > outer configuration > built-in defaults**.
+The priority is **instance props > inner defaults > outer defaults > built-in defaults**.
 
-<ComponentExample title="Inheritance and overrides" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx">
+<ComponentExample exampleId="inheritance" preview={<ConfigProviderInheritance />} fileName="inheritance.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/inheritance.tsx"
-
 ```
 
 </ComponentExample>
 
-### Clearing inherited defaults
+Defaults merge by component and prop. Only `undefined` falls back; values such as `false`, `0` and empty strings are retained. Objects, arrays, class names and callbacks replace the previous value rather than merging.
 
-Set a component entry to `null` to restore its built-in defaults locally, for example `components={{ Input: null }}`.
+### Clear inherited defaults
 
-<ComponentExample title="Clearing inherited defaults" preview={<ConfigProviderReset />} fileName="reset.tsx" width={360}>
+Set a component entry to `null` to restore its built-in defaults in that region. An empty object or `undefined` continues to inherit. Other components and the theme are unaffected.
+
+<ComponentExample exampleId="reset" preview={<ConfigProviderReset />} fileName="reset.tsx" width={480}>
 
 ```tsx lineNumbers file="../../../src/examples/en/config-provider/reset.tsx"
-
 ```
 
 </ComponentExample>
 
-<DocsCollapse title="Configuration keys, merging rules and usage advice">
+Use `LeafComponentDefaults` to check reusable configuration. Keys match public component names; compound names use keys such as `DataTableSearch`. Aliases use their canonical key, such as `FloatButton` for `FAB`. See the [complete defaults reference](/en/api/component-defaults#leafcomponentdefaults).
 
-Use `LeafComponentDefaults` for type completion. See [the complete reference](/en/api/component-defaults#leafcomponentdefaults) for configurable props.
+Keep instance data, controlled state and events on each component. Pass a new configuration object when updating it. Internal controls are configured through their owner, such as `Modal.confirmButtonProps`; global `Button` defaults do not apply to them.
 
-- Keys match component names, such as `Input` and `Modal`. `DataTable.Search` uses `DataTableSearch`, and `DataTable.Root` uses `DataTable`. The aliases `FAB` and `ResizablePanels` use `FloatButton` and `Splitter`.
-- Only `undefined` falls back to a default; `false`, `0`, empty strings and allowed `null` values are preserved. Objects, arrays, class names and callbacks are replaced as a whole.
-- A `null` component entry clears inherited defaults; an empty object and `undefined` continue to inherit. Other components and the theme are unaffected.
-- Keep instance data and events on the component, such as `Select.options`, `Modal.open` and `onChange`.
-- Pass a new object when updating configuration; do not mutate the existing one.
-- Configure internal actions through their owner, such as `Modal.confirmButtonProps`. They do not inherit shared `Button` defaults.
-
-</DocsCollapse>
+{/* leaf:section api */}
 
 ## API
 
@@ -196,14 +169,14 @@ Use `LeafComponentDefaults` for type completion. See [the complete reference](/e
 | `locale` | `LeafLocale \| readonly LeafLocale[]` | `'zh-CN'` | Current language and per-entry fallback order; inherited when omitted |
 | `translations` | `Readonly<Record<string, `[`LeafTranslation`](../api/translations#leaftranslation)`>>` | — | JSON resources indexed by language tag; nested entries merge |
 | `theme` | [`LeafTheme`](#leaftheme) | — | Regional settings; omitted fields inherit |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Inherited controls, forms, menus, lists and overlay spacing; explicit sizes override the preset. |
+| `components` | [`LeafComponentDefaults`](../api/component-defaults#leafcomponentdefaults) | — | Regional component defaults, inherited by component and prop. |
 | `direction` | `'ltr' \| 'rtl'` | — | Text and interaction direction. |
 | `weekStartsOn` | `0 \| 1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | First day of the week; 0 is Sunday and 1 is Monday. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `maskBlur` | `boolean` | `true` | Enable mask blur for Modal, Drawer and Modal-based overlays such as confirmations and command palettes. Disable to reduce rendering cost; nested providers inherit it. |
-| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | Inherited controls, forms, menus, lists and overlay spacing; explicit sizes override the preset. |
-| `components` | [`LeafComponentDefaults`](../api/component-defaults#leafcomponentdefaults) | — | Regional component defaults, inherited by component and prop. |
+| `maskBlur` | `boolean` | `false` | Enable mask blur for Modal, Drawer and Modal-based overlays such as confirmations and command palettes. Disable to reduce rendering cost; nested providers inherit it. |
 
-Native div props, `className` and `style` apply to the region wrapper. `maskBlur={false}` disables backdrop blur while preserving the translucent mask; this is independent of `theme.motion`.
+Native div props, `className` and `style` apply to the region wrapper. The default is a translucent gray mask without blur; `maskBlur={true}` explicitly enables blur; this is independent of `theme.motion`.
 
 ### LeafTheme
 
@@ -211,28 +184,17 @@ Common theme options. Unspecified fields inherit from the outer region.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#1e964f'` | Primary color with derived interaction states; dark appearance defaults to a lighter green |
+| `primaryColor` | `string` | `'#1e964f'` | Primary base color shared by light and dark appearances; interaction colors are derived automatically. |
+| `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
 | `borderRadius` | `number \| string` | `8` | Base radius; small / medium / large radii use × 0.5 / 1.5 / 2 |
 | `controlHeight` | `number \| string` | `34` | Base height; small / large heights use − / + 6px |
 | `fontSize` | `number \| string` | `14` | Base font; small font − 1px, large font + 2px |
 | `fontFamily` | `string` | System sans-serif | Font family |
-| `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
 | `motion` | `boolean` | `true` | Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it. |
-| `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | Optional advanced overrides |
 | `spacing` | `number` | — | Base spacing; other spacing values are derived. |
 | `lineHeight` | `number \| string` | `20` | Body line height. Numbers are pixels, except numbers greater than 0 and up to 4 which keep the legacy multiplier meaning; strings are CSS lengths. |
-| `headingWeight` | `400 \| 500 \| 700` | — | Card and Typography heading weight, default 700; other component labels use `tokens.fontWeight`, default 500. |
+| `headingWeight` | `400 \| 500 \| 700` | `700` | Card and Typography heading weight, default 700; other component labels use `tokens.fontWeight`, default 500. |
 | `elevation` | `'none' \| 'soft' \| 'medium'` | — | Overall shadow strength. |
 | `breakpoints` | `Partial<Record<'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl', number>>` | — | Responsive thresholds used by useBreakpoint. |
+| `tokens` | [`LeafThemeTokens`](../api/theme-tokens#leafthemetokens) | — | Optional advanced overrides |
 | `components` | `Record<string, `[`LeafComponentTokens`](../api/theme-tokens#leafcomponenttokens)`>` | — | Override local styles by component name. |
-
-### Types and complete reference
-
-Import types when creating reusable configuration:
-
-```ts
-import type { ConfigProviderProps, LeafComponentDefaults, LeafTheme } from '@ifhover/leaf-ui';
-```
-
-- [LeafComponentDefaults](/en/api/component-defaults#leafcomponentdefaults): component keys and configurable props.
-- [LeafThemeTokens](/en/api/theme-tokens#leafthemetokens): advanced theme overrides.

@@ -1,46 +1,24 @@
-import type { TabItem } from '@ifhover/leaf-ui';
-import { Input, RadioGroup, Space, Tabs } from '@ifhover/leaf-ui';
-import { ChartNoAxesColumn, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { Space, Tabs, Text } from '@ifhover/leaf-ui';
 
-const items: readonly TabItem[] = [
-  {
-    key: 'overview',
-    label: 'Overview',
-    icon: <ChartNoAxesColumn />,
-    children: 'View project activity, members and recent updates.',
-  },
-  {
-    key: 'settings',
-    label: 'Settings',
-    icon: <Settings />,
-    children: <Input aria-label="Project name" placeholder="Type and switch; your draft is kept" />,
-  },
-  { key: 'history', label: 'History', disabled: true, children: null },
+const items = [
+  { key: 'overview', label: 'Overview', children: 'Overview content' },
+  { key: 'settings', label: 'Settings', children: 'Settings content' },
 ];
-
-type TabsAppearance = 'line' | 'card' | 'segmented';
-
-const appearances = [
-  { value: 'line', label: 'Line' },
-  { value: 'card', label: 'Card' },
-  { value: 'segmented', label: 'Segmented' },
-] as const;
-
 export function TabsAppearances() {
-  const [appearance, setAppearance] = useState<TabsAppearance>('line');
-  const appearanceLabel = appearances.find((option) => option.value === appearance)?.label;
-
   return (
     <Space direction="vertical" align="stretch" size="lg">
-      <RadioGroup
-        label="Tab style"
-        name="tabs-appearance"
-        value={appearance}
-        onChange={(event) => setAppearance(event.target.value as TabsAppearance)}
-        options={appearances}
-      />
-      <Tabs aria-label={`${appearanceLabel} tabs`} items={items} type={appearance} />
+      <Space direction="vertical" align="stretch" size="sm">
+        <Text tone="muted">Line</Text>
+        <Tabs aria-label="Line" type="line" items={items} />
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <Text tone="muted">Card</Text>
+        <Tabs aria-label="Card" type="card" items={items} />
+      </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <Text tone="muted">Segmented</Text>
+        <Tabs aria-label="Segmented" type="segmented" items={items} />
+      </Space>
     </Space>
   );
 }

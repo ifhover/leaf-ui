@@ -1,23 +1,10 @@
-import type { TabItem } from '@ifhover/leaf-ui';
-import { Input, Tabs } from '@ifhover/leaf-ui';
-import { ChartNoAxesColumn, Settings } from 'lucide-react';
+import { Tabs } from '@ifhover/leaf-ui';
 
-const items: readonly TabItem[] = [
-  {
-    key: 'overview',
-    label: '概览',
-    icon: <ChartNoAxesColumn />,
-    children: '查看项目活动、成员和最近更新。',
-  },
-  {
-    key: 'settings',
-    label: '设置',
-    icon: <Settings />,
-    children: <Input aria-label="项目名称" placeholder="输入内容后切换，内容会保留" />,
-  },
-  { key: 'history', label: '历史', disabled: true, children: null },
+const items = [
+  { key: 'overview', label: '概览', children: '概览内容' },
+  { key: 'settings', label: '设置', children: '设置内容' },
 ];
 
 export function TabsBasic() {
-  return <Tabs aria-label="项目信息" items={items} />;
+  return <Tabs aria-label="内容分类" items={items} />;
 }

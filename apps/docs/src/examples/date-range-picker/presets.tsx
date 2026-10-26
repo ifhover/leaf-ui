@@ -1,18 +1,19 @@
-import { DateRangePicker } from '@ifhover/leaf-ui';
+import { type DateRange, DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
 
-const recentSevenDays = (): [Date, Date] => {
+function recentSevenDays(): DateRange {
   const end = new Date();
-  const start = new Date();
+  end.setHours(0, 0, 0, 0);
+  const start = new Date(end);
   start.setDate(start.getDate() - 6);
   return [start, end];
-};
+}
 
-export function Presets({ english = false }) {
+export function Presets() {
   return (
-    <DateRangePicker
-      aria-label={english ? 'Reporting range' : '统计区间'}
-      placeholder={english ? 'Pick a reporting range' : '选择统计区间'}
-      presets={[{ label: english ? 'Recent 7 days' : '最近七天', value: recentSevenDays }]}
-    />
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="统计区间">
+        <DateRangePicker presets={[{ label: '最近七天', value: recentSevenDays }]} />
+      </FormField>
+    </Form>
   );
 }

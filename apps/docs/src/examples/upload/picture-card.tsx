@@ -1,17 +1,9 @@
 import { Upload } from '@ifhover/leaf-ui';
 
-export function PictureCard({ english = false }) {
+export function PictureCard() {
   return (
-    <Upload
-      accept="image/*"
-      customRequest={async () => {
-        await new Promise((resolve) => setTimeout(resolve, 700));
-        return {};
-      }}
-      listType="picture-card"
-      multiple
-    >
-      {english ? 'Upload images' : '上传图片'}
+    <Upload accept="image/*" listType="picture-card" multiple>
+      选择图片
     </Upload>
   );
 }

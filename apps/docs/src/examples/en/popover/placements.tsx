@@ -1,18 +1,33 @@
-import { Button, Flex, Popover } from '@ifhover/leaf-ui';
+import { Button, Flex, Grid, Popover, Text } from '@ifhover/leaf-ui';
+
+const placements = [
+  { placement: 'top', label: 'Top' },
+  { placement: 'bottom', label: 'Bottom' },
+  { placement: 'left', label: 'Left' },
+  { placement: 'right', label: 'Right' },
+] as const;
+
 export function PopoverPlacements() {
   return (
-    <Flex gap="md" align="center" wrap justify="center">
-      {(['top', 'bottom', 'left', 'right'] as const).map((placement) => (
-        <Popover
+    <Flex direction="column" gap="md">
+      {placements.map(({ placement, label }) => (
+        <Grid
           key={placement}
-          placement={placement}
-          title="Project hint"
-          content="The panel adjusts to available space."
+          role="group"
+          aria-label={label}
+          columns={{ xs: 1, sm: 2 }}
+          gap="8px"
+          align="center"
         >
-          <Button variant="outline">
-            {{ top: 'Top', bottom: 'Bottom', left: 'Left', right: 'Right' }[placement]}
-          </Button>
-        </Popover>
+          <Text tone="muted">{label}</Text>
+          <Popover
+            placement={placement}
+            title="Project details"
+            content="See project details and recent updates here."
+          >
+            <Button variant="outline">View details</Button>
+          </Popover>
+        </Grid>
       ))}
     </Flex>
   );

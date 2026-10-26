@@ -13,9 +13,6 @@ export function TextareaControlled() {
           onChange={(event) => setValue(event.target.value)}
         />
       </FormField>
-      <FormField label="Message error" error="Add a description.">
-        <Textarea placeholder="Add a description" />
-      </FormField>
     </Form>
   );
 }

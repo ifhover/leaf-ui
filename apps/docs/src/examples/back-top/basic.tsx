@@ -1,21 +1,10 @@
-import { BackTop, ScrollArea } from '@ifhover/leaf-ui';
-import { useRef } from 'react';
+import { BackTop, Button } from '@ifhover/leaf-ui';
+
 export function BackTopBasic() {
-  const root = useRef<HTMLDivElement>(null);
   return (
-    <div style={{ position: 'relative' }}>
-      <ScrollArea ref={root} height={200} aria-label="演示滚动区域">
-        {Array.from({ length: 18 }, (_, i) => (
-          <p key={String(i)} style={{ padding: '4px 16px' }}>
-            向下滚动后，右下角显示返回按钮。 {i + 1}
-          </p>
-        ))}
-      </ScrollArea>
-      <BackTop
-        target={() => root.current}
-        visibilityHeight={100}
-        style={{ position: 'absolute', right: 16, bottom: 16 }}
-      />
-    </div>
+    <>
+      <Button onClick={() => window.scrollBy(0, 600)}>向下滚动页面</Button>
+      <BackTop />
+    </>
   );
 }

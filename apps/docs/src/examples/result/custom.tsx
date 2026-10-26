@@ -1,9 +1,15 @@
-import { Result } from '@ifhover/leaf-ui';
-import { Leaf } from 'lucide-react';
+import { Result, Text } from '@ifhover/leaf-ui';
+import { Archive } from 'lucide-react';
+
 export function ResultCustom() {
   return (
-    <Result title="让灵感继续生长" description="图标、内容和操作区都可以替换。" icon={<Leaf />}>
-      <p>这里可以放置后续步骤、问题说明或其他补充内容。</p>
+    <Result
+      status="success"
+      title="文件已归档"
+      description="归档内容可在文件列表中查看。"
+      icon={<Archive />}
+    >
+      <Text>归档文件：季度报告.pdf</Text>
     </Result>
   );
 }

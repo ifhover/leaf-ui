@@ -1,56 +1,82 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { CarouselBasic } from '../../src/examples/carousel/basic';
+import { CarouselControlled } from '../../src/examples/carousel/controlled';
 import { CarouselAutoplay } from '../../src/examples/carousel/autoplay';
+
+export const leafDoc = { component: 'Carousel', primaryApi: 'CarouselProps' };
 
 # Carousel 轮播
 
 依次浏览图片或内容。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<CarouselBasic />} fileName="basic.tsx">
+把每一项内容作为子元素传入。默认显示切换按钮与指示器，并在首尾循环；设置 `infinite={false}` 可在边界停止。为轮播提供能说明内容的 `aria-label`。
+
+<ComponentExample exampleId="basic" preview={<CarouselBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/carousel/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 自动播放
+轮播获得焦点后，可用左右方向键切换、Home 和 End 跳到首尾；输入框等编辑控件保留自己的方向键行为。非当前项仍保持挂载，但不参与焦点导航。
 
-<ComponentExample title="自动播放" preview={<CarouselAutoplay />} fileName="autoplay.tsx">
+{/* leaf:section examples */}
+
+## 示例
+
+### 外部控制
+
+传入 `activeIndex` 后，在 `onChange` 中回写索引。索引从 0 开始；ref 提供 `previous()`、`next()` 和 `goTo(index)`，可接入外部按钮。此例用外部按钮替代内置箭头，保留指示器。
+
+<ComponentExample exampleId="controlled" preview={<CarouselControlled />} fileName="controlled.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/carousel/controlled.tsx"
+```
+
+</ComponentExample>
+
+### 自动播放
+
+设置数字 `autoplay` 指定间隔，并通过应用状态提供明确的开始与停止操作。此例每 3 秒切换一次。
+
+<ComponentExample exampleId="autoplay" preview={<CarouselAutoplay />} fileName="autoplay.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/carousel/autoplay.tsx"
 ```
 
 </ComponentExample>
 
-## CarouselHandle
+焦点进入轮播时暂停，焦点移出后恢复；默认鼠标进入和移出也会暂停或恢复，`pauseOnHover` 只控制鼠标悬停处理。页面隐藏时不前进；系统要求减少动态效果或 ConfigProvider 关闭动效时不自动播放，手动切换仍可使用。
+
+{/* leaf:section api */}
+
+## API
+
+### Carousel API
+
+当前页、切换控件与自动播放行为的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `goTo` | `(index: number) => void` | 必填 | 切换到指定的索引。 |
-| `next` | `() => void` | 必填 | 切换到下一项。 |
-| `previous` | `() => void` | 必填 | 切换到上一项。 |
-
-## Carousel API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `activeIndex` | `number` | — | 受控的当前幻灯片索引。 |
-| `defaultActiveIndex` | `number` | `0` | 初始幻灯片索引。 |
-| `onChange` | `(index: number) => void` | — | 值发生变化时调用。 |
+| `activeIndex` | `number` | — | 受控的当前页索引，从 0 开始，须在 onChange 中回写。 |
+| `defaultActiveIndex` | `number` | `0` | 非受控模式的初始页索引，从 0 开始。 |
+| `onChange` | `(index: number) => void` | — | 请求切换时返回从 0 开始的索引。 |
 | `arrows` | `boolean` | `true` | 显示前后切换按钮。 |
 | `dots` | `boolean` | `true` | 显示幻灯片指示器。 |
-| `autoplay` | `boolean \| number` | `false` | 启用自动播放；数字表示间隔毫秒数。 |
 | `infinite` | `boolean` | `true` | 允许循环切换。 |
-| `pauseOnHover` | `boolean` | `true` | 鼠标悬停时暂停播放；焦点进入也会暂停。 |
+| `autoplay` | `boolean \| number` | `false` | 自动播放；true 使用 4000ms，非零数字设置间隔且至少 500ms。关闭动画或页面隐藏时不前进。 |
+| `pauseOnHover` | `boolean` | `true` | 悬停时暂停自动播放；焦点进入时始终暂停，不受此参数影响。 |
 
-## 类型与交互
+### CarouselHandle
 
-组装可复用配置时，可导入对应的属性和数据类型。
+通过 `ref` 调用轮播控制方法的引用接口。
 
-```ts
-import type { CarouselHandle, CarouselProps } from '@ifhover/leaf-ui';
-```
-
-上一张与下一张按钮提供可读名称；轮播支持键盘操作，并跟随 ConfigProvider 的主题和减少动画设置。
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `goTo` | `(index: number) => void` | 必填 | 切换到从 0 开始的索引；循环模式取模，非循环模式限制在有效范围内。 |
+| `next` | `() => void` | 必填 | 切换到下一项。 |
+| `previous` | `() => void` | 必填 | 切换到上一项。 |

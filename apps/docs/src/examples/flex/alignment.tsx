@@ -3,14 +3,15 @@ import { Button, Flex, Text } from '@ifhover/leaf-ui';
 export function FlexAlignment() {
   return (
     <Flex direction="column" gap="lg">
-      <Flex justify="space-between" align="center" gap="sm" wrap>
-        <Text>项目设置</Text>
-        <Button size="sm">保存</Button>
-      </Flex>
-      <Flex justify="end" gap="sm" wrap>
-        <Button variant="outline">取消</Button>
-        <Button>确认</Button>
-      </Flex>
+      {(['start', 'center', 'end', 'space-between'] as const).map((justify) => (
+        <Flex key={justify} direction="column" gap="sm">
+          <Text tone="muted">{justify}</Text>
+          <Flex justify={justify} gap="sm" wrap>
+            <Button>一</Button>
+            <Button>二</Button>
+          </Flex>
+        </Flex>
+      ))}
     </Flex>
   );
 }

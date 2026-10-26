@@ -1,31 +1,21 @@
 import { TreeSelect } from '@ifhover/leaf-ui';
 
-const options = (english: boolean) => [
-  { value: 'team', label: english ? 'Team' : '团队', isLeaf: false },
-];
+const options = [{ value: 'team', label: '团队', isLeaf: false }];
 
-export function LazyLoad({ english = false }) {
+export function LazyLoad() {
   return (
     <TreeSelect
-      aria-label={english ? 'Remote team' : '远程团队'}
-      loadData={async (option) => {
+      aria-label="异步加载团队"
+      options={options}
+      placeholder="展开团队加载子项"
+      loadData={async (option, signal) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
+        signal.throwIfAborted();
         return [
-          {
-            value: `${option.value}-design`,
-            label: english ? 'Design team' : '设计组',
-            isLeaf: true,
-          },
-          {
-            value: `${option.value}-dev`,
-            label: english ? 'Engineering team' : '开发组',
-            isLeaf: true,
-          },
+          { value: `${option.value}-design`, label: '设计组', isLeaf: true },
+          { value: `${option.value}-dev`, label: '开发组', isLeaf: true },
         ];
       }}
-      options={options(english)}
-      placeholder={english ? 'Expand the team to load members' : '展开团队加载成员'}
-      virtual
     />
   );
 }

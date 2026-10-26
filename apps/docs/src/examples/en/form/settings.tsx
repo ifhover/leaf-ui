@@ -3,30 +3,26 @@ import { Form, FormField, Select, Switch, Textarea } from '@ifhover/leaf-ui';
 export function FormSettings() {
   return (
     <Form layout="settings">
-      <FormField label="Auto-save" description="Save your changes automatically while editing.">
+      <FormField label="Auto-save" description="Save changes automatically while editing.">
         <Switch name="autoSave" defaultChecked />
       </FormField>
-      <FormField label="Response language" description="Choose the default language for new chats.">
+      <FormField label="Language" description="Choose the application display language.">
         <Select
           name="language"
           defaultValue="zh-CN"
           options={[
-            { value: 'zh-CN', label: '简体中文' },
+            { value: 'zh-CN', label: 'Simplified Chinese' },
             { value: 'en-US', label: 'English' },
           ]}
         />
       </FormField>
       <FormField
-        label="Custom instructions"
-        description="Tell the assistant how you prefer it to respond."
+        label="Biography"
+        description="Introduce yourself to other members."
         layout="vertical"
-        help="This setting applies to future chats."
+        help="Up to 120 characters."
       >
-        <Textarea
-          name="instructions"
-          rows={3}
-          placeholder="For example: be concise and include examples."
-        />
+        <Textarea name="biography" rows={3} maxLength={120} />
       </FormField>
     </Form>
   );

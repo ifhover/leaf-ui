@@ -1,57 +1,105 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { SplitterBasic } from '../../src/examples/splitter/basic';
 import { SplitterVertical } from '../../src/examples/splitter/vertical';
+import { SplitterLimits } from '../../src/examples/splitter/limits';
+import { SplitterCollapsible } from '../../src/examples/splitter/collapsible';
+import { SplitterControlled } from '../../src/examples/splitter/controlled';
+
+export const leafDoc = { component: 'Splitter', primaryApi: 'SplitterProps' };
 
 # Splitter 分割面板
 
 调整工作区面板的大小。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<SplitterBasic />} fileName="basic.tsx" width="100%">
+拖动分隔条调整相邻面板。聚焦分隔条后使用方向键调整，按住 `Shift` 加大步长。面板通过稳定的 `key` 标识；不传比例时初始等分。
+
+<ComponentExample exampleId="basic" preview={<SplitterBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/splitter/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 上下布局
+<a id="常用用法"></a>
 
-<ComponentExample title="上下布局" preview={<SplitterVertical />} fileName="vertical.tsx" width="100%">
+{/* leaf:section examples */}
+
+## 示例
+
+### 上下布局
+
+`direction="vertical"` 将面板上下排列。指定容器高度，让面板有可分配的纵向空间。
+
+<ComponentExample exampleId="vertical" preview={<SplitterVertical />} fileName="vertical.tsx">
 
 ```tsx lineNumbers file="../../src/examples/splitter/vertical.tsx"
 ```
 
 </ComponentExample>
 
-## SplitterPanel
+### 尺寸限制
+
+`min` 和 `max` 使用百分比，限制拖动和方向键调整。相邻两个面板的约束会共同生效；初始比例也应符合这些约束。
+
+<ComponentExample exampleId="limits" preview={<SplitterLimits />} fileName="limits.tsx">
+
+```tsx lineNumbers file="../../src/examples/splitter/limits.tsx"
+```
+
+</ComponentExample>
+
+### 折叠面板
+
+设置 `collapsible` 后，可点击分隔条上的按钮折叠和恢复其前一个面板，也可双击分隔条或聚焦后按 `Enter`。折叠的空间分配给下一个面板，折叠内容退出键盘焦点顺序。最后一个面板没有后续分隔条，不能通过此配置折叠。
+
+<ComponentExample exampleId="collapsible" preview={<SplitterCollapsible />} fileName="collapsible.tsx">
+
+```tsx lineNumbers file="../../src/examples/splitter/collapsible.tsx"
+```
+
+</ComponentExample>
+
+### 受控比例
+
+使用 `sizes` 时，在 `onResize` 中同步新比例；外部按钮也可更新该状态。`defaultSizes` 只提供非受控初始值，不用于重置。比例总和会归一化为 `100`；`onResizeEnd` 在拖动、方向键调整或折叠操作结束时通知应用，可用于保存结果。
+
+<ComponentExample exampleId="controlled" preview={<SplitterControlled />} fileName="controlled.tsx">
+
+```tsx lineNumbers file="../../src/examples/splitter/controlled.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Splitter API
+
+配置面板尺寸、排列方向和调整行为。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | 必填 | 工作区面板。 |
+| `sizes` | `readonly number[]` | — | 受控的面板比例；有效数组归一为 100，配合 onResize 更新。 |
+| `defaultSizes` | `readonly number[]` | 各面板等分 | 非受控初始比例；省略、数量不匹配或总和无效时等分。 |
+| `onResize` | `(sizes: number[]) => void` | — | 拖动、方向键或折叠引起比例变化时返回新比例。 |
+| `onResizeEnd` | `(sizes: number[]) => void` | — | 拖动结束、方向键调整或折叠 / 恢复后调用。 |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 左右或上下排列面板。 |
+
+### SplitterPanel
+
+`panels` 中每个面板的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 稳定且唯一的标识。 |
 | `children` | `ReactNode` | 必填 | 面板内容。 |
-| `min` | `number` | — | 面板最小百分比。 |
-| `max` | `number` | — | 面板最大百分比。 |
-| `collapsible` | `boolean` | — | 允许折叠和恢复面板。 |
-| `resizable` | `boolean` | — | 允许拖动和使用方向键调整大小。 |
-
-## Splitter API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `panels` | `readonly `[`SplitterPanel`](#splitterpanel)`[]` | 必填 | 工作区面板。 |
-| `sizes` | `readonly number[]` | — | 受控的面板比例，总和会归一化为 100。 |
-| `defaultSizes` | `readonly number[]` | — | 初始的面板比例。 |
-| `onResize` | `(sizes: number[]) => void` | — | 大小改变时调用。 |
-| `onResizeEnd` | `(sizes: number[]) => void` | — | 调整结束时调用。 |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 左右或上下排列面板。 |
-
-## 类型与交互
-
-组装可复用配置时，可导入对应的属性和数据类型。
-
-```ts
-import type { SplitterPanel, SplitterProps } from '@ifhover/leaf-ui';
-```
-
-分隔条使用 role="separator" 并暴露 aria-valuenow；支持方向键调整，并跟随 ConfigProvider 的主题和减少动画设置。
+| `min` | `number` | `5` | 面板最小百分比。 |
+| `max` | `number` | `100` | 面板最大百分比。 |
+| `collapsible` | `boolean` | — | 允许通过本面板后的手柄折叠 / 恢复，与下一面板交换空间；末面板无手柄。 |
+| `resizable` | `boolean` | — | false 禁止手柄拖动并将其移出 Tab 顺序。 |

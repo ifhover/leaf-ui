@@ -1,27 +1,12 @@
-import { Avatar, Badge, Flex, Text } from '@ifhover/leaf-ui';
+import { Avatar, AvatarGroup } from '@ifhover/leaf-ui';
 export function AvatarBasic() {
   return (
-    <Flex gap="md" align="center" wrap justify="center">
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Small</Text>
-        <Avatar size="sm">LF</Avatar>
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Medium</Text>
-        <Avatar>LE</Avatar>
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Large · Square</Text>
-        <Avatar size="lg" shape="square">
-          UI
+    <AvatarGroup aria-label="Team members">
+      {['Ada', 'Ben', 'Cara', 'Dan', 'Eva'].map((name) => (
+        <Avatar key={name} alt={name}>
+          {name.slice(0, 1)}
         </Avatar>
-      </Flex>
-      <Flex direction="column" gap="sm" align="start">
-        <Text>Unread indicator</Text>
-        <Badge dot>
-          <Avatar alt="Unread messages">A</Avatar>
-        </Badge>
-      </Flex>
-    </Flex>
+      ))}
+    </AvatarGroup>
   );
 }

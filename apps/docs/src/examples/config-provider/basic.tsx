@@ -1,8 +1,8 @@
-import { Button, ConfigProvider, Form, FormField, Input, Select } from '@ifhover/leaf-ui';
+import { ConfigProvider, Form, FormField, Input, Select } from '@ifhover/leaf-ui';
 
 export function ConfigProviderBasic() {
   return (
-    <ConfigProvider theme={{ primaryColor: '#7654c6', borderRadius: 8 }}>
+    <ConfigProvider theme={{ primaryColor: '#1d9bf0' }}>
       <Form onSubmit={(event) => event.preventDefault()}>
         <FormField label="项目名称">
           <Input defaultValue="Leaf UI" />
@@ -16,7 +16,6 @@ export function ConfigProviderBasic() {
             ]}
           />
         </FormField>
-        <Button type="submit">保存设置</Button>
       </Form>
     </ConfigProvider>
   );

@@ -7,12 +7,7 @@ export function NotificationBasic() {
       onClick={() =>
         notification.open({
           title: '报告已生成',
-          description: '你的月度报告已准备好，可以下载查看。',
-          actions: (
-            <Button size="sm" onClick={() => notification.close()}>
-              知道了
-            </Button>
-          ),
+          description: '月度报告已准备好，可以前往报告列表查看。',
         })
       }
     >

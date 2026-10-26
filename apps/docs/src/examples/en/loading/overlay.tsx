@@ -1,19 +1,30 @@
-import { Button, Card, Loading, Space } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Loading, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function LoadingOverlay() {
   const [spinning, setSpinning] = useState(true);
+  const [edited, setEdited] = useState(false);
+
   return (
-    <Space direction="vertical" align="stretch">
-      <Button variant="outline" onClick={() => setSpinning(!spinning)}>
-        {spinning ? 'Finish loading' : 'Start loading'}
-      </Button>
-      <Loading spinning={spinning} tip="Loading projects" delay={200}>
-        <Card>
-          <strong>Leaf Garden</strong>
-          <p>See project details and recent updates here.</p>
-          <Button variant="outline">Edit project</Button>
+    <Flex direction="column" gap="md">
+      <Flex>
+        <Button variant="outline" onClick={() => setSpinning((value) => !value)}>
+          {spinning ? 'Finish loading' : 'Start loading'}
+        </Button>
+      </Flex>
+      <Loading spinning={spinning} tip="Loading projects">
+        <Card title="Project overview">
+          <Flex direction="column" gap="md">
+            <Text>See project progress here.</Text>
+            <Flex>
+              <Button variant="outline" onClick={() => setEdited(true)}>
+                Edit project
+              </Button>
+            </Flex>
+            {edited && <Text role="status">Project editor opened</Text>}
+          </Flex>
         </Card>
       </Loading>
-    </Space>
+    </Flex>
   );
 }

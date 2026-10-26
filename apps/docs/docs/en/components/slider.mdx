@@ -1,44 +1,130 @@
-import { Capabilities } from '../../../src/examples/slider/capabilities';
 import { ComponentExample } from '../../../src/components/component-example';
 import { SliderBasic } from '../../../src/examples/en/slider/basic';
+import { SliderRange } from '../../../src/examples/en/slider/range';
+import { SliderMarks } from '../../../src/examples/en/slider/marks';
+import { SliderDisabled } from '../../../src/examples/en/slider/disabled';
+import { SliderVertical } from '../../../src/examples/en/slider/vertical';
+import { SliderTooltip } from '../../../src/examples/en/slider/tooltip';
+import { SliderControlled } from '../../../src/examples/en/slider/controlled';
+
+export const leafDoc = { component: 'Slider', primaryApi: 'SliderProps' };
 
 # Slider
 
 Choose a number or range by sliding.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<SliderBasic />} fileName="basic.tsx">
+Choose a numeric value with the slider and provide an associated field label.
+
+<ComponentExample exampleId="basic" preview={<SliderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/slider/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Discrete marks and tooltip
+{/* leaf:section examples */}
 
-<ComponentExample title="Discrete marks and tooltip" preview={<Capabilities english />} fileName="capabilities.tsx">
+## Examples
 
-```tsx lineNumbers file="../../../src/examples/slider/capabilities.tsx"
+### Range
+
+`range` uses a `[start, end]` tuple. The two thumbs cannot cross.
+
+<ComponentExample exampleId="range" preview={<SliderRange />} fileName="range.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/range.tsx"
 ```
 
 </ComponentExample>
 
-## Slider API
+### Discrete marks
+
+`marks` adds clickable positions. Set `step={null}` to restrict selection to those positions.
+
+<ComponentExample exampleId="marks" preview={<SliderMarks />} fileName="marks.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/marks.tsx"
+```
+
+</ComponentExample>
+
+### Read only and disabled
+
+Both prevent changes. Use `readOnly` when the value must still be included in form submission.
+
+<ComponentExample exampleId="disabled" preview={<SliderDisabled />} fileName="disabled.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/disabled.tsx"
+```
+
+</ComponentExample>
+
+### Vertical
+
+Set `vertical` to adjust the value along a vertical track.
+
+<ComponentExample exampleId="vertical" preview={<SliderVertical />} fileName="vertical.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/vertical.tsx"
+```
+
+</ComponentExample>
+
+<a id="advanced-usage"></a>
+
+### Value tooltip
+
+`tooltip` shows the value when the thumb is hovered or focused. Use `formatter` to customize its text.
+
+<ComponentExample exampleId="tooltip" preview={<SliderTooltip />} fileName="tooltip.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/tooltip.tsx"
+```
+
+</ComponentExample>
+
+### Controlled value and completion
+
+`onChange` reports each value change: a number for a single value or a tuple for a range. `onChangeComplete` runs after an interaction that changed the value, for example to save the final value. Reset controlled fields by also restoring `value` in application state.
+
+<ComponentExample exampleId="controlled" preview={<SliderControlled />} fileName="controlled.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/slider/controlled.tsx"
+```
+
+</ComponentExample>
+
+#### Forms and keyboard
+
+Set `name` for native form submission. A range submits two values under the same name; read them with `FormData.getAll`. Uncontrolled fields restore their initial value on form reset. See [Form](/en/components/form) for form integration.
+
+Arrow keys move by one step, Home / End go to the bounds, and Shift + arrows or PageUp / PageDown move ten steps. Discrete mode moves between adjacent marks.
+
+{/* leaf:section api */}
+
+## API
+
+### Slider API
+
+Configure a value or range, numeric bounds and slider interaction.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | `0` | Bounds and step |
-| `max` | `number` | `100` | Bounds and step |
-| `step` | `number \| null` | `1` | Bounds and step |
+| `min` | `number` | `0` | Lower bound, 0 by default. |
+| `max` | `number` | `100` | Upper bound, 100 by default. |
+| `step` | `number \| null` | `1` | Increment per adjustment; null restricts selection to marks. |
 | `marks` | `readonly `[`SliderMark`](#slidermark)`[]` | `[]` | Marks |
 | `vertical` | `boolean` | `false` | Use a vertical layout |
 | `showValue` | `boolean` | `false` | Show the value above the rail on hover or focus; hidden by default |
-| `onChangeComplete` | `(value: number \| readonly [number, number]) => void` | — | After a drag or keyboard change completes |
+| `onChangeComplete` | `(value: number \| readonly [number, number]) => void` | — | Called after an interaction that changed the value; returns a number or a range tuple. |
 | `tooltip` | `boolean \| { formatter?: (value: number) => ReactNode }` | `false` | Show a thumb tooltip, optionally with custom formatting. |
 | `range` | `false \| true` | `false` | Range selection |
 | `value` | `number \| readonly [number, number]` | — | Controlled value. |
-| `defaultValue` | `number \| readonly [number, number]` | `[min, max]` | Initial value for uncontrolled usage; range mode uses a two-number tuple. |
+| `defaultValue` | `number \| readonly [number, number]` | `range ? [min, max] : min` | Initial uncontrolled value; defaults to min, or [min, max] in range mode. |
 | `onChange` | `((value: number) => void) \| ((value: [number, number]) => void)` | — | Value changes; callback follows range mode |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `readOnly` | `boolean` | `false` | Lock the value against typing, selection, clearing and removal. |
@@ -47,19 +133,9 @@ Choose a number or range by sliding.
 
 ### SliderMark
 
+Display a mark and label at a specific numeric position.
+
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `number` | Required | Mark value. |
 | `label` | `ReactNode` | — | Visible mark label. |
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { SliderProps, SliderMark } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Arrows change the value, Home / End go to bounds, and Shift + arrows or PageUp / PageDown move ten steps. Range thumbs do not cross. Range mode submits two values under the same name; read them with FormData.getAll. Native form reset is supported.

@@ -12,7 +12,6 @@ import {
   Info,
   LoaderCircle,
   Star,
-  UserRound,
   X,
 } from 'lucide-react';
 import { createElement } from 'react';
@@ -27,13 +26,21 @@ const icon = (component, x, y, color = '#1e964f', size = 14) =>
 const circle = (x, y, radius, color) =>
   `<circle cx="${x}" cy="${y}" r="${radius}" fill="${color}"/>`;
 const images = {
-  avatar:
-    circle(58, 62, 26, '#eaf4ed') +
-    icon(UserRound, 45, 48, '#1e964f', 27) +
-    rect(103, 38, 50, 50, '#eaf4ed', '#bddcc7', 8) +
-    text(116, 69, 'LF', '#1e964f', 18) +
-    circle(188, 62, 20, '#f1edf9') +
-    text(179, 67, 'UI', '#7654c6', 14),
+  avatar: [
+    ['A', '#eaf4ed', 'var(--leaf-color-primary-ink)'],
+    ['B', '#edf5ff', 'var(--leaf-color-info-ink)'],
+    ['C', '#fff6e9', 'var(--leaf-color-warning-ink)'],
+    ['D', 'var(--leaf-color-danger-soft)', 'var(--leaf-color-danger-ink)'],
+    ['+2', '#f6f6f7', '#68686f'],
+  ]
+    .map(([label, background, foreground], index) => {
+      const x = 56 + index * 32;
+      return (
+        `<circle cx="${x}" cy="64" r="23" fill="${background}" stroke="var(--leaf-color-surface)" stroke-width="2"/>` +
+        `<text x="${x}" y="69" text-anchor="middle" fill="${foreground}" font-size="14" font-family="system-ui,sans-serif">${label}</text>`
+      );
+    })
+    .join(''),
   card:
     rect(25, 15, 190, 98) +
     text(39, 37, 'Leaf Garden', '#202024', 11) +

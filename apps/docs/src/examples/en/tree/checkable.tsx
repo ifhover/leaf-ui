@@ -1,7 +1,7 @@
 import { Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-const treeData: readonly TreeNode[] = [
+const treeData: TreeNode[] = [
   {
     key: 'design',
     title: 'Design resources',
@@ -22,21 +22,28 @@ const treeData: readonly TreeNode[] = [
 ];
 
 export function TreeCheckable() {
-  const [checked, setChecked] = useState<readonly string[]>(['components']);
+  const [checked, setChecked] = useState<string[]>(['components']);
+  const [halfChecked, setHalfChecked] = useState<readonly string[]>(['design']);
   return (
     <Space direction="vertical" align="stretch">
       <Tree
+        aria-label="Design resources"
         data={treeData}
         checkable
         selectable={false}
         defaultExpandAll
-        showLine
         checkedKeys={checked}
-        onCheck={setChecked}
+        onCheck={(keys, info) => {
+          setChecked(keys);
+          setHalfChecked(info.halfCheckedKeys);
+        }}
       />
-      <output>
-        <Text tone="muted">Checked keys: {checked.join(', ') || 'None'}</Text>
-      </output>
+      <Text role="status" tone="muted">
+        Checked keys: {checked.join(', ') || 'None'}
+      </Text>
+      <Text role="status" tone="muted">
+        Mixed keys: {halfChecked.join(', ') || 'None'}
+      </Text>
     </Space>
   );
 }

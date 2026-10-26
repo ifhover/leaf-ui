@@ -1,30 +1,24 @@
-import { Button, Space, Statistic } from '@ifhover/leaf-ui';
+import { Button, Flex, Statistic } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-export function StatisticAnimation({ english = false }: { english?: boolean }) {
+export function StatisticAnimation() {
   const [value, setValue] = useState(1286.5);
   const [replay, setReplay] = useState(0);
   return (
-    <Space direction="vertical" size={20}>
+    <Flex direction="column" gap="md" align="start">
       <Statistic
         key={replay}
-        title={english ? 'Revenue' : '收入'}
+        title={'收入'}
         value={value}
         initialValue={1000}
         precision={2}
         prefix="¥"
       />
-      <Space wrap>
-        <Button onClick={() => setValue((current) => current + 500)}>
-          {english ? 'Increase' : '增加'}
-        </Button>
-        <Button variant="outline" onClick={() => setValue((current) => current - 500)}>
-          {english ? 'Decrease' : '减少'}
-        </Button>
-        <Button variant="outline" onClick={() => setReplay((current) => current + 1)}>
-          {english ? 'Replay from 1,000' : '从 1,000 重播'}
-        </Button>
-      </Space>
-    </Space>
+      <Flex gap="sm" align="center" wrap>
+        <Button onClick={() => setValue((current) => current + 500)}>{'增加'}</Button>
+        <Button onClick={() => setValue((current) => current - 500)}>{'减少'}</Button>
+        <Button onClick={() => setReplay((current) => current + 1)}>{'从 1,000 重播'}</Button>
+      </Flex>
+    </Flex>
   );
 }

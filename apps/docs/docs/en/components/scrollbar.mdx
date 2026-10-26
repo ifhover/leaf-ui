@@ -1,46 +1,100 @@
 import { ComponentExample } from '../../../src/components/component-example';
-import { ScrollbarBasic } from '../../../src/examples/scrollbar/basic';
-import { ScrollbarHorizontal } from '../../../src/examples/scrollbar/horizontal';
-import { ScrollbarDynamic } from '../../../src/examples/scrollbar/dynamic';
+import { ScrollbarBasic } from '../../../src/examples/en/scrollbar/basic';
+import { ScrollbarHorizontal } from '../../../src/examples/en/scrollbar/horizontal';
+import { ScrollbarVisibility } from '../../../src/examples/en/scrollbar/visibility';
+import { ScrollbarPersistent } from '../../../src/examples/en/scrollbar/persistent';
+import { ScrollbarSize } from '../../../src/examples/en/scrollbar/size';
+import { ScrollbarDynamic } from '../../../src/examples/en/scrollbar/dynamic';
+
+export const leafDoc = { component: 'Scrollbar', primaryApi: 'ScrollbarProps' };
 
 # Scrollbar
 
 Browse long or wide content inside a region.
 
+{/* leaf:section basic */}
+
 ## Basic usage
 
-Scrollbars fade in when the pointer enters the region and fade out when it leaves, without taking up content space. Wheel, touch and keyboard scrolling retain native behavior.
+Constrain the region with `height` or `maxHeight`. Provide an accessible name with `aria-label` or `aria-labelledby`.
 
-<ComponentExample title="Project activity" preview={<ScrollbarBasic english />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<ScrollbarBasic />} fileName="basic.tsx" width={600}>
 
-```tsx lineNumbers file="../../../src/examples/scrollbar/basic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Horizontal and always visible
+{/* leaf:section examples */}
 
-`orientation` controls the scrolling axes. Use `scrollbar="always"` to keep bars visible, or `hidden` to hide them without disabling scrolling. Drag a thumb or click its track to move through the content.
+## Examples
 
-<ComponentExample title="Project board" preview={<ScrollbarHorizontal english />} fileName="horizontal.tsx">
+### Horizontal scrolling
 
-```tsx lineNumbers file="../../../src/examples/scrollbar/horizontal.tsx"
+Set `orientation="horizontal"` to provide a scrollbar for horizontal content.
+
+<ComponentExample exampleId="horizontal" preview={<ScrollbarHorizontal />} fileName="horizontal.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/horizontal.tsx"
 ```
 
 </ComponentExample>
 
-## Dynamic content and scroll control
+### Scrollbar visibility
 
-Thumbs update when content or container sizes change. The forwarded `ref` points to the scrolling viewport: call `scrollTo`, read `scrollTop`, or use it with BackTop. At a scroll boundary, or when content fits, the wheel continues scrolling the page.
+`hidden` hides the scrollbar without disabling scrolling.
 
-<ComponentExample title="Add content" preview={<ScrollbarDynamic english />} fileName="dynamic.tsx">
+<ComponentExample exampleId="visibility" preview={<ScrollbarVisibility />} fileName="visibility.tsx" width={600}>
 
-```tsx lineNumbers file="../../../src/examples/scrollbar/dynamic.tsx"
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/visibility.tsx"
 ```
 
 </ComponentExample>
 
-## Scrollbar API
+### Overlay and reserved space
+
+`persistent` reserves space for the track. `scrollbar="always"` alone keeps an overlay visible; `hidden` does not reserve space.
+
+<ComponentExample exampleId="persistent" preview={<ScrollbarPersistent />} fileName="persistent.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/persistent.tsx"
+```
+
+</ComponentExample>
+
+### Track sizes
+
+Use `size` to compare the default and small scrollbars.
+
+<ComponentExample exampleId="size" preview={<ScrollbarSize />} fileName="size.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/size.tsx"
+```
+
+</ComponentExample>
+
+### Dynamic content and scroll control
+
+The forwarded `ref` points to the scrolling viewport, where you can call native methods such as `scrollTo`.
+
+<ComponentExample exampleId="dynamic" preview={<ScrollbarDynamic />} fileName="dynamic.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/scrollbar/dynamic.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Scrollbar API
+
+Configure the scroll container direction, dimensions and scrollbar feedback.
+
+`style` and `className` apply to the outer wrapper. Region names, `tabIndex` and `onScroll` apply to the scrolling viewport. For vertical scrolling by default, see [ScrollArea](/en/components/scroll-area).
+
+Focus a thumb to use arrow keys, PageUp / PageDown and Home / End.
 
 ```ts
 import type { ScrollbarProps } from '@ifhover/leaf-ui';
@@ -52,12 +106,10 @@ import type { ScrollbarProps } from '@ifhover/leaf-ui';
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum height; unconstrained content determines its own height. |
 | `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'both'` | Scrolling axes. |
 | `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | Scrollbar visibility. |
+| `persistent` | `boolean` | `false` | Keep scrollbars visible in reserved gutters; overlay content by default. |
+| `size` | `'sm' \| 'md'` | `'md'` | Scrollbar size; sm uses a narrower, quieter track for dense lists. |
+| `verticalOffset` | `number` | `0` | Top inset for the vertical track, useful with sticky headers. |
 | `viewportClassName` | `string` | — | Class for the scrolling viewport. |
 | `viewportStyle` | `CSSProperties` | — | Styles for the scrolling viewport. |
 | `contentClassName` | `string` | — | Class for the content container. |
 | `contentStyle` | `CSSProperties` | — | Styles for the content container. |
-| `verticalOffset` | `number` | `0` | Top inset for the vertical track, useful with sticky headers. |
-
-`style` and `className` apply to the outer wrapper. `id`, `role`, `tabIndex`, region names and `onScroll` apply to the scrolling viewport. Provide `aria-label` or `aria-labelledby` to name it. Focus a thumb with Tab and use arrow keys, PageUp / PageDown or Home / End.
-
-`ScrollArea` uses the same scrollbar implementation and defaults to vertical scrolling. Existing usage remains supported.

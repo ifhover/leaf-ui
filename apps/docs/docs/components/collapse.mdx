@@ -1,48 +1,92 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { CollapseBasic } from '../../src/examples/collapse/basic';
+import { CollapseAccordion } from '../../src/examples/collapse/accordion';
+import { CollapsePreserveContent } from '../../src/examples/collapse/preserve-content';
+import { CollapseExtra } from '../../src/examples/collapse/extra';
+
+export const leafDoc = { component: 'Collapse', primaryApi: 'CollapseProps' };
 
 # Collapse 折叠面板
 
-展开或收起一组内容。
+按需展开或收起一组内容。
+
+{/* leaf:section basic */}
 
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<CollapseBasic />} fileName="basic.tsx">
+通过 `items` 提供标题与内容，`defaultActiveKey` 设置初始展开项。默认允许同时展开多个面板；`disabled` 禁止切换对应标题。
+
+<ComponentExample exampleId="basic" preview={<CollapseBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../src/examples/collapse/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Collapse API
+{/* leaf:section examples */}
+
+## 示例
+
+### 手风琴
+
+设置 `accordion` 后最多展开一个面板，也可以全部收起。受控使用 `activeKey` 与 `onChange`；回调始终返回 `string[]`，包括手风琴模式。
+
+<ComponentExample exampleId="accordion" preview={<CollapseAccordion />} fileName="accordion.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/collapse/accordion.tsx"
+```
+
+</ComponentExample>
+
+### 内容保留与销毁
+
+未打开过的内容按需挂载，访问过的内容默认在收起后保留。输入草稿后收起再展开，可继续编辑；开启 `destroyInactive` 后，收起动画结束会卸载内容，重新打开时内部非受控值恢复初始状态。组件外部的受控状态仍由应用管理。
+
+<ComponentExample exampleId="preserve-content" preview={<CollapsePreserveContent />} fileName="preserve-content.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/collapse/preserve-content.tsx"
+```
+
+</ComponentExample>
+
+### 标题操作
+
+使用 `extra` 在标题旁放置独立操作。附加按钮不会切换面板；此例只更新阅读状态。
+
+<ComponentExample exampleId="extra" preview={<CollapseExtra />} fileName="extra.tsx" width={600}>
+
+```tsx lineNumbers file="../../src/examples/collapse/extra.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Collapse API
+
+面板数据、展开状态与手风琴模式的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | [`readonly CollapseItem[]`](#collapseitem) | 必填 | 面板列表 |
-| `activeKey / defaultActiveKey` | `string \| readonly string[]` | `[]` | 受控展开项 / 初始展开项 |
-| `onChange` | `(keys: string[]) => void` | — | 展开项变化 |
+| `items` | `readonly `[`CollapseItem`](#collapseitem)`[]` | 必填 | 面板列表 |
+| `activeKey` | `string \| readonly string[]` | — | 受控展开项；可传字符串或数组，手风琴模式只取第一项。 |
+| `defaultActiveKey` | `string \| readonly string[]` | `[]` | 非受控模式的初始展开项。 |
+| `onChange` | `(keys: string[]) => void` | — | 展开项变化时始终返回字符串数组；全部关闭返回空数组。 |
 | `accordion` | `boolean` | `false` | 同时只展开一个面板 |
-| `bordered` | `boolean` | `true` | 显示边框 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标题尺寸 |
-| `destroyInactive` | `boolean` | `false` | 收起后销毁内容 |
+| `bordered` | `boolean` | `true` | 显示边框 |
+| `destroyInactive` | `boolean` | `false` | 退出动画后卸载关闭的内容；默认保留访问过的内容，未访问项延迟挂载。 |
 
 ### CollapseItem
+
+折叠面板条目的标题、内容和状态。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `key` | `string` | 必填 | 唯一标识 |
-| `label / children` | `ReactNode` | 必填 | 标题 / 面板内容 |
-| `disabled` | `boolean` | `false` | 禁止切换该面板 |
+| `label` | `ReactNode` | 必填 | 可展开标题。 |
+| `children` | `ReactNode` | 必填 | 展开后的内容。 |
+| `disabled` | `boolean` | `false` | 禁止通过标题切换展开，不禁用 extra 中的独立操作。 |
 | `extra` | `ReactNode` | — | 标题旁的内容 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { CollapseProps, CollapseItem } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-访问过的内容默认保留。方向键、Home 和 End 在标题之间移动，Enter 或空格展开。extra 中的操作不会触发展开。

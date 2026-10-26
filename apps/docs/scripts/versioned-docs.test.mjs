@@ -9,6 +9,7 @@ import { versionTarget } from '../src/components/version-path.ts';
 import {
   apiDefaultCell,
   apiSectionMatch,
+  orderApiSections,
   properties,
   readApiRows,
   removeDuplicateApiSections,
@@ -122,6 +123,7 @@ export function ActiveDemo() {
   return <Button variant={initial.tone} title={OtherDemo}>{format(label)}</Button>;
 }`;
   const selected = extractExampleSource(source, 'ActiveDemo');
+  assert.match(selected, /from '@ifhover\/leaf-ui';\nimport \{ useState \}/);
   assert.match(selected, /type ButtonProps/);
   assert.match(selected, /type Settings/);
   assert.match(selected, /function format/);
@@ -135,7 +137,7 @@ export function ActiveDemo() {
 test('rendered and AI example code resolve aliases to the same export', () => {
   const source =
     'export function First() { return <span>First</span>; }\nexport function Second() { return <span>Second</span>; }';
-  const mdx = `import { First as Preview } from './basic';\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n\`\`\`tsx file="./basic.tsx"\n\`\`\`\n\n</ComponentExample>`;
+  const mdx = `import { First as Preview } from './basic';\n\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n\`\`\`tsx file="./basic.tsx"\n\`\`\`\n\n</ComponentExample>`;
   const markdown = `\`\`\`tsx file="./basic.tsx"\n${source}\n\`\`\``;
   const extracted = extractExampleMarkdown(markdown, mdx);
   assert.match(extracted, /function First/);
@@ -154,6 +156,88 @@ test('rendered and AI example code resolve aliases to the same export', () => {
   };
   remarkExampleSource()(tree);
   assert.equal(code.value.trim(), extractExampleSource(source, 'First').trim());
+});
+
+test('rendered and AI example code agree on static preview language props', () => {
+  const source = `export function First({ english = false }: { english?: boolean }) {
+  return <span>{english ? 'English' : 'Chinese'}</span>;
+}`;
+  for (const [preview, english] of [
+    ['<Preview />', false],
+    ['<Preview english />', true],
+    ['<Preview english={true} />', true],
+    ['<Preview english={false} />', false],
+    ['<Preview title="english " />', false],
+  ]) {
+    const mdx = `import { First as Preview } from './basic';
+
+<ComponentExample preview={${preview}} width={360} fileName="basic.tsx">
+
+\`\`\`tsx file="./basic.tsx"
+\`\`\`
+
+</ComponentExample>`;
+    const markdown = `\`\`\`tsx file="./basic.tsx"\n${source}\n\`\`\``;
+    const expected = extractExampleSource(source, 'First', { english }).trim();
+    const code = { type: 'code', lang: 'tsx', meta: 'file="./basic.tsx"', value: source };
+    const tree = {
+      children: [
+        { type: 'mdxjsEsm', value: "import { First as Preview } from './basic';" },
+        {
+          type: 'mdxJsxFlowElement',
+          name: 'ComponentExample',
+          attributes: [{ name: 'preview', value: { value: preview } }],
+          children: [code],
+        },
+      ],
+    };
+    remarkExampleSource()(tree);
+    assert.equal(code.value.trim(), expected, preview);
+    assert.equal(
+      extractExampleMarkdown(markdown, mdx),
+      `\`\`\`tsx file="./basic.tsx"\n${expected}\n\`\`\``,
+      preview,
+    );
+    assert.match(expected, english ? /'English'/ : /'Chinese'/);
+    assert.doesNotMatch(expected, english ? /'Chinese'/ : /'English'/);
+  }
+});
+
+test('rendered and AI examples reject ambiguous or dynamic preview language props', () => {
+  const source = 'export function First() { return <span />; }';
+  for (const preview of [
+    '<First english={language} />',
+    '<First english="false" />',
+    '<First english={undefined} />',
+    '<First {...props} />',
+    '<First english english={false} />',
+    '<><First english /><First english={false} /></>',
+  ]) {
+    const message = /literal boolean|spread or duplicate|different english values/;
+    const code = { type: 'code', lang: 'tsx', meta: 'file="./basic.tsx"', value: source };
+    const tree = {
+      children: [
+        {
+          type: 'mdxJsxFlowElement',
+          name: 'ComponentExample',
+          attributes: [{ name: 'preview', value: { value: preview } }],
+          children: [code],
+        },
+      ],
+    };
+    const mdx = `<ComponentExample preview={${preview}} fileName="basic.tsx">
+
+\`\`\`tsx file="./basic.tsx"
+\`\`\`
+
+</ComponentExample>`;
+    assert.throws(() => remarkExampleSource()(tree), message, preview);
+    assert.throws(
+      () => extractExampleMarkdown(`\`\`\`tsx file="./basic.tsx"\n${source}\n\`\`\``, mdx),
+      message,
+      preview,
+    );
+  }
 });
 
 test('every component preview has a valid, independently extracted code sample', async () => {
@@ -180,6 +264,11 @@ test('every component preview has a valid, independently extracted code sample',
             /\{\s*english\s*=|english\s*\?:/,
             'No documentation-only language API',
           );
+          assert.doesNotMatch(
+            code,
+            /from\s+['"]\./,
+            'Copied examples have no missing local modules',
+          );
           parse(code, {
             sourceType: 'module',
             plugins: ['typescript', 'jsx'],
@@ -198,6 +287,16 @@ test('every component preview has a valid, independently extracted code sample',
     /TableStates|TableSimple|useState|<Table[\s.>]/,
   );
   assert.match(extractExampleSource(basic, 'TableBasic'), /<DataTable/);
+});
+
+test('merged mode APIs deduplicate top-level unions without breaking callback signatures', async () => {
+  const entry = path.resolve(import.meta.dirname, '../../../packages/react/src/index.ts');
+  const input = await properties(entry, 'InputNumberProps');
+  assert.equal(input.get('value').type, 'number | null | string');
+  assert.match(input.get('onChange').type, /\(value: number \| null\) => void/);
+  assert.match(input.get('onChange').type, /\(value: string \| null\) => void/);
+  const tree = await properties(entry, 'TreeSelectProps');
+  assert.equal(tree.get('value').type, 'string | null | readonly string[]');
 });
 
 test('component defaults stay scoped to their own function rather than sibling components', async () => {
@@ -267,6 +366,131 @@ test('API section lookup keeps the first table in document order and removes dup
   assert.equal(cleaned.match(/^#{2,6} DemoOption\r?$/gmu)?.length, 1);
   assert.match(cleaned, /First table/u);
   assert.doesNotMatch(cleaned, /Duplicate table/u);
+});
+
+test('API section lookup preserves wrappers around nested prop tables', () => {
+  for (const newline of ['\n', '\r\n']) {
+    const document = [
+      '# Avatar',
+      '',
+      '## AvatarGroup API',
+      '',
+      'Group properties.',
+      '',
+      '### AvatarGroupProps API',
+      '',
+      '| Property | Type | Default | Description |',
+      '| --- | --- | --- | --- |',
+      '| `shape` | `string` | — | Avatar shape |',
+      '',
+      '## Avatar API',
+      '',
+      'Avatar properties.',
+    ].join(newline);
+    const found = apiSectionMatch(document, 'AvatarGroupProps');
+    assert.equal(found.heading, 'AvatarGroupProps API');
+    assert.equal(readApiRows(found.match[2]).get('shape').description, 'Avatar shape');
+    const cleaned = removeDuplicateApiSections(document, ['AvatarGroupProps']);
+    assert.equal(cleaned, document);
+    assert.equal(
+      readApiRows(apiSectionMatch(cleaned, 'AvatarGroupProps').match[2]).get('shape').description,
+      'Avatar shape',
+    );
+    assert.equal(removeDuplicateApiSections(cleaned, ['AvatarGroupProps']), cleaned);
+  }
+});
+
+test('API section ordering preserves complete blocks and non-API context across heading levels and line endings', () => {
+  const names = ['GridProps', 'RowProps', 'ColProps'];
+  for (const newline of ['\n', '\r\n']) {
+    for (let level = 2; level <= 6; level++) {
+      const heading = '#'.repeat(level);
+      const prefix = ['# Grid', '', 'Introduction.', '', '## API', '', ''].join(newline);
+      const col = [
+        `${heading} ColProps API`,
+        '',
+        'Column description.',
+        '',
+        '| Property | Description |',
+        '| --- | --- |',
+        '| `span` | Column span |',
+        ...(level < 6 ? ['', `${heading}# Details`, '', 'Column details.'] : []),
+        '',
+        '',
+      ].join(newline);
+      const context = [`${heading} Notes`, '', 'Keep unrelated notes here.', '', ''].join(newline);
+      const grid = [`${heading} Grid API`, '', 'Grid description.', '', ''].join(newline);
+      const row = [`${heading} RowProps`, '', 'Row description.', '', ''].join(newline);
+      const suffix = ['# Footer', '', 'Keep footer.', ''].join(newline);
+      const document = prefix + col + context + grid + row + suffix;
+      const ordered = orderApiSections(document, names);
+      assert.equal(ordered, prefix + grid + context + row + col + suffix);
+      for (const name of names) {
+        assert.equal(
+          apiSectionMatch(ordered, name).match[0],
+          apiSectionMatch(document, name).match[0],
+        );
+      }
+      assert.equal(orderApiSections(ordered, names), ordered);
+    }
+  }
+});
+
+test('API section ordering ignores missing names and repeated names or aliases', () => {
+  const col = '### ColProps API\n\nColumn description.\n\n';
+  const grid = '### Grid API\n\nGrid description.\n\n';
+  const row = '### Row API\n\nRow description.\n\n';
+  const document = col + grid + row;
+  assert.equal(
+    orderApiSections(document, [
+      'MissingProps',
+      'GridProps',
+      'GridProps',
+      'Grid',
+      'RowProps',
+      'ColProps',
+    ]),
+    grid + row + col,
+  );
+  assert.equal(orderApiSections(document, []), document);
+  assert.equal(orderApiSections(document, ['MissingProps']), document);
+  assert.equal(orderApiSections(document, ['GridProps', 'MissingProps']), document);
+  assert.equal(
+    orderApiSections('Plain document without API headings.', ['GridProps']),
+    'Plain document without API headings.',
+  );
+});
+
+test('API section ordering preserves safe mixed-level blocks without moving surrounding prose', () => {
+  const names = ['GridProps', 'RowProps', 'ColProps'];
+  for (const newline of ['\n', '\r\n']) {
+    const prefix = ['# Grid', '', 'Introduction.', '', ''].join(newline);
+    const col = ['#### Col API', '', 'Column description.', '', ''].join(newline);
+    const firstContext = ['## Notes', '', 'Keep first notes.', '', ''].join(newline);
+    const grid = ['### GridProps API', '', 'Grid description.', '', ''].join(newline);
+    const secondContext = ['## More notes', '', 'Keep second notes.', '', ''].join(newline);
+    const row = ['##### RowProps', '', 'Row description.', '', ''].join(newline);
+    const suffix = ['# Footer', '', 'Keep footer.', ''].join(newline);
+    const document = prefix + col + firstContext + grid + secondContext + row + suffix;
+    const ordered = orderApiSections(document, names);
+    assert.equal(ordered, prefix + grid + firstContext + row + secondContext + col + suffix);
+    assert.equal(orderApiSections(ordered, names), ordered);
+  }
+});
+
+test('API section ordering leaves overlapping sections untouched', () => {
+  const document =
+    '## Grid API\n\nGrid description.\n\n### Row API\n\nNested row.\n\n## Col API\n\nColumn description.\n';
+  assert.equal(orderApiSections(document, ['ColProps', 'RowProps', 'GridProps']), document);
+});
+
+test('API section ordering refuses moves that would swallow context or join an EOF body to a heading', () => {
+  for (const document of [
+    '## Col API\n\nColumn description.\n\n# Boundary\n\nKeep boundary.\n\n### Grid API\n\nGrid description.\n\n### Notes\n\nKeep notes.\n',
+    '### Col API\n\nColumn description.\n\n### Grid API\n\nGrid description without a final newline.',
+  ]) {
+    assert.equal(orderApiSections(document, ['GridProps', 'ColProps']), document);
+  }
 });
 
 test('API table replacement respects its offset and is idempotent with LF and CRLF', () => {
@@ -576,7 +800,7 @@ for (const [packageName, version] of [
       const source =
         'export function First() { return <span>First</span>; }\nexport function Second() { return <span>Second</span>; }';
       const document =
-        'import { First as Preview } from \'./basic\';\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n```tsx file="./basic.tsx"\n```\n\n</ComponentExample>';
+        'import { First as Preview } from \'./basic\';\n\n<ComponentExample title="Demo" preview={<Preview />} fileName="basic.tsx">\n\n```tsx file="./basic.tsx"\n```\n\n</ComponentExample>';
       await writeFile(path.join(root, 'apps/docs/docs/components/button.mdx'), document);
       await writeFile(
         path.join(output, 'components/button.md'),

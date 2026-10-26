@@ -1,55 +1,115 @@
-import { RadioCards } from '../../../src/examples/radio/surfaces';
-import { RadioList } from '../../../src/examples/radio/list';
 import { ComponentExample } from '../../../src/components/component-example';
-import { RadioBasic, RadioControlled } from '../../../src/components/en-form-examples';
+import { RadioBasic } from '../../../src/examples/en/radio/basic';
+import { RadioControlled } from '../../../src/examples/en/radio/controlled';
+import { RadioVertical } from '../../../src/examples/en/radio/vertical';
+import { RadioCards } from '../../../src/examples/en/radio/surfaces';
+import { RadioList } from '../../../src/examples/en/radio/list';
+
+export const leafDoc = { component: 'Radio', primaryApi: 'RadioProps' };
 
 # Radio
 
 Choose one option from a group.
 
-## Grouped options
+{/* leaf:section basic */}
 
-RadioGroup builds options and supplies a group name. Provide label, aria-label or aria-labelledby. Give the group a name for form submission. Read event.target.value in onChange. Individual Radio controls with the same name form a native group.
+## Basic usage
 
-<ComponentExample title="Grouped options" preview={<RadioBasic />} fileName="basic.tsx">
+Define choices with `RadioGroup.options`. Give the group a name with `label`, `aria-label` or `aria-labelledby`.
+
+<ComponentExample exampleId="basic" preview={<RadioBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Controlled and vertical layout
+{/* leaf:section examples */}
 
-<ComponentExample title="Controlled and vertical layout" preview={<RadioControlled />} fileName="controlled.tsx" width={360}>
+## Examples
+
+### Controlled selection
+
+Control the selected string with `value`, and read `event.target.value` in `onChange`.
+
+<ComponentExample exampleId="controlled" preview={<RadioControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/controlled.tsx"
 ```
 
 </ComponentExample>
 
-## Card choices
+### Vertical layout
 
-Use icons and descriptions to help people choose a plan.
+Set `direction="vertical"` for a vertical group.
 
-<ComponentExample title="Card choices" preview={<RadioCards english />} fileName="surfaces.tsx">
+<ComponentExample exampleId="vertical" preview={<RadioVertical />} fileName="vertical.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/radio/surfaces.tsx"
+```tsx lineNumbers file="../../../src/examples/en/radio/vertical.tsx"
 ```
 
 </ComponentExample>
 
-## Grouped choices
+<a id="advanced-usage"></a>
 
-Group choices into one list while retaining native arrow-key navigation.
+### Card choices
 
-<ComponentExample title="Grouped choices" preview={<RadioList english />} fileName="list.tsx">
+Set `variant="card"` for choices with icons and descriptions.
 
-```tsx lineNumbers file="../../../src/examples/radio/list.tsx"
+<ComponentExample exampleId="surfaces" preview={<RadioCards />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/radio/surfaces.tsx"
 ```
 
 </ComponentExample>
 
-## RadioGroup API
+### Grouped choices
+
+Use `variant="list"` for a shared list. Keep `extra` to non-interactive status, not buttons or links.
+
+<ComponentExample exampleId="list" preview={<RadioList />} fileName="list.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/radio/list.tsx"
+```
+
+</ComponentExample>
+
+#### Forms and reset
+
+Set `name` to submit the selected option's `value`. Unselected and disabled options are not submitted. When composing individual `Radio` controls, use the same `name` and unique values for each group.
+
+Uncontrolled groups return to `defaultValue` on form reset. For controlled groups, reset application state as well.
+
+{/* leaf:section api */}
+
+## API
+
+### Radio API
+
+Configure selection, submission value and disabled state for an individual radio.
+
+Individual `Radio` controls support native radio attributes. `className` and `style` apply to the label container.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
+| `variant` | `'plain' \| 'card'` | `'plain'` | Plain choice or a card with a full clickable surface. |
+| `description` | `ReactNode` | — | Supporting text below the option. |
+| `icon` | `ReactNode` | — | Leading icon content for the option. |
+| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
+| `checked` | `boolean` | — | Controlled checked state. |
+| `defaultChecked` | `boolean` | — | Initial checked state for uncontrolled usage. |
+| `value` | `string \| number \| readonly string[]` | — | The value submitted by this radio, not its checked state; use checked for selection. |
+| `name` | `string` | — | Field name in native FormData. |
+| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read the selected value from event.target.value. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `required` | `boolean` | `false` | Require a selection among radios with the same name. |
+| `children` | `ReactNode` | — | Clickable choice label. |
+| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
+
+### RadioGroup API
+
+Manage the selected value and layout of a group of radio options.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -66,26 +126,9 @@ Group choices into one list while retaining native arrow-key navigation.
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFieldSetElement>` | — | DOM reference |
 
-## Radio API
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `variant` | `'plain' \| 'card'` | `'plain'` | Plain choice or a card with a full clickable surface. |
-| `description` | `ReactNode` | — | Supporting text below the option. |
-| `icon` | `ReactNode` | — | Leading icon content for the option. |
-| `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
-| `checked` | `boolean` | — | Controlled checked state / initial checked state |
-| `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
-| `value` | `string` | — | The value submitted by this radio, not its checked state; use checked for selection. |
-| `name` | `string` | — | Field name in native FormData. |
-| `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read the selected value from event.target.value. |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
-| `children` | `ReactNode` | — | Clickable choice label. |
-| `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
-
 ### RadioOption
+
+One group option containing its submission value and displayed content.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -95,19 +138,3 @@ Group choices into one list while retaining native arrow-key navigation.
 | `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
 | `value` | `string` | Required | Option value; unique within the group. |
 | `disabled` | `boolean` | `false` | Disable the option. |
-
-## Types
-
-Import RadioProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { RadioProps, RadioGroupProps, RadioOption } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## Surfaces and rich content
-
-Radio and RadioGroup support icons, descriptions and status tags. RadioGroup variant="card" arranges cards; variant="list" creates grouped rows. description and extra are accessible descriptions; avoid buttons or links in extra. Groups retain native arrow keys, disabled-option skipping and form submission.

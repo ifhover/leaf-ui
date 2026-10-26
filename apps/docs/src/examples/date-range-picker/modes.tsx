@@ -1,31 +1,19 @@
 import { DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
+
 export function DateRangePickerModes() {
   return (
-    <Form layout="vertical">
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
       <FormField label="年份区间">
-        <DateRangePicker aria-label="年份区间" picker="year" placeholder="年份区间" />
-      </FormField>
-      <FormField label="月份区间">
-        <DateRangePicker aria-label="月份区间" picker="month" placeholder="月份区间" />
+        <DateRangePicker picker="year" />
       </FormField>
       <FormField label="季度区间">
-        <DateRangePicker
-          aria-label="季度区间"
-          format="YYYY-[Q]Q"
-          picker="quarter"
-          placeholder="季度区间"
-        />
+        <DateRangePicker picker="quarter" />
+      </FormField>
+      <FormField label="月份区间">
+        <DateRangePicker picker="month" />
       </FormField>
       <FormField label="周区间">
-        <DateRangePicker aria-label="周区间" picker="week" placeholder="周区间" />
-      </FormField>
-      <FormField label="日期时间区间">
-        <DateRangePicker
-          aria-label="日期时间区间"
-          picker="datetime"
-          placeholder="日期时间区间"
-          use12Hours
-        />
+        <DateRangePicker picker="week" />
       </FormField>
     </Form>
   );

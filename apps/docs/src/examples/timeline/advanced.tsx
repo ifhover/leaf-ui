@@ -4,10 +4,10 @@ export function TimelineAlternate() {
   return (
     <Timeline
       mode="alternate"
-      pending="等待下一步"
       items={[
-        { key: 'one', label: '2026-10-01', children: '需求确认' },
-        { key: 'two', label: '2026-10-03', children: '开始设计', color: 'warning' },
+        { key: 'create', label: '09:00', children: '创建项目' },
+        { key: 'review', label: '10:30', children: '完成审核' },
+        { key: 'release', label: '12:00', children: '发布成功' },
       ]}
     />
   );

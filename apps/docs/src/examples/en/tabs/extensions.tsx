@@ -1,39 +1,25 @@
-import { Button, Space, type TabItem, Tabs } from '@ifhover/leaf-ui';
-import { useRef, useState } from 'react';
+import { Button, Flex, type TabItem, Tabs, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+
+const initialItems: TabItem[] = [
+  { key: 'one', label: 'Tab one', children: 'Content one' },
+  { key: 'two', label: 'Tab two', children: 'Content two' },
+  { key: 'three', label: 'Tab three', children: 'Content three' },
+];
+
 export function ExtensionDemo() {
-  const count = useRef(7);
-  const [items, setItems] = useState<TabItem[]>(
-    Array.from({ length: 6 }, (_, i) => ({
-      key: String(i),
-      label: `Item ${i + 1}`,
-      children: `Item ${i + 1} content`,
-      closable: true,
-    })),
-  );
-  const addTab = () => {
-    const id = String(count.current++);
-    setItems((current) => [
-      ...current,
-      { key: id, label: `Item ${id}`, children: 'New item', closable: true },
-    ]);
-  };
+  const [items, setItems] = useState(initialItems);
   return (
-    <Space direction="vertical" align="stretch">
-      <Tabs
-        aria-label="Sortable tabs"
-        items={items}
-        sortable
-        onReorder={setItems}
-        onAdd={addTab}
-        onClose={(key) => setItems((current) => current.filter((item) => item.key !== key))}
-      />
-      {items.length === 0 && (
-        <Space>
-          <Button variant="outline" onClick={addTab}>
-            Add tab
-          </Button>
-        </Space>
-      )}
-    </Space>
+    <Flex direction="column" gap="md">
+      <Tabs aria-label="Sortable tabs" items={items} sortable onReorder={setItems} />
+      <Text role="status" tone="muted">
+        Current order: {items.map((item) => item.label).join(' / ')}
+      </Text>
+      <Flex>
+        <Button variant="outline" onClick={() => setItems(initialItems)}>
+          Restore order
+        </Button>
+      </Flex>
+    </Flex>
   );
 }

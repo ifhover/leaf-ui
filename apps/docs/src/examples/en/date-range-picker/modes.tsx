@@ -1,31 +1,19 @@
 import { DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
+
 export function DateRangePickerModes() {
   return (
-    <Form layout="vertical">
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
       <FormField label="Year range">
-        <DateRangePicker aria-label="Year range" picker="year" placeholder="Year range" />
-      </FormField>
-      <FormField label="Month range">
-        <DateRangePicker aria-label="Month range" picker="month" placeholder="Month range" />
+        <DateRangePicker picker="year" />
       </FormField>
       <FormField label="Quarter range">
-        <DateRangePicker
-          aria-label="Quarter range"
-          format="YYYY-[Q]Q"
-          picker="quarter"
-          placeholder="Quarter range"
-        />
+        <DateRangePicker picker="quarter" />
+      </FormField>
+      <FormField label="Month range">
+        <DateRangePicker picker="month" />
       </FormField>
       <FormField label="Week range">
-        <DateRangePicker aria-label="Week range" picker="week" placeholder="Week range" />
-      </FormField>
-      <FormField label="Date and time range">
-        <DateRangePicker
-          aria-label="Date and time range"
-          picker="datetime"
-          placeholder="Date and time range"
-          use12Hours
-        />
+        <DateRangePicker picker="week" />
       </FormField>
     </Form>
   );

@@ -2,49 +2,61 @@ import { ComponentExample } from '../../src/components/component-example';
 import { InfiniteScrollBasic } from '../../src/examples/infinite-scroll/basic';
 import { InfiniteScrollRetry } from '../../src/examples/infinite-scroll/advanced';
 
+export const leafDoc = { component: 'InfiniteScroll', primaryApi: 'InfiniteScrollProps' };
+
 # InfiniteScroll 无限滚动
 
-浏览到列表末尾时加载更多内容。
+滚动接近列表末尾时加载更多内容。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
+## 基础用法
+
+<a id="基本用法"></a>
+
+`onLoadMore` 返回加载任务的 Promise，同一时间只执行一次加载。追加数据后同步 `dataLength`；没有后续数据时将 `hasMore` 设为 `false`。
+
+示例通过 `target` 指定滚动容器。省略时会查找最近的可滚动祖先，找不到时使用页面滚动。末尾进入 `threshold` 的预加载范围便会触发，首次显示时也可能开始加载。
+
+<ComponentExample exampleId="basic" preview={<InfiniteScrollBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/infinite-scroll/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 失败重试
+卸载或将 `hasMore` 设为 `false` 会中止本次任务的 `signal`。实际请求需把它传给 `fetch` 等支持取消的接口；其他异步操作应像示例一样，在写入状态前检查 `signal.aborted`。
 
-<ComponentExample title="失败重试" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
+{/* leaf:section examples */}
+
+## 示例
+
+### 失败重试
+
+加载失败时让 Promise 拒绝，组件会暂停自动加载并显示重试按钮。示例第一次请求故意失败，点击重试后追加剩余记录。`onError` 可用于记录错误，不负责替应用恢复数据。
+
+<ComponentExample exampleId="advanced" preview={<InfiniteScrollRetry />} fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/infinite-scroll/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+{/* leaf:section api */}
 
-onLoadMore 返回 Promise，一次请求期间不会重复触发。追加新数据后更新 dataLength。signal 在卸载时取消请求，失败后可重试。
+## API
 
-## 类型
+### InfiniteScrollProps API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { InfiniteScrollProps } from '@ifhover/leaf-ui';
-```
-
-## InfiniteScrollProps API
+滚动加载的触发条件、异步任务与加载反馈配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `dataLength` | `number` | 必填 | 已加载数量，变化后允许下一次请求 |
-| `hasMore` | `boolean` | 必填 | 还有后续数据 |
-| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | 必填 | 加载更多，signal 用于取消请求 |
-| `target` | `() => HTMLElement \| null` | — | 返回滚动容器的函数；省略时使用页面滚动。 |
-| `threshold` | `number` | `200` | 距离末尾触发加载的像素距离 |
+| `dataLength` | `number` | 必填 | 已加载数量；数据追加后更新，允许下一次加载。 |
+| `hasMore` | `boolean` | 必填 | 是否还有后续数据；false 中止当前任务的 signal 并显示结束内容。 |
+| `onLoadMore` | `(signal: AbortSignal) => Promise<void>` | 必填 | 返回加载任务的 Promise；应用追加数据并传递或检查取消信号，拒绝时暂停自动加载并显示重试。 |
+| `target` | `() => HTMLElement \| null` | — | 返回滚动容器；省略或返回 null 时查找最近的纵向滚动祖先，否则使用视口。 |
+| `threshold` | `number` | `200` | 距离末尾多少像素时预加载；负值按 0 处理。 |
 | `loader` | `ReactNode` | — | 加载占位内容 |
 | `endMessage` | `ReactNode` | — | 全部加载后的内容 |
-| `onError` | `(error: unknown) => void` | — | 异常回调 |
+| `onError` | `(error: unknown) => void` | — | 加载 Promise 拒绝且任务未取消时调用；不替应用恢复数据。 |

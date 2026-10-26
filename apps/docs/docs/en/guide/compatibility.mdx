@@ -34,8 +34,8 @@ These versions are Leaf UI's minimum support targets, not a claim that every ver
 </ConfigProvider>
 ```
 
-Use concrete hex/rgb/hsl/named colors through `theme` and `tokens`. A server cannot resolve CSS variables: `var(...)` colors resolve after mounting and synchronize when ancestor class/style attributes change. Pass concrete colors for a deterministic SSR first frame. Changing only a base CSS color does not recalculate the full palette.
+Configure colors through `theme` and `tokens`. Solid foregrounds default to white and can be set to black through `on*Color`. CSS expressions are preserved, not resolved after mounting or synchronized from class/style changes.
 
 ## Validation coverage
 
-CI covers Chromium, Firefox, WebKit, React 18/19, SSR and package exports. WebKit coverage does not imply physical Safari/iOS coverage. Local Firefox currently fails to launch (`spawn UNKNOWN`) and is not recorded as passed. See `packages/react/ACCESSIBILITY.md` in the repository for executed checks and manual limits.
+Compatibility targets and automated coverage do not guarantee every device. Automation uses Chromium, Firefox and WebKit and checks React 18/19, SSR and package exports. WebKit does not replace testing on physical Safari/iOS devices; validate your application on its target devices.

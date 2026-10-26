@@ -1,55 +1,106 @@
-import { CheckboxCards } from '../../../src/examples/checkbox/surfaces';
-import { CheckboxList } from '../../../src/examples/checkbox/list';
 import { ComponentExample } from '../../../src/components/component-example';
-import { CheckboxBasic, CheckboxCheckAll } from '../../../src/components/en-form-examples';
+import { CheckboxBasic } from '../../../src/examples/en/checkbox/basic';
+import { CheckboxGroupDemo } from '../../../src/examples/en/checkbox/group';
+import { CheckboxDisabled } from '../../../src/examples/en/checkbox/disabled';
+import { CheckboxCheckAll } from '../../../src/examples/en/checkbox/check-all';
+import { CheckboxCards } from '../../../src/examples/en/checkbox/surfaces';
+import { CheckboxList } from '../../../src/examples/en/checkbox/list';
+
+export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 
 # Checkbox
 
-Select one or more options.
+Select one or more options, or confirm a setting.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-Read event.target.checked in onChange. Use indeterminate to represent a partially selected group; it does not change the submitted value. Native name, value, required and form attributes are supported.
+Provide the option label as content; users can toggle its checked state independently.
 
-<ComponentExample title="Basic usage" preview={<CheckboxBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<CheckboxBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Select all and indeterminate
+For controlled usage, pass `checked` and read the boolean from `event.target.checked` in `onChange`.
 
-<ComponentExample title="Select all and indeterminate" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width={360}>
+{/* leaf:section examples */}
+
+## Examples
+
+### Checkbox group
+
+Use `CheckboxGroup` for multiple choices. Unlike a single checkbox, its `value` and `onChange` use arrays of strings.
+
+<ComponentExample exampleId="group" preview={<CheckboxGroupDemo />} fileName="group.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/group.tsx"
+```
+
+</ComponentExample>
+
+### Disabled states
+
+With `disabled`, the checked state remains visible but cannot be changed by the user.
+
+<ComponentExample exampleId="disabled" preview={<CheckboxDisabled />} fileName="disabled.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/disabled.tsx"
+```
+
+</ComponentExample>
+
+### Select all and indeterminate
+
+`indeterminate` indicates a partially selected group; it does not change `checked` or the submitted value. The application maintains the child selections and select-all behavior.
+
+<ComponentExample exampleId="check-all" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/check-all.tsx"
 ```
 
 </ComponentExample>
 
-## Card choices
+### Card choices
 
-Make the whole card clickable for choices with icons and descriptions.
+<a id="advanced-usage"></a>
 
-<ComponentExample title="Card choices" preview={<CheckboxCards english />} fileName="surfaces.tsx">
+Set `variant="card"` for choices with icons and descriptions.
 
-```tsx lineNumbers file="../../../src/examples/checkbox/surfaces.tsx"
+<ComponentExample exampleId="surfaces" preview={<CheckboxCards />} fileName="surfaces.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/surfaces.tsx"
 ```
 
 </ComponentExample>
 
-## Grouped choices
+### Grouped choices
 
-Related options share borders and row dividers, with supplementary status on the right.
+Use `CheckboxGroup variant="list"` for a shared list. Keep `extra` to non-interactive content such as status tags, not buttons or links.
 
-<ComponentExample title="Grouped choices" preview={<CheckboxList english />} fileName="list.tsx">
+<ComponentExample exampleId="list" preview={<CheckboxList />} fileName="list.tsx">
 
-```tsx lineNumbers file="../../../src/examples/checkbox/list.tsx"
+```tsx lineNumbers file="../../../src/examples/en/checkbox/list.tsx"
 ```
 
 </ComponentExample>
 
-## Checkbox API
+#### Forms and reset
+
+With `name`, only checked and enabled choices are submitted. A checkbox group submits repeated values under the same name; read them with `FormData.getAll(name)`.
+
+Uncontrolled fields return to `defaultChecked` or `defaultValue` on form reset. For controlled fields, reset the corresponding application state as well.
+
+{/* leaf:section api */}
+
+## API
+
+### Checkbox API
+
+Native checkbox attributes such as `name`, `value`, `required` and `form` are supported. Provide `aria-label` when there is no text label. `className` and `style` apply to the label container.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -59,32 +110,16 @@ Related options share borders and row dividers, with supplementary status on the
 | `icon` | `ReactNode` | — | Icon content. |
 | `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
 | `indeterminate` | `boolean` | `false` | Partially checked state |
-| `checked` | `boolean` | — | Controlled checked state / initial checked state |
-| `defaultChecked` | `boolean` | — | Controlled checked state / initial checked state |
+| `checked` | `boolean` | — | Controlled checked state. |
+| `defaultChecked` | `boolean` | — | Initial checked state for uncontrolled usage. |
 | `onChange` | `ChangeEventHandler<HTMLInputElement>` | — | Read the selection from event.target.checked. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `children` | `ReactNode` | — | Clickable choice label. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
-## Types
+### CheckboxGroupProps API
 
-Import CheckboxProps to describe component props. Option types in the API table link to their detailed fields above.
-
-```ts
-import type { CheckboxProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-## Extension types
-
-```ts
-import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
-```
-
-## CheckboxGroupProps API
+Props for managing the options and values of a checkbox group.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -98,17 +133,15 @@ import type { CheckboxGroupProps, CheckboxOption } from '@ifhover/leaf-ui';
 | `required` | `boolean` | — | Require a non-empty value; compound controls validate once. |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction of the options. |
 
-## CheckboxOption API
+### CheckboxOption API
+
+Option data supplied through a checkbox group's `options`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Controlled value |
+| `value` | `string` | Required | Option value; unique within the group. |
 | `label` | `ReactNode` | Required | Display label |
 | `description` | `ReactNode` | — | Additional description. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `extra` | `ReactNode` | — | Supplementary status or tags; avoid interactive controls. |
 | `disabled` | `boolean` | — | Disable interaction. |
-
-## Surfaces and rich content
-
-Checkbox variant="card" makes the whole label clickable. CheckboxGroup variant="card" arranges cards; variant="list" groups rows into one surface. description and extra provide accessible descriptions; icon is decorative. Keep extra to non-interactive status, without buttons or links. Native names, values, forms, reset and keyboard behavior remain available.

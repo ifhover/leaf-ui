@@ -5,64 +5,80 @@ import { BadgeDot } from '../../src/examples/badge/dot';
 import { BadgeInside } from '../../src/examples/badge/inside';
 import { BadgeStandalone } from '../../src/examples/badge/standalone';
 
+export const leafDoc = { component: 'Badge', primaryApi: 'BadgeProps' };
+
 # Badge 角标
 
 展示数量或未读提醒。
 
+{/* leaf:section basic */}
+
 ## 基础用法
 
-<ComponentExample title="基础用法" preview={<BadgeBasic />} fileName="basic.tsx">
+使用 `count` 设置数量，传入 `children` 将角标附着到内容上。
+
+<ComponentExample exampleId="basic" preview={<BadgeBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/badge/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 数值规则
+{/* leaf:section examples */}
 
-超过 `max` 的数值展示为上限加号；使用 `showZero` 展示零值。
+## 示例
 
-<ComponentExample title="数值规则" preview={<BadgeCounts />} fileName="counts.tsx">
+### 数值规则
+
+超过 `max` 的数值展示为上限加号。零值默认隐藏，设置 `showZero` 后显示。
+
+<ComponentExample exampleId="counts" preview={<BadgeCounts />} fileName="counts.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/badge/counts.tsx"
 ```
 
 </ComponentExample>
 
-## 红点提醒
+### 红点提醒
 
-只提示有新内容，不展示具体数量。
+设置 `dot` 只提示有新内容。请通过 `aria-label` 说明提醒的含义。
 
-<ComponentExample title="红点提醒" preview={<BadgeDot />} fileName="dot.tsx">
+<ComponentExample exampleId="dot" preview={<BadgeDot />} fileName="dot.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/badge/dot.tsx"
 ```
 
 </ComponentExample>
 
-## 内置角标
+### 内置角标
 
-使用 `placement="inside"` 将带白色外圈的提醒放在按钮等内容的右上角内部，并为角标预留足够空间，避免遮挡内容；RTL 下位置镜像。
+设置 `placement="inside"`，将提醒放在内容内部。为角标留出空间，避免遮挡文字或图标。
 
-<ComponentExample title="内置角标" preview={<BadgeInside />} fileName="inside.tsx">
+<ComponentExample exampleId="inside" preview={<BadgeInside />} fileName="inside.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/badge/inside.tsx"
 ```
 
 </ComponentExample>
 
-## 独立使用
+### 独立使用
 
-不传入 `children` 时独立展示角标，数量角标使用较小的圆角。
+不传入 `children` 时，可独立展示数量或简短文字。
 
-<ComponentExample title="独立使用" preview={<BadgeStandalone />} fileName="standalone.tsx">
+<ComponentExample exampleId="standalone" preview={<BadgeStandalone />} fileName="standalone.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/badge/standalone.tsx"
 ```
 
 </ComponentExample>
 
-## Badge API
+{/* leaf:section api */}
+
+## API
+
+### Badge API
+
+角标的计数、圆点提醒及附着位置配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -73,15 +89,3 @@ import { BadgeStandalone } from '../../src/examples/badge/standalone';
 | `dot` | `boolean` | `false` | 使用圆点提醒 |
 | `placement` | `'outside' \| 'inside'` | `'outside'` | 附着角标的位置：默认外置，inside 放在右上角内部；RTL 下镜像，独立使用时无效 |
 | `color` | `string` | — | 自定义角标颜色 |
-
-## 类型
-
-定义组件属性或组装列表时可导入相关类型。
-
-```ts
-import type { BadgeProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-独立使用时可展示数量或简短文字。附着在按钮等内容上时，为圆点提醒提供 aria-label，以说明提醒的含义。

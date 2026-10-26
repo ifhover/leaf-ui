@@ -1,110 +1,132 @@
-import { CardSections } from '../../../src/examples/en/card/sections';
 import { ComponentExample } from '../../../src/components/component-example';
 import { CardBasic } from '../../../src/examples/en/card/basic';
-import { CardLayered } from '../../../src/examples/en/card/layered';
-import { CardSizes } from '../../../src/examples/en/card/sizes';
 import { CardSelected } from '../../../src/examples/en/card/selected';
+import { CardSizes } from '../../../src/examples/en/card/sizes';
+import { CardLayered } from '../../../src/examples/en/card/layered';
 import { CardStandaloneTitle } from '../../../src/examples/en/card/standalone-title';
+import { CardActions } from '../../../src/examples/en/card/actions';
 import { CardTabs } from '../../../src/examples/en/card/tabs';
 import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title';
+import { CardLoading } from '../../../src/examples/en/card/loading';
+
+export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 
 # Card
 
 Group related content and actions in a container.
 
-Default-appearance titles use weight 700, configurable through ConfigProvider's `theme.headingWeight`. Layered card titles use weight 500.
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<CardBasic />} fileName="basic.tsx" width={380}>
+Supply the card title through `title` and its content through `children`.
+
+<ComponentExample exampleId="basic" preview={<CardBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Selected state
+{/* leaf:section examples */}
 
-`selected` displays a primary border without a shadow. Switch options with the buttons; the prop is visual only and does not make the whole card interactive.
+## Examples
 
-<ComponentExample title="Selected state" preview={<CardSelected />} fileName="selected.tsx" width={800}>
+### Selected state
+
+`selected` is visual only. Use a button or selection control to make a card selectable.
+
+<ComponentExample exampleId="selected" preview={<CardSelected />} fileName="selected.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/selected.tsx"
 ```
 
 </ComponentExample>
 
-## Sizes
+### Sizes
 
-`size` offers small, default and large cards, adjusting padding, heading typography and heading height together. Embedded Tabs follow the card size unless overridden with `tabs.size`. Buttons, inputs and other controls inside the card use their own `size`.
+Embedded tabs follow the card's `size` unless overridden with `tabs.size`. Buttons and inputs inside the card use their own `size`.
 
-These cards use increasing display widths and independent tabs. Set width through the container or `style`; `size` does not automatically change the card width.
-
-<ComponentExample title="Sizes" preview={<CardSizes />} fileName="sizes.tsx" width={460}>
+<ComponentExample exampleId="sizes" preview={<CardSizes />} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Layered card
+### Layered card
 
-Set `variant="layered"` for a small muted heading and a separate content card; optionally add actions below it with `footer`. The `description` is not displayed. The heading row reserves room for a default outlined Tag, keeping headings equally tall with or without a tag.
+Set `variant="layered"` to separate the heading from the content card. This appearance does not display `description`.
 
-<ComponentExample title="Layered card" preview={<CardLayered />} fileName="layered.tsx" width={520}>
+<ComponentExample exampleId="layered" preview={<CardLayered />} fileName="layered.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/layered.tsx"
 ```
 
 </ComponentExample>
 
-## Standalone title
+### Standalone title
 
-Use `CardTitle` outside a card to reuse its heading style without a `Card` wrapper. Its default heading level matches Card and renders `<h3>`, so most usages need no `level`. `size` controls visual size: with the default 14px base font, `sm`, `md` and `lg` are 14px, 16px and 18px, with a default weight of 700. `description` sits beneath the heading and `extra` sits at its trailing edge, matching the Card heading area.
+`CardTitle` can be used outside a card and renders `<h3>` by default. Use `level` to match the document hierarchy without changing its visual size.
 
-These three content sections show small, default and large sizes with descriptions and trailing actions. Import `CardTitle` from `@ifhover/leaf-ui` or `@ifhover/leaf-ui/card`.
-
-<ComponentExample title="Standalone title" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
+<ComponentExample exampleId="standalone-title" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/standalone-title.tsx"
 ```
 
 </ComponentExample>
 
-## Content sections
+### Heading and footer actions
 
-The heading, body and footer actions are grouped with spacing and no internal borders.
+Place actions beside the title with `extra`, or below the content with `footer`.
 
-<ComponentExample title="Content sections" preview={<CardSections />} fileName="sections.tsx" width={560}>
+<ComponentExample exampleId="actions" preview={<CardActions />} fileName="actions.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/card/sections.tsx"
+```tsx lineNumbers file="../../../src/examples/en/card/actions.tsx"
 ```
 
 </ComponentExample>
 
-## Tabbed card
+### Tabbed card
 
-Use `tabs.items` to define labels and their content. Without a title, tabs fill the heading height with vertically centered labels, and Card's `extra` appears at their trailing edge.
+Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has no title. Each item's `children` holds its page; Card's `children` holds shared content below the pages.
 
-<ComponentExample title="Tabbed card" preview={<CardTabs />} fileName="tabs.tsx" width={520}>
+<ComponentExample exampleId="tabs" preview={<CardTabs />} fileName="tabs.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/tabs.tsx"
 ```
 
 </ComponentExample>
 
-## Heading with tabs
+### Heading with tabs
 
-With a `title` or `description`, tabs sit beneath the heading. There is no divider between the heading and tabs; the divider runs below the tab bar. Control selection with `tabs.activeKey` / `tabs.onChange`. Visited pages retain input state by default.
+Control the active tab with `tabs.activeKey` and `tabs.onChange`. Visited pages retain input state by default; use `destroyInactive` to unmount them when leaving. Other tab interactions follow [Tabs](tabs#tabs-api).
 
-<ComponentExample title="Heading with tabs" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx" width={520}>
+<ComponentExample exampleId="tabs-with-title" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/tabs-with-title.tsx"
 ```
 
 </ComponentExample>
 
-## Card API
+### Loading state
+
+`loading` replaces the body and tab pages with skeletons. It does not disable headings, tabs or actions; the application must disable any actions that should be unavailable.
+
+<ComponentExample exampleId="loading" preview={<CardLoading />} fileName="loading.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/card/loading.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### Card API
+
+Configuration for card headings, content regions, embedded tabs and loading state.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -114,47 +136,15 @@ With a `title` or `description`, tabs sit beneath the heading. There is no divid
 | `tabs` | [`CardTabsProps`](#cardtabs-api) | — | Embedded tabs; replace the heading without a title or sit beneath it. |
 | `cover` | `ReactNode` | — | Top cover. |
 | `footer` | `ReactNode` | — | Footer content or actions; layered places them on the canvas below the content card. |
-| `loading` | `boolean` | `false` | Replace the body with a skeleton |
+| `loading` | `boolean` | `false` | Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled. |
 | `bordered` | `boolean` | `true` | Show the outer border |
-| `selected` | `boolean` | `false` | Selected appearance: primary border and no shadow, even when bordered=false; visual only, with interaction provided by buttons or selection controls. |
+| `selected` | `boolean` | `false` | Mark the card as selected; use a button or selection control to manage selection. |
 | `variant` | `'default' \| 'layered'` | `'default'` | Card appearance; layered separates the content surface from the heading and footer on a muted canvas. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size: padding, heading typography and height, and the default size of embedded Tabs. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size; embedded tabs follow it by default, while other children use their own sizes. |
 
-## CardTitle API
+### CardTabs API
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Visual size, matching the heading in the corresponding Card size. |
-| `description` | `ReactNode` | — | Supporting text beneath the heading. |
-| `extra` | `ReactNode` | — | Trailing heading actions. |
-| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | Optional semantic level; defaults to h3 like Card without changing visual size. |
-| `containerProps` | `Omit<HTMLAttributes<HTMLDivElement>, 'children'>` | — | Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element. |
-| `children` | `ReactNode` | — | Heading content. |
-| `ref` | `Ref<HTMLHeadingElement>` | — | Reference to the heading element. |
-
-Supports native heading attributes, including `id`, `className`, `style`, `aria-*` and events. `description` and `extra` extend the heading area only; the heading remains an `HTMLHeadingElement`, and its ref points to the actual heading. Set defaults through `ConfigProvider` `components.CardTitle` for directly rendered `CardTitle` instances. Internal Card headings continue to follow the Card size.
-
-## Types
-
-Import the exported types when defining props or building item lists.
-
-```ts
-import type { CardProps, CardTitleProps, CardTabsProps, TabItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Place buttons or links in extra and footer. Use an explicit button or link for actions.
-
-`tabs` reuses Tabs configuration and interaction with top-aligned line tabs. `tabs.items[].children` provides each page; Card's `children` may hold shared content below all pages. `loading` replaces the content with skeletons while headings, tabs and actions stay available. Tabs follow the card's `size`; set `tabs.size` to override. An empty item list restores the ordinary card layout.
-
-Use `tabs` to configure disabled tabs, icons, manual keyboard activation, retained or destroyed pages, overflow scroll controls and add, close or reorder callbacks. `tabs.extra` always belongs to the tab bar; with a title, Card's `extra` stays alongside the heading.
-
-## Surfaces and rich content
-
-The default appearance supports `description` and keeps a subtle downward shadow. `variant="layered"` hides the description, removes the outer shadow and keeps a thin downward shadow with a subtle extension on both sides of the content card, with `footer` on the canvas beneath it. Both appearances follow the light or dark theme and support customization through `ConfigProvider` `theme.components.Card`.
-
-## CardTabs API
+Card tabs use top-aligned line tabs. `tabs.extra` belongs to the tab bar; Card's `extra` stays beside the heading when a title is present. An empty `items` list restores an ordinary card.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -173,3 +163,17 @@ The default appearance supports `description` and keeps a subtle downward shadow
 | `overflow` | `boolean` | `true` | Show directional scroll buttons when tabs overflow. |
 | `sortable` | `boolean` | `false` | Enable sorting alongside `onReorder`. |
 | `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | Return the reordered original items for the application to store. |
+
+### CardTitle API
+
+Supports native heading attributes and a ref to the actual heading element. `ConfigProvider` defaults for `components.CardTitle` affect directly rendered titles only; internal Card headings follow the Card size.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Visual size, matching the heading in the corresponding Card size. |
+| `description` | `ReactNode` | — | Supporting text beneath the heading. |
+| `extra` | `ReactNode` | — | Trailing heading actions. |
+| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | `3` | Optional semantic level; defaults to h3 like Card without changing visual size. |
+| `containerProps` | `Omit<HTMLAttributes<HTMLDivElement>, 'children'>` | — | Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element. |
+| `children` | `ReactNode` | — | Heading content. |
+| `ref` | `Ref<HTMLHeadingElement>` | — | Reference to the heading element. |

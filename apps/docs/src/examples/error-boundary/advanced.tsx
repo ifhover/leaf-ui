@@ -1,33 +1,31 @@
+import { Alert, Button, ErrorBoundary, Flex, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
+
 function Content({ broken }: { broken: boolean }) {
   if (broken) throw new Error('Demo rendering error');
-  return <span>备用界面只替换出错的区块。</span>;
+  return <Text>内容正常显示。</Text>;
 }
 
-import { Alert, Button, ErrorBoundary, Space } from '@ifhover/leaf-ui';
-import { useState } from 'react';
 export function ErrorBoundaryCustom() {
   const [broken, setBroken] = useState(false);
   return (
-    <Space direction="vertical" align="stretch">
-      <Button variant="outline" onClick={() => setBroken(true)}>
-        测试备用界面
-      </Button>
+    <Flex direction="column" gap="md">
+      <Flex>
+        <Button onClick={() => setBroken(true)}>测试备用界面</Button>
+      </Flex>
       <ErrorBoundary
         fallback={({ reset }) => (
-          <Alert
-            title="此区块不可用"
-            description={
-              <Button size="sm" onClick={reset}>
-                再次尝试
-              </Button>
-            }
-          />
+          <Flex direction="column" gap="md">
+            <Alert type="danger" title="此区块不可用" description="可以重试加载内容。" />
+            <Flex>
+              <Button onClick={reset}>再次尝试</Button>
+            </Flex>
+          </Flex>
         )}
         onReset={() => setBroken(false)}
-        resetKeys={[broken]}
       >
         <Content broken={broken} />
       </ErrorBoundary>
-    </Space>
+    </Flex>
   );
 }

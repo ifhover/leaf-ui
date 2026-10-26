@@ -1,6 +1,6 @@
-import { Cascader } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField } from '@ifhover/leaf-ui';
 
-const options = [
+const options: CascaderOption[] = [
   {
     value: 'product',
     label: '产品团队',
@@ -12,19 +12,21 @@ const options = [
   },
 ];
 
-export function SingleLine() {
+export function CascaderSingleLine() {
   return (
-    <Cascader
-      aria-label="产品团队"
-      multiple
-      showSearch
-      tagWrap={false}
-      options={options}
-      defaultValue={[
-        ['product', 'design'],
-        ['product', 'web'],
-        ['product', 'mobile'],
-      ]}
-    />
+    <Form layout="vertical">
+      <FormField label="产品团队">
+        <Cascader
+          multiple
+          tagWrap={false}
+          options={options}
+          defaultValue={[
+            ['product', 'design'],
+            ['product', 'web'],
+            ['product', 'mobile'],
+          ]}
+        />
+      </FormField>
+    </Form>
   );
 }

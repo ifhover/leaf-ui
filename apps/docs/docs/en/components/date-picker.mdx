@@ -1,260 +1,262 @@
-import { DisabledDates } from '../../../src/examples/date-picker/disabled-dates';
-import { ExtensionDemo } from '../../../src/examples/en/date-picker/extensions';
-import { Format } from '../../../src/examples/date-picker/format';
-import { MaxCount } from '../../../src/examples/date-picker/max-count';
-import { Multiple } from '../../../src/examples/date-picker/multiple';
 import { ComponentExample } from '../../../src/components/component-example';
-import { DatePickerBasic, DatePickerControlled } from '../../../src/components/en-form-examples';
-import { DatePickerFooter } from '../../../src/examples/en/date-picker/footer';
-import { DatePickerCard } from '../../../src/examples/en/date-picker/card';
+import { DatePickerBasic } from '../../../src/examples/en/date-picker/basic';
+import { DatePickerControlled } from '../../../src/examples/en/date-picker/controlled';
+import { DatePickerStates } from '../../../src/examples/en/date-picker/states';
+import { ExtensionDemo } from '../../../src/examples/en/date-picker/extensions';
+import { DisabledDates } from '../../../src/examples/en/date-picker/disabled-dates';
+import { DatePickerDateTime } from '../../../src/examples/en/date-picker/datetime';
+import { DatePickerTime } from '../../../src/examples/en/date-picker/time';
+import { DatePickerTwelveHours } from '../../../src/examples/en/date-picker/twelve-hours';
+import { Format } from '../../../src/examples/en/date-picker/format';
+import { DatePickerPresets } from '../../../src/examples/en/date-picker/presets';
+
+export const leafDoc = { component: 'DatePicker', primaryApi: 'DatePickerProps' };
 
 # DatePicker
 
-Choose a date from a calendar.
+Choose a date, time or date and time. Calendar modes use local `Date` values; `picker="time"` uses time strings. Use [DateRangePicker](/en/components/date-range-picker) for ranges.
 
-Values are Date objects in local time. onChange also supplies a string formatted with `format`; named fields submit the canonical period value instead. Arrow keys move days, Home / End move within a week, and PageUp / PageDown move months. Use [DateTimePicker](/en/components/date-time-picker) for time, or [DateRangePicker](/en/components/date-range-picker) for a range.
+{/* leaf:section basic */}
 
-## Basic selection
+## Basic usage
 
-Click the control to open the calendar and pick a date; the panel closes once a date is chosen. `defaultValue` sets the initial date and `disabled` disables the whole control.
+Set an initial date with `defaultValue`; choosing a date closes the panel. Use `null` for an empty value.
 
-<ComponentExample title="Basic selection" preview={<DatePickerBasic />} fileName="basic.tsx" width={360}>
+<ComponentExample exampleId="basic" preview={<DatePickerBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-picker/basic.tsx"
-
 ```
 
 </ComponentExample>
 
-## Card panel
+{/* leaf:section examples */}
 
-Date and time pickers share `panelVariant="card"`: the popup uses a muted canvas, while the calendar, time columns and shortcut region sit on an inset content surface.
+## Examples
 
-<ComponentExample title="Card panel" preview={<DatePickerCard />} fileName="card.tsx" width={360}>
+### Controlled value and clearing
 
-```tsx lineNumbers file="../../../src/examples/en/date-picker/card.tsx"
+Manage selection with `value` and `onChange`. Calendar modes provide both a `Date` and a formatted string; clearing returns `null` and `''`. Reset application state when resetting a controlled form field.
 
-```
-
-</ComponentExample>
-
-## Controlled value and date limits
-
-Use `minDate` / `maxDate` to restrict selectable dates; the boundary day itself remains selectable. `onChange` provides both a Date object and a local date string.
-
-<ComponentExample title="Controlled value and date limits" preview={<DatePickerControlled />} fileName="controlled.tsx" width={360}>
+<ComponentExample exampleId="controlled" preview={<DatePickerControlled />} fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-picker/controlled.tsx"
-
 ```
 
 </ComponentExample>
 
-## Date shortcuts
+### Interaction states
 
-Customize Today with todayText, add shortcuts with renderExtraFooter, or hide Today with showToday=false.
+`disabled` disables the whole control. `readOnly` keeps a read-only value that cannot be changed. `inputReadOnly` prevents typing but still allows panel selection.
 
-<ComponentExample title="Date shortcuts" preview={<DatePickerFooter />} fileName="footer.tsx">
+<ComponentExample exampleId="states" preview={<DatePickerStates />} fileName="states.tsx">
 
-```tsx lineNumbers file="../../../src/examples/en/date-picker/footer.tsx"
-
+```tsx lineNumbers file="../../../src/examples/en/date-picker/states.tsx"
 ```
 
 </ComponentExample>
 
-## Picker granularity
+### Picker granularity
 
-`picker` sets the panel granularity: year, quarter, month or week.
+Use `picker` to select a year, quarter, month or week. The returned `Date` is the start of that period. [ConfigProvider](/en/components/config-provider) sets the first weekday with `weekStartsOn`, defaulting to Monday.
 
-<ComponentExample title="Picker granularity" preview={<ExtensionDemo />} fileName="extensions.tsx">
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/date-picker/extensions.tsx"
-
 ```
 
 </ComponentExample>
 
-## Serialization and dates
+### Restrict selectable dates
 
-<ComponentExample title="Custom display format" preview={<Format english />} fileName="format.tsx" width={360}>
+`minDate` / `maxDate` include their boundaries, and returning `true` from `disabledDate` disables a date. This example allows weekdays in October only. Restrictions apply to typing and panel selection without clearing an existing value; revalidate it in the application when business rules change. Datetime mode compares complete timestamps against its bounds.
 
-```tsx lineNumbers file="../../../src/examples/date-picker/format.tsx"
+<ComponentExample exampleId="disabled-dates" preview={<DisabledDates />} fileName="disabled-dates.tsx">
 
+```tsx lineNumbers file="../../../src/examples/en/date-picker/disabled-dates.tsx"
 ```
 
 </ComponentExample>
 
-`format` changes display text and the string argument of `onChange`; FormData keeps the canonical period/date representation described below. Square brackets escape literal text, such as `YYYY-[Q]Q`. Provide `parse` with a function-valued formatter. Dates are local calendar values; convert business timezones explicitly at the application boundary. Configure the first weekday with ConfigProvider's `weekStartsOn`.
+### Date and time
 
-## Disabled dates
+With `picker="datetime"`, choose a date and time, then select OK to commit. This mode defaults to `needConfirm={true}`; an outside click discards an unconfirmed date and time.
 
-`disabledDate` is called for every visible date; returning `true` makes that date unselectable. It suits weekends, holidays or dates outside the business range, and does not clear an existing value.
+<ComponentExample exampleId="datetime" preview={<DatePickerDateTime />} fileName="datetime.tsx">
 
-<ComponentExample title="Weekdays only" preview={<DisabledDates english />} fileName="disabled-dates.tsx" width={360}>
-
-```tsx lineNumbers file="../../../src/examples/date-picker/disabled-dates.tsx"
-
+```tsx lineNumbers file="../../../src/examples/en/date-picker/datetime.tsx"
 ```
 
 </ComponentExample>
 
-## Multiple dates
+### Time only
 
-Set `multiple` to pick several dates in one panel; `onChange` receives an array of dates.
+`picker="time"` uses 24-hour `HH:mm` strings for its value and `onChange`, returning `null` when cleared. With `showSeconds`, it uses `HH:mm:ss`. Set `minTime` / `maxTime` for time bounds, or `disabledTime` for business restrictions.
 
-<ComponentExample title="Several dates" preview={<Multiple english />} fileName="multiple.tsx" width={360}>
+<ComponentExample exampleId="time" preview={<DatePickerTime />} fileName="time.tsx">
 
-```tsx lineNumbers file="../../../src/examples/date-picker/multiple.tsx"
-
+```tsx lineNumbers file="../../../src/examples/en/date-picker/time.tsx"
 ```
 
 </ComponentExample>
 
-## Selection limit
+### 12-hour time and seconds
 
-`maxCount` is available in `multiple` mode and caps how many dates can be selected; once the limit is reached the remaining dates become unselectable.
+`use12Hours` changes display only; values remain in 24-hour format. `minuteStep` / `secondStep` set adjustment steps while retaining existing off-step values. When seconds are hidden, committed seconds are `0`.
 
-<ComponentExample title="At most three" preview={<MaxCount english />} fileName="max-count.tsx" width={360}>
+<ComponentExample exampleId="twelve-hours" preview={<DatePickerTwelveHours />} fileName="twelve-hours.tsx">
 
-```tsx lineNumbers file="../../../src/examples/date-picker/max-count.tsx"
-
+```tsx lineNumbers file="../../../src/examples/en/date-picker/twelve-hours.tsx"
 ```
 
 </ComponentExample>
 
-## DatePicker API
+### Display format and form submission
+
+<a id="advanced-usage"></a>
+
+`format` changes display and the string argument of `onChange`, not the canonical FormData value. This example displays `DD/MM/YYYY` and submits `YYYY-MM-DD`. Clearing submits an empty string; resetting an uncontrolled field restores `defaultValue`.
+
+<ComponentExample exampleId="format" preview={<Format />} fileName="format.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/format.tsx"
+```
+
+</ComponentExample>
+
+Canonical values are `date: YYYY-MM-DD`, `year: YYYY`, `quarter: YYYY-QN`, `month: YYYY-MM` and `week: YYYY-Www`; datetime uses `YYYY-MM-DD HH:mm[:ss]`. Dates use local time. Handle business timezone conversion in the application rather than treating UTC date strings as local calendar values.
+
+String formats support `YYYY`, `MM`, `DD`, `HH`, `mm`, `ss` and `Q`. Escape literals with brackets, for example `YYYY-[Q]Q`. If a function formatter produces text the default parser cannot recognize, provide `parse`, returning `null` on failure. See [Form](/en/components/form) for other form configuration.
+
+### Date shortcuts
+
+Use `presets` for common dates. Values may be a `Date` or a function that synchronously returns a `Date`, not a Promise. Choosing a valid preset commits immediately and closes the panel without waiting for OK. Configure Today with `showToday` / `todayText`; use `renderExtraFooter` for custom footer content and handle its business actions in the application.
+
+<ComponentExample exampleId="presets" preview={<DatePickerPresets />} fileName="presets.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/date-picker/presets.tsx"
+```
+
+</ComponentExample>
+
+#### Input and confirmation
+
+Type or paste a complete value, and select date segments with the mouse or Left / Right. Enter commits valid input; Escape discards the current edit. Invalid or incomplete input reverts to the committed value when focus leaves the whole picker. Alt + ArrowDown moves focus into the panel.
+
+Date and time-only modes do not require confirmation by default; valid changes may commit when focus leaves. With `needConfirm`, unconfirmed edits are discarded on dismissal. Clearing and presets still commit directly.
+
+{/* leaf:section api */}
+
+## API
+
+### DatePicker API
+
+The main table includes props for different `picker` modes: `format`, `parse`, `presets`, `minDate` / `maxDate` and calendar display props apply to calendar modes; `minTime` / `maxTime` apply to time-only mode. In datetime mode, `disabledTime` also receives the current `Date`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
-| `popupClassName` | `string` | — | Custom class for the popup. |
-| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
-| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
-| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `picker` | `'date' \| 'datetime' \| 'year' \| 'quarter' \| 'month' \| 'week' \| 'time'` | `'date'` | Select a date, time, date-time, week, month, quarter or year. |
+| `value` | `Date \| null \| string` | — | Controlled value: Date for dates/date-times, HH:mm[:ss] string for time; null when empty. |
+| `defaultValue` | `Date \| null \| string` | `null` | Initial uncontrolled value, matching picker, restored on form reset. |
+| `onChange` | `((value: Date \| null, dateString: string) => void) \| ((value: string \| null) => void)` | — | Called on commit: Date and formatted string for date modes, only HH:mm[:ss] or null for time. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation appearance |
-| `allowClear` | `boolean` | `true` | Show a clear button |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `multiple` | `false \| true` | — | Enable multiple selection; value and callback types change accordingly. |
-| `value` | `Date \| null \| readonly Date[]` | `null` | Controlled date / initial uncontrolled date |
-| `defaultValue` | `Date \| null \| readonly Date[]` | `null` | Controlled date / initial uncontrolled date |
-| `minDate` | `Date` | — | Earliest / latest date, compared in local time |
-| `maxDate` | `Date` | — | Earliest / latest date, compared in local time |
-| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Select date, year, quarter, month or week |
+| `allowClear` | `boolean` | `true` | Show a clear button |
+| `minDate` | `Date` | — | Earliest selectable date; datetime compares the complete timestamp, inclusive. |
+| `maxDate` | `Date` | — | Latest selectable date; datetime compares the complete timestamp, inclusive. |
 | `disabledDate` | `(date: Date) => boolean` | — | Restrict selectable dates |
+| `minTime` | `string` | — | Earliest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `maxTime` | `string` | — | Latest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `disabledTime` | `((parts: `[`TimeParts`](#timeparts)`, date: Date) => boolean) \| ((parts: `[`TimeParts`](#timeparts)`) => boolean)` | — | Disable times; typing and panel selection use the same rules. |
+| `needConfirm` | `boolean` | `picker === "datetime"` | Require OK or Enter to commit; discard the draft on blur when enabled. |
+| `showSeconds` | `boolean` | `false` | Display and edit seconds; otherwise seconds are zero. |
+| `use12Hours` | `boolean` | `false` | Use a 12-hour clock with AM/PM. |
+| `minuteStep` | `number` | `1` | Minute segment step and column interval, retaining existing off-step values. |
+| `secondStep` | `number` | `1` | Second segment step and column interval, retaining existing off-step values. |
+| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
+| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
+| `presets` | `readonly `[`DatePreset`](#datepreset)`[]` | — | Presets; value may be computed on demand. |
 | `showToday` | `boolean` | `true` | Show the Today shortcut |
 | `todayText` | `ReactNode` | Locale default | Customize the Today label |
 | `renderExtraFooter` | `ReactNode` | — | Additional footer content |
-| `onChange` | `((value: Date \| null, dateString: string) => void) \| ((value: Date[], dateStrings: string[]) => void)` | — | Changed date; clearing returns null and an empty string |
-| `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
-| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
-| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
-| `presets` | `readonly `[`DatePreset`](#datepreset)`[]` | — | Presets; value may be computed on demand. |
 | `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
 | `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
 | `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
-| `maxCount` | `number` | — | Maximum selection count. |
-| `disabled` | `boolean` | `false` | Disable interaction. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Calendar open-state changes |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
 | `name` | `string` | — | Field name in native FormData. |
 | `form` | `string` | — | ID of the associated native form. |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
 | `ref` | `Ref<HTMLInputElement>` | — | DOM reference |
 
-## Types
+Other native input attributes and `aria-*` target the input; `className` / `style` target the wrapper. See [PopupOptions](/en/api/popup-options) for shared popup configuration.
 
-Import DatePickerProps to describe component props. Option types in the API table link to their detailed fields above.
+### SingleDatePicker API
 
-```ts
-import type { DatePickerProps } from '@ifhover/leaf-ui';
-```
-
-## Forms and localization
-
-Use name to include values in FormData. Uncontrolled fields follow form reset; reset controlled values in application state. Place controls in [FormField](/en/components/form#formfield-api) for labels, help and errors. [ConfigProvider](/en/components/config-provider) supplies regional themes and translated built-in UI. Application labels and options are your responsibility.
-
-Type `YYYY-MM-DD` and press Enter or move focus away to submit. Invalid dates and values outside minDate/maxDate are rejected. Click the month or year heading to switch panels. Today selects the current date. Use showToday, todayText and renderExtraFooter to customize shortcuts.
-
-Clicking the field keeps typing focus; ArrowDown moves into the calendar, and Escape discards pending text. Other input attributes and aria-\* target the input; className/style target the wrapper.
-
-Canonical picker values: `date → YYYY-MM-DD`, `year → YYYY`, `quarter → YYYY-QN`, `month → YYYY-MM`, `week → YYYY-Www`. Without an explicit `format`, these values also drive the input display and onChange string. A custom `format` does not change FormData.
-
-## SingleDatePicker API
+Value and callback types for calendar modes; see the main table for shared props.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
-| `popupClassName` | `string` | — | Custom class for the popup. |
-| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
-| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
-| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `status` | `'error' \| 'warning'` | — | Configure status. |
-| `allowClear` | `boolean` | `true` | Show a clear action. |
-| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `multiple` | `false` | — | Enable multiple selection; value and callback types change accordingly. |
 | `value` | `Date \| null` | — | Controlled value. |
 | `defaultValue` | `Date \| null` | `null` | Initial value; uncontrolled fields support native form reset. |
-| `minDate` | `Date` | — | Earliest available date, inclusive. |
-| `maxDate` | `Date` | — | Latest available date, inclusive. |
-| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Configure picker. |
-| `disabledDate` | `(date: Date) => boolean` | — | Disable dates using business rules. |
-| `showToday` | `boolean` | `true` | Configure show today. |
-| `todayText` | `ReactNode` | — | Configure today text. |
-| `renderExtraFooter` | `ReactNode` | — | Configure render extra footer. |
-| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Called when the value changes. |
-| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
-| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
-| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
-| `presets` | `readonly `[`DatePreset`](#datepreset)`[]` | — | Presets; value may be computed on demand. |
-| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
-| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
-| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
+| `onChange` | `(value: Date \| null, dateString: string) => void` | — | Return the date and formatted string on commit; clearing returns null and an empty string. |
 
-## MultipleDatePicker API
+### DatePreset
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
-| `popupClassName` | `string` | — | Custom class for the popup. |
-| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
-| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
-| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `status` | `'error' \| 'warning'` | — | Configure status. |
-| `allowClear` | `boolean` | `true` | Show a clear action. |
-| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
-| `panelVariant` | `'plain' \| 'card'` | `'plain'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
-| `open` | `boolean` | — | Control whether the panel is open. |
-| `defaultOpen` | `boolean` | — | Initial open state. |
-| `minDate` | `Date` | — | Earliest available date, inclusive. |
-| `maxDate` | `Date` | — | Latest available date, inclusive. |
-| `picker` | `'date' \| 'year' \| 'quarter' \| 'month' \| 'week'` | `'date'` | Configure picker. |
-| `disabledDate` | `(date: Date) => boolean` | — | Disable dates using business rules. |
-| `showToday` | `boolean` | `true` | Configure show today. |
-| `todayText` | `ReactNode` | — | Configure today text. |
-| `renderExtraFooter` | `ReactNode` | — | Configure render extra footer. |
-| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
-| `format` | `string \| ((date: Date) => string)` | — | Display format; dates support YYYY, MM, DD, HH, mm, ss and Q. |
-| `parse` | `(text: string) => Date \| null` | — | Parse entered text; return null on failure. |
-| `panelValue` | `Date` | — | Controlled date displayed by the calendar panel. |
-| `onPanelChange` | `(date: Date) => void` | — | Called when the displayed calendar period changes. |
-| `cellRender` | `(date: Date) => ReactNode` | — | Customize calendar cell content. |
-| `multiple` | `true` | Required | Enable multiple selection; value and callback types change accordingly. |
-| `value` | `readonly Date[]` | — | Controlled value. |
-| `defaultValue` | `readonly Date[]` | — | Initial value; uncontrolled fields support native form reset. |
-| `maxCount` | `number` | — | Maximum selection count. |
-| `onChange` | `(value: Date[], dateStrings: string[]) => void` | — | Called when the value changes. |
-
-## DatePreset
+Preset entries used by `presets`. `T` is `Date` for a single value or a date tuple for a range. Functions must be synchronous, free of side effects and safe to evaluate repeatedly.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | — | Stable, unique identifier. |
 | `label` | `ReactNode` | Required | Visible label or content. |
-| `value` | `T \| (() => T)` | Required | Controlled value. |
+| `value` | `T \| (() => T)` | Required | Preset value or synchronous function; functions must be pure and allow repeated evaluation. |
+
+### TimePickerMode API
+
+Props and callbacks for `picker="time"`; values always use 24-hour strings.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `picker` | `'time'` | Required | Time-only mode; pass time. |
+| `value` | `string \| null` | — | Controlled 24-hour HH:mm or HH:mm:ss string; null when empty. |
+| `defaultValue` | `string \| null` | `null` | Initial value; uncontrolled fields support native form reset. |
+| `onChange` | `(value: string \| null) => void` | — | Return only a 24-hour string on commit, or null on clear. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
+| `status` | `'error' \| 'warning'` | — | Show an error or warning appearance without performing validation. |
+| `allowClear` | `boolean` | `true` | Show a clear action. |
+| `inputReadOnly` | `boolean` | — | Disable typing while retaining panel selection. |
+| `minTime` | `string` | — | Earliest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `maxTime` | `string` | — | Latest selectable time, inclusive, as HH:mm or HH:mm:ss. |
+| `disabledTime` | `(parts: `[`TimeParts`](#timeparts)`) => boolean` | — | Disable times; typing and panel selection use the same rules. |
+| `needConfirm` | `boolean` | `false` | Require OK or Enter to commit; discard the draft on blur when enabled. |
+| `showSeconds` | `boolean` | `false` | Display and edit seconds; otherwise seconds are zero. |
+| `use12Hours` | `boolean` | `false` | Use a 12-hour clock with AM/PM. |
+| `minuteStep` | `number` | `1` | Minute segment step and column interval, retaining existing off-step values. |
+| `secondStep` | `number` | `1` | Second segment step and column interval, retaining existing off-step values. |
+| `open` | `boolean` | — | Control whether the panel is open. |
+| `defaultOpen` | `boolean` | — | Initial open state. |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when the panel opens or closes. |
+| `panelVariant` | `'plain' \| 'card'` | `'card'` | Panel appearance; card places the content on an inset surface above a muted canvas. |
+| `popupPlacement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | — | Placement relative to the trigger. |
+| `popupClassName` | `string` | — | Custom class for the popup. |
+| `popupStyle` | `CSSProperties` | — | Custom popup styles. |
+| `popupRender` | `(content: React.ReactNode) => React.ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
+| `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+
+### TimeParts
+
+Time parts passed to `disabledTime`.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `hour` | `number` | Required | Hour as an integer from 0 to 23. |
+| `minute` | `number` | Required | Minute as an integer from 0 to 59. |
+| `second` | `number` | Required | Second as an integer from 0 to 59. |

@@ -1,36 +1,38 @@
-import type { CascaderOption } from '@ifhover/leaf-ui';
-import { Cascader } from '@ifhover/leaf-ui';
+import { Cascader, type CascaderOption, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
-const regions = (english: boolean): CascaderOption[] => [
+const regions: CascaderOption[] = [
   {
     value: 'zhejiang',
-    label: english ? 'Zhejiang' : '浙江',
+    label: '浙江',
     children: [
-      { value: 'hangzhou', label: english ? 'Hangzhou' : '杭州' },
-      { value: 'ningbo', label: english ? 'Ningbo' : '宁波' },
+      { value: 'hangzhou', label: '杭州' },
+      { value: 'ningbo', label: '宁波' },
     ],
   },
   {
     value: 'jiangsu',
-    label: english ? 'Jiangsu' : '江苏',
+    label: '江苏',
     children: [
-      { value: 'nanjing', label: english ? 'Nanjing' : '南京' },
-      { value: 'suzhou', label: english ? 'Suzhou' : '苏州' },
+      { value: 'nanjing', label: '南京' },
+      { value: 'suzhou', label: '苏州' },
     ],
   },
 ];
 
-export function Multiple({ english = false }) {
+export function CascaderMultiple() {
+  const [value, setValue] = useState<string[][]>([
+    ['zhejiang', 'hangzhou'],
+    ['jiangsu', 'nanjing'],
+  ]);
   return (
-    <Cascader
-      aria-label={english ? 'Regions' : '地区'}
-      defaultValue={[
-        ['zhejiang', 'hangzhou'],
-        ['jiangsu', 'nanjing'],
-      ]}
-      multiple
-      options={regions(english)}
-      placeholder={english ? 'Select regions' : '选择地区'}
-    />
+    <Form layout="vertical">
+      <FormField label="地区">
+        <Cascader multiple options={regions} value={value} onChange={setValue} />
+      </FormField>
+      <Text role="status" tone="muted">
+        选中路径数：{value.length}
+      </Text>
+    </Form>
   );
 }

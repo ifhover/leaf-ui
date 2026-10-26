@@ -1,29 +1,48 @@
-import { Button, Form, FormField, Input, Popover } from '@ifhover/leaf-ui';
+import { Button, Flex, Form, FormField, Input, Popover, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
+
 export function PopoverControlled() {
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState('Leaf Garden');
+  const [draft, setDraft] = useState(name);
   return (
-    <Popover
-      title="编辑项目"
-      open={open}
-      onOpenChange={setOpen}
-      width={260}
-      content={
-        <Form
-          layout="vertical"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setOpen(false);
-          }}
-        >
-          <FormField label="项目名称">
-            <Input defaultValue="Leaf Garden" />
-          </FormField>
-          <Button type="submit">保存并关闭</Button>
-        </Form>
-      }
-    >
-      <Button variant="outline">点击编辑</Button>
-    </Popover>
+    <Flex direction="column" gap="md" align="start">
+      <Popover
+        title="编辑项目"
+        width={280}
+        open={open}
+        onOpenChange={(next) => {
+          if (next) setDraft(name);
+          setOpen(next);
+        }}
+        content={
+          <Form
+            layout="vertical"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setName(draft.trim());
+              setOpen(false);
+            }}
+          >
+            <FormField label="项目名称">
+              <Input
+                name="projectName"
+                value={draft}
+                onChange={(event) => setDraft(event.currentTarget.value)}
+                required
+              />
+            </FormField>
+            <Button type="submit" disabled={!draft.trim()}>
+              保存并关闭
+            </Button>
+          </Form>
+        }
+      >
+        <Button variant="outline">编辑项目</Button>
+      </Popover>
+      <Text role="status" tone="muted">
+        项目名称: {name}
+      </Text>
+    </Flex>
   );
 }

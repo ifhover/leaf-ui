@@ -1,32 +1,39 @@
-import { Anchor } from '@ifhover/leaf-ui';
+import { Anchor, Flex, Grid, Paragraph, Title } from '@ifhover/leaf-ui';
 import { useCallback, useId, useRef } from 'react';
-export function AnchorBasic({ english = false }: { english?: boolean }) {
-  const scroll = useRef<HTMLDivElement>(null),
-    id = useId();
+
+export function AnchorBasic() {
+  const scroll = useRef<HTMLElement>(null);
+  const id = useId();
   const container = useCallback(() => scroll.current ?? window, []);
   const sections = [
-    english ? 'Overview' : '概况',
-    english ? 'Members' : '成员',
-    english ? 'Settings' : '设置',
+    { key: 'overview', title: '概况', description: '查看项目的基本信息。' },
+    { key: 'members', title: '成员', description: '管理参与项目的成员。' },
+    { key: 'settings', title: '设置', description: '调整项目的通知设置。' },
   ];
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '120px minmax(0, 1fr)', gap: 20 }}>
+    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="start">
       <Anchor
+        aria-label="章节目录"
         container={container}
-        items={sections.map((title, index) => ({ key: title, title, href: `#${id}-${index}` }))}
+        items={sections.map(({ key, title }) => ({ key, title, href: `#${id}-${key}` }))}
       />
-      <div ref={scroll} style={{ height: 240, overflow: 'auto' }}>
-        {sections.map((title, index) => (
-          <section key={title} id={`${id}-${index}`} style={{ minHeight: 210 }}>
-            <h3>{title}</h3>
-            <p>
-              {english
-                ? 'Scroll this area or select an item in the contents.'
-                : '滚动这一块内容，或点击左侧的目录。'}
-            </p>
+      <section
+        ref={scroll}
+        aria-label="章节内容"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: The scroll region needs keyboard focus.
+        tabIndex={0}
+        style={{ height: 240, overflow: 'auto' }}
+      >
+        {sections.map(({ key, title, description }) => (
+          <section key={key} id={`${id}-${key}`} style={{ minHeight: 210 }}>
+            <Flex direction="column" gap={8}>
+              <Title level={4}>{title}</Title>
+              <Paragraph>{description}</Paragraph>
+            </Flex>
           </section>
         ))}
-      </div>
-    </div>
+      </section>
+    </Grid>
   );
 }

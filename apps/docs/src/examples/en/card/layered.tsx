@@ -8,9 +8,7 @@ export function CardLayered() {
       variant="layered"
     >
       <Space direction="vertical" align="stretch" size="md">
-        <Text>
-          The content outline is ready. We are adding usage examples and checking the mobile layout.
-        </Text>
+        <Text>Document component usage and add interactive examples.</Text>
         <Progress percent={60} aria-label="Project completion" />
         <Flex justify="space-between" gap="sm" wrap>
           <Text tone="muted">6 of 10 tasks completed</Text>

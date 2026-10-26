@@ -2,67 +2,100 @@ import { ComponentExample } from '../../src/components/component-example';
 import { CalendarBasic } from '../../src/examples/calendar/basic';
 import { CalendarCompact } from '../../src/examples/calendar/compact';
 import { CalendarMonth } from '../../src/examples/calendar/month';
+import { CalendarControlled } from '../../src/examples/calendar/controlled';
+import { CalendarSchedule } from '../../src/examples/calendar/schedule';
+
+export const leafDoc = { component: 'Calendar', primaryApi: 'CalendarProps' };
 
 # Calendar 日历
 
-查看日期、选择日期并展示日程安排。
+浏览和选择日期，也可在日期中补充日程信息。
 
-## 日程日历
+{/* leaf:section basic */}
 
-<ComponentExample title="日程日历" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
+## 基础用法
+
+通过 `defaultValue` 设置初始选中日期；选择日期时触发 `onChange`。
+
+<ComponentExample exampleId="basic" preview={<CalendarBasic />} fileName="basic.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/calendar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 紧凑日历与禁用日期
+{/* leaf:section examples */}
 
-<ComponentExample title="紧凑日历与禁用日期" preview={<CalendarCompact />} fileName="compact.tsx" width="100%">
+## 示例
+
+### 紧凑日历
+
+设置 `fullscreen={false}` 使用紧凑日历。下面通过 `disabledDate` 排除周末；点击标题可切换到月份视图。
+
+<ComponentExample exampleId="compact" preview={<CalendarCompact />} fileName="compact.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/calendar/compact.tsx"
 ```
 
 </ComponentExample>
 
-## 选择月份
+### 选择月份
 
-<ComponentExample title="选择月份" preview={<CalendarMonth />} fileName="month.tsx" width="100%">
+`mode="month"` 直接选择月份，返回所选月份第一天的本地 `Date`。此模式的 `disabledDate` 也接收月初日期。
+
+<ComponentExample exampleId="month" preview={<CalendarMonth />} fileName="month.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/calendar/month.tsx"
 ```
 
 </ComponentExample>
 
-## Calendar API
+### 受控日期与展示月份
+
+<a id="进阶用法"></a>
+
+`value` 管理选中日期，`visibleDate` 管理正在查看的月份。翻页或点击“今天”只改变展示月份，不会选择日期；`onVisibleChange` 返回新月份的第一天。示例通过 `headerExtra` 提供返回所选月份的操作。
+
+<ComponentExample exampleId="controlled" preview={<CalendarControlled />} fileName="controlled.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/calendar/controlled.tsx"
+```
+
+</ComponentExample>
+
+### 日程内容
+
+通过 `cellRender` 补充文字、图标或 Tag。内容放在日期按钮内，不能嵌套链接、按钮等交互元素；需要操作日程时，在日历外提供对应入口。
+
+<ComponentExample exampleId="schedule" preview={<CalendarSchedule />} fileName="schedule.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/calendar/schedule.tsx"
+```
+
+</ComponentExample>
+
+日期使用本地 `Date`；`minDate` / `maxDate` 包含边界日期。SSR 页面应提供服务端和客户端一致的初始日期，见 [服务端渲染](/guide/ssr)。Calendar 不提供原生表单提交或重置行为，需要这些能力时使用 [DatePicker](/components/date-picker)。
+
+{/* leaf:section api */}
+
+## API
+
+### Calendar API
+
+选中日期、显示月份与可选日期范围的配置。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `value / defaultValue` | `Date` | — | 受控 / 初始选中日期 |
-| `onChange` | `(date: Date) => void` | — | 选择日期后触发 |
-| `visibleDate` | `Date` | — | 受控展示范围 |
-| `onVisibleChange` | `(date: Date) => void` | — | 展示范围变化 |
+| `value` | `Date` | — | 受控的选中日期，与 visibleDate 独立。 |
+| `defaultValue` | `Date` | — | 非受控模式的初始选中日期。 |
+| `onChange` | `(date: Date) => void` | — | 选择日期时调用；month 模式返回所选月的第一天。 |
 | `mode` | `'date' \| 'month'` | `'date'` | 选择日期或月份 |
-| `fullscreen` | `boolean` | `true` | 完整日历布局 |
-| `minDate / maxDate` | `Date` | — | 日期边界 |
+| `fullscreen` | `boolean` | `true` | 完整月历布局；`false` 为 296px 紧凑日历 |
+| `minDate` | `Date` | — | 日期边界 |
+| `maxDate` | `Date` | — | 日期边界 |
 | `disabledDate` | `(date: Date) => boolean` | — | 禁用指定日期 |
-| `cellRender` | `(date: Date) => ReactNode` | — | 补充日程内容 |
+| `visibleDate` | `Date` | — | 受控的显示月份，不代表选中日期。 |
+| `onVisibleChange` | `(date: Date) => void` | — | 显示月份变化时返回新月份的第一天；不触发选择。 |
+| `showToday` | `boolean` | `true` | 显示回到今天的操作，仅切换显示月份，不改变选中值。 |
+| `cellRender` | `(date: Date) => ReactNode` | — | 自定义单元格内容；内容位于选择按钮内，不要嵌套交互控件。 |
 | `headerExtra` | `ReactNode` | — | 标题区域补充内容 |
-| `showToday` | `boolean` | `true` | 完整日历展示今天按钮，跳至当前月份 |
-
-
-## 类型
-
-可导入以下类型定义属性、组装数据或处理回调。
-
-```ts
-import type { CalendarProps } from '@ifhover/leaf-ui';
-```
-
-## 使用说明
-
-完整日历采用编辑式无边框网格：大号月份标题、轻量年份、尾端的今天与翻页控件共同组成页眉。日期、月份和年份视图分别使用 7 列、4 列和 3 列开放布局。选中日期使用整格淡主题色背景和实心圆形日期标签；今天使用主题色数字与圆点，不以边框强调。
-
-`fullscreen={false}` 展示 32px 无边框日期格的紧凑日历。`cellRender` 内容位于日期下方并单行省略，请使用文字、图标等非交互内容，避免在日期按钮内嵌套按钮。禁用选中项保留清晰的灰色状态，不会再次触发选择。
-
-方向键移动日期，Home / End 跳至一行首尾，PageUp / PageDown 切换月份。SSR 页面应提供一致的初始日期，详见 [服务端渲染](/guide/ssr)。

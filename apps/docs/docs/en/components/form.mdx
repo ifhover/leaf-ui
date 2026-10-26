@@ -1,54 +1,145 @@
-import { ExtensionDemo } from '../../../src/examples/en/form/extensions';
 import { ComponentExample } from '../../../src/components/component-example';
 import { FormBasic } from '../../../src/examples/en/form/basic';
 import { FormLabelWidth } from '../../../src/examples/en/form/label-width';
 import { FormSettings } from '../../../src/examples/en/form/settings';
+import { ExtensionDemo } from '../../../src/examples/en/form/extensions';
+import { FormSummary } from '../../../src/examples/en/form/error-summary';
+import { FormValidation } from '../../../src/examples/en/form/validation';
+
+export const leafDoc = { component: 'Form', primaryApi: 'FormProps' };
 
 # Form
 
 Organize fields, labels and validation feedback, and collect form data.
 
-## Submission and validation
+{/* leaf:section basic */}
 
-<ComponentExample title="Submission and validation" preview={<FormBasic />} fileName="basic.tsx" width={600}>
+## Basic usage
+
+Set a control’s `name` and read its value from `FormData` in the submit event. `FormField required` and input types enable native validation, with errors shown below the corresponding fields.
+
+<ComponentExample exampleId="basic" preview={<FormBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Label widths
+{/* leaf:section examples */}
 
-<ComponentExample title="Label widths" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
+## Examples
+
+### Label widths
+
+Horizontal fields share the widest label width by default. Set a numeric `labelWidth` for a fixed width. Horizontal and settings fields stack in narrow containers.
+
+<ComponentExample exampleId="label-width" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/label-width.tsx"
 ```
 
 </ComponentExample>
 
-## Settings layout
+### Settings layout
 
-Set `layout="settings"` to place labels and `description` on the left and naturally sized controls on the right, with dividers between fields. For wider controls, set `FormField layout="vertical"` to place the label and description above a full-width control. Fields stack automatically on narrow screens.
+`layout="settings"` places the label and `description` to the left of the control. Override a wider field with `layout="vertical"`. `description` explains the field; `help` appears below the control and is replaced by `error`.
 
-Use `description` to explain a field beside its label. Use `help` for guidance below the control; validation feedback from `error` replaces `help`.
-
-<ComponentExample title="Settings layout with a vertical field" preview={<FormSettings />} fileName="settings.tsx" width={600}>
+<ComponentExample exampleId="settings" preview={<FormSettings />} fileName="settings.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/settings.tsx"
 ```
 
 </ComponentExample>
 
-## Dynamic form lists
+### Dynamic form lists
 
-<ComponentExample title="Dynamic form lists" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
+`FormList` manages row values, insertion, removal and ordering. Use `field.key` as the React key and pass `field.name` to the actual control. Moving a row updates its index and name. An uncontrolled list restores `defaultValue` on form reset.
+
+`name` is only a field-name prefix. Dotted names remain literal strings in `FormData`; they do not create nested objects.
+
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/form/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## Form API
+### Error summary
+
+Place `FormErrorSummary` inside the same `Form` to collect field errors. Submit the empty form, then select an error to focus its control.
+
+<ComponentExample exampleId="error-summary" preview={<FormSummary />} fileName="error-summary.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/form/error-summary.tsx"
+```
+
+</ComponentExample>
+
+### Custom validation
+
+`useFormValidation` reads `FormData` and manages errors and `pending`. Use `noValidate` to take over validation and pass field-keyed errors to `FormField`. This example validates synchronously and clears the field error on input.
+
+<ComponentExample exampleId="validation" preview={<FormValidation />} fileName="validation.tsx" width={600}>
+
+```tsx lineNumbers file="../../../src/examples/en/form/validation.tsx"
+```
+
+</ComponentExample>
+
+Asynchronous `validate` and `onSubmit` callbacks must honor the provided `AbortSignal`. A new submission cancels the previous request; `clearErrors` also cancels the current request. Bind `handleReset` to the form reset event to cancel requests and clear errors.
+
+### React Hook Form integration
+
+{/* leaf:example react-hook-form */}
+
+This third-party integration is a code-only example: the documentation site does not load React Hook Form. Install it in your application first. Use `register` for native inputs and `Controller` for value-based controls.
+
+```bash
+npm install react-hook-form
+```
+
+```tsx
+import { Button, Form, FormField, Input, Select } from '@ifhover/leaf-ui';
+import { Controller, useForm } from 'react-hook-form';
+
+export function AccountForm() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { email: '', role: '' },
+  });
+  return (
+    <Form noValidate onSubmit={handleSubmit((values) => console.log(values))}>
+      <FormField label="Email" error={errors.email?.message}>
+        <Input {...register('email', { required: 'Enter an email' })} />
+      </FormField>
+      <Controller
+        name="role"
+        control={control}
+        rules={{ required: 'Choose a role' }}
+        render={({ field, fieldState }) => (
+          <FormField label="Role" error={fieldState.error?.message}>
+            <Select {...field} options={[{ value: 'editor', label: 'Editor' }]} />
+          </FormField>
+        )}
+      />
+      <Button type="submit">Save</Button>
+    </Form>
+  );
+}
+```
+
+Use React Hook Form’s `useFieldArray` for arrays.
+
+{/* leaf:section api */}
+
+## API
+
+### Form API
+
+#### Form integration
+
+`FormData` values are strings or `File` objects. Convert numbers and assemble objects in your application. Unchecked checkboxes do not submit `false`; use `getAll()` for repeated names. Native reset restores uncontrolled defaults; reset controlled state in your application.
+
+Leaf UI controls read the associations supplied by `FormField`. For native or third-party controls, provide matching `id` and `htmlFor` values. `Form disabled` passes disabled state to controls that consume its context; it does not disable arbitrary DOM elements or prevent submission.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -58,69 +149,57 @@ Use `description` to explain a field beside its label. Use `help` for guidance b
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
 
-## FormField API
+### FormField API
+
+Props associating a field label, control and validation messages.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `label` | `ReactNode` | — | Field label |
-| `description` | `ReactNode` | — | Description below the label, displayed independently of help and error below the control |
-| `layout` | [`FormProps`](#form-api)`['layout']` | Inherited from Form | Override this field's layout; vertical allows wider controls to fill the row |
 | `htmlFor` | `string` | Generated | The associated control ID; one field wraps one control or group |
 | `required` | `boolean` | `false` | Require a non-empty value; compound controls validate once. |
 | `help` | `ReactNode` | — | Supporting text below the control, included in the field layout |
 | `error` | `ReactNode` | — | Error message, displayed instead of help |
+| `layout` | [`FormProps`](#form-api)`['layout']` | Inherited from Form | Override this field's layout; vertical allows wider controls to fill the row |
 | `labelWidth` | `number` | — | Override this horizontal field’s label width in pixels |
+| `description` | `ReactNode` | — | Description below the label, displayed independently of help and error below the control |
 
-## Types
+### FormGroupProps API
 
-Import types when defining reusable component props or assembling options.
-
-```ts
-import type { FormProps, FormFieldProps } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-The default horizontal layout aligns labels to the widest horizontal field label in the Form. Widths update when text, fonts or mounted fields change. Vertical layouts and narrow screens stack labels above fields. A FormField can override the Form layout with its own layout prop; labelWidth and labelAlign only apply to horizontal fields. Standard form attributes such as action, method, onSubmit and onReset are supported.
-
-Help and error messages occupy normal layout space and preserve the form gap before the next field. Wrapped text naturally adds height.
-
-Read named controls with FormData. Use required, type and minLength for basic validation; errors appear beside their fields. Pass application or server errors through error. Set noValidate when handling validation yourself. FormData contains strings, does not build nested objects, and omits unchecked checkboxes. Reset controlled fields in application state.
-
-## Extension types
-
-```ts
-import type { FormGroupProps, FormListProps, FormListField, FormListOperations, FormErrorSummaryProps, FormError } from '@ifhover/leaf-ui';
-```
-
-## FormGroupProps API
+Props for the legend and description of a form field group.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `legend` | `ReactNode` | — | Field group title |
 | `description` | `ReactNode` | — | Supporting description |
 
-## FormListProps API
+### FormListProps API
+
+Props for the data, field naming and rendering of a dynamic form list.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `name` | `string` | Required | Form field name |
+| `name` | `string` | Required | Field-name prefix; use field.name on the actual control. Dotted names do not construct nested objects. |
 | `value` | `readonly T[]` | — | Controlled value |
 | `defaultValue` | `readonly T[]` | `[]` | Initial value, restored by uncontrolled form resets |
 | `onChange` | `(values: T[]) => void` | — | Value change callback |
 | `itemKey` | `(value: T) => string` | — | Return a stable identifier |
 | `children` | `(fields: readonly `[`FormListField`](#formlistfield-api)`<T>[], operations: `[`FormListOperations`](#formlistoperations-api)`<T>) => ReactNode` | Required | Render function for fields and row operations. |
 
-## FormListField API
+### FormListField API
+
+Information for one field passed to the list rendering function.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `key` | `string` | Required | Unique stable identifier |
 | `index` | `number` | Required | Current index, starting at zero |
 | `name` | `string` | Required | Form field name |
-| `value` | `T` | Required | Controlled value |
+| `value` | `T` | Required | Current value of this row. |
 
-## FormListOperations API
+### FormListOperations API
+
+Methods for inserting, removing, moving and updating dynamic form list entries.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -129,14 +208,18 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 | `move` | `(from: number, to: number) => void` | Required | Move fields preserving stable keys |
 | `update` | `(index: number, value: T) => void` | Required | Update field value |
 
-## FormErrorSummaryProps API
+### FormErrorSummaryProps API
+
+Props for presenting field validation errors together.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `errors` | `readonly `[`FormError`](#formerror-api)`[]` | — | Omitted collects field errors in this Form |
-| `title` | `ReactNode` | — | Title content |
+| `title` | `ReactNode` | Localized default | Error-summary heading, localized by default. |
 
-## FormError API
+### FormError API
+
+The field identity, label and message of an error summary entry.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -144,32 +227,9 @@ import type { FormGroupProps, FormListProps, FormListField, FormListOperations, 
 | `message` | `ReactNode` | Required | Error content |
 | `label` | `ReactNode` | — | Display label |
 
-## React Hook Form integration
+### FormValidationApi
 
-Install react-hook-form in your application. Use register with native inputs and Controller with components whose onChange returns a value. Leaf Form handles layout; the form library owns validation and state. Use noValidate to take over validation. FormList names are plain field names; use useFieldArray when React Hook Form manages the collection.
-
-```tsx
-import { useForm, Controller } from 'react-hook-form';
-import { Form, FormField, FormErrorSummary, Input, Select, Button } from '@ifhover/leaf-ui';
-
-export function AccountForm() {
-  const { register, control, handleSubmit, formState: { errors } } = useForm({ defaultValues: { email: '', role: '' } });
-  return <Form noValidate onSubmit={handleSubmit(values => console.log(values))}>
-    <FormErrorSummary />
-    <FormField label="Email" error={errors.email?.message}>
-      <Input {...register('email', { required: 'Enter an email' })} />
-    </FormField>
-    <Controller name="role" control={control} rules={{ required: 'Choose a role' }} render={({ field, fieldState }) =>
-      <FormField label="Role" error={fieldState.error?.message}>
-        <Select {...field} options={[{ value: 'editor', label: 'Editor' }]} />
-      </FormField>}
-    />
-    <Button type="submit">Save</Button>
-  </Form>;
-}
-```
-
-## FormValidationApi
+State and form event handlers returned by `useFormValidation`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -181,11 +241,13 @@ export function AccountForm() {
 | `cancel` | `() => void` | Required | Cancel the current request. |
 | `clearErrors` | `(name?: string) => void` | Required | Clear one or all errors and cancel stale requests. |
 
-## FormValidationOptions
+### FormValidationOptions
+
+Configuration for application validation, submission callbacks and error handling.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `validate` | `( data: FormData, signal: AbortSignal, ) => Record<string, string> \| Promise<Record<string, string>>` | Required | Validate FormData with a cancellation signal; return field-keyed errors. |
 | `onSubmit` | `(data: FormData, signal: AbortSignal) => void \| Promise<void>` | — | Submit after validation, respecting cancellation. |
 | `onError` | `(error: unknown) => void` | — | Called when validation or submission throws. |
-| `focusError` | `boolean` | — | Focus the first invalid field. |
+| `focusError` | `boolean` | `true` | Focus the first invalid field. |

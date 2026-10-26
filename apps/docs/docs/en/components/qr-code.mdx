@@ -1,53 +1,97 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { QRCodeBasic } from '../../../src/examples/en/qr-code/basic';
 import { QRCodeStatus } from '../../../src/examples/en/qr-code/advanced';
+import { QRCodeRefresh } from '../../../src/examples/en/qr-code/refresh';
+import { QRCodeDownload } from '../../../src/examples/en/qr-code/download';
+import { QRCodeLogo } from '../../../src/examples/en/qr-code/logo';
+
+export const leafDoc = { component: 'QRCode', primaryApi: 'QRCodeProps' };
 
 # QRCode
 
-Present text and links as QR codes.
+Encode text or a URL as a QR code.
+
+{/* leaf:section basic */}
 
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<QRCodeBasic />} fileName="basic.tsx">
+The `value` prop contains the content to encode. Use `aria-label` to describe the purpose of the QR code.
+
+<ComponentExample exampleId="basic" preview={<QRCodeBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/qr-code/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Status and refresh
+<a id="status-and-downloads"></a>
 
-<ComponentExample title="Status and refresh" preview={<QRCodeStatus />} fileName="advanced.tsx" width={360}>
+{/* leaf:section examples */}
+
+## Examples
+
+### Loading state
+
+`status="loading"` displays a loading indicator but does not fetch or update the encoded content.
+
+<ComponentExample exampleId="advanced" preview={<QRCodeStatus />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/qr-code/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+### Refresh after expiry
 
-value contains the encoded content. status can display a loading or expired state. Handle refresh through onRefresh and enable downloadable for SVG downloads.
+`status="expired"` shows a refresh button. The `onRefresh` callback asks the application to refresh; it does not change `value` or `status`. This example generates a new demo token each time. When using an API, the application handles the request, errors, and state changes.
 
-## Types
+<ComponentExample exampleId="refresh" preview={<QRCodeRefresh />} width="fit-content" fileName="refresh.tsx">
 
-Import these types for data, callbacks and refs.
-
-```ts
-import type { QRCodeProps } from '@ifhover/leaf-ui';
+```tsx lineNumbers file="../../../src/examples/en/qr-code/refresh.tsx"
 ```
 
-## QRCodeProps API
+</ComponentExample>
+
+### Download an SVG
+
+Enable `downloadable` to show the download action. Set `fileName` to a filename including its extension.
+
+<ComponentExample exampleId="download" preview={<QRCodeDownload />} width="fit-content" fileName="download.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/qr-code/download.tsx"
+```
+
+</ComponentExample>
+
+### Center logo
+
+Use `logo` to add a center image and `level` to set error correction. Test the result with actual scanning devices after adding a logo or changing colors; a higher correction level does not replace scan testing.
+
+<ComponentExample exampleId="logo" preview={<QRCodeLogo />} width="fit-content" fileName="logo.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/qr-code/logo.tsx"
+```
+
+</ComponentExample>
+
+{/* leaf:section api */}
+
+## API
+
+### QRCodeProps API
+
+Configure encoded content, QR code status and download actions.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `string` | Required | Controlled value |
-| `size` | `number` | `160` | QR code width in pixels. |
-| `color` | `string` | `'var(--leaf-color-text)'` | Color |
-| `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | Background color |
+| `value` | `string` | Required | Text or URL encoded in the QR code. |
+| `size` | `number` | `160` | Square QR-code size in pixels, with a minimum of 64. |
+| `status` | `'active' \| 'loading' \| 'expired'` | `'active'` | Display active, loading or expired state without loading data or calculating expiration. |
+| `onRefresh` | `() => void` | — | Called when the expired-state refresh button is clicked; the application updates value and status. |
+| `downloadable` | `boolean` | `false` | Show the download action, exporting an SVG file. |
+| `fileName` | `string` | `'qrcode.svg'` | Download filename, including its extension. |
 | `level` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | QR error correction level |
 | `logo` | `string` | — | Center logo URL |
 | `logoSize` | `number` | `32` | Center logo size |
-| `status` | `'active' \| 'loading' \| 'expired'` | `'active'` | Display state |
-| `onRefresh` | `() => void` | — | Refresh expired QR code |
-| `downloadable` | `boolean` | `false` | Show download action |
-| `fileName` | `string` | `'qrcode.svg'` | Download filename |
+| `color` | `string` | `'var(--leaf-color-text)'` | Color |
+| `backgroundColor` | `string` | `'var(--leaf-color-surface)'` | Background color |

@@ -1,4 +1,4 @@
-import { Space, Text, TimeRangePicker } from '@ifhover/leaf-ui';
+import { DateRangePicker, Space, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 export function TimeRangePickerBasic() {
   const [value, setValue] = useState<import('@ifhover/leaf-ui').TimeRange | null>([
@@ -7,7 +7,7 @@ export function TimeRangePickerBasic() {
   ]);
   return (
     <Space direction="vertical" align="stretch">
-      <TimeRangePicker value={value} onChange={setValue} />
+      <DateRangePicker picker="time" value={value} onChange={setValue} />
       <output>
         <Text tone="muted">{value?.join(' ~ ') || '—'}</Text>
       </output>

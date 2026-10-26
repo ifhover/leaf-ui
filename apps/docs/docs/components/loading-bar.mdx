@@ -2,50 +2,51 @@ import { ComponentExample } from '../../src/components/component-example';
 import { LoadingBarBasic } from '../../src/examples/loading-bar/basic';
 import { LoadingBarProgress } from '../../src/examples/loading-bar/advanced';
 
+export const leafDoc = { component: 'LoadingBar', primaryApi: 'LoadingBarProps' };
+
 # LoadingBar 顶部加载条
 
-展示页面或任务的加载进度。
+在视口边缘展示页面或任务的加载进度。
 
-## 基本用法
+{/* leaf:section basic */}
 
-<ComponentExample title="基本用法" preview={<LoadingBarBasic />} fileName="basic.tsx" width="fit-content">
+## 基础用法
+
+在 [ConfigProvider](/components/config-provider) 的子组件中调用 `useLoadingBar()`，已有上下文时无需重复包裹。需要独立加载条时使用 `LoadingBarProvider`；嵌套 ConfigProvider 仍复用现有加载条。
+
+`start()` 返回当前任务的完成函数，无论请求成功还是失败，都应在 `finally` 中调用。多个任务并发时，全部完成后加载条才会收起。
+
+<ComponentExample exampleId="basic" preview={<LoadingBarBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading-bar/basic.tsx"
 ```
 
 </ComponentExample>
 
-## 手动控制进度
+`reset()` 会清空当前 Provider 中的全部任务，不只影响调用组件。结束单个任务时应使用 `start()` 返回的函数；取消请求或卸载时的任务清理也应如此。
 
-<ComponentExample title="手动控制进度" preview={<LoadingBarProgress />} fileName="advanced.tsx">
+{/* leaf:section examples */}
+
+## 示例
+
+### 手动控制进度
+
+已知百分比时，可直接使用 `LoadingBar` 的 `active` 和 `progress`。进度范围为 0 到 100，任务结束后将 `active` 设为 `false`。加载条不会自动启动或停止实际任务。
+
+<ComponentExample exampleId="advanced" preview={<LoadingBarProgress />} width="fit-content" fileName="advanced.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading-bar/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## 使用说明
+{/* leaf:section api */}
 
-ConfigProvider 自动提供加载条。start() 返回对应任务的完成函数，适合在 finally 中调用。多个任务同时运行时，全部完成后才结束。
+## API
 
-## 类型
+### LoadingBarProps API
 
-组装数据、定义回调和使用 ref 时，可以导入这些类型。
-
-```ts
-import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@ifhover/leaf-ui';
-```
-
-## LoadingBarApi API
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `start` | `() => () => void` | 必填 | 开始任务，返回该任务完成函数 |
-| `finish` | `() => void` | 必填 | 完成一个任务，全部完成后收起 |
-| `set` | `(progress: number) => void` | 必填 | 设置显示进度 |
-| `reset` | `() => void` | 必填 | 重置状态或重试 |
-
-## LoadingBarProps API
+加载状态、进度及条形指示器展示位置的参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -57,7 +58,20 @@ import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@i
 | `className` | `string` | — | 容器类名 |
 | `style` | `CSSProperties` | — | 容器内联样式 |
 
-## LoadingBarProviderProps API
+### LoadingBarApi API
+
+`useLoadingBar` 返回的任务计数与进度控制接口。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `start` | `() => () => void` | 必填 | 开始任务，返回仅完成该任务的函数；应在 finally 或取消清理时调用。 |
+| `finish` | `() => void` | 必填 | 完成最早的一个待完成任务，全部任务完成后收起；优先使用 start 返回的函数。 |
+| `set` | `(progress: number) => void` | 必填 | 设置显示进度，范围 0–100；不启动或完成任务。 |
+| `reset` | `() => void` | 必填 | 清空当前 Provider 的全部任务与进度，不取消实际请求。 |
+
+### LoadingBarProviderProps API
+
+独立加载条上下文的容器与展示参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
@@ -66,4 +80,4 @@ import type { LoadingBarApi, LoadingBarProps, LoadingBarProviderProps } from '@i
 | `position` | `'top' \| 'bottom'` | `'top'` | 显示或插入位置 |
 | `className` | `string` | — | 容器类名 |
 | `style` | `CSSProperties` | — | 容器内联样式 |
-| `children` | `ReactNode` | — | 进度条下方展示的内容。 |
+| `children` | `ReactNode` | — | 共享此加载条任务作用域的子内容。 |

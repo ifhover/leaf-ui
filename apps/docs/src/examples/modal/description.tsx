@@ -1,24 +1,34 @@
-import { Button, Modal } from '@ifhover/leaf-ui';
-import { Save } from 'lucide-react';
-import { useState } from 'react';
+import { Button, Form, FormField, Input, Modal } from '@ifhover/leaf-ui';
+import { Pencil } from 'lucide-react';
+import { useId, useState } from 'react';
 
 export function ModalDescription() {
   const [open, setOpen] = useState(false);
+  const formId = useId();
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        带图标与说明
-      </Button>
+      <Button onClick={() => setOpen(true)}>重命名文件</Button>
       <Modal
         open={open}
-        title="保存设置"
-        description="保存后，新设置将立即生效。"
-        icon={<Save />}
+        title="重命名文件"
+        description="新名称会用于文件列表和下载。"
+        icon={<Pencil />}
         confirmText="保存"
         onClose={() => setOpen(false)}
-        onConfirm={() => setOpen(false)}
+        confirmButtonProps={{ type: 'submit', form: formId }}
       >
-        确认保存当前设置？
+        <Form
+          id={formId}
+          layout="vertical"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setOpen(false);
+          }}
+        >
+          <FormField label="文件名" required>
+            <Input name="filename" defaultValue="设计说明.md" />
+          </FormField>
+        </Form>
       </Modal>
     </>
   );

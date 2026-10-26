@@ -1,10 +1,10 @@
-import { TreeSelect } from '@ifhover/leaf-ui';
+import { Flex, Text, TreeSelect } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-const options = (english: boolean) => [
+const options = [
   {
     value: 'team',
-    label: english ? 'Team' : '团队',
+    label: '团队',
     children: [
       { value: 'alice', label: 'Alice' },
       { value: 'bob', label: 'Bob' },
@@ -13,15 +13,20 @@ const options = (english: boolean) => [
   },
 ];
 
-export function Expanded({ english = false }) {
+export function Expanded() {
   const [expanded, setExpanded] = useState<readonly string[]>(['team']);
   return (
-    <TreeSelect
-      aria-label={english ? 'Team members' : '团队成员'}
-      onExpand={setExpanded}
-      options={options(english)}
-      placeholder={english ? 'Expanded branch' : '保持展开的分支'}
-      treeExpandedKeys={expanded}
-    />
+    <Flex direction="column" gap="sm">
+      <TreeSelect
+        aria-label="受控展开的团队"
+        options={options}
+        treeExpandedKeys={expanded}
+        onExpand={setExpanded}
+        placeholder="选择成员"
+      />
+      <Text tone="muted" role="status">
+        展开节点：{expanded.join(', ') || '无'}
+      </Text>
+    </Flex>
   );
 }

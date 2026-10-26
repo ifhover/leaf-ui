@@ -2,43 +2,53 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { ScrollAreaBasic } from '../../../src/examples/en/scroll-area/basic';
 import { ScrollAreaHorizontal } from '../../../src/examples/en/scroll-area/advanced';
 
+export const leafDoc = { component: 'ScrollArea', primaryApi: 'ScrollAreaProps' };
+
 # ScrollArea
 
 Browse content inside a bounded scroll area.
 
+ScrollArea shares its props with [Scrollbar](/en/components/scrollbar) and defaults to vertical scrolling.
+
+{/* leaf:section basic */}
+
 ## Basic usage
 
-<ComponentExample title="Basic usage" preview={<ScrollAreaBasic />} fileName="basic.tsx">
+Set the area height so overflowing content scrolls within it.
+
+<ComponentExample exampleId="basic" preview={<ScrollAreaBasic />} fileName="basic.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/scroll-area/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Horizontal scrolling
+{/* leaf:section examples */}
 
-<ComponentExample title="Horizontal scrolling" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx">
+## Examples
+
+### Horizontal scrolling
+
+Set `orientation="horizontal"` to browse content wider than the area.
+
+<ComponentExample exampleId="advanced" preview={<ScrollAreaHorizontal />} fileName="advanced.tsx" width={600}>
 
 ```tsx lineNumbers file="../../../src/examples/en/scroll-area/advanced.tsx"
 ```
 
 </ComponentExample>
 
-## Usage
+{/* leaf:section api */}
 
-Constrain the region with height or maxHeight. orientation controls the axes and scrollbar controls visibility. Wheel, touch and keyboard scrolling use native scrolling behavior.
+## API
 
-Overlay scrollbars fade in on hover without taking up content space. The forwarded `ref` points to the scrolling viewport; `style` and `className` apply to the outer wrapper. See [Scrollbar](./scrollbar) for styling and keyboard controls. When content fits or reaches a boundary, the wheel continues scrolling the page.
+### ScrollAreaProps API
 
-## Types
-
-Import these types for data, callbacks and refs.
+Configure scrolling direction, area dimensions and scrollbar visibility.
 
 ```ts
 import type { ScrollAreaProps } from '@ifhover/leaf-ui';
 ```
-
-## ScrollAreaProps API
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -46,8 +56,10 @@ import type { ScrollAreaProps } from '@ifhover/leaf-ui';
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum height |
 | `orientation` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Scrolling direction |
 | `scrollbar` | `'auto' \| 'always' \| 'hidden'` | `'auto'` | Scrollbar visibility |
+| `persistent` | `boolean` | `false` | Keep scrollbars visible in reserved gutters; overlay content by default. |
+| `size` | `'sm' \| 'md'` | `'md'` | Scrollbar size; sm uses a narrower track. |
+| `verticalOffset` | `number` | `0` | Top inset for the vertical track. |
 | `viewportClassName` | `string` | — | Class for the scrolling viewport. |
 | `viewportStyle` | `CSSProperties` | — | Styles for the scrolling viewport. |
 | `contentClassName` | `string` | — | Class for the content container. |
 | `contentStyle` | `CSSProperties` | — | Styles for the content container. |
-| `verticalOffset` | `number` | `0` | Top inset for the vertical track. |

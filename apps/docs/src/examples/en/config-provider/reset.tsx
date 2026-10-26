@@ -11,13 +11,13 @@ const defaults = { Input: { readOnly: true } } satisfies LeafComponentDefaults;
 export function ConfigProviderReset() {
   return (
     <ConfigProvider components={defaults}>
-      <Form>
+      <Form onSubmit={(event) => event.preventDefault()}>
         <FormField label="Inherited defaults">
-          <Input defaultValue="This input is read-only" />
+          <Input defaultValue="Read-only content" />
         </FormField>
         <ConfigProvider components={{ Input: null }}>
-          <FormField label="Clear defaults in this region">
-            <Input defaultValue="Try editing this text" />
+          <FormField label="Cleared defaults">
+            <Input defaultValue="Editable content" />
           </FormField>
         </ConfigProvider>
       </Form>

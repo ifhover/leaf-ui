@@ -1,39 +1,20 @@
-import type { SelectOption } from '@ifhover/leaf-ui';
-import { Form, FormField, Select, Text } from '@ifhover/leaf-ui';
-import { useState } from 'react';
+import { Select } from '@ifhover/leaf-ui';
 
-const options: SelectOption[] = [
-  { value: 'design', label: '设计' },
-  { value: 'engineering', label: '研发' },
-  { value: 'marketing', label: '市场' },
+const options = [
+  { value: 'design', label: '设计工作室' },
+  { value: 'product', label: '产品团队' },
+  { value: 'engineering', label: '工程团队' },
+  { value: 'archived', label: '归档项目', disabled: true },
 ];
+
 export function SelectSearch() {
-  const [teams, setTeams] = useState<string[]>(['design']);
   return (
-    <Form layout="vertical">
-      <FormField label="搜索团队">
-        <Select
-          aria-label="搜索团队"
-          showSearch
-          allowClear
-          options={options}
-          placeholder="输入搜索团队"
-        />
-      </FormField>
-      <FormField label="多选团队">
-        <Select
-          aria-label="多选团队"
-          multiple
-          showSearch
-          allowClear
-          options={options}
-          value={teams}
-          onChange={setTeams}
-        />
-      </FormField>
-      <output>
-        <Text tone="muted">{teams.join(', ') || '—'}</Text>
-      </output>
-    </Form>
+    <Select
+      aria-label="搜索团队"
+      showSearch
+      allowClear
+      options={options}
+      placeholder="输入团队名称搜索"
+    />
   );
 }

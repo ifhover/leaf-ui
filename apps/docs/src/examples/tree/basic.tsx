@@ -1,7 +1,7 @@
 import { Space, Text, Tree, type TreeNode } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-const treeData: readonly TreeNode[] = [
+const treeData: TreeNode[] = [
   {
     key: 'design',
     title: '设计资源',
@@ -22,19 +22,19 @@ const treeData: readonly TreeNode[] = [
 ];
 
 export function TreeBasic() {
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
   return (
     <Space direction="vertical" align="stretch">
       <Tree
+        aria-label="设计资源"
         data={treeData}
         defaultExpandedKeys={['design']}
-        showIcon
         selectedKeys={selected}
         onSelect={setSelected}
       />
-      <output>
-        <Text tone="muted">已选: {selected.join(', ') || '暂无'}</Text>
-      </output>
+      <Text role="status" tone="muted">
+        已选节点：{selected.join(', ') || '暂无'}
+      </Text>
     </Space>
   );
 }

@@ -1,104 +1,132 @@
-import { TabsViewSwitcher } from '../../../src/examples/en/tabs/view-switcher';
-import { Capabilities } from '../../../src/examples/tabs/capabilities';
-import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
-import { TabsClosable } from '../../../src/examples/en/tabs/closable';
 import { ComponentExample } from '../../../src/components/component-example';
 import { TabsBasic } from '../../../src/examples/en/tabs/basic';
 import { TabsSizes } from '../../../src/examples/en/tabs/sizes';
 import { TabsAppearances } from '../../../src/examples/en/tabs/appearances';
+import { TabsViewSwitcher } from '../../../src/examples/en/tabs/view-switcher';
+import { TabsPreserved } from '../../../src/examples/en/tabs/preserved';
+import { TabsClosable } from '../../../src/examples/en/tabs/closable';
+import { ExtensionDemo } from '../../../src/examples/en/tabs/extensions';
+import { Capabilities } from '../../../src/examples/en/tabs/capabilities';
+
+export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 # Tabs
 
-Switch between content views within the same region.
+Switch content within one region.
 
-Content and panel height update immediately without transition animations. Line tabs show a short rounded indicator beneath the selected label and move it to the next selection.
-
-Line tabs use the body text color for the selected label and muted neutral text for the others, without drawing a full-width baseline. The short rounded indicator beneath the selected label uses the primary indicator color. The indicator sits on the tab's bottom edge, grows to 2 / 3 / 4 px by size and keeps a visible gap below the label because line tabs add 4 px of height. Card tabs use a light rounded selected surface, with unselected labels rendered in a lighter neutral color and no surrounding container. Segmented tabs add a muted rounded track and a white moving selection surface for compact view switching; the surface moves directly with the standard non-overshooting easing. `size` controls 32 / 38 / 44 px line tabs and 28 / 34 / 40 px card and segmented tabs. Set `block` for equal-width tabs; content panels use the available width. When labels overflow, outlined arrow buttons appear in the scrollable directions; they are visible only while the tab bar is hovered or keyboard-focused.
+{/* leaf:section basic */}
 
 ## Basic usage
 
-The basic example uses the default size and line appearance to demonstrate content switching.
+Define labels and content with `items`; select a tab to switch panels.
 
-<ComponentExample title="Basic usage" preview={<TabsBasic />} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
 ```
 
 </ComponentExample>
 
-## Sizes
+{/* leaf:section examples */}
 
-Use the radio options to switch between small, default and large sizes.
+## Examples
 
-<ComponentExample title="Sizes" preview={<TabsSizes />} fileName="sizes.tsx">
+### Sizes
+
+Use `size` to set the tab control size.
+
+<ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/sizes.tsx"
 ```
 
 </ComponentExample>
 
-## Appearances
+### Appearances
 
-Use the radio options to switch between line, card and segmented appearances.
+Use `type` to choose the tab appearance.
 
-<ComponentExample title="Appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
+<ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/appearances.tsx"
 ```
 
 </ComponentExample>
 
-## View switching
+### View switching
 
-Omit item `children` when controlling an existing view. Only the tab bar is rendered, with no empty content area. `block` fills the available width.
+Omit item `children` to render only the tab bar. Use `activeKey` and `onChange` to switch content outside the component.
 
-<ComponentExample title="View switching" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx" width={360}>
+Arrow keys activate the next enabled tab by default; Home / End move to the first / last enabled tab. With `activationMode="manual"`, arrow keys move focus and Enter or Space activates the focused tab.
+
+<ComponentExample exampleId="view-switcher" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/view-switcher.tsx"
 ```
 
 </ComponentExample>
 
-## Closable tabs
+### Preserved input state
 
-Use the plus button to add a tab. Closing every tab hides the component; the example's add button can reopen it.
+Content mounts on first visit. Visited panels and their input state are kept by default; set `destroyInactive` to unmount content when leaving.
 
-<ComponentExample title="Closable tabs" preview={<TabsClosable />} fileName="closable.tsx">
+<ComponentExample exampleId="preserved" preview={<TabsPreserved />} fileName="preserved.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/preserved.tsx"
+```
+
+</ComponentExample>
+
+### Adding and closing tabs
+
+`onAdd` and `onClose` report requests; update `items` in the application. When `items` is empty, the whole component, including its add button, is hidden. Keep an external action to restore the list.
+
+<ComponentExample exampleId="closable" preview={<TabsClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/closable.tsx"
 ```
 
 </ComponentExample>
 
-## Adding and closing tabs
+### Sorting tabs
 
-<ComponentExample title="Adding and closing tabs" preview={<ExtensionDemo />} fileName="extensions.tsx">
+Enable `sortable` and store the items returned by `onReorder`. Drag a handle to reorder, or focus it and use Space, arrow keys, then Space to confirm; Escape cancels.
+
+<ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/extensions.tsx"
 ```
 
 </ComponentExample>
 
-## Bottom placement
+### Bottom placement
 
-<ComponentExample title="Bottom placement" preview={<Capabilities english />} fileName="capabilities.tsx">
+Set `placement="bottom"` to place the tabs below the content.
 
-```tsx lineNumbers file="../../../src/examples/tabs/capabilities.tsx"
+<ComponentExample exampleId="capabilities" preview={<Capabilities />} fileName="capabilities.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/tabs/capabilities.tsx"
 ```
 
 </ComponentExample>
 
-## Tabs API
+{/* leaf:section api */}
+
+## API
+
+### Tabs API
+
+Configure tab data, the active tab and panel retention.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`TabItem`](#tabitem)`[]` | Required | Tab items; an empty array hides the component |
-| `activeKey` | `string` | First enabled item | Controlled / initial active key |
-| `defaultActiveKey` | `string` | First enabled item | Controlled / initial active key |
+| `activeKey` | `string` | — | Controlled active tab key; update it with onChange. |
+| `defaultActiveKey` | `string` | First enabled item | Initial tab key in uncontrolled mode; later changes do not reset the selection. |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | Tab appearance |
 | `placement` | `'top' \| 'bottom'` | `'top'` | Tab bar placement |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab height (32 / 38 / 44 px line, 28 / 34 / 40 px card and segmented) and font size |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size. |
 | `block` | `boolean` | `false` | Fill the available width with equal-width tabs |
 | `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate on arrow navigation / Enter or Space |
 | `destroyInactive` | `boolean` | `false` | Unmount content when inactive |
@@ -110,7 +138,9 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 | `sortable` | `boolean` | `false` | Enable sorting; use with onReorder |
 | `onReorder` | `(items: `[`TabItem`](#tabitem)`[]) => void` | — | Reordered tabs |
 
-## TabItem
+### TabItem
+
+Define an individual tab key, label and content.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -120,15 +150,3 @@ Use the plus button to add a tab. Closing every tab hides the component; the exa
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `icon` | `ReactNode` | — | Leading icon |
 | `closable` | `boolean` | `false` | Show a close button; requires onClose |
-
-## Types
-
-Import the component props and item types when preparing your own values.
-
-```ts
-import type { TabsProps, TabItem } from '@ifhover/leaf-ui';
-```
-
-## Usage notes
-
-Content mounts on first visit. Visited panels and their input state are kept by default. Arrow keys skip disabled tabs, and Home / End move to the first / last tab. Use manual activation when changing content takes time.

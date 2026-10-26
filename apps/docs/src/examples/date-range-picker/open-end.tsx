@@ -1,11 +1,25 @@
-import { DateRangePicker } from '@ifhover/leaf-ui';
+import { DateRangePicker, Form, FormField, type OpenDateRange, Text } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
-export function OpenEnd({ english = false }) {
+export function OpenEnd() {
+  const [value, setValue] = useState<OpenDateRange | null>([new Date(2026, 9, 5), null]);
+  const [texts, setTexts] = useState<readonly [string, string]>(['2026-10-05', '']);
+
   return (
-    <DateRangePicker
-      allowEmpty={[false, true]}
-      aria-label={english ? 'Project range with an open end' : '项目周期，允许结束为空'}
-      placeholder={english ? 'Start date, no end date' : '开始日期，结束可为空'}
-    />
+    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
+      <FormField label="进行中的项目周期">
+        <DateRangePicker
+          allowEmpty={[false, true]}
+          value={value}
+          onChange={(next: OpenDateRange | null, dateStrings: readonly [string, string]) => {
+            setValue(next);
+            setTexts(dateStrings);
+          }}
+        />
+      </FormField>
+      <Text tone="muted" role="status">
+        起点：{texts[0] || '空'}；终点：{texts[1] || '空'}
+      </Text>
+    </Form>
   );
 }
