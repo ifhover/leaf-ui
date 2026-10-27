@@ -2,12 +2,51 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { type ChangeEvent, useState } from 'react';
 import { flushSync } from 'react-dom';
+import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Button, ConfigProvider, Input, RadioGroup, Select, Textarea } from '../index';
 import { Form, FormField } from './form';
 
 afterEach(() => vi.restoreAllMocks());
 describe('Form', () => {
+  it('renders the default label width on the server', () => {
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(
+      <Form>
+        <FormField label="Project name">
+          <Input />
+        </FormField>
+      </Form>,
+    );
+    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
+      '112px',
+    );
+  });
+  it('keeps the label width without measuring text when fields change', () => {
+    const measure = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+    const fields = (extra: boolean) => (
+      <Form>
+        <FormField label="Name">
+          <input />
+        </FormField>
+        {extra && (
+          <FormField label="A much longer label">
+            <input />
+          </FormField>
+        )}
+      </Form>
+    );
+    const { container, rerender } = render(fields(false));
+    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
+      '112px',
+    );
+    rerender(fields(true));
+    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
+      '112px',
+    );
+    rerender(fields(false));
+    expect(measure).not.toHaveBeenCalled();
+  });
   it('associates labels, inherits required state and clears validation after editing', async () => {
     render(
       <ConfigProvider locale="en-US">
@@ -147,52 +186,31 @@ describe('Form', () => {
     expect(screen.getAllByRole('alert')).toHaveLength(2);
     await waitFor(() => expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveFocus());
   });
-  it('applies the widest label and recomputes when fields are removed', async () => {
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      return {
-        width: (this.textContent?.length ?? 0) * 8,
-        height: 20,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        x: 0,
-        y: 0,
-        toJSON: () => ({}),
-      };
-    });
-    const fields = (extra: boolean) => (
-      <Form>
-        <FormField label="Short">
-          <Input />
-        </FormField>
-        {extra && (
-          <FormField label="Much longer label">
+  it.each([0, 120, 160, -20])('applies numeric label widths and field overrides: %s', (width) => {
+    const { container, rerender } = render(
+      <Form labelWidth={width}>
+        <div>
+          <FormField label="Name" labelWidth={80}>
             <Input />
           </FormField>
-        )}
-      </Form>
-    );
-    const { container, rerender } = render(fields(true));
-    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
-      'min(136px, 40%)',
-    );
-    rerender(fields(false));
-    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
-      'min(40px, 40%)',
-    );
-    rerender(
-      <Form labelWidth={120}>
-        <FormField label="Name">
-          <Input />
-        </FormField>
+        </div>
       </Form>,
     );
     expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
-      '120px',
+      `${Math.max(0, width)}px`,
     );
+    const field = () => container.querySelector<HTMLElement>('.leaf-form-field');
+    expect(field()?.style.getPropertyValue('--leaf-form-label-width')).toBe('80px');
+    rerender(
+      <Form labelWidth={width}>
+        <div>
+          <FormField label="Name">
+            <Input />
+          </FormField>
+        </div>
+      </Form>,
+    );
+    expect(field()?.style.getPropertyValue('--leaf-form-label-width')).toBe('');
   });
   it('names radio groups and inherits disabled controls', () => {
     render(
@@ -243,14 +261,9 @@ describe('Form', () => {
     );
     expect(screen.queryByRole('alert')).toBeNull();
   });
-  it('measures only horizontal labels when layouts are mixed or changed', () => {
-    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
-      this: HTMLElement,
-    ) {
-      return { width: (this.textContent?.length ?? 0) * 8 } as DOMRect;
-    });
+  it('preserves configured width when layouts are mixed or changed', () => {
     const fields = (layout: 'vertical' | 'horizontal') => (
-      <Form layout="settings">
+      <Form layout="settings" labelWidth={144}>
         <FormField label="Short" layout="horizontal">
           <Input />
         </FormField>
@@ -265,31 +278,37 @@ describe('Form', () => {
     const { container, rerender } = render(fields('vertical'));
     const width = () =>
       container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width');
-    expect(width()).toBe('min(40px, 40%)');
+    expect(width()).toBe('144px');
     rerender(fields('horizontal'));
-    expect(width()).toBe('min(184px, 40%)');
+    expect(width()).toBe('144px');
     rerender(fields('vertical'));
-    expect(width()).toBe('min(40px, 40%)');
+    expect(width()).toBe('144px');
   });
   it('inherits region layout defaults and keeps explicit field overrides', () => {
     const { container } = render(
       <ConfigProvider
         components={{
-          Form: { layout: 'settings' },
-          FormField: { description: 'Default hint' },
+          Form: { layout: 'settings', labelWidth: 140 },
+          FormField: { description: 'Default hint', labelWidth: 80 },
         }}
       >
         <Form>
           <FormField label="Name">
             <Input />
           </FormField>
-          <FormField label="Notes" layout="vertical">
+          <FormField label="Notes" layout="vertical" labelWidth={96}>
             <Textarea />
           </FormField>
         </Form>
       </ConfigProvider>,
     );
     expect(container.querySelector('.leaf-form')).toHaveClass('leaf-form--settings');
+    expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
+      '140px',
+    );
+    const fields = container.querySelectorAll<HTMLElement>('.leaf-form-field');
+    expect(fields[0]?.style.getPropertyValue('--leaf-form-label-width')).toBe('80px');
+    expect(fields[1]?.style.getPropertyValue('--leaf-form-label-width')).toBe('96px');
     expect(screen.getByRole('textbox', { name: 'Name' }).closest('.leaf-form-field')).toHaveClass(
       'leaf-form-field--settings',
     );

@@ -7,6 +7,17 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.10.0 - 2026-10-27
+
+### Improved and fixed
+
+- Horizontal Form labels now default to 112px without waiting for client-side measurement. Set `Form.labelWidth` for the form or `FormField.labelWidth` for an individual field.
+
+### Migration
+
+- `Form.labelWidth` no longer accepts `'auto'` or adjusts to the widest label. Remove `labelWidth="auto"` to use the default, or replace it with a numeric pixel width; `ConfigProvider.components.Form.labelWidth` also accepts numbers only.
+- Default horizontal label widths and control positions change, and longer labels wrap within the specified width. Vertical, settings and narrow-screen stacked layouts are unchanged.
+
 ## 0.9.0 - 2026-10-27
 
 ### Added

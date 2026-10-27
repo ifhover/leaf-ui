@@ -7,6 +7,17 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.10.0 - 2026-10-27
+
+### 改进与修复
+
+- Form 水平布局默认使用 112px 标签宽度，首屏无需等待标签测量；可通过 `Form.labelWidth` 统一调整，或通过 `FormField.labelWidth` 单独覆盖。
+
+### 迁移说明
+
+- `Form.labelWidth` 不再支持 `'auto'` 或按最长标签自动调整。删除原来的 `labelWidth="auto"` 以使用默认宽度，或改为数字指定像素宽度；`ConfigProvider.components.Form.labelWidth` 同样只接受数字。
+- 默认水平表单的标签列宽和控件起始位置会变化，较长的标签会在指定宽度内换行。纵向、设置布局及窄屏堆叠规则不变。
+
 ## 0.9.0 - 2026-10-27
 
 ### 新增

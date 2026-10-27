@@ -15,7 +15,7 @@
 
 ## 组件目录
 
-表单采用真实的 `form` 与字段上下文，控件独立管理值并保留 FormData / reset。`FormField` 通过 ResizeObserver 注册标签内在宽度，由 Form 统一使用最大宽度。配置上下文只管理语言和区域主题，不建立字段值仓库。
+表单采用真实的 `form` 与字段上下文，控件独立管理值并保留 FormData / reset。水平标签使用确定的列宽，由 Form 统一配置，FormField 可单独覆盖，不依赖客户端测量。配置上下文只管理语言和区域主题，不建立字段值仓库。
 
 浮层共用 FloatingPanel、presence 和区域 CSS 变量传递。关闭时保留节点至动画结束，并立即设为 inert。Modal 用 OverlayOwner 关联内部控件的 portal，保证焦点管理与嵌套浮层的 Escape 行为。
 
@@ -85,4 +85,4 @@ pnpm --dir packages/react pack
 
 ## 质量验收
 
-PR 与 main 推送均运行组件检查、React 18 / 19 兼容矩阵和 Chromium / Firefox / WebKit 浏览器矩阵。交互、a11y、主题布局、大数据及生产体积的范围和证据说明见 [packages/react/QUALITY.md](packages/react/QUALITY.md)。
+检查范围、基础测试与人工确认的边界、按需浏览器排障及保留的自动化统一见 [质量验收](packages/react/QUALITY.md#当前验收规则)，不在此维护第二份矩阵或发布门禁要求。

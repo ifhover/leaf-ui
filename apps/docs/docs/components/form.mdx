@@ -31,7 +31,7 @@ export const leafDoc = { component: 'Form', primaryApi: 'FormProps' };
 
 ### 标签宽度
 
-水平布局默认统一使用最宽标签的宽度；设置数字 `labelWidth` 可使用固定宽度。水平和设置布局在窄容器内自动上下排列。
+水平布局的标签宽度默认为 112px。通过 `Form.labelWidth` 统一调整，或通过 `FormField.labelWidth` 单独覆盖，单位均为像素；长标签在指定宽度内换行。水平和设置布局在窄容器内自动上下排列。
 
 <ComponentExample exampleId="label-width" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
@@ -144,7 +144,7 @@ Leaf UI 控件会读取 `FormField` 的关联信息。原生或第三方控件�
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | 字段默认布局；settings 将标签与描述放在左侧，控件靠右排列 |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | 仅用于 horizontal 字段；数字设置像素宽度，auto 统一使用最宽标签 |
+| `labelWidth` | `number` | `112` | horizontal 字段的标签宽度，单位像素；可由 FormField.labelWidth 单独覆盖。 |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | horizontal 字段的标签对齐方向 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `ref` | `Ref<HTMLFormElement>` | — | 表单引用 |

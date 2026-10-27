@@ -20,7 +20,7 @@ import type { LeafThemeStyle } from '../theme';
 
 export interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
   layout?: 'horizontal' | 'vertical' | 'settings';
-  labelWidth?: number | 'auto';
+  labelWidth?: number;
   labelAlign?: 'left' | 'right';
   disabled?: boolean;
 }
@@ -43,7 +43,6 @@ const FormContext = createContext({
   layout: 'horizontal' as NonNullable<FormProps['layout']>,
   labelAlign: 'right' as 'left' | 'right',
   disabled: false,
-  measure: (_id: string, _width: number | null) => {},
   errors: [] as readonly FormError[],
   registerError: (_id: string, _error: FormError | null) => {},
 });
@@ -70,7 +69,7 @@ export function FieldScope({ children }: { children: ReactNode }) {
 export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProps: FormProps, ref) {
   const {
     layout = 'horizontal',
-    labelWidth = 'auto',
+    labelWidth = 112,
     labelAlign = 'right',
     disabled = false,
     className,
@@ -78,10 +77,8 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
     children,
     ...props
   } = useComponentProps('Form', rawProps);
-  const widths = useRef(new Map<string, number>());
   const invalidFocusTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(invalidFocusTimer.current), []);
-  const [maximum, setMaximum] = useState(0);
   const [errors, setErrors] = useState<readonly FormError[]>([]);
   const registerError = useCallback((id: string, error: FormError | null) => {
     setErrors((previous) =>
@@ -92,18 +89,12 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
           : previous,
     );
   }, []);
-  const measure = useCallback((id: string, width: number | null) => {
-    if (width === null) widths.current.delete(id);
-    else widths.current.set(id, Math.ceil(width));
-    setMaximum(Math.max(0, ...widths.current.values()));
-  }, []);
   const context = useMemo(
-    () => ({ layout, labelAlign, disabled, measure, errors, registerError }),
-    [layout, labelAlign, disabled, measure, errors, registerError],
+    () => ({ layout, labelAlign, disabled, errors, registerError }),
+    [layout, labelAlign, disabled, errors, registerError],
   );
   const variables: LeafThemeStyle = {
-    '--leaf-form-label-width':
-      labelWidth === 'auto' ? `min(${maximum}px, 40%)` : `${Math.max(0, labelWidth)}px`,
+    '--leaf-form-label-width': `${Math.max(0, labelWidth)}px`,
     ...style,
   };
   return (
@@ -159,7 +150,6 @@ export function FormField(rawProps: FormFieldProps) {
   const inputId = htmlFor ?? `${generated}-control`;
   const descriptionId = `${generated}-description`;
   const summaryId = `${generated}-summary`;
-  const labelRef = useRef<HTMLSpanElement>(null);
   const [validationError, setValidationError] = useState<string>();
   const displayedError = error ?? validationError;
   useEffect(() => {
@@ -169,26 +159,6 @@ export function FormField(rawProps: FormFieldProps) {
     );
     return () => form.registerError(inputId, null);
   }, [form.registerError, inputId, displayedError, label]);
-  useEffect(() => {
-    if (label == null || layout !== 'horizontal' || labelWidth !== undefined) return;
-    const element = labelRef.current;
-    if (!element) return;
-    const measure = () => {
-      // Measure natural text, not the wrapped width of a narrow label column.
-      const previous = element.style.cssText;
-      element.style.cssText += ';width:max-content;max-width:none;white-space:nowrap';
-      const width = element.getBoundingClientRect().width;
-      element.style.cssText = previous;
-      form.measure(generated, width);
-    };
-    measure();
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
-    observer?.observe(element);
-    return () => {
-      observer?.disconnect();
-      form.measure(generated, null);
-    };
-  }, [form.measure, generated, label, layout, labelWidth]);
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const owner = root.current?.closest('form');
@@ -250,7 +220,7 @@ export function FormField(rawProps: FormFieldProps) {
           <div className="leaf-form-field__header">
             {label != null && (
               <label id={`${generated}-label`} className="leaf-form-field__label" htmlFor={inputId}>
-                <span ref={labelRef}>
+                <span>
                   {required && (
                     <span className="leaf-form-field__required" aria-hidden="true">
                       *

@@ -20,7 +20,7 @@ pnpm dev
 3. 显式维护组件目录和 `src/index.ts` 的公开导出，包含调用方需要组装数据的选项、值和事件类型；内部控件不属于公开 API。在 `src/styles/index.scss` 中用 `@use` 引入样式，并维护独立样式的依赖。
 4. 在 `apps/docs/src/examples/<component>/` 添加示例，MDX 的 ComponentExample 与 file 围栏共同引用该源码；遵守 [文档站协作约定](../../apps/docs/AGENTS.md)。
 5. 更新组件侧边栏和总览卡片，提供静态 SVG 缩略图，避免总览挂载全部组件实例。
-6. 按影响完成类型、行为、样式产物及必要的浏览器验证，范围见 [QUALITY.md](QUALITY.md)。涉及公共 API 时同步中英文文档、API 表格及 AI 文档生成所需的元数据。
+6. 按影响完成类型、行为和样式产物检查，实际效果与按需排障遵循 [QUALITY.md](QUALITY.md#当前验收规则)，不默认新增浏览器回归。涉及公共 API 时同步中英文文档、API 表格及 AI 文档生成所需的元数据。
 
 在线文档只面向使用者，开发和构建说明保留在源码 Markdown 中。
 

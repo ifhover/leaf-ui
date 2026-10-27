@@ -50,14 +50,30 @@ npm deprecate '@sudden3/leaf-ui@*' 'This package has moved to @ifhover/leaf-ui. 
 
 ## 检查与发布
 
-在仓库根目录运行：
+检查范围与成功结果复用遵循 [质量验收](QUALITY.md#合并与发布检查)。需要首次完整基础验收、且没有实际发布提交的有效证据时，在仓库根目录运行：
 
 ```bash
 pnpm check
 pnpm build
 ```
 
-`pnpm check:release` 会检查当前版本的中英文记录、日期与实际变更条目，并拒绝在线记录中的未发布区域。它已加入 `pnpm check`、GitHub Pages 检查以及 npm 的 `prepublishOnly`，升版但未更新记录时会阻止正常发布。发布前的检查还会构建并验证 npm 包产物。
+`pnpm check:release` 会检查当前版本的中英文记录、日期与实际变更条目，并拒绝在线记录中的未发布区域。它已加入 `pnpm check` 和本地目录发布的 `prepublishOnly`；质量 CI 构建并验证 npm 包产物，发布任务复用该结果。
+
+### 自动化分工与复用
+
+完整基础验收只由质量 CI 执行，后续阶段验证身份和结果，不重新执行整套检查或构建。不能用全局 `--ignore-scripts` 或环境变量跳过发布防护。
+
+| 环节 | 当前职责 |
+| --- | --- |
+| `Component quality` | 执行 `pnpm check`、`pnpm build`、体积预算及 React 18 兼容检查；锁定的 React 19 由常规检查覆盖。`main` 推送的检查任务将已验证产物打包为 `npm-release` artifact，保留 14 天 |
+| `Publish npm package` | 只接受实际发布 SHA 对应的 `main` 推送质量工作流整体成功（包括兼容任务），等待尚未完成的运行；下载该运行的包，校验提交、版本、包元数据及 SHA-512，再通过 OIDC / provenance 发布 |
+| npm 生命周期 | CI 上传已验证的 `.tgz`，npm 不执行目录发布的 `prepublishOnly`，无需额外跳过开关；本地直接从组件目录发布仍检查更新记录、构建并验证包 |
+| `Deploy documentation` | 只在 npm 发布工作流成功后或手动维护时部署，不响应普通 `main` 推送；只执行已发布版本快照构建，不重跑组件检查、库构建或会被丢弃的工作区文档构建 |
+| `pnpm verify:release` | HTTP 核对 npm、远端标签、提交、默认文档与固定快照的元数据、双语代表页面和代表资源，不启动浏览器、不遍历组件 / 主题 / 屏宽组合 |
+
+`pnpm release:pack` 只封装现有的 `dist`，不构建、不执行基础验收；它要求源码已提交，在暂存副本中写入 `gitHead`，不改工作区包清单。单独打包或校验摘要不能代替质量 CI 成功。发布任务不接受 PR / 开发分支的运行，也不在找不到证据时自行降级发布。质量运行失败时修复后重新检查；artifact 过期或缺失时重新运行该提交原有的 `main` 推送质量运行，再重试发布。
+
+文档历史快照继续复用现有缓存；根站点与 `/v/X.Y.Z/` 的 base 不同，所需的独立构建不能当作重复步骤删除。版本、提交或基础设施不匹配时不能复用旧产物。临时预览只清理本次实际创建的内容，不为没有创建预览的发布新增清理任务或证明材料。
 
 ### GitHub Actions 自动发布（推荐）
 
@@ -65,7 +81,7 @@ pnpm build
 
 普通提交、推送开发分支或合并 `main` 都不会发布 npm。工作流只在推送 `vX.Y.Z` 标签时发布，或通过 **Actions → Publish npm package → Run workflow** 手动运行；手动运行时，在 **Use workflow from** 中选择已经推送的正式版本标签，也可以执行 `gh workflow run publish.yml --ref vX.Y.Z`。不能选择开发分支或 `main`，确保工作流提交、发布源码和 provenance 一致。
 
-1. 更新 `packages/react/package.json` 中的版本与中英文更新记录，检查通过后合并到 `main`。
+1. 更新 `packages/react/package.json` 中的版本与中英文更新记录，完成定向验证后合并到 `main`，由合并后的质量 CI 完成完整基础验收。
 2. 拉取最新 `main`，确认工作区干净，在实际合并后的发布提交创建并推送标签。下面以尚未发布的 `0.5.1` 为例，执行前替换为本次实际版本：
 
    ```bash
@@ -75,8 +91,8 @@ pnpm build
    git push origin v0.5.1
    ```
 
-3. 工作流确认标签与组件版本一致、提交已包含在 `main`，且新版本高于 npm `latest`；随后安装依赖，执行 `pnpm check`、`pnpm build`，确认构建没有改动源码，再发布公开包与 provenance。
-4. 发布后核对 npm `gitHead`、`latest` 和发布标签。工作流成功后，`Deploy documentation` 自动从 `main` 运行，构建 npm 已发布版本的文档与快照。
+3. 发布工作流确认标签与组件版本一致、提交已包含在 `main`，且新版本高于 npm `latest`；等待该 SHA 的质量 CI 整体成功，下载并校验其 artifact，再发布公开包与 provenance。不安装工作区依赖、不重新执行 `pnpm check` / `pnpm build`。
+4. 工作流用 `verify:release` 的 npm-only 模式确认 npm `gitHead`、`latest` 和远端标签。成功后，`Deploy documentation` 自动从 `main` 运行，构建已发布文档与快照，并在部署后执行完整发布结果核验。
 
 此工作流只处理正式版本，拒绝预发布标签。同一版本不能覆盖：如果 npm 已有该版本且提交不同，会要求升版；如果该版本已从同一提交发布并且仍是 `latest`，重跑会跳过上传，继续核对并触发文档部署。npm 已发布而文档失败时，优先重跑 `Deploy documentation`，无需重新发布 npm。
 
@@ -84,12 +100,17 @@ pnpm build
 
 ### 本地手动发布
 
-检查通过后，将版本和更新记录提交到开发分支，通过审查后合并到 `main`。在实际合并后的发布提交重新执行检查与构建，并确认工作区干净，再在 `packages/react` 目录运行：
+将版本和更新记录提交并合并到 `main`，确认实际发布提交的质量工作流整体成功、工作区干净。优先下载同一 SHA 的 `npm-release` artifact；将 `<run-id>` 替换为该次成功的 `main` 推送运行，不能使用其他提交或只通过部分任务的结果。在仓库根目录执行：
 
 ```bash
-npm publish --dry-run --access public
-npm publish --access public
+gh run download <run-id> --name npm-release --dir packages/react/.quality/release
+node packages/react/scripts/release-artifact.mjs verify
+npm publish packages/react/.quality/release/leaf-ui.tgz --access public --tag latest
 ```
+
+没有可复用产物时，在干净的实际发布提交按 [质量规则](QUALITY.md#合并与发布检查) 完成一次基础验收，再运行 `pnpm release:pack`，校验并上传同一路径的包。不要封装来源未知或可能过期的 `dist`。
+
+本地直接在 `packages/react` 目录运行 `npm publish --access public` 仍由 `prepublishOnly` 检查更新记录、构建和验证产物，作为手动发布兜底。不要先执行会运行同一生命周期的 `npm publish --dry-run` 再正式发布而构建两遍；通常复用上面的已验证 tarball。
 
 确认包名为 `@ifhover/leaf-ui`，账户具备该作用域的写入权限，并由维护者在已登录浏览器中完成 npm 双因素认证。令牌和验证码不得写入源码。
 
@@ -99,12 +120,10 @@ npm 的 `gitHead` 和 `vX.Y.Z` 标签必须指向同一个实际发布提交。�
 
 ## 发布完成
 
-1. 通过 `npm view @ifhover/leaf-ui@X.Y.Z version gitHead` 和 `npm view @ifhover/leaf-ui dist-tags --json` 确认新版本已存在、`latest` 指向它、`gitHead` 与发布提交一致。
-2. 确认 `vX.Y.Z` Git 标签已推送到 GitHub，且与 npm 指向同一发布提交。通过 Actions 发布时，推送标签就是发布入口；本地手动发布时，推送标签触发的工作流会核对已有版本并跳过重复上传。
-3. `main` 推送以及 `Publish npm package` 成功都会自动构建并部署 GitHub Pages。构建器从 npm 的 `gitHead` 还原发布提交，因此该提交必须已推送到仓库，且 package.json 中版本必须与 npm 一致。若未通过发布工作流触发部署，发布后手动触发 `Deploy documentation` workflow。
-4. 确认 `/v/X.Y.Z/`、其 `llm.txt`、`llms.txt`、`api/index.json` 和组件 Markdown 均能访问。顶部版本菜单应包含新版本，中英文更新记录应一致；默认根地址直接展示 npm latest 的已发布文档，不跳转到版本路径。
-5. 分支合并后删除对应临时开发文档及其预览入口，确认该 URL 已不再提供开发内容。默认文档、新版本快照、npm 信息与预览清理全部验收后，才算发布完成。
-6. 若 npm 发布或文档部署失败，按未完成的发布继续处理。版本化部署只展示 npm 中实际发布的版本，开发内容可本地或在独立临时地址预览。
+1. 确认发布标签已推送，npm 和文档工作流成功。构建器从 npm `gitHead` 还原发布提交，该提交须已推送且包版本与 npm 一致。npm 已发布但文档失败时只重跑文档部署；维护部署使用手动入口。
+2. 部署工作流已自动执行轻量核验，直接引用其成功证据，不再由 AI 逐项重复查询。手动发布或排障时，可在仓库根目录运行 `pnpm verify:release --version X.Y.Z`（省略版本则使用当前组件版本），用 `--commit <完整SHA>` 固定预期提交；`--npm-only` 只检查发布前半段，不能据此称文档已上线。默认只尝试一次，传播延迟时可用 `--attempts 12` 有界重试。
+3. 完整核验包含 npm 版本 / `latest` / `gitHead`、远端 Git 标签、`versions.json`、默认与固定快照的 `api/index.json`、`ai/v1/index.json`、`llm.txt` / `llms.txt`、中英文 Button 页面 / Markdown / 更新记录以及各一项 JS / CSS 资源。它是固定数量的 HTTP 检查，不证明全站交互、搜索、视觉或无障碍已验收；实际效果由用户查看，不扩展为 AI 全站巡检。
+4. 仅在本次确实创建过临时开发文档时清理其资源与入口，确认不再提供开发内容。正式历史快照保留。发布结果、实际效果确认状态和相关未完成项分别报告；任一步失败仍按未完成的发布处理。
 
 若发布后文档工作流未自动运行，或需要重试文档部署，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；各版示例与 API 必须始终使用对应的发布提交。文档基础设施更新可以通过构建器的公共 overlay 应用到旧快照，不能混入未发布组件 API。
 
