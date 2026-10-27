@@ -12,7 +12,7 @@
   gap: 12px;
   min-width: 0;
   &--horizontal {
-    grid-template-columns: var(--leaf-form-label-width, 40%) minmax(0, 1fr);
+    grid-template-columns: var(--leaf-form-label-width, 112px) minmax(0, 1fr);
     > .leaf-form-field__body {
       grid-column: 2;
     }

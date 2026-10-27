@@ -1696,6 +1696,10 @@ const specificTypes = {
   'UseDataTableSelectionOptions.defaultSelectedRowKeys': 'readonly DataTableRowSelectionKey[]',
 };
 const specific = {
+  'FormProps.labelWidth': [
+    'horizontal 字段的标签宽度，单位像素；可由 FormField.labelWidth 单独覆盖。',
+    'Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields.',
+  ],
   'MenuGroupProps.children': ['分组中的菜单项。', 'Menu items in this group.'],
   'DividerProps.children': ['显示在分割线中的内容。', 'Content displayed within the divider.'],
   'LoadingProps.children': ['被加载遮罩覆盖的内容。', 'Content covered by the loading overlay.'],

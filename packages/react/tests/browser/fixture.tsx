@@ -54,7 +54,7 @@ import { FeedbackFixture } from './feedback-fixture';
 import { FieldColorContractFixture } from './field-color-contract-fixture';
 import { FileListFixture } from './file-list-fixture';
 import { FlexFixture } from './flex-fixture';
-import { FormFixture, FormHelpFixture } from './form-fixture';
+import { FormColumnsFixture, FormFixture, FormHelpFixture } from './form-fixture';
 import { FormSettingsFixture } from './form-settings-fixture';
 import { ImageFixture } from './image-fixture';
 import { InputPopupWidthFixture } from './input-popup-width-fixture';
@@ -431,6 +431,8 @@ createRoot(root).render(
         <FlexFixture />
       ) : fixture === 'tabs' ? (
         <TabsFixture />
+      ) : fixture === 'form-columns' ? (
+        <FormColumnsFixture />
       ) : fixture === 'form-help' ? (
         <FormHelpFixture />
       ) : fixture === 'form-settings' ? (

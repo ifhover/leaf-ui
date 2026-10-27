@@ -28,6 +28,7 @@ for (const language of ['zh', 'en']) {
         await expect(submit).toBeVisible();
         await expect(submit).toHaveClass(/leaf-button--solid/);
         await expect(basic.locator('form')).toHaveCSS('row-gap', '16px');
+        await expect(basic.locator('form')).toHaveCSS('--leaf-form-label-width', '112px');
         await expect(
           page
             .getByRole('region', {
@@ -49,25 +50,27 @@ for (const language of ['zh', 'en']) {
           ),
         ).toBeLessThan(1);
         const labels = previews.nth(1);
-        const automatic = labels.getByRole('switch');
-        await expect(automatic).toBeChecked();
-        await expect(labels.getByRole('button')).toHaveCount(0);
         const form = labels.locator('form');
-        await expect
-          .poll(() =>
-            form.evaluate((node) =>
-              Number(
-                (node as HTMLElement).style
-                  .getPropertyValue('--leaf-form-label-width')
-                  .match(/\d+(?:\.\d+)?/)?.[0] ?? 0,
-              ),
-            ),
-          )
-          .toBeGreaterThan(0);
-        await automatic.click();
-        await expect(form).toHaveCSS('--leaf-form-label-width', '110px');
-        await automatic.click();
-        await expect(automatic).toBeChecked();
+        await expect(form).toHaveCSS('--leaf-form-label-width', '140px');
+        const fields = form.locator('.leaf-form-field');
+        await expect(fields).toHaveCount(3);
+        for (const index of [0, 1, 2]) {
+          const expectedWidth = index === 2 ? 80 : 140;
+          const field = fields.nth(index);
+          await expect(field).toHaveCSS('--leaf-form-label-width', `${expectedWidth}px`);
+          if (width === 1280) {
+            expect(
+              await field
+                .locator('.leaf-form-field__header')
+                .evaluate((node) => node.getBoundingClientRect().width),
+            ).toBe(expectedWidth);
+          } else {
+            const header = await field.locator('.leaf-form-field__header').boundingBox();
+            const body = await field.locator('.leaf-form-field__body').boundingBox();
+            if (!header || !body) throw new Error('Missing stacked form field');
+            expect(body.y).toBeGreaterThanOrEqual(header.y + header.height);
+          }
+        }
         const settings = previews.nth(2).locator('.leaf-form-field');
         await expect(settings.nth(1)).toHaveCSS('padding-block-start', '12px');
         await expect(settings.nth(1)).toHaveCSS('border-block-start-style', 'dashed');
@@ -84,10 +87,13 @@ for (const language of ['zh', 'en']) {
           .click();
         await expect
           .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-          .toContain('useState(true)');
+          .toContain('labelWidth={140}');
         await expect
           .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-          .not.toContain('setExtra');
+          .toContain('labelWidth={80}');
+        await expect
+          .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+          .not.toContain("'auto'");
         await previews.nth(0).screenshot({ path: test.info().outputPath('form-basic.png') });
         await previews.nth(2).screenshot({ path: test.info().outputPath('form-settings.png') });
       });

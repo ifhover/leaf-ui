@@ -31,7 +31,7 @@ Set a control’s `name` and read its value from `FormData` in the submit event.
 
 ### Label widths
 
-Horizontal fields share the widest label width by default. Set a numeric `labelWidth` for a fixed width. Horizontal and settings fields stack in narrow containers.
+Horizontal labels default to 112px. Set `Form.labelWidth` for the whole form or `FormField.labelWidth` for an individual field, both in pixels; long labels wrap within that width. Horizontal and settings fields stack in narrow containers.
 
 <ComponentExample exampleId="label-width" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
@@ -144,7 +144,7 @@ Leaf UI controls read the associations supplied by `FormField`. For native or th
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | Default field layout; settings places labels and descriptions on the left and controls on the right |
-| `labelWidth` | `number \| 'auto'` | `'auto'` | Horizontal fields only: a pixel width, or auto to align labels to the widest label |
+| `labelWidth` | `number` | `112` | Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields. |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment for horizontal fields |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |

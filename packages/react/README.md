@@ -144,7 +144,7 @@ Framework builds load styles automatically. Use the same initial theme during se
 
 All fields support name, form and required. DatePicker submits a local YYYY-MM-DD string, DatePicker with picker="time" submits HH:mm (or HH:mm:ss when enabled), and Cascader submits a JSON array string. Uncontrolled fields restore defaultValue on form reset; controlled fields require resetting application state. Select, DatePicker, DateRangePicker and AutoComplete forward their input; Cascader forwards its trigger button. Multi-select values use repeated name entries in FormData. Provide a label or aria-label for every control.
 
-Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Use labelWidth="auto" to align all labels to the widest one, or pass a number for a fixed pixel width. DatePicker with picker="datetime" submits YYYY-MM-DD HH:mm (or HH:mm:ss with showSeconds); DateRangePicker submits a start/end string in the selected granularity.
+Form keeps native onSubmit, onReset and FormData behavior. Wrap each control in FormField for labels and validation feedback. Horizontal labels default to 112px; set a numeric labelWidth on Form or FormField to adjust the width. DatePicker with picker="datetime" submits YYYY-MM-DD HH:mm (or HH:mm:ss with showSeconds); DateRangePicker submits a start/end string in the selected granularity.
 
 ## More components
 

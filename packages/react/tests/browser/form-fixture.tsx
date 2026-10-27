@@ -1,5 +1,41 @@
 import { useState } from 'react';
-import { Button, ConfigProvider, Form, FormField, FormGroup, Input, Space } from '../../src';
+import { Button, ConfigProvider, Form, FormField, FormGroup, Grid, Input, Space } from '../../src';
+
+export function FormColumnsFixture() {
+  const [width, setWidth] = useState<number>();
+  const [longLabel, setLongLabel] = useState(false);
+  return (
+    <>
+      <Space wrap>
+        <Button onClick={() => setWidth(undefined)}>Default width</Button>
+        <Button onClick={() => setWidth(160)}>Wider labels</Button>
+        <Button onClick={() => setLongLabel((previous) => !previous)}>Change label</Button>
+      </Space>
+      <Form aria-label="Wrapped columns" labelWidth={width} style={{ maxWidth: 'none' }}>
+        <Grid columns={{ xs: 1, lg: 3 }}>
+          <div>
+            <FormField label={longLabel ? 'A much longer project name label' : 'Project'}>
+              <Input name="project" defaultValue="Leaf" />
+            </FormField>
+          </div>
+          <div>
+            <FormField label="Type">
+              <Input name="type" />
+            </FormField>
+          </div>
+          <div>
+            <FormField label="Owner" labelWidth={80}>
+              <Input name="owner" />
+            </FormField>
+          </div>
+        </Grid>
+      </Form>
+      <FormField label="Standalone">
+        <Input />
+      </FormField>
+    </>
+  );
+}
 
 export function FormFixture() {
   const [saved, setSaved] = useState('');
