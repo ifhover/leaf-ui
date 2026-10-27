@@ -85,4 +85,4 @@ pnpm --dir packages/react pack
 
 ## 质量验收
 
-PR 与 main 推送均运行组件检查、React 18 / 19 兼容矩阵和 Chromium / Firefox / WebKit 浏览器矩阵。交互、a11y、主题布局、大数据及生产体积的范围和证据说明见 [packages/react/QUALITY.md](packages/react/QUALITY.md)。
+检查范围、基础测试与人工确认的边界、按需浏览器排障及保留的自动化统一见 [质量验收](packages/react/QUALITY.md#当前验收规则)，不在此维护第二份矩阵或发布门禁要求。

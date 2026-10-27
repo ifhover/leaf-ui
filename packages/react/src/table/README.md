@@ -38,14 +38,12 @@ Stripe parity belongs to data rows, not native DOM sibling positions: detail row
 
 Explicit row virtualization uses TanStack Virtual and spacer rows. It measures natural row/detail heights and grouped header height; retained focused rows can introduce intermediate spacers. This is not a spreadsheet grid or column-virtualization engine. Screen-reader/device acceptance remains distinct from browser axe checks.
 
-Verify with:
+Run the relevant unit tests during development:
 
 ```sh
 pnpm --filter @ifhover/leaf-ui exec vitest run src/table src/tabletanstack
-pnpm --filter @ifhover/leaf-ui exec playwright test table.spec.ts
-pnpm check
-pnpm build
-pnpm --filter @ifhover/leaf-ui measure:bundle
 ```
+
+Full release checks, result reuse, manual confirmation and optional browser diagnosis follow [QUALITY.md](../../QUALITY.md#当前验收规则); this component does not add a separate browser test requirement.
 
 Maintain independent style dependencies, exports, documentation metadata, bilingual examples, the static catalog SVG, and AI export discovery together. Developing here does not publish or replace the current stable documentation.

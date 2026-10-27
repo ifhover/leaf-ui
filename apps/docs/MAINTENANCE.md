@@ -93,7 +93,7 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 导出层按原页面 URL 和 `LEAF_DOCS_BASE` 解析站内 Markdown 链接，保留版本路径、语言、查询参数和锚点，将文档路由转换为真实 `.html` 地址；资源链接保留其扩展。只改写链接目的地址，不改写正文或代码，原始抽取结果仍用于网页源码一致性检查。
 
-单独导出可运行 `node apps/docs/scripts/export-component-docs.mjs --output .quality/doc-structure-rollout/export`。解析、覆盖和导出测试纳入 `pnpm test:docs`；真实页面验证复用文档布局浏览器测试。unified / remark 依赖均为 MIT，仅作为文档构建开发依赖，不进入组件运行产物。结构升级不改写历史版本文档，查询客户端须按版本支持情况读取，不能伪造旧版结构化数据。
+单独导出可运行 `node apps/docs/scripts/export-component-docs.mjs --output .quality/doc-structure-rollout/export`。解析、覆盖和导出测试纳入 `pnpm test:docs`；页面效果与按需排障遵循 [质量规则](../../packages/react/QUALITY.md#当前验收规则)，不依赖全量文档浏览器测试。unified / remark 依赖均为 MIT，仅作为文档构建开发依赖，不进入组件运行产物。结构升级不改写历史版本文档，查询客户端须按版本支持情况读取，不能伪造旧版结构化数据。
 
 ## 正式站点与历史快照
 
@@ -105,7 +105,7 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 旧快照只补充版本导航和 AI 基础设施，组件实现、文档与示例保持发布提交。缓存 `.version-cache` 的键包含包名、提交、base 和基础设施摘要。修改 AI 导出的 import 后同步 `build-versioned-site.mjs` 的 `platformFiles` 及其直接依赖，并执行隔离快照测试。
 
-组件版本来自 `packages/react/package.json`；更新记录同步中英文，标题由 `pnpm check:release` 校验。未发布记录放在在线 `docs` 之外。npm、Git 标签、默认文档、固定快照和 AI 文档全部一致后才报告发布完成。
+组件版本来自 `packages/react/package.json`；更新记录同步中英文，标题由 `pnpm check:release` 校验。未发布记录放在在线 `docs` 之外。Pages 只在 npm 发布成功后或手动维护时部署，不响应普通 `main` 推送；直接运行快照构建，不先重跑工作区完整检查和库 / 文档构建。部署后由 [轻量发布核验](../../packages/react/RELEASING.md#发布完成) 检查 npm、标签、默认文档、固定快照与 AI 文档，不能把 HTTP 可达性当作视觉验收。
 
 ## 开发预览
 

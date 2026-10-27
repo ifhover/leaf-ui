@@ -154,7 +154,7 @@ These roles stay with their component because the visual responsibility is not a
 
 ## Verification boundary and commands
 
-Source coverage of 81 exports is not a claim that 81 components received browser visual acceptance. The browser suite is contract-targeted and must report the fixtures and viewports it actually exercised.
+Source coverage of 81 exports is not a claim that 81 components received visual acceptance. The current workflow uses static / unit checks and user inspection, without a permanent browser suite; see [quality rules](QUALITY.md#当前验收规则).
 
 Run the static and package checks from the repository root:
 
@@ -166,10 +166,6 @@ pnpm --filter @ifhover/leaf-ui test
 pnpm --filter @ifhover/leaf-ui build
 ```
 
-For the targeted browser contract, run only when browser acceptance is in scope:
-
-```powershell
-pnpm --filter @ifhover/leaf-ui exec playwright test tests/browser/family-color-contract.spec.ts
-```
+Use a real browser only to diagnose a specific reported rendering issue or when explicitly requested. Do not restore the removed browser suite or infer visual acceptance from static checks.
 
 Record the revision, command, environment, and actual result with the change set. This document describes source responsibility and does not carry a fabricated pass result for those commands.

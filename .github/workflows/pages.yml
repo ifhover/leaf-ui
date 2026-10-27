@@ -1,8 +1,6 @@
 name: Deploy documentation
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
   workflow_run:
     workflows: ['Publish npm package']
@@ -19,6 +17,9 @@ jobs:
   build:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      commit: ${{ steps.release.outputs.commit }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,12 +31,6 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Check source and component behavior
-        run: pnpm check
-      - name: Build library and documentation
-        run: pnpm build
-        env:
-          LEAF_DOCS_BASE: /leaf-ui/
       - name: Cache published documentation snapshots
         uses: actions/cache@v4
         with:
@@ -46,6 +41,15 @@ jobs:
         run: pnpm build:versions
         env:
           LEAF_DOCS_BASE: /leaf-ui/
+      - name: Record the deployed release identity
+        id: release
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const manifest = JSON.parse(readFileSync('apps/docs/site_build/versions.json', 'utf8'));
+          const release = manifest.versions.find(({ version }) => version === manifest.latest);
+          appendFileSync(process.env.GITHUB_OUTPUT, `version=${release.version}\ncommit=${release.sourceCommit}\n`);
+          NODE
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -55,6 +59,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -64,3 +69,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      - name: Verify npm, release tag and deployed documentation
+        env:
+          RELEASE_VERSION: ${{ needs.build.outputs.version }}
+          RELEASE_COMMIT: ${{ needs.build.outputs.commit }}
+        run: node packages/react/scripts/verify-release.mjs --version "$RELEASE_VERSION" --commit "$RELEASE_COMMIT" --attempts 12

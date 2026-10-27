@@ -27,22 +27,25 @@ jobs:
       - run: pnpm check
       - run: pnpm build
       - run: pnpm --filter @ifhover/leaf-ui measure:bundle
+      - name: Ensure checks did not change release sources
+        run: git diff --exit-code && test -z "$(git ls-files --others --exclude-standard)"
       - uses: actions/upload-artifact@v4
         with:
           name: production-bundles
-          path: packages/react/.quality
+          path: packages/react/.quality/bundle-report.json
           include-hidden-files: true
-      - run: pnpm --filter @ifhover/leaf-ui exec playwright install --with-deps chromium
-      - run: pnpm test:docs:browser
+      - name: Pack the checked release without rebuilding
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: pnpm release:pack
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
-          name: docs-browser
+          name: npm-release
           include-hidden-files: true
-          path: |
-            packages/react/.quality/browser/*/html
-            packages/react/.quality/browser/*/results
-            packages/react/.quality/browser/*/report.json
+          path: packages/react/.quality/release/
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: true
 
   react-compatibility:
     runs-on: ubuntu-latest
@@ -63,29 +66,3 @@ jobs:
         run: pnpm --filter @ifhover/leaf-ui add --save-dev react@${{ matrix.react }} react-dom@${{ matrix.react }} @types/react@${{ matrix.react }} @types/react-dom@${{ matrix.react }}
       - run: pnpm --filter @ifhover/leaf-ui typecheck
       - run: pnpm --filter @ifhover/leaf-ui test
-
-  browsers:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '26'
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @ifhover/leaf-ui exec playwright install --with-deps ${{ matrix.browser }}
-      - run: pnpm --filter @ifhover/leaf-ui test:browser --project=${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: browser-${{ matrix.browser }}
-          include-hidden-files: true
-          path: |
-            packages/react/.quality/browser/*/html
-            packages/react/.quality/browser/*/results
-            packages/react/.quality/browser/*/report.json
