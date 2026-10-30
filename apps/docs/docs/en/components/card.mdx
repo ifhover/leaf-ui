@@ -5,6 +5,7 @@ import { CardSizes } from '../../../src/examples/en/card/sizes';
 import { CardLayered } from '../../../src/examples/en/card/layered';
 import { CardStandaloneTitle } from '../../../src/examples/en/card/standalone-title';
 import { CardActions } from '../../../src/examples/en/card/actions';
+import { CardTable } from '../../../src/examples/en/card/table';
 import { CardTabs } from '../../../src/examples/en/card/tabs';
 import { CardTabsWithTitle } from '../../../src/examples/en/card/tabs-with-title';
 import { CardLoading } from '../../../src/examples/en/card/loading';
@@ -87,6 +88,17 @@ Place actions beside the title with `extra`, or below the content with `footer`.
 
 </ComponentExample>
 
+### Table content
+
+Put `DataTable` in `cover` so the table fills the card content area. The heading, toolbar above the table and `footer` keep their horizontal insets. Use `variant="simple"` when embedding the table in an existing content surface to avoid a second surface and frame.
+
+<ComponentExample exampleId="table" preview={<CardTable />} fileName="table.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/card/table.tsx"
+```
+
+</ComponentExample>
+
 ### Tabbed card
 
 Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has no title. Each item's `children` holds its page; Card's `children` holds shared content below the pages.
@@ -100,7 +112,7 @@ Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has n
 
 ### Heading with tabs
 
-Control the active tab with `tabs.activeKey` and `tabs.onChange`. Visited pages retain input state by default; use `destroyInactive` to unmount them when leaving. Other tab interactions follow [Tabs](tabs#tabs-api).
+Control the active tab with `tabs.activeKey` and `tabs.onChange`. Visited pages retain input state by default; use `destroyInactive` to unmount them when leaving. See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for other tab interactions.
 
 <ComponentExample exampleId="tabs-with-title" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx">
 
@@ -137,32 +149,19 @@ Configuration for card headings, content regions, embedded tabs and loading stat
 | `cover` | `ReactNode` | — | Top cover. |
 | `footer` | `ReactNode` | — | Footer content or actions; layered places them on the canvas below the content card. |
 | `loading` | `boolean` | `false` | Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled. |
-| `bordered` | `boolean` | `true` | Show the outer border |
+| `bordered` | `boolean` | `true` | Show the outer border; set to `false` to remove it. |
+| `shadow` | `boolean` | `true` | Show the card's resting shadow; layered cards apply it to the inner content surface. |
 | `selected` | `boolean` | `false` | Mark the card as selected; use a button or selection control to manage selection. |
 | `variant` | `'default' \| 'layered'` | `'default'` | Card appearance; layered separates the content surface from the heading and footer on a muted canvas. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size; embedded tabs follow it by default, while other children use their own sizes. |
 
 ### CardTabs API
 
-Card tabs use top-aligned line tabs. `tabs.extra` belongs to the tab bar; Card's `extra` stays beside the heading when a title is present. An empty `items` list restores an ordinary card.
+See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Card fixes `type="line"` and `placement="top"`, adds loading skeletons to tab content, and keeps `tabs.extra` on the tab bar; an empty `items` list restores an ordinary card.
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | Required | Tab labels and pages; an empty list restores an ordinary card. |
-| `activeKey` | `string` | First enabled item | Controlled active tab. |
-| `defaultActiveKey` | `string` | First enabled item | Initially active tab. |
-| `onChange` | `(key: string) => void` | — | Called when the active tab changes. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size; may be overridden independently. |
-| `block` | `boolean` | `false` | Make the tabs share the available width equally. |
-| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | Activate with arrow keys or with Enter / Space. |
-| `destroyInactive` | `boolean` | `false` | Unmount pages on leaving; visited pages are retained by default. |
-| `extra` | `ReactNode` | — | Trailing tab bar content. |
-| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | Request removal by the application; default switching can be prevented. |
-| `onAdd` | `() => void` | — | Show the add button and request a new tab. |
-| `addLabel` | `string` | Localized prompt | Accessible name of the add button. |
-| `overflow` | `boolean` | `true` | Show directional scroll buttons when tabs overflow. |
-| `sortable` | `boolean` | `false` | Enable sorting alongside `onReorder`. |
-| `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | Return the reordered original items for the application to store. |
+```ts
+type CardTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```
 
 ### CardTitle API
 

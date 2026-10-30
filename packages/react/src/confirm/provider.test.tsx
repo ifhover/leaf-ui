@@ -36,6 +36,7 @@ describe('Managed confirmations', () => {
     });
     expect(screen.getAllByRole('alertdialog')).toHaveLength(1);
     expect(screen.getByRole('alertdialog')).toHaveAccessibleName('First');
+    expect(screen.getByRole('alertdialog')).toHaveClass('leaf-confirm--info');
     expect(renders).toHaveBeenCalledTimes(before);
     const mask = screen.getByRole('alertdialog').closest('.leaf-modal-mask');
     if (mask instanceof HTMLElement) mask.style.transitionDuration = '160ms';

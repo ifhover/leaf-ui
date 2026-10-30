@@ -212,6 +212,15 @@
         }
       ]
     },
+    "card/card.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#000",
+          "count": 1,
+          "reason": "Card headings retain the requested black ink in light appearance; dark appearance uses the regional text role, and the existing Card color override remains authoritative."
+        }
+      ]
+    },
     "colorpicker/colorpicker.scss": {
       "hardcodedColors": [
         {
@@ -359,93 +368,24 @@
     "image/image.scss": {
       "hardcodedColors": [
         {
+          "expression": "#fff",
+          "count": 1,
+          "reason": "Self-contained photographic preview keeps fixed white foreground independently of application appearance."
+        },
+        {
+          "expression": "#0008",
+          "count": 1,
+          "reason": "Photographic preview shares one translucent black backdrop and resting control fill."
+        },
+        {
+          "expression": "#000c",
+          "count": 1,
+          "reason": "Photographic preview uses a darker media-owned hover and zoom-tooltip fill."
+        },
+        {
           "expression": "#0003",
           "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#0006",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#0009",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#26292f",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#b7bfc9",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#e8edf3",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#f4f5f7",
-          "count": 2,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#f5b4b4",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#fff",
-          "count": 6,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#ffffff0b",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#ffffff0e",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#ffffff12",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#ffffff1c",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "#ffffff24",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "rgba(0,0,0,0.22)",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        },
-        {
-          "expression": "white",
-          "count": 1,
-          "reason": "Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables."
-        }
-      ]
-    },
-    "image/viewer.tsx": {
-      "hardcodedColors": [
-        {
-          "expression": "rgba(0,0,0,.92)",
-          "count": 1,
-          "reason": "Media viewer backdrop is a fixed photographic overlay color."
+          "reason": "The thumbnail strip uses a separate translucent photographic overlay."
         }
       ]
     },
@@ -581,6 +521,11 @@
     "menu/menu.scss": {
       "hardcodedColors": [
         {
+          "expression": "rgb(241 241 242)",
+          "count": 1,
+          "reason": "User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role."
+        },
+        {
           "expression": "rgb(0 0 0/0.08)",
           "count": 1,
           "reason": "Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract."
@@ -588,7 +533,7 @@
         {
           "expression": "rgba(0,0,0,0.04)",
           "count": 1,
-          "reason": "Raised Menu press uses a lighter transient layer than default feedback, preserving its established motion/paint contract."
+          "reason": "Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract."
         }
       ],
       "derivedTokenUsages": [
@@ -715,7 +660,7 @@
       {
         "expression": "rgb(0 0 0/8%)",
         "count": 1,
-        "reason": "Default Menu neutral feedback is also the source of the half-strength shared choice-row feedback. Both remain borderless and shadowless."
+        "reason": "Menu appearance fallbacks retain this neutral overlay, which also supplies the half-strength shared choice-row feedback. Both remain borderless and shadowless."
       },
       {
         "expression": "rgb(0 0 0/0.04)",
@@ -757,7 +702,7 @@
       {
         "expression": "color-mix(in srgb,currentColor #{$strength},var(--leaf-color-surface))",
         "count": 1,
-        "reason": "Default Menu retains its independent 80% inherited ink recipe; choice rows use full inherited ink in both unselected and selected states."
+        "reason": "Menu retains its independent 80% inherited ink recipe; choice rows use full inherited ink in both unselected and selected states."
       },
       {
         "expression": "color-mix(in srgb,#{neutral-option-background()} 50%,transparent)",
@@ -775,9 +720,9 @@
         "reason": "Status-label close and checkable feedback share a foreground-relative tint."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-divider)70%,#{$surface})",
+        "expression": "color-mix(in srgb,var(--leaf-color-divider)#{$divider-weight},#{$surface})",
         "count": 1,
-        "reason": "Card/Table softened frames follow their actual local surface."
+        "reason": "Card uses a lighter 50% divider blend while other softened frames keep the 70% divider blend; both follow their actual local surface."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-color-primary)3%,var(--leaf-table-surface))",

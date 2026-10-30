@@ -3,6 +3,7 @@ import { AlertBasic } from '../../../src/examples/en/alert/basic';
 import { AlertTypes } from '../../../src/examples/en/alert/types';
 import { AlertClosable } from '../../../src/examples/en/alert/closable';
 import { AlertIcons } from '../../../src/examples/en/alert/icons';
+import { AlertExtra } from '../../../src/examples/en/alert/extra';
 
 export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 
@@ -34,6 +35,17 @@ Use `type` for information, success, warning or danger messages. Use `danger` in
 <ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/types.tsx"
+```
+
+</ComponentExample>
+
+### Trailing content
+
+Use `extra` for buttons, links or other elements on the right. It can be combined with `closable` and appears before the close button.
+
+<ComponentExample exampleId="extra" preview={<AlertExtra />} fileName="extra.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/alert/extra.tsx"
 ```
 
 </ComponentExample>
@@ -72,6 +84,7 @@ Configuration for alert content, feedback type and dismissal.
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | Required | Main content |
 | `description` | `ReactNode` | — | Additional details |
+| `extra` | `ReactNode` | — | Trailing content. |
 | `type` | `FeedbackType \| 'error'` | `'info'` | Feedback type; `error` is a compatibility alias |
 | `icon` | `ReactNode` | — | Icon content. |
 | `showIcon` | `boolean` | `true` | Show the feedback icon |

@@ -209,6 +209,7 @@
     "downloadFailedOpenTheOriginalImageToSaveIt": "ダウンロードに失敗しました。元の画像を開いて保存してください。",
     "openOriginal": "元の画像を開く",
     "zoomOut": "縮小",
+    "zoomLevel": "ズーム倍率",
     "resetZoom": "拡大率をリセット",
     "zoomIn": "拡大",
     "showThumbnails": "サムネイルを表示",
@@ -222,7 +223,10 @@
     "actualSize": "実際のサイズ（1:1）",
     "fitToWindow": "画面に合わせる",
     "rotateCounterclockwise": "反時計回りに回転",
-    "rotateClockwise": "時計回りに回転"
+    "rotateClockwise": "時計回りに回転",
+    "resetImage": "画像をリセット",
+    "flipHorizontal": "左右反転",
+    "flipVertical": "上下反転"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "読み込みに失敗しました。再試行",
@@ -263,22 +267,16 @@
     "loadError": "データを読み込めませんでした。もう一度お試しください。"
   },
   "dataTable": {
-    "searchTable": "表を検索",
-    "columns": "列",
     "resizeColumn": "列「{label}」の幅を変更",
     "selectRows": "行を選択",
     "selectAllRowsOnThisPage": "このページのすべての行を選択",
-    "selectAllRows": "すべての行を選択",
-    "reorderRow": "行「{label}」を並べ替え",
     "selectRow": "行「{label}」を選択",
     "collapseRow": "行「{label}」を折りたたむ",
     "expandRow": "行「{label}」を展開",
-    "reorderRows": "行を並べ替え",
     "expandRows": "行を展開",
     "sortAscending": "昇順に並べ替え",
     "sortDescending": "降順に並べ替え",
-    "clearSorting": "並べ替えを解除",
-    "reorderColumn": "列「{label}」を並べ替え"
+    "clearSorting": "並べ替えを解除"
   },
   "timeRangePicker": {
     "placeholder": "開始時刻 ～ 終了時刻",

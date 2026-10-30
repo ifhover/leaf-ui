@@ -72,6 +72,10 @@ console.table(
 console.log(report.includes);
 
 for (const [name, modules] of inputs) {
+  assert.ok(
+    !modules.some((file) => /viewerjs|yet-another-react-lightbox/u.test(file)),
+    `${name} must not load an external image preview engine`,
+  );
   if (!['table', 'tableAdapter'].includes(name))
     assert.ok(
       !modules.some((file) =>
@@ -86,7 +90,7 @@ for (const [name, modules] of inputs) {
     assert.match(css, /\.leaf-button/);
     assert.doesNotMatch(css, /\.leaf-table|\.leaf-input|\.leaf-modal/);
     // Guard against accidentally pulling in unrelated, expensive component families.
-    assert.ok(!modules.some((file) => /qrcode\.react|yet-another-react-lightbox/u.test(file)));
+    assert.ok(!modules.some((file) => /qrcode\.react/u.test(file)));
     assert.ok(report.cases[name].js.gzip < 5 * 1024, 'Button-only JS regression: over 5 KiB gzip');
     // The fixture now includes the automatically loaded shared foundation.
     // Keep the existing component budget, accounting for that shared CSS separately.

@@ -1,6 +1,5 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ModalBasic } from '../../src/examples/modal/basic';
-import { ModalCard } from '../../src/examples/modal/card';
 import { ModalDescription } from '../../src/examples/modal/description';
 import { ModalFooter } from '../../src/examples/modal/footer';
 import { ModalDestroy } from '../../src/examples/modal/destroy';
@@ -34,20 +33,9 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 ## 示例
 
-### 卡片外观
-
-设置 `variant="card"`，以分层卡片外观展示弹窗内容。
-
-<ComponentExample exampleId="card" preview={<ModalCard />} fileName="card.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../src/examples/modal/card.tsx"
-```
-
-</ComponentExample>
-
 ### 图标与说明
 
-通过 `icon` 和 `description` 为弹窗补充图标与说明。
+通过 `icon` 和 `description` 为弹窗补充图标与说明。标题和底部默认显示分隔线，通过 `divided={false}` 关闭。
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -58,7 +46,7 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 ### 自定义底部
 
-函数形式的 `footer` 接收默认按钮，可保留其确认与取消逻辑并增加操作。`footer={null}` 隐藏底部。
+函数形式的 `footer` 接收默认按钮，可保留其确认与取消逻辑并增加操作。自定义按钮间距由 `Space` 管理；`footer={null}` 隐藏底部。
 
 <ComponentExample exampleId="footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
@@ -126,9 +114,8 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |
 | `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮 |
-| `variant` | `'plain' \| 'card'` | `'plain'` | 内容外观；card 将正文分为独立的内容面。 |
 | `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
+| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
 | `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
 | `closable` | `boolean` | `true` | 显示右上角关闭按钮。 |
 | `maskClosable` | `boolean` | `true` | 点击遮罩时请求关闭。 |

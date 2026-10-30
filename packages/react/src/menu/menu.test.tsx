@@ -29,18 +29,18 @@ describe('Menu transitions', () => {
     expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--raised');
 
     rerender(
-      <ConfigProvider components={{ Menu: { variant: 'default' } }}>
+      <ConfigProvider components={{ Menu: { variant: 'neutral' } }}>
         <Menu items={items} />
       </ConfigProvider>,
     );
-    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--neutral');
 
     rerender(
       <ConfigProvider components={{ Menu: { variant: 'primary' } }}>
-        <Menu items={items} variant="default" />
+        <Menu items={items} variant="neutral" />
       </ConfigProvider>,
     );
-    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--default');
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--neutral');
   });
 
   it('renders item extra inline and in collapsed navigation without changing the item label', async () => {
@@ -65,8 +65,8 @@ describe('Menu transitions', () => {
     );
   });
 
-  it('inherits the raised variant and lets an instance restore the default without resetting selection', async () => {
-    const view = (variant?: 'default' | 'raised' | 'primary') => (
+  it('inherits the raised variant and lets an instance use neutral without resetting selection', async () => {
+    const view = (variant?: 'neutral' | 'raised' | 'primary') => (
       <ConfigProvider components={{ Menu: { variant: 'raised' } }}>
         <Menu items={items} variant={variant} defaultSelectedKey="settings" />
       </ConfigProvider>
@@ -79,7 +79,8 @@ describe('Menu transitions', () => {
     rerender(view('primary'));
     expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--primary');
     expect(screen.getByRole('navigation')).not.toHaveClass('leaf-menu--raised');
-    rerender(view('default'));
+    rerender(view('neutral'));
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--neutral');
     expect(screen.getByRole('navigation')).not.toHaveClass('leaf-menu--raised');
     expect(screen.getByRole('menuitem', { name: 'Design' })).toHaveAttribute(
       'aria-current',
@@ -283,6 +284,17 @@ describe('Menu groups', () => {
 });
 
 describe('Menu popup navigation', () => {
+  it.each(['neutral', 'raised', 'primary'] as const)(
+    'keeps the %s appearance in collapsed submenus',
+    async (variant) => {
+      render(<Menu items={items} variant={variant} collapsed defaultSelectedKey="design" />);
+      await userEvent.click(screen.getByRole('menuitem', { name: 'Projects' }));
+      const selected = screen.getByRole('menuitem', { name: 'Design' });
+      expect(selected).toHaveAttribute('aria-current', 'page');
+      expect(selected.closest('.leaf-menu__popup')).toHaveClass(`leaf-menu__popup--${variant}`);
+    },
+  );
+
   it('keeps selected links and nested navigation in the collapsed popup', async () => {
     const onSelect = vi.fn();
     render(

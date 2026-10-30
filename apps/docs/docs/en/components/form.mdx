@@ -40,6 +40,41 @@ Horizontal labels default to 112px. Set `Form.labelWidth` for the whole form or 
 
 </ComponentExample>
 
+### Label widths through CSS
+
+{/* leaf:example css-label-width */}
+
+When using build tools such as `postcss-pxtorem`, define the width in a stylesheet so your CSS pipeline can convert its unit. You can also use `rem` directly. The following example connects the label width to an application CSS variable through `style`.
+
+```css
+.account-form {
+  --app-form-label-width: 140px;
+}
+```
+
+```tsx
+import { Form, FormField, Input, type LeafThemeStyle } from '@ifhover/leaf-ui';
+import './account-form.css';
+
+const formStyle = {
+  '--leaf-form-label-width': 'var(--app-form-label-width)',
+} satisfies LeafThemeStyle;
+
+export function AccountForm() {
+  return (
+    <Form className="account-form" style={formStyle}>
+      <FormField label="Account name">
+        <Input name="account" />
+      </FormField>
+    </Form>
+  );
+}
+```
+
+Whether `140px` is converted, and at what ratio, depends on your build configuration. Include this stylesheet and its custom property declarations in the conversion scope. Numeric `labelWidth` values generate inline pixel values, which PostCSS usually does not process. Form currently also generates an inline default width, so declaring `--leaf-form-label-width` in a CSS class on the same Form does not override it. The example explicitly connects the CSS variable through `style` without requiring `!important`.
+
+For an application-wide width, define `--app-form-label-width` on the application root and configure `ConfigProvider components={{ Form: { style: formStyle } }}` once. `style` is replaced as a whole, not merged; retain the variable connection when supplying a separate `style` on a Form. `FormField.labelWidth` or the same CSS variable on an individual field can still override that field. This width configuration applies only to horizontal layouts.
+
 ### Settings layout
 
 `layout="settings"` places the label and `description` to the left of the control. Override a wider field with `layout="vertical"`. `description` explains the field; `help` appears below the control and is replaced by `error`.

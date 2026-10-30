@@ -69,7 +69,7 @@ const flatten = (items: readonly DropdownItem[]): DropdownItem[] =>
 interface NavigationMenu {
   selectedKey?: string;
   title?: ReactNode;
-  variant?: 'default' | 'raised' | 'primary';
+  variant?: 'neutral' | 'raised' | 'primary';
 }
 interface DropdownControlProps extends DropdownProps {
   navigation?: NavigationMenu;
@@ -428,7 +428,7 @@ function MenuPanel({
           'leaf-dropdown',
           !navigation && `leaf-dropdown--${size}`,
           navigation && 'leaf-menu__popup',
-          navigation && `leaf-menu__popup--${navigation.variant ?? 'default'}`,
+          navigation && `leaf-menu__popup--${navigation.variant ?? 'neutral'}`,
           popupClassName,
         )}
         position={position}

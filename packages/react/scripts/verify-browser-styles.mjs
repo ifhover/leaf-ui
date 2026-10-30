@@ -33,12 +33,24 @@ const cases = {
     names: ['DataTable'],
     subpath: '/table',
     include: ['table', 'scrollbar', 'loading', 'result', 'checkbox', 'pagination'],
-    exclude: ['color-picker', 'date-picker'],
+    exclude: ['color-picker', 'date-picker', 'popover'],
   },
   date: {
     names: ['DatePicker'],
     include: ['date-picker', 'calendar', 'time-picker', 'scrollbar'],
     exclude: ['table', 'color-picker'],
+  },
+  dateRangeSubpath: {
+    names: ['DateRangePicker'],
+    subpath: '/date-range-picker',
+    include: ['date-picker', 'calendar', 'time-picker', 'tabs', 'scrollbar'],
+    exclude: ['table', 'color-picker'],
+  },
+  colorSubpath: {
+    names: ['ColorPicker'],
+    subpath: '/color-picker',
+    include: ['color-picker', 'tabs', 'scrollbar'],
+    exclude: ['table', 'date-picker'],
   },
   card: {
     names: ['Card'],
@@ -213,12 +225,12 @@ for (const engine of ['rspack', 'vite']) {
         .join('\n');
       assert.doesNotMatch(
         initialCss,
-        /\.leaf-image(?:\b|__|-)|\.yarl__/,
-        `${engine}: idle ConfigProvider excludes Image and YARL CSS`,
+        /\.leaf-image(?:\b|__|-)/,
+        `${engine}: idle ConfigProvider excludes image preview CSS`,
       );
       assert.doesNotMatch(
         initialJs,
-        /leaf-image__trigger|leaf-image-viewer__|yarl__/,
+        /leaf-image-viewer__/,
         `${engine}: idle ConfigProvider excludes image controls and viewer code`,
       );
       assert.match(
@@ -226,7 +238,11 @@ for (const engine of ['rspack', 'vite']) {
         /\.leaf-image-viewer__/,
         `${engine}: requested preview retains lazy viewer CSS`,
       );
-      assert.match(css, /\.yarl__/, `${engine}: requested preview retains lazy YARL CSS`);
+      assert.match(
+        css,
+        /\.leaf-image-viewer__stage/,
+        `${engine}: requested preview retains the self-contained viewer stage`,
+      );
       const deferred = await Promise.all(
         (await readdir(destination, { recursive: true }))
           .map((file) => file.replaceAll(path.sep, '/'))

@@ -210,6 +210,7 @@ export interface LocaleMessages {
     readonly downloadFailedOpenTheOriginalImageToSaveIt: string;
     readonly openOriginal: string;
     readonly zoomOut: string;
+    readonly zoomLevel: string;
     readonly resetZoom: string;
     readonly zoomIn: string;
     readonly showThumbnails: string;
@@ -224,6 +225,9 @@ export interface LocaleMessages {
     readonly fitToWindow: string;
     readonly rotateCounterclockwise: string;
     readonly rotateClockwise: string;
+    readonly resetImage: string;
+    readonly flipHorizontal: string;
+    readonly flipVertical: string;
   };
   readonly infiniteScroll: {
     readonly loadingFailedRetry: string;
@@ -264,22 +268,16 @@ export interface LocaleMessages {
     readonly loadError: string;
   };
   readonly dataTable: {
-    readonly searchTable: string;
-    readonly columns: string;
     readonly resizeColumn: string;
     readonly selectRows: string;
     readonly selectAllRowsOnThisPage: string;
-    readonly selectAllRows: string;
-    readonly reorderRow: string;
     readonly selectRow: string;
     readonly collapseRow: string;
     readonly expandRow: string;
-    readonly reorderRows: string;
     readonly expandRows: string;
     readonly sortAscending: string;
     readonly sortDescending: string;
     readonly clearSorting: string;
-    readonly reorderColumn: string;
   };
   readonly timeRangePicker: {
     readonly placeholder: string;

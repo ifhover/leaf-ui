@@ -39,7 +39,10 @@
     border-block-width var(--leaf-motion-duration) var(--leaf-motion-easing),
     border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-  background: var(--leaf-component-alert-background, var(--leaf-color-surface-muted));
+  background: var(
+    --leaf-component-alert-background,
+    mixins.subtle-action-background(var(--leaf-color-surface))
+  );
   &[data-state='closing'] {
     max-height: 0;
     opacity: 0;
@@ -73,6 +76,12 @@
     color: var(--leaf-color-text-muted);
     font-size: var(--leaf-font-size-sm);
     line-height: var(--leaf-line-height-sm);
+  }
+  &__extra {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    flex-shrink: 0;
   }
   &__close {
     align-items: center;
@@ -141,6 +150,9 @@
     font-weight: var(--leaf-heading-weight);
     line-height: var(--leaf-line-height-lg);
   }
+  > .leaf-modal__footer {
+    gap: 8px;
+  }
   &__title {
     min-width: 0;
     overflow-wrap: anywhere;
@@ -149,10 +161,7 @@
     padding-inline-start: 36px;
   }
   // Keep the explanation in the same text column as the heading.
-  &.leaf-modal:not(.leaf-modal--card)
-    > .leaf-modal__header
-    + .leaf-modal__body
-    .leaf-modal__content {
+  &.leaf-modal > .leaf-modal__header + .leaf-modal__body .leaf-modal__content {
     padding-block-start: 8px;
   }
   &__body {

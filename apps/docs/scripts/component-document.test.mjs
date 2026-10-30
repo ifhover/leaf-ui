@@ -162,6 +162,14 @@ test('API signatures, constrained aliases and lowercase hook identities do not r
       .slice(0, -fixture.slice(fixture.indexOf('| Property |')).length) +
     '`useDemo(options?: DemoOptions): DemoApi`\n';
   assert.deepEqual(parseComponentDocument(signature).apiNames, ['useDemo']);
+  const hookPage = signature
+    .replace("component: 'Demo'", "component: 'useDemo'")
+    .replace('# Demo', '# useDemo');
+  assert.equal(parseComponentDocument(hookPage).component, 'useDemo');
+  assert.throws(
+    () => parseComponentDocument(hookPage.replace("component: 'useDemo'", "component: 'demo'")),
+    /export names/,
+  );
   const alias = `${fixture}\n### DemoRowKey\n\nOnly required string or number fields are accepted.\n\n\`type DemoRowKey<TData> = keyof TData | ((record: TData) => string | number)\`\n`;
   assert.deepEqual(parseComponentDocument(alias).apiNames, ['DemoProps', 'DemoRowKey']);
   assert.throws(
@@ -490,6 +498,86 @@ test('static download links and known withBase literals are converted without ev
   });
 });
 
+test('new-tab API links preserve destinations in AI output and reject dynamic attributes', async () => {
+  await temporary(async (directory) => {
+    const file = path.join(directory, 'demo.mdx');
+    const source = fixture.replace(
+      'Basic description.',
+      'See <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>.',
+    );
+    await writeFile(file, source);
+    await writeFile(path.join(directory, 'demo.tsx'), 'export function Demo() { return null; }');
+    const document = await readComponentDocument(file);
+    assert.match(document.basic, /\[Pagination API\]\(<pagination\.html#pagination-api>\)/);
+    assert.doesNotMatch(document.basic, /<a|target=|rel=/);
+    for (const [attribute, value] of [
+      ['target', '_blank'],
+      ['rel', 'noopener noreferrer'],
+    ])
+      assert.throws(
+        () =>
+          parseComponentDocument(
+            source.replace(`${attribute}="${value}"`, `${attribute}={getValue()}`),
+          ),
+        new RegExp(`Link ${attribute} must be a literal string`),
+      );
+  });
+});
+
+test('API disclosures expand complete content and nested links in AI output without accepting dynamic MDX', async () => {
+  await temporary(async (directory) => {
+    const file = path.join(directory, 'demo.mdx');
+    await writeFile(path.join(directory, 'demo.tsx'), 'export function Demo() { return null; }');
+    for (const gap of ['', '\n']) {
+      const disclosure = [
+        '#### Native configuration (DemoNativeOptions)',
+        '',
+        '<a id="demonativeoptions"></a>',
+        '',
+        'Advanced configuration.',
+        '',
+        `<details className="leaf-api-details">${gap}`,
+        '<summary>View **native** options</summary>',
+        '',
+        '| Property | Type | Description |',
+        '| --- | --- | --- |',
+        '| `native` | `boolean` | Native option. |',
+        '',
+        'See <a href="pagination.html#pagination-api" target="_blank">Pagination API</a>.',
+        '',
+        '</details>',
+      ].join('\n');
+      const source = `${fixture}\n${disclosure}\n`;
+      await writeFile(file, source);
+      const document = await readComponentDocument(file);
+      assert.match(document.api, /View \*\*native\*\* options/u);
+      assert.match(document.api, /\| `native` \| `boolean` \| Native option\. \|/u);
+      assert.match(document.api, /\[Pagination API\]\(<pagination\.html#pagination-api>\)/u);
+      assert.doesNotMatch(document.api, /<details|<summary|<a href|target=/u);
+      for (const [before, after] of [
+        ['className="leaf-api-details"', 'className={getClassName()}'],
+        ['<summary>', '<summary onClick={handleClick}>'],
+      ]) {
+        assert.throws(
+          () => parseComponentDocument(source.replace(before, after)),
+          /static leaf-api-details/,
+        );
+      }
+      assert.throws(
+        () => parseComponentDocument(source.replace('Native option.', '<Unknown />')),
+        /Unsupported MDX node Unknown/u,
+      );
+      assert.throws(
+        () =>
+          parseComponentDocument(
+            source.replace('</details>', '\n##### Hidden heading\n\n</details>'),
+          ),
+        /keep headings outside/u,
+      );
+    }
+  });
+});
+
 test('example selection supports multiple indices, IDs and exact titles, deduplicating in request order', () => {
   const document = {
     examples: [
@@ -558,6 +646,27 @@ test('build export produces detail and separate complete example files with work
       assert.equal(detail.version, index.version);
       assert.equal(detail.primaryApi, detail.apiNames[0]);
       assert.ok(detail.basic.includes('```tsx'));
+      if (item.component === 'DataTable') {
+        assert.deepEqual(detail.apiNames, [
+          'DataTableProps',
+          'useDataTable',
+          'useDataTableSelection',
+          'DataTableColumnMeta',
+          'DataTableVirtualOptions',
+          'DataTablePagination',
+        ]);
+        for (const name of [
+          'DataTableRowKey',
+          'DataTablePresentationProps',
+          'UseDataTableOptions',
+          'selectedRowKeys',
+          'onRowSelectionChange',
+          'enableMultiRowSelection',
+          'hasNextPage',
+        ])
+          assert.ok(detail.api.includes(name), `${name} survives the compact API export`);
+        assert.doesNotMatch(detail.api, /<details|<summary/u);
+      }
       for (const example of detail.examples) {
         assert.equal('markdown' in example, false);
         const full = JSON.parse(

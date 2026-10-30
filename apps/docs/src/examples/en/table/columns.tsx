@@ -30,15 +30,10 @@ export function TableColumns() {
     <DataTable
       table={table}
       aria-label="Pinned and resizable columns"
-      layout="custom"
       maxHeight={300}
       resizable
+      toolbar={<Button onClick={() => table.resetColumnSizing()}>Reset widths</Button>}
       pagination={false}
-    >
-      <DataTable.Toolbar>
-        <Button onClick={() => table.resetColumnSizing()}>Reset widths</Button>
-      </DataTable.Toolbar>
-      <DataTable.Content />
-    </DataTable>
+    />
   );
 }

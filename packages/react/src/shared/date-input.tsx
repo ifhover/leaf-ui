@@ -64,7 +64,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
     required: requiredProp,
     allowClear = true,
     inputReadOnly,
-    panelVariant = 'card',
+    panelVariant = 'plain',
     defaultOpen: _defaultOpen,
     popupPlacement,
     popupClassName,
@@ -207,6 +207,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
   useEffect(() => {
     if (open && focusPanel) {
       (
+        panel.current?.querySelector<HTMLElement>('[data-day][tabindex="0"]:not(:disabled)') ??
         panel.current?.querySelector<HTMLElement>('[tabindex="0"]:not(:disabled)') ??
         panel.current?.querySelector<HTMLElement>('button:not(:disabled)')
       )?.focus();

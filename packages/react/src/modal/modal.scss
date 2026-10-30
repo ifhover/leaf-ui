@@ -33,36 +33,8 @@
 }
 .leaf-modal {
   @include dialog-sections.sections(modal);
-  @include mixins.panel-canvas-family;
-  --leaf-modal-canvas-background: var(--leaf-panel-canvas-background);
   // Three compact layers retain depth without the large shadow's broad footprint.
   --leaf-modal-default-shadow: var(--leaf-shadow-md), var(--leaf-shadow-md), var(--leaf-shadow-md);
-  --leaf-modal-card-inset: calc(var(--leaf-spacing) * 0.75);
-  --leaf-modal-card-border-width: var(--leaf-border-width, 1px);
-  --leaf-modal-card-body-inline-start: var(
-    --leaf-component-modal-padding-left,
-    var(--leaf-density-dialog-inline)
-  );
-  --leaf-modal-card-body-inline-end: var(
-    --leaf-component-modal-padding-right,
-    var(--leaf-density-dialog-inline)
-  );
-  --leaf-modal-card-content-inline-start: max(
-    0px,
-    calc(var(--leaf-modal-card-body-inline-start) - var(--leaf-spacing))
-  );
-  --leaf-modal-card-content-inline-end: max(
-    0px,
-    calc(var(--leaf-modal-card-body-inline-end) - var(--leaf-spacing))
-  );
-  --leaf-modal-card-content-edge-inline-start: calc(
-    var(--leaf-modal-card-inset) + var(--leaf-modal-card-border-width) +
-      var(--leaf-modal-card-content-inline-start)
-  );
-  --leaf-modal-card-outer-inline: var(--leaf-modal-card-inset);
-  --leaf-modal-content-padding-end: calc(
-    var(--leaf-density-dialog-block) + var(--leaf-spacing) * 0.5
-  );
   position: relative;
   box-sizing: border-box;
   max-width: 100%;
@@ -94,10 +66,7 @@
     transform: translateY(18px) scale(0.96);
   }
   > .leaf-modal__header {
-    padding: var(
-      --leaf-component-modal-padding,
-      var(--leaf-spacing-md) var(--leaf-density-dialog-inline)
-    );
+    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
     padding-block-end: 0;
   }
   &__header--simple {
@@ -115,103 +84,25 @@
   }
   &__content {
     box-sizing: border-box;
-    padding: var(
-      --leaf-component-modal-padding,
-      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-        var(--leaf-modal-content-padding-end)
-    );
+    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
   }
-  &--card {
-    // Keep section separation in one place; header padding only sizes the header.
-    --leaf-modal-card-section-gap: calc(var(--leaf-spacing) * 1.5);
-    --leaf-modal-card-footer-gap: calc(var(--leaf-spacing) * 1.25);
-    --leaf-modal-card-border-width: 0px;
-    border-color: var(
-      --leaf-component-modal-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-    background: var(--leaf-modal-canvas-background);
-    > .leaf-modal__body {
-      min-height: 0;
-      width: auto;
-      max-width: none;
-      margin-block: var(--leaf-modal-card-section-gap) var(--leaf-modal-card-footer-gap);
-      margin-inline: var(--leaf-modal-card-inset);
-      border: var(--leaf-modal-card-border-width) solid
-        var(
-          --leaf-component-modal-border-color,
-          var(--leaf-frame-border-color, var(--leaf-color-border))
-        );
-      border-radius: var(--leaf-radius-md);
-      background: var(--leaf-component-modal-background, var(--leaf-color-surface));
-      box-shadow: none;
-    }
-    > .leaf-modal__body .leaf-modal__viewport {
-      border-radius: inherit;
-    }
-    > .leaf-modal__body .leaf-modal__content {
-      padding-block: var(--leaf-component-modal-padding-top, var(--leaf-spacing-md))
-        var(--leaf-component-modal-padding-bottom, var(--leaf-spacing-md));
-      padding-inline: var(--leaf-modal-card-content-inline-start)
-        var(--leaf-modal-card-content-inline-end);
-    }
-    > .leaf-modal__header {
-      padding-block-start: var(--leaf-component-modal-padding-top, calc(var(--leaf-spacing) * 1.5));
-      padding-block-end: 0;
-      padding-inline: var(--leaf-modal-card-content-edge-inline-start)
-        calc(var(--leaf-modal-card-outer-inline) + var(--leaf-spacing));
-    }
-    > .leaf-modal__header > .leaf-modal__close {
-      width: 24px;
-      height: 24px;
-      padding: 3px;
-      border-radius: var(--leaf-radius-sm);
-      color: var(--leaf-color-text);
-    }
-    > .leaf-modal__header > .leaf-modal__close:hover {
-      background: var(--leaf-color-option-hover);
-    }
-    > .leaf-modal__header > .leaf-modal__close > svg {
-      width: 16px;
-      height: 16px;
-    }
-    > .leaf-modal__header > .leaf-modal__heading h2 {
-      font-size: var(--leaf-font-size);
-      font-weight: var(--leaf-heading-weight);
-      line-height: var(--leaf-line-height-lg);
-      transform: translateY(2px);
-    }
-    > .leaf-modal__footer {
-      padding-block: 0 var(--leaf-component-modal-padding-bottom, calc(var(--leaf-spacing) * 1.25));
-      padding-inline: var(--leaf-modal-card-outer-inline);
-      background: transparent;
-    }
+  &__actions {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  &--divided {
-    --leaf-modal-content-padding-end: var(--leaf-density-dialog-block);
+  > .leaf-modal__footer {
+    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
+    padding-block-start: 0;
   }
-  &:not(.leaf-modal--card) {
-    --leaf-dialog-padding-block: var(
-      --leaf-component-modal-padding-top,
-      var(--leaf-density-dialog-block)
-    );
-    > .leaf-modal__header {
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-      padding-block-end: 0;
-    }
-    > .leaf-modal__body .leaf-modal__content {
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-    }
-    > .leaf-modal__footer {
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-      padding-block-start: 0;
-    }
-    &.leaf-modal--divided > .leaf-modal__header {
-      padding-block-end: var(--leaf-dialog-padding-block);
-    }
-    &.leaf-modal--divided > .leaf-modal__footer {
-      padding-block-start: var(--leaf-dialog-padding-block);
-    }
+  &--divided > .leaf-modal__header {
+    padding-block-end: var(--leaf-dialog-padding-block);
+  }
+  &--divided > .leaf-modal__footer {
+    padding-block-start: var(--leaf-dialog-padding-block);
   }
   &__close {
     margin-inline-start: auto;
@@ -226,6 +117,60 @@
     border-radius: var(--leaf-radius);
 
     @include mixins.text-action;
+  }
+  // Confirm shares the dialog shell but retains its original spacing and typography.
+  &:not(.leaf-confirm) {
+    @include mixins.softened-frame-color(
+      modal,
+      var(--leaf-component-modal-background, var(--leaf-color-surface))
+    );
+    --leaf-dialog-divider: var(--leaf-component-modal-border-color, var(--leaf-modal-frame-color));
+    --leaf-dialog-icon-size: var(--leaf-control-height-lg);
+    border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-md));
+    > .leaf-modal__header {
+      padding: var(--leaf-component-modal-padding, 10px var(--leaf-density-dialog-block));
+      &.leaf-modal__header--icon {
+        padding: var(
+          --leaf-component-modal-padding,
+          var(--leaf-spacing-md) var(--leaf-density-dialog-block)
+        );
+      }
+      > .leaf-modal__icon {
+        align-self: center;
+        border: 0;
+        border-radius: var(--leaf-radius-md);
+        > svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+      > .leaf-modal__heading h2 {
+        font-size: var(--leaf-component-modal-font-size, var(--leaf-font-size-lg));
+        font-weight: var(--leaf-heading-weight);
+      }
+      > .leaf-modal__heading > .leaf-modal__description {
+        font-size: var(--leaf-font-size-sm);
+      }
+      > .leaf-modal__close {
+        box-sizing: border-box;
+        align-self: center;
+        margin-inline-end: -4px;
+        width: 32px;
+        height: 32px;
+        padding: 8px;
+        > svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+    > .leaf-modal__footer {
+      padding: var(
+        --leaf-component-modal-padding,
+        calc(var(--leaf-spacing) * 1.5) var(--leaf-density-dialog-block)
+      );
+      background: var(--leaf-component-modal-footer-background, transparent);
+    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

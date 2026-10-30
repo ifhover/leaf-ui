@@ -116,7 +116,10 @@ export function Progress(rawProps: ProgressProps) {
     >
       {type === 'line' ? (
         <div
-          className="leaf-progress__track"
+          className={classes(
+            'leaf-progress__track',
+            Boolean(segments?.length) && 'leaf-progress__track--segments',
+          )}
           style={{ height: width, display: segments?.length ? 'flex' : undefined }}
         >
           {stepCount ? (

@@ -40,16 +40,15 @@ function escapePattern(value) {
 }
 export function apiSectionMatches(document, name) {
   const headings = [...new Set([`${name.replace(/Props$/u, '')} API`, `${name} API`, name])];
+  const titlePattern = `(?:${headings.map(escapePattern).join('|')}|[^\\r\\n]+ \\(${escapePattern(name)}\\))`;
   const matches = [];
-  for (const heading of headings) {
-    for (let level = 2; level <= 6; level++) {
-      const expression = new RegExp(
-        `(^#{${level}} ${escapePattern(heading)}\\r?\\n)([\\s\\S]*?)(?=^#{1,${level}} |$(?![\\s\\S]))`,
-        'gmu',
-      );
-      for (const match of document.matchAll(expression))
-        matches.push({ match, heading, expression });
-    }
+  for (let level = 2; level <= 6; level++) {
+    const expression = new RegExp(
+      `(^#{${level}} ${titlePattern}\\r?\\n)([\\s\\S]*?)(?=^#{1,${level}} |$(?![\\s\\S]))`,
+      'gmu',
+    );
+    for (const match of document.matchAll(expression))
+      matches.push({ match, heading: match[1].replace(/^#+ /u, '').trim(), expression });
   }
   // A matching ancestor is a wrapper, not a duplicate of its nested API section.
   return matches

@@ -98,17 +98,17 @@ Button 外观为 `solid`、`outline`、`text`、`link`（默认 `outline`），S
 
 ## 扩展组件的实现
 
-布局与栅格使用 CSS。Masonry 使用多列布局，内容按列阅读；要求按行阅读或固定焦点顺序时使用 Grid。图片预览等复杂交互的依赖见 [THIRD_PARTY.md](THIRD_PARTY.md)。只在需要时加载浏览器引擎，SSR 首屏输出稳定的占位内容。
+布局与栅格使用 CSS。Masonry 使用多列布局，内容按列阅读；要求按行阅读或固定焦点顺序时使用 Grid。第三方交互依赖见 [THIRD_PARTY.md](THIRD_PARTY.md)。图片预览自行实现，仅使用 `useImagePreview` 的区域预热单层异步视图，普通 ConfigProvider 不加载预览界面；FileList 复用同一内部视图。SSR 首屏不渲染预览布局。
 
 Rslib 保留 ESM / CommonJS 模块结构，使组件可以摇树优化，懒加载模块不在服务端执行。源码入口及各输出文件保留 Next.js 客户端边界。
 
 异步加载组件必须支持 AbortSignal 与卸载清理；InfiniteScroll 同一 dataLength 不会重复请求，失败时可重试，缺少 IntersectionObserver 时提供手动加载。Tree、TreeSelect 和 Cascader 的 key 必须稳定，异步子树在实例内缓存。更换 data / options、loadData 或 cacheKey 时清除缓存，取消旧请求并隔离返回结果；调用方应稳定数据与加载函数的引用。Select 只缓存已选项的回显标签，不保留所有历史搜索结果。虚拟列表通过 TanStack 测量实际行高，移动焦点时先滚动再聚焦。
 
-Tabs、Tree 与 DataTable 的排序能力通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
+Tabs 与 Tree 的拖动排序通过 dnd-kit 提供键盘与触摸交互。拖动结果由调用方更新数组或树数据。Upload 提供校验与可取消请求，FileList 展示文件信息，只预览图片与音视频。
 
 ConfigProvider 自动提供 Confirm、ImagePreview、Message、Notification 与 LoadingBar 的作用域。useConfirm / useImagePreview / useMessage 不返回 holder，独立使用需在入口放置相应 Provider。确认请求依次展示，图片预览在同一 Provider 内只展示最近一组；调用区域卸载时取消所属请求。任务加载条通过各任务的完成函数管理并发，避免先结束的请求提前关闭加载条。不要在模块全局创建跨 SSR 请求共享的状态。
 
-Confirm 只公开 `useConfirm().confirm(options)`，配置使用 `ConfirmOptions`，正文只展示简短的操作说明；包含表单或多步骤的流程使用 Modal。排序能力由 Tabs / Tree / DataTable 自身提供，不提供独立 Sortable。
+Confirm 只公开 `useConfirm().confirm(options)`，配置使用 `ConfirmOptions`，正文只展示简短的操作说明；包含表单或多步骤的流程使用 Modal。拖动排序由 Tabs / Tree 自身提供，不提供独立 Sortable。
 
 ## 区域组件默认参数
 
@@ -124,7 +124,7 @@ Confirm 只公开 `useConfirm().confirm(options)`，配置使用 `ConfirmOptions
 
 数组词条整体替换；只有缺失和 `undefined` 回退，空字符串保留。Provider 纯函数合并且不修改传入对象，不使用跨请求的可变注册表；主题变化不重新解析未变的资源。FloatingPanel 与 ScopedPortal 同步当前 `lang`。测试需覆盖部分翻译、内置覆盖、嵌套链替换、运行时切换、实例优先、Portal、服务组件与 SSR / hydration。包导出五种内置 JSON、Schema 和 `leaf-ui-check-translations` 检查命令；文档构建将同版本资源复制到版本根目录的 `locales/`。
 
-ConfigProvider 的 `components` 支持全部公开 UI 组件、复合组件的公开部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable.Root 使用 DataTable，其他命名空间部件使用 LayoutHeader、DataTableSearch 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / ImagePreview / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
+ConfigProvider 的 `components` 支持全部公开 UI 组件、公开的复合部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable 仅使用 DataTable，其他命名空间部件使用 LayoutHeader 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / ImagePreview / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
 
 ### 公开入口与合并语义
 

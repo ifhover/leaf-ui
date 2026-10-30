@@ -98,7 +98,7 @@ const componentSidebar = [
     text: '媒体',
     items: [
       { text: 'Carousel', tag: '轮播', link: '/components/carousel' },
-      { text: 'Image', tag: '图片', link: '/components/image' },
+      { text: 'useImagePreview', tag: '图片预览', link: '/components/image' },
       { text: 'FileList', tag: '文件列表', link: '/components/file-list' },
     ],
   },

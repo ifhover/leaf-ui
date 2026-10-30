@@ -3,22 +3,82 @@ import userEvent from '@testing-library/user-event';
 import { StrictMode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfirmDialog } from '../confirm/confirm';
-import { Button, ConfigProvider, Select, useConfirm } from '../index';
+import { Button, ConfigProvider, Select, Space, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
-  it('marks the card surface preset without changing dialog semantics', () => {
+  it('uses a plain content surface without changing dialog semantics', () => {
     render(
-      <Modal open variant="card" title="Card surface">
+      <Modal open title="Content surface">
         Content
       </Modal>,
     );
-    const dialog = screen.getByRole('dialog', { name: 'Card surface' });
-    expect(dialog).toHaveClass('leaf-modal--card');
-    expect(dialog).not.toHaveClass('leaf-modal--divided');
+    const dialog = screen.getByRole('dialog', { name: 'Content surface' });
+    expect(dialog).not.toHaveClass('leaf-modal--card');
+    expect(dialog).toHaveClass('leaf-modal--divided');
     expect(dialog.querySelector('.leaf-modal__footer .leaf-button')).toHaveClass(
       'leaf-button--outline',
     );
+  });
+  it('allows disabling modal dividers without adding them to confirmations', () => {
+    const { rerender } = render(
+      <Modal open title="Undivided" divided={false}>
+        Content
+      </Modal>,
+    );
+    expect(screen.getByRole('dialog')).not.toHaveClass('leaf-modal--divided');
+    rerender(
+      <ConfigProvider components={{ Modal: { divided: true } }}>
+        <ConfirmDialog open title="Confirm" onClose={() => {}}>
+          Notice
+        </ConfirmDialog>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('alertdialog')).not.toHaveClass('leaf-modal--divided');
+  });
+  it('groups only built-in footer actions and leaves Confirm footer structure unchanged', () => {
+    const { rerender } = render(
+      <Modal open title="Default actions">
+        Content
+      </Modal>,
+    );
+    const footer = screen.getByRole('dialog').querySelector('.leaf-modal__footer');
+    const actions = footer?.querySelector('.leaf-modal__actions');
+    expect(footer?.children).toHaveLength(1);
+    expect(actions?.querySelectorAll('button')).toHaveLength(2);
+    rerender(
+      <ConfirmDialog open title="Confirm" onClose={() => {}}>
+        Notice
+      </ConfirmDialog>,
+    );
+    const confirmFooter = screen.getByRole('alertdialog').querySelector('.leaf-modal__footer');
+    expect(confirmFooter?.querySelector('.leaf-modal__actions')).toBeNull();
+    expect(confirmFooter?.children).toHaveLength(2);
+  });
+  it('defaults confirmations to info and keeps default and hidden icons explicit', () => {
+    const { rerender } = render(
+      <ConfirmDialog open title="Continue" onClose={() => {}}>
+        Notice
+      </ConfirmDialog>,
+    );
+    const dialog = screen.getByRole('alertdialog', { name: 'Continue' });
+    expect(dialog).toHaveClass('leaf-confirm--info', 'leaf-confirm--titled-icon');
+    expect(dialog.querySelector('.leaf-modal__header .leaf-confirm__icon svg')).not.toBeNull();
+    expect(dialog).toHaveAccessibleDescription('Notice');
+    rerender(
+      <ConfirmDialog open title="Continue" type="default" onClose={() => {}}>
+        Notice
+      </ConfirmDialog>,
+    );
+    expect(dialog).toHaveClass('leaf-confirm--default');
+    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
+    rerender(
+      <ConfirmDialog open title="Continue" icon={null} onClose={() => {}}>
+        Notice
+      </ConfirmDialog>,
+    );
+    expect(dialog).toHaveClass('leaf-confirm--info');
+    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
   });
   it('associates supporting text with the dialog and keeps decorative icons outside its name', () => {
     render(
@@ -34,6 +94,7 @@ describe('Modal and Confirm', () => {
       </Modal>,
     );
     const dialog = screen.getByRole('dialog', { name: 'Access' });
+    expect(dialog.querySelector('.leaf-modal__header')).toHaveClass('leaf-modal__header--icon');
     expect(dialog).toHaveAccessibleDescription(
       'Changes take effect immediately Choose the services this agent may access',
     );
@@ -120,11 +181,11 @@ describe('Modal and Confirm', () => {
           onClose={close}
           confirmButtonProps={{ type: 'submit', form: 'edit-form' }}
           footer={({ cancelButton, confirmButton }) => (
-            <>
+            <Space size="sm" wrap>
               <Button>Help</Button>
               {cancelButton}
               {confirmButton}
-            </>
+            </Space>
           )}
         >
           <form id="edit-form" onSubmit={submit}>

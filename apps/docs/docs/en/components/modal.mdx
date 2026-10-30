@@ -1,6 +1,5 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ModalBasic } from '../../../src/examples/en/modal/basic';
-import { ModalCard } from '../../../src/examples/en/modal/card';
 import { ModalDescription } from '../../../src/examples/en/modal/description';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ModalDestroy } from '../../../src/examples/en/modal/destroy';
@@ -34,20 +33,9 @@ Associate the default confirm button with the form using `type="submit"` and a f
 
 ## Examples
 
-### Card surface
-
-Set `variant="card"` to present content in a layered card modal.
-
-<ComponentExample exampleId="card" preview={<ModalCard />} fileName="card.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/modal/card.tsx"
-```
-
-</ComponentExample>
-
 ### Icon and description
 
-Use `icon` and `description` to add an icon and supporting description to the modal.
+Use `icon` and `description` to add an icon and supporting description to the modal. Header and footer dividers are shown by default; set `divided={false}` to hide them.
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -58,7 +46,7 @@ Use `icon` and `description` to add an icon and supporting description to the mo
 
 ### Custom footer
 
-A `footer` function receives the default buttons, so extra actions can retain their confirmation and cancellation behavior. Set `footer={null}` to hide the footer.
+A `footer` function receives the default buttons, so extra actions can retain their confirmation and cancellation behavior. Use `Space` to manage custom button spacing. Set `footer={null}` to hide the footer.
 
 <ComponentExample exampleId="footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
@@ -126,9 +114,8 @@ Provide `aria-label` when omitting `title`.
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
-| `variant` | `'plain' \| 'card'` | `'plain'` | Content appearance; card places the body on a separate surface. |
 | `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
+| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
 | `width` | `number \| string` | `480` | Width; numbers are pixels |
 | `closable` | `boolean` | `true` | Show the close button. |
 | `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |

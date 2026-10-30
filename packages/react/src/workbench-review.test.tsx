@@ -141,18 +141,18 @@ it('forwards carousel pointer and focus events and does not steal editor arrow k
   expect(change).not.toHaveBeenCalled();
 });
 
-it('defaults Drawer to an undivided card and keeps plain divided opt-in', () => {
+it('uses one Drawer surface and keeps section dividers opt-in', () => {
   const { rerender } = render(
     <Drawer open title="Details">
       Content
     </Drawer>,
   );
-  expect(screen.getByRole('dialog')).toHaveClass('leaf-drawer--card');
+  expect(screen.getByRole('dialog')).not.toHaveClass('leaf-drawer--card');
   expect(screen.getByRole('dialog')).not.toHaveClass('leaf-drawer--divided');
   rerender(
-    <Drawer open variant="plain" divided title="Details">
+    <Drawer open divided title="Details">
       Content
     </Drawer>,
   );
-  expect(screen.getByRole('dialog')).toHaveClass('leaf-drawer--plain', 'leaf-drawer--divided');
+  expect(screen.getByRole('dialog')).toHaveClass('leaf-drawer--divided');
 });

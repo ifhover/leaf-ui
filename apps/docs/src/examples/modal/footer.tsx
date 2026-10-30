@@ -12,7 +12,7 @@ export function ModalFooter() {
         title="草稿说明"
         onClose={() => setOpen(false)}
         footer={({ cancelButton, confirmButton }) => (
-          <Space wrap>
+          <Space size="sm" wrap>
             <Button variant="text" onClick={() => setDetails(!details)}>
               {details ? '收起详情' : '查看详情'}
             </Button>

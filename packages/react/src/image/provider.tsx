@@ -17,13 +17,11 @@ import {
 } from '../config-provider/component-defaults';
 import { type LeafConfig, useLeafConfig } from '../config-provider/context';
 import { deepActiveElement } from '../shared/dom';
-import type { ImagePreviewItem, ImagePreviewProps } from './image';
+import type { ImagePreviewItem, ImagePreviewOptions } from './types';
 
-const PreviewRenderer = lazy(() => import('./preview-renderer'));
+const loadRenderer = () => import('./preview-renderer');
+const PreviewRenderer = lazy(loadRenderer);
 
-export type ImagePreviewOptions = Omit<ImagePreviewProps, 'items' | 'open' | 'onClose'> & {
-  onClose?: () => void;
-};
 export interface ImagePreviewApi {
   /** Open one image or a gallery. Returns an idempotent close function. */
   preview: (
@@ -125,6 +123,10 @@ export function useImagePreview(): ImagePreviewApi {
   const latest = useRef({ config, components });
   latest.current = { config, components };
   const mounted = useRef(true);
+  // Warm only regions that actually use this hook, not every ConfigProvider.
+  useEffect(() => {
+    void loadRenderer().catch(() => {});
+  }, []);
   useEffect(() => host?.update(scope, config, components), [host, scope, config, components]);
   useEffect(() => {
     mounted.current = true;
@@ -145,13 +147,11 @@ export function useImagePreview(): ImagePreviewApi {
         if (!items.length) return () => {};
         const snapshot = latest.current;
         const defaults = snapshot.components.ImagePreview;
-        const resolved = mergeComponentProps<ImagePreviewProps>(defaults, {
+        const resolved = mergeComponentProps<ImagePreviewOptions>(defaults, {
           ...options,
-          items,
-          open: true,
           onClose: options.onClose ?? (() => {}),
         });
-        // Capture before either lazy module can move focus away from the caller.
+        // Capture before the preview renderer can move focus away from the caller.
         const active = typeof document === 'undefined' ? null : deepActiveElement();
         return host.show({
           id: Symbol(),

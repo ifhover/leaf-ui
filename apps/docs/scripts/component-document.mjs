@@ -94,7 +94,7 @@ function moduleMetadata(tree, file) {
           metadata[key] = property.value.value;
         }
         if (
-          !/^[A-Z]\w*$/.test(metadata.component ?? '') ||
+          !/^(?:[A-Z]\w*|use[A-Z]\w*)$/.test(metadata.component ?? '') ||
           !/^[A-Za-z_$][\w$]*$/.test(metadata.primaryApi ?? '')
         )
           fail(file, node, 'leafDoc requires component and primaryApi export names.');
@@ -225,8 +225,12 @@ function staticLink(node, model) {
     !node.children.length
   )
     return { node, value: null };
-  if (attributes.some((item) => !['href', 'download'].includes(item.name)))
-    fail(model.file, node, 'Only static href/download links and empty ID anchors are supported.');
+  if (attributes.some((item) => !['href', 'download', 'target', 'rel'].includes(item.name)))
+    fail(
+      model.file,
+      node,
+      'Only static href/download/target/rel links and empty ID anchors are supported.',
+    );
   let href = attribute(node, 'href')?.value;
   if (href?.type === 'mdxJsxAttributeValueExpression') {
     const expression = parse(`(${href.value})`, { plugins: ['typescript', 'jsx'] }).program.body[0]
@@ -250,6 +254,11 @@ function staticLink(node, model) {
   const download = attribute(node, 'download')?.value;
   if (typeof href !== 'string' || !href || (download != null && typeof download !== 'string'))
     fail(model.file, node, 'Links require a literal href and optional literal download attribute.');
+  for (const name of ['target', 'rel']) {
+    const item = attribute(node, name);
+    if (item && typeof item.value !== 'string')
+      fail(model.file, node, `Link ${name} must be a literal string.`);
+  }
   if (
     !/^(?:https?:\/\/|mailto:|\/|#|[\w.-])/.test(href) ||
     (/^[a-z][\w+.-]*:/i.test(href) && !/^(?:https?:|mailto:)/i.test(href))
@@ -291,11 +300,15 @@ function referenceDefinitions(tree, file, source) {
 }
 
 function explicitApiDefinition(nodes, name) {
-  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const signature = new RegExp(`(?:^|\\b)${escaped}(?:<[^]*>)?\\([^]*\\)\\s*(?::|=>)\\s*\\S`);
-  const alias = new RegExp(`(?:^|\\b)(?:type\\s+)?${escaped}(?:<[^]*>)?\\s*=\\s*\\S`);
+  const names = name.endsWith('Props') ? [name] : [name, `${name}Props`];
+  const escaped = names.map((value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const alternatives = escaped.join('|');
+  const signature = new RegExp(
+    `(?:^|\\b)(?:${alternatives})(?:<[^]*>)?\\([^]*\\)\\s*(?::|=>)\\s*\\S`,
+  );
+  const alias = new RegExp(`(?:^|\\b)(?:type\\s+)?(?:${alternatives})(?:<[^]*>)?\\s*=\\s*\\S`);
   const declaration = new RegExp(
-    `\\b(?:interface\\s+${escaped}(?:<[^]*>)?(?:\\s+extends[^]*?)?\\s*\\{|(?:declare\\s+)?function\\s+${escaped}(?:<[^]*>)?\\s*\\(|(?:const|let|var)\\s+${escaped}\\s*:)`,
+    `\\b(?:interface|(?:declare\\s+)?function|(?:const|let|var))\\s+(?:${alternatives})(?:<[^]*>)?(?:\\s+extends[^]*?)?\\s*(?:\\{|\\(|:)`,
   );
   return nodes
     .flatMap((node) => descendants(node, (child) => ['inlineCode', 'code'].includes(child.type)))
@@ -424,6 +437,31 @@ export function analyzeComponentDocument(tree, source, file) {
     conversions: [],
   };
   const known = new Set([basic.node, ...blocks.map((block) => block.node ?? block.markerNode)]);
+  const disclosures = sections.api.filter((node) => node.name === 'details');
+  for (const node of disclosures) {
+    const first = node.children[0];
+    const summary =
+      first?.type === 'paragraph' && first.children.length === 1 ? first.children[0] : first;
+    if (
+      node.attributes.length !== 1 ||
+      node.attributes[0].type !== 'mdxJsxAttribute' ||
+      node.attributes[0].name !== 'className' ||
+      node.attributes[0].value !== 'leaf-api-details' ||
+      summary?.name !== 'summary' ||
+      summary.attributes.length ||
+      !text(summary).trim() ||
+      node.children.length < 2 ||
+      descendants(node, (child) => child.type === 'heading' || child.name === 'summary').length !==
+        1
+    )
+      fail(
+        file,
+        node,
+        'API disclosures need a static leaf-api-details class, one summary and content; keep headings outside.',
+      );
+    known.add(node);
+    known.add(summary);
+  }
   for (const node of descendants(tree, (child) => child.type.startsWith('mdx'))) {
     if (node.type === 'mdxjsEsm' || marker(node, file)) continue;
     if (known.has(node)) continue;
@@ -437,6 +475,15 @@ export function analyzeComponentDocument(tree, source, file) {
       node,
       `Unsupported MDX node ${node.name ?? node.type}; add an explicit conversion instead of dropping it.`,
     );
+  }
+  // Expand disclosures in AI output, applying nested link conversions before replacing the wrapper.
+  for (const node of disclosures) {
+    const first = node.children[0];
+    const summary = first.name === 'summary' ? first : first.children[0];
+    result.conversions.push({
+      node,
+      value: `${sourceSlice(result, summary.children)}\n\n${sourceSlice(result, node.children.slice(1))}`,
+    });
   }
   return result;
 }

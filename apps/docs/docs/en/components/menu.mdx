@@ -43,7 +43,7 @@ Set `type: 'group'` and use `label` and `children` to define a group. Group titl
 
 ### Selection appearance
 
-The raised appearance (`raised`) is used by default. Set `variant="default"` for the flat appearance or `variant="primary"` for the primary appearance. Each comparison uses the same menu entries.
+The raised appearance (`raised`) is used by default. Set `variant="neutral"` for the neutral appearance or `variant="primary"` for the primary appearance. Each comparison uses the same menu entries.
 
 <ComponentExample exampleId="appearance" preview={<MenuAppearance />} fileName="appearance.tsx" width={240}>
 
@@ -111,7 +111,7 @@ Menu component props.
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`MenuItem`](#menuitem-api)`[]` | Required | Items; keep keys unique and stable |
-| `variant` | `'default' \| 'raised' \| 'primary'` | `'raised'` | Selection appearance: default, raised or primary. |
+| `variant` | `'neutral' \| 'raised' \| 'primary'` | `'raised'` | Selection appearance: neutral, raised or primary. |
 | `selectedKey` | `string` | — | Controlled selected key |
 | `defaultSelectedKey` | `string` | `''` | Initial selected key |
 | `onSelect` | `(key: string, item: `[`MenuItem`](#menuitem-api)`) => void` | — | Select an item |

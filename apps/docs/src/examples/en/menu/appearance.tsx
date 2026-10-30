@@ -7,7 +7,7 @@ const items = [
 ];
 
 const variants = [
-  { value: 'default', label: 'Default' },
+  { value: 'neutral', label: 'Neutral' },
   { value: 'raised', label: 'Raised' },
   { value: 'primary', label: 'Primary' },
 ] as const;

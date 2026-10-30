@@ -154,7 +154,7 @@ export const leafDoc = { component: 'ConfigProvider', primaryApi: 'ConfigProvide
 
 </ComponentExample>
 
-使用 `LeafComponentDefaults` 检查可复用配置。键名与公开组件名一致；组合组件使用 `DataTableSearch` 等键，别名使用规范名称，例如 `FAB` 对应 `FloatButton`。完整参数见[组件默认值参考](/api/component-defaults#leafcomponentdefaults)。
+使用 `LeafComponentDefaults` 检查可复用配置。键名与公开组件名一致；DataTable 仅使用 `DataTable` 键，别名使用规范名称，例如 `FAB` 对应 `FloatButton`。完整参数见[组件默认值参考](/api/component-defaults#leafcomponentdefaults)。
 
 每个实例的数据、受控状态和事件仍传给组件。更新配置时传入新对象；内部控件通过所属组件配置，例如 `Modal.confirmButtonProps`，不会跟随全局 `Button` 默认值。
 

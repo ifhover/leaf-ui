@@ -21,6 +21,7 @@ describe('Drawer', () => {
     expect(dialog).toHaveAccessibleDescription('Manage the connected services');
     expect(dialog.querySelector('.leaf-drawer__icon')).toHaveAttribute('aria-hidden', 'true');
     expect(dialog).not.toHaveClass('leaf-drawer--divided');
+    expect(dialog).not.toHaveClass('leaf-drawer--card');
   });
   it('shares scroll and focus ownership with nested modals and picker portals', async () => {
     function Example() {

@@ -1,4 +1,4 @@
-import { Image, Masonry } from '@ifhover/leaf-ui';
+import { Masonry } from '@ifhover/leaf-ui';
 
 const landscapes = [
   { background: '#b9d3bf', height: 640 },
@@ -16,13 +16,12 @@ export function MasonryImages() {
   return (
     <Masonry columns={{ xs: 1, sm: 2 }}>
       {landscapes.map((image, index) => (
-        <Image
+        <img
           key={image.src}
           src={image.src}
           alt={`风景 ${index + 1}`}
-          width="100%"
-          style={{ aspectRatio: 960 / image.height }}
-          preview={false}
+          style={{ width: '100%', display: 'block', aspectRatio: 960 / image.height }}
+          loading="lazy"
         />
       ))}
     </Masonry>

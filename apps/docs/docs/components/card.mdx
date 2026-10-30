@@ -5,6 +5,7 @@ import { CardSizes } from '../../src/examples/card/sizes';
 import { CardLayered } from '../../src/examples/card/layered';
 import { CardStandaloneTitle } from '../../src/examples/card/standalone-title';
 import { CardActions } from '../../src/examples/card/actions';
+import { CardTable } from '../../src/examples/card/table';
 import { CardTabs } from '../../src/examples/card/tabs';
 import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 import { CardLoading } from '../../src/examples/card/loading';
@@ -87,6 +88,17 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 
 </ComponentExample>
 
+### 表格内容
+
+将 `DataTable` 放入 `cover`，让表格铺满卡片内容区；标题、表格上方的工具栏和 `footer` 仍保留横向内边距。嵌入已有内容面时使用 `variant="simple"`，避免重复的表面和边框。
+
+<ComponentExample exampleId="table" preview={<CardTable />} fileName="table.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/card/table.tsx"
+```
+
+</ComponentExample>
+
 ### 标签页卡片
 
 通过 `tabs.items` 定义标签页。没有卡片标题时，请通过 `tabs['aria-label']` 提供名称。各项的 `children` 是对应页面内容；Card 的 `children` 是所有页面下方的公共内容。
@@ -100,7 +112,7 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 
 ### 标题与标签页
 
-通过 `tabs.activeKey` 和 `tabs.onChange` 控制当前标签。默认保留已访问页面的输入状态；设置 `destroyInactive` 可在切走时卸载页面。其他标签交互见 [Tabs](tabs#tabs-api)。
+通过 `tabs.activeKey` 和 `tabs.onChange` 控制当前标签。默认保留已访问页面的输入状态；设置 `destroyInactive` 可在切走时卸载页面。其他标签交互见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。
 
 <ComponentExample exampleId="tabs-with-title" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx">
 
@@ -137,32 +149,19 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 | `cover` | `ReactNode` | — | 顶部封面。 |
 | `footer` | `ReactNode` | — | 底部内容或操作；layered 展示在内容卡下方的外层区域。 |
 | `loading` | `boolean` | `false` | 将正文和标签页内容替换为骨架屏；不会禁用标题、标签页或操作。 |
-| `bordered` | `boolean` | `true` | 显示外轮廓 |
+| `bordered` | `boolean` | `true` | 显示外轮廓；设为 `false` 移除边框。 |
+| `shadow` | `boolean` | `true` | 显示卡片的静止阴影；分层卡片将其应用于内层内容面。 |
 | `selected` | `boolean` | `false` | 标记选中外观，不提供选择交互；使用按钮或选择控件管理选中状态。 |
 | `variant` | `'default' \| 'layered'` | `'default'` | 卡片外观；layered 将内容卡与外层标题、底部操作分层展示。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 卡片尺寸；内嵌标签页默认跟随此尺寸，其他子组件独立配置。 |
 
 ### CardTabs API
 
-`tabs` 固定使用顶部线形标签。`tabs.extra` 属于标签栏；有标题时，Card 的 `extra` 仍位于标题旁。`items` 为空时恢复普通卡片。
+内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Card 固定使用 `type="line"` 与 `placement="top"`，并为标签页内容接入加载骨架；`tabs.extra` 仍属于标签栏，`items` 为空时恢复普通卡片。
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `items` | `readonly `[`TabItem`](tabs#tabitem)`[]` | 必填 | 标签与页面列表；为空时恢复普通卡片。 |
-| `activeKey` | `string` | 首个可用项 | 受控的激活项。 |
-| `defaultActiveKey` | `string` | 首个可用项 | 初始激活项。 |
-| `onChange` | `(key: string) => void` | — | 激活项变化时调用。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸，可单独覆盖。 |
-| `block` | `boolean` | `false` | 让标签等分铺满可用宽度。 |
-| `activationMode` | `'automatic' \| 'manual'` | `'automatic'` | 方向键直接激活，或回车 / 空格激活。 |
-| `destroyInactive` | `boolean` | `false` | 切走时卸载内容；默认保留已访问页面。 |
-| `extra` | `ReactNode` | — | 标签栏右侧的附加内容。 |
-| `onClose` | `(key: string, event: MouseEvent<HTMLButtonElement>) => void` | — | 请求关闭，由应用移除对应项；可阻止默认切换。 |
-| `onAdd` | `() => void` | — | 添加页签，传入后显示添加按钮。 |
-| `addLabel` | `string` | 当前语言的提示 | 添加按钮的可访问名称。 |
-| `overflow` | `boolean` | `true` | 溢出时显示两侧滚动按钮。 |
-| `sortable` | `boolean` | `false` | 启用排序，配合 `onReorder` 使用。 |
-| `onReorder` | `(items: `[`TabItem`](tabs#tabitem)`[]) => void` | — | 返回排序后的原始页签，由应用更新列表。 |
+```ts
+type CardTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```
 
 ### CardTitle API
 

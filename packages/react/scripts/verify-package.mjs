@@ -25,6 +25,8 @@ const entry = manifest.exports['.'];
 function assertPublicExports(api, label) {
   for (const name of Object.keys(api))
     assert.ok(!/Control$|^ModalBase$/u.test(name), `${label}: ${name} must remain internal`);
+  for (const name of ['Image', 'ImagePreview', 'ImagePreviewGroup'])
+    assert.equal(api[name], undefined, `${label}: ${name} is replaced by useImagePreview`);
 }
 let subpathCount = 0;
 for (const [subpath, targets] of Object.entries(manifest.exports)) {
@@ -266,15 +268,7 @@ const components = [
   ['MenuGroup', { title: 'Workspace' }, 'Custom content', /role="group"/],
   ['BackTop', {}, null, /leaf-back-top/],
   ['Descriptions', { items: [{ key: 'name', label: 'Name', children: 'Leaf' }] }, null, /<dl/],
-  ['Image', { src: '/test.png', alt: 'Preview' }, null, /leaf-image/],
-  [
-    'ImagePreview',
-    { items: [{ src: '/test.png' }], open: true, onClose: () => {} },
-    null,
-    /^$/,
-    false,
-  ],
-  ['ImagePreviewGroup', {}, 'Images', /Images/, false],
+  ['ImagePreviewProvider', {}, 'Images', /Images/, false],
   ['QRCode', { value: 'https://example.com' }, null, /<svg/],
   ['Timeline', { items: [{ key: 'first', children: 'Created' }] }, null, /<ol/],
   [
@@ -536,7 +530,7 @@ const scopedTheme: ScopedTheme = customTheme;
 const presentation: DataTablePresentationProps = { size: 'sm', selection: 'multiple' };
 const components: LeafComponentDefaults = {
   Button: { variant: 'outline' }, DataTable: presentation,
-  DataTablePagination: { showSizeChanger: true }, VirtualList: { estimateSize: 36 },
+  VirtualList: { estimateSize: 36 },
 };
 export const example = <ConfigProvider components={components} locale={languages} translations={translations} theme={scopedTheme}><ConfigProvider theme={customTheme}><Button>Leaf</Button></ConfigProvider></ConfigProvider>;
 `;
@@ -751,17 +745,31 @@ function AdapterFixture({ component }) {
   });
   return createElement(component, { table, pagination: false, 'aria-label': 'Records' });
 }
-for (const api of [adapter, commonJsAdapter])
+for (const api of [adapter, commonJsAdapter]) {
+  for (const name of [
+    'DataTableSearch',
+    'DataTableColumnVisibility',
+    'DataTableToolbar',
+    'DataTableContent',
+    'DataTableFooter',
+    'DataTablePagination',
+  ])
+    assert.ok(!(name in api), `${name} must not remain in the table API`);
+  for (const name of ['Search', 'ColumnVisibility', 'Toolbar', 'Content', 'Footer', 'Pagination'])
+    assert.ok(!(name in api.DataTable), `DataTable.${name} must not remain in the table API`);
   assert.match(
     renderToStaticMarkup(createElement(AdapterFixture, { component: api.DataTable })),
     /Alice/,
   );
+}
 const adapterCss = await readFile(
   new URL(manifest.exports['./table/style.css'], packageRoot),
   'utf8',
 );
-for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination', 'popover'])
+for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination'])
   assert.ok(adapterCss.includes(`.leaf-${name}`), `Adapter CSS includes ${name}`);
+assert.ok(!adapterCss.includes('.leaf-popover'), 'Adapter styles exclude removed column controls');
+assert.ok(!adapterCss.includes('.leaf-data-table__drag-handle'), 'Adapter styles exclude dragging');
 assert.ok(!adapterCss.includes('.leaf-color-picker'), 'Adapter styles must remain scoped');
 console.log('Package root:', fileURLToPath(packageRoot));
 console.log(`Verified ${subpathCount} public JS subpaths and every CSS export.`);

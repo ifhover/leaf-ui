@@ -5,6 +5,109 @@ import { ConfigProvider } from '../config-provider';
 import { DateRangePicker } from './daterangepicker';
 
 describe('DateRangePicker', () => {
+  it('uses isolated default line endpoint tabs for datetime with keyboard navigation', async () => {
+    const tabsChange = vi.fn();
+    render(
+      <ConfigProvider
+        locale="en-US"
+        components={{ Tabs: { type: 'segmented', size: 'lg', onChange: tabsChange } }}
+      >
+        <DateRangePicker picker="datetime" defaultOpen />
+      </ConfigProvider>,
+    );
+    const start = screen.getByRole('tab', { name: 'Start' });
+    const end = screen.getByRole('tab', { name: 'End' });
+    expect(start.closest('.leaf-tabs')).toHaveClass('leaf-tabs--line', 'leaf-tabs--sm');
+    expect(start.closest('.leaf-tabs')).not.toHaveClass('leaf-tabs--segmented');
+    expect(start).toHaveAttribute('aria-selected', 'true');
+    start.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(end).toHaveFocus();
+    expect(end).toHaveAttribute('aria-selected', 'true');
+    await userEvent.keyboard('{Home}');
+    expect(start).toHaveFocus();
+    expect(start).toHaveAttribute('aria-selected', 'true');
+    expect(tabsChange).not.toHaveBeenCalled();
+  });
+  it.each(['date', 'week', 'month', 'quarter', 'year', 'time'] as const)(
+    'does not show endpoint tabs for %s ranges',
+    (picker) => {
+      render(
+        picker === 'time' ? (
+          <DateRangePicker picker="time" defaultOpen />
+        ) : (
+          <DateRangePicker picker={picker} defaultOpen />
+        ),
+      );
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.queryByRole('tablist')).toBeNull();
+    },
+  );
+  it.each(['date', 'datetime'] as const)(
+    'previews a replacement end without changing the saved %s range',
+    async (picker) => {
+      const change = vi.fn();
+      render(
+        <ConfigProvider locale="en-US">
+          <DateRangePicker
+            picker={picker}
+            defaultValue={[new Date(2026, 0, 8), new Date(2026, 0, 20)]}
+            onChange={change}
+          />
+        </ConfigProvider>,
+      );
+      const input = screen.getByRole('combobox');
+      await userEvent.click(input);
+      if (picker === 'datetime') await userEvent.click(screen.getByRole('tab', { name: 'End' }));
+      else await userEvent.keyboard('{End}');
+      const savedEnd = screen.getByRole('button', { name: '2026-01-20' });
+      const laterEnd = screen.getByRole('button', { name: '2026-01-25' });
+      await userEvent.hover(laterEnd);
+      expect(laterEnd).toHaveClass('leaf-date-picker__day--preview');
+      expect(savedEnd).not.toHaveClass('leaf-date-picker__day--selected');
+      expect(screen.getByRole('button', { name: '2026-01-24' }).parentElement).toHaveClass(
+        'leaf-calendar__cell--range',
+      );
+      const earlierEnd = screen.getByRole('button', { name: '2026-01-12' });
+      await userEvent.hover(earlierEnd);
+      expect(earlierEnd).toHaveClass('leaf-date-picker__day--preview');
+      expect(laterEnd).not.toHaveClass('leaf-date-picker__day--preview');
+      expect(screen.getByRole('button', { name: '2026-01-18' }).parentElement).not.toHaveClass(
+        'leaf-calendar__cell--range',
+      );
+      await userEvent.unhover(earlierEnd);
+      expect(savedEnd).toHaveClass('leaf-date-picker__day--selected');
+      expect(screen.getByRole('button', { name: '2026-01-18' }).parentElement).toHaveClass(
+        'leaf-calendar__cell--range',
+      );
+      expect(change).not.toHaveBeenCalled();
+      await userEvent.keyboard('{Escape}');
+      expect(input).toHaveValue(
+        picker === 'datetime' ? '2026-01-08 00:00 ~ 2026-01-20 00:00' : '2026-01-08 ~ 2026-01-20',
+      );
+    },
+  );
+  it.each([
+    { picker: 'year', end: new Date(2028, 0, 1), hover: '2027', old: '2028' },
+    { picker: 'quarter', end: new Date(2026, 9, 1), hover: '2026-Q2', old: '2026-Q4' },
+    { picker: 'month', end: new Date(2026, 5, 1), hover: '2026-03', old: '2026-06' },
+    { picker: 'week', end: new Date(2026, 0, 20), hover: '2026-01-26', old: '2026-01-20' },
+  ] as const)('previews a replacement end in $picker mode', async ({ picker, end, hover, old }) => {
+    render(
+      <ConfigProvider locale="en-US">
+        <DateRangePicker picker={picker} defaultValue={[new Date(2026, 0, 8), end]} />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.keyboard('{End}');
+    const candidate = screen.getByRole('button', { name: hover });
+    await userEvent.hover(candidate);
+    expect(candidate).toHaveClass('leaf-date-picker__day--preview');
+    expect(candidate.parentElement).toHaveClass('leaf-calendar__cell--end');
+    expect(screen.getByRole('button', { name: old })).not.toHaveClass(
+      'leaf-date-picker__day--selected',
+    );
+  });
   it('edits the ending time in the field in datetime mode and commits with OK', async () => {
     const change = vi.fn();
     render(
@@ -19,9 +122,9 @@ describe('DateRangePicker', () => {
     );
     await userEvent.click(screen.getByRole('combobox'));
     expect(document.querySelectorAll('.leaf-calendar')).toHaveLength(1);
-    const end = screen.getByRole('button', { name: 'End' });
+    const end = screen.getByRole('tab', { name: 'End' });
     await userEvent.click(end);
-    expect(end).toHaveAttribute('aria-pressed', 'true');
+    expect(end).toHaveAttribute('aria-selected', 'true');
     await userEvent.click(screen.getByRole('combobox'));
     await userEvent.keyboard('{End}{ArrowLeft}11');
     expect(change).not.toHaveBeenCalled();
@@ -104,15 +207,15 @@ describe('DateRangePicker', () => {
       </ConfigProvider>,
     );
     await userEvent.click(screen.getByRole('combobox'));
-    expect(screen.getByRole('button', { name: /^Start/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('tab', { name: /^Start/ })).toHaveAttribute('aria-selected', 'true');
     await userEvent.click(screen.getByRole('button', { name: '2026-01-08' }));
-    expect(screen.getByRole('button', { name: /^Start/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('tab', { name: /^Start/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(screen.getByRole('button', { name: /^End/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('tab', { name: /^End/ })).toHaveAttribute('aria-selected', 'true');
     await userEvent.click(screen.getByRole('button', { name: '2026-01-20' }));
     expect(change).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: /^Start/ }));
+    await userEvent.click(screen.getByRole('tab', { name: /^Start/ }));
     await userEvent.click(screen.getByRole('combobox'));
     await userEvent.keyboard('{Home}{ArrowRight}{ArrowRight}{ArrowRight}10');
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));

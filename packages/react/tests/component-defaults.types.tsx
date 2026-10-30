@@ -31,7 +31,10 @@ type MissingDefaults = Exclude<
   PublicComponentName,
   keyof LeafComponentDefaults | InfrastructureOrAlias
 >;
-type UnknownDefaults = Exclude<keyof LeafComponentDefaults, PublicComponentName | 'Confirm'>;
+type UnknownDefaults = Exclude<
+  keyof LeafComponentDefaults,
+  PublicComponentName | 'Confirm' | 'ImagePreview'
+>;
 export const completeComponentDefaultsCoverage: [MissingDefaults, UnknownDefaults] extends [
   never,
   never,
@@ -140,7 +143,6 @@ export function expandedComponentDefaultsContracts() {
     Pagination: { variant: 'outline', showTotal: true },
     Tabs: { size: 'sm' },
     DataTable: { size: 'sm', variant: 'simple', striped: true },
-    DataTableSearch: { allowClear: true },
     VirtualList: { estimateSize: 36 },
     FormList: { className: 'rows' },
     Confirm: { confirmText: 'Continue' },

@@ -12,7 +12,7 @@ export function ModalFooter() {
         title="About drafts"
         onClose={() => setOpen(false)}
         footer={({ cancelButton, confirmButton }) => (
-          <Space wrap>
+          <Space size="sm" wrap>
             <Button variant="text" onClick={() => setDetails(!details)}>
               {details ? 'Hide details' : 'View details'}
             </Button>

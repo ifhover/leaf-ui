@@ -209,6 +209,7 @@
     "downloadFailedOpenTheOriginalImageToSaveIt": "下载失败，可在新窗口打开原图保存",
     "openOriginal": "打开原图",
     "zoomOut": "缩小",
+    "zoomLevel": "缩放比例",
     "resetZoom": "重置缩放",
     "zoomIn": "放大",
     "showThumbnails": "显示缩略图",
@@ -222,7 +223,10 @@
     "actualSize": "原始尺寸（1:1）",
     "fitToWindow": "适应窗口",
     "rotateCounterclockwise": "逆时针旋转",
-    "rotateClockwise": "顺时针旋转"
+    "rotateClockwise": "顺时针旋转",
+    "resetImage": "重置图片",
+    "flipHorizontal": "水平翻转",
+    "flipVertical": "垂直翻转"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "加载失败，重试",
@@ -263,22 +267,16 @@
     "loadError": "加载失败，请重试"
   },
   "dataTable": {
-    "searchTable": "搜索表格",
-    "columns": "显示列",
     "resizeColumn": "调整列宽: {label}",
     "selectRows": "选择行",
     "selectAllRowsOnThisPage": "选择本页所有行",
-    "selectAllRows": "选择所有行",
-    "reorderRow": "移动行: {label}",
     "selectRow": "选择行: {label}",
     "collapseRow": "收起行: {label}",
     "expandRow": "展开行: {label}",
-    "reorderRows": "移动行",
     "expandRows": "展开行",
     "sortAscending": "升序排序",
     "sortDescending": "降序排序",
-    "clearSorting": "取消排序",
-    "reorderColumn": "移动列: {label}"
+    "clearSorting": "取消排序"
   },
   "timeRangePicker": {
     "placeholder": "开始时间 ～ 结束时间",

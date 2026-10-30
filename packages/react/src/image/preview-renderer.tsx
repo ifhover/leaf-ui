@@ -28,6 +28,7 @@ export default function PreviewRenderer({ request, onClose, onIndexChange }: Pre
         >
           <ImagePreviewControl
             {...request.options}
+            session={request.id}
             items={request.items}
             open={request.open}
             index={request.index}

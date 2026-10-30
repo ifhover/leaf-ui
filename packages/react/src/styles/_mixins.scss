@@ -1,4 +1,4 @@
-// Default Menu, Select and tree rows share paint without sharing layout or motion.
+// Menu appearance fallbacks and choice rows share this neutral overlay.
 @function neutral-option-background() {
   @return rgb(0 0 0 / 8%);
 }
@@ -153,16 +153,17 @@
 }
 
 // Card and Table share one quiet resting surface; component and global overrides still win.
-@mixin resting-surface-shadow($component) {
-  box-shadow: var(
-    --leaf-component-#{$component}-shadow,
-    var(--leaf-surface-shadow, var(--leaf-shadow-xs))
-  );
+@mixin resting-surface-shadow($component, $fallback: var(--leaf-shadow-xs)) {
+  box-shadow: var(--leaf-component-#{$component}-shadow, var(--leaf-surface-shadow, #{$fallback}));
 }
 
 // Frame borders are intentionally lighter than standalone dividers.
-@mixin softened-frame-color($component, $surface) {
-  --leaf-#{$component}-frame-color: color-mix(in srgb, var(--leaf-color-divider) 70%, #{$surface});
+@mixin softened-frame-color($component, $surface, $divider-weight: 70%) {
+  --leaf-#{$component}-frame-color: color-mix(
+    in srgb,
+    var(--leaf-color-divider) #{$divider-weight},
+    #{$surface}
+  );
 }
 
 // Branded soft cues for selections and actions, never ordinary neutral option feedback.
@@ -278,7 +279,6 @@
     var(--leaf-table-surface)
   );
   --leaf-table-selected-background: var(--leaf-color-primary-soft);
-  --leaf-table-action-hover-background: var(--leaf-color-option-hover);
   // Retain the historical optional compatibility variable; its default is local to this family.
   --leaf-table-overlay-background: var(
     --leaf-color-surface-alpha-80,

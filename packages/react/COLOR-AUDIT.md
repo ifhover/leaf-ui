@@ -22,7 +22,7 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 54 | 75 |
+| Legal hardcoded-color exceptions | 43 | 58 |
 | Legal color-mix exceptions | 1 | 1 |
 | Reviewed derived-token exceptions | 7 | 7 |
 | Reviewed color-scale step exceptions | 0 | 0 |
@@ -84,7 +84,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 24 | 5 | 42 |
+| `--leaf-color-border` | 23 | 5 | 40 |
 | `--leaf-color-border-hover` | 5 | 1 | 6 |
 | `--leaf-color-danger` | 9 | 1 | 12 |
 | `--leaf-color-danger-active` | 1 | 0 | 1 |
@@ -130,8 +130,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-primary` | 8 | 1 | 12 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 5 | 2 | 13 |
-| `--leaf-color-primary` | 32 | 3 | 82 |
+| `--leaf-color-option-hover` | 4 | 2 | 11 |
+| `--leaf-color-primary` | 31 | 3 | 80 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
@@ -147,8 +147,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-fill-border` | 1 | 0 | 1 |
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
 | `--leaf-color-primary-hover` | 0 | 0 | 0 |
-| `--leaf-color-primary-indicator` | 26 | 2 | 49 |
-| `--leaf-color-primary-ink` | 16 | 3 | 31 |
+| `--leaf-color-primary-indicator` | 25 | 2 | 48 |
+| `--leaf-color-primary-ink` | 16 | 3 | 30 |
 | `--leaf-color-primary-ink-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
@@ -173,10 +173,10 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-surface` | 34 | 4 | 60 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 26 | 4 | 46 |
+| `--leaf-color-surface-muted` | 24 | 4 | 43 |
 | `--leaf-color-surface-raised` | 8 | 2 | 10 |
-| `--leaf-color-text` | 47 | 5 | 98 |
-| `--leaf-color-text-muted` | 43 | 6 | 106 |
+| `--leaf-color-text` | 47 | 4 | 96 |
+| `--leaf-color-text-muted` | 41 | 6 | 104 |
 | `--leaf-color-text-subtle` | 10 | 1 | 15 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
 | `--leaf-color-warning` | 3 | 1 | 5 |
@@ -286,6 +286,9 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 ### `button/button.scss`
 - mixFormulas: `color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)` x1 - Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color.
 
+### `card/card.scss`
+- hardcodedColors: `#000` x1 - Card headings retain the requested black ink in light appearance; dark appearance uses the regional text role, and the existing Card color override remains authoritative.
+
 ### `cascader/cascader.scss`
 - fieldFamilyBorders: `border-inline-start:1px solid var(--leaf-color-border)` x1 - Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border.
 - fieldFamilyBorders: `border:0` x1 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
@@ -331,25 +334,10 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `#111` x1 - Fixed letterboxing belongs to the video content, not the regional theme surface.
 
 ### `image/image.scss`
-- hardcodedColors: `#0003` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#0006` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#0009` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#26292f` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#b7bfc9` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#e8edf3` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#f4f5f7` x2 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#f5b4b4` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#fff` x6 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#ffffff0b` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#ffffff0e` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#ffffff12` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#ffffff1c` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `#ffffff24` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `rgba(0,0,0,0.22)` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-- hardcodedColors: `white` x1 - Media viewer chrome uses fixed lightbox colors for photographic overlays and third-party viewer variables.
-
-### `image/viewer.tsx`
-- hardcodedColors: `rgba(0,0,0,.92)` x1 - Media viewer backdrop is a fixed photographic overlay color.
+- hardcodedColors: `#fff` x1 - Self-contained photographic preview keeps fixed white foreground independently of application appearance.
+- hardcodedColors: `#0008` x1 - Photographic preview shares one translucent black backdrop and resting control fill.
+- hardcodedColors: `#000c` x1 - Photographic preview uses a darker media-owned hover and zoom-tooltip fill.
+- hardcodedColors: `#0003` x1 - The thumbnail strip uses a separate translucent photographic overlay.
 
 ### `input/input.scss`
 - fieldFamilyBorders: `border:0` x3 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
@@ -367,8 +355,9 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-55)` x1 - Glow around the progress indicator is an optical effect; it does not define label or selection paint.
 
 ### `menu/menu.scss`
+- hardcodedColors: `rgb(241 241 242)` x1 - User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role.
 - hardcodedColors: `rgb(0 0 0/0.08)` x1 - Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract.
-- hardcodedColors: `rgba(0,0,0,0.04)` x1 - Raised Menu press uses a lighter transient layer than default feedback, preserving its established motion/paint contract.
+- hardcodedColors: `rgba(0,0,0,0.04)` x1 - Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract.
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-10)` x1 - Primary Menu appearance retains its established translucent persistent-selection layer.
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-4)` x1 - Primary Menu press clears its persistent layer and uses a lighter transient feedback layer.
 

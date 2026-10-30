@@ -794,6 +794,10 @@
           "type": "string",
           "description": "English: Zoom out"
         },
+        "zoomLevel": {
+          "type": "string",
+          "description": "English: Zoom level"
+        },
         "resetZoom": {
           "type": "string",
           "description": "English: Reset zoom"
@@ -849,6 +853,18 @@
         "rotateClockwise": {
           "type": "string",
           "description": "English: Rotate clockwise"
+        },
+        "resetImage": {
+          "type": "string",
+          "description": "English: Reset image"
+        },
+        "flipHorizontal": {
+          "type": "string",
+          "description": "English: Flip horizontal"
+        },
+        "flipVertical": {
+          "type": "string",
+          "description": "English: Flip vertical"
         }
       }
     },
@@ -988,14 +1004,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "searchTable": {
-          "type": "string",
-          "description": "English: Search table"
-        },
-        "columns": {
-          "type": "string",
-          "description": "English: Columns"
-        },
         "resizeColumn": {
           "type": "string",
           "description": "English: Resize column: {label}"
@@ -1008,14 +1016,6 @@
           "type": "string",
           "description": "English: Select all rows on this page"
         },
-        "selectAllRows": {
-          "type": "string",
-          "description": "English: Select all rows"
-        },
-        "reorderRow": {
-          "type": "string",
-          "description": "English: Reorder row: {label}"
-        },
         "selectRow": {
           "type": "string",
           "description": "English: Select row: {label}"
@@ -1027,10 +1027,6 @@
         "expandRow": {
           "type": "string",
           "description": "English: Expand row: {label}"
-        },
-        "reorderRows": {
-          "type": "string",
-          "description": "English: Reorder rows"
         },
         "expandRows": {
           "type": "string",
@@ -1047,10 +1043,6 @@
         "clearSorting": {
           "type": "string",
           "description": "English: Clear sorting"
-        },
-        "reorderColumn": {
-          "type": "string",
-          "description": "English: Reorder column: {label}"
         }
       }
     },

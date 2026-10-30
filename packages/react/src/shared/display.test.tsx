@@ -35,6 +35,23 @@ describe('Display feedback', () => {
       '100',
     );
   });
+  it('keeps segmented progress fills square where they meet', () => {
+    render(
+      <Progress
+        aria-label="Processing"
+        percent={75}
+        segments={[
+          { key: 'first', percent: 35 },
+          { key: 'second', percent: 40 },
+        ]}
+      />,
+    );
+    const track = screen
+      .getByRole('progressbar', { name: 'Processing' })
+      .querySelector('.leaf-progress__track');
+    expect(track).toHaveClass('leaf-progress__track--segments');
+    expect(track?.querySelectorAll('.leaf-progress__fill')).toHaveLength(2);
+  });
   it('reports step selection while honoring disabled steps', async () => {
     const change = vi.fn();
     render(

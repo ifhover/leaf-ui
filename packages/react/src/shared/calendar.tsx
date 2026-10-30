@@ -289,7 +289,8 @@ export function CalendarPanel({
     setVisible(next);
     setActive(nextActive);
   };
-  const periodNames = [range?.[0], range?.[1] ?? (range?.[0] ? hoverDate : null)] as const;
+  const previewEnd = range?.[0] ? hoverDate : null;
+  const periodNames = [range?.[0], previewEnd ?? range?.[1]] as const;
   const times = periodNames
     .filter((date): date is Date => Boolean(date))
     .map((date) => startOfPeriod(date, cellMode, weekStartsOn).getTime());
@@ -400,11 +401,9 @@ export function CalendarPanel({
             return <span key={dateKey(date)} className="leaf-calendar__cell" />;
           const time = startOfPeriod(date, cellMode, weekStartsOn).getTime();
           const checked = range
-            ? range.some((endpoint) => samePeriod(date, endpoint))
+            ? samePeriod(date, range[0]) || (!previewEnd && samePeriod(date, range[1]))
             : samePeriod(date, value);
-          const hovered = Boolean(
-            range?.[0] && !range[1] && !checked && samePeriod(date, hoverDate),
-          );
+          const hovered = Boolean(previewEnd && !checked && samePeriod(date, previewEnd));
           const isActive = Boolean(
             activeCell &&
               (view === 'date' ? sameDate(date, activeCell) : samePeriod(date, activeCell)),

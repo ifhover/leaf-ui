@@ -7,6 +7,28 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.10.1 - 2026-10-31
+
+### Added and improved
+
+- Image support now centers on the imperative `useImagePreview().preview(images, options)` service and `ImagePreviewProvider`, backed by a new implementation without a third-party viewer engine. It supports wraparound navigation, keyboard zoom and switching, 1:1 sizing, rotation, two-axis flipping, touch gestures, windowed thumbnails and optional downloads while retaining scoped configuration, focus return and FileList previews.
+- Reworked Modal, Drawer and Confirm surfaces, headings, icons, spacing, dividers and close controls. Modal uses a tighter medium radius and dividers by default, Drawer no longer nests a card surface, and Confirm displays an information icon by default.
+- DataTable simple mode uses a square content-surface header, the scoped 14px base font and stripes by default. Built-in layout, toolbar, search, column visibility and drag APIs are reduced so applications can compose business controls through TanStack state.
+- DatePicker and DateRangePicker popups return to an ordinary content surface. Only date-time ranges show endpoint controls, now with Tabs semantics; other date granularities and time-only ranges omit the unnecessary switcher.
+- Refined Card borders, title colors and cover-only layout, softened neutral Alert backgrounds, and made Progress segments share the outer track radius. Synchronized bilingual guides, examples, scoped defaults, type tests and structured API / AI exports.
+
+### Migration
+
+- Rename `Menu variant="default"` to `variant="neutral"`, including `ConfigProvider.components.Menu.variant`. The old name is not retained; the default appearance remains `raised`.
+- Modal and Drawer remove `variant` and their card appearances, including `plain` / `card` instance and scoped defaults. Modal now defaults `divided` to `true`, and its footer no longer spaces direct children automatically; compose custom actions with `Space` or another layout component. Modal's default radius, heading, icon and spacing also change, while explicit props still win.
+- `Confirm.type` now defaults from `default` to `info`. Set `type="default"` or `icon={null}` for the previous icon-free appearance.
+- DatePicker and DateRangePicker, including time and date-time modes, change the default `panelVariant` from `card` to `plain`; pass `panelVariant="card"` for the previous layered appearance. Date-time range endpoint controls change from `aria-pressed` buttons to `tab` / `aria-selected` semantics.
+- `DataTable variant="simple"` now shows stripes by default and respects `striped`; set `striped={false}` for thin row dividers. Simple mode continues to ignore `columnDividers`.
+- DataTable removes `DataTable.Search`, `ColumnVisibility`, row and column dragging, the `Toolbar` / `Content` / `Footer` / `Pagination` compound parts, and their types, exports and scoped defaults. It also removes `layout` / `children`, `bordered`, `selectAllMode`, `columnReordering`, `onRowReorder` and the hook's `pagination` alias. Use root `toolbar` / `pagination`, `columnDividers`, `localPagination` and application-owned TanStack state instead.
+- DataTable now exports one `DataTableProps<T>` type and removes `DataTableInstanceProps<T>` / `DataTableDataProps<T>`. Instance wrappers can use `Extract<DataTableProps<T>, { table: TanStackTable<T> }>`; `localPagination` cannot be passed with an existing `table`.
+- Remove `Image`, `ImagePreview`, `ImagePreviewGroup`, their prop types and `ConfigProvider.components.Image` / `ImagePreviewGroup`. Render page images with native `img` and open previews through `useImagePreview().preview()`; `components.ImagePreview` still configures the imperative service.
+- Default Card borders are lighter, cover-only cards no longer render empty body spacing, and default Card / CardTitle headings are black in light appearance. Layered cards and explicit color overrides are unchanged. Progress `segments` now join with square inner corners; `steps` are unchanged.
+
 ## 0.10.0 - 2026-10-27
 
 ### Improved and fixed

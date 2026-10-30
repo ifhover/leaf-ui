@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { ComponentDefaultsContext } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import type { ImagePreviewProps } from './image';
 import { type ImagePreviewApi, ImagePreviewProvider, useImagePreview } from './provider';
+import type { ImageViewerProps } from './types';
 
 const rendererLoad = vi.hoisted(() => {
   let release = () => {};
@@ -23,7 +23,7 @@ vi.mock('./preview-renderer', async (original) => {
 });
 
 vi.mock('./viewer', () => ({
-  ImageViewer: (props: ImagePreviewProps) => {
+  ImageViewer: (props: ImageViewerProps) => {
     const config = useLeafConfig();
     const defaults = useContext(ComponentDefaultsContext);
     return props.open ? (
@@ -67,14 +67,14 @@ function Region({ children }: { children: ReactNode }) {
 }
 
 describe('useImagePreview', () => {
-  it('loads only for a request and keeps the initiating focus across a delayed host', async () => {
+  it('warms the renderer and keeps the initiating focus across a delayed host', async () => {
     const { rerender } = render(
       <Region>
         <Caller />
         <button type="button">Elsewhere</button>
       </Region>,
     );
-    expect(rendererLoad.calls).toBe(0);
+    await waitFor(() => expect(rendererLoad.calls).toBe(1));
     const canceled = vi.fn();
     act(() => {
       const close = api.preview('/canceled.png', { onClose: canceled });
