@@ -8,6 +8,12 @@
   --leaf-menu-hover-color: var(--leaf-menu-unselected-color);
   --leaf-menu-hover-opacity: 1;
   --leaf-menu-neutral-background: #{mixins.neutral-option-background()};
+  @if $variant == neutral {
+    --leaf-menu-neutral-background: light-dark(
+      rgb(241 241 242),
+      #{mixins.neutral-option-background()}
+    );
+  }
   --leaf-menu-hover-background: var(--leaf-menu-neutral-background);
   --leaf-menu-selected-color: currentColor;
   --leaf-menu-selected-background: var(--leaf-menu-neutral-background);
@@ -17,7 +23,7 @@
   --leaf-menu-selected-clip: none;
   --leaf-menu-entry-duration: var(--leaf-motion-fast);
   --leaf-menu-exit-duration: var(--leaf-motion-fast);
-  @if $variant != default {
+  @if $variant != neutral {
     --leaf-menu-hover-opacity: 0;
     --leaf-menu-hover-color: currentColor;
     --leaf-menu-active-background: rgba(0, 0, 0, 0.04);
@@ -125,7 +131,7 @@
 .leaf-menu,
 .leaf-menu__popup {
   @include mixins.danger-soft-feedback-family;
-  @include appearance(default);
+  @include appearance(neutral);
 }
 .leaf-menu--raised,
 .leaf-menu__popup--raised {

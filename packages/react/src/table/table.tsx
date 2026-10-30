@@ -201,7 +201,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
         `leaf-table--${size}`,
         variant === 'simple' && 'leaf-table--simple',
         variant !== 'simple' && columnDividers && 'leaf-table--column-dividers',
-        variant !== 'simple' && striped && 'leaf-table--striped',
+        striped && 'leaf-table--striped',
         className,
       )}
       style={

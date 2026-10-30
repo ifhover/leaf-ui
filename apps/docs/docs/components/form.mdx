@@ -40,6 +40,41 @@ export const leafDoc = { component: 'Form', primaryApi: 'FormProps' };
 
 </ComponentExample>
 
+### 通过 CSS 设置标签宽度
+
+{/* leaf:example css-label-width */}
+
+项目使用 `postcss-pxtorem` 等构建工具时，可将宽度写在样式表中，让 CSS 构建流程统一转换单位；也可以直接使用 `rem`。下面通过 `style` 将标签宽度关联到应用的 CSS 变量。
+
+```css
+.account-form {
+  --app-form-label-width: 140px;
+}
+```
+
+```tsx
+import { Form, FormField, Input, type LeafThemeStyle } from '@ifhover/leaf-ui';
+import './account-form.css';
+
+const formStyle = {
+  '--leaf-form-label-width': 'var(--app-form-label-width)',
+} satisfies LeafThemeStyle;
+
+export function AccountForm() {
+  return (
+    <Form className="account-form" style={formStyle}>
+      <FormField label="账号名称">
+        <Input name="account" />
+      </FormField>
+    </Form>
+  );
+}
+```
+
+`140px` 是否转换以及转换比例由应用的构建配置决定，需确保该样式表与自定义属性声明纳入转换范围。数字 `labelWidth` 会生成内联像素值，通常不会经过 PostCSS 转换。当前 Form 默认也会生成内联宽度，因此仅在同一个 Form 的 CSS 类中声明 `--leaf-form-label-width` 不能覆盖默认值；上例使用 `style` 显式连接 CSS 变量，不需要 `!important`。
+
+需要全应用统一时，可将 `--app-form-label-width` 定义在应用根节点，并通过 `ConfigProvider components={{ Form: { style: formStyle } }}` 配置一次。`style` 整体替换、不合并；单个 Form 另传 `style` 时，需要保留该变量关联。`FormField.labelWidth` 或字段自身的同名 CSS 变量仍可覆盖该字段；这种宽度配置仅用于水平布局。
+
 ### 设置布局
 
 `layout="settings"` 将标签与 `description` 放在控件左侧；较宽的字段可单独设置 `layout="vertical"`。`description` 解释字段含义，`help` 是控件下方的提示，`error` 会替代 `help`。

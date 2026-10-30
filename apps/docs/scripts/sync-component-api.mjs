@@ -132,14 +132,6 @@ const descriptions = {
     '行选择模式；false 关闭，single 单选，multiple 多选。',
     'Row selection mode: false disables it, single selects one row, multiple selects many.',
   ],
-  selectAllMode: [
-    '表头全选作用于当前页或已加载的全部筛选结果，不包含未加载的服务端数据。',
-    'Select all rows on the page or in loaded filtered results, not unloaded server records.',
-  ],
-  columnReordering: [
-    '启用列拖拽；仅支持单层表头且不跨固定列分区。',
-    'Enable column dragging for flat headers within their pinned region.',
-  ],
   pagination: [
     '显示或配置分页器；快捷数据模式下 false 同时关闭本地切页。',
     'Show or configure pagination; false also disables local slicing in data mode.',
@@ -604,25 +596,17 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
-const layoutDescription = [
-  '显式选择内置布局或完全自定义组合。省略时保留旧行为：传入 children 会替换自动布局；`children={false}` 才继续使用自动布局。',
-  'Explicitly choose the built-in layout or a fully custom composition. When omitted, legacy behavior applies: children replace the automatic layout; only `children={false}` keeps the automatic layout.',
-];
-const childrenDescription = [
-  'layout="custom" 时的完整组合；省略 layout 时传入 children 会替换自动布局并触发开发提示。只是被工具栏或内容使用的嵌套数据不应放在这里。',
-  'The complete composition for layout="custom". With layout omitted, children replace the automatic layout and emit a development warning. Do not place nested row data here.',
-];
 const tableVariantDescription = [
-  'layered 使用分层卡片；simple 使用整块圆角表头，无外框、阴影、斑马纹和列分隔线。',
-  'layered uses a layered card; simple uses one rounded header without a frame, shadows, stripes or column dividers.',
+  'layered 使用分层卡片；simple 使用直角内容面表头，无外框、阴影和列分隔线。',
+  'layered uses a layered card; simple uses a square content-surface header without a frame, shadows or column dividers.',
 ];
 const columnDividersDescription = [
   '增加表体和表尾的列分隔线；layered 表头保留短分隔线。simple 模式忽略此项。',
   'Add body and footer column dividers; layered headers keep short separators. Ignored in simple mode.',
 ];
 const tableStripedDescription = [
-  '从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。simple 模式忽略此项，始终使用细行分隔线。',
-  'Alternate backgrounds from the second row and hide row dividers. Disable to show fine row dividers. Ignored in simple mode, which always uses fine row dividers.',
+  '两种外观均默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。',
+  'Both variants default to alternating backgrounds from the second row and hide row dividers. Disable to show fine row dividers.',
 ];
 const tableHeightDescription = [
   '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
@@ -631,6 +615,12 @@ const tableHeightDescription = [
 const localPaginationDescription = [
   '是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。',
   'Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows.',
+];
+const paginationReference =
+  '<a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>';
+const tablePaginationDescription = [
+  `分页器开关或展示参数，参见 ${paginationReference}；直接传入数据时，false 同时关闭本地切页。`,
+  `Pagination visibility or display options; see ${paginationReference}. With direct data input, false also disables local slicing.`,
 ];
 const selectionModeDescription = [
   '单选只保留最近请求的一个 key；多选保留全部已选 key。',
@@ -653,6 +643,7 @@ const onSelectedRowKeysChangeDescription = [
   'Called with normalized, unique string keys whenever selection changes.',
 ];
 const specificDefaults = {
+  'ConfirmOptions.type': "`'info'`",
   'ScrollAreaProps.persistent': '`false`',
   'ScrollAreaProps.scrollbar': "`'auto'`",
   'ScrollAreaProps.verticalOffset': '`0`',
@@ -679,9 +670,6 @@ const specificDefaults = {
   'CarouselProps.activeIndex': '—',
   'CollapseProps.activeKey': '—',
   'CollapseProps.defaultActiveKey': '`[]`',
-  'ImagePreviewGroupProps.open': '—',
-  'ImagePreviewGroupProps.index': '—',
-  'ImagePreviewProps.index': '`0`',
   'DateRangePickerProps.value': '—',
   'TimePickerModeProps.value': '—',
   'TimePickerModeProps.size': "`'md'`",
@@ -698,13 +686,13 @@ const specificDefaults = {
   'TabsProps.activeKey': '—',
   'DatePickerProps.value': '—',
   'DatePickerProps.needConfirm': '`picker === "datetime"`',
-  'DatePickerProps.panelVariant': "`'card'`",
+  'DatePickerProps.panelVariant': "`'plain'`",
   'SingleDatePickerProps.needConfirm': '`picker === "datetime"`',
   'DateRangePickerProps.needConfirm': '`picker === "datetime"`',
-  'DateRangePickerProps.panelVariant': "`'card'`",
+  'DateRangePickerProps.panelVariant': "`'plain'`",
   'CalendarDateRangePickerProps.needConfirm': '`picker === "datetime"`',
-  'TimePickerModeProps.panelVariant': "`'card'`",
-  'TimeRangePickerModeProps.panelVariant': "`'card'`",
+  'TimePickerModeProps.panelVariant': "`'plain'`",
+  'TimeRangePickerModeProps.panelVariant': "`'plain'`",
   'ScrollbarProps.persistent': '`false`',
   'DateRangePickerProps.defaultTime': "`['00:00:00', '23:59:59']`",
   'InputNumberProps.value': '—',
@@ -756,8 +744,10 @@ const specificDefaults = {
   'DropdownProps.open': '—',
   'TooltipProps.open': '—',
   'PopoverProps.open': '—',
-  'DataTableSearchProps.allowClear': '`true`',
-  'DataTableSearchProps.size': 'DataTable size',
+  'DataTableProps.table': '—',
+  'DataTableProps.data': ['未传 table 时必填', 'Required without table'],
+  'DataTableProps.columns': ['未传 table 时必填', 'Required without table'],
+  'DataTableProps.rowKey': ['未传 table 时必填', 'Required without table'],
   'DataTablePaginationProps.showSizeChanger': '`true`',
   'DataTablePaginationProps.size': 'DataTable size',
   'UseDataTableSelectionOptions.mode': '`multiple`',
@@ -767,8 +757,9 @@ function specificDefault(name, property, english) {
   const value = specificDefaults[`${name}.${property}`];
   return Array.isArray(value) ? value[english ? 1 : 0] : value;
 }
-// Mode tables list only differences; shared options remain in the main API table.
+// Difference-only tables link to the shared API instead of repeating its properties.
 const modeProperties = {
+  DataTablePaginationProps: ['hasNextPage'],
   SingleDatePickerProps: ['value', 'defaultValue', 'onChange'],
   NumericInputNumberProps: [
     'stringMode',
@@ -793,7 +784,11 @@ const modeProperties = {
     'parser',
   ],
 };
-const removedProperties = new Set(['CascaderProps.children']);
+const removedProperties = new Set([
+  'CascaderProps.children',
+  'DataTableProps.children',
+  'DataTablePresentationProps.children',
+]);
 const apiSectionOrder = {
   'components/avatar': ['AvatarProps', 'AvatarGroupProps'],
   'components/config-provider': ['ConfigProviderProps', 'LeafTheme'],
@@ -820,12 +815,9 @@ const apiSectionOrder = {
   'components/qr-code': ['QRCodeProps'],
   'components/error-boundary': ['ErrorBoundaryProps', 'ErrorBoundaryFallbackProps'],
   'components/image': [
-    'ImageProps',
-    'ImagePreviewGroupProps',
-    'ImagePreviewProps',
-    'ImagePreviewItem',
     'ImagePreviewApi',
     'ImagePreviewOptions',
+    'ImagePreviewItem',
     'ImagePreviewProviderProps',
   ],
   'components/calendar': ['CalendarProps'],
@@ -889,6 +881,7 @@ const apiSectionOrder = {
   ],
 };
 const apiPropertyOrder = {
+  DataTableProps: ['data', 'columns', 'rowKey', 'options', 'localPagination', 'table'],
   ConfigProviderProps: [
     'locale',
     'translations',
@@ -1082,28 +1075,6 @@ const apiPropertyOrder = {
     'backgroundColor',
   ],
   ErrorBoundaryProps: ['children', 'fallback', 'onReset', 'resetKeys', 'onError'],
-  ImageProps: ['src', 'alt', 'width', 'height', 'fit', 'fallback', 'preview', 'previewSrc'],
-  ImagePreviewGroupProps: [
-    'children',
-    'items',
-    'open',
-    'defaultOpen',
-    'onOpenChange',
-    'index',
-    'defaultIndex',
-    'onIndexChange',
-    'thumbnails',
-    'downloadable',
-  ],
-  ImagePreviewProps: [
-    'items',
-    'open',
-    'onClose',
-    'index',
-    'onIndexChange',
-    'thumbnails',
-    'downloadable',
-  ],
   CalendarProps: [
     'value',
     'defaultValue',
@@ -1317,7 +1288,6 @@ const apiPropertyOrder = {
     'confirmButtonProps',
     'cancelButtonProps',
     'footer',
-    'variant',
     'icon',
     'divided',
     'width',
@@ -1343,7 +1313,6 @@ const apiPropertyOrder = {
     'height',
     'footer',
     'extra',
-    'variant',
     'icon',
     'divided',
     'closable',
@@ -1700,6 +1669,10 @@ const specific = {
     'horizontal 字段的标签宽度，单位像素；可由 FormField.labelWidth 单独覆盖。',
     'Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields.',
   ],
+  'MenuProps.variant': [
+    '选中项外观：中性、浮起或主题色。',
+    'Selection appearance: neutral, raised or primary.',
+  ],
   'MenuGroupProps.children': ['分组中的菜单项。', 'Menu items in this group.'],
   'DividerProps.children': ['显示在分割线中的内容。', 'Content displayed within the divider.'],
   'LoadingProps.children': ['被加载遮罩覆盖的内容。', 'Content covered by the loading overlay.'],
@@ -2040,42 +2013,17 @@ const specific = {
     '同步调用 onReset 后清除错误并重新渲染子树，不自动重做业务请求。',
     'Call onReset synchronously, clear the error and rerender the subtree without automatically repeating business requests.',
   ],
-  'ImagePreviewProps.onClose': [
-    '关闭请求；应用须将受控 open 改为 false。',
-    'Close request; the application must set controlled open to false.',
-  ],
-  'ImagePreviewProps.index': [
-    '从 0 开始的当前图片索引，切换时须回写 onIndexChange。',
-    'Current zero-based image index; write onIndexChange results back to it.',
-  ],
-  'ImagePreviewGroupProps.open': ['受控的预览展开状态。', 'Controlled preview open state.'],
-  'ImagePreviewGroupProps.defaultOpen': [
-    '非受控模式的初始展开状态。',
-    'Initial preview open state for uncontrolled usage.',
-  ],
-  'ImagePreviewGroupProps.index': [
-    '受控的图片索引，从 0 开始，切换时须回写 onIndexChange。',
-    'Controlled zero-based image index; write onIndexChange results back to it.',
-  ],
-  'ImagePreviewGroupProps.defaultIndex': [
-    '非受控模式的初始图片索引，从 0 开始。',
-    'Initial zero-based image index for uncontrolled usage.',
-  ],
-  'ImagePreviewGroupProps.items': [
-    '显式图片列表；传入时优先于从 children 收集的图片。',
-    'Explicit image list, taking precedence over images collected from children.',
-  ],
   'ImagePreviewItem.download': [
     '外层 downloadable 开启时，false 禁用本项下载，字符串替换下载地址，其余使用 src。跨域下载需要 CORS。',
     'With downloadable enabled, false disables this download, a string overrides its URL, otherwise src is used. Cross-origin downloads require CORS.',
   ],
   'ImagePreviewItem.width': [
-    '原图像素宽度，用于预览布局。',
-    'Original image width in pixels for preview layout.',
+    '可选的原图像素宽度，用于载入前的尺寸提示；实际以加载后的自然尺寸为准。',
+    'Optional original width in pixels for initial layout before loading; natural dimensions take precedence after loading.',
   ],
   'ImagePreviewItem.height': [
-    '原图像素高度，用于预览布局。',
-    'Original image height in pixels for preview layout.',
+    '可选的原图像素高度，用于载入前的尺寸提示；实际以加载后的自然尺寸为准。',
+    'Optional original height in pixels for initial layout before loading; natural dimensions take precedence after loading.',
   ],
   'ImagePreviewOptions.onClose': [
     '预览结束时调用，包括用户关闭、返回的关闭函数、同 Provider 替换和调用方卸载。',
@@ -2550,17 +2498,9 @@ const specific = {
     '预览单张或一组图片，可指定初始索引与预览选项；返回幂等关闭函数。',
     'Preview one image or a gallery with an initial index and options; returns an idempotent close function.',
   ],
-  'ImageProps.fallback': [
-    '无图片或加载失败时的内容；默认自适应显示图标与单行提示，小尺寸仅显示图标。',
-    'Missing or failed image content; defaults to an adaptive icon and one line of text, or only the icon in small containers.',
-  ],
   'ImagePreviewProviderProps.children': [
     '可调用 useImagePreview 的内容；ConfigProvider 已自动提供此服务。',
     'Content that can call useImagePreview; ConfigProvider already provides this service.',
-  ],
-  'ImagePreviewGroupProps.children': [
-    '自动收集有 src 且允许预览的 Image；仅有 srcSet 的图片不加入预览。',
-    'Collect preview-enabled Images with src; srcSet-only images are not included.',
   ],
   'DatePickerProps.picker': descriptions.picker,
   'DateRangePickerProps.picker': descriptions.picker,
@@ -3068,6 +3008,10 @@ const specific = {
     '将正文和标签页内容替换为骨架屏；不会禁用标题、标签页或操作。',
     'Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled.',
   ],
+  'CardProps.shadow': [
+    '显示卡片的静止阴影；分层卡片将其应用于内层内容面。',
+    "Show the card's resting shadow; layered cards apply it to the inner content surface.",
+  ],
   'CardProps.size': [
     '卡片尺寸；内嵌标签页默认跟随此尺寸，其他子组件独立配置。',
     'Card size; embedded tabs follow it by default, while other children use their own sizes.',
@@ -3108,19 +3052,11 @@ const specific = {
     'soft 使用状态底色；neutral 使用中性底色并保留语义图标颜色。',
     'Soft uses a semantic surface; neutral uses a neutral surface with a semantic icon.',
   ],
-  'ModalProps.variant': [
-    '内容外观；card 将正文分为独立的内容面。',
-    'Content appearance; card places the body on a separate surface.',
-  ],
   'ModalProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
-  'DrawerProps.variant': [
-    '内容外观；card 将正文分为独立的内容面。',
-    'Content appearance; card places the body on a separate surface.',
-  ],
   'DrawerProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
   'ConfirmOptions.icon': [
-    '正文左侧的状态图标；传入 null 隐藏图标。',
-    'Semantic icon beside the explanation; null hides the icon.',
+    '标题旁的状态图标；无标题时位于正文旁，传入 null 隐藏。',
+    'Semantic icon beside the title, or the explanation when untitled; null hides it.',
   ],
   'ProgressProps.active': [
     '未完成的线形进度默认显示流光；设为 false 关闭，完成、错误或不确定进度时自动停止。',
@@ -3153,46 +3089,24 @@ const specific = {
     'Supplementary status or tags; avoid interactive controls.',
   ],
   'DataTableProps.table': [
-    '由 useReactTable 创建的实例，唯一的数据与状态来源。',
-    'Instance created by useReactTable; the sole data and state owner.',
-  ],
-  'DataTableInstanceProps.table': [
-    '实例模式唯一的数据与状态来源；不再传入 data、columns、rowKey 或 options。',
-    'The only data and state owner in instance mode; do not also pass data, columns, rowKey or options.',
+    '由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。',
+    'Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination.',
   ],
   'DataTableProps.toolbar': [
-    '自动布局中的工具栏内容；仍由 DataTable 渲染 Content 和分页器。显式自定义布局请直接组合对应的公共部件。',
-    'Toolbar content in the automatic layout; DataTable still renders Content and pagination. Compose public parts directly for a custom layout.',
+    '自动布局中的工具栏内容。',
+    'Toolbar content in the automatic layout.',
   ],
-  'DataTableProps.pagination': [
-    '默认布局的分页器开关或展示参数；快捷模式设为 false 时同时关闭本地数据截断。',
-    'Automatic pagination visibility or presentation options; false also disables local slicing in data mode.',
-  ],
-  'DataTableProps.layout': layoutDescription,
-  'DataTablePresentationProps.layout': layoutDescription,
-  'DataTableProps.children': childrenDescription,
-  'DataTablePresentationProps.children': childrenDescription,
+  'DataTableProps.pagination': tablePaginationDescription,
+  'DataTablePresentationProps.pagination': tablePaginationDescription,
   'DataTableProps.variant': tableVariantDescription,
   'DataTablePresentationProps.variant': tableVariantDescription,
   'DataTableProps.columnDividers': columnDividersDescription,
   'DataTablePresentationProps.columnDividers': columnDividersDescription,
-  'DataTableProps.bordered': [
-    '已弃用，请改用 columnDividers；columnDividers 显式传入时优先。',
-    'Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence.',
-  ],
-  'DataTablePresentationProps.bordered': [
-    '已弃用，请改用 columnDividers；columnDividers 显式传入时优先。',
-    'Deprecated; use columnDividers instead. An explicit columnDividers value takes precedence.',
-  ],
   'DataTableProps.localPagination': localPaginationDescription,
   'UseDataTableOptions.localPagination': localPaginationDescription,
-  'UseDataTableOptions.pagination': [
-    '已弃用，请改用 localPagination。不传 localPagination 时作为兼容别名；false 会关闭本地数据切分。',
-    'Deprecated; use localPagination instead. Acts as a compatibility alias when localPagination is omitted; false disables local slicing.',
-  ],
   'DataTablePresentationProps.toolbar': [
-    '自动布局中的工具栏内容；自定义布局需要自行渲染 DataTable.Toolbar。',
-    'Toolbar content for the automatic layout; custom layouts render DataTable.Toolbar themselves.',
+    '自动布局中的工具栏内容。',
+    'Toolbar content in the automatic layout.',
   ],
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
@@ -3202,33 +3116,10 @@ const specific = {
     '表格最小宽度；默认根据可见列宽计算。',
     'Minimum table width; defaults to visible column sizes.',
   ],
-  'DataTableProps.columnReordering': [
-    '展示单层表头的拖拽手柄。',
-    'Show drag handles for single-level headers.',
+  'DataTableColumnMeta.label': [
+    '排序和列宽调整使用的纯文字列名。',
+    'Plain-text column name for sorting and resize controls.',
   ],
-  'DataTableProps.onRowReorder': [
-    '展示行拖拽手柄，并返回重排后的当前页行；应用负责更新数据。',
-    'Show row handles and return reordered current-page rows; the application updates the data.',
-  ],
-  'DataTableSearchProps.size': [
-    '默认跟随 DataTable 的尺寸。',
-    'Inherit DataTable size by default.',
-  ],
-  'DataTableSearchProps.allowClear': [
-    '默认展示清除操作；传入 false 可关闭。',
-    'Shown by default; pass false to remove the clear action.',
-  ],
-  'DataTableSearchProps.status': ['输入框的校验状态。', 'Input validation status.'],
-  'DataTableSearchProps.prefix': [
-    '前置内容；默认是搜索图标。',
-    'Leading content; defaults to a search icon.',
-  ],
-  'DataTableSearchProps.onClear': ['清除搜索内容时调用。', 'Called when the search is cleared.'],
-  'DataTableSearchProps.showCount': [
-    '显示或定制输入字数。',
-    'Display or customize the input count.',
-  ],
-  'DataTableSearchProps.onPressEnter': ['按 Enter 时调用。', 'Called on Enter.'],
   'DataTablePaginationProps.showSizeChanger': [
     '展示每页条数选择器；DataTable 默认开启，可显式传入 false 关闭。',
     'Show the page-size selector; enabled by default in DataTable and can be disabled with false.',
@@ -3259,16 +3150,16 @@ const specific = {
     '未知总数时控制下一页是否可用。',
     'Control next-page availability when the total is unknown.',
   ],
-  'DataTableDataProps.data': [
+  'DataTableProps.data': [
     '展示的数据，更新时使用新数组。',
     'Data to display; provide a new array when updating.',
   ],
-  'DataTableDataProps.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
-  'DataTableDataProps.rowKey': [
+  'DataTableProps.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
+  'DataTableProps.rowKey': [
     '非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。',
     'A required string/number identity field, or a function returning a string/number identity.',
   ],
-  'DataTableDataProps.options': [
+  'DataTableProps.options': [
     '定制 TanStack 的状态、回调和服务端配置。',
     'Customize TanStack state, callbacks and server configuration.',
   ],
@@ -3284,26 +3175,6 @@ const specific = {
   'UseDataTableOptions.options': [
     '定制 TanStack 的状态、回调、行模型和服务端配置。',
     'Customize native TanStack state, callbacks, row models and server settings.',
-  ],
-  'DataTableRowReorderInfo.rows': [
-    '当前页重排后的行；通过 row.original 取得业务数据。',
-    'Reordered current-page rows; read business data from row.original.',
-  ],
-  'DataTableRowReorderInfo.fromIndex': [
-    '原始当前页索引，从 0 开始。',
-    'Original zero-based current-page index.',
-  ],
-  'DataTableRowReorderInfo.toIndex': [
-    '目标当前页索引，从 0 开始。',
-    'Destination zero-based current-page index.',
-  ],
-  'DataTableRowReorderInfo.activeRow': [
-    '正在移动的行，包含稳定 row.id。',
-    'The moved row, including its stable row.id.',
-  ],
-  'DataTableRowReorderInfo.overRow': [
-    '放置目标行，包含稳定 row.id。',
-    'The target row, including its stable row.id.',
   ],
   'DataTableRowProps.selected': ['设置行的选中样式。', 'Apply the selected row appearance.'],
   'DataTableCellProps.align': ['单元格内容对齐。', 'Cell content alignment.'],
@@ -3499,7 +3370,16 @@ const specific = {
     'Scroll-target distance from the container top in pixels.',
   ],
 };
-const headings = new Map();
+// These types are explained beside their consuming props instead of duplicating their tables.
+const inlineApiTypes = new Set([
+  'DataTablePresentationProps',
+  'UseDataTableOptions',
+  'DataTableRowKey',
+  'DataTableColumnDef',
+  'DataTableRowProps',
+  'DataTableCellProps',
+]);
+const anchors = new Map();
 const documentedTypes = new Set();
 for (const english of [false, true]) {
   for (const [page, names] of byPage) {
@@ -3511,17 +3391,22 @@ for (const english of [false, true]) {
       );
     } catch {}
     for (const name of names) {
-      if (apiSectionMatch(document, name)) documentedTypes.add(`${english}/${name}`);
-      headings.set(
+      const section = apiSectionMatch(document, name);
+      const canonicalHeading = name.endsWith('Props') ? `${name.replace(/Props$/u, '')} API` : name;
+      const canonicalAnchor = canonicalHeading.toLowerCase().replaceAll(' ', '-');
+      const hasExplicitAnchor = document.includes(`<a id="${canonicalAnchor}"></a>`);
+      if (section || hasExplicitAnchor) documentedTypes.add(`${english}/${name}`);
+      anchors.set(
         `${english}/${name}`,
-        apiSectionMatch(document, name)?.heading ??
-          (name.endsWith('Props') ? `${name.replace(/Props$/u, '')} API` : name),
+        hasExplicitAnchor
+          ? canonicalAnchor
+          : (section?.heading ?? canonicalHeading).toLowerCase().replaceAll(' ', '-'),
       );
     }
   }
 }
 function anchor(name, english) {
-  return headings.get(`${english}/${name}`).toLowerCase().replaceAll(' ', '-');
+  return anchors.get(`${english}/${name}`);
 }
 function code(value) {
   const fence = value.includes('`') ? '``' : '`';
@@ -3609,6 +3494,13 @@ for (const [page, names] of byPage) {
         );
     } catch {}
     for (const name of names) {
+      if (inlineApiTypes.has(name)) {
+        if (!documentedTypes.has(`${english}/${name}`))
+          throw new Error(`Missing inline API documentation: ${file} (${name})`);
+        continue;
+      }
+      // Card tabs intentionally reuse the standalone Tabs API instead of duplicating its table.
+      if (page === 'components/card' && name === 'CardTabsProps') continue;
       const props = schema.get(name);
       if (!props?.size) continue;
       const section = apiSectionMatch(document, name);
@@ -3631,17 +3523,6 @@ for (const [page, names] of byPage) {
       for (const [property, value] of orderedProps) {
         if (value.type === 'never') continue;
         if (modeProperties[name] && !modeProperties[name].includes(property)) continue;
-        if (
-          name === 'DataTableProps' &&
-          ['table', 'data', 'columns', 'rowKey', 'options'].includes(property)
-        )
-          continue;
-        if (name === 'DataTableInstanceProps' && property !== 'table') continue;
-        if (
-          name === 'DataTableDataProps' &&
-          !['data', 'columns', 'rowKey', 'options'].includes(property)
-        )
-          continue;
         const previous = old.get(property);
         const previousDescription = /^(?:设置 \w+。|Configure [\w ]+\.)$/.test(
           previous?.description ?? '',
@@ -3767,7 +3648,13 @@ for (const [page, names] of byPage) {
               '文件展示字段见 [FileItem](file-list#fileitem-api)；UploadFile 在其基础上要求 uid，并增加 response。',
               'See [FileItem](file-list#fileitem-api) for display fields; UploadFile requires uid and adds response.',
             ]
-          : undefined;
+          : page === 'components/card'
+            ? [
+                'CardTabsProps',
+                '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Card 固定使用 `type="line"` 与 `placement="top"`，并为标签页内容接入加载骨架；`tabs.extra` 仍属于标签栏，`items` 为空时恢复普通卡片。\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+                'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Card fixes `type="line"` and `placement="top"`, adds loading skeletons to tab content, and keeps `tabs.extra` on the tab bar; an empty `items` list restores an ordinary card.\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+              ]
+            : undefined;
     if (sharedReference) {
       const sharedSection = apiSectionMatch(document, sharedReference[0]);
       if (sharedSection) {

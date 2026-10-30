@@ -107,20 +107,11 @@ export type { ColProps, GridBreakpoint, GridProps, RowProps } from './grid';
 export { Col, Grid, Row } from './grid';
 export type {
   ImagePreviewApi,
-  ImagePreviewGroupProps,
   ImagePreviewItem,
   ImagePreviewOptions,
-  ImagePreviewProps,
   ImagePreviewProviderProps,
-  ImageProps,
 } from './image';
-export {
-  Image,
-  ImagePreview,
-  ImagePreviewGroup,
-  ImagePreviewProvider,
-  useImagePreview,
-} from './image';
+export { ImagePreviewProvider, useImagePreview } from './image';
 export type { InfiniteScrollProps } from './infinitescroll';
 export { InfiniteScroll } from './infinitescroll';
 export type { InputGroupProps, InputProps, InputSearchProps } from './input';

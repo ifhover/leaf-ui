@@ -1,11 +1,6 @@
 @use '../table/table';
 @use '../styles/mixins' as *;
 
-html:has(.leaf-data-table [data-dragging]),
-body:has(.leaf-data-table [data-dragging]) {
-  overflow-anchor: none;
-}
-
 .leaf-data-table {
   display: flex;
   flex-direction: column;
@@ -26,37 +21,6 @@ body:has(.leaf-data-table [data-dragging]) {
     &[data-align='end'] .leaf-data-table__sort {
       justify-content: flex-end;
     }
-  }
-  &__drag-handle {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: var(--leaf-radius-sm);
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: grab;
-    touch-action: none;
-    &:hover {
-      background: var(--leaf-table-action-hover-background);
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    }
-    &:focus-visible {
-      @include focus-ring;
-    }
-    &:active {
-      cursor: grabbing;
-    }
-  }
-  tr[data-dragging],
-  th[data-dragging] {
-    position: relative;
-    z-index: 5;
-    opacity: 0.8;
   }
   box-sizing: border-box;
   width: 100%;
@@ -86,15 +50,6 @@ body:has(.leaf-data-table [data-dragging]) {
   &__footer {
     justify-content: flex-end;
     margin-block-start: 14px;
-  }
-  &__search {
-    width: min(280px, 100%);
-  }
-  &__visibility {
-    display: flex;
-    min-width: 160px;
-    flex-direction: column;
-    gap: 4px;
   }
   &__sort {
     display: flex;

@@ -1,5 +1,4 @@
 import type { CSSProperties, HTMLAttributes, ReactNode, Ref, TdHTMLAttributes } from 'react';
-import type { InputProps } from '../input/input';
 import type { PaginationProps } from '../pagination/pagination';
 import type { ControlSize } from '../shared/types';
 
@@ -19,23 +18,14 @@ export interface DataTableVirtualOptions {
 /** Shared presentation props do not depend on TanStack or the caller's row type. */
 export interface DataTablePresentationProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
-  /**
-   * Explicitly choose the built-in layout or a fully custom composition.
-   * Omitting it keeps the legacy behavior where children replace the automatic layout.
-   */
-  layout?: 'auto' | 'custom';
-  /** Custom composition rendered by `layout="custom"`, or implicitly by legacy children. */
-  children?: ReactNode;
   /** Content for the toolbar in the automatic layout. */
   toolbar?: ReactNode;
   size?: ControlSize;
-  /** Simple uses a single rounded header without a frame, shadows, stripes or column dividers. */
+  /** Simple uses a square, content-surface header without a frame, shadows or column dividers. */
   variant?: 'layered' | 'simple';
   /** Adds body/footer column dividers in the layered variant; ignored in simple. */
   columnDividers?: boolean;
-  /** @deprecated Use `columnDividers` instead. */
-  bordered?: boolean;
-  /** Alternating row backgrounds in the layered variant; ignored in simple. */
+  /** Alternating row backgrounds in either variant; enabled by default. */
   striped?: boolean;
   /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];
@@ -45,34 +35,13 @@ export interface DataTablePresentationProps
   error?: ReactNode;
   onRetry?: () => void;
   selection?: false | 'single' | 'multiple';
-  selectAllMode?: 'page' | 'all';
   resizable?: boolean;
-  columnReordering?: boolean;
   virtual?: boolean | DataTableVirtualOptions;
   /** Controls the default pagination UI only; local row slicing is a data/Hook option. */
   pagination?: boolean | DataTablePaginationProps;
   tableRef?: Ref<HTMLTableElement>;
 }
 
-export interface DataTableSearchProps
-  extends Omit<
-    InputProps,
-    | 'value'
-    | 'defaultValue'
-    | 'onChange'
-    | 'type'
-    | 'visibilityToggle'
-    | 'visible'
-    | 'defaultVisible'
-    | 'onVisibleChange'
-    | 'visibilityIcon'
-  > {
-  columnId?: string;
-}
-export interface DataTableColumnVisibilityProps {
-  children?: ReactNode;
-  label?: string;
-}
 export interface DataTablePaginationProps
   extends Omit<
     PaginationProps,
@@ -80,4 +49,3 @@ export interface DataTablePaginationProps
   > {
   hasNextPage?: boolean;
 }
-export interface DataTableContentProps extends HTMLAttributes<HTMLDivElement> {}

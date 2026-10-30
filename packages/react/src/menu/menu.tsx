@@ -61,7 +61,7 @@ export interface MenuItem {
 }
 export interface MenuProps extends Omit<HTMLAttributes<HTMLElement>, 'onSelect'> {
   items: readonly MenuItem[];
-  variant?: 'default' | 'raised' | 'primary';
+  variant?: 'neutral' | 'raised' | 'primary';
   selectedKey?: string;
   defaultSelectedKey?: string;
   onSelect?: (key: string, item: MenuItem) => void;

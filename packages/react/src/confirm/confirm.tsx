@@ -41,7 +41,7 @@ export function ConfirmDialog({
   children,
   confirmText,
   cancelText,
-  type = 'default',
+  type = 'info',
   showCancel,
   confirmButtonProps,
   cancelButtonProps,

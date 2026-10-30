@@ -39,7 +39,7 @@ import type {
 } from '../form/form';
 import type { FormListProps } from '../form/list';
 import type { ColProps, GridProps, RowProps } from '../grid/grid';
-import type { ImagePreviewGroupProps, ImagePreviewProps, ImageProps } from '../image/image';
+import type { ImagePreviewOptions } from '../image/types';
 import type { InfiniteScrollProps } from '../infinitescroll/infinitescroll';
 import type { InputGroupProps, InputSearchProps } from '../input/group';
 import type { InputProps } from '../input/input';
@@ -73,13 +73,7 @@ import type { SplitterProps } from '../splitter/splitter';
 import type { CountdownProps, StatisticProps } from '../statistic/statistic';
 import type { StepsProps } from '../steps/steps';
 import type { SwitchProps } from '../switch/switch';
-import type {
-  DataTableColumnVisibilityProps,
-  DataTableContentProps,
-  DataTablePaginationProps,
-  DataTablePresentationProps,
-  DataTableSearchProps,
-} from '../tabletanstack/defaults';
+import type { DataTablePresentationProps } from '../tabletanstack/defaults';
 import type { TabsProps } from '../tabs/tabs';
 import type { CheckableTagProps, TagGroupProps } from '../tag/group';
 import type { TagProps } from '../tag/tag';
@@ -129,12 +123,6 @@ interface ComponentPropsMap {
   ColorPicker: ColorPickerProps;
   Confirm: ConfirmOptions;
   Countdown: CountdownProps;
-  DataTableColumnVisibility: DataTableColumnVisibilityProps;
-  DataTableContent: DataTableContentProps;
-  DataTableFooter: HTMLAttributes<HTMLDivElement>;
-  DataTablePagination: DataTablePaginationProps;
-  DataTableSearch: DataTableSearchProps;
-  DataTableToolbar: HTMLAttributes<HTMLDivElement>;
   DatePicker: DatePickerProps;
   DateRangePicker: DateRangePickerProps;
   Descriptions: DescriptionsProps;
@@ -152,9 +140,7 @@ interface ComponentPropsMap {
   FormField: FormFieldProps;
   FormGroup: FormGroupProps;
   Grid: GridProps;
-  Image: ImageProps;
-  ImagePreview: ImagePreviewProps;
-  ImagePreviewGroup: ImagePreviewGroupProps;
+  ImagePreview: ImagePreviewOptions;
   InfiniteScroll: InfiniteScrollProps;
   Input: InputProps;
   InputGroup: InputGroupProps;
@@ -247,12 +233,6 @@ export interface LeafComponentDefaults {
   Confirm?: Partial<Omit<ConfirmOptions, 'key' | 'ref'>> | null;
   Countdown?: Partial<Omit<CountdownProps, 'key' | 'ref' | 'value'>> | null;
   DataTable?: Partial<Omit<DataTablePresentationProps, 'tableRef'>> | null;
-  DataTableColumnVisibility?: Partial<Omit<DataTableColumnVisibilityProps, 'key' | 'ref'>> | null;
-  DataTableContent?: Partial<Omit<DataTableContentProps, 'key' | 'ref'>> | null;
-  DataTableFooter?: Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' | 'ref'>> | null;
-  DataTablePagination?: Partial<Omit<DataTablePaginationProps, 'key' | 'ref'>> | null;
-  DataTableSearch?: Partial<Omit<DataTableSearchProps, 'key' | 'ref'>> | null;
-  DataTableToolbar?: Partial<Omit<HTMLAttributes<HTMLDivElement>, 'key' | 'ref'>> | null;
   DatePicker?: Partial<
     Omit<DatePickerProps, 'key' | 'ref' | 'value' | 'defaultValue' | 'onChange'>
   > | null;
@@ -278,11 +258,7 @@ export interface LeafComponentDefaults {
     >
   > | null;
   Grid?: Partial<Omit<GridProps, 'key' | 'ref'>> | null;
-  Image?: Partial<Omit<ImageProps, 'key' | 'ref'>> | null;
-  ImagePreview?: Partial<
-    Omit<ImagePreviewProps, 'key' | 'ref' | 'items' | 'open' | 'onClose'>
-  > | null;
-  ImagePreviewGroup?: Partial<Omit<ImagePreviewGroupProps, 'key' | 'ref'>> | null;
+  ImagePreview?: Omit<ImagePreviewOptions, 'onClose'> | null;
   InfiniteScroll?: Partial<
     Omit<InfiniteScrollProps, 'key' | 'ref' | 'dataLength' | 'hasMore' | 'onLoadMore'>
   > | null;

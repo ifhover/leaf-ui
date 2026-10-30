@@ -16,6 +16,10 @@
     overflow: hidden;
     border-radius: 100px;
     background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+    &--segments > .leaf-progress__fill {
+      // The track owns the outer curve; adjacent segments meet with square edges.
+      border-radius: 0;
+    }
   }
   &__fill {
     position: relative;

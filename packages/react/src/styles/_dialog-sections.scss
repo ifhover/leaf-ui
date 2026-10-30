@@ -89,7 +89,6 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: wrap;
-    gap: 8px;
     padding: var(
       --leaf-component-#{$component}-padding,
       var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)

@@ -170,6 +170,22 @@
     }
   }
 
+  &__row:not([aria-hidden='true'])
+    > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+    padding-inline-start: var(
+      --leaf-component-table-padding-left,
+      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+    );
+  }
+
+  &__row:not([aria-hidden='true'])
+    > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+    padding-inline-end: var(
+      --leaf-component-table-padding-right,
+      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+    );
+  }
+
   &__column-header {
     position: relative;
     padding-block-start: calc(var(--leaf-table-heading-gap) + var(--leaf-spacing) * 0.25);
@@ -227,7 +243,7 @@
   }
 
   &--simple {
-    --leaf-table-radius: var(--leaf-component-table-radius, var(--leaf-radius));
+    --leaf-table-header-background: var(--leaf-table-surface);
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -238,13 +254,24 @@
     display: none;
   }
 
-  &--simple &__header {
-    // Clip the entire header, including grouped and pinned cells, as one rounded surface.
-    clip-path: inset(0 round var(--leaf-table-radius));
+  &--simple &__header::after {
+    // One continuous divider stays below grouped and pinned header cells.
+    position: absolute;
+    z-index: 2;
+    inset-block-end: 0;
+    inset-inline: 0;
+    border-block-end: 2px solid
+      var(
+        --leaf-component-table-border-color,
+        var(--leaf-frame-border-color, var(--leaf-table-frame-color))
+      );
+    pointer-events: none;
+    content: '';
   }
 
   &--simple &__column-header {
     padding-block: var(--leaf-table-heading-gap);
+    font-size: var(--leaf-font-size);
     &::before {
       display: none;
     }
@@ -311,6 +338,22 @@
 [dir='rtl'] .leaf-table__cell[data-pinned='start'][data-pin-edge]::after {
   background: linear-gradient(to left, var(--leaf-table-pin-shadow), transparent);
 }
+[dir='rtl']
+  .leaf-table__row:not([aria-hidden='true'])
+  > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+  padding-inline-start: var(
+    --leaf-component-table-padding-right,
+    calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+  );
+}
+[dir='rtl']
+  .leaf-table__row:not([aria-hidden='true'])
+  > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+  padding-inline-end: var(
+    --leaf-component-table-padding-left,
+    calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+  );
+}
 [dir='rtl'] .leaf-table__cell[data-pinned='end'][data-pin-edge]::after {
   background: linear-gradient(to right, var(--leaf-table-pin-shadow), transparent);
 }
@@ -320,7 +363,8 @@
   }
 }
 @media (forced-colors: active) {
-  .leaf-table__panel {
+  .leaf-table__panel,
+  .leaf-table--simple .leaf-table__header::after {
     border-color: CanvasText;
   }
   .leaf-table__row[data-selected] > td {

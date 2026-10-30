@@ -14,7 +14,7 @@ This guide covers component composition and the scales for custom page layouts. 
 
 | Component | Current appearance | Page composition |
 | --- | --- | --- |
-| [Menu](/en/components/menu) | Defaults to `raised`: a selected content surface, fine border and light shadow on a muted canvas. | Retain the selected surface instead of adding another indicator or a large brand-colored background. `default` and `primary` are other explicit appearances. |
+| [Menu](/en/components/menu) | Defaults to `raised`: a selected content surface, fine border and light shadow on a muted canvas. | Retain the selected surface instead of adding another indicator or a large brand-colored background. `neutral` and `primary` are other explicit appearances. |
 | [Button](/en/components/button) | Defaults to `outline`: a neutral content surface and border with a slight resting shadow. | Keep ordinary actions neutral; reserve `solid` for important actions rather than emphasizing every button. |
 | [Card](/en/components/card) | `variant="layered"` puts a small muted heading on the canvas and content on an inner surface. Card itself still defaults to `default`. | Use `layered` for independent tasks needing a heading/content separation. It does not display `description`; put important explanations in the body or a standalone CardTitle. |
 | [DataTable](/en/components/table) | Defaults to `layered`: a quiet header and inner data surface share the layered Card relationship. | Place the main table and its toolbar directly, usually without another layered Card around them. Consider `simple` when embedding a table in an existing content surface. |
@@ -70,7 +70,7 @@ Size and density are separate dimensions. Use consistent `size` values in one ro
 
 Use `--leaf-radius-sm`, `--leaf-radius`, `--leaf-radius-md` and `--leaf-radius-lg`: defaults are 4 / 8 / 12 / 16px, derived from the base at 0.5 / 1 / 1.5 / 2 times. Components normally handle their own nested geometry; do not override internal `.leaf-*` radii.
 
-Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: outlined buttons and default Card have the lightest resting feedback, layered Card / Table use a light inner-surface shadow, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
+Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: outlined buttons and default Card use the lightest resting feedback, layered Card / Table inner surfaces use `shadow-sm`, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
 
 Input, InputNumber, InputSearch, Select, AutoComplete, Cascader, TreeSelect and single-value pickers default to 240px and do not resize after selection. Date ranges use 300px and datetime ranges 380px; allow more width for longer formats. Fields shrink in narrow containers and fill FormField; `style.width` overrides the default. Textarea remains full-width. Page layouts must not depend on these default widths remaining fixed.
 

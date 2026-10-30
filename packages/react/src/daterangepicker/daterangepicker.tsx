@@ -25,6 +25,7 @@ import { usePopupState } from '../shared/floating';
 import { parseDateText } from '../shared/parse-date';
 import { pickerSegments } from '../shared/segments';
 import { displayTime, parseTime, type TimeParts } from '../shared/time';
+import { TabsControl } from '../tabs/tabs';
 import { TimePanel } from '../timepicker/time-panel';
 import { TimeRangeInput, type TimeRangePickerModeProps } from '../timerangepicker/timerangepicker';
 
@@ -379,24 +380,20 @@ const CalendarDateRangePicker = forwardRef<HTMLInputElement, CalendarDateRangePi
         panelClassName={classes('leaf-range-panel', datetime && 'leaf-range-panel--datetime')}
         renderPanel={(close) => (
           <>
-            <fieldset
-              className="leaf-range-panel__endpoints"
-              data-active={endpoint}
-              aria-label={messages.dateRangePicker.placeholder}
-            >
-              {([0, 1] as const).map((index) => (
-                <button
-                  key={index}
-                  type="button"
-                  aria-pressed={endpoint === index}
-                  onClick={() => switchEndpoint(index)}
-                >
-                  <span className="leaf-range-panel__endpoint-label">
-                    {index === 0 ? messages.common.start : messages.common.end}
-                  </span>{' '}
-                </button>
-              ))}
-            </fieldset>
+            {datetime && (
+              <TabsControl
+                className="leaf-range-panel__endpoints"
+                aria-label={messages.dateRangePicker.placeholder}
+                size="sm"
+                overflow={false}
+                items={[
+                  { key: 'start', label: messages.common.start },
+                  { key: 'end', label: messages.common.end },
+                ]}
+                activeKey={endpoint === 0 ? 'start' : 'end'}
+                onChange={(key) => switchEndpoint(key === 'start' ? 0 : 1)}
+              />
+            )}
             <div
               className={classes(
                 'leaf-range-panel__body',
@@ -467,7 +464,7 @@ const CalendarDateRangePicker = forwardRef<HTMLInputElement, CalendarDateRangePi
                         range={preview ?? draft}
                         hoverDate={preview ? null : hover}
                         onHover={(date) => {
-                          if (endpoint === 1 && draft[0] && !draft[1]) setHover(date);
+                          if (endpoint === 1 && draft[0]) setHover(date);
                         }}
                         showOutsideDays={datetime}
                         onChange={(date) => choose(date, close)}

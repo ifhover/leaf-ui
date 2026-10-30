@@ -9,17 +9,21 @@ import { TableControl as Table } from './table';
 describe('Table', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('ignores stripes and column dividers in simple mode and restores them when switched back', () => {
-    const { rerender } = render(<Table variant="simple" striped columnDividers />);
+  it('defaults to stripes in simple mode while ignoring column dividers across variant changes', () => {
+    const { rerender } = render(<Table variant="simple" columnDividers />);
     const root = screen.getByRole('table').closest('.leaf-table');
     expect(root).toHaveClass('leaf-table--simple');
-    expect(root).not.toHaveClass('leaf-table--striped');
+    expect(root).toHaveClass('leaf-table--striped');
     expect(root).not.toHaveClass('leaf-table--column-dividers');
     expect(screen.getByRole('table')).not.toHaveAttribute('variant');
     rerender(<Table variant="layered" striped columnDividers />);
     expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
     expect(root).not.toHaveClass('leaf-table--simple');
     expect(root).toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
+    rerender(<Table variant="simple" striped={false} columnDividers />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
+    expect(root).toHaveClass('leaf-table--simple');
+    expect(root).not.toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
   });
 
   it('preserves native table semantics, header scopes, spans and refs', () => {

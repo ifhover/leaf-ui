@@ -30,15 +30,10 @@ export function TableColumns() {
     <DataTable
       table={table}
       aria-label="固定列与列宽调整"
-      layout="custom"
       maxHeight={300}
       resizable
+      toolbar={<Button onClick={() => table.resetColumnSizing()}>重置列宽</Button>}
       pagination={false}
-    >
-      <DataTable.Toolbar>
-        <Button onClick={() => table.resetColumnSizing()}>重置列宽</Button>
-      </DataTable.Toolbar>
-      <DataTable.Content />
-    </DataTable>
+    />
   );
 }

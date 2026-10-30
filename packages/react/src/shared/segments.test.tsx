@@ -19,37 +19,38 @@ function insertText(input: HTMLInputElement, text: string) {
 
 describe('segmented picker fields', () => {
   it.each(['date', 'datetime', 'time'] as const)(
-    'uses card by default and allows plain panels in %s mode',
+    'uses plain by default and allows card panels in %s mode',
     async (picker) => {
       const { rerender } = render(<DatePicker picker={picker} />);
       await userEvent.click(screen.getByRole('combobox'));
-      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).toHaveClass(
+      expect(screen.queryByRole('tablist')).toBeNull();
+      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).not.toHaveClass(
         'leaf-picker-panel--card',
       );
-      rerender(<DatePicker picker={picker} panelVariant="plain" />);
-      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).not.toHaveClass(
+      rerender(<DatePicker picker={picker} panelVariant="card" />);
+      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).toHaveClass(
         'leaf-picker-panel--card',
       );
     },
   );
   it.each(['date', 'datetime', 'time'] as const)(
-    'uses card by default and allows plain panels for %s ranges',
+    'uses plain by default and allows card panels for %s ranges',
     async (picker) => {
       const { rerender } = render(
         picker === 'time' ? <DateRangePicker picker="time" /> : <DateRangePicker picker={picker} />,
       );
       await userEvent.click(screen.getByRole('combobox'));
-      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).toHaveClass(
+      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).not.toHaveClass(
         'leaf-picker-panel--card',
       );
       rerender(
         picker === 'time' ? (
-          <DateRangePicker picker="time" panelVariant="plain" />
+          <DateRangePicker picker="time" panelVariant="card" />
         ) : (
-          <DateRangePicker picker={picker} panelVariant="plain" />
+          <DateRangePicker picker={picker} panelVariant="card" />
         ),
       );
-      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).not.toHaveClass(
+      expect(screen.getByRole('dialog').closest('.leaf-picker-panel')).toHaveClass(
         'leaf-picker-panel--card',
       );
     },
@@ -85,7 +86,7 @@ describe('segmented picker fields', () => {
     expect(screen.getByRole('button', { name: '2027-03-16' })).toHaveClass(
       'leaf-date-picker__day--selected',
     );
-    expect(screen.getByRole('button', { name: '结束' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('tab', { name: '结束' })).toHaveAttribute('aria-selected', 'true');
     expect(change).not.toHaveBeenCalled();
   });
   it('handles full-width composition once and resumes segmented keyboard input', async () => {
@@ -515,7 +516,7 @@ describe('segmented picker fields', () => {
     await userEvent.keyboard('{Home}{Tab}{Tab}{Tab}{Tab}{Tab}');
     expect(input).toHaveFocus();
     expect([input.selectionStart, input.selectionEnd]).toEqual([19, 23]);
-    expect(screen.getByRole('button', { name: '结束' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('tab', { name: '结束' })).toHaveAttribute('aria-selected', 'true');
     expect(change).not.toHaveBeenCalled();
     await userEvent.keyboard('{End}{Tab}');
     expect(screen.getByRole('button', { name: 'Next' })).toHaveFocus();

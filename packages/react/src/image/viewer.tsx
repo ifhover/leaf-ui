@@ -2,557 +2,781 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FlipHorizontal2,
+  FlipVertical2,
   ImageOff,
-  Maximize2,
-  Minimize2,
-  PanelBottom,
+  Minus,
+  Plus,
+  RefreshCw,
   RotateCcw,
   RotateCw,
   X,
-  ZoomIn,
-  ZoomOut,
 } from 'lucide-react';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Lightbox, {
-  type FullscreenRef,
-  ImageSlide,
-  isImageSlide,
-  useController,
-  useLightboxState,
-  useLoseFocus,
-  useNavigationState,
-  type ZoomRef,
-} from 'yet-another-react-lightbox';
-import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-import { LoadingControl as Loading } from '../loading/loading';
-import { ScrollbarControl } from '../scrollbar/scrollbar';
-import { motionDuration, useMotionEnabled } from '../shared/motion';
+import {
+  type ButtonHTMLAttributes,
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useDialog } from '../shared/dialog';
+import { useMotionEnabled } from '../shared/motion';
+import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
-import type { ImagePreviewItem, ImagePreviewProps } from './image';
+import {
+  fitRatio,
+  type ImageTransform,
+  initialTransform,
+  transformStyle,
+  wrapIndex,
+  zoomAt,
+} from './geometry';
+import type { ImageViewerProps } from './types';
 
-const maxZoomPixelRatio = 20;
-
-export function ImageViewer(props: ImagePreviewProps) {
+export function ImageViewer(props: ImageViewerProps) {
+  const [identity, setIdentity] = useState({ session: props.session, key: 0 });
+  if (identity.session !== props.session)
+    setIdentity({ session: props.session, key: identity.key + 1 });
   return (
     <ScopedPortal>
-      <Viewer {...props} />
+      <ViewerHost key={identity.key} {...props} />
     </ScopedPortal>
   );
 }
-function Control({
+
+function Tool({
   label,
   children,
-  active,
-  disabled,
-  onClick,
-  className = '',
-}: {
-  label: string;
-  children: ReactNode;
-  active?: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-  className?: string;
-}) {
-  const { focus } = useController();
-  const focusHandlers = useLoseFocus(focus, disabled);
+  ...props
+}: { label: string; children: ReactNode } & Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+>) {
   return (
     <button
       type="button"
-      className={`leaf-image-viewer__control ${className}`}
+      className="leaf-image-viewer__tool"
       aria-label={label}
       title={label}
-      aria-pressed={active}
-      disabled={disabled}
-      onClick={onClick}
-      {...focusHandlers}
+      {...props}
     >
       {children}
     </button>
   );
 }
-function ViewerChrome({
-  items,
-  thumbnails,
-  downloadable,
-  zoomControl,
-  fullscreenControl,
-  onRotate,
-}: {
-  items: readonly ImagePreviewItem[];
-  thumbnails: boolean;
-  downloadable: boolean;
-  zoomControl: ZoomRef | null;
-  fullscreenControl: FullscreenRef | null;
-  onRotate: (src: string, delta: number) => void;
-}) {
-  const t = useText();
-  const format = useFormattedText();
-  const motion = useMotionEnabled();
-  const { currentIndex } = useLightboxState();
-  const { prev, next, close } = useController();
-  const { prevDisabled, nextDisabled } = useNavigationState();
-  const strip = useRef<HTMLDivElement>(null);
-  const [showThumbs, setShowThumbs] = useState(thumbnails);
-  const [failedDownload, setFailedDownload] = useState(false);
-  const [downloading, setDownloading] = useState(false);
-  const item = items[currentIndex];
-  const hasThumbs = thumbnails && items.length > 1;
-  const zoom = zoomControl?.zoom ?? 1;
-  // The engine measures zoom relative to the fitted image, not its original pixels.
-  const originalZoom =
-    Math.max(zoomControl?.maxZoom ?? maxZoomPixelRatio, maxZoomPixelRatio) / maxZoomPixelRatio;
-  const fullscreen = fullscreenControl?.fullscreen ?? false;
-  const downloadUrl = typeof item?.download === 'string' ? item.download : item?.src;
-  useEffect(() => setShowThumbs(thumbnails), [thumbnails]);
-  useEffect(() => {
-    setFailedDownload(false);
-    if (!showThumbs) return;
-    const root = strip.current;
-    const selected = root?.querySelector<HTMLElement>(`[data-index="${currentIndex}"]`);
-    if (root && selected)
-      root.scrollTo({
-        left: selected.offsetLeft - root.offsetLeft - (root.clientWidth - selected.clientWidth) / 2,
-        behavior: motion ? 'smooth' : 'auto',
-      });
-  }, [currentIndex, showThumbs, motion]);
-  const choose = (target: number) => {
-    const difference = target - currentIndex;
-    if (difference > 0) next({ count: difference });
-    else if (difference < 0) prev({ count: -difference });
-  };
-  const scrollThumbnails = (distance: number) => {
-    const viewport = strip.current;
-    if (!viewport) return;
-    const left = viewport.scrollLeft + distance;
-    viewport.scrollTo({ left, behavior: motion ? 'smooth' : 'auto' });
-  };
-  const download = async () => {
-    if (!item || downloading) return;
-    setDownloading(true);
-    setFailedDownload(false);
-    try {
-      const address = typeof item.download === 'string' ? item.download : item.src;
-      const response = await fetch(address);
-      if (!response.ok) throw new Error('Download failed');
-      const url = URL.createObjectURL(await response.blob());
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = item.downloadName || address.split(/[?#]/)[0]?.split('/').pop() || 'image';
-      anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch {
-      setFailedDownload(true);
-    } finally {
-      setDownloading(false);
-    }
-  };
-  return (
-    <div
-      className="leaf-image-viewer__chrome"
-      data-thumbnails={(hasThumbs && showThumbs) || undefined}
-    >
-      <header className="leaf-image-viewer__header">
-        <div className="leaf-image-viewer__title">
-          <span className="leaf-image-viewer__count" aria-live="polite">
-            {currentIndex + 1} / {items.length}
-          </span>
-        </div>
-        <div className="leaf-image-viewer__header-actions">
-          {downloadable && item?.download !== false && (
-            <Control
-              label={t('image.downloadImage')}
-              onClick={() => void download()}
-              disabled={downloading}
-            >
-              {downloading ? <Loading size="sm" /> : <Download size={19} />}
-            </Control>
-          )}
-          <Control
-            label={fullscreen ? t('image.exitFullscreen') : t('image.enterFullscreen')}
-            disabled={!fullscreenControl || fullscreenControl.disabled}
-            onClick={() => (fullscreen ? fullscreenControl?.exit() : fullscreenControl?.enter())}
-          >
-            {fullscreen ? <Minimize2 size={19} /> : <Maximize2 size={19} />}
-          </Control>
-          <Control label={t('image.closePreview')} onClick={close}>
-            <X size={22} />
-          </Control>
-        </div>
-      </header>
-      {items.length > 1 && (
-        <>
-          <Control
-            className="leaf-image-viewer__previous"
-            label={t('image.previousImage')}
-            disabled={prevDisabled}
-            onClick={() => prev()}
-          >
-            <ChevronLeft size={26} />
-          </Control>
-          <Control
-            className="leaf-image-viewer__next"
-            label={t('image.nextImage')}
-            disabled={nextDisabled}
-            onClick={() => next()}
-          >
-            <ChevronRight size={26} />
-          </Control>
-        </>
-      )}
-      <footer className="leaf-image-viewer__footer">
-        {failedDownload && (
-          <p role="alert" className="leaf-image-viewer__error">
-            {t('image.downloadFailedOpenTheOriginalImageToSaveIt')}{' '}
-            <a href={downloadUrl} target="_blank" rel="noopener noreferrer">
-              {t('image.openOriginal')}
-            </a>
-          </p>
-        )}
-        <div className="leaf-image-viewer__tools">
-          <Control
-            label={t('image.zoomOut')}
-            disabled={!zoomControl || zoomControl.disabled || zoom <= zoomControl.minZoom}
-            onClick={() => zoomControl?.zoomOut()}
-          >
-            <ZoomOut size={18} />
-          </Control>
-          <button
-            type="button"
-            className="leaf-image-viewer__zoom-level"
-            onClick={() => zoomControl?.changeZoom(1)}
-            title={t('image.fitToWindow')}
-            aria-label={t('image.fitToWindow')}
-            disabled={!zoomControl || zoomControl.disabled}
-          >
-            {Math.round((zoom / originalZoom) * 100)}%
-          </button>
-          <Control
-            label={t('image.zoomIn')}
-            disabled={!zoomControl || zoomControl.disabled || zoom >= zoomControl.maxZoom}
-            onClick={() => zoomControl?.zoomIn()}
-          >
-            <ZoomIn size={18} />
-          </Control>
-          <Control
-            label={t('image.actualSize')}
-            disabled={!zoomControl || zoomControl.disabled}
-            onClick={() => zoomControl?.changeZoom(originalZoom)}
-          >
-            <span className="leaf-image-viewer__actual-size" aria-hidden="true">
-              1:1
-            </span>
-          </Control>
-          <Control
-            label={t('image.rotateCounterclockwise')}
-            disabled={!zoomControl || zoomControl.disabled}
-            onClick={() => item && onRotate(item.src, -90)}
-          >
-            <RotateCcw size={18} />
-          </Control>
-          <Control
-            label={t('image.rotateClockwise')}
-            disabled={!zoomControl || zoomControl.disabled}
-            onClick={() => item && onRotate(item.src, 90)}
-          >
-            <RotateCw size={18} />
-          </Control>
-          {hasThumbs && (
-            <>
-              <span className="leaf-image-viewer__tool-separator" />
-              <Control
-                label={t('image.showThumbnails')}
-                active={showThumbs}
-                onClick={() => setShowThumbs((value) => !value)}
-              >
-                <PanelBottom size={18} />
-              </Control>
-            </>
-          )}
-        </div>
-        {hasThumbs && showThumbs && (
-          <div className="leaf-image-viewer__gallery">
-            <Control
-              label={t('image.scrollThumbnailsBackward')}
-              onClick={() => scrollThumbnails(-(strip.current?.clientWidth ?? 0) * 0.7)}
-            >
-              <ChevronLeft size={18} />
-            </Control>
-            <ScrollbarControl
-              className="leaf-image-viewer__strip"
-              contentClassName="leaf-image-viewer__thumbnails"
-              ref={strip}
-              orientation="horizontal"
-              role="group"
-              tabIndex={-1}
-              scrollbarTabIndex={-1}
-              aria-label={t('image.imageList')}
-            >
-              {items.map((image, target) => (
-                <button
-                  type="button"
-                  // biome-ignore lint/suspicious/noArrayIndexKey: Stateless thumbnails may intentionally repeat the same source URL.
-                  key={`${image.src}-${target}`}
-                  className="leaf-image-viewer__thumbnail"
-                  data-index={target}
-                  aria-current={currentIndex === target || undefined}
-                  aria-label={format('image.viewImage', {
-                    index: target + 1,
-                    alt: image.alt ? `: ${image.alt}` : '',
-                  })}
-                  title={image.alt || String(target + 1)}
-                  tabIndex={currentIndex === target ? 0 : -1}
-                  onClick={() => choose(target)}
-                  onKeyDown={(event) => {
-                    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-                    const position =
-                      event.key === 'Home'
-                        ? 0
-                        : event.key === 'End'
-                          ? items.length - 1
-                          : Math.max(
-                              0,
-                              Math.min(
-                                items.length - 1,
-                                target + (event.key === 'ArrowRight' ? 1 : -1),
-                              ),
-                            );
-                    choose(position);
-                    strip.current
-                      ?.querySelector<HTMLButtonElement>(`[data-index="${position}"]`)
-                      ?.focus();
-                  }}
-                >
-                  <img
-                    src={image.thumbnailSrc ?? image.src}
-                    alt=""
-                    loading="lazy"
-                    draggable={false}
-                  />
-                  <span>{target + 1}</span>
-                </button>
-              ))}
-            </ScrollbarControl>
-            <Control
-              label={t('image.scrollThumbnailsForward')}
-              onClick={() => scrollThumbnails((strip.current?.clientWidth ?? 0) * 0.7)}
-            >
-              <ChevronRight size={18} />
-            </Control>
-          </div>
-        )}
-      </footer>
-    </div>
-  );
+
+interface Pointer {
+  x: number;
+  y: number;
 }
-function Viewer({
+interface Gesture {
+  transform: ImageTransform;
+  center: Pointer;
+  distance: number;
+  angle: number;
+  moved: boolean;
+  multiple: boolean;
+  touch: boolean;
+  hitImage: boolean;
+}
+
+function ViewerHost({
   items,
   open,
   index = 0,
-  onClose,
-  onIndexChange,
   thumbnails = true,
   downloadable = false,
-}: ImagePreviewProps) {
-  const [root, setRoot] = useState<HTMLDivElement | null>(null);
-  const [zoomControl, setZoomControl] = useState<ZoomRef | null>(null);
-  const [fullscreenControl, setFullscreenControl] = useState<FullscreenRef | null>(null);
-  const [rotations, setRotations] = useState<Record<string, number>>({});
-  const [dimensions, setDimensions] = useState<Record<string, { width: number; height: number }>>(
-    {},
-  );
-  const [slides, setSlides] = useState(() => items.map((item) => ({ ...item })));
-  // A new array with the same images must not reset the carousel's navigation animation.
-  if (
-    items.length !== slides.length ||
-    items.some((item, position) => {
-      const slide = slides[position];
-      return (
-        !slide ||
-        item.src !== slide.src ||
-        item.alt !== slide.alt ||
-        item.width !== slide.width ||
-        item.height !== slide.height ||
-        item.thumbnailSrc !== slide.thumbnailSrc ||
-        item.download !== slide.download ||
-        item.downloadName !== slide.downloadName
-      );
-    })
-  ) {
-    setSlides(items.map((item) => ({ ...item })));
-  }
+  onClose,
+  onHidden,
+  onIndexChange,
+}: ImageViewerProps) {
   const t = useText();
   const format = useFormattedText();
   const motion = useMotionEnabled();
-  const duration = root && motion ? motionDuration(root) : 0;
-  useEffect(() => {
-    if (!root || !open) return;
-    let container: HTMLElement | null = null;
-    const closeOnMock = (event: MouseEvent) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-      if (
-        target.closest('.leaf-image-viewer__control, .leaf-image-viewer__thumbnail') ||
-        target.closest('.yarl__slide_image')
-      )
-        return;
-      if (target === container || target.closest('.yarl__slide, .yarl__slide_wrapper')) onClose();
+  const id = useId();
+  const root = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const image = useRef<HTMLImageElement>(null);
+  const tooltip = useRef<HTMLOutputElement>(null);
+  const transform = useRef(initialTransform());
+  const bounds = useRef({ left: 0, top: 0, width: 1, height: 1 });
+  const fitted = useRef(1);
+  const frame = useRef<number | undefined>(undefined);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const wheelTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const downloadRequest = useRef<AbortController | null>(null);
+  const pointers = useRef(new Map<number, Pointer>());
+  const gesture = useRef<Gesture | null>(null);
+  const lastTap = useRef({ time: 0, x: 0, y: 0 });
+  const manualDoubleTap = useRef(0);
+  const suppressClick = useRef(false);
+  const thumbnailDrag = useRef<{
+    pointer: number;
+    x: number;
+    index: number;
+    moved: boolean;
+  } | null>(null);
+  const suppressThumbnailClick = useRef(false);
+  const focusThumbnail = useRef(false);
+  const reportedHidden = useRef(false);
+  const [closing, setClosing] = useState(false);
+  const visible = open && !closing && items.length > 0;
+  const present = usePresence(visible, root);
+  const [current, setCurrent] = useState(() => Math.max(0, Math.min(index, items.length - 1)));
+  const currentRef = useRef(current);
+  const [size, setSize] = useState({
+    width: items[current]?.width ?? 0,
+    height: items[current]?.height ?? 0,
+  });
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [downloadFailed, setDownloadFailed] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const latest = useRef({ items, index, open, onClose, onHidden, onIndexChange, size });
+  latest.current = { items, index, open, onClose, onHidden, onIndexChange, size };
+  const item = items[current];
+
+  const paint = useCallback((queued = false) => {
+    const write = () => {
+      frame.current = undefined;
+      if (image.current) image.current.style.transform = transformStyle(transform.current);
     };
-    const connect = () => {
-      const next = root.querySelector<HTMLElement>('.yarl__container');
-      if (next === container) return;
-      container?.removeEventListener('click', closeOnMock);
-      container = next;
-      container?.addEventListener('click', closeOnMock);
-    };
-    connect();
-    const observer = new MutationObserver(connect);
-    observer.observe(root, { childList: true, subtree: true });
-    return () => {
-      observer.disconnect();
-      container?.removeEventListener('click', closeOnMock);
-    };
-  }, [root, open, onClose]);
-  const rotate = useCallback((src: string, delta: number) => {
-    setRotations((previous) => ({ ...previous, [src]: (previous[src] ?? 0) + delta }));
+    if (!queued) {
+      if (frame.current !== undefined) cancelAnimationFrame(frame.current);
+      write();
+    } else if (frame.current === undefined) frame.current = requestAnimationFrame(write);
   }, []);
-  const previewSlides = useMemo(
-    () =>
-      slides.map((slide) => {
-        const size = dimensions[slide.src] ?? slide;
-        const turned = Math.abs((rotations[slide.src] ?? 0) % 180) === 90;
-        // Keep the zoom engine's pan bounds aligned with the rotated image.
-        return {
-          ...slide,
-          width: turned ? size.height : size.width,
-          height: turned ? size.width : size.height,
-        };
-      }),
-    [slides, dimensions, rotations],
+  function hint() {
+    if (!tooltip.current) return;
+    tooltip.current.textContent = `${Math.round(transform.current.ratio * 100)}%`;
+    tooltip.current.dataset.visible = 'true';
+    clearTimeout(hintTimer.current);
+    hintTimer.current = setTimeout(() => {
+      if (tooltip.current) delete tooltip.current.dataset.visible;
+    }, 1000);
+  }
+  function zoom(ratio: number, x = 0, y = 0, queued = false) {
+    transform.current = zoomAt(transform.current, ratio, x, y);
+    paint(queued);
+    hint();
+  }
+  function toggleSize(x = 0, y = 0) {
+    zoom(Math.abs(transform.current.ratio - 1) < 0.001 ? fitted.current : 1, x, y);
+  }
+  function reset() {
+    transform.current = initialTransform(fitted.current);
+    paint();
+  }
+  const select = useCallback((next: number) => {
+    const count = latest.current.items.length;
+    if (!count) return;
+    const position = wrapIndex(next, count);
+    if (position === currentRef.current) return;
+    focusThumbnail.current = Boolean(
+      root.current
+        ?.querySelector('.leaf-image-viewer__thumbnails')
+        ?.contains(document.activeElement),
+    );
+    currentRef.current = position;
+    setCurrent(position);
+    latest.current.onIndexChange?.(position);
+  }, []);
+  function close() {
+    setClosing(true);
+  }
+  useDialog(present, root, id, close, true, { initialFocus: root, returnFocus: false });
+  useEffect(() => {
+    if (present) {
+      reportedHidden.current = false;
+      return;
+    }
+    if (reportedHidden.current) return;
+    reportedHidden.current = true;
+    latest.current.onHidden?.();
+    if (closing && latest.current.open) latest.current.onClose();
+  }, [present, closing]);
+  useEffect(() => {
+    if (open) setClosing(false);
+  }, [open]);
+  useEffect(() => {
+    const position = Math.max(0, Math.min(index, items.length - 1));
+    currentRef.current = position;
+    setCurrent(position);
+  }, [index, items.length]);
+  const source = item?.src;
+  const imageKey = `${current}:${source ?? ''}`;
+  const hintWidth = item?.width;
+  const hintHeight = item?.height;
+  useLayoutEffect(() => {
+    void current;
+    if (!focusThumbnail.current) return;
+    focusThumbnail.current = false;
+    root.current
+      ?.querySelector<HTMLButtonElement>('.leaf-image-viewer__thumbnails [aria-current]')
+      ?.focus({ preventScroll: true });
+  }, [current]);
+  useLayoutEffect(() => {
+    void imageKey;
+    void present;
+    setLoaded(false);
+    setFailed(false);
+    setDownloadFailed(false);
+    setBusy(false);
+    pointers.current.clear();
+    gesture.current = null;
+    lastTap.current.time = 0;
+    manualDoubleTap.current = 0;
+    root.current?.removeAttribute('data-moving');
+    root.current?.removeAttribute('data-wheeling');
+    clearTimeout(wheelTimer.current);
+    downloadRequest.current?.abort();
+    downloadRequest.current = null;
+    setSize({ width: hintWidth ?? 0, height: hintHeight ?? 0 });
+    const box = bounds.current;
+    fitted.current = fitRatio(hintWidth ?? 0, hintHeight ?? 0, box.width, box.height);
+    transform.current = initialTransform(fitted.current);
+    paint();
+  }, [imageKey, hintWidth, hintHeight, present, paint]);
+  useLayoutEffect(() => {
+    const node = stage.current;
+    if (!node || !present) return;
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      bounds.current = {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width || window.innerWidth,
+        height: rect.height || window.innerHeight,
+      };
+      setViewportWidth(bounds.current.width);
+      const previous = fitted.current;
+      fitted.current = fitRatio(
+        latest.current.size.width,
+        latest.current.size.height,
+        bounds.current.width,
+        bounds.current.height,
+      );
+      if (Math.abs(transform.current.ratio - previous) < 0.001) {
+        transform.current = { ...transform.current, x: 0, y: 0, ratio: fitted.current };
+        paint();
+      }
+    };
+    measure();
+    const observer =
+      typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(node);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [present, paint]);
+  const previousSource =
+    items.length > 1 ? items[wrapIndex(current - 1, items.length)]?.src : undefined;
+  const nextSource =
+    items.length > 1 ? items[wrapIndex(current + 1, items.length)]?.src : undefined;
+  // Only adjacent originals are warmed, after the current image is usable.
+  useEffect(() => {
+    if (!loaded || !visible) return;
+    const pending = [...new Set([previousSource, nextSource])].filter(Boolean).map((source) => {
+      const preload = new window.Image();
+      preload.decoding = 'async';
+      preload.fetchPriority = 'low';
+      preload.src = source ?? '';
+      return preload;
+    });
+    return () => {
+      for (const preload of pending) if (!preload.complete) preload.src = '';
+    };
+  }, [loaded, visible, previousSource, nextSource]);
+  const actions = useRef({ zoom });
+  actions.current = { zoom };
+  useEffect(() => {
+    const node = stage.current;
+    if (!node || !present) return;
+    const wheel = (event: WheelEvent) => {
+      event.preventDefault();
+      root.current?.setAttribute('data-wheeling', 'true');
+      clearTimeout(wheelTimer.current);
+      wheelTimer.current = setTimeout(() => root.current?.removeAttribute('data-wheeling'), 100);
+      const rect = bounds.current;
+      const delta =
+        event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? rect.height : 1);
+      actions.current.zoom(
+        transform.current.ratio * 1.1 ** (-Math.max(-100, Math.min(100, delta)) / 100),
+        event.clientX - rect.left - rect.width / 2,
+        event.clientY - rect.top - rect.height / 2,
+        true,
+      );
+    };
+    node.addEventListener('wheel', wheel, { passive: false });
+    return () => node.removeEventListener('wheel', wheel);
+  }, [present]);
+  useEffect(
+    () => () => {
+      if (frame.current !== undefined) cancelAnimationFrame(frame.current);
+      clearTimeout(hintTimer.current);
+      clearTimeout(wheelTimer.current);
+      downloadRequest.current?.abort();
+    },
+    [],
   );
+
+  function point(event: { clientX: number; clientY: number }) {
+    const rect = bounds.current;
+    return {
+      x: event.clientX - rect.left - rect.width / 2,
+      y: event.clientY - rect.top - rect.height / 2,
+    };
+  }
+  function begin(touch: boolean, moved = false, hitImage = true) {
+    const values = [...pointers.current.values()];
+    const first = values[0];
+    if (!first) {
+      gesture.current = null;
+      return;
+    }
+    const second = values[1] ?? first;
+    gesture.current = {
+      transform: { ...transform.current },
+      center: { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 },
+      distance: Math.hypot(second.x - first.x, second.y - first.y),
+      angle: Math.atan2(second.y - first.y, second.x - first.x),
+      moved,
+      multiple: values.length > 1 || moved,
+      touch,
+      hitImage,
+    };
+  }
+  function pointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 || (event.target as Element).closest('button, a')) return;
+    suppressClick.current = false;
+    pointers.current.set(event.pointerId, point(event));
+    stage.current?.setPointerCapture?.(event.pointerId);
+    begin(event.pointerType === 'touch', pointers.current.size > 1, event.target === image.current);
+  }
+  function pointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const start = gesture.current;
+    if (!start || !pointers.current.has(event.pointerId)) return;
+    pointers.current.set(event.pointerId, point(event));
+    const [first, second] = [...pointers.current.values()];
+    if (!first) return;
+    const center = second ? { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 } : first;
+    const dx = center.x - start.center.x;
+    const dy = center.y - start.center.y;
+    if (Math.hypot(dx, dy) > 3 || second) start.moved = true;
+    if (!start.moved) return;
+    root.current?.setAttribute('data-moving', 'true');
+    if (second && start.distance > 0) {
+      const ratio =
+        (start.transform.ratio * Math.hypot(second.x - first.x, second.y - first.y)) /
+        start.distance;
+      const value = zoomAt(start.transform, ratio, start.center.x, start.center.y);
+      const angle =
+        ((Math.atan2(second.y - first.y, second.x - first.x) - start.angle) * 180) / Math.PI;
+      const rotation = ((angle + 540) % 360) - 180;
+      const radians = (rotation * Math.PI) / 180;
+      const x = value.x - start.center.x;
+      const y = value.y - start.center.y;
+      transform.current = {
+        ...value,
+        x: center.x + x * Math.cos(radians) - y * Math.sin(radians),
+        y: center.y + x * Math.sin(radians) + y * Math.cos(radians),
+        rotate: start.transform.rotate + rotation,
+      };
+    } else if (!start.touch || start.transform.ratio > fitted.current * 1.01 || start.multiple)
+      transform.current = {
+        ...start.transform,
+        x: start.transform.x + dx,
+        y: start.transform.y + dy,
+      };
+    paint(true);
+  }
+  function pointerEnd(event: ReactPointerEvent<HTMLDivElement>, cancelled = false) {
+    const start = gesture.current;
+    if (!start || !pointers.current.has(event.pointerId)) return;
+    pointers.current.delete(event.pointerId);
+    suppressClick.current = start.moved || start.hitImage || cancelled;
+    const finish = point(event);
+    if (!cancelled && start.touch && !start.multiple) {
+      const dx = finish.x - start.center.x;
+      const dy = finish.y - start.center.y;
+      if (
+        start.moved &&
+        start.transform.ratio <= fitted.current * 1.01 &&
+        Math.abs(dx) > 50 &&
+        Math.abs(dx) > Math.abs(dy) * 1.5
+      )
+        select(currentRef.current + (dx < 0 ? 1 : -1));
+      if (!start.moved && start.hitImage) {
+        const now = Date.now();
+        if (
+          now - lastTap.current.time < 300 &&
+          Math.hypot(finish.x - lastTap.current.x, finish.y - lastTap.current.y) < 24
+        ) {
+          toggleSize(finish.x, finish.y);
+          manualDoubleTap.current = now;
+          lastTap.current.time = 0;
+        } else lastTap.current = { ...finish, time: now };
+      }
+    }
+    if (pointers.current.size) begin(start.touch, true);
+    else {
+      paint();
+      root.current?.removeAttribute('data-moving');
+    }
+  }
+  async function download() {
+    if (!item || downloadRequest.current || item.download === false) return;
+    const request = new AbortController();
+    downloadRequest.current = request;
+    setBusy(true);
+    setDownloadFailed(false);
+    const address = typeof item.download === 'string' ? item.download : item.src;
+    try {
+      const response = await fetch(address, { signal: request.signal });
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      if (request.signal.aborted) return;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download =
+        item.downloadName ||
+        (!/^(data|blob):/i.test(address) && address.split(/[?#]/)[0]?.split('/').pop()) ||
+        'image';
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      if (!request.signal.aborted) setDownloadFailed(true);
+    } finally {
+      if (downloadRequest.current === request) {
+        downloadRequest.current = null;
+        setBusy(false);
+      }
+    }
+  }
+  if (!present || !item) return null;
+  const nearby = Math.min(5, Math.max(3, Math.ceil(viewportWidth / 31 / 2) + 1));
+  const firstThumbnail = Math.max(0, current - nearby);
+  const lastThumbnail = Math.min(items.length, current + nearby + 1);
+  const downloadAddress = typeof item.download === 'string' ? item.download : item.src;
   return (
-    <div ref={setRoot} className="leaf-image-viewer">
-      {root && (
-        <Lightbox
-          open={open && items.length > 0}
-          close={onClose}
-          slides={previewSlides}
-          index={Math.max(0, Math.min(index, items.length - 1))}
-          portal={{ root }}
-          plugins={[Zoom, Fullscreen]}
-          className="leaf-image-viewer__lightbox"
-          carousel={{ finite: true, padding: 0, spacing: 24 }}
-          animation={{
-            fade: duration * 1.2,
-            swipe: duration * 1.6,
-            navigation: duration * 1.6,
-            zoom: duration * 0.85,
+    <div
+      ref={root}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('image.imagePreview')}
+      aria-describedby={`${id}-position`}
+      tabIndex={-1}
+      className="leaf-image-viewer"
+      data-state={visible ? 'open' : 'closing'}
+      data-motion={motion ? 'on' : 'off'}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          event.preventDefault();
+          select(currentRef.current + (event.key === 'ArrowLeft' ? -1 : 1));
+        } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+          event.preventDefault();
+          zoom(transform.current.ratio * (event.key === 'ArrowUp' ? 1.1 : 1 / 1.1));
+        } else if (event.ctrlKey && (event.key === '0' || event.key === '1')) {
+          event.preventDefault();
+          toggleSize();
+        }
+      }}
+    >
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Canvas gestures supplement the named toolbar buttons and dialog keyboard commands. */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Escape and the close button provide keyboard backdrop dismissal. */}
+      <div
+        ref={stage}
+        className="leaf-image-viewer__stage"
+        onPointerDown={pointerDown}
+        onPointerMove={pointerMove}
+        onPointerUp={(event) => pointerEnd(event)}
+        onPointerCancel={(event) => pointerEnd(event, true)}
+        onLostPointerCapture={(event) => pointerEnd(event, true)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget && !suppressClick.current) close();
+          suppressClick.current = false;
+        }}
+        onDoubleClick={(event) => {
+          // Pointer capture can retarget the browser's double-click to the stage.
+          const start = gesture.current;
+          const hitImage =
+            event.target === image.current ||
+            (event.target === stage.current && start?.hitImage && !start.moved && !start.touch);
+          if (hitImage && Date.now() - manualDoubleTap.current > 400) {
+            const position = point(event);
+            toggleSize(position.x, position.y);
+          }
+        }}
+      >
+        <img
+          key={imageKey}
+          ref={image}
+          src={source}
+          alt={item.alt || item.downloadName || t('image.image')}
+          draggable={false}
+          decoding="async"
+          fetchPriority="high"
+          className="leaf-image-viewer__image"
+          data-loaded={loaded || undefined}
+          style={{
+            width: size.width || undefined,
+            height: size.height || undefined,
+            marginLeft: -size.width / 2,
+            marginTop: -size.height / 2,
           }}
-          zoom={{
-            ref: setZoomControl,
-            minZoom: 0.1,
-            maxZoomPixelRatio,
-            zoomInMultiplier: 1.25,
-            wheelZoomDistanceFactor: 160,
-            scrollToZoom: true,
+          onLoad={(event) => {
+            const node = event.currentTarget;
+            const dimensions = {
+              width: node.naturalWidth || item.width || 1,
+              height: node.naturalHeight || item.height || 1,
+            };
+            setSize(dimensions);
+            fitted.current = fitRatio(
+              dimensions.width,
+              dimensions.height,
+              bounds.current.width,
+              bounds.current.height,
+            );
+            transform.current = initialTransform(fitted.current);
+            paint();
+            setLoaded(true);
+            setFailed(false);
           }}
-          fullscreen={{ ref: setFullscreenControl }}
-          controller={{ closeOnBackdropClick: true }}
-          toolbar={{ buttons: [] }}
-          render={{
-            slide: ({ slide, rect, offset }) => {
-              if (!isImageSlide(slide)) return undefined;
-              const size = dimensions[slide.src];
-              const angle = rotations[slide.src] ?? 0;
-              const turned = Math.abs(angle % 180) === 90;
-              const width = size?.width ?? slide.width;
-              const height = size?.height ?? slide.height;
-              const scale =
-                width && height
-                  ? Math.min(
-                      1,
-                      rect.width / (turned ? height : width),
-                      rect.height / (turned ? width : height),
-                    )
-                  : 1;
-              return (
-                <ImageSlide
-                  slide={{ ...slide, width, height }}
-                  offset={offset}
-                  rect={rect}
-                  render={{
-                    iconLoading: () => <Loading />,
-                    iconError: () => <ImageOff size={32} />,
-                  }}
-                  style={{
-                    width: width ? width * scale : undefined,
-                    height: height ? height * scale : undefined,
-                    maxWidth: width ? 'none' : undefined,
-                    maxHeight: height ? 'none' : undefined,
-                    rotate: `${angle}deg`,
-                    transition: motion
-                      ? `rotate ${duration * 1.8}ms var(--leaf-motion-easing)`
-                      : 'none',
-                  }}
-                  onLoad={(image) =>
-                    setDimensions((previous) => {
-                      const next = { width: image.naturalWidth, height: image.naturalHeight };
-                      return previous[slide.src]?.width === next.width &&
-                        previous[slide.src]?.height === next.height
-                        ? previous
-                        : { ...previous, [slide.src]: next };
-                    })
-                  }
-                />
-              );
-            },
-            buttonClose: () => null,
-            buttonPrev: () => null,
-            buttonNext: () => null,
-            buttonZoom: () => null,
-            buttonFullscreen: () => null,
-            iconLoading: () => <Loading />,
-            iconError: () => <ImageOff size={32} />,
-            controls: () => (
-              <ViewerChrome
-                items={items}
-                thumbnails={thumbnails}
-                downloadable={downloadable}
-                zoomControl={zoomControl}
-                fullscreenControl={fullscreenControl}
-                onRotate={rotate}
-              />
-            ),
-          }}
-          labels={{
-            Lightbox: t('image.imagePreview'),
-            'Photo gallery': t('image.imageList'),
-            Slide: t('image.image'),
-            '{index} of {total}': format('image.position', {
-              index: index + 1,
-              total: items.length,
-            }),
-            Close: t('image.closePreview'),
-          }}
-          on={{
-            exited: () => setRotations({}),
-            view: ({ index: next }) => {
-              if (next !== index) onIndexChange?.(next);
-            },
-          }}
-          styles={{
-            root: {
-              '--yarl__color_backdrop': 'rgba(0,0,0,.92)',
-              zIndex: 'var(--leaf-z-index-modal)',
-            },
+          onError={() => {
+            setFailed(true);
+            setLoaded(false);
           }}
         />
-      )}
+        {!loaded && !failed && (
+          <span
+            className="leaf-image-viewer__loading"
+            role="status"
+            aria-label={t('image.image')}
+          />
+        )}
+        {failed && (
+          <div className="leaf-image-viewer__error" role="alert">
+            <ImageOff />
+            <span>{t('image.imageUnavailable')}</span>
+            <a href={item.src} target="_blank" rel="noopener noreferrer">
+              {t('image.openOriginal')}
+            </a>
+          </div>
+        )}
+        <output
+          ref={tooltip}
+          className="leaf-image-viewer__tooltip"
+          aria-live="off"
+          aria-label={t('image.zoomLevel')}
+        />
+        {items.length > 1 && (
+          <>
+            <button
+              type="button"
+              className="leaf-image-viewer__navigation leaf-image-viewer__navigation--previous"
+              aria-label={t('image.previousImage')}
+              title={t('image.previousImage')}
+              onClick={() => select(currentRef.current - 1)}
+            >
+              <ChevronLeft />
+            </button>
+            <button
+              type="button"
+              className="leaf-image-viewer__navigation leaf-image-viewer__navigation--next"
+              aria-label={t('image.nextImage')}
+              title={t('image.nextImage')}
+              onClick={() => select(currentRef.current + 1)}
+            >
+              <ChevronRight />
+            </button>
+          </>
+        )}
+      </div>
+      <div className="leaf-image-viewer__footer">
+        <div className="leaf-image-viewer__title" aria-live="polite">
+          {downloadFailed ? (
+            <span role="alert">
+              {t('image.downloadFailedOpenTheOriginalImageToSaveIt')}{' '}
+              <a href={downloadAddress} target="_blank" rel="noopener noreferrer">
+                {t('image.openOriginal')}
+              </a>
+            </span>
+          ) : (
+            <>
+              {item.alt || item.downloadName || t('image.image')}
+              {loaded && ` (${size.width} × ${size.height})`}
+            </>
+          )}
+        </div>
+        <div
+          className="leaf-image-viewer__toolbar"
+          role="toolbar"
+          aria-label={t('image.imagePreview')}
+        >
+          <Tool label={t('image.zoomIn')} onClick={() => zoom(transform.current.ratio * 1.1)}>
+            <Plus />
+          </Tool>
+          <Tool label={t('image.zoomOut')} onClick={() => zoom(transform.current.ratio / 1.1)}>
+            <Minus />
+          </Tool>
+          <Tool label={t('image.actualSize')} onClick={() => toggleSize()}>
+            <span className="leaf-image-viewer__one-to-one">1:1</span>
+          </Tool>
+          <Tool label={t('image.resetImage')} onClick={reset}>
+            <RefreshCw />
+          </Tool>
+          <Tool
+            label={t('image.previousImage')}
+            onClick={() => select(currentRef.current - 1)}
+            disabled={items.length < 2}
+          >
+            <ChevronLeft />
+          </Tool>
+          <Tool
+            label={t('image.nextImage')}
+            onClick={() => select(currentRef.current + 1)}
+            disabled={items.length < 2}
+          >
+            <ChevronRight />
+          </Tool>
+          <Tool
+            label={t('image.rotateCounterclockwise')}
+            onClick={() => {
+              transform.current.rotate -= 90;
+              paint();
+            }}
+          >
+            <RotateCcw />
+          </Tool>
+          <Tool
+            label={t('image.rotateClockwise')}
+            onClick={() => {
+              transform.current.rotate += 90;
+              paint();
+            }}
+          >
+            <RotateCw />
+          </Tool>
+          <Tool
+            label={t('image.flipHorizontal')}
+            onClick={() => {
+              transform.current.flipX *= -1;
+              paint();
+            }}
+          >
+            <FlipHorizontal2 />
+          </Tool>
+          <Tool
+            label={t('image.flipVertical')}
+            onClick={() => {
+              transform.current.flipY *= -1;
+              paint();
+            }}
+          >
+            <FlipVertical2 />
+          </Tool>
+          {downloadable && item.download !== false && (
+            <Tool
+              label={t('image.downloadImage')}
+              aria-disabled={busy || undefined}
+              onClick={() => void download()}
+            >
+              <Download />
+            </Tool>
+          )}
+        </div>
+        {thumbnails && (
+          <nav
+            className="leaf-image-viewer__thumbnails"
+            aria-label={t('image.imageList')}
+            onPointerDown={(event) => {
+              if (event.button !== 0) return;
+              suppressThumbnailClick.current = false;
+              thumbnailDrag.current = {
+                pointer: event.pointerId,
+                x: event.clientX,
+                index: currentRef.current,
+                moved: false,
+              };
+            }}
+            onPointerMove={(event) => {
+              const drag = thumbnailDrag.current;
+              if (!drag || drag.pointer !== event.pointerId) return;
+              const distance = event.clientX - drag.x;
+              if (Math.abs(distance) < 4) return;
+              drag.moved = true;
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+              select(drag.index - Math.round(distance / 31));
+            }}
+            onPointerUp={() => {
+              suppressThumbnailClick.current = thumbnailDrag.current?.moved ?? false;
+              thumbnailDrag.current = null;
+            }}
+            onPointerCancel={() => {
+              suppressThumbnailClick.current = true;
+              thumbnailDrag.current = null;
+            }}
+            onLostPointerCapture={() => {
+              thumbnailDrag.current = null;
+            }}
+            onClickCapture={(event) => {
+              if (suppressThumbnailClick.current) {
+                event.preventDefault();
+                event.stopPropagation();
+                suppressThumbnailClick.current = false;
+              }
+            }}
+          >
+            {items.slice(firstThumbnail, lastThumbnail).map((thumbnail, offset) => {
+              const position = firstThumbnail + offset;
+              return (
+                <button
+                  type="button"
+                  key={position}
+                  aria-label={format('image.viewImage', {
+                    index: position + 1,
+                    alt: thumbnail.alt ? `: ${thumbnail.alt}` : '',
+                  })}
+                  aria-current={position === current ? 'true' : undefined}
+                  style={{ left: `calc(50% + ${(position - current) * 31}px)` }}
+                  onClick={() => select(position)}
+                >
+                  <img
+                    src={thumbnail.thumbnailSrc || thumbnail.src}
+                    alt=""
+                    loading="lazy"
+                    fetchPriority="low"
+                    decoding="async"
+                    draggable={false}
+                  />
+                </button>
+              );
+            })}
+          </nav>
+        )}
+      </div>
+      <button
+        type="button"
+        className="leaf-image-viewer__close"
+        aria-label={t('image.closePreview')}
+        title={t('image.closePreview')}
+        onClick={close}
+      >
+        <X />
+      </button>
+      <span id={`${id}-position`} className="leaf-image-viewer__sr-only">
+        {format('image.position', { index: current + 1, total: items.length })}
+      </span>
     </div>
   );
 }

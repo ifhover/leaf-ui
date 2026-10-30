@@ -14,16 +14,18 @@ import {
 } from '@tanstack/react-table';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
+import * as tableEntry from '../table';
+import * as compatibilityEntry from './index';
 import { useDataTableSelection } from './selection';
 import {
   DataTable,
-  type DataTableDataProps,
-  type DataTableInstanceProps,
+  type DataTableProps,
+  type UseDataTableOptions,
   useDataTable,
 } from './tabletanstack';
 
@@ -61,16 +63,14 @@ function Harness({
   pageSize = 2,
   manual = false,
   pageCount,
-  children,
   ...props
-}: Omit<DataTableInstanceProps<Person>, 'table'> & {
+}: Omit<Extract<DataTableProps<Person>, { table: TanStackTable<Person> }>, 'table'> & {
   source?: Person[];
   customColumns?: ColumnDef<Person>[];
   pageSize?: number;
   manual?: boolean;
   pageCount?: number;
   onState?: (table: TanStackTable<Person>) => void;
-  children?: ReactNode;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setSelection] = useState<RowSelectionState>({});
@@ -105,9 +105,7 @@ function Harness({
         aria-label="People"
         getRowLabel={(row) => row.original.name}
         {...props}
-      >
-        {children}
-      </DataTable>
+      />
     </ConfigProvider>
   );
 }
@@ -118,9 +116,57 @@ const bodyNames = () =>
   );
 
 describe('DataTable TanStack adapter', () => {
+  it('exports only the table and state hooks without public composition controls', () => {
+    expect(Object.keys(tableEntry).sort()).toEqual([
+      'DataTable',
+      'useDataTable',
+      'useDataTableSelection',
+    ]);
+    expect(compatibilityEntry).toEqual(tableEntry);
+    expect(Object.keys(DataTable)).toEqual([]);
+    for (const property of [
+      'children',
+      'layout',
+      'bordered',
+      'selectAllMode',
+      'columnReordering',
+      'onRowReorder',
+    ] as const) {
+      expectTypeOf<DataTableProps<Person>>().not.toHaveProperty(property);
+    }
+    expectTypeOf<UseDataTableOptions<Person>>().not.toHaveProperty('pagination');
+  });
+
+  it('ignores removed JavaScript options in both modes without replacing automatic content', () => {
+    const legacy = {
+      children: <p>Obsolete composition</p>,
+      layout: 'custom',
+      bordered: true,
+      selectAllMode: 'all',
+      columnReordering: true,
+      onRowReorder: vi.fn(),
+    };
+    const view = render(
+      <DataTable {...legacy} data={data} columns={columns} rowKey="id" toolbar="Tools" />,
+    );
+    const assertAutomaticContent = () => {
+      const root = screen.getByRole('table').closest('.leaf-data-table');
+      expect(screen.getByText('Tools')).toBeInTheDocument();
+      expect(screen.getByRole('navigation')).toBeInTheDocument();
+      expect(screen.queryByText('Obsolete composition')).not.toBeInTheDocument();
+      for (const property of Object.keys(legacy)) expect(root).not.toHaveAttribute(property);
+      expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
+        'leaf-table--column-dividers',
+      );
+    };
+    assertAutomaticContent();
+    view.rerender(<Harness {...legacy} toolbar="Tools" />);
+    assertAutomaticContent();
+    expect(legacy.onRowReorder).not.toHaveBeenCalled();
+  });
+
   it('removes caption in both modes without leaking legacy options to the DOM', () => {
-    expectTypeOf<DataTableInstanceProps<Person>>().not.toHaveProperty('caption');
-    expectTypeOf<DataTableDataProps<Person>>().not.toHaveProperty('caption');
+    expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('caption');
     const legacyOptions = { caption: 'Obsolete caption' };
     const view = render(
       <DataTable
@@ -141,7 +187,7 @@ describe('DataTable TanStack adapter', () => {
   });
 
   it('does not expose or forward the obsolete fixed-header switch', () => {
-    expectTypeOf<DataTableInstanceProps<Person>>().not.toHaveProperty('stickyHeader');
+    expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('stickyHeader');
     const legacyOptions = { stickyHeader: false };
     render(
       <DataTable
@@ -289,7 +335,6 @@ describe('DataTable TanStack adapter', () => {
         columns,
         rowKey: 'id',
         localPagination: true,
-        pagination: false,
         options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
       });
       instance = table;
@@ -303,75 +348,6 @@ describe('DataTable TanStack adapter', () => {
     expect(instance?.options.manualPagination).toBeUndefined();
     expect(bodyNames()).toEqual(['Alice', 'Bob']);
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
-  });
-
-  it('warns and disables search when the instance has no filtering model', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    function CoreOnly() {
-      const table = useReactTable({
-        data,
-        columns,
-        getRowId: (row) => row.id,
-        getCoreRowModel: getCoreRowModel(),
-      });
-      return (
-        <DataTable table={table}>
-          <DataTable.Toolbar>
-            <DataTable.Search />
-          </DataTable.Toolbar>
-          <DataTable.Content />
-        </DataTable>
-      );
-    }
-    render(
-      <ConfigProvider locale="en-US">
-        <CoreOnly />
-      </ConfigProvider>,
-    );
-    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('getFilteredRowModel'));
-    warn.mockRestore();
-  });
-
-  it('warns and disables search for a missing or unfilterable column', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const unfilterable = [
-      { accessorKey: 'name', header: 'Name' },
-      { accessorKey: 'team', header: 'Team', enableColumnFilter: false },
-    ] satisfies ColumnDef<Person>[];
-    function SearchTable({ columnId }: { columnId: string }) {
-      const table = useReactTable({
-        data,
-        columns: unfilterable,
-        getRowId: (row) => row.id,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-      });
-      return (
-        <DataTable table={table}>
-          <DataTable.Toolbar>
-            <DataTable.Search columnId={columnId} />
-          </DataTable.Toolbar>
-          <DataTable.Content />
-        </DataTable>
-      );
-    }
-    const { rerender } = render(
-      <ConfigProvider locale="en-US">
-        <SearchTable columnId="missing" />
-      </ConfigProvider>,
-    );
-    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('does not match any'));
-    warn.mockClear();
-    rerender(
-      <ConfigProvider locale="en-US">
-        <SearchTable columnId="team" />
-      </ConfigProvider>,
-    );
-    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('cannot filter column'));
-    warn.mockRestore();
   });
 
   it('hides sorting and pagination controls when the instance lacks their models', () => {
@@ -396,7 +372,7 @@ describe('DataTable TanStack adapter', () => {
     warn.mockRestore();
   });
 
-  it('supports manual model capabilities without installing local row models', () => {
+  it('supports manual sorting and pagination without installing local row models', () => {
     function ManualOnly() {
       const table = useReactTable({
         data,
@@ -405,20 +381,9 @@ describe('DataTable TanStack adapter', () => {
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
         manualSorting: true,
-        manualFiltering: true,
         rowCount: 60,
       });
-      return (
-        <DataTable table={table}>
-          <DataTable.Toolbar>
-            <DataTable.Search />
-          </DataTable.Toolbar>
-          <DataTable.Content />
-          <DataTable.Footer>
-            <DataTable.Pagination />
-          </DataTable.Footer>
-        </DataTable>
-      );
+      return <DataTable table={table} />;
     }
     render(
       <ConfigProvider locale="en-US">
@@ -426,8 +391,94 @@ describe('DataTable TanStack adapter', () => {
       </ConfigProvider>,
     );
     expect(screen.getByRole('button', { name: 'Name: Sort ascending' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeEnabled();
     expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+  });
+
+  it('renders application-owned filtering, visibility and column order from TanStack state', async () => {
+    function ApplicationTable() {
+      const table = useDataTable({ data, columns, rowKey: 'id', localPagination: false });
+      return (
+        <DataTable
+          table={table}
+          pagination={false}
+          toolbar={
+            <>
+              <input
+                aria-label="Filter names"
+                value={String(table.getColumn('name')?.getFilterValue() ?? '')}
+                onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  table.setColumnVisibility({ age: false });
+                  table.setColumnOrder(['team', 'name', 'age']);
+                }}
+              >
+                Choose columns
+              </button>
+            </>
+          }
+        />
+      );
+    }
+    render(<ApplicationTable />);
+    await userEvent.type(screen.getByRole('textbox', { name: 'Filter names' }), 'char');
+    expect(bodyNames()).toEqual(['Charlie']);
+    await userEvent.click(screen.getByRole('button', { name: 'Choose columns' }));
+    expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual([
+      'Team',
+      'Name',
+    ]);
+    expect(screen.getAllByRole('cell').map((cell) => cell.textContent)).toEqual([
+      'Design',
+      'Charlie',
+    ]);
+  });
+
+  it('resets local pagination after external filtering while slicing is temporarily disabled', async () => {
+    function ApplicationTable() {
+      const [pagination, setPagination] = useState(true);
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        localPagination: pagination,
+        options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
+      });
+      return (
+        <DataTable
+          table={table}
+          pagination={pagination}
+          toolbar={
+            <>
+              <button type="button" onClick={() => setPagination((value) => !value)}>
+                Toggle slicing
+              </button>
+              <button
+                type="button"
+                onClick={() => table.getColumn('name')?.setFilterValue('alice')}
+              >
+                Filter Alice
+              </button>
+            </>
+          }
+        />
+      );
+    }
+    render(
+      <ConfigProvider locale="en-US">
+        <ApplicationTable />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
+    await userEvent.click(screen.getByRole('button', { name: 'Toggle slicing' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Filter Alice' }));
+    expect(bodyNames()).toEqual(['Alice']);
+    await userEvent.click(screen.getByRole('button', { name: 'Toggle slicing' }));
+    expect(bodyNames()).toEqual(['Alice']);
   });
 
   it('normalizes a single-selection state to the last selected row', async () => {
@@ -498,47 +549,10 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeChecked();
   });
 
-  it('keeps implicit children as a legacy custom layout and warns once', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    render(
-      <ConfigProvider locale="en-US">
-        <DataTable data={data} columns={columns} rowKey="id">
-          <DataTable.Content />
-        </DataTable>
-      </ConfigProvider>,
-    );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('layout="custom"'));
-    warn.mockRestore();
-  });
-
-  it('uses explicit automatic and custom layouts without guessing from children', () => {
-    const { rerender } = render(
-      <ConfigProvider locale="en-US">
-        <DataTable data={data} columns={columns} rowKey="id" layout="auto">
-          <p>Ignored custom layout</p>
-        </DataTable>
-      </ConfigProvider>,
-    );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.queryByText('Ignored custom layout')).not.toBeInTheDocument();
-
-    rerender(
-      <ConfigProvider locale="en-US">
-        <DataTable data={data} columns={columns} rowKey="id" layout="custom">
-          <p>Explicit custom layout</p>
-        </DataTable>
-      </ConfigProvider>,
-    );
-    expect(screen.getByText('Explicit custom layout')).toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
-  });
-
   it('supports simple regional defaults and explicit layered overrides without replacing rows', async () => {
     const { rerender } = render(
       <ConfigProvider
-        components={{ DataTable: { variant: 'simple', striped: true, bordered: true } }}
+        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
       >
         <Harness pagination={false} selection="multiple" />
       </ConfigProvider>,
@@ -546,13 +560,13 @@ describe('DataTable TanStack adapter', () => {
     const table = screen.getByRole('table');
     const root = table.closest('.leaf-table');
     expect(root).toHaveClass('leaf-table--simple');
-    expect(root).not.toHaveClass('leaf-table--striped');
+    expect(root).toHaveClass('leaf-table--striped');
     expect(root).not.toHaveClass('leaf-table--column-dividers');
     expect(table.closest('.leaf-data-table')).not.toHaveAttribute('variant');
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Alice' }));
     rerender(
       <ConfigProvider
-        components={{ DataTable: { variant: 'simple', striped: true, bordered: true } }}
+        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
       >
         <Harness variant="layered" pagination={false} selection="multiple" />
       </ConfigProvider>,
@@ -563,58 +577,49 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
   });
 
-  it('ignores explicit stripe and divider props in simple data mode and server output', () => {
+  it('defaults to stripes but ignores column dividers in simple data mode and server output', () => {
     const props = {
       data,
       columns,
       rowKey: 'id',
       variant: 'simple',
-      striped: true,
       columnDividers: true,
-      bordered: true,
       pagination: false,
     } as const;
-    render(<DataTable {...props} />);
+    const { rerender } = render(<DataTable {...props} />);
     expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--simple');
-    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--striped');
     expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
       'leaf-table--column-dividers',
     );
     const html = renderToString(<DataTable {...props} />);
     expect(html).toContain('leaf-table--simple');
-    expect(html).not.toContain('leaf-table--striped');
+    expect(html).toContain('leaf-table--striped');
     expect(html).not.toContain('leaf-table--column-dividers');
     expect(html).not.toContain('variant=');
+    const rows = screen.getAllByRole('row').slice(1);
+    expect(rows.map((row) => row.hasAttribute('data-striped'))).toEqual([false, true, false, true]);
+    rerender(<DataTable {...props} striped={false} />);
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
+    expect(renderToString(<DataTable {...props} striped={false} />)).not.toContain(
+      'leaf-table--striped',
+    );
   });
 
-  it('prefers columnDividers over the deprecated bordered alias', () => {
-    const { rerender } = render(
-      <DataTable
-        data={data}
-        columns={columns}
-        rowKey="id"
-        columnDividers
-        bordered={false}
-        pagination={false}
-      />,
+  it('lets explicit simple stripes override regional defaults without replacing the table', () => {
+    const view = (striped?: boolean) => (
+      <ConfigProvider components={{ DataTable: { variant: 'simple', striped: false } }}>
+        <DataTable data={data} columns={columns} rowKey="id" pagination={false} striped={striped} />
+      </ConfigProvider>
     );
-    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass(
-      'leaf-table--column-dividers',
-    );
-
-    rerender(
-      <DataTable
-        data={data}
-        columns={columns}
-        rowKey="id"
-        columnDividers={false}
-        bordered
-        pagination={false}
-      />,
-    );
-    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
-      'leaf-table--column-dividers',
-    );
+    const { rerender } = render(view());
+    const table = screen.getByRole('table');
+    const root = table.closest('.leaf-table');
+    expect(root).toHaveClass('leaf-table--simple');
+    expect(root).not.toHaveClass('leaf-table--striped');
+    rerender(view(true));
+    expect(screen.getByRole('table')).toBe(table);
+    expect(root).toHaveClass('leaf-table--striped');
   });
 
   it('checks the stable row key contract in convenience mode', () => {
@@ -646,27 +651,6 @@ describe('DataTable TanStack adapter', () => {
     expect(bodyNames()).toEqual(['Bob', 'Dana']);
   });
 
-  it('filters a column and global search without a second filter store', async () => {
-    let instance: TanStackTable<Person> | undefined;
-    render(
-      <Harness
-        onState={(table) => {
-          instance = table;
-        }}
-      >
-        <DataTable.Toolbar>
-          <DataTable.Search columnId="name" />
-        </DataTable.Toolbar>
-        <DataTable.Content />
-      </Harness>,
-    );
-    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'char');
-    expect(instance?.getState().columnFilters).toEqual([{ id: 'name', value: 'char' }]);
-    expect(bodyNames()).toEqual(['Charlie']);
-    await userEvent.click(screen.getByRole('button', { name: 'Clear input' }));
-    await waitFor(() => expect(bodyNames()).toEqual(['Alice', 'Bob']));
-  });
-
   it('paginates from the same TanStack instance and changes page size', async () => {
     let instance: TanStackTable<Person> | undefined;
     render(
@@ -674,10 +658,8 @@ describe('DataTable TanStack adapter', () => {
         onState={(table) => {
           instance = table;
         }}
-      >
-        <DataTable.Content />
-        <DataTable.Pagination pageSizeOptions={[2, 4]} />
-      </Harness>,
+        pagination={{ pageSizeOptions: [2, 4] }}
+      />,
     );
     await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
     expect(instance?.getState().pagination.pageIndex).toBe(1);
@@ -706,36 +688,6 @@ describe('DataTable TanStack adapter', () => {
     expect(instance?.getState().rowSelection).toEqual({ alice: true, dana: true });
     await userEvent.click(screen.getByRole('button', { name: 'Previous page' }));
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
-  });
-
-  it('offers explicit select-all semantics and single selection', async () => {
-    let instance: TanStackTable<Person> | undefined;
-    const { unmount } = render(
-      <Harness
-        selection="multiple"
-        selectAllMode="all"
-        onState={(table) => {
-          instance = table;
-        }}
-      />,
-    );
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }));
-    expect(instance?.getState().rowSelection).toEqual({ alice: true, charlie: true, dana: true });
-    unmount();
-    render(
-      <Harness
-        selection="single"
-        pageSize={4}
-        onState={(table) => {
-          instance = table;
-        }}
-      />,
-    );
-    await userEvent.click(screen.getByRole('radio', { name: 'Select row: Alice' }));
-    await userEvent.click(screen.getByRole('radio', { name: 'Select row: Dana' }));
-    expect(instance?.getState().rowSelection).toEqual({ dana: true });
-    expect(screen.getByRole('radio', { name: 'Select row: Alice' })).not.toBeChecked();
-    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('links detail rows and keeps native inputs mounted while collapsed', async () => {
@@ -782,27 +734,6 @@ describe('DataTable TanStack adapter', () => {
     expect(bodyNames()).toEqual(['Alice']);
     await userEvent.click(screen.getByRole('button', { name: 'Expand row: Alice' }));
     expect(bodyNames()).toEqual(['Alice', 'Charlie']);
-  });
-
-  it('hides columns while respecting enableHiding', async () => {
-    let instance: TanStackTable<Person> | undefined;
-    render(
-      <Harness
-        onState={(table) => {
-          instance = table;
-        }}
-      >
-        <DataTable.Toolbar>
-          <DataTable.ColumnVisibility />
-        </DataTable.Toolbar>
-        <DataTable.Content />
-      </Harness>,
-    );
-    await userEvent.click(screen.getByRole('button', { name: 'Columns' }));
-    expect(screen.getByRole('checkbox', { name: 'Name' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Age' }));
-    expect(instance?.getState().columnVisibility.age).toBe(false);
-    expect(screen.queryByRole('columnheader', { name: /Age/ })).not.toBeInTheDocument();
   });
 
   it('resizes columns by keyboard using the TanStack sizing state', async () => {
@@ -865,10 +796,11 @@ describe('DataTable TanStack adapter', () => {
 
   it('stops unknown-total pagination when the application has no next page', () => {
     render(
-      <Harness manual pageCount={-1}>
-        <DataTable.Content />
-        <DataTable.Pagination hasNextPage={false} variant="ghost" size="sm" />
-      </Harness>,
+      <Harness
+        manual
+        pageCount={-1}
+        pagination={{ hasNextPage: false, variant: 'ghost', size: 'sm' }}
+      />,
     );
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass(
@@ -904,61 +836,6 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 
-  it('keeps automatic content and configurable pagination when adding a toolbar', async () => {
-    render(
-      <ConfigProvider locale="en-US">
-        <DataTable
-          data={data}
-          columns={columns}
-          rowKey="id"
-          toolbar={<DataTable.Search columnId="name" />}
-          pagination={{ showSizeChanger: false, showTotal: true, 'aria-label': 'People pages' }}
-          options={{ initialState: { pagination: { pageIndex: 0, pageSize: 2 } } }}
-        />
-      </ConfigProvider>,
-    );
-    expect(bodyNames()).toEqual(['Alice', 'Bob']);
-    expect(screen.getByRole('navigation', { name: 'People pages' })).toBeInTheDocument();
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'char');
-    expect(bodyNames()).toEqual(['Charlie']);
-  });
-
-  it('resets the local page after filtering while pagination is temporarily disabled', async () => {
-    function ToggleTable() {
-      const [pagination, setPagination] = useState(true);
-      return (
-        <DataTable
-          data={data}
-          columns={columns}
-          rowKey="id"
-          options={{ initialState: { pagination: { pageIndex: 0, pageSize: 2 } } }}
-          pagination={pagination}
-          toolbar={
-            <>
-              <button type="button" onClick={() => setPagination((value) => !value)}>
-                Toggle
-              </button>
-              <DataTable.Search columnId="name" />
-            </>
-          }
-        />
-      );
-    }
-    render(
-      <ConfigProvider locale="en-US">
-        <ToggleTable />
-      </ConfigProvider>,
-    );
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
-    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
-    await userEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'alice');
-    expect(bodyNames()).toEqual(['Alice']);
-    await userEvent.click(screen.getByRole('button', { name: 'Toggle' }));
-    expect(bodyNames()).toEqual(['Alice']);
-  });
-
   it('keeps native manual server options when creating an instance with the hook', () => {
     const serverData = [data[2] as Person, data[0] as Person];
     function ServerTable() {
@@ -980,42 +857,6 @@ describe('DataTable TanStack adapter', () => {
     }
     render(<ServerTable />);
     expect(bodyNames()).toEqual(['Charlie', 'Alice']);
-  });
-
-  it('isolates automatic parts from public part defaults while resolving root defaults', () => {
-    render(
-      <ConfigProvider
-        components={{
-          DataTable: { toolbar: 'Default toolbar', pagination: { showSizeChanger: false } },
-          DataTableToolbar: { id: 'explicit-toolbar' },
-          DataTablePagination: { id: 'explicit-pagination' },
-        }}
-      >
-        <DataTable data={data} columns={columns} rowKey="id" />
-        <DataTable data={data} columns={columns} rowKey="id">
-          <DataTable.Toolbar>Explicit toolbar</DataTable.Toolbar>
-          <DataTable.Content />
-          <DataTable.Pagination />
-        </DataTable>
-      </ConfigProvider>,
-    );
-    expect(screen.getByText('Default toolbar')).not.toHaveAttribute('id');
-    expect(screen.getByText('Explicit toolbar')).toHaveAttribute('id', 'explicit-toolbar');
-    const pages = screen.getAllByRole('navigation');
-    expect(pages[0]).not.toHaveAttribute('id');
-    expect(pages[1]).toHaveAttribute('id', 'explicit-pagination');
-  });
-
-  it('lets explicit children replace the automatic toolbar, content and pagination', () => {
-    render(
-      <DataTable data={data} columns={columns} rowKey="id" toolbar="Automatic toolbar">
-        <p>Custom layout</p>
-      </DataTable>,
-    );
-    expect(screen.getByText('Custom layout')).toBeInTheDocument();
-    expect(screen.queryByText('Automatic toolbar')).not.toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
   it('preserves native pagination props and events with an unknown total', async () => {
@@ -1053,7 +894,7 @@ describe('DataTable TanStack adapter', () => {
         data,
         columns,
         rowKey: (row) => row.age,
-        pagination,
+        localPagination: pagination,
         options: {
           enableSorting: true,
           initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
@@ -1155,27 +996,6 @@ describe('DataTable TanStack adapter', () => {
     expect(cell?.style.insetInlineStart).toBe('0px');
   });
 
-  it('allows search to opt out of its default clear action', async () => {
-    function SearchWithoutClear() {
-      const table = useDataTable({ data, columns, rowKey: 'id', localPagination: false });
-      return (
-        <DataTable table={table} layout="custom" pagination={false}>
-          <DataTable.Toolbar>
-            <DataTable.Search allowClear={false} />
-          </DataTable.Toolbar>
-          <DataTable.Content />
-        </DataTable>
-      );
-    }
-    render(
-      <ConfigProvider locale="en-US">
-        <SearchWithoutClear />
-      </ConfigProvider>,
-    );
-    await userEvent.type(screen.getByRole('textbox', { name: 'Search table' }), 'Alice');
-    expect(screen.queryByRole('button', { name: 'Clear input' })).not.toBeInTheDocument();
-  });
-
   it('supports uncontrolled multiple and single selections through the helper', async () => {
     function Uncontrolled({ mode }: { mode: 'single' | 'multiple' }) {
       const selection = useDataTableSelection({
@@ -1240,32 +1060,6 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByTestId('selected-keys')).toBeEmptyDOMElement();
   });
 
-  it('exposes accessible reordering handles only in supported data modes', async () => {
-    render(<Harness onRowReorder={vi.fn()} columnReordering pagination={false} />);
-    expect(screen.getByRole('button', { name: 'Reorder row: Alice' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Reorder column: Name' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Name: Sort ascending' }));
-    expect(screen.queryByRole('button', { name: 'Reorder row: Alice' })).not.toBeInTheDocument();
-  });
-
-  it('isolates internal fields from a surrounding FormField', () => {
-    render(
-      <Form>
-        <FormField label="People" required>
-          <Harness selection="multiple">
-            <DataTable.Search />
-            <DataTable.Content />
-          </Harness>
-        </FormField>
-      </Form>,
-    );
-    const inputs = screen.getAllByRole('checkbox');
-    expect(inputs.every((input) => !input.hasAttribute('required'))).toBe(true);
-    expect(screen.getByRole('textbox', { name: 'Search table' })).not.toBeRequired();
-    const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
-    expect(new Set(ids).size).toBe(ids.length);
-  });
-
   it('shows loading, empty and error states with current column spans and retry', async () => {
     const retry = vi.fn();
     const { rerender } = render(<Harness source={[]} loading selection="multiple" />);
@@ -1279,19 +1073,32 @@ describe('DataTable TanStack adapter', () => {
     expect(retry).toHaveBeenCalledOnce();
   });
 
-  it('blocks sort, selection, pagination and search during refresh without replacing rows', () => {
+  it('isolates internal fields from a surrounding FormField', () => {
     render(
-      <Harness loading selection="multiple" renderExpandedRow={() => 'Details'}>
-        <DataTable.Search />
-        <DataTable.Content />
-        <DataTable.Pagination />
-      </Harness>,
+      <Form>
+        <FormField label="People" required>
+          <Harness selection="multiple" />
+        </FormField>
+      </Form>,
     );
+    expect(screen.getAllByRole('checkbox').every((input) => !input.hasAttribute('required'))).toBe(
+      true,
+    );
+    const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('blocks sorting, selection, expansion, resize and pagination during refresh without replacing rows', () => {
+    render(<Harness loading selection="multiple" resizable renderExpandedRow={() => 'Details'} />);
     expect(screen.getByRole('button', { name: 'Name: Sort ascending' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Expand row: Alice' })).toBeDisabled();
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeDisabled();
+    expect(screen.getByRole('checkbox', { name: 'Select all rows on this page' })).toBeDisabled();
+    expect(screen.getByRole('separator', { name: 'Resize column: Name' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
-    expect(screen.getByRole('textbox', { name: 'Search table' })).toBeDisabled();
     expect(bodyNames()).toEqual(['Alice', 'Bob']);
   });
 
@@ -1327,13 +1134,5 @@ describe('DataTable TanStack adapter', () => {
     expect(markup).toContain('aria-rowindex="2"');
     expect(markup).toContain('Alice');
     expect(markup).not.toContain('role="grid"');
-  });
-
-  it('errors clearly when composed parts are outside a DataTable', () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => render(<DataTable.Search />)).toThrow(
-      'DataTable parts must be rendered inside DataTable.',
-    );
-    log.mockRestore();
   });
 });

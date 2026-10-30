@@ -477,13 +477,13 @@ export const componentCatalog = [
     'Present object details as labels and values.',
   ],
   [
-    'Image',
-    '图片',
+    'useImagePreview',
+    '图片预览',
     'image',
     '媒体',
     'Media',
-    '展示图片并放大浏览图片组。',
-    'Display images and explore galleries.',
+    '命令式打开单张图片或图片组预览。',
+    'Open image previews and galleries from event handlers.',
   ],
   [
     'QRCode',

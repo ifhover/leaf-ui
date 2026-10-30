@@ -5,7 +5,6 @@ import {
   type DataTableCellProps,
   type DataTableColumnDef,
   type DataTableColumnMeta,
-  type DataTableInstanceProps,
   type DataTableProps,
   type DataTableRowKey,
   type DataTableRowProps,
@@ -35,7 +34,10 @@ export function dataTableTypeContracts(table: TableInstance<RecordRow>) {
   const direct = <DataTable data={data} columns={columns} rowKey="id" />;
   const directProps: DataTableProps<RecordRow> = { data, columns, rowKey: 'id' };
   const forwarded = <DataTable {...directProps} />;
-  const instanceProps: DataTableInstanceProps<RecordRow> = props;
+  const instanceProps: Extract<
+    DataTableProps<RecordRow>,
+    { table: TableInstance<RecordRow> }
+  > = props;
   const numericKey = <DataTable data={data} columns={columns} rowKey={(row) => row.id.length} />;
   const readonlyColumns = [
     { accessorKey: 'name', header: 'Name', meta: { align: 'end' } },
@@ -65,6 +67,8 @@ export function dataTableTypeContracts(table: TableInstance<RecordRow>) {
   const missingKey = <DataTable data={data} columns={columns} />;
   // @ts-expect-error A table instance owns its own data and columns.
   const mixed = <DataTable table={table} data={data} columns={columns} rowKey="id" />;
+  // @ts-expect-error Local slicing belongs to data input or useDataTable, not a supplied instance.
+  const instanceLocalPagination = <DataTable table={table} localPagination={false} />;
   // @ts-expect-error Table is no longer part of the root public API.
   const removedTable = root.Table;
   // @ts-expect-error DataTable stays in its optional peer entry.
@@ -97,6 +101,7 @@ export function dataTableTypeContracts(table: TableInstance<RecordRow>) {
     optionalField,
     missingKey,
     mixed,
+    instanceLocalPagination,
     removedTable,
     rootDataTable,
     rootHook,

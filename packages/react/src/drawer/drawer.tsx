@@ -22,7 +22,6 @@ export interface DrawerProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'onResize'>,
     DialogFocusOptions {
   open: boolean;
-  variant?: 'plain' | 'card';
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
@@ -49,7 +48,6 @@ export interface DrawerProps
 }
 function DrawerSurface({
   open,
-  variant = 'card',
   title,
   description,
   icon,
@@ -156,12 +154,7 @@ function DrawerSurface({
             .join(' ') || undefined
         }
         tabIndex={-1}
-        className={classes(
-          'leaf-drawer',
-          `leaf-drawer--${variant}`,
-          divided && 'leaf-drawer--divided',
-          className,
-        )}
+        className={classes('leaf-drawer', divided && 'leaf-drawer--divided', className)}
         style={{
           ...(horizontal
             ? { width: resized ?? width, height: '100%' }

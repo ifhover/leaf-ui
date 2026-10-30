@@ -77,17 +77,17 @@ Input、Select、AutoComplete、Textarea、InputNumber、TreeSelect、Cascader�
 
 普通选项的候选、悬停和按下使用 `--leaf-color-option-hover`。使用独立候选背景的其他列表共用这一角色；有移动背景时只能由移动层绘制一次。下列 Select 风格选项使用共享的浅色逐行配方。危险操作、日历、分页等明确设计例外不能被机械替换成普通选项。
 
-Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和时间列的选项行共用 `choice-option` 配方：从 `neutral-option-background()` 取一半强度的中性反馈，未选中、选中、悬停与键盘候选均使用完整继承文字色，不因未选中而淡化。每行只对自身背景颜色作过渡，不使用移动背景或几何出入动画；已保存值以勾选标记表达，不永久绘制选中底色。AutoComplete / Mentions 的 ARIA 选中表示当前候选，因此保留候选背景。Menu 默认外观继续独立消费完整中性背景与 80% 继承色，三种皮肤不受此配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围选中态保留各自语义，不扩大字段聚焦变体。
+Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和时间列的选项行共用 `choice-option` 配方：从 `neutral-option-background()` 取一半强度的中性反馈，未选中、选中、悬停与键盘候选均使用完整继承文字色，不因未选中而淡化。每行只对自身背景颜色作过渡，不使用移动背景或几何出入动画；已保存值以勾选标记表达，不永久绘制选中底色。AutoComplete / Mentions 的 ARIA 选中表示当前候选，因此保留候选背景。Menu 的 `neutral` 外观独立使用明确的局部中性背景与 80% 继承色，具体填充见[Menu 状态契约](DESIGN-STANDARDS.md#menu)；三种皮肤不受 choice-option 配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围选中态保留各自语义，不扩大字段聚焦变体。
 
 ### 内容表面与动作
 
-内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。Card / Table 的柔化边框通过共享配方实现，静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
+内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。内容容器的柔化边框与普通 Modal 的分区线复用 `softened-frame-color`，随实际局部表面减淡；Confirm 不继承 Modal 的分区线调整。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。条纹、悬停和遮罩基于当前表格的表面与文字计算，不能替换成仅对默认白底近似的全局色。选中行始终使用映射后的 `--leaf-color-primary-soft`，内部展开 / 拖拽操作默认复用 `option-hover`；显式 `primarySoftColor` 等覆盖继续优先，不为补默认值生成新全局 token。
+Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。条纹、悬停和遮罩基于当前表格的表面与文字计算，不能替换成仅对默认白底近似的全局色。选中行始终使用映射后的 `--leaf-color-primary-soft`，内部展开操作复用文字按钮的中性反馈；显式 `primarySoftColor` 等覆盖继续优先，不为补默认值生成新全局 token。
 
 ### 共享底板与内容表面
 
-分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card、Transfer 与 DataTable 的外层底板、卡片式 Modal 与日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card、Transfer 与 DataTable 的外层底板、显式 card 型日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
 Tabs 选中滑块与 Card / Transfer / DataTable / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
@@ -98,7 +98,7 @@ Tabs 选中滑块与 Card / Transfer / DataTable / 面板内层内容继续使�
 | `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、导航、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中。分页当前页属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认 |
 | `danger-soft-feedback-family` | 危险浅底反馈，供 Dropdown / Menu 危险操作、Form / Confirm 错误摘要、FileList 动作复用 |
 | `status-ink-family` / `status-label-family` | 五种语义的可读文字、浅底标签和实底前景；Typography / FileList / Tag 不再自行选择 `text-80` |
-| `panel-canvas-family` | 卡片式 Modal 与日期面板共用柔和画布；普通 Modal 使用 surface |
+| `panel-canvas-family` | 显式 card 型日期面板的柔和画布；Modal 与 Drawer 直接使用 surface |
 | `segmented-surface-family` | Tabs 与 ColorPicker 格式切换共用轨道、选中底和弱文字 |
 | `overlay-family(dialog / spotlight)` | Modal / Drawer 默认共用无模糊灰色遮罩，可显式开启模糊；Tour 保留更强的无模糊聚光遮罩 |
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |

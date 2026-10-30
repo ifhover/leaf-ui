@@ -3,6 +3,7 @@ import { AlertBasic } from '../../src/examples/alert/basic';
 import { AlertTypes } from '../../src/examples/alert/types';
 import { AlertClosable } from '../../src/examples/alert/closable';
 import { AlertIcons } from '../../src/examples/alert/icons';
+import { AlertExtra } from '../../src/examples/alert/extra';
 
 export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 
@@ -34,6 +35,17 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 <ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/types.tsx"
+```
+
+</ComponentExample>
+
+### 右侧内容
+
+通过 `extra` 在右侧放置按钮、链接等元素，可与关闭按钮同时使用；内容显示在关闭按钮之前。
+
+<ComponentExample exampleId="extra" preview={<AlertExtra />} fileName="extra.tsx">
+
+```tsx lineNumbers file="../../src/examples/alert/extra.tsx"
 ```
 
 </ComponentExample>
@@ -72,6 +84,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | 必填 | 提示内容 |
 | `description` | `ReactNode` | — | 补充说明 |
+| `extra` | `ReactNode` | — | 尾部的补充内容。 |
 | `type` | `FeedbackType \| 'error'` | `'info'` | 提示类型；`error` 为兼容别名 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `showIcon` | `boolean` | `true` | 展示语义图标 |

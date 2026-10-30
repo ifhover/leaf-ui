@@ -11,6 +11,8 @@ export type { FeedbackType, FeedbackTypeInput } from '../shared/feedback';
 export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   description?: ReactNode;
+  /** Trailing content, displayed before the close button. */
+  extra?: ReactNode;
   type?: FeedbackTypeInput;
   icon?: ReactNode;
   showIcon?: boolean;
@@ -38,6 +40,7 @@ export function Alert(rawProps: AlertProps) {
   const {
     title,
     description,
+    extra,
     type = 'info',
     icon,
     showIcon = true,
@@ -77,6 +80,7 @@ export function Alert(rawProps: AlertProps) {
         <div className="leaf-alert__title">{title}</div>
         {description && <div className="leaf-alert__description">{description}</div>}
       </div>
+      {extra != null && <div className="leaf-alert__extra">{extra}</div>}
       {closable && (
         <button
           type="button"

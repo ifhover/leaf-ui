@@ -2,4 +2,4 @@
 
 本文集中记录开发分支上尚未写入正式更新记录的兼容性变化，面向准备发布的维护者，不进入在线文档。发版时按 [发布操作](packages/react/RELEASING.md#版本与记录) 把对应条目整理进中英文更新记录的“迁移说明”，然后从本文删除这些条目。新增破坏性或默认外观变化时在这里追加一条，不再分散写进各规范文件。
 
-当前没有尚未发布的迁移条目。0.10.0 的迁移内容已整理至[中文更新记录](apps/docs/docs/changelog.md)与[英文更新记录](apps/docs/docs/en/changelog.md)。
+当前没有尚未发布的迁移条目。0.10.1 的迁移内容已整理至[中文更新记录](apps/docs/docs/changelog.md)与[英文更新记录](apps/docs/docs/en/changelog.md)。

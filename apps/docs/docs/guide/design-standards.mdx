@@ -14,7 +14,7 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 
 | 组件 | 当前外观 | 页面组合方式 |
 | --- | --- | --- |
-| [Menu](/components/menu) | 默认 `raised`，柔和底板上的选中项使用独立内容面、细边框和轻投影。 | 导航沿用选中表面；不再叠加另一条高亮或大面积品牌色背景。`default` 和 `primary` 是其他明确的外观选择。 |
+| [Menu](/components/menu) | 默认 `raised`，柔和底板上的选中项使用独立内容面、细边框和轻投影。 | 导航沿用选中表面；不再叠加另一条高亮或大面积品牌色背景。`neutral` 和 `primary` 是其他明确的外观选择。 |
 | [Button](/components/button) | 默认 `outline`，中性内容面和边框，带轻微静止阴影。 | 普通操作保持中性，关键操作才使用 `solid`；不让所有按钮同时争抢注意力。 |
 | [Card](/components/card) | `variant="layered"` 用底板承载小号弱标题，内层内容面承载正文。Card 本身默认仍是 `default`。 | 独立任务分区需要标题与内容分层时使用 `layered`；此时不显示 `description`，重要说明放在正文或独立 CardTitle 中。 |
 | [DataTable](/components/table) | 默认 `layered`，弱化表头与内层数据表面延续分层 Card 的关系。 | 主要数据区域直接放置表格和工具栏；通常不再外包一层同样的分层 Card。确需嵌入已有内容面时考虑 `simple`。 |
@@ -70,7 +70,7 @@ Flex 的 `gap="sm|md|lg"` 与 Space 的 `size="sm|md|lg"` 直接读取对应变�
 
 圆角使用 `--leaf-radius-sm`、`--leaf-radius`、`--leaf-radius-md`、`--leaf-radius-lg`，默认为 4 / 8 / 12 / 16px，随基础圆角按 0.5 / 1 / 1.5 / 2 派生。通常由组件处理内外嵌套，不手工覆盖内部 `.leaf-*` 圆角。
 
-阴影使用库提供的 `--leaf-shadow-xs`、`--leaf-shadow-sm`、`--leaf-shadow-md`、`--leaf-shadow-lg`：描边按钮与默认 Card 的静止反馈最轻，分层 Card / Table 的内层内容使用轻阴影，浮层使用更高层级。优先使用组件默认值，不在容器外重复添加阴影；悬停不抬升、不放大、不切换阴影等级。需要覆盖时通过主题配置，保留用户的 `controlShadow` / `surfaceShadow` 设置。
+阴影使用库提供的 `--leaf-shadow-xs`、`--leaf-shadow-sm`、`--leaf-shadow-md`、`--leaf-shadow-lg`：描边按钮和默认 Card 的静止反馈最轻，分层 Card / Table 的内层内容使用 `shadow-sm`，浮层使用更高层级。优先使用组件默认值，不在容器外重复添加阴影；悬停不抬升、不放大、不切换阴影等级。需要覆盖时通过主题配置，保留用户 `controlShadow` / `surfaceShadow` 设置。
 
 Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect 和单值选择器默认宽 240px，选值后不改变宽度。日期区间为 300px，日期时间区间为 380px；较长格式适当加宽。窄容器中自动收缩，FormField 内默认铺满；`style.width` 可显式覆盖，Textarea 保持默认铺满。页面布局不能依赖字段永远等于这些默认宽度。
 

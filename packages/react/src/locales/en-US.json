@@ -209,6 +209,7 @@
     "downloadFailedOpenTheOriginalImageToSaveIt": "Download failed. Open the original image to save it.",
     "openOriginal": "Open original",
     "zoomOut": "Zoom out",
+    "zoomLevel": "Zoom level",
     "resetZoom": "Reset zoom",
     "zoomIn": "Zoom in",
     "showThumbnails": "Show thumbnails",
@@ -222,7 +223,10 @@
     "actualSize": "Actual size (1:1)",
     "fitToWindow": "Fit to window",
     "rotateCounterclockwise": "Rotate counterclockwise",
-    "rotateClockwise": "Rotate clockwise"
+    "rotateClockwise": "Rotate clockwise",
+    "resetImage": "Reset image",
+    "flipHorizontal": "Flip horizontal",
+    "flipVertical": "Flip vertical"
   },
   "infiniteScroll": {
     "loadingFailedRetry": "Loading failed. Retry",
@@ -263,22 +267,16 @@
     "loadError": "Unable to load data. Please try again."
   },
   "dataTable": {
-    "searchTable": "Search table",
-    "columns": "Columns",
     "resizeColumn": "Resize column: {label}",
     "selectRows": "Select rows",
     "selectAllRowsOnThisPage": "Select all rows on this page",
-    "selectAllRows": "Select all rows",
-    "reorderRow": "Reorder row: {label}",
     "selectRow": "Select row: {label}",
     "collapseRow": "Collapse row: {label}",
     "expandRow": "Expand row: {label}",
-    "reorderRows": "Reorder rows",
     "expandRows": "Expand rows",
     "sortAscending": "Sort ascending",
     "sortDescending": "Sort descending",
-    "clearSorting": "Clear sorting",
-    "reorderColumn": "Reorder column: {label}"
+    "clearSorting": "Clear sorting"
   },
   "timeRangePicker": {
     "placeholder": "Start time ~ End time",

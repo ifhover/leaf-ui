@@ -64,14 +64,40 @@ test('Menu popup and inline rows share text and interaction paint', async () => 
   assert.equal(menu('.leaf-menu__popup.leaf-dropdown .leaf-dropdown__arrow').color, 'inherit');
 });
 
-test('default Menu retains its own neutral palette while choice rows share Select feedback', async () => {
+test('neutral Menu uses the requested light fill without changing other appearances', async () => {
   const menu = await compiledStyles('menu/menu.scss');
-  const palette = menu('.leaf-menu');
-  assert.equal(
-    palette['--leaf-menu-unselected-color'],
-    'color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))',
-  );
-  assert.equal(palette['--leaf-menu-neutral-background'], 'rgba(0,0,0,0.08)');
+  for (const selector of ['.leaf-menu', '.leaf-menu__popup']) {
+    const palette = menu(selector);
+    assert.equal(
+      palette['--leaf-menu-unselected-color'],
+      'color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))',
+    );
+    assert.equal(
+      palette['--leaf-menu-neutral-background'],
+      'light-dark(rgb(241 241 242),rgba(0,0,0,0.08))',
+    );
+    for (const state of ['hover', 'selected', 'active']) {
+      assert.equal(
+        palette[`--leaf-menu-${state}-background`],
+        'var(--leaf-menu-neutral-background)',
+      );
+    }
+  }
+  for (const selector of ['.leaf-menu--raised', '.leaf-menu__popup--raised']) {
+    const palette = menu(selector);
+    assert.equal(palette['--leaf-menu-selected-background'], 'var(--leaf-color-surface)');
+    assert.equal(palette['--leaf-menu-hover-opacity'], '0');
+    assert.equal(palette['--leaf-menu-active-background'], 'rgba(0,0,0,0.04)');
+  }
+  for (const selector of ['.leaf-menu--primary', '.leaf-menu__popup--primary']) {
+    const palette = menu(selector);
+    assert.equal(palette['--leaf-menu-selected-background'], 'var(--leaf-color-primary-alpha-10)');
+    assert.equal(palette['--leaf-menu-hover-opacity'], '0');
+    assert.equal(palette['--leaf-menu-active-background'], 'var(--leaf-color-primary-alpha-4)');
+  }
+});
+
+test('choice rows retain Select feedback independently of the neutral Menu appearance', async () => {
   for (const [file, selector] of [
     ['select/select.scss', '.leaf-select__panel .leaf-floating__option'],
     ['tree/tree.scss', '.leaf-tree__row'],

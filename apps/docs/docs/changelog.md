@@ -7,6 +7,28 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.10.1 - 2026-10-31
+
+### 新增与改进
+
+- 图片能力收敛为 `useImagePreview().preview(images, options)` 与 `ImagePreviewProvider` 命令式服务，并改为不依赖第三方引擎的预览实现。新增首尾循环、键盘缩放与切换、1:1、旋转、双向翻转、触摸手势、窗口化缩略图和可选下载，同时保留区域配置、焦点返回与 FileList 内部预览。
+- 重新整理 Modal、Drawer 与 Confirm 的内容面、标题、图标、留白、分隔线和关闭按钮；Modal 使用更紧凑的 medium 圆角与默认分隔线，Drawer 不再嵌套卡片内容面，Confirm 默认展示信息图标。
+- DataTable 简洁模式使用直角内容面表头、14px 区域基础字号与默认斑马纹；精简内置布局、工具栏、搜索、列显隐和拖动 API，应用继续通过 TanStack 状态组合这些业务控件。
+- DatePicker 与 DateRangePicker 的浮层恢复普通内容面，只有日期时间区间展示符合 Tabs 语义的端点切换；其他日期粒度和纯时间区间不再显示无用切换。
+- 调整 Card 边框、标题颜色和纯封面布局，降低 Alert 中性底色强度，并让 Progress 分段共享整条轨道的外侧圆角。同步双语文档、示例、区域默认参数、类型测试和结构化 API / AI 导出。
+
+### 迁移说明
+
+- `Menu variant="default"` 重命名为 `variant="neutral"`，包括 `ConfigProvider.components.Menu.variant`；不保留旧名称，默认外观仍为 `raised`。
+- `Modal` 与 `Drawer` 移除 `variant` 及卡片外观，删除实例和区域配置中的 `plain` / `card`。Modal 的 `divided` 默认改为 `true`，footer 不再自动为直接子元素添加间距；自定义按钮组请用 `Space` 等布局组件。Modal 默认圆角、标题、图标和留白也有调整，显式参数仍优先。
+- `Confirm.type` 默认由 `default` 改为 `info`；需要无图标外观时设置 `type="default"` 或 `icon={null}`。
+- DatePicker 与 DateRangePicker（包括时间和日期时间模式）的 `panelVariant` 默认由 `card` 改为 `plain`；需要原分层外观时显式设置 `panelVariant="card"`。日期时间区间端点切换由 `aria-pressed` 按钮改为 `tab` / `aria-selected`。
+- `DataTable variant="simple"` 默认展示斑马纹并遵守 `striped`；设置 `striped={false}` 恢复细行分隔线。简洁模式继续忽略 `columnDividers`。
+- DataTable 移除 `DataTable.Search`、`ColumnVisibility`、行列拖动、`Toolbar` / `Content` / `Footer` / `Pagination` 复合部件及对应类型、导出和区域配置；移除 `layout` / `children`、`bordered`、`selectAllMode`、`columnReordering`、`onRowReorder` 与 hook 的 `pagination` 别名。使用根 `toolbar` / `pagination`、`columnDividers`、`localPagination` 和应用自己的 TanStack 状态替代。
+- DataTable 统一导出 `DataTableProps<T>`，移除 `DataTableInstanceProps<T>` 与 `DataTableDataProps<T>`。实例接入的窄类型可用 `Extract<DataTableProps<T>, { table: TanStackTable<T> }>`；`localPagination` 不能与已创建的 `table` 一起传入。
+- 移除 `Image`、`ImagePreview`、`ImagePreviewGroup` 及其 Props 和 `ConfigProvider.components.Image` / `ImagePreviewGroup`。页面图片改用原生 `img`，预览使用 `useImagePreview().preview()`；`components.ImagePreview` 继续配置命令式服务。
+- 默认 Card 外框变浅，纯 `cover` 不再产生空 body；默认 Card / CardTitle 浅色标题改为纯黑色，分层 Card 和显式颜色覆盖不变。Progress 的 `segments` 改为内部直角连接，`steps` 不变。
+
 ## 0.10.0 - 2026-10-27
 
 ### 改进与修复

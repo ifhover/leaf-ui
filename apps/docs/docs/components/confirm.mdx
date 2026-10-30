@@ -47,7 +47,7 @@ export function Root() {
 
 ### 状态提示
 
-通过 `type` 选择提示意图。`success` 默认不显示取消按钮，需要时设置 `showCancel`。
+通过 `type` 选择提示意图，默认为 `info`。`type="default"` 不显示内置图标，也可用 `icon={null}` 隐藏任意类型的图标。`success` 默认不显示取消按钮，需要时设置 `showCancel`。
 
 <ComponentExample exampleId="status" preview={<ConfirmStatus />} fileName="status.tsx" width="fit-content">
 
@@ -112,8 +112,8 @@ export function Root() {
 | `children` | `ReactNode` | — | 简短说明本次操作的影响。 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；等待 Promise 成功后关闭，失败时保留并显示错误。 |
 | `onCancel` | `() => void` | — | 取消时调用。 |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | 状态图标与颜色；仅 danger 改变确定按钮颜色。 |
-| `icon` | `ReactNode` | — | 正文左侧的状态图标；传入 null 隐藏图标。 |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'info'` | 状态图标与颜色；仅 danger 改变确定按钮颜色。 |
+| `icon` | `ReactNode` | — | 标题旁的状态图标；无标题时位于正文旁，传入 null 隐藏。 |
 | `confirmText` | `ReactNode` | 语言默认值 | 确认按钮文字。 |
 | `cancelText` | `ReactNode` | 语言默认值 | 取消按钮文字。 |
 | `showCancel` | `boolean` | success 为 false，其余 true | 是否展示取消按钮。 |

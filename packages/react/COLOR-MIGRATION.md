@@ -28,7 +28,7 @@ Source-level review for the `0.9.0` development branch on `2026-10-23`.
 - `segmented-surface-family`: shared segmented surface, border, selected surface, and muted label roles for `tabs` and `colorpicker`.
 - `calendar-selection-family`: shared calendar range and selected-day paint uses `primary-soft`, with `primary-soft-hover` for selection feedback.
 - `overlay-family`: dialog and spotlight overlay roles for `modal`, `drawer`, and `tour`.
-- `panel-canvas-family`: muted panel canvas for `modal` and inset calendar-picker panels.
+- `panel-canvas-family`: muted panel canvas for inset calendar-picker panels.
 - `status-ink-family` / `status-label-family`: contrast-aware readable status ink and soft status-label foreground/background roles.
 - `table-family`, `softened-frame-color`, and `resting-surface-shadow`: table and raised-surface ownership shared by Table and Card. Selected rows use `primary-soft`; stripes, hover, pinned shadows, and loading scrims retain formulas based on the table's own surface and text.
 
@@ -38,7 +38,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 
 | # | Export | Source | Assigned responsibility | Source result |
 | ---: | --- | --- | --- | --- |
-| 1 | `alert` | `alert` | Status base/ink roles on a neutral surface; `option-hover` for close feedback | Reviewed |
+| 1 | `alert` | `alert` | Status base/ink roles on a softened neutral surface via `subtle-action-background`; `option-hover` for close feedback | Reviewed |
 | 2 | `anchor` | `anchor` | `accent-soft-feedback-family` for selected navigation, resolved through `primary-soft` and `primary-border` | Reviewed |
 | 4 | `auto-complete` | `autocomplete` | Primary `field` focus; `floating-paint`; shared `choice-option` feedback | Inherited |
 | 5 | `avatar` | `avatar` | Direct surface, text, and border roles; grouped text fallbacks cycle through primary / info / warning / danger soft / ink pairs and neutral muted roles for identity, not status; explicit Avatar paint overrides win | Reviewed |
@@ -81,7 +81,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 43 | `mentions` | `mentions` | `floating-paint`; `choice-option`; Textarea field/base roles | Inherited |
 | 44 | `menu` | `menu` | `danger-soft-feedback-family`; explicit local appearance palette | Reviewed + exception |
 | 45 | `message` | `message` | Status roles; direct surface and elevation roles | Reviewed |
-| 46 | `modal` | `modal` | `overlay-family`; `panel-canvas-family`; shared dialog sections | Reviewed |
+| 46 | `modal` | `modal` | `overlay-family`; shared dialog sections; direct panel surface; standard Modal section dividers reuse `softened-frame-color`, excluding Confirm | Reviewed |
 | 47 | `notification` | `notification` | Status roles; direct surface and elevation roles | Reviewed |
 | 48 | `pagination` | `pagination` | `accent-soft-feedback-family` resolves to `primary-soft` / `primary-border`; `primary-indicator` remains the selection indicator | Reviewed |
 | 49 | `popconfirm` | `popconfirm` | Inherits popover/modal and button action roles | Inherited |
@@ -142,10 +142,10 @@ Table stripes, hover tint, pinned-column shadows, and the loading scrim still fo
 
 These roles stay with their component because the visual responsibility is not a general semantic color family:
 
-- Menu keeps its complete appearance: default uses full neutral feedback and 80% inherited ink, while raised/primary and danger states retain their separate palettes. Select, AutoComplete, Mentions, Tree, TreeSelect, Cascader and Dropdown reuse the shared choice-row recipe with half-strength neutral feedback, 70% resting ink and row-local background-color transitions. Persistent values keep their checks without a saved background; candidate-only ARIA selections retain active feedback. Calendar/range/time selection semantics and field focus variants do not change.
+- Menu keeps its complete appearance: neutral uses the local fill specified by the [Menu state contract](../../DESIGN-STANDARDS.md#menu) and 80% inherited ink, while raised/primary and danger states retain their separate palettes. Select, AutoComplete, Mentions, Tree, TreeSelect, Cascader and Dropdown reuse the shared choice-row recipe with half-strength neutral feedback, full inherited ink and row-local background-color transitions. Persistent values keep their checks without a saved background; candidate-only ARIA selections retain active feedback. Calendar/range/time selection semantics and field focus variants do not change.
 - ColorPicker keeps hue, alpha, checkerboard, preset, and contrast-outline paint. The inline field keeps `shadow-xs` through the field override path.
 - Rate keeps its independent rating scale; it is not the warning status family.
-- Image, Carousel controls, and the FileList video letterbox keep media-owned overlays and contrast handling.
+- Image preview, Carousel controls, and the FileList video letterbox keep media-owned overlays and contrast handling.
 - Typography's inline warning mark keeps its translucent content-highlight layer rather than adopting an opaque status surface.
 - Loading keeps its surface scrim, LoadingBar its glow, Progress and Skeleton their local shimmer/effect paint, and QRCode its exposed canvas foreground/background roles.
 - Tooltip keeps inverse-content contrast and Tour keeps spotlight contrast.

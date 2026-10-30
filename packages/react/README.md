@@ -51,7 +51,7 @@ Browser component entries automatically load theme variables, shared popup style
 - Layout / Grid / Row / Col / Space / ScrollArea / Masonry: page structure, responsive columns, spacing and scrolling.
 - Tabs / Menu / BackTop: content and view switching, nested navigation and scroll-to-top.
 - Descriptions / Timeline / QRCode: details, event histories, QR codes.
-- Image / ImagePreview / ImagePreviewGroup: loading and error states, zoom, galleries, thumbnails and fullscreen.
+- useImagePreview: self-contained imperative image previews with zoom, looping galleries, side navigation, thumbnails, rotation and flips, without slideshow or fullscreen modes. Use native img elements for inline images.
 - VirtualList / InfiniteScroll: measured virtual rows and abortable loading.
 - DataTable: sorting, filtering, selection, grouping, pagination and virtualization through a TanStack Table instance. Import it from `@ifhover/leaf-ui/table`.
 - Transfer / InputOTP / InputMask: transfers, code autofill/paste, formatted values and time ranges.
@@ -84,7 +84,7 @@ export function ProjectTable() {
 }
 ```
 
-Tables use the same softened frame and downward resting shadow as Card by default. Set `bordered` for column dividers, or `striped={false}` for row dividers. `DataTable` and its helper components use the dedicated table entry; ordinary components do not require the optional table peer.
+Tables use the same softened frame and downward resting shadow as Card by default. Set `columnDividers` for column dividers, or `striped={false}` for row dividers. `DataTable` uses the dedicated table entry; ordinary components do not require the optional table peer.
 
 Migration: replace native `Table`, `Table.Header`, `Table.Body`, `Table.Row`, `Table.Cell` and related named exports with a `DataTable` instance and column definitions. Native Table regional defaults are removed; use `components.DataTable` for presentation defaults. The `theme.components.Table` visual tokens remain available. The former `@ifhover/leaf-ui/table/tanstack` path remains a compatibility alias for `DataTable`.
 

@@ -1,11 +1,15 @@
 @use '../styles/mixins' as *;
 
 .leaf-card-title {
+  --leaf-card-title-color: var(
+    --leaf-component-card-color,
+    light-dark(#000, var(--leaf-color-text))
+  );
   --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
   --leaf-card-title-line-height: calc(var(--leaf-line-height) + 2px);
   min-width: 0;
   margin: 0;
-  color: var(--leaf-color-text);
+  color: var(--leaf-card-title-color);
   font: var(--leaf-font-weight, 500) var(--leaf-card-title-font-size) var(--leaf-font-family);
   line-height: var(--leaf-card-title-line-height);
   overflow-wrap: anywhere;
@@ -55,7 +59,8 @@
     calc(var(--leaf-card-padding) - var(--leaf-card-inset) - var(--leaf-card-border-width))
   );
   --leaf-card-canvas: var(--leaf-color-surface-muted);
-  @include softened-frame-color(card, var(--leaf-card-surface));
+  // Keep the frame quiet without removing the card's border cue.
+  @include softened-frame-color(card, var(--leaf-card-surface), 50%);
   box-sizing: border-box;
   min-width: 0;
   border: var(--leaf-card-border-width) solid transparent;
@@ -107,7 +112,7 @@
     overflow-wrap: anywhere;
   }
   &__title {
-    color: inherit;
+    color: var(--leaf-card-title-color);
   }
   &__extra {
     flex: 0 0 auto;
@@ -148,6 +153,10 @@
     overflow: hidden;
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
+    &:last-child {
+      border-end-start-radius: inherit;
+      border-end-end-radius: inherit;
+    }
     > img {
       display: block;
       width: 100%;
@@ -243,6 +252,15 @@
     > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel {
       padding-inline: var(--leaf-card-inset-padding);
     }
+  }
+  &--shadowless {
+    box-shadow: none;
+    > .leaf-card__panel::before {
+      box-shadow: none;
+    }
+  }
+  &--layered:not(.leaf-card--bordered) > .leaf-card__panel {
+    border-color: transparent;
   }
   &--selected {
     border-color: var(--leaf-component-card-border-color, var(--leaf-color-primary));

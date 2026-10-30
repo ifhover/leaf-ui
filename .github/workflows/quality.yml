@@ -34,6 +34,7 @@ jobs:
           name: production-bundles
           path: packages/react/.quality/bundle-report.json
           include-hidden-files: true
+          retention-days: 7
       - name: Pack the checked release without rebuilding
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: pnpm release:pack

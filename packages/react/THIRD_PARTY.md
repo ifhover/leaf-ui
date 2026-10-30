@@ -7,7 +7,6 @@ Leaf UI 的样式、组件接口、主题和语言集成为项目源码。以下
 | 能力 | 项目 | 许可证 |
 | --- | --- | --- |
 | 浮层定位 | [Floating UI](https://github.com/floating-ui/floating-ui) | MIT |
-| 图片预览、触摸切换、缩放、全屏和缩略图 | [Yet Another React Lightbox](https://github.com/igordanchenko/yet-another-react-lightbox) | MIT |
 | 指针、触摸和键盘拖拽排序 | [dnd-kit](https://github.com/clauderic/dnd-kit) | MIT |
 | 虚拟列表与动态行高 | [TanStack Virtual](https://github.com/TanStack/virtual) | MIT |
 | 格式输入 | [IMask](https://github.com/uNmAnNeR/imaskjs) | MIT |
@@ -15,5 +14,7 @@ Leaf UI 的样式、组件接口、主题和语言集成为项目源码。以下
 | ICU 翻译模板与复数 | [FormatJS intl-messageformat](https://github.com/formatjs/formatjs) | BSD-3-Clause |
 
 各外部依赖的完整许可证随其 npm 包分发。
+
+图片预览由 Leaf UI 自行实现，界面和交互参考 [Viewer.js](https://github.com/fengyuanchen/viewerjs)，但不引入其脚本、样式或图标，也不依赖其他图片预览引擎。预览操作图标使用已有的 Lucide 依赖。
 
 其他运行依赖（Lucide、TinyColor、tabbable）的许可证随对应依赖包分发。

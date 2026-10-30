@@ -7,7 +7,7 @@ import type { TabsProps } from '../tabs';
 import { TabsControl as Tabs } from '../tabs/tabs';
 import { CardTitleControl } from './title';
 
-/** Horizontal line tabs integrated with the card heading and content spacing. */
+/** Tabs controls integrated with the card; Card fixes the line type and top placement. */
 export interface CardTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
@@ -21,6 +21,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
   footer?: ReactNode;
   loading?: boolean;
   bordered?: boolean;
+  /** Show the card's resting shadow; layered cards apply this to the inner content surface. */
+  shadow?: boolean;
   /** Visual selection only; use explicit buttons or selection controls for interaction. */
   selected?: boolean;
   /** `layered` separates the content surface from the heading and footer on a muted canvas. */
@@ -38,6 +40,7 @@ export function Card(rawProps: CardProps) {
     footer,
     loading = false,
     bordered = true,
+    shadow = true,
     selected = false,
     variant = 'default',
     size = 'md',
@@ -51,6 +54,8 @@ export function Card(rawProps: CardProps) {
   const layered = variant === 'layered';
   const visibleDescription = layered ? undefined : description;
   const hasHeading = title != null || visibleDescription != null;
+  // A cover can be the complete content region; do not leave an empty body gap before the footer.
+  const hasBody = children != null || (!hasTabs && (loading || cover == null));
   const footerContent = footer != null && <div className="leaf-card__footer">{footer}</div>;
   const tabExtra =
     !hasHeading && extra != null ? (
@@ -86,7 +91,7 @@ export function Card(rawProps: CardProps) {
           }
         />
       )}
-      {(!hasTabs || children != null) && (
+      {hasBody && (
         <div className="leaf-card__body" ref={body}>
           <Skeleton loading={loading}>{children}</Skeleton>
         </div>
@@ -102,6 +107,7 @@ export function Card(rawProps: CardProps) {
         'leaf-card',
         `leaf-card--${size}`,
         bordered && 'leaf-card--bordered',
+        !shadow && 'leaf-card--shadowless',
         selected && 'leaf-card--selected',
         layered && 'leaf-card--layered',
         hasHeading && 'leaf-card--headed',

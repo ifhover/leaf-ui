@@ -47,7 +47,7 @@ export function Root() {
 
 ### Semantic states
 
-Use `type` to select a semantic state. `success` hides Cancel by default; set `showCancel` to display it.
+Use `type` to select a semantic state; it defaults to `info`. `type="default"` omits the built-in icon, and `icon={null}` hides the icon for any type. `success` hides Cancel by default; set `showCancel` to display it.
 
 <ComponentExample exampleId="status" preview={<ConfirmStatus />} fileName="status.tsx" width="fit-content">
 
@@ -112,8 +112,8 @@ Content, actions and interaction settings supplied to `confirm()`.
 | `children` | `ReactNode` | — | A short explanation of the action's consequences. |
 | `onConfirm` | `() => void \| Promise<void>` | — | Close after success; keep the dialog open and show the error on rejection. |
 | `onCancel` | `() => void` | — | Called on cancellation. |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'default'` | Semantic icon and color; only danger changes the confirm button color. |
-| `icon` | `ReactNode` | — | Semantic icon beside the explanation; null hides the icon. |
+| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'info'` | Semantic icon and color; only danger changes the confirm button color. |
+| `icon` | `ReactNode` | — | Semantic icon beside the title, or the explanation when untitled; null hides it. |
 | `confirmText` | `ReactNode` | Locale default | Confirm button label. |
 | `cancelText` | `ReactNode` | Locale default | Cancel button label. |
 | `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
