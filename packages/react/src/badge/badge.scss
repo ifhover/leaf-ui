@@ -30,9 +30,6 @@
     font-variant-numeric: tabular-nums;
     transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
-  &--standalone &__indicator {
-    border-radius: var(--leaf-radius-sm);
-  }
   &__indicator--dot {
     border-radius: 100px;
     width: 8px;

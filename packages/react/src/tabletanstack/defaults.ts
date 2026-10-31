@@ -21,11 +21,9 @@ export interface DataTablePresentationProps
   /** Content for the toolbar in the automatic layout. */
   toolbar?: ReactNode;
   size?: ControlSize;
-  /** Simple uses a square, content-surface header without a frame, shadows or column dividers. */
-  variant?: 'layered' | 'simple';
-  /** Adds body/footer column dividers in the layered variant; ignored in simple. */
-  columnDividers?: boolean;
-  /** Alternating row backgrounds in either variant; enabled by default. */
+  /** Extend to the surrounding Card content edges while keeping toolbar and pagination insets. */
+  bleed?: boolean;
+  /** Alternating row backgrounds; enabled by default. */
   striped?: boolean;
   /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];

@@ -596,17 +596,13 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
-const tableVariantDescription = [
-  'layered 使用分层卡片；simple 使用直角内容面表头，无外框、阴影和列分隔线。',
-  'layered uses a layered card; simple uses a square content-surface header without a frame, shadows or column dividers.',
-];
-const columnDividersDescription = [
-  '增加表体和表尾的列分隔线；layered 表头保留短分隔线。simple 模式忽略此项。',
-  'Add body and footer column dividers; layered headers keep short separators. Ignored in simple mode.',
-];
 const tableStripedDescription = [
-  '两种外观均默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。',
-  'Both variants default to alternating backgrounds from the second row and hide row dividers. Disable to show fine row dividers.',
+  '默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。',
+  'Alternating backgrounds start from the second row and hide row dividers by default. Disable to show fine row dividers.',
+];
+const tableBleedDescription = [
+  '直接嵌入 Card 正文或内嵌标签页面板时，让表格区域左右贴边；工具栏与分页补回相同的横向内边距。额外布局容器内不自动延伸，Card 外无延伸量。',
+  'Extend the table to the content edges when placed directly in a Card body or integrated tab panel. Toolbar and pagination restore matching horizontal padding. Additional layout wrappers and standalone tables have no automatic extension.',
 ];
 const tableHeightDescription = [
   '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
@@ -708,7 +704,7 @@ const specificDefaults = {
   'LeafThemeTokens.onDangerColor': '`#ffffff`',
   'LeafThemeTokens.onWarningColor': '`#ffffff`',
   'LeafThemeTokens.onInfoColor': '`#ffffff`',
-  'LeafThemeTokens.neutralColor': '`#707070`',
+  'LeafThemeTokens.neutralColor': '`#6c737e`',
   'AutoCompleteProps.value': '—',
   'AutoCompleteProps.defaultOpen': '`false`',
   'AutoCompleteProps.optionHeight': ['由主题和密度计算', 'Theme and density dependent'],
@@ -884,6 +880,8 @@ const apiSectionOrder = {
   ],
 };
 const apiPropertyOrder = {
+  BadgeProps: ['children', 'count', 'max', 'showZero', 'dot', 'placement', 'color'],
+  TagProps: ['children', 'color', 'variant', 'size', 'icon', 'closable', 'onClose'],
   DataTableProps: ['data', 'columns', 'rowKey', 'options', 'localPagination', 'table'],
   ConfigProviderProps: [
     'locale',
@@ -3130,10 +3128,6 @@ const specific = {
   ],
   'DataTableProps.pagination': tablePaginationDescription,
   'DataTablePresentationProps.pagination': tablePaginationDescription,
-  'DataTableProps.variant': tableVariantDescription,
-  'DataTablePresentationProps.variant': tableVariantDescription,
-  'DataTableProps.columnDividers': columnDividersDescription,
-  'DataTablePresentationProps.columnDividers': columnDividersDescription,
   'DataTableProps.localPagination': localPaginationDescription,
   'UseDataTableOptions.localPagination': localPaginationDescription,
   'DataTablePresentationProps.toolbar': [
@@ -3142,6 +3136,8 @@ const specific = {
   ],
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
+  'DataTableProps.bleed': tableBleedDescription,
+  'DataTablePresentationProps.bleed': tableBleedDescription,
   'DataTableProps.maxHeight': tableHeightDescription,
   'DataTablePresentationProps.maxHeight': tableHeightDescription,
   'DataTableProps.minWidth': [
@@ -3272,8 +3268,8 @@ const specific = {
     'Auxiliary text; shares the muted default and can be overridden separately.',
   ],
   'LeafThemeTokens.mutedSurfaceColor': [
-    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与 DataTable 外底、Modal 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
-    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, the outer canvases of layered Card and DataTable, Modal and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
+    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
+    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, layered Card canvases and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
   ],
   'LeafThemeTokens.raisedSurfaceColor': [
     '浮层与抬升表面色。',

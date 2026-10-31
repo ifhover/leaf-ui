@@ -260,10 +260,7 @@
 @mixin table-family($component: table) {
   --leaf-table-surface: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
   --leaf-table-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
-  --leaf-table-header-background: var(
-    --leaf-component-#{$component}-background,
-    var(--leaf-color-surface-muted)
-  );
+  --leaf-table-header-background: var(--leaf-table-surface);
   --leaf-table-header-color: var(
     --leaf-component-#{$component}-color,
     var(--leaf-color-text-muted)
@@ -284,7 +281,6 @@
     --leaf-color-surface-alpha-80,
     color-mix(in srgb, var(--leaf-table-surface) 80%, transparent)
   );
-  --leaf-table-pin-shadow: rgb(0 0 0 / 0.045);
 }
 
 // State paint never changes geometry or the focus outline. Call after the component's

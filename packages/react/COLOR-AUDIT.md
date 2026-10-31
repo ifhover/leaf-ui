@@ -84,7 +84,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 23 | 5 | 40 |
+| `--leaf-color-border` | 22 | 5 | 39 |
 | `--leaf-color-border-hover` | 5 | 1 | 6 |
 | `--leaf-color-danger` | 9 | 1 | 12 |
 | `--leaf-color-danger-active` | 1 | 0 | 1 |
@@ -101,7 +101,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-danger-soft` | 0 | 1 | 2 |
 | `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
 | `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-divider` | 15 | 6 | 37 |
+| `--leaf-color-divider` | 15 | 6 | 33 |
 | `--leaf-color-info` | 4 | 0 | 5 |
 | `--leaf-color-info-border` | 0 | 0 | 0 |
 | `--leaf-color-info-dark-1` | 0 | 0 | 0 |
@@ -115,7 +115,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-info-soft` | 0 | 1 | 1 |
 | `--leaf-color-info-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-info-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-neutral` | 0 | 0 | 0 |
+| `--leaf-color-neutral` | 1 | 0 | 1 |
 | `--leaf-color-neutral-100` | 0 | 0 | 0 |
 | `--leaf-color-neutral-200` | 0 | 0 | 0 |
 | `--leaf-color-neutral-300` | 0 | 0 | 0 |
@@ -127,10 +127,10 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-neutral-900` | 0 | 0 | 0 |
 | `--leaf-color-on-danger` | 3 | 1 | 4 |
 | `--leaf-color-on-info` | 2 | 1 | 3 |
-| `--leaf-color-on-primary` | 8 | 1 | 12 |
+| `--leaf-color-on-primary` | 10 | 1 | 14 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 4 | 2 | 11 |
+| `--leaf-color-option-hover` | 5 | 2 | 13 |
 | `--leaf-color-primary` | 32 | 3 | 83 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
@@ -170,13 +170,13 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-success-soft` | 0 | 1 | 1 |
 | `--leaf-color-success-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-success-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-surface` | 34 | 4 | 60 |
+| `--leaf-color-surface` | 33 | 4 | 59 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 24 | 4 | 43 |
+| `--leaf-color-surface-muted` | 25 | 4 | 43 |
 | `--leaf-color-surface-raised` | 8 | 2 | 10 |
-| `--leaf-color-text` | 47 | 4 | 96 |
-| `--leaf-color-text-muted` | 41 | 6 | 104 |
+| `--leaf-color-text` | 47 | 4 | 97 |
+| `--leaf-color-text-muted` | 42 | 6 | 105 |
 | `--leaf-color-text-subtle` | 10 | 1 | 15 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
 | `--leaf-color-warning` | 3 | 1 | 5 |
@@ -219,7 +219,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-info-soft`
 - `--leaf-color-info-soft-active`
 - `--leaf-color-info-soft-hover`
-- `--leaf-color-neutral`
 - `--leaf-color-neutral-100`
 - `--leaf-color-neutral-200`
 - `--leaf-color-neutral-300`

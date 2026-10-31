@@ -5,7 +5,6 @@ import { CardSizes } from '../../src/examples/card/sizes';
 import { CardLayered } from '../../src/examples/card/layered';
 import { CardStandaloneTitle } from '../../src/examples/card/standalone-title';
 import { CardActions } from '../../src/examples/card/actions';
-import { CardTable } from '../../src/examples/card/table';
 import { CardTabs } from '../../src/examples/card/tabs';
 import { CardTabsWithTitle } from '../../src/examples/card/tabs-with-title';
 import { CardLoading } from '../../src/examples/card/loading';
@@ -15,6 +14,10 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 # Card 卡片
 
 在独立容器中展示相关内容和操作。
+
+<a id="表格内容" />
+
+嵌入贴边表格的用法见 [DataTable 的卡片内表格示例](table#卡片内表格)。
 
 {/* leaf:section basic */}
 
@@ -84,17 +87,6 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 <ComponentExample exampleId="actions" preview={<CardActions />} fileName="actions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/card/actions.tsx"
-```
-
-</ComponentExample>
-
-### 表格内容
-
-将 `DataTable` 放入 `cover`，让表格铺满卡片内容区；标题、表格上方的工具栏和 `footer` 仍保留横向内边距。嵌入已有内容面时使用 `variant="simple"`，避免重复的表面和边框。
-
-<ComponentExample exampleId="table" preview={<CardTable />} fileName="table.tsx" width="100%">
-
-```tsx lineNumbers file="../../src/examples/card/table.tsx"
 ```
 
 </ComponentExample>

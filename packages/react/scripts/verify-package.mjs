@@ -190,7 +190,7 @@ const components = [
   ['Breadcrumb', { items: [{ title: 'Home', href: '/' }, { title: 'Project' }] }, null, /<nav/],
   ['Pagination', { total: 120 }, null, /<nav/],
   ['Tag', { color: 'success' }, 'Published', /leaf-tag/],
-  ['Badge', { count: 5 }, null, /role="status"/],
+  ['Badge', { count: 5 }, 'Inbox', /role="status"/],
   ['Loading', { tip: 'Loading' }, null, /role="status"/],
   ['Progress', { percent: 50 }, null, /role="progressbar"/],
   ['Calendar', { defaultValue: new Date(2026, 9, 4) }, null, /leaf-calendar-view/],

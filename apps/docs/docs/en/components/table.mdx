@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TableBasic } from '../../../src/examples/en/table/basic';
+import { TableCard } from '../../../src/examples/en/table/card';
 import { TableSimple } from '../../../src/examples/en/table/simple';
 import { TableSorting } from '../../../src/examples/en/table/sorting';
 import { TableSelection } from '../../../src/examples/en/table/selection';
@@ -28,7 +29,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## Basic usage
 
-Pass data, column definitions, and a stable unique `rowKey`. Local pagination is enabled by default. Ordinary tables without configured widths distribute space based on content, with long text wrapping as needed.
+Pass data, column definitions, and a stable unique `rowKey`. Tables use a simple surface with alternating stripes, and local pagination is enabled by default. This example sets 5 rows per page so you can switch pages. Ordinary tables without configured widths distribute space based on content, with long text wrapping as needed.
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -43,9 +44,22 @@ Pass data, column definitions, and a stable unique `rowKey`. Local pagination is
 
 ## Examples
 
-### Simple appearance
+### Table in a card
 
-`variant="simple"` removes the outer frame and dividers and shows alternating stripes by default; set `striped={false}` to use fine row dividers instead.
+Place `DataTable` directly in the `Card` body and enable `bleed` to extend the table to both content edges. The `toolbar` and built-in pagination retain the card's horizontal insets; pagination padding matches the table's outward extension. This also works directly inside an integrated Card tab panel. Additional layout wrappers do not receive automatic bleed insets.
+
+<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/table/card.tsx"
+```
+
+</ComponentExample>
+
+### Row dividers
+
+<a id="simple-appearance" />
+
+Alternating stripes distinguish rows by default; set `striped={false}` to use fine row dividers instead.
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -193,9 +207,8 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `table` | `TanStackTable<TData>` | — | Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination. |
 | `toolbar` | `ReactNode` | — | Toolbar content in the automatic layout. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `variant` | `'layered' \| 'simple'` | `'layered'` | layered uses a layered card; simple uses a square content-surface header without a frame, shadows or column dividers. |
-| `columnDividers` | `boolean` | — | Add body and footer column dividers; layered headers keep short separators. Ignored in simple mode. |
-| `striped` | `boolean` | `true` | Both variants default to alternating backgrounds from the second row and hide row dividers. Disable to show fine row dividers. |
+| `bleed` | `boolean` | `false` | Extend the table to the content edges when placed directly in a Card body or integrated tab panel. Toolbar and pagination restore matching horizontal padding. Additional layout wrappers and standalone tables have no automatic extension. |
+| `striped` | `boolean` | `true` | Alternating backgrounds start from the second row and hide row dividers by default. Disable to show fine row dividers. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum table viewport height. Headers always stay fixed while the body scrolls internally; virtual mode defaults to 400 when omitted. |
 | `minWidth` | `CSSProperties['minWidth']` | — | Minimum content-area width; adapts to the container and column widths by default. |
 | `loading` | `boolean` | `false` | Show a loading state. |
@@ -228,7 +241,7 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 
 <a id="datatablepresentation-api"></a>
 
-[ConfigProvider](config-provider#configprovider-api) configures shared presentation defaults (such as `size`, `variant`, and `pagination`) via `components.DataTable`. Import `DataTablePresentationProps` from `@ifhover/leaf-ui` for typing.
+[ConfigProvider](config-provider#configprovider-api) configures shared presentation defaults (such as `size`, `striped`, and `pagination`) via `components.DataTable`. Import `DataTablePresentationProps` from `@ifhover/leaf-ui` for typing.
 
 ### useDataTable
 

@@ -19,7 +19,7 @@
 
 五种语义基色在浅深模式保持相同原值，独立于彼此。仅生成 `light-3`、`light-7`、`light-9`、`dark-1`、`dark-3`、`dark-7`、`dark-9` 七档，数字表示白色或黑色的占比（单位 10%），使用 sRGB 混色。例如 `primary-light-3` 是 70% primary + 30% 白，`primary-dark-1` 是 90% primary + 10% 黑，不是透明度。不会把原色替换成某一档，也不保留 `primary-100` 至 `-900` 等旧语义数字档。按需派生不意味着铺满亮暗 1–9 的全部矩阵。
 
-中性色带继续由固定 OKLCH 明度序列生成 `100`–`900`，默认基色 `#707070`，可通过 `neutralColor` 修改。五种语义色共 35 个派生色，加中性九档共 44 档。原色与派生色跨模式共享，只有用途映射随实际表面变化。
+中性色带继续由固定 OKLCH 明度序列生成 `100`–`900`，默认基色为略偏蓝的灰色 `#6c737e`，可通过 `neutralColor` 修改。派生色保留基色的色相，在接近白色和黑色时减弱色度，不将中性色强制转为纯灰。五种语义色共 35 个派生色，加中性九档共 44 档。原色与派生色跨模式共享，只有用途映射随实际表面变化。
 
 `resolveColorRoles(appearance, overrides)` 返回 `{ values, sources }`，统一生成共享用途并记录覆盖来源。颜色派生只随 ConfigProvider 的 JS 配置更新；不通过 DOM 属性、computed color、canvas 探针或媒体查询推断输入，也不在 hydration 后重写色板。应用可以用 `useSystemAppearance()` 获取系统偏好，再把结果传给 ConfigProvider；这是 JS 输入，不是颜色引擎监听 DOM。Portal 复制区域 CSS 变量以传递主题，不重新解析或派生颜色。CSS 颜色表达式保持表达式形式，需要确定数值的计算应由应用传入具体颜色。`deriveColors` 仅额外输出具有真实消费者的有限光学配方，不再生成无消费的旧百分比矩阵。
 
@@ -87,9 +87,9 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 
 ### 共享底板与内容表面
 
-分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card、Transfer 与 DataTable 的外层底板、显式 card 型日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card 与 Transfer 的外层底板、显式 card 型日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
-Tabs 选中滑块与 Card / Transfer / DataTable / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
+Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。DataTable 整体直接使用该内容表面，不再保留外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
 ### 跨组件的有限配方
 

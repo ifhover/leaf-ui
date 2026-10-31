@@ -2,27 +2,27 @@
 
 日常定制优先设置 ConfigProvider 的 `theme.primaryColor`、`theme.borderRadius` 和 `theme.controlHeight`，其他样式会自动派生，见[定制主题](/guide/theming)。
 
-默认浅色基础色统一来自 `colors.ts`：主题与成功为 `#1e964f`，危险为 `#dd3f2e`，警告为 `#d38b11`，信息为 `#1677ff`。组件样式和静态色板都消费同一组 `--leaf-color-*` 变量，不要在组件内重复声明语义色。
+默认浅色基础色统一来自 `colors.ts`：主题为 `#1e964f`，成功为 `#52c41a`，危险为 `#ff4d4f`，警告为 `#faad14`，信息为 `#1677ff`。组件样式和静态色板都消费同一组 `--leaf-color-*` 变量，不要在组件内重复声明语义色。
 
 ## LeafThemeTokens
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `onPrimaryColor` | `string` | `#ffffff` | 主题实底上的字色；默认白色，可手动设为 #000000。 |
-| `dangerColor` | `string` | `#dd3f2e` | 危险基色，浅深模式共用。 |
+| `dangerColor` | `string` | `#ff4d4f` | 危险基色，浅深模式共用。 |
 | `onDangerColor` | `string` | `#ffffff` | 危险实底上的字色；默认白色。 |
 | `onSuccessColor` | `string` | `#ffffff` | 成功实底上的字色；默认白色。 |
 | `onWarningColor` | `string` | `#ffffff` | 警告实底上的字色；默认白色。 |
 | `onInfoColor` | `string` | `#ffffff` | 信息实底上的字色；默认白色。 |
-| `neutralColor` | `string` | `#707070` | 中性基色，用于生成中性色阶。 |
-| `successColor` | `string` | `#1e964f` | 成功基色，浅深模式共用。 |
-| `warningColor` | `string` | `#d38b11` | 警告基色，浅深模式共用。 |
+| `neutralColor` | `string` | `#6c737e` | 中性基色，用于生成中性色阶。 |
+| `successColor` | `string` | `#52c41a` | 成功基色，浅深模式共用。 |
+| `warningColor` | `string` | `#faad14` | 警告基色，浅深模式共用。 |
 | `infoColor` | `string` | `#1677ff` | 信息基色，浅深模式共用。 |
 | `textColor` | `string` | 按外观生成 | 主要 / 次要文字 |
 | `mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
 | `subtleTextColor` | `string` | — | 辅助文字；默认与 mutedTextColor 同值，可独立覆盖。 |
 | `surfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
-| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与 DataTable 外底、Modal 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。 |
+| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。 |
 | `raisedSurfaceColor` | `string` | — | 浮层与抬升表面色。 |
 | `borderColor` | `string` | 按外观生成 | 全局外框色；显式设置时统一覆盖实色控件和弱描边外框，组件级覆盖优先。 |
 | `borderHoverColor` | `string` | — | 悬停时的中性边框色。 |

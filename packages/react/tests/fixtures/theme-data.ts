@@ -8,10 +8,10 @@ export const testThemes: Record<'default' | 'cartoon' | 'illustration', LeafThem
     borderRadius: 10,
     tokens: {
       onPrimaryColor: '#ffffff',
-      dangerColor: '#dd3f2e',
+      dangerColor: '#ff4d4f',
       onDangerColor: '#ffffff',
-      successColor: '#1e964f',
-      warningColor: '#d38b11',
+      successColor: '#52c41a',
+      warningColor: '#faad14',
       infoColor: '#1677ff',
       textColor: '#202024',
       mutedTextColor: '#68686f',

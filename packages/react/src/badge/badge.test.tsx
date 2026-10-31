@@ -32,38 +32,44 @@ describe('Badge placement', () => {
 });
 
 describe('Badge content', () => {
-  it('renders standalone counts and short text without children', () => {
-    const { container, rerender, getByRole } = render(<Badge count={120} />);
-    expect(badgeRoot(container)).toHaveClass('leaf-badge--standalone');
-    expect(getByRole('status')).toHaveTextContent('99+');
-    expect(getByRole('status')).toHaveAttribute('aria-label', '120');
-    rerender(<Badge count="NEW" />);
-    expect(getByRole('status')).toHaveTextContent('NEW');
+  it('does not render an indicator without an attached child', () => {
+    const { container } = render(<Badge count={120}>{false}</Badge>);
+    expect(container.firstChild).toBeNull();
   });
 
   it('hides empty counts and only shows zero when requested', () => {
-    const { rerender, queryByRole, getByRole } = render(<Badge />);
+    const { rerender, queryByRole, getByRole } = render(
+      <Badge>
+        <span>Target</span>
+      </Badge>,
+    );
     expect(queryByRole('status')).not.toBeInTheDocument();
-    rerender(<Badge count="" />);
+    rerender(
+      <Badge count="">
+        <span>Target</span>
+      </Badge>,
+    );
     expect(queryByRole('status')).not.toBeInTheDocument();
-    rerender(<Badge count={0} />);
+    rerender(
+      <Badge count={0}>
+        <span>Target</span>
+      </Badge>,
+    );
     expect(queryByRole('status')).not.toBeInTheDocument();
-    rerender(<Badge count={0} showZero />);
+    rerender(
+      <Badge count={0} showZero>
+        <span>Target</span>
+      </Badge>,
+    );
     expect(getByRole('status')).toHaveTextContent('0');
   });
 
-  it('switches between standalone and attached modes as children change', () => {
-    const { container, rerender } = render(<Badge count={8}>{false}</Badge>);
-    expect(badgeRoot(container)).toHaveClass('leaf-badge--standalone');
-    rerender(<Badge count={8}>Target</Badge>);
-    expect(badgeRoot(container)).toHaveClass('leaf-badge--attached');
-    expect(badgeRoot(container)).not.toHaveClass('leaf-badge--standalone');
-    rerender(<Badge count={8}>{[]}</Badge>);
-    expect(badgeRoot(container)).toHaveClass('leaf-badge--standalone');
-  });
-
-  it('keeps standalone dots empty and uses an explicit accessible name', () => {
-    const { getByRole } = render(<Badge dot count={8} aria-label="Unread" />);
+  it('keeps attached dots empty and uses an explicit accessible name', () => {
+    const { getByRole } = render(
+      <Badge dot count={8} aria-label="Unread">
+        <span>Target</span>
+      </Badge>,
+    );
     expect(getByRole('status', { name: 'Unread' })).toHaveClass('leaf-badge__indicator--dot');
     expect(getByRole('status')).toBeEmptyDOMElement();
   });
@@ -75,14 +81,22 @@ describe('Badge foreground color', () => {
     ['yellow', '#ffee00', 'var(--leaf-color-on-primary)'],
     ['dark', '#111827', 'var(--leaf-color-on-primary)'],
   ])('uses a white foreground for a %s custom background', (_, color, foreground) => {
-    const { container } = render(<Badge count={8} color={color} />);
+    const { container } = render(
+      <Badge count={8} color={color}>
+        <span>Target</span>
+      </Badge>,
+    );
     const root = badgeRoot(container);
     expect(root.style.getPropertyValue('--leaf-badge-color')).toBe(color);
     expect(root.style.getPropertyValue('--leaf-badge-on-color')).toBe(foreground);
   });
 
   it('keeps the danger foreground as a CSS fallback when no custom color is supplied', () => {
-    const { container } = render(<Badge count={8} />);
+    const { container } = render(
+      <Badge count={8}>
+        <span>Target</span>
+      </Badge>,
+    );
     expect(badgeRoot(container).style.getPropertyValue('--leaf-badge-on-color')).toBe('');
   });
 
@@ -92,7 +106,9 @@ describe('Badge foreground color', () => {
         count={8}
         color="#ffee00"
         style={{ '--leaf-badge-on-color': '#123456' } as CSSProperties}
-      />,
+      >
+        <span>Target</span>
+      </Badge>,
     );
     expect(badgeRoot(container).style.getPropertyValue('--leaf-badge-on-color')).toBe('#123456');
   });
@@ -110,7 +126,11 @@ describe('Badge foreground color', () => {
         },
       });
     });
-    const { container } = render(<Badge count={8} color="var(--custom-badge-background)" />);
+    const { container } = render(
+      <Badge count={8} color="var(--custom-badge-background)">
+        <span>Target</span>
+      </Badge>,
+    );
     expect(
       vi
         .mocked(window.getComputedStyle)

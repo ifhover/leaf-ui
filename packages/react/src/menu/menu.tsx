@@ -1,5 +1,14 @@
 import { ChevronDown } from 'lucide-react';
-import { forwardRef, type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import type { DropdownItem } from '../dropdown';
@@ -8,6 +17,8 @@ import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
+
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
@@ -77,27 +88,33 @@ function MenuSubmenu({
   open,
   id,
   label,
-  lineOffset,
   children,
 }: {
   open: boolean;
   id: string;
   label?: string;
-  lineOffset: string;
   children: () => ReactNode;
 }) {
+  const panel = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(open);
   const [visited, setVisited] = useState(open);
   if (open && !visited) setVisited(true);
+  useBrowserLayoutEffect(() => {
+    if (expanded === open) return;
+    // Establish layout with lazy content mounted before changing the transition target.
+    panel.current?.getBoundingClientRect();
+    setExpanded(open);
+  }, [expanded, open]);
   return (
     <div
+      ref={panel}
       id={id}
       role="menu"
       className="leaf-menu__submenu"
       aria-label={label}
       aria-hidden={!open || undefined}
       {...inertProps(!open)}
-      data-open={open || undefined}
-      style={{ '--leaf-menu-submenu-line-offset': lineOffset } as React.CSSProperties}
+      data-open={expanded || undefined}
     >
       <div className="leaf-menu__submenu-inner">
         <div className="leaf-menu__submenu-content">{visited && children()}</div>
@@ -213,10 +230,7 @@ export function Menu(rawProps: MenuProps) {
         onFocus: () => setActive(item.key),
         title: collapsed && typeof item.label === 'string' ? item.label : undefined,
         style: {
-          // Keep label alignment while reserving the guide rail outside the row.
-          paddingInlineStart: depth
-            ? `calc(${12 + depth * 32}px - var(--leaf-menu-submenu-line-offset) - 9px)`
-            : 12,
+          paddingInlineStart: 12 + depth * 32,
         },
       };
       const activate = () => {
@@ -286,7 +300,6 @@ export function Menu(rawProps: MenuProps) {
               id={`${id}-${item.key}`}
               open={expanded}
               label={typeof item.label === 'string' ? item.label : undefined}
-              lineOffset={`calc(var(--leaf-spacing-md) + ${direction === 'rtl' ? 10 : 6}px + ${depth * 32}px)`}
             >
               {() => renderItems(item.children ?? [], depth + 1)}
             </MenuSubmenu>

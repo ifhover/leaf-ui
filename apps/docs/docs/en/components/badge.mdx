@@ -3,7 +3,6 @@ import { BadgeBasic } from '../../../src/examples/en/badge/basic';
 import { BadgeCounts } from '../../../src/examples/en/badge/counts';
 import { BadgeDot } from '../../../src/examples/en/badge/dot';
 import { BadgeInside } from '../../../src/examples/en/badge/inside';
-import { BadgeStandalone } from '../../../src/examples/en/badge/standalone';
 
 export const leafDoc = { component: 'Badge', primaryApi: 'BadgeProps' };
 
@@ -61,17 +60,6 @@ Set `placement="inside"` to place the indicator inside the content. Leave room s
 
 </ComponentExample>
 
-### Standalone
-
-Omit `children` to display a count or short text on its own.
-
-<ComponentExample exampleId="standalone" preview={<BadgeStandalone />} fileName="standalone.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/badge/standalone.tsx"
-```
-
-</ComponentExample>
-
 {/* leaf:section api */}
 
 ## API
@@ -80,12 +68,12 @@ Omit `children` to display a count or short text on its own.
 
 Configuration for badge counts, dot indicators and attachment placement.
 
-| Prop | Type | Default | Description |
+| Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Attach the indicator to this content |
+| `children` | `ReactNode` | Required | Content the indicator attaches to; no badge renders without content |
 | `count` | `number \| string` | — | Badge content |
 | `max` | `number` | `99` | Display max+ above this count |
 | `showZero` | `boolean` | `false` | Show a zero count |
 | `dot` | `boolean` | `false` | Use a notification dot |
-| `placement` | `'outside' \| 'inside'` | `'outside'` | Attached indicator position: outside by default, or inside the top-right corner; mirrored in RTL and ignored without children |
+| `placement` | `'outside' \| 'inside'` | `'outside'` | Attached indicator position: outside by default, or inside the top-right corner; mirrored in RTL |
 | `color` | `string` | — | Custom indicator color |

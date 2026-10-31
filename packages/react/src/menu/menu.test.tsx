@@ -152,6 +152,44 @@ describe('Menu transitions', () => {
     rerender(<Menu items={items} openKeys={['projects']} onOpenChange={onOpenChange} />);
     expect(screen.getByRole('menuitem', { name: 'Design' })).toBe(child);
   });
+
+  it.each(['neutral', 'raised', 'primary'] as const)(
+    'stages controlled %s transitions with mounted content before changing the target',
+    (variant) => {
+      const { container, rerender } = render(
+        <Menu items={items} variant={variant} openKeys={[]} />,
+      );
+      const panel = container.querySelector<HTMLElement>('.leaf-menu__submenu');
+      if (!panel) throw new Error('Missing submenu');
+      const bounds = panel.getBoundingClientRect();
+      const measurements: { open: boolean; hasChild: boolean }[] = [];
+      const measure = vi.spyOn(panel, 'getBoundingClientRect').mockImplementation(() => {
+        measurements.push({
+          open: panel.hasAttribute('data-open'),
+          hasChild: Boolean(panel.querySelector('[data-menu-key="design"]')),
+        });
+        return bounds;
+      });
+
+      rerender(<Menu items={items} variant={variant} openKeys={['projects']} />);
+      const child = screen.getByRole('menuitem', { name: 'Design' });
+      expect(panel).toHaveAttribute('data-open', 'true');
+      expect(measurements).toEqual([{ open: false, hasChild: true }]);
+
+      rerender(<Menu items={items} variant={variant} openKeys={[]} />);
+      expect(panel).not.toHaveAttribute('data-open');
+      expect(panel).toHaveAttribute('inert');
+      expect(child).toBeInTheDocument();
+      rerender(<Menu items={items} variant={variant} openKeys={['projects']} />);
+      expect(screen.getByRole('menuitem', { name: 'Design' })).toBe(child);
+      expect(measurements).toEqual([
+        { open: false, hasChild: true },
+        { open: true, hasChild: true },
+        { open: false, hasChild: true },
+      ]);
+      measure.mockRestore();
+    },
+  );
 });
 
 describe('Menu groups', () => {

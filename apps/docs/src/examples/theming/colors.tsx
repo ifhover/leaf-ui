@@ -14,11 +14,11 @@ const colorOptions = [
 export function ThemeColors() {
   const [colors, setColors] = useState({
     primary: '#1e964f',
-    success: '#1e964f',
-    danger: '#dd3f2e',
-    warning: '#d38b11',
+    success: '#52c41a',
+    danger: '#ff4d4f',
+    warning: '#faad14',
     info: '#1677ff',
-    neutral: '#707070',
+    neutral: '#6c737e',
     mutedSurface: 'rgb(244,243,239)',
   });
   const [blackText, setBlackText] = useState(false);
@@ -60,16 +60,16 @@ export function ThemeColors() {
         </Flex>
         <Flex wrap gap={8}>
           <Button variant="solid">保存</Button>
-          <Tag color="success" variant="outline">
+          <Tag color="success" variant="soft">
             成功色
           </Tag>
-          <Tag color="danger" variant="outline">
+          <Tag color="danger" variant="soft">
             危险色
           </Tag>
-          <Tag color="warning" variant="outline">
+          <Tag color="warning" variant="soft">
             警告色
           </Tag>
-          <Tag color="info" variant="outline">
+          <Tag color="info" variant="soft">
             信息色
           </Tag>
         </Flex>

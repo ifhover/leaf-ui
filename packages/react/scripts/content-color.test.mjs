@@ -17,15 +17,16 @@ const TARGET_FILES = [
   'breadcrumb/breadcrumb.scss',
 ];
 
-test('simple tables keep square content surfaces and one softened 2px header divider', async () => {
+test('tables default to square content surfaces and one softened 2px header divider', async () => {
   const table = await compiledStyles('table/table.scss');
-  const simple = table('.leaf-table--simple');
-  assert.equal(simple.background, 'var(--leaf-table-surface)');
-  assert.equal(simple['--leaf-table-header-background'], 'var(--leaf-table-surface)');
-  assert.equal(simple['border-radius'], '0px');
-  assert.equal(simple.border, '0px');
-  assert.equal(table('.leaf-table--simple .leaf-table__panel').display, 'none');
-  const divider = table('.leaf-table--simple .leaf-table__header::after');
+  const surface = table('.leaf-table');
+  assert.equal(surface.background, 'var(--leaf-table-surface)');
+  assert.equal(surface['--leaf-table-header-background'], 'var(--leaf-table-surface)');
+  assert.equal(surface['border-radius'], '0px');
+  assert.equal(surface.border, '0px');
+  assert.equal(surface['box-shadow'], 'none');
+  assert.throws(() => table('.leaf-table__panel'), /missing compiled rule/);
+  const divider = table('.leaf-table__header::after');
   assert.equal(
     divider['border-block-end'],
     '2px solid var(--leaf-component-table-border-color,var(--leaf-frame-border-color,var(--leaf-table-frame-color)))',
@@ -34,27 +35,24 @@ test('simple tables keep square content surfaces and one softened 2px header div
   assert.equal(divider['inset-inline'], '0px');
   assert.equal(divider['pointer-events'], 'none');
   assert.equal(table('.leaf-table__header')['clip-path'], undefined);
-  assert.equal(table('.leaf-table--simple .leaf-table__column-header::before').display, 'none');
-  assert.equal(
-    table('.leaf-table--simple .leaf-table__cell[data-pin-edge]::after').content,
-    'none',
-  );
+  assert.throws(() => table('.leaf-table__column-header::before'), /missing compiled rule/);
+  assert.throws(() => table('.leaf-table__cell[data-pin-edge]::after'), /missing compiled rule/);
 });
 
-test('simple headers use the base font size independently of layered sizes', async () => {
+test('headers use base typography and taller size-dependent padding', async () => {
   const table = await compiledStyles('table/table.scss');
+  assert.equal(table('.leaf-table__column-header')['font-size'], 'var(--leaf-font-size)');
   assert.equal(
-    table('.leaf-table--simple .leaf-table__column-header')['font-size'],
-    'var(--leaf-font-size)',
+    table('.leaf-table__column-header')['padding-block'],
+    'var(--leaf-table-heading-gap)',
   );
+  assert.equal(table('.leaf-table')['--leaf-table-heading-gap'], 'var(--leaf-table-padding-block)');
   assert.equal(
-    table('.leaf-table__column-header')['font-size'],
-    'max(12px,var(--leaf-font-size)- 2px)',
+    table('.leaf-table')['--leaf-table-padding-block'],
+    'var(--leaf-density-row-padding,12px)',
   );
-  assert.equal(
-    table('.leaf-table--lg .leaf-table__column-header')['font-size'],
-    'var(--leaf-font-size-sm)',
-  );
+  assert.equal(table('.leaf-table--sm')['--leaf-table-padding-block'], '8px');
+  assert.equal(table('.leaf-table--lg')['--leaf-table-padding-block'], '16px');
 });
 
 test('segmented progress keeps the outer track radius and removes inner fill curves', async () => {
@@ -66,7 +64,7 @@ test('segmented progress keeps the outer track radius and removes inner fill cur
   assert.equal(progress('.leaf-progress__track')['border-radius'], '100px');
 });
 
-test('table variants retain theme-aware ink, stripes and explicit frame paint overrides', async () => {
+test('tables retain theme-aware ink, stripes and explicit divider paint overrides', async () => {
   const table = await compiledStyles('table/table.scss');
   const palette = table('.leaf-table');
   assert.equal(
@@ -114,6 +112,49 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
       );
     }
   }
+});
+
+test('Card table bleed restores identical toolbar and pagination insets and isolates nested tables', async () => {
+  const card = await compiledStyles('card/card.scss');
+  const table = await compiledStyles('tabletanstack/tabletanstack.scss');
+  for (const selector of [
+    '.leaf-card__body > [data-leaf-bleed]',
+    '.leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel > [data-leaf-bleed]',
+  ]) {
+    const insets = card(selector);
+    for (const side of ['left', 'right']) {
+      assert.equal(insets[`--leaf-bleed-${side}`], `var(--leaf-card-content-padding-${side})`);
+    }
+  }
+  for (const side of ['left', 'right']) {
+    assert.equal(table('.leaf-data-table')[`--leaf-bleed-${side}`], '0px');
+    assert.equal(
+      table('.leaf-data-table[data-leaf-bleed]')[`margin-${side}`],
+      `calc(0px - var(--leaf-bleed-${side}))`,
+    );
+    for (const part of ['toolbar', 'footer']) {
+      assert.equal(
+        table(`.leaf-data-table[data-leaf-bleed] > .leaf-data-table__${part}`)[`padding-${side}`],
+        `var(--leaf-bleed-${side})`,
+      );
+    }
+    assert.equal(
+      card('.leaf-card')[`--leaf-card-content-padding-${side}`],
+      `var(--leaf-component-card-padding-${side},var(--leaf-card-padding))`,
+    );
+    assert.equal(
+      card('.leaf-card--layered > .leaf-card__panel > .leaf-card__body')[`padding-${side}`],
+      `var(--leaf-card-content-padding-${side})`,
+    );
+  }
+  assert.equal(
+    table('.leaf-data-table[data-leaf-bleed]').width,
+    'calc(100% + var(--leaf-bleed-left)+ var(--leaf-bleed-right))',
+  );
+  assert.equal(table('.leaf-data-table[data-leaf-bleed]')['margin-block'], undefined);
+  assert.equal(card('.leaf-card__body').padding, 'var(--leaf-card-padding)');
+  assert.equal(table('.leaf-data-table__toolbar')['margin-block-end'], '14px');
+  assert.equal(table('.leaf-data-table__footer')['margin-block-start'], '14px');
 });
 
 function stripComments(source) {

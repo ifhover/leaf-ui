@@ -17,19 +17,19 @@ const dialog = (title, body, confirm = false) =>
   text(confirm ? 69 : 48, 36, title, '#202024', 11) +
   icon(X, 182, 24, '#68686f') +
   text(confirm ? 69 : 48, 58, body) +
-  (confirm ? icon(CircleX, 48, 24, '#dd3f2e') : '') +
+  (confirm ? icon(CircleX, 48, 24, '#ff4d4f') : '') +
   rect(82, 78, 52, 22) +
   text(91, 93, 'Cancel', '#68686f', 9) +
-  button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#dd3f2e' : '#1e964f');
+  button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#ff4d4f' : '#1e964f');
 const confirmation =
   rect(20, 13, 200, 102, '#00000026', 'none', 12) +
   rect(36, 24, 168, 80, '#fff', '#e5e5e8', 10) +
   text(48, 43, 'Delete project?', '#202024', 11) +
-  icon(CircleAlert, 48, 53, '#dd3f2e') +
+  icon(CircleAlert, 48, 53, '#ff4d4f') +
   text(68, 64, 'This cannot be undone.', '#202024', 8) +
   rect(94, 78, 43, 18, '#fff', '#e5e5e8', 5) +
   text(103, 90, 'Cancel', '#202024', 8) +
-  rect(143, 78, 49, 18, '#dd3f2e', 'none', 5) +
+  rect(143, 78, 49, 18, '#ff4d4f', 'none', 5) +
   text(155, 90, 'Delete', '#fff', 8);
 const images = {
   form:
@@ -59,7 +59,7 @@ const images = {
     text(75, 58, 'Edit', '#1e964f') +
     text(75, 81, 'Copy') +
     `<path d="M66 91h108" stroke="#e5e5e8"/>` +
-    text(75, 108, 'Delete', '#dd3f2e'),
+    text(75, 108, 'Delete', '#ff4d4f'),
   alert:
     rect(18, 30, 204, 68, '#eaf4ed', '#b9d8c3') +
     icon(Check, 30, 45) +
@@ -70,7 +70,7 @@ const images = {
     icon(Info, 53, 37, '#1677ff') +
     text(76, 49, 'A new notification') +
     rect(31, 70, 178, 30) +
-    icon(CircleAlert, 43, 78, '#d38b11') +
+    icon(CircleAlert, 43, 78, '#faad14') +
     text(65, 90, 'Check your settings'),
   'date-time-picker':
     rect(20, 13, 200, 26) +

@@ -16,23 +16,14 @@ import { usePresence } from '../shared/presence';
 import type { ControlSize } from '../shared/types';
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
-  color?:
-    | 'default'
-    | 'primary'
-    | 'success'
-    | 'warning'
-    | 'danger'
-    | 'error'
-    | 'info'
-    | (string & {});
-  variant?: 'soft' | 'outline';
+  color?: 'default' | 'success' | 'warning' | 'danger' | 'info' | (string & {});
+  variant?: 'soft' | 'solid';
   size?: ControlSize;
-  dot?: boolean;
   icon?: ReactNode;
   closable?: boolean;
   onClose?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
-const presets = ['default', 'primary', 'success', 'warning', 'danger', 'error', 'info'];
+const presets = ['default', 'success', 'warning', 'danger', 'info'];
 function tagVariables(
   appearance: 'light' | 'dark',
   seed: string,
@@ -56,14 +47,14 @@ function tagVariables(
     '--leaf-tag-color-alpha-10': values['--leaf-color-primary-soft-hover'],
     '--leaf-tag-color-surface-8': values['--leaf-color-primary-soft'],
     '--leaf-tag-ink': values['--leaf-color-primary-ink'],
+    '--leaf-tag-solid-foreground': 'var(--leaf-color-on-primary)',
   };
 }
 export function Tag(rawProps: TagProps) {
   const {
-    color = 'primary',
+    color = 'default',
     variant = 'soft',
     size = 'md',
-    dot = true,
     icon,
     closable = false,
     onClose,
@@ -76,15 +67,17 @@ export function Tag(rawProps: TagProps) {
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
   const present = usePresence(!closed, root);
-  const custom = !presets.includes(color);
-  const presetColor = color === 'default' ? 'primary' : color === 'error' ? 'danger' : color;
+  // Keep removed semantic aliases predictable while the public presets stay neutral plus four statuses.
+  const normalizedColor = color === 'primary' ? 'default' : color === 'error' ? 'danger' : color;
+  const custom = !presets.includes(normalizedColor);
+  const presetColor = normalizedColor;
   const appearance = theme.appearance ?? 'light';
   const surface = theme.tokens?.surfaceColor;
   const mutedSurface = theme.tokens?.mutedSurfaceColor;
   const neutral = theme.tokens?.neutralColor;
   const customVariables = useMemo(
-    () => (custom ? tagVariables(appearance, color, surface, mutedSurface, neutral) : {}),
-    [appearance, color, custom, mutedSurface, neutral, surface],
+    () => (custom ? tagVariables(appearance, normalizedColor, surface, mutedSurface, neutral) : {}),
+    [appearance, custom, mutedSurface, neutral, normalizedColor, surface],
   );
   if (!present) return null;
   return (
@@ -102,8 +95,6 @@ export function Tag(rawProps: TagProps) {
         <span className="leaf-tag__icon" aria-hidden="true">
           {icon}
         </span>
-      ) : dot ? (
-        <span className="leaf-tag__dot" aria-hidden="true" />
       ) : null}
       <span>{children}</span>
       {closable && (

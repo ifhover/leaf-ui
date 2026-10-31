@@ -99,6 +99,7 @@ test('neutral Menu uses the requested light fill without changing other appearan
     );
     assert.equal(palette['--leaf-menu-hover-opacity'], '0');
     assert.equal(palette['--leaf-menu-active-background'], 'var(--leaf-color-primary-alpha-4)');
+    assert.equal(palette['--leaf-menu-hover-background'], 'transparent');
   }
 });
 

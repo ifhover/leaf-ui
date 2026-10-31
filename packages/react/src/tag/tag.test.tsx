@@ -7,47 +7,46 @@ import { ConfigProvider } from '../config-provider/config-provider';
 import { Tag } from './tag';
 
 describe('Tag', () => {
-  it('shows a decorative dot by default, allows hiding it and prioritizes custom icons', () => {
+  it('renders custom icons without a built-in dot', () => {
     const { container, rerender } = render(<Tag>Live</Tag>);
-    expect(container.querySelector('.leaf-tag__dot')).toHaveAttribute('aria-hidden', 'true');
-    expect(container.querySelector('.leaf-tag')).not.toHaveAttribute('dot');
-    rerender(<Tag dot={false}>Live</Tag>);
     expect(container.querySelector('.leaf-tag__dot')).toBeNull();
     rerender(<Tag icon={<svg data-testid="custom-icon" />}>Live</Tag>);
-    expect(container.querySelector('.leaf-tag__dot')).toBeNull();
-    expect(container.querySelector('.leaf-tag__icon svg')).not.toBeNull();
-    rerender(
-      <Tag dot={false} icon={<svg />}>
-        Live
-      </Tag>,
-    );
     expect(container.querySelector('.leaf-tag__icon svg')).not.toBeNull();
   });
 
-  it('supports outlined tags and regional dot defaults with instance overrides', () => {
+  it('supports solid tags and regional variant defaults', () => {
     const { container, rerender } = render(
-      <ConfigProvider components={{ Tag: { variant: 'outline', dot: false } }}>
+      <ConfigProvider components={{ Tag: { variant: 'solid' } }}>
         <Tag>Live</Tag>
       </ConfigProvider>,
     );
-    expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--outline');
-    expect(container.querySelector('.leaf-tag__dot')).toBeNull();
+    expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--solid');
     rerender(
-      <ConfigProvider components={{ Tag: { dot: false } }}>
-        <Tag dot>Live</Tag>
+      <ConfigProvider components={{ Tag: { variant: 'soft' } }}>
+        <Tag>Live</Tag>
       </ConfigProvider>,
     );
-    expect(container.querySelector('.leaf-tag__dot')).not.toBeNull();
+    expect(container.querySelector('.leaf-tag')).toHaveClass('leaf-tag--soft');
   });
 
   it('maps presets to status data and leaves custom colors for local derivation', () => {
-    const { container, rerender } = render(<Tag color="success">Success</Tag>);
+    const { container, rerender } = render(<Tag>Default</Tag>);
     const tag = container.querySelector<HTMLElement>('.leaf-tag');
+    expect(tag).toHaveAttribute('data-color', 'default');
+
+    rerender(<Tag color="success">Success</Tag>);
     expect(tag).toHaveAttribute('data-color', 'success');
 
     rerender(<Tag color="#7654c6">Custom</Tag>);
     expect(tag).not.toHaveAttribute('data-color');
     expect(tag?.style.getPropertyValue('--leaf-tag-color')).toBe('#7654c6');
+  });
+
+  it('uses the neutral default instead of the primary theme color', () => {
+    const { container } = render(<Tag>Default</Tag>);
+    const tag = container.querySelector<HTMLElement>('.leaf-tag');
+    expect(tag).toHaveAttribute('data-color', 'default');
+    expect(tag?.style.getPropertyValue('--leaf-tag-color')).toBe('');
   });
 
   it('derives readable custom soft labels without inheriting primary ink', async () => {

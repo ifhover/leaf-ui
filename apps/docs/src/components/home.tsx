@@ -1,4 +1,3 @@
-import { Badge } from '@ifhover/leaf-ui';
 import { ButtonLink } from './button-link';
 import { componentCatalog } from './component-catalog';
 import { HomeShowcase } from './home-showcase';
@@ -43,12 +42,12 @@ export function HomeLayout() {
   return (
     <main className="leaf-home">
       <section className="leaf-hero">
-        <Badge className="leaf-release">
+        <span className="leaf-release">
           {t(
             `${componentCatalog.length} 个 React 组件 · 开箱即用，风格统一`,
             `${componentCatalog.length} React components · Consistent out of the box`,
           )}
-        </Badge>
+        </span>
         <h1>
           <span className="leaf-hero__brand">Leaf UI</span>
           <span className="leaf-hero__headline">

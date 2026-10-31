@@ -2,27 +2,27 @@
 
 Prefer ConfigProvider's `theme.primaryColor`, `theme.borderRadius` and `theme.controlHeight` for everyday customization. Related styles derive automatically; see [theming](/en/guide/theming).
 
-Default light base colors come from `colors.ts`: primary and success use `#1e964f`, danger uses `#dd3f2e`, warning uses `#d38b11`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
+Default light base colors come from `colors.ts`: primary uses `#1e964f`, success uses `#52c41a`, danger uses `#ff4d4f`, warning uses `#faad14`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
 
 ## LeafThemeTokens
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `onPrimaryColor` | `string` | `#ffffff` | Text on primary solid fills; defaults to white and can be set to #000000. |
-| `dangerColor` | `string` | `#dd3f2e` | Danger base shared by both appearances. |
+| `dangerColor` | `string` | `#ff4d4f` | Danger base shared by both appearances. |
 | `onDangerColor` | `string` | `#ffffff` | Text on danger fills; white by default. |
 | `onSuccessColor` | `string` | `#ffffff` | Text on success fills; white by default. |
 | `onWarningColor` | `string` | `#ffffff` | Text on warning fills; white by default. |
 | `onInfoColor` | `string` | `#ffffff` | Text on info fills; white by default. |
-| `neutralColor` | `string` | `#707070` | Neutral base used to generate the neutral scale. |
-| `successColor` | `string` | `#1e964f` | Success base shared by both appearances. |
-| `warningColor` | `string` | `#d38b11` | Warning base shared by both appearances. |
+| `neutralColor` | `string` | `#6c737e` | Neutral base used to generate the neutral scale. |
+| `successColor` | `string` | `#52c41a` | Success base shared by both appearances. |
+| `warningColor` | `string` | `#faad14` | Warning base shared by both appearances. |
 | `infoColor` | `string` | `#1677ff` | Info base shared by both appearances. |
 | `textColor` | `string` | Appearance | Main / secondary text |
 | `mutedTextColor` | `string` | Appearance | Main / secondary text |
 | `subtleTextColor` | `string` | — | Auxiliary text; shares the muted default and can be overridden separately. |
 | `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
-| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, the outer canvases of layered Card and DataTable, Modal and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence. |
+| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, layered Card canvases and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence. |
 | `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
 | `borderColor` | `string` | Appearance | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
 | `borderHoverColor` | `string` | — | Neutral border color on hover. |
