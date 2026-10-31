@@ -2,11 +2,7 @@ import { Card, Flex, Progress, Space, Tag, Text } from '@ifhover/leaf-ui';
 
 export function CardLayered() {
   return (
-    <Card
-      title="Project progress"
-      extra={<Tag variant="outline">In progress</Tag>}
-      variant="layered"
-    >
+    <Card title="Project progress" extra={<Tag variant="soft">In progress</Tag>} variant="layered">
       <Space direction="vertical" align="stretch" size="md">
         <Text>Document component usage and add interactive examples.</Text>
         <Progress percent={60} aria-label="Project completion" />

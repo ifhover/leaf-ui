@@ -9,7 +9,7 @@ const members = [
 export function TableSimple() {
   return (
     <DataTable
-      variant="simple"
+      striped={false}
       data={members}
       columns={[
         { accessorKey: 'name', header: 'Member' },
@@ -17,7 +17,7 @@ export function TableSimple() {
         { accessorKey: 'projects', header: 'Projects' },
       ]}
       rowKey="id"
-      aria-label="Simple table"
+      aria-label="Table with row dividers"
       pagination={false}
     />
   );

@@ -4,6 +4,7 @@
 // Each appearance supplies a complete state palette; row geometry stays shared.
 @mixin appearance($variant) {
   --leaf-menu-unselected-color: #{mixins.neutral-option-color()};
+  --leaf-menu-unselected-label-color: currentColor;
   --leaf-menu-canvas: var(--leaf-color-surface);
   --leaf-menu-hover-color: var(--leaf-menu-unselected-color);
   --leaf-menu-hover-opacity: 1;
@@ -38,7 +39,9 @@
     --leaf-menu-selected-clip: inset(0 0 -4px);
   }
   @if $variant == primary {
+    --leaf-menu-unselected-label-color: var(--leaf-component-menu-color, var(--leaf-color-text));
     --leaf-menu-hover-color: var(--leaf-color-primary);
+    --leaf-menu-hover-background: transparent;
     --leaf-menu-selected-color: var(--leaf-color-primary);
     --leaf-menu-selected-background: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
     --leaf-menu-active-background: var(--leaf-color-primary-alpha-4);
@@ -47,7 +50,16 @@
 
 @mixin row-feedback {
   color: var(--leaf-menu-item-color, var(--leaf-menu-unselected-color));
+  font-weight: var(--leaf-font-weight);
   background: transparent;
+  &:not(:hover):not(:focus-visible):not([data-selected]):not([aria-current='page']):not(
+      [data-danger]
+    ):not(.leaf-dropdown__danger):not(:disabled):not([aria-disabled='true']) {
+    > .leaf-menu__label,
+    > .leaf-menu__popup-label {
+      color: var(--leaf-menu-unselected-label-color);
+    }
+  }
   // Floating options also have a shared hover fill; Menu paints only its own layer.
   &:is(:hover, :focus-visible, :active):not(:disabled):not([aria-disabled='true']) {
     background: transparent;
@@ -90,7 +102,6 @@
   }
   &:is([data-selected], [aria-current='page']) {
     color: var(--leaf-menu-selected-color);
-    font-weight: var(--leaf-font-weight);
     &::before {
       background: var(--leaf-menu-selected-background);
       border: var(--leaf-menu-selected-border);
@@ -140,6 +151,13 @@
 .leaf-menu--primary,
 .leaf-menu__popup--primary {
   @include appearance(primary);
+}
+.leaf-menu__submenu,
+.leaf-menu__popup {
+  --leaf-menu-unselected-label-color: var(
+    --leaf-component-menu-color,
+    var(--leaf-color-text-muted)
+  );
 }
 
 .leaf-menu {
@@ -251,31 +269,18 @@
     width: 60px;
   }
   &__submenu {
-    position: relative;
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
     transition:
       grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &::before {
-      content: '';
-      position: absolute;
-      inset-block: 0 4px;
-      inset-inline-start: var(--leaf-menu-submenu-line-offset);
-      width: 1px;
-      background: var(--leaf-color-divider);
-      border-radius: 999px;
-      z-index: 2;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-    }
     &[data-open='true'] {
       grid-template-rows: 1fr;
       opacity: 1;
-      &::before {
-        opacity: 1;
+      @starting-style {
+        grid-template-rows: 0fr;
+        opacity: 0;
       }
     }
   }
@@ -284,8 +289,8 @@
     overflow: hidden;
   }
   &__submenu &__item {
-    width: calc(100% - var(--leaf-menu-submenu-line-offset) - 9px);
-    margin-inline-start: calc(var(--leaf-menu-submenu-line-offset) + 9px);
+    width: 100%;
+    margin-inline-start: 0;
     // Inline tags can exceed the text line box; keep the navigation row's
     // agreed height instead of letting trailing content grow the layout.
     min-height: var(--leaf-density-option-height);
@@ -297,8 +302,11 @@
     transform: translateY(-5px);
     transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
   }
-  &__submenu[data-open='true'] &__submenu-content {
+  &__submenu[data-open='true'] > &__submenu-inner > &__submenu-content {
     transform: translateY(0);
+    @starting-style {
+      transform: translateY(-5px);
+    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -17,6 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { Card } from '../card';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
 import * as tableEntry from '../table';
@@ -214,6 +215,8 @@ describe('DataTable TanStack adapter', () => {
       selectAllMode: 'all',
       columnReordering: true,
       onRowReorder: vi.fn(),
+      variant: 'layered',
+      columnDividers: true,
     };
     const view = render(
       <DataTable {...legacy} data={data} columns={columns} rowKey="id" toolbar="Tools" />,
@@ -270,7 +273,7 @@ describe('DataTable TanStack adapter', () => {
     const table = screen.getByRole('table', { name: 'Fixed headers' });
     expect(table).not.toHaveAttribute('stickyHeader');
     expect(table.closest('.leaf-data-table')).not.toHaveAttribute('stickyHeader');
-    expect(table.closest('.leaf-table')?.querySelector('.leaf-table__panel')).toBeInTheDocument();
+    expect(table.closest('.leaf-table')?.querySelector('.leaf-table__panel')).toBeNull();
   });
 
   it('creates a single engine for the data/columns convenience mode', async () => {
@@ -618,51 +621,44 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeChecked();
   });
 
-  it('supports simple regional defaults and explicit layered overrides without replacing rows', async () => {
+  it('supports regional stripes and explicit overrides without replacing selected rows', async () => {
+    expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('variant');
+    expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('columnDividers');
     const { rerender } = render(
-      <ConfigProvider
-        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
-      >
+      <ConfigProvider components={{ DataTable: { striped: true } }}>
         <Harness pagination={false} selection="multiple" />
       </ConfigProvider>,
     );
     const table = screen.getByRole('table');
     const root = table.closest('.leaf-table');
-    expect(root).toHaveClass('leaf-table--simple');
     expect(root).toHaveClass('leaf-table--striped');
     expect(root).not.toHaveClass('leaf-table--column-dividers');
     expect(table.closest('.leaf-data-table')).not.toHaveAttribute('variant');
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Alice' }));
     rerender(
-      <ConfigProvider
-        components={{ DataTable: { variant: 'simple', striped: true, columnDividers: true } }}
-      >
-        <Harness variant="layered" pagination={false} selection="multiple" />
+      <ConfigProvider components={{ DataTable: { striped: true } }}>
+        <Harness striped={false} pagination={false} selection="multiple" />
       </ConfigProvider>,
     );
     expect(screen.getByRole('table')).toBe(table);
-    expect(root).not.toHaveClass('leaf-table--simple');
-    expect(root).toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
+    expect(root).not.toHaveClass('leaf-table--striped', 'leaf-table--column-dividers');
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
   });
 
-  it('defaults to stripes but ignores column dividers in simple data mode and server output', () => {
+  it('defaults to a frameless striped table in data mode and server output', () => {
     const props = {
       data,
       columns,
       rowKey: 'id',
-      variant: 'simple',
-      columnDividers: true,
       pagination: false,
     } as const;
     const { rerender } = render(<DataTable {...props} />);
-    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--simple');
     expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--striped');
     expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
       'leaf-table--column-dividers',
     );
     const html = renderToString(<DataTable {...props} />);
-    expect(html).toContain('leaf-table--simple');
+    expect(html).not.toContain('leaf-table__panel');
     expect(html).toContain('leaf-table--striped');
     expect(html).not.toContain('leaf-table--column-dividers');
     expect(html).not.toContain('variant=');
@@ -675,16 +671,77 @@ describe('DataTable TanStack adapter', () => {
     );
   });
 
-  it('lets explicit simple stripes override regional defaults without replacing the table', () => {
+  it('supports regional bleed and instance opt-out without resetting pagination or the native table', async () => {
+    function CardTable({ bleed }: { bleed?: boolean }) {
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        options: { initialState: { pagination: { pageSize: 2 } } },
+      });
+      return (
+        <Card title="Members">
+          <DataTable
+            table={table}
+            bleed={bleed}
+            aria-label="People"
+            toolbar={<input aria-label="Filter members" />}
+          />
+        </Card>
+      );
+    }
+    const view = (bleed?: boolean) => (
+      <ConfigProvider locale="en-US" components={{ DataTable: { bleed: true } }}>
+        <CardTable bleed={bleed} />
+      </ConfigProvider>
+    );
+    const { rerender } = render(view());
+    const table = screen.getByRole('table', { name: 'People' });
+    const root = table.closest('.leaf-data-table');
+    expect(root).toHaveAttribute('data-leaf-bleed', 'true');
+    expect(root).not.toHaveAttribute('bleed');
+    expect(root?.parentElement).toHaveClass('leaf-card__body');
+    expect(
+      screen.getByRole('textbox', { name: 'Filter members' }).closest('.leaf-data-table__toolbar')
+        ?.parentElement,
+    ).toBe(root);
+    expect(
+      screen.getByRole('button', { name: 'Next page' }).closest('.leaf-data-table__footer')
+        ?.parentElement,
+    ).toBe(root);
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(screen.getByText('Charlie')).toBeInTheDocument();
+    expect(screen.queryByText('Alice')).toBeNull();
+    rerender(view(false));
+    expect(screen.getByRole('table', { name: 'People' })).toBe(table);
+    expect(root).not.toHaveAttribute('data-leaf-bleed');
+    expect(screen.getByText('Charlie')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Filter members' })).toBeInTheDocument();
+  });
+
+  it('renders bleed consistently in data mode and SSR without adding a native table attribute', () => {
+    const props = { data, columns, rowKey: 'id', pagination: false } as const;
+    const { rerender } = render(<DataTable {...props} bleed />);
+    const table = screen.getByRole('table');
+    expect(table.closest('.leaf-data-table')).toHaveAttribute('data-leaf-bleed', 'true');
+    expect(table).not.toHaveAttribute('bleed');
+    const html = renderToString(<DataTable {...props} bleed />);
+    expect(html).toContain('data-leaf-bleed="true"');
+    expect(html).not.toMatch(/\sbleed=/u);
+    rerender(<DataTable {...props} />);
+    expect(screen.getByRole('table')).toBe(table);
+    expect(table.closest('.leaf-data-table')).not.toHaveAttribute('data-leaf-bleed');
+  });
+
+  it('lets explicit stripes override regional defaults without replacing the table', () => {
     const view = (striped?: boolean) => (
-      <ConfigProvider components={{ DataTable: { variant: 'simple', striped: false } }}>
+      <ConfigProvider components={{ DataTable: { striped: false } }}>
         <DataTable data={data} columns={columns} rowKey="id" pagination={false} striped={striped} />
       </ConfigProvider>
     );
     const { rerender } = render(view());
     const table = screen.getByRole('table');
     const root = table.closest('.leaf-table');
-    expect(root).toHaveClass('leaf-table--simple');
     expect(root).not.toHaveClass('leaf-table--striped');
     rerender(view(true));
     expect(screen.getByRole('table')).toBe(table);

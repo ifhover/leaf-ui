@@ -189,7 +189,11 @@ function WorkspaceShowcase() {
                   key: 'inbox',
                   label: t('收件箱', 'Inbox'),
                   icon: <Inbox size={17} />,
-                  extra: <Badge count={3} />,
+                  extra: (
+                    <Badge count={3}>
+                      <span aria-hidden="true" />
+                    </Badge>
+                  ),
                 },
               ],
             },

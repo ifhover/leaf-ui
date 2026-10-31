@@ -7,6 +7,24 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.13.0 - 2026-11-01
+
+### Added and improved
+
+- DataTable adds `bleed`: when placed directly in a Card body or integrated tab panel, the table extends to both edges while its toolbar and pagination restore the same horizontal inset. Vertical spacing is preserved. The card example moves to the Table guide, and basic usage now demonstrates pagination.
+- DataTable adopts one simple appearance with taller headers, softer header text and a lighter bottom divider. Stripes, sticky headers, pinned columns and row interactions remain available.
+- Tag offers `soft` with a light background and colored text, and `solid` with a colored background and white text. Selected and unselected tags share the same radius, and close controls have a smaller hover background. Bilingual color, appearance and icon examples cover every built-in color and a custom color.
+- Default neutrals use a blue-gray seed. Success, warning and danger bases match Ant Design, while info remains `#1677ff`. Updated theme examples, design resources and Figma exports.
+- Menu unifies item weights and refines top-level text, submenu indentation and colors. Programmatic and click expansion share transitions, with fixes for initial and lazy expansion, nested submenu motion and primary press feedback.
+
+### Migration
+
+- This `0.x` minor release removes APIs and changes default appearances. DataTable removes `variant`, `columnDividers` and the layered appearance; the former simple appearance is now the only default. Remove these props from instances and `ConfigProvider.components.DataTable`; legacy JavaScript values are ignored. Use `striped={false}` for thin row dividers.
+- Badge now requires `children` and no longer renders standalone indicators. Attach count or dot badges to actual content; use Tag for standalone status text.
+- Tag removes `dot` and `variant="outline"`. Remove `dot` and choose `soft` or `solid` instead of outline. The default changes from primary to neutral gray with black text. Presets are `success` / `info` / `warning` / `danger`, with custom colors also supported. Legacy `color="primary"` becomes neutral, and `error` maps to `danger`. Soft preset text uses the semantic base color; solid text defaults to white. CheckableTag and TagGroup use neutral soft when unselected and primary solid when selected.
+- The default neutral seed changes from `#707070` to `#6c737e`, affecting shared text, surfaces, borders and neutral feedback. Success, danger and warning bases change to `#52c41a`, `#ff4d4f` and `#faad14`. Explicit theme overrides retain precedence. To restore the previous palette, set `theme.tokens` to `neutralColor: '#707070'`, `successColor: '#1e964f'`, `dangerColor: '#dd3f2e'` and `warningColor: '#d38b11'`.
+- Menu items now default to weight 500 across all three appearances. Ordinary unselected top-level labels in the default primary appearance use body text, while submenu labels use muted text; explicit component color overrides retain precedence. Inline submenus fill the available width without hierarchy lines. Second-level content aligns with the text of top-level items that have icons, with deeper levels indented further.
+
 ## 0.12.0 - 2026-10-31
 
 ### Added and improved

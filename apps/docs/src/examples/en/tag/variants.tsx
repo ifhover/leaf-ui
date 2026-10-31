@@ -1,22 +1,36 @@
-import { Flex, Grid, Tag, Text } from '@ifhover/leaf-ui';
-import { Fragment } from 'react';
-
-const options = [
-  { value: 'soft', label: 'Soft' },
-  { value: 'outline', label: 'Outline' },
-] as const;
+import { Flex, Tag, Text } from '@ifhover/leaf-ui';
 
 export function TagVariants() {
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
-      {options.map(({ value, label }) => (
-        <Fragment key={value}>
-          <Text tone="muted">{label}</Text>
-          <Flex align="center" wrap>
-            <Tag variant={value}>In progress</Tag>
-          </Flex>
-        </Fragment>
-      ))}
-    </Grid>
+    <Flex direction="column" gap="sm" align="start">
+      <Flex gap="sm" align="center" wrap>
+        <Text tone="muted">soft</Text>
+        <Tag>Default</Tag>
+        <Tag color="success">Success</Tag>
+        <Tag color="info">Info</Tag>
+        <Tag color="warning">Warning</Tag>
+        <Tag color="danger">Danger</Tag>
+        <Tag color="#722ed1">Custom</Tag>
+      </Flex>
+      <Flex gap="sm" align="center" wrap>
+        <Text tone="muted">solid</Text>
+        <Tag variant="solid">Default</Tag>
+        <Tag color="success" variant="solid">
+          Success
+        </Tag>
+        <Tag color="info" variant="solid">
+          Info
+        </Tag>
+        <Tag color="warning" variant="solid">
+          Warning
+        </Tag>
+        <Tag color="danger" variant="solid">
+          Danger
+        </Tag>
+        <Tag color="#722ed1" variant="solid">
+          Custom
+        </Tag>
+      </Flex>
+    </Flex>
   );
 }

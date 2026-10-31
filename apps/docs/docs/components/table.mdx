@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TableBasic } from '../../src/examples/table/basic';
+import { TableCard } from '../../src/examples/table/card';
 import { TableSimple } from '../../src/examples/table/simple';
 import { TableSorting } from '../../src/examples/table/sorting';
 import { TableSelection } from '../../src/examples/table/selection';
@@ -28,7 +29,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 基础用法
 
-传入数据、列定义与稳定唯一的 `rowKey`。默认开启本地分页。普通表格不设置列宽时按内容分配空间，长文本可以换行。
+传入数据、列定义与稳定唯一的 `rowKey`。默认使用简洁外观和斑马纹，并开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本可以换行。
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -43,9 +44,22 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 示例
 
-### 简洁样式
+### 卡片内表格
 
-`variant="simple"` 移除外框和分隔线，默认带有斑马纹；设置 `striped={false}` 可改为行间细线。
+将 `DataTable` 直接放入 `Card` 正文并启用 `bleed`，表格区域即可左右贴边。`toolbar` 筛选区与内置分页保留卡片的横向内边距，分页补回的内边距与表格向外延伸的距离一致。支持直接放入 Card 内嵌标签页的内容区；额外包裹有布局的容器时不自动贴边。
+
+<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/card.tsx"
+```
+
+</ComponentExample>
+
+### 行间分隔线
+
+<a id="简洁样式" />
+
+默认使用斑马纹区分行；设置 `striped={false}` 可改为行间细线。
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -193,9 +207,8 @@ npm install @tanstack/react-table@^8.21.3
 | `table` | `TanStackTable<TData>` | — | 由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。 |
 | `toolbar` | `ReactNode` | — | 自动布局中的工具栏内容。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `variant` | `'layered' \| 'simple'` | `'layered'` | layered 使用分层卡片；simple 使用直角内容面表头，无外框、阴影和列分隔线。 |
-| `columnDividers` | `boolean` | — | 增加表体和表尾的列分隔线；layered 表头保留短分隔线。simple 模式忽略此项。 |
-| `striped` | `boolean` | `true` | 两种外观均默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。 |
+| `bleed` | `boolean` | `false` | 直接嵌入 Card 正文或内嵌标签页面板时，让表格区域左右贴边；工具栏与分页补回相同的横向内边距。额外布局容器内不自动延伸，Card 外无延伸量。 |
+| `striped` | `boolean` | `true` | 默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。 |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。 |
 | `minWidth` | `CSSProperties['minWidth']` | — | 表格内容区域的最小宽度；默认适应容器与列宽。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
@@ -228,7 +241,7 @@ npm install @tanstack/react-table@^8.21.3
 
 <a id="datatablepresentation-api"></a>
 
-[ConfigProvider](config-provider#configprovider-api) 的 `components.DataTable` 可全局配置展示参数（如 `size`、`variant`、`pagination` 等）。类型定义可从 `@ifhover/leaf-ui` 导入 `DataTablePresentationProps`。
+[ConfigProvider](config-provider#configprovider-api) 的 `components.DataTable` 可全局配置展示参数（如 `size`、`striped`、`pagination` 等）。类型定义可从 `@ifhover/leaf-ui` 导入 `DataTablePresentationProps`。
 
 ### useDataTable
 

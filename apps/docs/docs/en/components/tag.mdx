@@ -1,8 +1,8 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TagBasic } from '../../../src/examples/en/tag/basic';
-import { TagIcons } from '../../../src/examples/en/tag/icons';
 import { TagColors } from '../../../src/examples/en/tag/colors';
 import { TagVariants } from '../../../src/examples/en/tag/variants';
+import { TagIcons } from '../../../src/examples/en/tag/icons';
 import { TagSizes } from '../../../src/examples/en/tag/sizes';
 import { TagCheckable } from '../../../src/examples/en/tag/checkable';
 import { TagSelection } from '../../../src/examples/en/tag/selection';
@@ -23,6 +23,7 @@ Use Tag to add a short category or status label to content.
 <ComponentExample exampleId="basic" preview={<TagBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -31,35 +32,38 @@ Use Tag to add a short category or status label to content.
 
 ## Examples
 
-### Dots and icons
-
-A status dot is shown by default. Hide it with `dot={false}` or replace it with `icon`.
-
-<ComponentExample exampleId="icons" preview={<TagIcons />} fileName="icons.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/tag/icons.tsx"
-```
-
-</ComponentExample>
-
 ### Colors
 
-`color` accepts a semantic color or a custom color value.
+The default tag uses a gray background and black text. This example shows every built-in color and a custom color.
 
 <ComponentExample exampleId="colors" preview={<TagColors />} fileName="colors.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/colors.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Appearance
 
-Use `variant` to choose soft or outline appearance.
+Use `variant` `soft` for a light background with colored text or `solid` for a colored background with white text. The example shows every built-in color and a custom color.
 
 <ComponentExample exampleId="variants" preview={<TagVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/variants.tsx"
+
+```
+
+</ComponentExample>
+
+### Icons
+
+This example shows `soft` and `solid` appearances with every built-in color and a custom color. Tags no longer provide a built-in dot.
+
+<ComponentExample exampleId="icons" preview={<TagIcons />} fileName="icons.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/tag/icons.tsx"
+
 ```
 
 </ComponentExample>
@@ -71,6 +75,7 @@ Set the size with `size`; the default is `md`.
 <ComponentExample exampleId="sizes" preview={<TagSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/sizes.tsx"
+
 ```
 
 </ComponentExample>
@@ -84,6 +89,7 @@ Use `CheckableTag` for a toggle selection and control it with `checked` and `onC
 <ComponentExample exampleId="checkable" preview={<TagCheckable />} fileName="checkable.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/checkable.tsx"
+
 ```
 
 </ComponentExample>
@@ -95,6 +101,7 @@ Use `TagGroup` for multiple options. `value` and `onChange` use an array of stri
 <ComponentExample exampleId="selection" preview={<TagSelection />} fileName="selection.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/selection.tsx"
+
 ```
 
 </ComponentExample>
@@ -108,6 +115,7 @@ Set `closable` to allow removal. Update a dynamic list with `onClose`, or call `
 <ComponentExample exampleId="closable" preview={<TagClosable />} fileName="closable.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/tag/closable.tsx"
+
 ```
 
 </ComponentExample>
@@ -120,50 +128,49 @@ Set `closable` to allow removal. Update a dynamic list with `onClose`, or call `
 
 Configure tag content, appearance and closing.
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `children` | `ReactNode` | — | Tag content |
-| `color` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info' \| string` | `'primary'` | Semantic or custom color; `default` and `error` are compatibility aliases |
-| `variant` | `'soft' \| 'outline'` | `'soft'` | Tinted fill or neutral outlined surface |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size |
-| `dot` | `boolean` | `true` | Show the built-in status dot when no custom icon is provided |
-| `icon` | `ReactNode` | — | Custom icon replacing the built-in dot |
-| `closable` | `boolean` | `false` | Show a close button |
-| `onClose` | `(event: MouseEvent<HTMLButtonElement>) => void` | — | Called on close |
+| Property   | Type                                                                         | Default     | Description                                                                                       |
+| ---------- | ---------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------- |
+| `children` | `ReactNode`                                                                  | —           | Child content.                                                                                    |
+| `color`    | `'default' \| 'success' \| 'warning' \| 'danger' \| 'info' \| (string & {})` | `'default'` | Gray by default; use one of four semantic presets or a custom color                               |
+| `variant`  | `'soft' \| 'solid'`                                                          | `'soft'`    | `soft` uses a light background and colored text; `solid` uses a colored background and white text |
+| `size`     | `'sm' \| 'md' \| 'lg'`                                                       | `'md'`      | Tag size                                                                                          |
+| `icon`     | `ReactNode`                                                                  | —           | Show a custom icon                                                                                |
+| `closable` | `boolean`                                                                    | `false`     | Show a close button                                                                               |
+| `onClose`  | `(event: MouseEvent<HTMLButtonElement>) => void`                             | —           | Called on close                                                                                   |
 
 ### CheckableTagProps API
 
 Configure selection state and change events for a checkable tag.
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `checked` | `boolean` | — | Controlled checked state |
-| `defaultChecked` | `boolean` | `false` | Initial checked state |
-| `onChange` | `(checked: boolean) => void` | — | Value change callback |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size. |
+| Property         | Type                         | Default | Description              |
+| ---------------- | ---------------------------- | ------- | ------------------------ |
+| `checked`        | `boolean`                    | —       | Controlled checked state |
+| `defaultChecked` | `boolean`                    | `false` | Initial checked state    |
+| `onChange`       | `(checked: boolean) => void` | —       | Value change callback    |
+| `size`           | `'sm' \| 'md' \| 'lg'`       | `'md'`  | Tag size.                |
 
 ### TagGroupProps API
 
 Manage selected values and presentation for a group of tag options.
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `options` | [`readonly TagOption[]`](#tagoption-api) | Required | Available options |
-| `value` | `readonly string[]` | — | Controlled value |
-| `defaultValue` | `readonly string[]` | `[]` | Initial value, restored by uncontrolled form resets |
-| `onChange` | `(values: string[]) => void` | — | Value change callback |
-| `disabled` | `boolean` | — | Disable interactions |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tag size. |
-| `name` | `string` | — | Form field name |
-| `form` | `string` | — | Associated form ID |
-| `required` | `boolean` | — | Required form validation |
+| Property       | Type                                         | Default  | Description                                                 |
+| -------------- | -------------------------------------------- | -------- | ----------------------------------------------------------- |
+| `options`      | `readonly `[`TagOption`](#tagoption-api)`[]` | Required | Available options                                           |
+| `value`        | `readonly string[]`                          | —        | Controlled value                                            |
+| `defaultValue` | `readonly string[]`                          | `[]`     | Initial value, restored by uncontrolled form resets         |
+| `onChange`     | `(values: string[]) => void`                 | —        | Value change callback                                       |
+| `disabled`     | `boolean`                                    | —        | Disable interaction.                                        |
+| `size`         | `'sm' \| 'md' \| 'lg'`                       | `'md'`   | Tag size.                                                   |
+| `name`         | `string`                                     | —        | Form field name                                             |
+| `form`         | `string`                                     | —        | Associated form ID                                          |
+| `required`     | `boolean`                                    | —        | Require a non-empty value; compound controls validate once. |
 
 ### TagOption API
 
 An individual option supplied to a tag group.
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string` | Required | Controlled value |
-| `label` | `ReactNode` | Required | Display label |
-| `disabled` | `boolean` | — | Disable interactions |
+| Property   | Type        | Default  | Description          |
+| ---------- | ----------- | -------- | -------------------- |
+| `value`    | `string`    | Required | Controlled value     |
+| `label`    | `ReactNode` | Required | Display label        |
+| `disabled` | `boolean`   | —        | Disable interaction. |

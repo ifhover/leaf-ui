@@ -165,9 +165,9 @@ describe('portable component themes', () => {
   it('keeps the five seeds and semantic shades and neutral scale values shared while modern roles follow appearance', () => {
     const seeds = {
       primary: '#1e964f',
-      success: '#1e964f',
-      danger: '#dd3f2e',
-      warning: '#d38b11',
+      success: '#52c41a',
+      danger: '#ff4d4f',
+      warning: '#faad14',
       info: '#1677ff',
     } as const;
     const families = [...Object.keys(seeds), 'neutral'] as const;

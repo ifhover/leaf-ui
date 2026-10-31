@@ -14,14 +14,14 @@ const solidForeground = { black: '#000000', white: '#ffffff' } as const;
 export const semanticColorFamilies = ['primary', 'success', 'danger', 'warning', 'info'] as const;
 const semanticSeeds = {
   primary: '#1e964f',
-  success: '#1e964f',
-  danger: '#dd3f2e',
-  warning: '#d38b11',
+  success: '#52c41a',
+  danger: '#ff4d4f',
+  warning: '#faad14',
   info: '#1677ff',
 };
-export const colorSeeds = { ...semanticSeeds, neutral: '#707070' };
+export const colorSeeds = { ...semanticSeeds, neutral: '#6c737e' };
 
-export const neutralColorScale = generateColorScale('#707070') as ColorScale;
+export const neutralColorScale = generateColorScale(colorSeeds.neutral) as ColorScale;
 
 export const defaultColors = {
   light: {

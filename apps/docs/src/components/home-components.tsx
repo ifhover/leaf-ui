@@ -301,13 +301,13 @@ export function ComponentShowcase() {
               <Tag color="info">{t('待审核', 'In review')}</Tag>
             </div>
             <div className="leaf-component-scene__tag-row">
-              <Tag variant="outline" color="default" dot={false}>
+              <Tag variant="soft" color="default">
                 {t('设计', 'Design')}
               </Tag>
-              <Tag variant="outline" color="default" dot={false}>
+              <Tag variant="soft" color="default">
                 {t('开发', 'Build')}
               </Tag>
-              <Tag variant="outline" color="default" dot={false}>
+              <Tag variant="soft" color="default">
                 {t('文档', 'Docs')}
               </Tag>
             </div>

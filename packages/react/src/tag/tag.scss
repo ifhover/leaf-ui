@@ -1,32 +1,46 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-tag {
-  @include mixins.status-label-family(primary);
-  --leaf-tag-color: var(--leaf-status-label-base);
-  --leaf-tag-color-surface-8: var(--leaf-status-label-background);
-  --leaf-tag-color-alpha-10: var(--leaf-status-label-feedback-background);
-  --leaf-tag-ink: var(--leaf-status-ink);
+  --leaf-tag-color: var(--leaf-color-neutral);
+  --leaf-tag-color-surface-8: var(--leaf-color-surface-muted);
+  --leaf-tag-color-alpha-10: var(--leaf-color-option-hover);
+  --leaf-tag-ink: var(--leaf-color-text);
+  --leaf-tag-solid-foreground: var(--leaf-color-on-primary);
+  --leaf-status-label-close-background: var(--leaf-color-option-hover);
+  --leaf-tag-close-background: var(--leaf-status-label-close-background);
   --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
   --leaf-tag-paint-background: var(
     --leaf-component-tag-background,
     var(--leaf-tag-color-surface-8)
   );
-  --leaf-tag-close-background: var(--leaf-status-label-close-background);
+
+  @mixin tag-family($tone) {
+    @include mixins.status-label-family($tone);
+    --leaf-tag-color: var(--leaf-status-label-base);
+    --leaf-tag-color-surface-8: var(--leaf-status-label-background);
+    --leaf-tag-color-alpha-10: var(--leaf-color-#{$tone}-soft-hover);
+    // Ant Design uses the semantic family color for soft tag text instead of
+    // the darker contrast-optimized ink role used by body-level feedback.
+    --leaf-tag-ink: var(--leaf-status-label-base);
+    --leaf-tag-solid-foreground: var(--leaf-status-label-foreground);
+    --leaf-tag-close-background: var(--leaf-status-label-close-background);
+  }
+
   &[data-color='primary'] {
-    @include mixins.status-label-family(primary);
+    @include tag-family(primary);
   }
   &[data-color='success'] {
-    @include mixins.status-label-family(success);
+    @include tag-family(success);
   }
   &[data-color='warning'] {
-    @include mixins.status-label-family(warning);
+    @include tag-family(warning);
   }
   &[data-color='danger'],
   &[data-color='error'] {
-    @include mixins.status-label-family(danger);
+    @include tag-family(danger);
   }
   &[data-color='info'] {
-    @include mixins.status-label-family(info);
+    @include tag-family(info);
   }
   box-sizing: border-box;
   display: inline-flex;
@@ -56,7 +70,7 @@
     overflow: hidden;
     pointer-events: none;
   }
-  > span:not(.leaf-tag__icon):not(.leaf-tag__dot) {
+  > span:not(.leaf-tag__icon) {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -69,23 +83,21 @@
     font-size: var(--leaf-font-size);
     line-height: var(--leaf-line-height);
   }
-  &--outline {
-    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-color-text));
-    --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-color-surface));
-    border-color: var(--leaf-component-tag-border-color, var(--leaf-color-border));
-    border-radius: var(--leaf-component-tag-radius, 999px);
+  &--soft {
+    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
+    --leaf-tag-paint-background: var(
+      --leaf-component-tag-background,
+      var(--leaf-tag-color-surface-8)
+    );
   }
-  &__dot {
-    flex: none;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--leaf-tag-color);
+  &--solid {
+    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-solid-foreground));
+    --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-tag-color));
   }
   &__icon {
     display: inline-flex;
     flex: none;
-    color: var(--leaf-tag-color);
+    color: var(--leaf-tag-paint-color);
     svg {
       width: 13px;
       height: 13px;
@@ -96,11 +108,11 @@
     align-items: center;
     justify-content: center;
     flex: none;
-    width: 24px;
-    height: 24px;
-    margin-block: -3px;
-    padding: 2px;
-    margin-inline-end: -4px;
+    width: 16px;
+    height: 16px;
+    margin-block: -1px;
+    padding: 1px;
+    margin-inline-end: -2px;
     border: 0;
     border-radius: 50%;
     color: inherit;

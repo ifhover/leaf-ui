@@ -47,6 +47,14 @@
 
 .leaf-card {
   --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2.5));
+  --leaf-card-content-padding-left: var(
+    --leaf-component-card-padding-left,
+    var(--leaf-card-padding)
+  );
+  --leaf-card-content-padding-right: var(
+    --leaf-component-card-padding-right,
+    var(--leaf-card-padding)
+  );
   --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2.5));
   --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
   --leaf-card-title-line-height: calc(var(--leaf-line-height) + 2px);
@@ -130,6 +138,11 @@
       padding-block-end: 16px;
     }
   }
+  &__body > [data-leaf-bleed],
+  &__tabs > .leaf-tabs__panels > .leaf-tabs__panel > [data-leaf-bleed] {
+    --leaf-bleed-left: var(--leaf-card-content-padding-left);
+    --leaf-bleed-right: var(--leaf-card-content-padding-right);
+  }
   &__header + &__body {
     padding-block-start: 0;
   }
@@ -168,6 +181,22 @@
     border-radius: inherit;
   }
   &--layered {
+    --leaf-card-content-padding-left: max(
+      0px,
+      calc(
+        var(--leaf-component-card-padding-left, var(--leaf-card-padding)) - var(
+            --leaf-card-inset
+          ) - var(--leaf-card-border-width)
+      )
+    );
+    --leaf-card-content-padding-right: max(
+      0px,
+      calc(
+        var(--leaf-component-card-padding-right, var(--leaf-card-padding)) - var(
+            --leaf-card-inset
+          ) - var(--leaf-card-border-width)
+      )
+    );
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 0.75));
     --leaf-card-title-font-size: max(12px, calc(var(--leaf-font-size) - 2px));
     --leaf-card-title-line-height: var(--leaf-line-height-sm);
@@ -236,7 +265,8 @@
     }
     > .leaf-card__panel > .leaf-card__body {
       padding-block: var(--leaf-card-inset-padding);
-      padding-inline: var(--leaf-card-inset-padding);
+      padding-left: var(--leaf-card-content-padding-left);
+      padding-right: var(--leaf-card-content-padding-right);
     }
     > .leaf-card__panel > .leaf-card__body:not(:last-child) {
       padding-block-end: 16px;
@@ -250,7 +280,8 @@
     }
     > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__header,
     > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel {
-      padding-inline: var(--leaf-card-inset-padding);
+      padding-left: var(--leaf-card-content-padding-left);
+      padding-right: var(--leaf-card-content-padding-right);
     }
   }
   &--shadowless {

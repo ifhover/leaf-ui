@@ -117,7 +117,11 @@ test('color guides show semantic shades and a matching editable surface example'
       'utf8',
     );
     assert.match(tokensPage, /mutedSurfaceColor[^\n]*--leaf-color-surface-muted/u);
-    assert.match(tokensPage, /Tabs[^\n]*Card[^\n]*Modal/u);
+    assert.match(tokensPage, /Tabs[^\n]*Card[^\n]*(?:日期|date)/u);
+    const mutedSurfaceRow = tokensPage
+      .split('\n')
+      .find((line) => line.includes('`mutedSurfaceColor`'));
+    assert.doesNotMatch(mutedSurfaceRow, /DataTable|Modal/u);
   }
 });
 

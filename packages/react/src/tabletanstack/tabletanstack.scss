@@ -2,6 +2,9 @@
 @use '../styles/mixins' as *;
 
 .leaf-data-table {
+  // Each table owns its inset; nested tables do not inherit an outer table's bleed.
+  --leaf-bleed-left: 0px;
+  --leaf-bleed-right: 0px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -11,8 +14,6 @@
     align-items: center;
     gap: 6px;
     min-width: 0;
-  }
-  .leaf-table--simple &__heading {
     &[data-align='center'],
     &[data-align='center'] .leaf-data-table__sort {
       justify-content: center;
@@ -28,6 +29,18 @@
   color: var(--leaf-color-text);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
+
+  &[data-leaf-bleed] {
+    width: calc(100% + var(--leaf-bleed-left) + var(--leaf-bleed-right));
+    margin-left: calc(0px - var(--leaf-bleed-left));
+    margin-right: calc(0px - var(--leaf-bleed-right));
+
+    > .leaf-data-table__toolbar,
+    > .leaf-data-table__footer {
+      padding-left: var(--leaf-bleed-left);
+      padding-right: var(--leaf-bleed-right);
+    }
+  }
 
   &__content {
     display: flex;

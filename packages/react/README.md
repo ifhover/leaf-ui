@@ -84,7 +84,7 @@ export function ProjectTable() {
 }
 ```
 
-Tables use the same softened frame and downward resting shadow as Card by default. Set `columnDividers` for column dividers, or `striped={false}` for row dividers. `DataTable` uses the dedicated table entry; ordinary components do not require the optional table peer.
+Tables use a square content surface without a frame or shadow, with taller muted headings and a continuous softened header divider. Rows are striped by default; set `striped={false}` for row dividers. `DataTable` uses the dedicated table entry; ordinary components do not require the optional table peer.
 
 Migration: replace native `Table`, `Table.Header`, `Table.Body`, `Table.Row`, `Table.Cell` and related named exports with a `DataTable` instance and column definitions. Native Table regional defaults are removed; use `components.DataTable` for presentation defaults. The `theme.components.Table` visual tokens remain available. The former `@ifhover/leaf-ui/table/tanstack` path remains a compatibility alias for `DataTable`.
 

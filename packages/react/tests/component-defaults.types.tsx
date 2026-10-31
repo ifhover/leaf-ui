@@ -142,7 +142,7 @@ export function expandedComponentDefaultsContracts() {
   const defaults: LeafComponentDefaults = {
     Pagination: { variant: 'outline', showTotal: true },
     Tabs: { size: 'sm' },
-    DataTable: { size: 'sm', variant: 'simple', striped: true },
+    DataTable: { size: 'sm', striped: true, bleed: true },
     VirtualList: { estimateSize: 36 },
     FormList: { className: 'rows' },
     Confirm: { confirmText: 'Continue' },

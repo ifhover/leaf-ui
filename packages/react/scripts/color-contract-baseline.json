@@ -670,11 +670,6 @@
         "reason": "Shared Card/Table secondary resting shadow."
       },
       {
-        "expression": "rgb(0 0 0/0.045)",
-        "count": 1,
-        "reason": "Table pinned-column optical shadow."
-      },
-      {
         "expression": "rgb(0 0 0/0.05)",
         "count": 1,
         "reason": "Shared Card/Table primary resting shadow."

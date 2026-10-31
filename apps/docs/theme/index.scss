@@ -321,10 +321,8 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   text-align: center;
 }
 .leaf-release {
-  font-size: 12px;
-}
-.leaf-release .leaf-badge__text {
   color: var(--leaf-site-muted);
+  font-size: 12px;
 }
 .leaf-hero h1 {
   display: flex;

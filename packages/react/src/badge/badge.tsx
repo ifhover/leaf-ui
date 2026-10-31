@@ -1,9 +1,11 @@
-import { Children, type HTMLAttributes, useRef } from 'react';
+import { Children, type HTMLAttributes, type ReactNode, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useContentTransition } from '../shared/presence';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  /** The element the indicator is attached to. Standalone badges are not rendered. */
+  children: ReactNode;
   count?: number | string;
   max?: number;
   showZero?: boolean;
@@ -43,14 +45,11 @@ export function Badge(rawProps: BadgeProps) {
   const visible = dot || hasCount;
   const display = typeof count === 'number' && count > max ? `${max}+` : count;
   useContentTransition(number, display ?? '');
+  if (!attached) return null;
   return (
     <span
       {...props}
-      className={classes(
-        'leaf-badge',
-        attached ? 'leaf-badge--attached' : 'leaf-badge--standalone',
-        className,
-      )}
+      className={classes('leaf-badge', 'leaf-badge--attached', className)}
       data-placement={placement}
       style={{
         ...(color ? { '--leaf-badge-color': color } : {}),

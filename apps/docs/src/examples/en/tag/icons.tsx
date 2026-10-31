@@ -1,21 +1,49 @@
-import { Flex, Grid, Tag, Text } from '@ifhover/leaf-ui';
-import { Sparkles } from 'lucide-react';
+import { Flex, Tag, Text } from '@ifhover/leaf-ui';
+import { Check, CircleAlert, CircleX, Info, Sparkles, Tag as TagIcon } from 'lucide-react';
 
 export function TagIcons() {
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
-      <Text tone="muted">Default dot</Text>
-      <Flex align="center" wrap>
-        <Tag>In progress</Tag>
+    <Flex direction="column" gap="sm" align="start">
+      <Flex gap="sm" align="center" wrap>
+        <Text tone="muted">soft</Text>
+        <Tag icon={<TagIcon />}>Default</Tag>
+        <Tag color="success" icon={<Check />}>
+          Success
+        </Tag>
+        <Tag color="info" icon={<Info />}>
+          Info
+        </Tag>
+        <Tag color="warning" icon={<CircleAlert />}>
+          Warning
+        </Tag>
+        <Tag color="danger" icon={<CircleX />}>
+          Danger
+        </Tag>
+        <Tag color="#722ed1" icon={<Sparkles />}>
+          Custom
+        </Tag>
       </Flex>
-      <Text tone="muted">No dot</Text>
-      <Flex align="center" wrap>
-        <Tag dot={false}>In progress</Tag>
+      <Flex gap="sm" align="center" wrap>
+        <Text tone="muted">solid</Text>
+        <Tag variant="solid" icon={<TagIcon />}>
+          Default
+        </Tag>
+        <Tag color="success" variant="solid" icon={<Check />}>
+          Success
+        </Tag>
+        <Tag color="info" variant="solid" icon={<Info />}>
+          Info
+        </Tag>
+        <Tag color="warning" variant="solid" icon={<CircleAlert />}>
+          Warning
+        </Tag>
+        <Tag color="danger" variant="solid" icon={<CircleX />}>
+          Danger
+        </Tag>
+        <Tag color="#722ed1" variant="solid" icon={<Sparkles />}>
+          Custom
+        </Tag>
       </Flex>
-      <Text tone="muted">Custom icon</Text>
-      <Flex align="center" wrap>
-        <Tag icon={<Sparkles />}>In progress</Tag>
-      </Flex>
-    </Grid>
+    </Flex>
   );
 }

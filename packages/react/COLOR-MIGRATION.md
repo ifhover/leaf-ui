@@ -30,7 +30,7 @@ Source-level review for the `0.9.0` development branch on `2026-10-23`.
 - `overlay-family`: dialog and spotlight overlay roles for `modal`, `drawer`, and `tour`.
 - `panel-canvas-family`: muted panel canvas for inset calendar-picker panels.
 - `status-ink-family` / `status-label-family`: contrast-aware readable status ink and soft status-label foreground/background roles.
-- `table-family`, `softened-frame-color`, and `resting-surface-shadow`: table and raised-surface ownership shared by Table and Card. Selected rows use `primary-soft`; stripes, hover, pinned shadows, and loading scrims retain formulas based on the table's own surface and text.
+- `table-family` and `softened-frame-color`: table surface, header divider and row paint; Card also shares the softened frame and consumes `resting-surface-shadow`. Selected rows use `primary-soft`; stripes, hover and loading scrims retain formulas based on the table's own surface and text. Table is frameless and has no pinned-column shadows.
 
 Single-consumer paint stays on direct semantic tokens or remains a documented local exception. A family is not introduced for a single consumer.
 
@@ -136,7 +136,7 @@ The remaining numeric-token usages are deliberately transparent or appearance-sp
 - Loading, LoadingBar, QRCode, and Skeleton retain their own translucent scrim, glow, and shimmer formulas.
 - Menu retains its complete local appearance, including `primary-alpha-10` / `primary-alpha-4` and neutral black overlays.
 
-Table stripes, hover tint, pinned-column shadows, and the loading scrim still follow the actual table surface and text because the component supports a local custom surface. Only its selected-row fill is normalized to `primary-soft`.
+Table stripes, hover tint and the loading scrim still follow the actual table surface and text because the component supports a local custom surface. Only its selected-row fill is normalized to `primary-soft`.
 
 ## Explicit local exceptions
 

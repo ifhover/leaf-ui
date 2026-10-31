@@ -30,13 +30,13 @@ export function CheckableTag(rawProps: CheckableTagProps) {
       type={props.type ?? 'button'}
       className={classes(
         'leaf-tag',
-        `leaf-tag--${current ? 'soft' : 'outline'}`,
+        `leaf-tag--${current ? 'solid' : 'soft'}`,
         `leaf-tag--${size}`,
         'leaf-checkable-tag',
         className,
       )}
       aria-pressed={current}
-      data-color="primary"
+      data-color={current ? 'primary' : 'default'}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) change(!current);
@@ -96,11 +96,11 @@ export function TagGroup(rawProps: TagGroupProps) {
             type="button"
             className={classes(
               'leaf-tag',
-              `leaf-tag--${selected ? 'soft' : 'outline'}`,
+              `leaf-tag--${selected ? 'solid' : 'soft'}`,
               `leaf-tag--${size ?? 'md'}`,
               'leaf-checkable-tag',
             )}
-            data-color="primary"
+            data-color={selected ? 'primary' : 'default'}
             data-motion-key={option.value}
             aria-pressed={selected}
             disabled={disabled || option.disabled}

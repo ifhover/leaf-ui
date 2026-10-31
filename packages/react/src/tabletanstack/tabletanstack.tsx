@@ -163,8 +163,7 @@ function DataTableRoot<TData>({
   table,
   toolbar,
   size = 'md',
-  variant = 'layered',
-  columnDividers,
+  bleed = false,
   striped = true,
   maxHeight,
   minWidth,
@@ -198,8 +197,7 @@ function DataTableRoot<TData>({
     label,
     labelledBy,
     size,
-    variant,
-    columnDividers,
+    bleed,
     striped,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
@@ -272,7 +270,11 @@ function DataTableRoot<TData>({
   return (
     <DataTableContext.Provider value={value}>
       <FieldScope>
-        <div {...props} className={classes('leaf-data-table', className)}>
+        <div
+          {...props}
+          className={classes('leaf-data-table', className)}
+          data-leaf-bleed={bleed || undefined}
+        >
           {toolbar != null && toolbar !== false && (
             <DataTableToolbarControl>{toolbar}</DataTableToolbarControl>
           )}
@@ -747,8 +749,6 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         aria-busy={loading || undefined}
         aria-rowcount={virtual && !status ? virtualRows.count : undefined}
         size={config.size}
-        variant={config.variant}
-        columnDividers={config.columnDividers}
         striped={config.striped}
         maxHeight={config.maxHeight}
         minWidth={config.minWidth}
@@ -1059,6 +1059,8 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
   const {
     stickyHeader: _stickyHeader,
     caption: _caption,
+    variant: _variant,
+    columnDividers: _columnDividers,
     layout: _layout,
     children: _children,
     bordered: _bordered,
@@ -1069,6 +1071,8 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
   } = merged as typeof merged & {
     stickyHeader?: unknown;
     caption?: unknown;
+    variant?: unknown;
+    columnDividers?: unknown;
     layout?: unknown;
     children?: unknown;
     bordered?: unknown;

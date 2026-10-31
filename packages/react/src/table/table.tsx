@@ -22,16 +22,10 @@ import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
-import type {
-  DataTableCellProps,
-  DataTablePresentationProps,
-  DataTableRowProps,
-} from '../tabletanstack/defaults';
+import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/defaults';
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
-  variant?: DataTablePresentationProps['variant'];
-  columnDividers?: boolean;
   striped?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
   minWidth?: CSSProperties['minWidth'];
@@ -75,8 +69,6 @@ export interface TableErrorProps extends TableStateProps {
 const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function TableRootControl(
   {
     size = 'md',
-    variant = 'layered',
-    columnDividers = false,
     striped = true,
     maxHeight,
     minWidth,
@@ -199,15 +191,12 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
       className={classes(
         'leaf-table',
         `leaf-table--${size}`,
-        variant === 'simple' && 'leaf-table--simple',
-        variant !== 'simple' && columnDividers && 'leaf-table--column-dividers',
         striped && 'leaf-table--striped',
         className,
       )}
       style={
         {
           ...style,
-          '--leaf-table-header-height': `${headerHeight}px`,
           '--leaf-table-viewport-width':
             viewportWidth === undefined ? undefined : `${viewportWidth}px`,
         } as CSSProperties
@@ -218,8 +207,6 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
       data-vertical-overflow={verticalOverflow || undefined}
       data-pinning-overflow={pinningOverflow || undefined}
     >
-      {/* A stationary frame clips the scrolling rows without splitting the native table. */}
-      <div className="leaf-table__panel" aria-hidden="true" />
       <Scrollbar
         ref={viewportRef}
         className="leaf-table__scroll-area"
