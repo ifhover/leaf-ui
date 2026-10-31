@@ -6,6 +6,7 @@ import { TableSelection } from '../../../src/examples/en/table/selection';
 import { TableExpansion } from '../../../src/examples/en/table/expansion';
 import { TableStates } from '../../../src/examples/en/table/states';
 import { TableColumns } from '../../../src/examples/en/table/columns';
+import { TableSizing } from '../../../src/examples/en/table/sizing';
 import { TableGrouped } from '../../../src/examples/en/table/grouped';
 import { TableEditable } from '../../../src/examples/en/table/editable';
 import { TableVirtual } from '../../../src/examples/en/table/advanced';
@@ -27,7 +28,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## Basic usage
 
-Pass data, column definitions, and a stable unique `rowKey`. Local pagination is enabled by default.
+Pass data, column definitions, and a stable unique `rowKey`. Local pagination is enabled by default. Ordinary tables without configured widths distribute space based on content, with long text wrapping as needed.
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -99,9 +100,24 @@ Use `loading`, `emptyContent`, `error`, and `onRetry` to present and handle load
 
 <a id="advanced-usage"></a>
 
+### Column sizing
+
+Set a column's `size` for a fixed width; columns without `size` share the remaining space. Set a positive `meta.flex` weight to control that share. The product and description columns below use a 2:1 ratio, constrained by `minSize` and `maxSize`. If the minimum widths exceed the available space, the table scrolls horizontally.
+
+<ComponentExample exampleId="sizing" preview={<TableSizing />} fileName="sizing.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/table/sizing.tsx"
+```
+
+</ComponentExample>
+
+When every column has a fixed width, extra space remains on the right. Leave a column without `size` or use `meta.flex` to fill the container. Flexible columns use `minSize` and `maxSize` as bounds; `size` does not participate in their proportional allocation. Body text wraps by default without automatic ellipsis; custom non-wrapping content must handle its own overflow.
+
 ### Pinning and resizing
 
 Set `resizable` to enable column resizing, and configure `size`, `minSize`, and `maxSize` in column definitions. Use `options.initialState.columnPinning` to pin columns, and `maxHeight` to keep headers fixed while scrolling internally. Use `toolbar` for header actions.
+
+Pinned, resizable, and virtual tables use deterministic widths. Unsized columns start at 150px and share remaining space. Pinned columns ignore `meta.flex`. Manually resizing a column keeps the new width; double-click its handle or reset column sizing to restore flexible allocation.
 
 <ComponentExample exampleId="columns" preview={<TableColumns />} fileName="columns.tsx" width="100%">
 
@@ -181,7 +197,7 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `columnDividers` | `boolean` | — | Add body and footer column dividers; layered headers keep short separators. Ignored in simple mode. |
 | `striped` | `boolean` | `true` | Both variants default to alternating backgrounds from the second row and hide row dividers. Disable to show fine row dividers. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum table viewport height. Headers always stay fixed while the body scrolls internally; virtual mode defaults to 400 when omitted. |
-| `minWidth` | `CSSProperties['minWidth']` | — | Minimum table width; defaults to visible column sizes. |
+| `minWidth` | `CSSProperties['minWidth']` | — | Minimum content-area width; adapts to the container and column widths by default. |
 | `loading` | `boolean` | `false` | Show a loading state. |
 | `emptyContent` | `ReactNode` | — | Empty content. |
 | `error` | `ReactNode` | — | Error content; null, undefined and false do not show an error. |
@@ -317,6 +333,7 @@ const columns = [
 | `align` | `'start' \| 'center' \| 'end'` | `'start'` | Header and cell alignment. |
 | `cellClassName` | `string` | — | Cell class. |
 | `headerClassName` | `string` | — | Header class. |
+| `flex` | `number` | — | Positive weight for sharing available width, bounded by minSize / maxSize; ignored on pinned or manually resized columns. |
 
 ### DataTableVirtualOptions
 

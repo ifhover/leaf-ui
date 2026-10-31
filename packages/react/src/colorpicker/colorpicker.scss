@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../input/input';
 .leaf-color-picker {
   @include mixins.field('color-picker');
   display: inline-flex;
@@ -59,6 +60,9 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  &:not([data-show-text]) &__trigger {
+    justify-content: center;
   }
   &__swatch {
     display: inline-flex;
@@ -192,26 +196,7 @@
     margin-block-end: 8px;
   }
   &__input {
-    @include mixins.field('color-picker');
-    --leaf-field-shadow: var(
-      --leaf-component-color-picker-shadow,
-      var(--leaf-control-shadow, var(--leaf-shadow-xs))
-    );
-    box-sizing: border-box;
     width: 100%;
-    min-height: var(--leaf-control-height);
-    padding: 5px 9px;
-    border-radius: var(--leaf-radius-sm);
-    font: inherit;
-    font-size: 12px;
-    outline: none;
-    transition:
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-
-    &[aria-invalid='true'] {
-      @include mixins.field-status(error);
-    }
   }
   &__error {
     display: block;

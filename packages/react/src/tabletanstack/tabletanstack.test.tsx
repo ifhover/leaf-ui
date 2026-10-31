@@ -12,7 +12,7 @@ import {
   type Table as TanStackTable,
   useReactTable,
 } from '@tanstack/react-table';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
@@ -116,6 +116,75 @@ const bodyNames = () =>
   );
 
 describe('DataTable TanStack adapter', () => {
+  it('uses content layout for unsized columns without a synthetic minimum table width', () => {
+    render(
+      <Harness
+        customColumns={[{ accessorKey: 'name' }, { accessorKey: 'team' }]}
+        pagination={false}
+      />,
+    );
+    const table = screen.getByRole('table');
+    expect(table).toHaveStyle({ tableLayout: 'auto', width: '100%' });
+    expect([...table.querySelectorAll('col')].every((col) => !col.style.width)).toBe(true);
+    expect(table.parentElement?.style.minWidth).toBe('');
+  });
+
+  it('keeps the final explicit column width when fixed layout is required', () => {
+    render(<Harness pagination={false} />);
+    expect(screen.getByRole('table')).toHaveStyle({
+      tableLayout: 'fixed',
+      width: '420px',
+      minWidth: '0',
+    });
+    expect(
+      [...screen.getByRole('table').querySelectorAll('col')].map((col) => col.style.width),
+    ).toEqual(['180px', '100px', '140px']);
+  });
+
+  it('keeps an empty table visible when no columns remain in a fixed layout', () => {
+    render(<Harness customColumns={[]} resizable pagination={false} />);
+    expect(screen.getByRole('table')).toHaveStyle({ width: '100%' });
+  });
+
+  it('starts mouse and keyboard resizing from the rendered flexible width', async () => {
+    const clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(1000);
+    try {
+      let instance: TanStackTable<Person> | undefined;
+      render(
+        <Harness
+          resizable
+          pagination={false}
+          customColumns={[
+            { accessorKey: 'name', header: 'Name', meta: { flex: 1 } },
+            { accessorKey: 'team', size: 100 },
+          ]}
+          onState={(table) => {
+            instance = table;
+          }}
+        />,
+      );
+      const handle = screen.getByRole('separator', { name: 'Resize column: Name' });
+      expect(Number(handle.getAttribute('aria-valuenow'))).toBeCloseTo(900);
+      clientWidth.mockReturnValue(700);
+      fireEvent.resize(window);
+      expect(Number(handle.getAttribute('aria-valuenow'))).toBeCloseTo(600);
+      expect(instance?.getState().columnSizing.name).toBeUndefined();
+      fireEvent.mouseDown(handle, { clientX: 600 });
+      expect(instance?.getState().columnSizingInfo.startSize).toBeCloseTo(600);
+      fireEvent.mouseMove(document, { clientX: 620 });
+      fireEvent.mouseUp(document, { clientX: 620 });
+      expect(instance?.getState().columnSizing.name).toBeCloseTo(620);
+      handle.focus();
+      await userEvent.keyboard('{ArrowRight}');
+      expect(instance?.getState().columnSizing.name).toBeCloseTo(630);
+      fireEvent.doubleClick(handle);
+      expect(instance?.getState().columnSizing.name).toBeUndefined();
+      expect(Number(handle.getAttribute('aria-valuenow'))).toBeCloseTo(600);
+    } finally {
+      clientWidth.mockRestore();
+    }
+  });
+
   it('exports only the table and state hooks without public composition controls', () => {
     expect(Object.keys(tableEntry).sort()).toEqual([
       'DataTable',

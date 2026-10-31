@@ -23,8 +23,8 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
 | Legal hardcoded-color exceptions | 43 | 58 |
-| Legal color-mix exceptions | 1 | 1 |
-| Reviewed derived-token exceptions | 7 | 7 |
+| Legal color-mix exceptions | 2 | 2 |
+| Reviewed derived-token exceptions | 6 | 6 |
 | Reviewed color-scale step exceptions | 0 | 0 |
 | Reviewed field-structure exceptions | 17 | 27 |
 
@@ -131,9 +131,9 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
 | `--leaf-color-option-hover` | 4 | 2 | 11 |
-| `--leaf-color-primary` | 31 | 3 | 80 |
+| `--leaf-color-primary` | 32 | 3 | 83 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
-| `--leaf-color-primary-alpha-10` | 1 | 0 | 1 |
+| `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-16` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-20` | 0 | 1 | 1 |
@@ -148,7 +148,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
 | `--leaf-color-primary-hover` | 0 | 0 | 0 |
 | `--leaf-color-primary-indicator` | 25 | 2 | 48 |
-| `--leaf-color-primary-ink` | 16 | 3 | 30 |
+| `--leaf-color-primary-ink` | 15 | 3 | 28 |
 | `--leaf-color-primary-ink-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
@@ -229,6 +229,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-neutral-700`
 - `--leaf-color-neutral-800`
 - `--leaf-color-neutral-900`
+- `--leaf-color-primary-alpha-10`
 - `--leaf-color-primary-alpha-12`
 - `--leaf-color-primary-alpha-16`
 - `--leaf-color-primary-alpha-20`
@@ -358,7 +359,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `rgb(241 241 242)` x1 - User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role.
 - hardcodedColors: `rgb(0 0 0/0.08)` x1 - Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract.
 - hardcodedColors: `rgba(0,0,0,0.04)` x1 - Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract.
-- derivedTokenUsages: `var(--leaf-color-primary-alpha-10)` x1 - Primary Menu appearance retains its established translucent persistent-selection layer.
+- mixFormulas: `color-mix(in srgb,var(--leaf-color-primary)8%,transparent)` x1 - User-requested lighter primary Menu selection uses an 8% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token.
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-4)` x1 - Primary Menu press clears its persistent layer and uses a lighter transient feedback layer.
 
 ### `progress/progress.scss`
@@ -399,7 +400,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ## Ongoing controls
 
-1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells and the private native color input inherit primary focus from the shared field default; Mentions reuses Textarea. Explicit neutral focus is reserved for reviewed exceptions.
+1. Fields: outer shells select shared field/validation recipes; ColorPicker reuses Input for its value field and Mentions reuses Textarea. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells inherit primary focus from the shared field default. Explicit neutral focus is reserved for reviewed exceptions.
 2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
 3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
 4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching `on-*` content. Where a dark custom base needs edge separation, `primary-indicator` provides the boundary rather than replacing the fill.

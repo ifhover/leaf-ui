@@ -38,9 +38,9 @@
     --leaf-menu-selected-clip: inset(0 0 -4px);
   }
   @if $variant == primary {
-    --leaf-menu-hover-color: var(--leaf-color-primary-ink);
-    --leaf-menu-selected-color: var(--leaf-color-primary-ink);
-    --leaf-menu-selected-background: var(--leaf-color-primary-alpha-10);
+    --leaf-menu-hover-color: var(--leaf-color-primary);
+    --leaf-menu-selected-color: var(--leaf-color-primary);
+    --leaf-menu-selected-background: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
     --leaf-menu-active-background: var(--leaf-color-primary-alpha-4);
   }
 }

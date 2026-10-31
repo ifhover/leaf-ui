@@ -1,9 +1,36 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { ColorPicker, ConfigProvider } from '../index';
+import { ColorPicker, ConfigProvider, Form, FormField } from '../index';
 
 describe('ColorPicker', () => {
+  it('isolates the value Input from its owning field and regional Input defaults', async () => {
+    const change = vi.fn();
+    const { container } = render(
+      <ConfigProvider
+        locale="en-US"
+        components={{ Input: { prefix: 'Regional prefix', allowClear: true, size: 'lg' } }}
+      >
+        <Form>
+          <FormField label="Accent" required>
+            <ColorPicker name="accent" defaultValue="#1677ff" defaultOpen onChange={change} />
+          </FormField>
+        </Form>
+      </ConfigProvider>,
+    );
+    const input = screen.getByRole('textbox', { name: 'Color value' });
+    expect(input).not.toBeRequired();
+    expect(input.id).not.toBe(screen.getByRole('button', { name: 'Accent' }).id);
+    expect(screen.queryByText('Regional prefix')).toBeNull();
+    fireEvent.change(input, { target: { value: '#ff0000' } });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    expect(change).not.toHaveBeenCalled();
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(change).toHaveBeenLastCalledWith('#ff0000');
+    expect(
+      new FormData(container.querySelector('form') as HTMLFormElement).getAll('accent'),
+    ).toEqual(['#ff0000']);
+  });
   it.each(['solid', 'gradient'] as const)(
     'opens %s from the outer row and keeps native clicks and keyboard activation single',
     async (mode) => {

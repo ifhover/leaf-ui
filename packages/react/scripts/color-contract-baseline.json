@@ -536,12 +536,14 @@
           "reason": "Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract."
         }
       ],
-      "derivedTokenUsages": [
+      "mixFormulas": [
         {
-          "expression": "var(--leaf-color-primary-alpha-10)",
+          "expression": "color-mix(in srgb,var(--leaf-color-primary)8%,transparent)",
           "count": 1,
-          "reason": "Primary Menu appearance retains its established translucent persistent-selection layer."
-        },
+          "reason": "User-requested lighter primary Menu selection uses an 8% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token."
+        }
+      ],
+      "derivedTokenUsages": [
         {
           "expression": "var(--leaf-color-primary-alpha-4)",
           "count": 1,

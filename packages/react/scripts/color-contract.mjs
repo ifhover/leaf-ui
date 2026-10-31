@@ -1034,7 +1034,7 @@ ${formatExceptions(baseline.exceptions)}
 
 ## Ongoing controls
 
-1. Fields: outer shells and the ColorPicker private value input select shared field/validation recipes. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells and the private native color input inherit primary focus from the shared field default; Mentions reuses Textarea. Explicit neutral focus is reserved for reviewed exceptions.
+1. Fields: outer shells select shared field/validation recipes; ColorPicker reuses Input for its value field and Mentions reuses Textarea. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells inherit primary focus from the shared field default. Explicit neutral focus is reserved for reviewed exceptions.
 2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
 3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
 4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching \`on-*\` content. Where a dark custom base needs edge separation, \`primary-indicator\` provides the boundary rather than replacing the fill.

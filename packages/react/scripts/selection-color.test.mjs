@@ -91,10 +91,29 @@ test('neutral Menu uses the requested light fill without changing other appearan
   }
   for (const selector of ['.leaf-menu--primary', '.leaf-menu__popup--primary']) {
     const palette = menu(selector);
-    assert.equal(palette['--leaf-menu-selected-background'], 'var(--leaf-color-primary-alpha-10)');
+    assert.equal(palette['--leaf-menu-selected-color'], 'var(--leaf-color-primary)');
+    assert.equal(palette['--leaf-menu-hover-color'], 'var(--leaf-color-primary)');
+    assert.equal(
+      palette['--leaf-menu-selected-background'],
+      'color-mix(in srgb,var(--leaf-color-primary)8%,transparent)',
+    );
     assert.equal(palette['--leaf-menu-hover-opacity'], '0');
     assert.equal(palette['--leaf-menu-active-background'], 'var(--leaf-color-primary-alpha-4)');
   }
+});
+
+test('ColorPicker uses shared Input geometry and centers swatch-only triggers', async () => {
+  const picker = await compiledStyles('colorpicker/colorpicker.scss');
+  const input = await compiledStyles('input/input.scss');
+  for (const property of ['border-radius', 'border', 'height', 'padding-inline']) {
+    assert.equal(picker('.leaf-input')[property], input('.leaf-input')[property]);
+  }
+  assert.equal(
+    picker('.leaf-color-picker:not([data-show-text]) .leaf-color-picker__trigger')[
+      'justify-content'
+    ],
+    'center',
+  );
 });
 
 test('choice rows retain Select feedback independently of the neutral Menu appearance', async () => {

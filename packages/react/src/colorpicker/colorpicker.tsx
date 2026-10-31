@@ -14,7 +14,8 @@ import {
 import { defaultColors } from '../colors';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { useFormField } from '../form/form';
+import { FieldScope, useFormField } from '../form/form';
+import { InputControl as Input } from '../input/input';
 import { classes } from '../shared/classes';
 import { FormValue, useFieldValue } from '../shared/field';
 import {
@@ -387,24 +388,24 @@ export function SolidColorPicker({
             onFormatChange?.(next);
           }}
         />
-        <input
-          className="leaf-color-picker__input"
-          aria-label={messages.colorPicker.value}
-          aria-invalid={invalid || undefined}
-          aria-describedby={invalid ? `${id}-error` : undefined}
-          value={input}
-          onChange={(event) => {
-            setInput(event.target.value);
-            setInvalid(false);
-          }}
-          onBlur={chooseText}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
+        <FieldScope>
+          <Input
+            className="leaf-color-picker__input"
+            aria-label={messages.colorPicker.value}
+            status={invalid ? 'error' : undefined}
+            aria-describedby={invalid ? `${id}-error` : undefined}
+            value={input}
+            onChange={(event) => {
+              setInput(event.target.value);
+              setInvalid(false);
+            }}
+            onBlur={chooseText}
+            onPressEnter={(event) => {
               event.preventDefault();
               chooseText();
-            }
-          }}
-        />
+            }}
+          />
+        </FieldScope>
         {invalid && (
           <span className="leaf-color-picker__error" id={`${id}-error`}>
             {messages.colorPicker.invalid}
