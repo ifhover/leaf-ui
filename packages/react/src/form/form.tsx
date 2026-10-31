@@ -22,6 +22,10 @@ export interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
   layout?: 'horizontal' | 'vertical' | 'settings';
   labelWidth?: number;
   labelAlign?: 'left' | 'right';
+  /** Align controls within the control column of settings fields. */
+  controlAlign?: 'left' | 'right';
+  /** Set the control-column width of settings fields. Numbers use pixels. */
+  settingsControlWidth?: number | string;
   disabled?: boolean;
 }
 export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
@@ -33,6 +37,10 @@ export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
   help?: ReactNode;
   error?: ReactNode;
   labelWidth?: number;
+  /** Override control alignment for this settings field. */
+  controlAlign?: FormProps['controlAlign'];
+  /** Override the control-column width for this settings field. Numbers use pixels. */
+  settingsControlWidth?: FormProps['settingsControlWidth'];
 }
 export interface FormError {
   fieldId: string;
@@ -42,6 +50,7 @@ export interface FormError {
 const FormContext = createContext({
   layout: 'horizontal' as NonNullable<FormProps['layout']>,
   labelAlign: 'right' as 'left' | 'right',
+  controlAlign: 'left' as NonNullable<FormProps['controlAlign']>,
   disabled: false,
   errors: [] as readonly FormError[],
   registerError: (_id: string, _error: FormError | null) => {},
@@ -71,6 +80,8 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
     layout = 'horizontal',
     labelWidth = 112,
     labelAlign = 'right',
+    controlAlign = 'left',
+    settingsControlWidth,
     disabled = false,
     className,
     style,
@@ -90,11 +101,19 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
     );
   }, []);
   const context = useMemo(
-    () => ({ layout, labelAlign, disabled, errors, registerError }),
-    [layout, labelAlign, disabled, errors, registerError],
+    () => ({ layout, labelAlign, controlAlign, disabled, errors, registerError }),
+    [layout, labelAlign, controlAlign, disabled, errors, registerError],
   );
   const variables: LeafThemeStyle = {
     '--leaf-form-label-width': `${Math.max(0, labelWidth)}px`,
+    ...(settingsControlWidth !== undefined
+      ? {
+          '--leaf-form-settings-control-width':
+            typeof settingsControlWidth === 'number'
+              ? `${Math.max(0, settingsControlWidth)}px`
+              : settingsControlWidth,
+        }
+      : {}),
     ...style,
   };
   return (
@@ -138,6 +157,8 @@ export function FormField(rawProps: FormFieldProps) {
     help,
     error,
     labelWidth,
+    controlAlign: suppliedControlAlign,
+    settingsControlWidth,
     children,
     className,
     style,
@@ -145,6 +166,7 @@ export function FormField(rawProps: FormFieldProps) {
   } = useComponentProps('FormField', rawProps);
   const form = useContext(FormContext);
   const layout = suppliedLayout ?? form.layout;
+  const controlAlign = suppliedControlAlign ?? form.controlAlign;
   const { messages } = useLeafConfig();
   const generated = useId();
   const inputId = htmlFor ?? `${generated}-control`;
@@ -185,6 +207,14 @@ export function FormField(rawProps: FormFieldProps) {
     ...(labelWidth !== undefined
       ? { '--leaf-form-label-width': `${Math.max(0, labelWidth)}px` }
       : {}),
+    ...(settingsControlWidth !== undefined
+      ? {
+          '--leaf-form-settings-control-width':
+            typeof settingsControlWidth === 'number'
+              ? `${Math.max(0, settingsControlWidth)}px`
+              : settingsControlWidth,
+        }
+      : {}),
     ...style,
   };
   return (
@@ -197,6 +227,8 @@ export function FormField(rawProps: FormFieldProps) {
           `leaf-form-field--${layout}`,
           form.layout === 'settings' && 'leaf-form-field--settings-row',
           `leaf-form-field--${form.labelAlign}`,
+          `leaf-form-field--control-${controlAlign}`,
+          description != null && 'leaf-form-field--has-description',
           className,
         )}
         style={variables}

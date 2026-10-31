@@ -22,13 +22,23 @@
     gap: var(--leaf-density-label-gap);
   }
   &--settings {
-    grid-template-columns: minmax(0, 1fr) fit-content(50%);
-    align-items: center;
+    grid-template-columns:
+      minmax(0, 1fr)
+      var(--leaf-form-settings-control-width, clamp(200px, 40%, 280px));
+    align-items: start;
     gap: var(--leaf-spacing-lg);
     > .leaf-form-field__body {
       grid-column: 2;
-      justify-self: end;
+      display: grid;
+      width: 100%;
       max-width: 100%;
+      justify-items: start;
+    }
+    &.leaf-form-field--control-right > .leaf-form-field__body {
+      justify-items: end;
+    }
+    > .leaf-form-field__body > .leaf-form-field__description {
+      justify-self: stretch;
     }
   }
   &__header {
@@ -50,8 +60,11 @@
   }
   &--vertical &__label,
   &--settings &__label {
-    min-height: 0;
     justify-content: flex-start;
+  }
+  &--vertical &__label,
+  &--settings.leaf-form-field--has-description &__label {
+    min-height: 0;
   }
   &--vertical &__label > span,
   &--settings &__label > span {

@@ -77,7 +77,7 @@ For an application-wide width, define `--app-form-label-width` on the applicatio
 
 ### Settings layout
 
-`layout="settings"` places the label and `description` to the left of the control. Override a wider field with `layout="vertical"`. `description` explains the field; `help` appears below the control and is replaced by `error`.
+`layout="settings"` places the label and `description` to the left of the control column. Controls align left by default; set `controlAlign="right"` on Form or override an individual FormField. Use `layout="vertical"` for wider fields. `description` explains the field; `help` appears below the control and is replaced by `error`.
 
 <ComponentExample exampleId="settings" preview={<FormSettings />} fileName="settings.tsx" width={600}>
 
@@ -85,6 +85,39 @@ For an application-wide width, define `--app-form-label-width` on the applicatio
 ```
 
 </ComponentExample>
+
+### Settings control-column width
+
+{/* leaf:example settings-control-width */}
+
+The control column defaults to `clamp(200px, 40%, 280px)`: it prefers 40% of the Form's available width, with a 200px minimum and a 280px maximum. The label column receives the space left after the control column and column gap. The 600px-wide example above therefore uses a 240px control column. Fields stack vertically when the Form or viewport becomes narrow.
+
+Use `settingsControlWidth` for common cases. Numbers use pixels; strings accept CSS values such as `rem`, percentages, or `clamp()`. FormField can override one field, and ConfigProvider can set an application or region default.
+
+```tsx
+<Form layout="settings" settingsControlWidth={240}>
+  <FormField label="Language">...</FormField>
+  <FormField label="Auto-save" settingsControlWidth="18rem">...</FormField>
+</Form>
+
+<ConfigProvider components={{ Form: { settingsControlWidth: 'clamp(220px, 36%, 300px)' } }}>
+  <App />
+</ConfigProvider>
+```
+
+To connect an application CSS variable, override the component variable directly. A value supplied through `style` takes precedence over `settingsControlWidth`.
+
+```tsx
+import { Form, type LeafThemeStyle } from '@ifhover/leaf-ui';
+
+const formStyle = {
+  '--leaf-form-settings-control-width': 'var(--app-settings-control-width)',
+} satisfies LeafThemeStyle;
+
+<Form layout="settings" style={formStyle}>
+  ...
+</Form>;
+```
 
 ### Dynamic form lists
 
@@ -178,9 +211,11 @@ Leaf UI controls read the associations supplied by `FormField`. For native or th
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | Default field layout; settings places labels and descriptions on the left and controls on the right |
+| `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | Default field layout; settings places labels and descriptions on the left and controls in a right-side control column. |
 | `labelWidth` | `number` | `112` | Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields. |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment for horizontal fields |
+| `controlAlign` | `'left' \| 'right'` | `'left'` | Control alignment within the control column of settings fields. |
+| `settingsControlWidth` | `number \| string` | `clamp(200px, 40%, 280px)` | Width of the settings control column; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
 
@@ -197,6 +232,8 @@ Props associating a field label, control and validation messages.
 | `error` | `ReactNode` | — | Error message, displayed instead of help |
 | `layout` | [`FormProps`](#form-api)`['layout']` | Inherited from Form | Override this field's layout; vertical allows wider controls to fill the row |
 | `labelWidth` | `number` | — | Override this horizontal field’s label width in pixels |
+| `controlAlign` | [`FormProps`](#form-api)`['controlAlign']` | Inherited from Form | Override control alignment for this settings field. |
+| `settingsControlWidth` | [`FormProps`](#form-api)`['settingsControlWidth']` | Inherited from Form | Override the control-column width for this settings field. |
 | `description` | `ReactNode` | — | Description below the label, displayed independently of help and error below the control |
 
 ### FormGroupProps API

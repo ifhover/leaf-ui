@@ -7,6 +7,17 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.11.0 - 2026-10-31
+
+### 新增与改进
+
+- Form 与 FormField 新增 `controlAlign` 和 `settingsControlWidth`，支持统一配置或逐字段覆盖 settings 布局的控件对齐方式与列宽。
+- 更新中英文 Form 设置布局示例与 API 说明，精简 DataTable 使用文档。
+
+### 迁移说明
+
+- `Form layout="settings"` 默认在 `clamp(200px, 40%, 280px)` 的右侧控件列中左对齐控件。需要原有右对齐效果时设置 `controlAlign="right"`，通过 `settingsControlWidth` 调整列宽；两项均支持 FormField 单独覆盖。标签与说明改为和控件顶部对齐，只有标签配单行控件时仍保持视觉垂直居中。
+
 ## 0.10.1 - 2026-10-31
 
 ### 新增与改进
