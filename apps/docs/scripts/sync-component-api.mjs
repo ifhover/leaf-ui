@@ -643,6 +643,9 @@ const onSelectedRowKeysChangeDescription = [
   'Called with normalized, unique string keys whenever selection changes.',
 ];
 const specificDefaults = {
+  'FormFieldProps.controlAlign': ['继承 Form', 'Inherited from Form'],
+  'FormFieldProps.settingsControlWidth': ['继承 Form', 'Inherited from Form'],
+  'FormProps.settingsControlWidth': ['`clamp(200px, 40%, 280px)`', '`clamp(200px, 40%, 280px)`'],
   'ConfirmOptions.type': "`'info'`",
   'ScrollAreaProps.persistent': '`false`',
   'ScrollAreaProps.scrollbar': "`'auto'`",
@@ -1216,7 +1219,14 @@ const apiPropertyOrder = {
     'onOpenChange',
     'panelVariant',
   ],
-  FormProps: ['layout', 'labelWidth', 'labelAlign', 'disabled'],
+  FormProps: [
+    'layout',
+    'labelWidth',
+    'labelAlign',
+    'controlAlign',
+    'settingsControlWidth',
+    'disabled',
+  ],
   FormFieldProps: [
     'label',
     'children',
@@ -1227,6 +1237,8 @@ const apiPropertyOrder = {
     'layout',
     'labelWidth',
     'labelAlign',
+    'controlAlign',
+    'settingsControlWidth',
   ],
   UploadProps: [
     'fileList',
@@ -1665,6 +1677,26 @@ const specificTypes = {
   'UseDataTableSelectionOptions.defaultSelectedRowKeys': 'readonly DataTableRowSelectionKey[]',
 };
 const specific = {
+  'FormProps.layout': [
+    '字段默认布局；settings 将标签与描述放在左侧，将控件放在右侧控件列。',
+    'Default field layout; settings places labels and descriptions on the left and controls in a right-side control column.',
+  ],
+  'FormProps.controlAlign': [
+    'settings 字段控件在右侧控件列中的对齐方向。',
+    'Control alignment within the control column of settings fields.',
+  ],
+  'FormProps.settingsControlWidth': [
+    'settings 右侧控件列宽度；数字按像素处理，字符串接受 CSS 长度、百分比或 clamp() 等函数。',
+    'Width of the settings control column; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp().',
+  ],
+  'FormFieldProps.controlAlign': [
+    '当前 settings 字段的控件对齐方向。',
+    'Override control alignment for this settings field.',
+  ],
+  'FormFieldProps.settingsControlWidth': [
+    '当前 settings 字段的控件列宽度。',
+    'Override the control-column width for this settings field.',
+  ],
   'FormProps.labelWidth': [
     'horizontal 字段的标签宽度，单位像素；可由 FormField.labelWidth 单独覆盖。',
     'Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields.',

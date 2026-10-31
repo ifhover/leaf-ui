@@ -3,10 +3,7 @@ import { Form, FormField, Select, Switch, Textarea } from '@ifhover/leaf-ui';
 export function FormSettings() {
   return (
     <Form layout="settings">
-      <FormField label="自动保存" description="编辑时自动保存更改。">
-        <Switch name="autoSave" defaultChecked />
-      </FormField>
-      <FormField label="界面语言" description="选择应用的显示语言。">
+      <FormField label="界面语言">
         <Select
           name="language"
           defaultValue="zh-CN"
@@ -15,6 +12,9 @@ export function FormSettings() {
             { value: 'en-US', label: 'English' },
           ]}
         />
+      </FormField>
+      <FormField label="自动保存" description="编辑时自动保存更改。">
+        <Switch name="autoSave" defaultChecked />
       </FormField>
       <FormField
         label="个人简介"

@@ -7,6 +7,17 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.11.0 - 2026-10-31
+
+### Added and improved
+
+- Form and FormField add `controlAlign` and `settingsControlWidth` to configure control alignment and column width for settings layouts, with per-field overrides.
+- Updated bilingual Form settings examples and API descriptions, and simplified the DataTable usage documentation.
+
+### Migration
+
+- `Form layout="settings"` now aligns controls to the left within a right-side column whose default width is `clamp(200px, 40%, 280px)`. Set `controlAlign="right"` for the previous right alignment and use `settingsControlWidth` to adjust column width; FormField can override both options. Labels and descriptions now align with the top of controls; labels without descriptions remain vertically centered with single-line controls.
+
 ## 0.10.1 - 2026-10-31
 
 ### Added and improved

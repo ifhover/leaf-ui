@@ -261,6 +261,73 @@ describe('Form', () => {
     );
     expect(screen.queryByRole('alert')).toBeNull();
   });
+  it('aligns settings controls from the left by default and allows form and field overrides', () => {
+    const { container } = render(
+      <Form layout="settings" controlAlign="right">
+        <FormField label="Name">
+          <Input />
+        </FormField>
+        <FormField
+          label="Language"
+          description="Shown throughout the application."
+          controlAlign="left"
+        >
+          <Select options={[{ value: 'en', label: 'English' }]} />
+        </FormField>
+      </Form>,
+    );
+    const fields = container.querySelectorAll('.leaf-form-field');
+    expect(fields[0]).toHaveClass('leaf-form-field--control-right');
+    expect(fields[0]).not.toHaveClass('leaf-form-field--has-description');
+    expect(fields[1]).toHaveClass(
+      'leaf-form-field--control-left',
+      'leaf-form-field--has-description',
+    );
+
+    const { container: defaultContainer } = render(
+      <Form layout="settings">
+        <FormField label="Name">
+          <Input />
+        </FormField>
+      </Form>,
+    );
+    expect(defaultContainer.querySelector('.leaf-form-field')).toHaveClass(
+      'leaf-form-field--control-left',
+    );
+  });
+  it('sets settings control widths on forms and individual fields', () => {
+    const { container } = render(
+      <Form layout="settings" settingsControlWidth={240}>
+        <FormField label="Name">
+          <Input />
+        </FormField>
+        <FormField label="Language" settingsControlWidth="clamp(220px, 36%, 300px)">
+          <Select options={[{ value: 'en', label: 'English' }]} />
+        </FormField>
+      </Form>,
+    );
+    expect(
+      container.querySelector('form')?.style.getPropertyValue('--leaf-form-settings-control-width'),
+    ).toBe('240px');
+    const fields = container.querySelectorAll<HTMLElement>('.leaf-form-field');
+    expect(fields[0]?.style.getPropertyValue('--leaf-form-settings-control-width')).toBe('');
+    expect(fields[1]?.style.getPropertyValue('--leaf-form-settings-control-width')).toBe(
+      'clamp(220px, 36%, 300px)',
+    );
+
+    const { container: defaultContainer } = render(
+      <Form layout="settings">
+        <FormField label="Name">
+          <Input />
+        </FormField>
+      </Form>,
+    );
+    expect(
+      defaultContainer
+        .querySelector('form')
+        ?.style.getPropertyValue('--leaf-form-settings-control-width'),
+    ).toBe('');
+  });
   it('preserves configured width when layouts are mixed or changed', () => {
     const fields = (layout: 'vertical' | 'horizontal') => (
       <Form layout="settings" labelWidth={144}>
@@ -288,8 +355,18 @@ describe('Form', () => {
     const { container } = render(
       <ConfigProvider
         components={{
-          Form: { layout: 'settings', labelWidth: 140 },
-          FormField: { description: 'Default hint', labelWidth: 80 },
+          Form: {
+            layout: 'settings',
+            labelWidth: 140,
+            controlAlign: 'right',
+            settingsControlWidth: 260,
+          },
+          FormField: {
+            description: 'Default hint',
+            labelWidth: 80,
+            controlAlign: 'left',
+            settingsControlWidth: '18rem',
+          },
         }}
       >
         <Form>
@@ -306,11 +383,16 @@ describe('Form', () => {
     expect(container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width')).toBe(
       '140px',
     );
+    expect(
+      container.querySelector('form')?.style.getPropertyValue('--leaf-form-settings-control-width'),
+    ).toBe('260px');
     const fields = container.querySelectorAll<HTMLElement>('.leaf-form-field');
     expect(fields[0]?.style.getPropertyValue('--leaf-form-label-width')).toBe('80px');
     expect(fields[1]?.style.getPropertyValue('--leaf-form-label-width')).toBe('96px');
+    expect(fields[0]?.style.getPropertyValue('--leaf-form-settings-control-width')).toBe('18rem');
     expect(screen.getByRole('textbox', { name: 'Name' }).closest('.leaf-form-field')).toHaveClass(
       'leaf-form-field--settings',
+      'leaf-form-field--control-left',
     );
     expect(screen.getByRole('textbox', { name: 'Notes' }).closest('.leaf-form-field')).toHaveClass(
       'leaf-form-field--vertical',
