@@ -3145,12 +3145,20 @@ const specific = {
   'DataTableProps.maxHeight': tableHeightDescription,
   'DataTablePresentationProps.maxHeight': tableHeightDescription,
   'DataTableProps.minWidth': [
-    '表格最小宽度；默认根据可见列宽计算。',
-    'Minimum table width; defaults to visible column sizes.',
+    '表格内容区域的最小宽度；默认适应容器与列宽。',
+    'Minimum content-area width; adapts to the container and column widths by default.',
+  ],
+  'DataTablePresentationProps.minWidth': [
+    '表格内容区域的最小宽度；默认适应容器与列宽。',
+    'Minimum content-area width; adapts to the container and column widths by default.',
   ],
   'DataTableColumnMeta.label': [
     '排序和列宽调整使用的纯文字列名。',
     'Plain-text column name for sorting and resize controls.',
+  ],
+  'DataTableColumnMeta.flex': [
+    '分配剩余宽度的正数权重，受 minSize / maxSize 约束；固定列和手动调整宽度的列忽略此项。',
+    'Positive weight for sharing available width, bounded by minSize / maxSize; ignored on pinned or manually resized columns.',
   ],
   'DataTablePaginationProps.showSizeChanger': [
     '展示每页条数选择器；DataTable 默认开启，可显式传入 false 关闭。',

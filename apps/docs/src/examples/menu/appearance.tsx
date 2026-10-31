@@ -7,9 +7,9 @@ const items = [
 ];
 
 const variants = [
+  { value: 'primary', label: '主题色（默认）' },
   { value: 'neutral', label: '中性' },
   { value: 'raised', label: '浮起' },
-  { value: 'primary', label: '主题色' },
 ] as const;
 
 export function MenuAppearance() {

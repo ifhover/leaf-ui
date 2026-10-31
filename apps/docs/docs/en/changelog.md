@@ -7,6 +7,21 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.12.0 - 2026-10-31
+
+### Added and improved
+
+- DataTable uses content-based layout for ordinary tables without configured column widths, and deterministic sizing for explicit dimensions, pinning, resizing and virtualization. New `meta.flex` distributes available space by weight within `minSize` / `maxSize` bounds. Manual resizing preserves the rendered width; resetting restores flexible allocation.
+- Menu defaults to the primary appearance. Selected and hovered text uses the original theme color, with a softer 8% primary selection background.
+- ColorPicker reuses the library's internal Input for color values, sharing its radius, dimensions, focus and validation feedback. Fixed swatch centering and trigger alignment in the documentation site's top-right theme color picker.
+- Synchronized bilingual sizing examples, component guides, API descriptions and behavior tests.
+
+### Migration
+
+- DataTable no longer assigns every column a default 150px width or gives all remaining space to the last unpinned column. Explicit `size`, width bounds, sizing state, pinning, resizing and virtualization enable deterministic sizing. Pinned or explicitly sized columns retain their widths; other columns share the remaining space. Set `options.defaultColumn.size: 150` for the previous base width and add `meta.flex` to columns that should fill available space. Flexible columns ignore `size` while respecting `minSize` / `maxSize`; pinned and manually resized columns ignore flex weights. Tables may leave space on the right when all columns have fixed widths or reach their maximum widths.
+- Menu's default `variant` changes from `raised` to `primary`. Set `variant="raised"` or `ConfigProvider.components.Menu.variant` to retain the previous appearance. Primary text no longer uses the adjusted `primary-ink` color, and its selection background changes from 10% to 8% primary.
+- ColorPicker's value input follows Input dimensions and radius. Its standalone style entry now includes Input styles.
+
 ## 0.11.0 - 2026-10-31
 
 ### Added and improved

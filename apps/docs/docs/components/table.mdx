@@ -6,6 +6,7 @@ import { TableSelection } from '../../src/examples/table/selection';
 import { TableExpansion } from '../../src/examples/table/expansion';
 import { TableStates } from '../../src/examples/table/states';
 import { TableColumns } from '../../src/examples/table/columns';
+import { TableSizing } from '../../src/examples/table/sizing';
 import { TableGrouped } from '../../src/examples/table/grouped';
 import { TableEditable } from '../../src/examples/table/editable';
 import { TableVirtual } from '../../src/examples/table/advanced';
@@ -27,7 +28,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 基础用法
 
-传入数据、列定义与稳定唯一的 `rowKey`。默认开启本地分页。
+传入数据、列定义与稳定唯一的 `rowKey`。默认开启本地分页。普通表格不设置列宽时按内容分配空间，长文本可以换行。
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -99,9 +100,24 @@ npm install @tanstack/react-table@^8.21.3
 
 <a id="进阶用法"></a>
 
+### 列宽分配
+
+列定义的 `size` 指定固定宽度；未设置 `size` 的列共享剩余空间。通过 `meta.flex` 指定正数权重，例如下例中商品名称与说明按 2:1 分配空间，并受 `minSize`、`maxSize` 约束。宽度不足时保留最小宽度，在表格内部横向滚动。
+
+<ComponentExample exampleId="sizing" preview={<TableSizing />} fileName="sizing.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/sizing.tsx"
+```
+
+</ComponentExample>
+
+所有列均指定固定宽度时，多余空间留在右侧；需要填满容器时，保留未设置 `size` 的列或配置 `meta.flex`。弹性列使用 `minSize`、`maxSize` 作为边界，`size` 不参与弹性比例计算。正文默认换行，不自动省略；自定义不换行的内容需要自行处理溢出。
+
 ### 固定列与列宽调整
 
 设置 `resizable` 开启列宽拖拽，在列定义中通过 `size`、`minSize`、`maxSize` 限制宽度范围。在 `options.initialState.columnPinning` 中固定列，配合 `maxHeight` 固定表头并在内部滚动。可通过 `toolbar` 添加表头工具栏。
+
+固定列、列宽调整和虚拟滚动使用确定的列宽，未配置宽度的列以 150px 为基础分配剩余空间。固定列忽略 `meta.flex`；手动调整后该列保持调整后的宽度，双击手柄或重置列宽可恢复弹性分配。
 
 <ComponentExample exampleId="columns" preview={<TableColumns />} fileName="columns.tsx" width="100%">
 
@@ -181,7 +197,7 @@ npm install @tanstack/react-table@^8.21.3
 | `columnDividers` | `boolean` | — | 增加表体和表尾的列分隔线；layered 表头保留短分隔线。simple 模式忽略此项。 |
 | `striped` | `boolean` | `true` | 两种外观均默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。 |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。 |
-| `minWidth` | `CSSProperties['minWidth']` | — | 表格最小宽度；默认根据可见列宽计算。 |
+| `minWidth` | `CSSProperties['minWidth']` | — | 表格内容区域的最小宽度；默认适应容器与列宽。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 空数据内容。 |
 | `error` | `ReactNode` | — | 请求失败提示；null、undefined 或 false 不展示。 |
@@ -317,6 +333,7 @@ const columns = [
 | `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头和单元格对齐。 |
 | `cellClassName` | `string` | — | 单元格类名。 |
 | `headerClassName` | `string` | — | 表头类名。 |
+| `flex` | `number` | — | 分配剩余宽度的正数权重，受 minSize / maxSize 约束；固定列和手动调整宽度的列忽略此项。 |
 
 ### DataTableVirtualOptions
 

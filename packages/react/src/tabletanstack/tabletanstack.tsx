@@ -36,8 +36,10 @@ import {
   createContext,
   Fragment,
   type HTMLAttributes,
+  type MouseEvent,
   type ReactNode,
   type RefObject,
+  type TouchEvent,
   useContext,
   useEffect,
   useId,
@@ -60,6 +62,7 @@ import { assignRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
 import { TableControl as Table } from '../table/table';
+import { getColumnLayout } from './column-sizing';
 import { useRowMotion } from './row-motion';
 
 export interface DataTableColumnMeta {
@@ -67,6 +70,8 @@ export interface DataTableColumnMeta {
   align?: 'start' | 'center' | 'end';
   cellClassName?: string;
   headerClassName?: string;
+  /** Positive weight for sharing available width; ignored on pinned or manually resized columns. */
+  flex?: number;
 }
 
 declare const process: { env: { NODE_ENV?: string } };
@@ -318,13 +323,23 @@ function pinProps(column: Column<unknown, unknown>) {
   };
 }
 
-function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
+function ResizeHandle({ header, width }: { header: Header<unknown, unknown>; width: number }) {
   const { table, loading } = useDataTableContext();
   const { direction } = useLeafConfig();
   const format = useFormattedText();
   const column = header.column;
   const min = column.columnDef.minSize ?? 20;
   const max = column.columnDef.maxSize ?? Number.MAX_SAFE_INTEGER;
+  const startResize = (event: MouseEvent<HTMLHRElement> | TouchEvent<HTMLHRElement>) => {
+    if ('touches' in event && event.touches.length !== 1) return;
+    header.getResizeHandler()(event);
+    // TanStack's stored size may differ from the width assigned to a flexible column.
+    table.setColumnSizingInfo((previous) => ({
+      ...previous,
+      startSize: width,
+      columnSizingStart: [[column.id, width]],
+    }));
+  };
   return (
     <hr
       tabIndex={loading ? -1 : 0}
@@ -332,12 +347,12 @@ function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
       aria-orientation="vertical"
       aria-valuemin={min}
       aria-valuemax={max}
-      aria-valuenow={column.getSize()}
+      aria-valuenow={width}
       aria-disabled={loading || undefined}
       className="leaf-data-table__resize"
       data-resizing={column.getIsResizing() || undefined}
-      onMouseDown={loading ? undefined : header.getResizeHandler()}
-      onTouchStart={loading ? undefined : header.getResizeHandler()}
+      onMouseDown={loading ? undefined : startResize}
+      onTouchStart={loading ? undefined : startResize}
       onDoubleClick={() => {
         if (!loading) column.resetSize();
       }}
@@ -346,8 +361,7 @@ function ResizeHandle({ header }: { header: Header<unknown, unknown> }) {
         event.preventDefault();
         const step = event.shiftKey ? 50 : 10;
         const delta = (event.key === 'ArrowRight' ? 1 : -1) * (direction === 'rtl' ? -1 : 1) * step;
-        const next =
-          event.key === 'Home' ? min : event.key === 'End' ? max : column.getSize() + delta;
+        const next = event.key === 'Home' ? min : event.key === 'End' ? max : width + delta;
         table.setColumnSizing((previous) => ({
           ...previous,
           [column.id]: Math.min(max, Math.max(min, next)),
@@ -664,6 +678,23 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
     config;
   const t = useText();
   const viewport = useRef<HTMLDivElement>(null);
+  const [availableWidth, setAvailableWidth] = useState(0);
+  useEffect(() => {
+    const node = viewport.current;
+    if (!node) return;
+    const content = node.firstElementChild;
+    const measure = () => setAvailableWidth(content?.clientWidth ?? node.clientWidth);
+    measure();
+    const observer =
+      typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(node);
+    if (content) observer?.observe(content);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
   const element = useRef<HTMLTableElement>(null);
   const [focusedRowId, setFocusedRowId] = useState<string>();
   const rows = table.getRowModel().rows;
@@ -677,8 +708,11 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const expandable = config.expandable;
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const colSpan = Math.max(1, columns.length + utilityCount);
-  const totalWidth = table.getTotalSize() + utilityCount * 44;
-  const lastCenter = table.getCenterVisibleLeafColumns().at(-1)?.id;
+  const layout = getColumnLayout(table, columns, {
+    forceFixed: Boolean(resizable || virtual || columns.some((column) => column.getIsPinned())),
+    availableWidth,
+    utilityWidth: utilityCount * 44,
+  });
   const status =
     error != null && error !== false
       ? 'error'
@@ -717,10 +751,14 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         columnDividers={config.columnDividers}
         striped={config.striped}
         maxHeight={config.maxHeight}
-        minWidth={config.minWidth ?? totalWidth}
+        minWidth={config.minWidth}
         pinnedWidth={table.getLeftTotalSize() + table.getRightTotalSize()}
-        tableLayout="fixed"
-        tableStyle={{ width: `max(100%, ${totalWidth}px)` }}
+        tableLayout={layout.fixed ? 'fixed' : 'auto'}
+        tableStyle={
+          layout.fixed && columns.length
+            ? { width: layout.totalWidth, minWidth: 0 }
+            : { width: '100%' }
+        }
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
         <colgroup>
@@ -730,7 +768,7 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
             <col
               key={column.id}
               style={{
-                width: column.id === lastCenter ? undefined : column.getSize(),
+                width: layout.widths.get(column.id),
               }}
             />
           ))}
@@ -802,7 +840,12 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                     {resizable &&
                       !header.isPlaceholder &&
                       !column.columns.length &&
-                      column.getCanResize() && <ResizeHandle header={header} />}
+                      column.getCanResize() && (
+                        <ResizeHandle
+                          header={header}
+                          width={layout.widths.get(column.id) ?? column.getSize()}
+                        />
+                      )}
                   </Table.ColumnHeader>
                 );
               })}

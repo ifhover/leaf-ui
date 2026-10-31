@@ -23,10 +23,10 @@ const items: MenuItem[] = [
 ];
 
 describe('Menu transitions', () => {
-  it('uses raised by default and allows regional and instance appearance overrides', () => {
+  it('uses primary by default and allows regional and instance appearance overrides', () => {
     const { rerender } = render(<Menu items={items} />);
-    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--raised');
-    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--raised');
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--primary');
+    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--primary');
 
     rerender(
       <ConfigProvider components={{ Menu: { variant: 'neutral' } }}>
@@ -284,6 +284,13 @@ describe('Menu groups', () => {
 });
 
 describe('Menu popup navigation', () => {
+  it('inherits the default primary appearance in collapsed submenus', async () => {
+    render(<Menu items={items} collapsed defaultSelectedKey="design" />);
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Projects' }));
+    expect(
+      screen.getByRole('menuitem', { name: 'Design' }).closest('.leaf-menu__popup'),
+    ).toHaveClass('leaf-menu__popup--primary');
+  });
   it.each(['neutral', 'raised', 'primary'] as const)(
     'keeps the %s appearance in collapsed submenus',
     async (variant) => {

@@ -7,9 +7,9 @@ const items = [
 ];
 
 const variants = [
+  { value: 'primary', label: 'Primary (default)' },
   { value: 'neutral', label: 'Neutral' },
   { value: 'raised', label: 'Raised' },
-  { value: 'primary', label: 'Primary' },
 ] as const;
 
 export function MenuAppearance() {

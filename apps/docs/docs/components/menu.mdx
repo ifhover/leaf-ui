@@ -43,7 +43,7 @@ export const leafDoc = { component: 'Menu', primaryApi: 'MenuProps' };
 
 ### 选中项外观
 
-默认使用浮起外观（`raised`）；通过 `variant="neutral"` 使用中性外观，或通过 `variant="primary"` 使用主题色外观。下面使用相同的菜单内容对比三种外观。
+默认使用主题色外观（`primary`），选中文字保持主题基色；通过 `variant="neutral"` 使用中性外观，或通过 `variant="raised"` 使用浮起外观。下面使用相同的菜单内容对比三种外观。
 
 <ComponentExample exampleId="appearance" preview={<MenuAppearance />} fileName="appearance.tsx" width={240}>
 
@@ -111,7 +111,7 @@ Menu 的组件参数。
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `readonly `[`MenuItem`](#menuitem-api)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
-| `variant` | `'neutral' \| 'raised' \| 'primary'` | `'raised'` | 选中项外观：中性、浮起或主题色。 |
+| `variant` | `'neutral' \| 'raised' \| 'primary'` | `'primary'` | 选中项外观：中性、浮起或主题色。 |
 | `selectedKey` | `string` | — | 受控选中项目 |
 | `defaultSelectedKey` | `string` | `''` | 初始选中项目 |
 | `onSelect` | `(key: string, item: `[`MenuItem`](#menuitem-api)`) => void` | — | 选择项目 |

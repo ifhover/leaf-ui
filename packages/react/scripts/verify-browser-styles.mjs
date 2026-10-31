@@ -49,7 +49,7 @@ const cases = {
   colorSubpath: {
     names: ['ColorPicker'],
     subpath: '/color-picker',
-    include: ['color-picker', 'tabs', 'scrollbar'],
+    include: ['color-picker', 'input', 'tabs', 'scrollbar'],
     exclude: ['table', 'date-picker'],
   },
   card: {

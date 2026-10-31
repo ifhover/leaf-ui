@@ -44,7 +44,9 @@ export function dataTableTypeContracts(table: TableInstance<RecordRow>) {
   ] as const satisfies readonly ColumnDef<RecordRow>[];
   const readonlyDirect = <DataTable data={data} columns={readonlyColumns} rowKey="id" />;
   const typedColumns: DataTableColumnDef<RecordRow>[] = [
-    { accessorKey: 'name', meta: { align: 'end', headerClassName: 'heading' } },
+    { accessorKey: 'name', meta: { align: 'end', headerClassName: 'heading', flex: 2 } },
+    // @ts-expect-error Flexible column weights must be numeric.
+    { accessorKey: 'name', meta: { flex: 'auto' } },
     // @ts-expect-error Leaf metadata validates alignment without global module augmentation.
     { accessorKey: 'name', meta: { align: 'sideways' } },
     // @ts-expect-error Misspelled metadata properties must not silently disappear.

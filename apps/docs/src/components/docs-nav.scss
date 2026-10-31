@@ -271,7 +271,7 @@
   color: var(--leaf-site-nav-text);
 }
 
-.leaf-docs-color-switcher {
+.leaf-docs-color-switcher.leaf-color-picker {
   flex: none;
   justify-content: center;
   width: 28px;
@@ -283,7 +283,9 @@
   .leaf-color-picker__trigger {
     width: 100%;
     min-width: 0;
-    height: 100%;
+    align-self: stretch;
+    height: auto;
+    justify-content: center;
     padding: 0;
   }
 

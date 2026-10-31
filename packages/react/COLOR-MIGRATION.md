@@ -52,7 +52,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 13 | `cascader` | `cascader` | Primary `field` focus; `floating-paint`; `choice-option`; controlled structural borders | Inherited |
 | 14 | `checkbox` | `checkbox` | `choice`; checked fill uses `primary`, checked border uses `primary-indicator`, and content uses `on-primary` | Reviewed |
 | 15 | `collapse` | `collapse` | `control-size`; direct surface, divider, and text roles | Reviewed |
-| 16 | `color-picker` | `colorpicker` | Primary `field` focus with local `shadow-xs`; internal segmented Tabs; intrinsic hue/alpha/checker/preset paint | Reviewed + exception |
+| 16 | `color-picker` | `colorpicker` | Primary `field` focus; shared Input for color text and segmented Tabs for formats; intrinsic hue/alpha/checker/preset paint | Reviewed + exception |
 | 18 | `config-provider` | `config-provider` | Contrast-calculation canvas only; no component paint | Exception |
 | 19 | `confirm` | `confirm` | Inherits dialog/modal and button actions; danger-soft error detail | Inherited |
 | 20 | `date-picker` | `datepicker`, private `timepicker` | Primary `field` focus; info/on-info native selection; `floating-paint`; shared calendar selection and `choice-option` time columns; persistent scrollbar | Reviewed |
@@ -143,7 +143,7 @@ Table stripes, hover tint, pinned-column shadows, and the loading scrim still fo
 These roles stay with their component because the visual responsibility is not a general semantic color family:
 
 - Menu keeps its complete appearance: neutral uses the local fill specified by the [Menu state contract](../../DESIGN-STANDARDS.md#menu) and 80% inherited ink, while raised/primary and danger states retain their separate palettes. Select, AutoComplete, Mentions, Tree, TreeSelect, Cascader and Dropdown reuse the shared choice-row recipe with half-strength neutral feedback, full inherited ink and row-local background-color transitions. Persistent values keep their checks without a saved background; candidate-only ARIA selections retain active feedback. Calendar/range/time selection semantics and field focus variants do not change.
-- ColorPicker keeps hue, alpha, checkerboard, preset, and contrast-outline paint. The inline field keeps `shadow-xs` through the field override path.
+- ColorPicker keeps hue, alpha, checkerboard, preset, and contrast-outline paint. Its value field delegates geometry, validation and focus paint to the shared Input control.
 - Rate keeps its independent rating scale; it is not the warning status family.
 - Image preview, Carousel controls, and the FileList video letterbox keep media-owned overlays and contrast handling.
 - Typography's inline warning mark keeps its translucent content-highlight layer rather than adopting an opaque status surface.

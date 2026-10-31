@@ -115,7 +115,7 @@ export function Menu(rawProps: MenuProps) {
     defaultOpenKeys = [],
     onOpenChange,
     collapsed = false,
-    variant = 'raised',
+    variant = 'primary',
     itemRender,
     linkRender,
     itemClassName,
