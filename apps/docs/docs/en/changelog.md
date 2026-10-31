@@ -7,6 +7,19 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.13.1 - 2026-11-01
+
+### Added and improved
+
+- Form `settings` now uses `labelWidth` for the left label column, while controls use the remaining width after the gap. `labelWidth` accepts numbers, percentages, `rem`, `clamp()` and other CSS strings; `settingsControlWidth` remains available for an explicit fixed control column.
+- Input moves its horizontal padding into the native input; without affixes, the native input fills the shell. The light-mode off Switch track now uses a lighter neutral background.
+
+### Migration
+
+- The default `settings` column allocation changes: the left label column now reads `labelWidth`, and controls use the remaining width. Set `settingsControlWidth` when a fixed right column is needed; numbers use pixels and strings accept CSS values.
+- Check custom `.leaf-input` shell padding for duplicated spacing; InputSearch, InputMask and other Input consumers change with it.
+- The light-mode off Switch track now uses the `option-hover` background; dark mode, explicit theme overrides and the on-state colors remain unchanged.
+
 ## 0.13.0 - 2026-11-01
 
 ### Added and improved

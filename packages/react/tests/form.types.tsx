@@ -7,13 +7,9 @@ export function formWidthTypeContracts() {
   const form = <Form {...subpath} />;
   const field = <FormField labelWidth={80} />;
   const defaults = <ConfigProvider components={{ Form: props, FormField: { labelWidth: 80 } }} />;
-  // @ts-expect-error Automatic label measurement is no longer supported.
-  const automatic = <Form labelWidth="auto" />;
-  // @ts-expect-error Widths must be pixel numbers, not CSS strings.
   const cssWidth = <Form labelWidth="112px" />;
-  // @ts-expect-error Regional defaults cannot re-enable automatic label measurement.
-  const automaticDefaults = <ConfigProvider components={{ Form: { labelWidth: 'auto' } }} />;
-  // @ts-expect-error Field overrides also require pixel numbers.
-  const automaticField = <FormField labelWidth="auto" />;
-  return { form, field, defaults, automatic, cssWidth, automaticDefaults, automaticField };
+  const percentageWidth = <Form labelWidth="20%" />;
+  const cssWidthDefaults = <ConfigProvider components={{ Form: { labelWidth: '12rem' } }} />;
+  const cssWidthField = <FormField labelWidth="clamp(112px, 20%, 240px)" />;
+  return { form, field, defaults, cssWidth, percentageWidth, cssWidthDefaults, cssWidthField };
 }

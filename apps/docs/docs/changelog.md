@@ -7,6 +7,19 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.13.1 - 2026-11-01
+
+### 新增与改进
+
+- Form 的 `settings` 布局改为使用 `labelWidth` 控制左侧标签列，右侧控件默认占用去除间隙后的剩余空间；`labelWidth` 支持数字、百分比、`rem` 和 `clamp()` 等 CSS 字符串。`settingsControlWidth` 仍可显式固定右侧控件列。
+- Input 将两侧留白移入原生输入区域，无附加元素时原生 input 铺满外框内部；Switch 关闭态浅色轨道改用更浅的中性背景。
+
+### 迁移说明
+
+- `settings` 表单的默认列分配发生变化：左侧标签列现在读取 `labelWidth`，右侧控件使用剩余宽度。需要固定右侧列时继续设置 `settingsControlWidth`；数字按像素处理，字符串接受 CSS 值。
+- Input 自定义 `.leaf-input` 外壳内边距的样式需要检查是否重复留白；InputSearch、InputMask 等复用 Input 的组件同步生效。
+- Switch 关闭态浅色模式轨道改用 `option-hover` 背景；深色模式、显式主题覆盖和开启态颜色保持原有契约。
+
 ## 0.13.0 - 2026-11-01
 
 ### 新增与改进

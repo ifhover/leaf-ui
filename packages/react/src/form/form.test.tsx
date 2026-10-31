@@ -212,6 +212,26 @@ describe('Form', () => {
     );
     expect(field()?.style.getPropertyValue('--leaf-form-label-width')).toBe('');
   });
+  it.each(['20%', '12rem', 'clamp(112px, 20%, 240px)'])(
+    'preserves CSS label widths: %s',
+    (width) => {
+      const { container } = render(
+        <Form layout="settings" labelWidth={width}>
+          <FormField label="Name" labelWidth={width}>
+            <Input />
+          </FormField>
+        </Form>,
+      );
+      expect(
+        container.querySelector('form')?.style.getPropertyValue('--leaf-form-label-width'),
+      ).toBe(width);
+      expect(
+        container
+          .querySelector<HTMLElement>('.leaf-form-field')
+          ?.style.getPropertyValue('--leaf-form-label-width'),
+      ).toBe(width);
+    },
+  );
   it('names radio groups and inherits disabled controls', () => {
     render(
       <Form disabled>

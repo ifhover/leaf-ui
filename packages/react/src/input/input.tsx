@@ -77,6 +77,7 @@ export const InputControl = forwardRef<HTMLInputElement, InputProps>(function In
   const disabled = disabledProp || field?.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: Shell pointer events only extend the native input's focus hit area.
     <div
       className={classes(
         'leaf-input',
@@ -87,6 +88,12 @@ export const InputControl = forwardRef<HTMLInputElement, InputProps>(function In
       style={style}
       data-status={status}
       data-disabled={disabled ? '' : undefined}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !disabled && !event.defaultPrevented) {
+          event.preventDefault();
+          input.current?.focus();
+        }
+      }}
     >
       {prefix && (
         <span className="leaf-input__affix" aria-hidden="true">

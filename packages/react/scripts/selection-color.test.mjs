@@ -117,6 +117,39 @@ test('ColorPicker uses shared Input geometry and centers swatch-only triggers', 
   );
 });
 
+test('Input fills its shell and only rounds native edges that meet the outer frame', async () => {
+  const input = await compiledStyles('input/input.scss');
+  assert.equal(input('.leaf-input')['padding-inline'], '0px');
+  const native = input('.leaf-input__native');
+  assert.equal(native.width, '100%');
+  assert.equal(native.height, '100%');
+  assert.equal(native.padding, '0px');
+  assert.equal(native['border-radius'], '0px');
+  for (const [child, side] of [
+    ['first', 'start'],
+    ['last', 'end'],
+  ]) {
+    const edge = input(`.leaf-input__native:${child}-child`);
+    assert.equal(edge[`padding-inline-${side}`], 'var(--leaf-density-field-padding)');
+    for (const corner of ['start', 'end']) {
+      assert.equal(
+        edge[`border-${corner}-${side}-radius`],
+        'max(0px,var(--leaf-component-input-radius,var(--leaf-radius))- var(--leaf-field-border-width))',
+      );
+      assert.equal(
+        input(`.leaf-input-group--compact > *:not(:${child}-child) > .leaf-input__native`)[
+          `border-${corner}-${side}-radius`
+        ],
+        '0px',
+      );
+    }
+    assert.equal(
+      input(`.leaf-input > :${child}-child:not(.leaf-input__native)`)[`margin-inline-${side}`],
+      'var(--leaf-density-field-padding)',
+    );
+  }
+});
+
 test('choice rows retain Select feedback independently of the neutral Menu appearance', async () => {
   for (const [file, selector] of [
     ['select/select.scss', '.leaf-select__panel .leaf-floating__option'],

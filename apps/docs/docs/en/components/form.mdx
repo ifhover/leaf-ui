@@ -31,7 +31,7 @@ Set a control’s `name` and read its value from `FormData` in the submit event.
 
 ### Label widths
 
-Horizontal labels default to 112px. Set `Form.labelWidth` for the whole form or `FormField.labelWidth` for an individual field, both in pixels; long labels wrap within that width. Horizontal and settings fields stack in narrow containers.
+Horizontal and settings label columns default to 112px. Set `Form.labelWidth` for the whole form or `FormField.labelWidth` for an individual field; numbers use pixels and strings accept CSS values such as `20%`, `12rem`, or `clamp()`. Long labels wrap within that width. Horizontal and settings fields stack in narrow containers.
 
 <ComponentExample exampleId="label-width" preview={<FormLabelWidth />} fileName="label-width.tsx" width={600}>
 
@@ -71,13 +71,13 @@ export function AccountForm() {
 }
 ```
 
-Whether `140px` is converted, and at what ratio, depends on your build configuration. Include this stylesheet and its custom property declarations in the conversion scope. Numeric `labelWidth` values generate inline pixel values, which PostCSS usually does not process. Form currently also generates an inline default width, so declaring `--leaf-form-label-width` in a CSS class on the same Form does not override it. The example explicitly connects the CSS variable through `style` without requiring `!important`.
+Whether `140px` is converted, and at what ratio, depends on your build configuration. Include this stylesheet and its custom property declarations in the conversion scope. Numeric `labelWidth` values generate inline pixel values, which PostCSS usually does not process; string values are passed through as CSS widths. Form currently also generates an inline default width, so declaring `--leaf-form-label-width` in a CSS class on the same Form does not override it. The example explicitly connects the CSS variable through `style` without requiring `!important`.
 
-For an application-wide width, define `--app-form-label-width` on the application root and configure `ConfigProvider components={{ Form: { style: formStyle } }}` once. `style` is replaced as a whole, not merged; retain the variable connection when supplying a separate `style` on a Form. `FormField.labelWidth` or the same CSS variable on an individual field can still override that field. This width configuration applies only to horizontal layouts.
+For an application-wide width, define `--app-form-label-width` on the application root and configure `ConfigProvider components={{ Form: { style: formStyle } }}` once. `style` is replaced as a whole, not merged; retain the variable connection when supplying a separate `style` on a Form. `FormField.labelWidth` or the same CSS variable on an individual field can still override that field.
 
 ### Settings layout
 
-`layout="settings"` places the label and `description` to the left of the control column. Controls align left by default; set `controlAlign="right"` on Form or override an individual FormField. Use `layout="vertical"` for wider fields. `description` explains the field; `help` appears below the control and is replaced by `error`.
+`layout="settings"` places the label and `description` to the left of the controls. The left column reads `labelWidth`; controls use the remaining width after the gap and align left by default. Set `controlAlign="right"` on Form or override an individual FormField. Use `layout="vertical"` for wider fields; it still fills the row by default. `description` explains the field; `help` appears below the control and is replaced by `error`.
 
 <ComponentExample exampleId="settings" preview={<FormSettings />} fileName="settings.tsx" width={600}>
 
@@ -90,9 +90,9 @@ For an application-wide width, define `--app-form-label-width` on the applicatio
 
 {/* leaf:example settings-control-width */}
 
-The control column defaults to `clamp(200px, 40%, 280px)`: it prefers 40% of the Form's available width, with a 200px minimum and a 280px maximum. The label column receives the space left after the control column and column gap. The 600px-wide example above therefore uses a 240px control column. Fields stack vertically when the Form or viewport becomes narrow.
+The control column uses the space left after the label column and column gap. To keep a fixed control column for compatibility, set `settingsControlWidth`; numbers use pixels and strings accept CSS values such as `rem`, percentages, or `clamp()`. Fields stack vertically when the Form or viewport becomes narrow.
 
-Use `settingsControlWidth` for common cases. Numbers use pixels; strings accept CSS values such as `rem`, percentages, or `clamp()`. FormField can override one field, and ConfigProvider can set an application or region default.
+Use `settingsControlWidth` only when a fixed control column is needed. FormField can override one field, and ConfigProvider can set an application or region default.
 
 ```tsx
 <Form layout="settings" settingsControlWidth={240}>
@@ -212,10 +212,10 @@ Leaf UI controls read the associations supplied by `FormField`. For native or th
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `layout` | `'horizontal' \| 'vertical' \| 'settings'` | `'horizontal'` | Default field layout; settings places labels and descriptions on the left and controls in a right-side control column. |
-| `labelWidth` | `number` | `112` | Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields. |
+| `labelWidth` | `number \| string` | `112` | Label-column width for horizontal/settings fields; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). FormField.labelWidth can override individual fields. |
 | `labelAlign` | `'left' \| 'right'` | `'right'` | Label alignment for horizontal fields |
 | `controlAlign` | `'left' \| 'right'` | `'left'` | Control alignment within the control column of settings fields. |
-| `settingsControlWidth` | `number \| string` | `clamp(200px, 40%, 280px)` | Width of the settings control column; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). |
+| `settingsControlWidth` | `number \| string` | — | Optional fixed control-column width for settings; when omitted, the remaining width after the label column and gap is used. Numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `ref` | `Ref<HTMLFormElement>` | — | Reference to the form |
 
@@ -231,9 +231,9 @@ Props associating a field label, control and validation messages.
 | `help` | `ReactNode` | — | Supporting text below the control, included in the field layout |
 | `error` | `ReactNode` | — | Error message, displayed instead of help |
 | `layout` | [`FormProps`](#form-api)`['layout']` | Inherited from Form | Override this field's layout; vertical allows wider controls to fill the row |
-| `labelWidth` | `number` | — | Override this horizontal field’s label width in pixels |
+| `labelWidth` | `number \| string` | — | Override this horizontal/settings field’s label-column width; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp() |
 | `controlAlign` | [`FormProps`](#form-api)`['controlAlign']` | Inherited from Form | Override control alignment for this settings field. |
-| `settingsControlWidth` | [`FormProps`](#form-api)`['settingsControlWidth']` | Inherited from Form | Override the control-column width for this settings field. |
+| `settingsControlWidth` | [`FormProps`](#form-api)`['settingsControlWidth']` | Inherited from Form | Override the fixed control-column width for this settings field; when omitted, the remaining width after the label column and gap is used. |
 | `description` | `ReactNode` | — | Description below the label, displayed independently of help and error below the control |
 
 ### FormGroupProps API

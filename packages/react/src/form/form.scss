@@ -23,8 +23,8 @@
   }
   &--settings {
     grid-template-columns:
-      minmax(0, 1fr)
-      var(--leaf-form-settings-control-width, clamp(200px, 40%, 280px));
+      var(--leaf-form-label-width, 112px)
+      minmax(0, var(--leaf-form-settings-control-width, 1fr));
     align-items: start;
     gap: var(--leaf-spacing-lg);
     > .leaf-form-field__body {

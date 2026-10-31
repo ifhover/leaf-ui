@@ -20,11 +20,12 @@ import type { LeafThemeStyle } from '../theme';
 
 export interface FormProps extends FormHTMLAttributes<HTMLFormElement> {
   layout?: 'horizontal' | 'vertical' | 'settings';
-  labelWidth?: number;
+  /** Set the label column width. Numbers use pixels; strings accept CSS lengths and functions. */
+  labelWidth?: number | string;
   labelAlign?: 'left' | 'right';
   /** Align controls within the control column of settings fields. */
   controlAlign?: 'left' | 'right';
-  /** Set the control-column width of settings fields. Numbers use pixels. */
+  /** Set a fixed control-column width for settings fields. Omit to use the remaining width. */
   settingsControlWidth?: number | string;
   disabled?: boolean;
 }
@@ -36,10 +37,11 @@ export interface FormFieldProps extends HTMLAttributes<HTMLDivElement> {
   required?: boolean;
   help?: ReactNode;
   error?: ReactNode;
-  labelWidth?: number;
+  /** Override the label column width. Numbers use pixels; strings accept CSS lengths and functions. */
+  labelWidth?: number | string;
   /** Override control alignment for this settings field. */
   controlAlign?: FormProps['controlAlign'];
-  /** Override the control-column width for this settings field. Numbers use pixels. */
+  /** Override the fixed control-column width for this settings field. Omit to use the remaining width. */
   settingsControlWidth?: FormProps['settingsControlWidth'];
 }
 export interface FormError {
@@ -55,6 +57,10 @@ const FormContext = createContext({
   errors: [] as readonly FormError[],
   registerError: (_id: string, _error: FormError | null) => {},
 });
+
+function formWidth(value: number | string): string {
+  return typeof value === 'number' ? `${Math.max(0, value)}px` : value;
+}
 interface FieldContextValue {
   id?: string;
   labelId?: string;
@@ -105,7 +111,7 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(rawProp
     [layout, labelAlign, controlAlign, disabled, errors, registerError],
   );
   const variables: LeafThemeStyle = {
-    '--leaf-form-label-width': `${Math.max(0, labelWidth)}px`,
+    '--leaf-form-label-width': formWidth(labelWidth),
     ...(settingsControlWidth !== undefined
       ? {
           '--leaf-form-settings-control-width':
@@ -204,9 +210,7 @@ export function FormField(rawProps: FormFieldProps) {
         .join(' ') || undefined,
   };
   const variables: LeafThemeStyle = {
-    ...(labelWidth !== undefined
-      ? { '--leaf-form-label-width': `${Math.max(0, labelWidth)}px` }
-      : {}),
+    ...(labelWidth !== undefined ? { '--leaf-form-label-width': formWidth(labelWidth) } : {}),
     ...(settingsControlWidth !== undefined
       ? {
           '--leaf-form-settings-control-width':

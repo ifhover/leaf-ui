@@ -108,7 +108,7 @@ Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-co
 
 配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色。
 
-Switch 关闭态使用中性灰轨道与亮色滑块：浅色区域分别消费 `text-muted` / `surface`，深色区域分别消费 `option-hover` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式全局 / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
+Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均消费 `option-hover` 轨道，滑块分别消费 `surface` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式全局 / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
 
 ### 可读颜色与兼容性
 

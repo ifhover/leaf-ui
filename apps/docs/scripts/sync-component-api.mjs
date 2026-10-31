@@ -641,7 +641,7 @@ const onSelectedRowKeysChangeDescription = [
 const specificDefaults = {
   'FormFieldProps.controlAlign': ['继承 Form', 'Inherited from Form'],
   'FormFieldProps.settingsControlWidth': ['继承 Form', 'Inherited from Form'],
-  'FormProps.settingsControlWidth': ['`clamp(200px, 40%, 280px)`', '`clamp(200px, 40%, 280px)`'],
+  'FormProps.settingsControlWidth': ['—', '—'],
   'ConfirmOptions.type': "`'info'`",
   'ScrollAreaProps.persistent': '`false`',
   'ScrollAreaProps.scrollbar': "`'auto'`",
@@ -1684,20 +1684,20 @@ const specific = {
     'Control alignment within the control column of settings fields.',
   ],
   'FormProps.settingsControlWidth': [
-    'settings 右侧控件列宽度；数字按像素处理，字符串接受 CSS 长度、百分比或 clamp() 等函数。',
-    'Width of the settings control column; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp().',
+    '可选的 settings 固定控件列宽度；省略时使用扣除标签列和间隙后的剩余宽度。数字按像素处理，字符串接受 CSS 长度、百分比或 clamp() 等函数。',
+    'Optional fixed control-column width for settings; when omitted, the remaining width after the label column and gap is used. Numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp().',
   ],
   'FormFieldProps.controlAlign': [
     '当前 settings 字段的控件对齐方向。',
     'Override control alignment for this settings field.',
   ],
   'FormFieldProps.settingsControlWidth': [
-    '当前 settings 字段的控件列宽度。',
-    'Override the control-column width for this settings field.',
+    '当前 settings 字段的固定控件列宽度；省略时使用扣除标签列和间隙后的剩余宽度。',
+    'Override the fixed control-column width for this settings field; when omitted, the remaining width after the label column and gap is used.',
   ],
   'FormProps.labelWidth': [
-    'horizontal 字段的标签宽度，单位像素；可由 FormField.labelWidth 单独覆盖。',
-    'Label width in pixels for horizontal fields; FormField.labelWidth can override individual fields.',
+    'horizontal/settings 字段的标签列宽度；数字按像素处理，字符串接受 CSS 长度、百分比或 clamp() 等函数；可由 FormField.labelWidth 单独覆盖。',
+    'Label-column width for horizontal/settings fields; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). FormField.labelWidth can override individual fields.',
   ],
   'MenuProps.variant': [
     '选中项外观：中性、浮起或主题色。',

@@ -6,6 +6,32 @@ import { ConfigProvider } from '../config-provider';
 import { Input } from './input';
 
 describe('Input', () => {
+  it('focuses from the shell border and gaps without redirecting child interactions', async () => {
+    const mouseDown = vi.fn();
+    const { rerender } = render(
+      <Input aria-label="Name" type="password" onMouseDown={mouseDown} />,
+    );
+    const input = screen.getByLabelText('Name');
+    const shell = input.parentElement as HTMLElement;
+    await userEvent.click(shell);
+    expect(input).toHaveFocus();
+    expect(mouseDown).not.toHaveBeenCalled();
+    input.blur();
+    await userEvent.click(screen.getByRole('button'));
+    expect(input).not.toHaveFocus();
+    expect(input).toHaveAttribute('type', 'text');
+    await userEvent.click(input);
+    expect(mouseDown).toHaveBeenCalledOnce();
+
+    rerender(<Input aria-label="Name" readOnly />);
+    input.blur();
+    await userEvent.click(shell);
+    expect(input).toHaveFocus();
+    input.blur();
+    rerender(<Input aria-label="Name" disabled />);
+    await userEvent.click(shell);
+    expect(input).not.toHaveFocus();
+  });
   it.each([true, (value: string) => `${value.length} characters`] as const)(
     'renders the clear button before the count with showCount=%s',
     (showCount) => {

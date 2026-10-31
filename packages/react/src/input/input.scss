@@ -1,26 +1,52 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-input {
+  $native-radius: max(
+    0px,
+    calc(var(--leaf-component-input-radius, var(--leaf-radius)) - var(--leaf-field-border-width))
+  );
   @include mixins.field('input');
   display: inline-flex;
   align-items: center;
   gap: var(--leaf-component-input-gap, 8px);
   height: var(--leaf-current-control-height);
-  padding-inline: var(--leaf-density-field-padding);
+  padding-inline: 0;
+
+  > :first-child:not(.leaf-input__native) {
+    margin-inline-start: var(--leaf-density-field-padding);
+  }
+  > :last-child:not(.leaf-input__native) {
+    margin-inline-end: var(--leaf-density-field-padding);
+  }
+  > :is(.leaf-input__clear, .leaf-input__visibility):last-child {
+    margin-inline-end: calc(var(--leaf-density-field-padding) - 3px);
+  }
 
   &__native {
     box-sizing: border-box;
+    flex: 1;
     width: 100%;
     min-width: 0;
     height: 100%;
     padding: 0;
     border: 0;
     outline: none;
-    border-radius: inherit;
+    border-radius: 0;
     color: inherit;
     background: transparent;
     font: inherit;
     line-height: inherit;
+    // Only edges touching the shell need padding and concentric corners.
+    &:first-child {
+      padding-inline-start: var(--leaf-density-field-padding);
+      border-start-start-radius: $native-radius;
+      border-end-start-radius: $native-radius;
+    }
+    &:last-child {
+      padding-inline-end: var(--leaf-density-field-padding);
+      border-start-end-radius: $native-radius;
+      border-end-end-radius: $native-radius;
+    }
     &:disabled {
       cursor: not-allowed;
     }
@@ -126,10 +152,18 @@
             var(--leaf-button-border-width, var(--leaf-border-width, 1px))
           )
       );
+      > .leaf-input__native {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+      }
     }
     &:not(:last-child) {
       border-start-end-radius: 0;
       border-end-end-radius: 0;
+      > .leaf-input__native {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+      }
     }
     &:focus-within {
       z-index: 1;

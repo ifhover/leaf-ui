@@ -7,7 +7,7 @@ test('compiled switch pairs a neutral off track with a light thumb in both appea
   const track = rule('.leaf-switch__track');
   assert.ok(
     track['--leaf-switch-track-background'].includes(
-      'light-dark(var(--leaf-color-text-muted),var(--leaf-color-option-hover))',
+      'light-dark(var(--leaf-color-option-hover),var(--leaf-color-option-hover))',
     ),
   );
   assert.ok(track['--leaf-switch-track-border'].includes('var(--leaf-switch-track-background)'));
