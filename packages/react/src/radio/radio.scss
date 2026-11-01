@@ -1,25 +1,22 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/choice-surfaces';
+$selected-border: var(--leaf-component-radio-border-color, var(--leaf-color-primary));
 .leaf-radio {
-  @include mixins.choice(radio);
-  @include choice-surfaces.item(radio);
+  @include mixins.choice(radio, $selected-border);
+  @include choice-surfaces.item(radio, $selected-border);
   &__input {
     border-radius: 50%;
     box-shadow: var(--leaf-shadow-xs);
     transition:
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
-  }
-  &:active:not([data-disabled]) &__input {
-    transform: scale(0.9);
+      border-color var(--leaf-motion-duration) ease,
+      background-color var(--leaf-motion-duration) ease;
   }
   &__mark {
     opacity: 0;
     transform: scale(0);
     transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+      opacity calc(var(--leaf-motion-duration) * 1.5) cubic-bezier(0.78, 0.14, 0.15, 0.86),
+      transform calc(var(--leaf-motion-duration) * 1.5) cubic-bezier(0.78, 0.14, 0.15, 0.86);
     position: absolute;
     width: 7px;
     height: 7px;
@@ -30,6 +27,12 @@
   &__input:checked ~ &__mark {
     opacity: 1;
     transform: scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &__input,
+    &__mark {
+      transition: none;
+    }
   }
 }
 .leaf-radio-group {
@@ -58,5 +61,5 @@
 }
 
 .leaf-radio {
-  @include mixins.choice-states(radio);
+  @include mixins.choice-states(radio, $selected-border, $selected-border);
 }

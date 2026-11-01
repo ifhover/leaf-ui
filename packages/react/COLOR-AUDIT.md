@@ -30,9 +30,9 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 
 Registered undefined-token risk occurrences: 0.
 
-Global color tokens: 110. Color recipes: 10. Field-family consumers: 9.
+Global color tokens: 114. Color recipes: 10. Field-family consumers: 9.
 
-Definition source counts (a token may have multiple sources): override 28, palette 109, recipe 10.
+Definition source counts (a token may have multiple sources): override 28, palette 113, recipe 10.
 
 ## Migration accounting
 
@@ -94,10 +94,12 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-danger-dark-7` | 0 | 0 | 0 |
 | `--leaf-color-danger-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-danger-hover` | 0 | 0 | 0 |
-| `--leaf-color-danger-ink` | 9 | 1 | 17 |
+| `--leaf-color-danger-ink` | 9 | 1 | 16 |
 | `--leaf-color-danger-light-3` | 0 | 0 | 0 |
 | `--leaf-color-danger-light-7` | 0 | 0 | 0 |
 | `--leaf-color-danger-light-9` | 0 | 0 | 0 |
+| `--leaf-color-danger-link-active` | 1 | 0 | 1 |
+| `--leaf-color-danger-link-hover` | 1 | 0 | 1 |
 | `--leaf-color-danger-soft` | 0 | 1 | 2 |
 | `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
 | `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
@@ -131,7 +133,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
 | `--leaf-color-option-hover` | 5 | 2 | 14 |
-| `--leaf-color-primary` | 32 | 3 | 81 |
+| `--leaf-color-primary` | 33 | 3 | 82 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
@@ -146,14 +148,16 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-primary-fill-border` | 1 | 0 | 1 |
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
-| `--leaf-color-primary-hover` | 0 | 0 | 0 |
-| `--leaf-color-primary-indicator` | 25 | 2 | 48 |
+| `--leaf-color-primary-hover` | 1 | 0 | 1 |
+| `--leaf-color-primary-indicator` | 25 | 2 | 47 |
 | `--leaf-color-primary-ink` | 13 | 3 | 25 |
 | `--leaf-color-primary-ink-active` | 0 | 0 | 0 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
 | `--leaf-color-primary-light-7` | 0 | 0 | 0 |
 | `--leaf-color-primary-light-9` | 0 | 0 | 0 |
+| `--leaf-color-primary-link-active` | 2 | 0 | 2 |
+| `--leaf-color-primary-link-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-soft` | 0 | 1 | 5 |
 | `--leaf-color-primary-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-primary-soft-hover` | 0 | 1 | 2 |
@@ -175,7 +179,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
 | `--leaf-color-surface-muted` | 25 | 4 | 44 |
 | `--leaf-color-surface-raised` | 8 | 2 | 10 |
-| `--leaf-color-text` | 47 | 4 | 97 |
+| `--leaf-color-text` | 47 | 4 | 98 |
 | `--leaf-color-text-muted` | 43 | 6 | 104 |
 | `--leaf-color-text-subtle` | 11 | 1 | 16 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
@@ -237,7 +241,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-primary-dark-7`
 - `--leaf-color-primary-dark-9`
 - `--leaf-color-primary-focus`
-- `--leaf-color-primary-hover`
 - `--leaf-color-primary-ink-active`
 - `--leaf-color-primary-light-3`
 - `--leaf-color-primary-light-7`

@@ -8,7 +8,8 @@
   );
   --leaf-button-color: var(--leaf-color-primary);
   --leaf-button-ink: var(--leaf-button-color);
-  --leaf-button-ink-active: var(--leaf-button-active);
+  --leaf-button-ink-hover: var(--leaf-color-primary-link-hover, var(--leaf-button-ink));
+  --leaf-button-ink-active: var(--leaf-color-primary-link-active, var(--leaf-button-active));
   --leaf-button-on-color: var(--leaf-color-on-primary);
   --leaf-focus-color: var(--leaf-color-text-muted);
   --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
@@ -16,6 +17,7 @@
   --leaf-button-active-background: var(--leaf-button-rest-background);
   --leaf-button-active-border: var(--leaf-button-rest-border);
   --leaf-button-hover-border: var(--leaf-button-base-border);
+  --leaf-button-hover-color: var(--leaf-button-base-color);
   --leaf-button-active-shadow: var(--leaf-button-base-shadow);
   box-sizing: border-box;
   display: inline-flex;
@@ -95,7 +97,8 @@
   &--danger {
     --leaf-button-color: var(--leaf-color-danger);
     --leaf-button-ink: var(--leaf-color-danger-ink);
-    --leaf-button-ink-active: var(--leaf-color-danger-ink);
+    --leaf-button-ink-hover: var(--leaf-color-danger-link-hover, var(--leaf-button-ink));
+    --leaf-button-ink-active: var(--leaf-color-danger-link-active, var(--leaf-button-active));
     --leaf-button-on-color: var(--leaf-color-on-danger);
     --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
   }
@@ -109,6 +112,7 @@
   }
 
   &--link {
+    transition: color var(--leaf-motion-color) cubic-bezier(0.645, 0.045, 0.355, 1);
     align-self: center;
     min-height: 0;
     padding: 0;
@@ -178,7 +182,8 @@
     --leaf-button-rest-border: transparent;
     --leaf-button-rest-shadow: none;
 
-    --leaf-button-active-color: var(--leaf-button-ink-active);
+    --leaf-button-hover-color: var(--leaf-component-button-color, var(--leaf-button-ink-hover));
+    --leaf-button-active-color: var(--leaf-component-button-color, var(--leaf-button-ink-active));
     --leaf-button-active-background: transparent;
     --leaf-button-active-border: transparent;
     &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
@@ -230,7 +235,7 @@
       @include mixins.state-paint(
         button,
         hover,
-        var(--leaf-button-base-color),
+        var(--leaf-button-hover-color),
         var(--leaf-button-hover-background, var(--leaf-button-base-background)),
         var(--leaf-button-hover-border),
         var(--leaf-button-base-shadow)

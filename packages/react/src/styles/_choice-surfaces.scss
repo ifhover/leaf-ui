@@ -1,6 +1,9 @@
 @use './mixins';
 
-@mixin item($component) {
+@mixin item(
+  $component,
+  $checked-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+) {
   &__copy {
     min-width: 0;
     display: flex;
@@ -81,7 +84,7 @@
     }
     &:has(.leaf-#{$component}__input:checked),
     &:has(.leaf-#{$component}__input:indeterminate) {
-      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      border-color: $checked-border;
     }
     &:has(.leaf-#{$component}__input:focus-visible) {
       @include mixins.focus-ring;

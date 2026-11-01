@@ -2070,6 +2070,14 @@ const specific = {
     '取消按钮、关闭按钮、遮罩或 Escape 请求关闭时调用；省略时调用 onClose。',
     'Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose.',
   ],
+  'ModalProps.confirmText': [
+    '默认确认按钮的内容，支持文本或 React 节点；为 `null` 或 `undefined` 时使用当前语言的 `common.confirm`（简体中文为“确定”，英文为“OK”）。对默认底部及 `footer` 函数接收的 `confirmButton` 生效，不影响自定义按钮。',
+    'Content of the default confirm button, accepting text or a React node. `null` or `undefined` uses the current locale\'s `common.confirm` ("确定" in Simplified Chinese, "OK" in English). Applies to the default footer and `confirmButton` passed to a `footer` function; does not affect custom buttons.',
+  ],
+  'ModalProps.cancelText': [
+    '默认取消按钮的内容，支持文本或 React 节点；为 `null` 或 `undefined` 时使用当前语言的 `common.cancel`（简体中文为“取消”，英文为“Cancel”）。对默认底部及 `footer` 函数接收的 `cancelButton` 生效，不影响自定义按钮；隐藏整个底部请设置 `footer={null}`。',
+    'Content of the default cancel button, accepting text or a React node. `null` or `undefined` uses the current locale\'s `common.cancel` ("取消" in Simplified Chinese, "Cancel" in English). Applies to the default footer and `cancelButton` passed to a `footer` function; does not affect custom buttons. Set `footer={null}` to hide the entire footer.',
+  ],
   'ModalProps.initialFocus': [
     '指定初始焦点；默认聚焦首个可聚焦元素，可能是关闭按钮。',
     'Specify initial focus; defaults to the first focusable element, which may be the close button.',

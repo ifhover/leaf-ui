@@ -303,6 +303,22 @@
   }
   &__tabs {
     // The navigation belongs to the heading; panes use the card's content insets.
+    --leaf-current-control-height: var(
+      --leaf-component-tabs-height,
+      calc(var(--leaf-control-height) - 4px)
+    );
+    &.leaf-tabs--sm {
+      --leaf-current-control-height: var(
+        --leaf-component-tabs-height-sm,
+        calc(var(--leaf-control-height-sm) - 4px)
+      );
+    }
+    &.leaf-tabs--lg {
+      --leaf-current-control-height: var(
+        --leaf-component-tabs-height-lg,
+        calc(var(--leaf-control-height-lg) - 4px)
+      );
+    }
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     > .leaf-tabs__header {
@@ -333,7 +349,7 @@
         bottom: -1px;
       }
       .leaf-tabs__tab {
-        padding-inline: 0;
+        padding-inline: var(--leaf-tabs-item-padding, 10px);
       }
     }
     > .leaf-tabs__panels > .leaf-tabs__panel {
@@ -353,7 +369,7 @@
     // A replacement heading fills the whole row; the underline stays on its bottom edge.
     --leaf-card-tab-heading-height: max(
       var(--leaf-current-control-height),
-      calc(var(--leaf-card-title-line-height) + var(--leaf-card-heading-gap) * 2)
+      calc(var(--leaf-card-title-line-height) + var(--leaf-card-heading-gap) * 2 - 4px)
     );
     align-items: stretch;
     > .leaf-tabs__viewport > .leaf-tabs__scroll > .leaf-tabs__list {

@@ -560,7 +560,13 @@
   }
 }
 
-@mixin choice($component: choice) {
+@mixin choice(
+  $component: choice,
+  $checked-border: var(
+      --leaf-frame-border-color,
+      var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+    )
+) {
   @include control-size;
   box-sizing: border-box;
   display: inline-flex;
@@ -609,10 +615,7 @@
 
     &:checked,
     &:indeterminate {
-      border-color: var(
-        --leaf-frame-border-color,
-        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-      );
+      border-color: $checked-border;
       background: var(--leaf-color-primary);
     }
 
@@ -639,7 +642,14 @@
   }
 }
 
-@mixin choice-states($component) {
+@mixin choice-states(
+  $component,
+  $checked-border: var(
+      --leaf-frame-border-color,
+      var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+    ),
+  $feedback-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+) {
   @include choice-label-states($component);
   &__input {
     --leaf-choice-background: var(
@@ -658,10 +668,7 @@
     &:checked,
     &:indeterminate {
       --leaf-choice-background: var(--leaf-color-primary);
-      --leaf-choice-border: var(
-        --leaf-frame-border-color,
-        var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-      );
+      --leaf-choice-border: #{$checked-border};
     }
     &:focus-visible:not(:disabled) {
       @include state-paint(
@@ -690,7 +697,7 @@
       hover,
       inherit,
       var(--leaf-choice-background),
-      var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+      $feedback-border,
       var(--leaf-choice-shadow)
     );
   }
@@ -700,7 +707,7 @@
       active,
       inherit,
       var(--leaf-choice-background),
-      var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+      $feedback-border,
       var(--leaf-choice-shadow)
     );
   }

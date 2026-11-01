@@ -15,7 +15,7 @@
 
 - outline 是默认外观，静止时带一道轻微朝下的阴影；悬停加深中性边框；按下只把背景变为浅中性灰，文字、边框和阴影不变。
 - text 使用常规按钮间距和透明静止背景，悬停为浅灰底，按下为更深的灰底。
-- link 使用主题基色 `primary`，按下使用 `primary-active`。
+- link 使用主题基色 `primary`，悬停使用 `primary-link-hover`，按下使用 `primary-link-active`，与运行时使用同一套 Ant Design HSV 色板算法。
 
 ## 导入 Figma
 

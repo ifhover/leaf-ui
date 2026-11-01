@@ -139,8 +139,10 @@ async function importLeafResources() {
               ? 'on-primary'
               : variant === 'link'
                 ? state === 'pressed'
-                  ? 'primary-active'
-                  : 'primary'
+                  ? 'primary-link-active'
+                  : state === 'hover'
+                    ? 'primary-link-hover'
+                    : 'primary'
                 : 'text',
           ),
         );

@@ -3,6 +3,9 @@
 .leaf-tabs {
   @include mixins.control-size;
   @include mixins.segmented-surface-family;
+  --leaf-tabs-item-padding: initial;
+  --leaf-tabs-item-gap: initial;
+  --leaf-tabs-track-padding: initial;
   min-width: 0;
   color: var(--leaf-component-tabs-color, var(--leaf-color-text));
   font: var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) /
@@ -31,7 +34,7 @@
     display: flex;
     width: max-content;
     min-width: 100%;
-    gap: 4px;
+    gap: var(--leaf-component-tabs-gap, var(--leaf-tabs-item-gap, 4px));
     // The moving background must never enlarge the tablist's scrollable area.
     overflow: clip;
   }
@@ -76,7 +79,7 @@
     justify-content: center;
     gap: 7px;
     box-sizing: border-box;
-    padding: 4px 10px;
+    padding: 4px var(--leaf-tabs-item-padding, 10px);
     min-height: var(--leaf-current-control-height);
     border: 0;
     border-radius: var(--leaf-radius-sm);
@@ -211,7 +214,7 @@
     width: auto;
   }
   &--card &__track {
-    gap: var(--leaf-component-tabs-gap, 4px);
+    gap: var(--leaf-component-tabs-gap, var(--leaf-tabs-item-gap, 4px));
   }
   &--card &__indicator {
     border-radius: var(--leaf-component-tabs-radius, var(--leaf-radius));
@@ -228,7 +231,7 @@
     @include geometry.nested-surface(
       tabs,
       var(--leaf-component-tabs-radius, var(--leaf-radius)),
-      var(--leaf-component-tabs-padding, 3px),
+      var(--leaf-component-tabs-padding, var(--leaf-tabs-track-padding, 3px)),
       var(--leaf-component-tabs-border-width, var(--leaf-border-width, 1px))
     );
     flex: 0 1 auto;
@@ -252,7 +255,7 @@
     box-shadow: var(--leaf-component-tabs-shadow, var(--leaf-control-shadow, none));
   }
   &--segmented &__track {
-    gap: var(--leaf-component-tabs-gap, 3px);
+    gap: var(--leaf-component-tabs-gap, var(--leaf-tabs-item-gap, 3px));
     box-sizing: border-box;
     min-width: calc(100% + var(--leaf-surface-padding-left) + var(--leaf-surface-padding-right));
     padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
@@ -292,13 +295,14 @@
     // The line indicator lives inside the tab box, so line tabs are slightly
     // taller than card tabs to keep a clear gap between the label and the pill.
     min-height: calc(var(--leaf-current-control-height) + 4px);
+    transition: color calc(var(--leaf-motion-color) * 1.5) ease;
   }
   &--card &__tab {
     gap: 6px;
     height: var(--leaf-current-control-height);
     min-height: var(--leaf-current-control-height);
     border-radius: var(--leaf-component-tabs-radius, var(--leaf-radius));
-    padding: 0 12px;
+    padding: 0 var(--leaf-tabs-item-padding, 12px);
     line-height: var(--leaf-line-height);
   }
   &--segmented &__tab {
@@ -306,7 +310,7 @@
     height: var(--leaf-tabs-segmented-tab-height);
     min-height: var(--leaf-tabs-segmented-tab-height);
     border-radius: var(--leaf-surface-inner-radius);
-    padding: 0 14px;
+    padding: 0 var(--leaf-tabs-item-padding, 14px);
     line-height: var(--leaf-line-height);
   }
   &--block &__viewport {
@@ -329,6 +333,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .leaf-tabs--line .leaf-tabs__tab,
   .leaf-tabs__tab,
   .leaf-tabs__close,
   .leaf-tabs__scroll-action,
@@ -350,6 +355,9 @@
   --leaf-tabs-indicator-line: 2px;
 }
 .leaf-tabs--lg {
+  --leaf-tabs-item-padding: 18px;
+  --leaf-tabs-item-gap: 8px;
+  --leaf-tabs-track-padding: 4px;
   --leaf-current-control-height: var(
     --leaf-component-tabs-height-lg,
     var(--leaf-control-height-lg)
@@ -407,6 +415,22 @@
         transparent,
         none
       );
+    }
+  }
+  &--line &__tab {
+    --leaf-tabs-tab-color: var(
+      --leaf-component-tabs-muted-color,
+      var(--leaf-component-tabs-color, var(--leaf-color-text))
+    );
+    --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-primary-hover));
+    --leaf-tabs-tab-active-color: var(
+      --leaf-component-tabs-color,
+      var(--leaf-color-primary-link-active)
+    );
+    &[aria-selected='true'] {
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-primary));
+      --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
+      --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
     }
   }
   &--card &__tab {

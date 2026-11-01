@@ -7,7 +7,7 @@
 - 同一种角色使用同一份默认配方；不因新增组件而新增一组全局颜色。
 - 不按 HEX 相同或接近判断合并。品牌与成功、边框与分隔线等不同语义保留独立入口，默认值允许共享。
 - 调色入口是 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`；业务 CSS 读取结果，不能承诺直接改基础 CSS 变量会重新运行派生算法。
-- 本规范不授权改变既定交互：输入和选择类字段（含 Textarea、Mentions、InputNumber）聚焦或展开统一使用主题色边框。普通选项使用中性反馈，Button 实底与链接仅按下变色，描边悬停加深边框、按下仅将背景轻微变灰。
+- 本规范不授权改变既定交互：输入和选择类字段（含 Textarea、Mentions、InputNumber）聚焦或展开统一使用主题色边框。普通选项使用中性反馈，Button 实底仅按下变色，链接文字悬停变亮、按下变深，描边悬停加深边框、按下仅将背景轻微变灰。
 
 ## 三层颜色架构
 
@@ -38,6 +38,7 @@
 | 主色可读前景与指示 | `--leaf-color-primary-indicator`、`--leaf-color-primary-focus`、`--leaf-color-primary-fill-border`                                      |
 | 实色前景           | `--leaf-color-on-primary`、`--leaf-color-on-success`、`--leaf-color-on-danger`、`--leaf-color-on-warning`、`--leaf-color-on-info`        |
 | 动作交互           | `--leaf-color-primary-active`、`--leaf-color-danger-active`，以及当前保留的 hover / ink-hover / ink-active 角色；是否使用由动作配方决定 |
+| 链接文字反馈       | `--leaf-color-primary-link-hover` / `-link-active`、`--leaf-color-danger-link-hover` / `-link-active`；primary-link-active 同时供线形 Tabs 按下使用 |
 | 普通选项反馈       | `--leaf-color-option-hover`；不为每个列表再建 selected / hover 近似色                                                                   |
 | 字段边框与背景     | `field` 配方内部的 `--leaf-field-rest-border`、`--leaf-field-color`、`--leaf-field-background`；不是新的全局配置 API                    |
 
@@ -51,6 +52,7 @@
 - `on-*`（实底上的文字 / 图标）始终默认纯白，不按对比度选择黑白；五种 `on*Color` token 可由应用显式设为纯黑或其他颜色。它不与浅底文字 `ink` 合并。组件消费共享 `on-*`，不硬编码白色或自动黑白判断。固定白色可能使部分基色组合低于 4.5:1：这是已确认的产品契约，验收时如实报告失败组合与 `on*Color` 定制方式，不自动改黑、不调暗基色，也不关闭 axe 对比度检查；库不保证固定白字或显式覆盖满足文字对比度。本条是实底前景规则的唯一出处，其他文档只链接这里。
 - `primary-indicator` 独立选择：原 primary 对当前表面达到 3:1 时可继续使用，否则从明暗派生色选择满足 3:1 的指示色。`primary-focus` 与选中控件的必要边界复用该结果，不用于给实底 Button 自动补边框。
 - Checkbox、Radio 和 Switch 的选中实底使用原 primary，内容使用 `on-primary`；`primary-indicator` 可用于边界或独立指示，不得把它用作实底却沿用原 primary 对应的内容色。
+- Radio 的选中圆框、卡片边框与交互边框直接使用 primary，不使用 primary-indicator；组件边框及对应状态覆盖优先。共享 choice / choice-states / choice-surfaces 配方通过参数提供这一区别，不改变 Checkbox 的默认映射。
 - 组件不得自行挑选语义明暗派生档或中性 `100`–`900`。常规状态使用映射后的 `*-soft`、`*-border`、`*-ink`、中性角色或显式组件覆盖；确需新增选阶逻辑时，先进入共享映射并补齐测试。
 
 ## 视觉家族契约
@@ -104,7 +106,9 @@ Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-co
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
 | `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。普通链接按钮使用主题基色 `primary`，按下使用 `primary-active`；危险链接保留可读的 `danger-ink`，显式覆盖优先。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。普通链接按钮使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`；危险链接静止使用可读的 `danger-ink`，悬停和按下使用 `danger-link-hover` / `danger-link-active`。线形 Tabs 未选中标签悬停使用 `primary-hover`，按下使用 `primary-link-active`，选中标签保持主题基色；显式组件文字和状态覆盖优先。
+
+上述文字动作色按 Ant Design 5.29.3 的 HSV 色板规则派生：普通链接悬停第 4 档，危险链接和 Tabs 悬停第 5 档，按下均为第 7 档。链接的四个独立角色服务于文字反馈，避免改动实底按下的 10% 混黑与可读 ink 配方；既有 primary / danger 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 默认 300ms、使用 CSS ease；两者随 motionDuration 缩放并遵守减少动态效果设置。
 
 配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色。
 

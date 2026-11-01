@@ -518,12 +518,42 @@ describe('theme color derivation', () => {
       }
     }
   });
+  it('matches Ant Design link and Tabs palette steps for brand, danger and neutral seeds', () => {
+    // Fixtures from @ant-design/colors@7.2.1: palette steps 4, 5 and 7.
+    const fixtures = [
+      ['#1677ff', '#69b1ff', '#4096ff', '#0958d9'],
+      ['#1e964f', '#5bb079', '#3ba363', '#11703c'],
+      ['#ff4d4f', '#ffa39e', '#ff7875', '#d9363e'],
+      ['#2563eb', '#7aadff', '#4f8af7', '#1647c4'],
+      ['#7654c6', '#bba6e0', '#987bd4', '#563ba1'],
+      ['#ffffff', '#ffffff', '#ffffff', '#d9d9d9'],
+      ['#000000', '#1a1a1a', '#0d0d0d', '#000000'],
+      ['#707070', '#8a8a8a', '#7d7d7d', '#4a4a4a'],
+    ] as const;
+    for (const appearance of ['light', 'dark'] as const) {
+      for (const [seed, linkHover, tabHover, active] of fixtures) {
+        const values = deriveColors(appearance, { primary: seed, danger: seed });
+        expect(values['--leaf-color-primary-link-hover']).toBe(linkHover);
+        expect(values['--leaf-color-primary-hover']).toBe(tabHover);
+        expect(values['--leaf-color-primary-link-active']).toBe(active);
+        expect(values['--leaf-color-danger-link-hover']).toBe(tabHover);
+        expect(values['--leaf-color-danger-link-active']).toBe(active);
+      }
+    }
+  });
+  it('keeps expression and translucent action inputs browser-native and preserves alpha', () => {
+    for (const seed of ['var(--brand)', 'rgba(22, 119, 255, 0.5)']) {
+      const values = deriveColors('dark', { primary: seed });
+      expect(values['--leaf-color-primary-link-hover']).toBe(mixColors(seed, '#ffffff', 90));
+      expect(values['--leaf-color-primary-link-active']).toBe(mixColors(seed, '#000000', 90));
+    }
+  });
   it('derives interaction colors for a custom palette while allowing explicit state overrides', () => {
     const custom = leafThemeVariables({ primaryColor: '#2563eb' });
     expect(custom['--leaf-color-primary-hover']).not.toEqual(
       deriveColors('light')['--leaf-color-primary-hover'],
     );
-    expect(custom['--leaf-color-primary-hover']).toBe(mixColors('#2563eb', '#ffffff', 90));
+    expect(custom['--leaf-color-primary-hover']).toBe('#4f8af7');
     const darkCustom = leafThemeVariables({ appearance: 'dark', primaryColor: '#2563eb' });
     expect(darkCustom['--leaf-color-on-primary']).toBe('#ffffff');
 
@@ -547,6 +577,10 @@ describe('theme color derivation', () => {
     expect(overridden['--leaf-color-primary-active']).toBe('#4c1d95');
     expect(overridden['--leaf-color-danger-hover']).toBe('#e11d48');
     expect(overridden['--leaf-color-danger-active']).toBe('#9f1239');
+    expect(overridden['--leaf-color-primary-link-hover']).toBe('#7c3aed');
+    expect(overridden['--leaf-color-primary-link-active']).toBe('#4c1d95');
+    expect(overridden['--leaf-color-danger-link-hover']).toBe('#e11d48');
+    expect(overridden['--leaf-color-danger-link-active']).toBe('#9f1239');
     const resolved = deriveColors('dark', {
       primary: 'rgb(37, 99, 235)',
       'on-primary': 'rgb(255, 255, 255)',

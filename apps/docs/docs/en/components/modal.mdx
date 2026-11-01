@@ -108,8 +108,8 @@ Provide `aria-label` when omitting `title`.
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `onConfirm` | `() => void \| Promise<void>` | — | Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success. |
 | `onCancel` | `() => void` | — | Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose. |
-| `confirmText` | `ReactNode` | Locale default | Button labels |
-| `cancelText` | `ReactNode` | Locale default | Button labels |
+| `confirmText` | `ReactNode` | Locale default | Content of the default confirm button, accepting text or a React node. `null` or `undefined` uses the current locale's `common.confirm` ("确定" in Simplified Chinese, "OK" in English). Applies to the default footer and `confirmButton` passed to a `footer` function; does not affect custom buttons. |
+| `cancelText` | `ReactNode` | Locale default | Content of the default cancel button, accepting text or a React node. `null` or `undefined` uses the current locale's `common.cancel` ("取消" in Simplified Chinese, "Cancel" in English). Applies to the default footer and `cancelButton` passed to a `footer` function; does not affect custom buttons. Set `footer={null}` to hide the entire footer. |
 | `confirmLoading` | `boolean` | `false` | Confirm loading state |
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |

@@ -7,6 +7,22 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.14.1 - 2026-11-02
+
+### Improvements and fixes
+
+- Tabs size examples now use appearance rows and size columns. Large tabs gain label padding and item spacing; Tabs embedded in Card restore horizontal label padding and use a shorter default heading.
+- Link buttons and unselected line tabs derive hover and pressed text colors from the Ant Design palette, with color transitions of 200ms and 300ms respectively.
+- Radio no longer shrinks on press. Selected control and card borders use the theme color, and the selection dot follows Ant Design's 300ms transition.
+- Clarified Modal `confirmText` and `cancelText` content types, locale fallbacks, custom footer behavior and footer hiding. Updated bilingual documentation and design resources.
+
+### Migration
+
+- Selected line tabs now use the theme color and unselected tabs use body text color. Selected labels retain the theme color during interaction; verify contrast for custom themes.
+- Default text feedback and transition timing change for link buttons and line tabs. `primary-hover` now uses Ant Design palette step 5. Durations scale with regional `motionDuration`; explicit component text, theme action colors and state overrides retain precedence.
+- The default heading height for Tabs embedded in Card decreases by 4px, and labels regain horizontal padding. Explicit Tabs height settings retain precedence; check custom styles that depend on the previous heading height or zero label padding.
+- Selected Radio borders use the theme seed instead of the contrast-adjusted indicator color. Explicit Radio component borders and state overrides retain precedence. Pressing no longer scales the control; the dot transition has no spring overshoot and respects reduced-motion settings.
+
 ## 0.14.0 - 2026-11-01
 
 ### Added and improved

@@ -1,4 +1,5 @@
 import { readability, TinyColor } from '@ctrl/tinycolor';
+import { actionColor } from './action-colors';
 import { colorRecipes } from './color-recipes';
 import {
   type ColorScale,
@@ -253,14 +254,38 @@ export function resolveColorRoles(
 
     if (family === 'primary' || family === 'danger') {
       for (const state of ['active', 'hover'] as const) {
+        // Link feedback is separate from solid press and readability-adjusted ink.
+        const linkOffset = state === 'active' ? 1 : family === 'primary' ? -2 : -1;
+        const linkValue = concreteOpaque(seed)
+          ? actionColor(seed, linkOffset)
+          : (mixColors(
+              seed,
+              state === 'active' ? solidForeground.black : solidForeground.white,
+              90,
+            ) ?? seed);
+        assign(
+          `${family}-link-${state}`,
+          overrides[`${family}-${state}`] ?? linkValue,
+          overrides[`${family}-${state}`] !== undefined
+            ? colorVariable(`${family}-${state}`)
+            : concreteOpaque(seed)
+              ? `antd-palette(${family}, ${6 + linkOffset})`
+              : `mix(${family}, ${state === 'active' ? 'black' : 'white'}, 90%)`,
+        );
         const value =
           state === 'active'
             ? shades['dark-1']
-            : (mixColors(seed, solidForeground.white, 90) ?? seed);
+            : family === 'primary' && concreteOpaque(seed)
+              ? actionColor(seed, -1)
+              : (mixColors(seed, solidForeground.white, 90) ?? seed);
         assign(
           `${family}-${state}`,
           value,
-          state === 'active' ? colorVariable(`${family}-dark-1`) : `mix(${family}, white, 90%)`,
+          state === 'active'
+            ? colorVariable(`${family}-dark-1`)
+            : family === 'primary' && concreteOpaque(seed)
+              ? 'antd-palette(primary, 5)'
+              : `mix(${family}, white, 90%)`,
         );
         if (family === 'primary') {
           const inkValue = values[colorVariable('primary-ink')] ?? ink.value;

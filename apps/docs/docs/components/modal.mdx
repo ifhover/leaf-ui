@@ -108,8 +108,8 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `onConfirm` | `() => void \| Promise<void>` | — | 默认确认按钮的操作，可返回 Promise；等待期间阻止重复确认和默认关闭。成功后应用仍须更新 open。 |
 | `onCancel` | `() => void` | — | 取消按钮、关闭按钮、遮罩或 Escape 请求关闭时调用；省略时调用 onClose。 |
-| `confirmText` | `ReactNode` | 语言默认值 | 按钮文字 |
-| `cancelText` | `ReactNode` | 语言默认值 | 按钮文字 |
+| `confirmText` | `ReactNode` | 语言默认值 | 默认确认按钮的内容，支持文本或 React 节点；为 `null` 或 `undefined` 时使用当前语言的 `common.confirm`（简体中文为“确定”，英文为“OK”）。对默认底部及 `footer` 函数接收的 `confirmButton` 生效，不影响自定义按钮。 |
+| `cancelText` | `ReactNode` | 语言默认值 | 默认取消按钮的内容，支持文本或 React 节点；为 `null` 或 `undefined` 时使用当前语言的 `common.cancel`（简体中文为“取消”，英文为“Cancel”）。对默认底部及 `footer` 函数接收的 `cancelButton` 生效，不影响自定义按钮；隐藏整个底部请设置 `footer={null}`。 |
 | `confirmLoading` | `boolean` | `false` | 确认加载状态 |
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |

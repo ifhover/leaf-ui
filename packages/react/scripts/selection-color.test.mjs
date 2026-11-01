@@ -2,6 +2,139 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { compiledStyles } from './compiled-styles.mjs';
 
+test('link buttons brighten on hover and darken on press while respecting explicit paint', async () => {
+  const button = await compiledStyles('button/button.scss');
+  const base = button('.leaf-button');
+  assert.equal(
+    base['--leaf-button-ink-hover'],
+    'var(--leaf-color-primary-link-hover,var(--leaf-button-ink))',
+  );
+  assert.equal(
+    base['--leaf-button-ink-active'],
+    'var(--leaf-color-primary-link-active,var(--leaf-button-active))',
+  );
+  assert.equal(base['--leaf-button-hover-color'], 'var(--leaf-button-base-color)');
+  const danger = button('.leaf-button--danger');
+  assert.equal(
+    danger['--leaf-button-ink-hover'],
+    'var(--leaf-color-danger-link-hover,var(--leaf-button-ink))',
+  );
+  assert.equal(
+    danger['--leaf-button-ink-active'],
+    'var(--leaf-color-danger-link-active,var(--leaf-button-active))',
+  );
+  assert.equal(
+    button('.leaf-button--link').transition,
+    'color var(--leaf-motion-color)cubic-bezier(0.645,0.045,0.355,1)',
+  );
+  const link = button('.leaf-button:is(.leaf-button--link)');
+  for (const state of ['hover', 'active']) {
+    assert.equal(
+      link[`--leaf-button-${state}-color`],
+      `var(--leaf-component-button-color,var(--leaf-button-ink-${state}))`,
+    );
+  }
+  const variants =
+    '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link)';
+  assert.equal(
+    button(`${variants}:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))`)
+      .color,
+    'var(--leaf-component-button-hover-color,var(--leaf-button-hover-color))',
+  );
+  assert.equal(
+    button(`${variants}:active:not(:disabled):not([data-loading])`).color,
+    'var(--leaf-component-button-active-color,var(--leaf-button-active-color))',
+  );
+  assert.equal(
+    button(`${variants}:disabled`).color,
+    'var(--leaf-component-button-disabled-color,var(--leaf-button-base-color))',
+  );
+});
+
+test('line Tabs use link feedback for unselected text without changing other appearances', async () => {
+  const tabs = await compiledStyles('tabs/tabs.scss');
+  const line = tabs('.leaf-tabs--line .leaf-tabs__tab');
+  assert.equal(
+    line['--leaf-tabs-tab-color'],
+    'var(--leaf-component-tabs-muted-color,var(--leaf-component-tabs-color,var(--leaf-color-text)))',
+  );
+  const selected = tabs('.leaf-tabs--line .leaf-tabs__tab[aria-selected=true]');
+  assert.equal(
+    selected['--leaf-tabs-tab-color'],
+    'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
+  );
+  for (const state of ['hover', 'active']) {
+    assert.equal(
+      line[`--leaf-tabs-tab-${state}-color`],
+      `var(--leaf-component-tabs-color,var(--leaf-color-primary-${state === 'active' ? 'link-active' : 'hover'}))`,
+    );
+    assert.equal(selected[`--leaf-tabs-tab-${state}-color`], 'var(--leaf-tabs-tab-color)');
+  }
+  assert.equal(line.transition, 'color calc(var(--leaf-motion-color)* 1.5)ease');
+  for (const state of ['hover', 'active']) {
+    const selector =
+      state === 'hover'
+        ? '.leaf-tabs__tab:hover:not(:disabled):where(:not(:focus-visible))'
+        : '.leaf-tabs__tab:active:not(:disabled)';
+    assert.equal(
+      tabs(selector).color,
+      `var(--leaf-component-tabs-${state}-color,var(--leaf-tabs-tab-${state}-color))`,
+    );
+  }
+  for (const appearance of ['card', 'segmented']) {
+    assert.equal(
+      tabs(`.leaf-tabs--${appearance} .leaf-tabs__tab`)['--leaf-tabs-tab-color'],
+      'var(--leaf-component-tabs-muted-color,var(--leaf-segmented-muted-color))',
+    );
+    assert.equal(
+      tabs(`.leaf-tabs--${appearance} .leaf-tabs__tab[aria-selected=true]`)[
+        '--leaf-tabs-tab-color'
+      ],
+      'var(--leaf-component-tabs-color,var(--leaf-color-text))',
+    );
+  }
+});
+
+test('Tabs increase large spacing and keep Card insets with explicit height overrides', async () => {
+  const tabs = await compiledStyles('tabs/tabs.scss');
+  const large = tabs('.leaf-tabs--lg');
+  assert.equal(large['--leaf-tabs-item-padding'], '18px');
+  assert.equal(large['--leaf-tabs-item-gap'], '8px');
+  assert.equal(large['--leaf-tabs-track-padding'], '4px');
+  for (const selector of [
+    '.leaf-tabs__track',
+    '.leaf-tabs--card .leaf-tabs__track',
+    '.leaf-tabs--segmented .leaf-tabs__track',
+  ]) {
+    assert.match(tabs(selector).gap, /--leaf-component-tabs-gap/);
+    assert.match(tabs(selector).gap, /--leaf-tabs-item-gap/);
+  }
+  const card = await compiledStyles('card/card.scss');
+  assert.equal(
+    card('.leaf-card__tabs > .leaf-tabs__header .leaf-tabs__tab')['padding-inline'],
+    'var(--leaf-tabs-item-padding,10px)',
+  );
+  for (const [selector, suffix] of [
+    ['.leaf-card__tabs', ''],
+    ['.leaf-card__tabs.leaf-tabs--sm', '-sm'],
+    ['.leaf-card__tabs.leaf-tabs--lg', '-lg'],
+  ]) {
+    assert.equal(
+      card(selector)['--leaf-current-control-height'],
+      `var(--leaf-component-tabs-height${suffix},calc(var(--leaf-control-height${suffix})- 4px))`,
+    );
+  }
+  assert.equal(
+    card('.leaf-card > .leaf-card__tabs:first-child > .leaf-tabs__header')[
+      '--leaf-card-tab-heading-height'
+    ].replace(/\s+/g, ''),
+    'max(var(--leaf-current-control-height),calc(var(--leaf-card-title-line-height)+var(--leaf-card-heading-gap)*2-4px))',
+  );
+  for (const property of ['padding', 'gap']) {
+    assert.equal(tabs('.leaf-tabs')[`--leaf-tabs-item-${property}`], 'initial');
+  }
+});
+
 test('compiled option and selection consumers expose their shared family roles', async () => {
   for (const [component, family, property, value] of [
     ['dropdown', 'danger-soft', 'background', 'danger-soft'],

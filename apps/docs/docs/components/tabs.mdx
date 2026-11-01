@@ -18,7 +18,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ## 基础用法
 
-通过 `items` 定义标签和内容，点击标签切换当前面板。
+通过 `items` 定义标签和内容，点击标签切换当前面板。线形标签未选中时使用正文色，悬停和按下时分别使用主题亮色和深色，默认颜色过渡为 300ms；选中标签保持主题色。
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
@@ -33,9 +33,9 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ### 不同尺寸
 
-通过 `size` 设置标签控件尺寸；每个尺寸分别展示线形、卡片和分段三种形态。
+通过 `size` 设置标签控件尺寸；每行展示一种形态，每列对比小、默认和大三种尺寸。窄屏下可横向滚动查看。
 
-<ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
 ```

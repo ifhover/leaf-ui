@@ -189,6 +189,10 @@
         "type": "color",
         "value": "transparent"
       },
+      "primary-link-active": {
+        "type": "color",
+        "value": "#11703c"
+      },
       "primary-active": {
         "type": "color",
         "value": "rgba(27, 135, 71, 1)"
@@ -197,9 +201,13 @@
         "type": "color",
         "value": "rgba(19, 95, 50, 1)"
       },
+      "primary-link-hover": {
+        "type": "color",
+        "value": "#5bb079"
+      },
       "primary-hover": {
         "type": "color",
-        "value": "rgba(52, 161, 97, 1)"
+        "value": "#3ba363"
       },
       "primary-ink-hover": {
         "type": "color",
@@ -317,9 +325,17 @@
         "type": "color",
         "value": "#ffffff"
       },
+      "danger-link-active": {
+        "type": "color",
+        "value": "#d9363e"
+      },
       "danger-active": {
         "type": "color",
         "value": "rgba(230, 69, 71, 1)"
+      },
+      "danger-link-hover": {
+        "type": "color",
+        "value": "#ff7875"
       },
       "danger-hover": {
         "type": "color",
@@ -629,6 +645,10 @@
         "type": "color",
         "value": "transparent"
       },
+      "primary-link-active": {
+        "type": "color",
+        "value": "#11703c"
+      },
       "primary-active": {
         "type": "color",
         "value": "rgba(27, 135, 71, 1)"
@@ -637,9 +657,13 @@
         "type": "color",
         "value": "rgba(114, 189, 144, 1)"
       },
+      "primary-link-hover": {
+        "type": "color",
+        "value": "#5bb079"
+      },
       "primary-hover": {
         "type": "color",
-        "value": "rgba(52, 161, 97, 1)"
+        "value": "#3ba363"
       },
       "primary-ink-hover": {
         "type": "color",
@@ -757,9 +781,17 @@
         "type": "color",
         "value": "#ffffff"
       },
+      "danger-link-active": {
+        "type": "color",
+        "value": "#d9363e"
+      },
       "danger-active": {
         "type": "color",
         "value": "rgba(230, 69, 71, 1)"
+      },
+      "danger-link-hover": {
+        "type": "color",
+        "value": "#ff7875"
       },
       "danger-hover": {
         "type": "color",

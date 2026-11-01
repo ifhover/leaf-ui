@@ -1,4 +1,5 @@
-import { ConfigProvider, Grid, Space, Tabs, Text } from '@ifhover/leaf-ui';
+import { ConfigProvider, Grid, ScrollArea, Tabs, Text } from '@ifhover/leaf-ui';
+import { Fragment } from 'react';
 
 const items = [
   { key: 'overview', label: 'Overview', children: 'Overview content' },
@@ -19,12 +20,23 @@ const appearances = [
 
 export function TabsSizes() {
   return (
-    <Space direction="vertical" align="stretch" size="lg">
-      {sizes.map((size) => (
-        <Space key={size.value} direction="vertical" align="stretch" size="sm">
-          <Text tone="muted">{size.label}</Text>
-          <Grid columns={{ xs: 1, sm: 3 }} gap={16} align="start">
-            {appearances.map((appearance) => {
+    <ScrollArea orientation="horizontal" aria-label="Tab appearance and size comparison">
+      <Grid
+        columns={4}
+        gap={24}
+        align="center"
+        style={{ gridTemplateColumns: 'max-content repeat(3, minmax(240px, 1fr))' }}
+      >
+        <span aria-hidden="true" />
+        {sizes.map((size) => (
+          <Text key={size.value} tone="muted">
+            {size.label}
+          </Text>
+        ))}
+        {appearances.map((appearance) => (
+          <Fragment key={appearance.value}>
+            <Text tone="muted">{appearance.label}</Text>
+            {sizes.map((size) => {
               const tab = (
                 <Tabs
                   aria-label={`${size.label} ${appearance.label}`}
@@ -34,8 +46,7 @@ export function TabsSizes() {
                 />
               );
               return (
-                <Space key={appearance.value} direction="vertical" align="stretch" size="sm">
-                  <Text tone="muted">{appearance.label}</Text>
+                <Fragment key={size.value}>
                   {size.value === 'sm' && appearance.value === 'segmented' ? (
                     <ConfigProvider theme={{ components: { Tabs: { padding: '2px 3px' } } }}>
                       {tab}
@@ -43,12 +54,12 @@ export function TabsSizes() {
                   ) : (
                     tab
                   )}
-                </Space>
+                </Fragment>
               );
             })}
-          </Grid>
-        </Space>
-      ))}
-    </Space>
+          </Fragment>
+        ))}
+      </Grid>
+    </ScrollArea>
   );
 }
