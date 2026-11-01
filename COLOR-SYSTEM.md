@@ -104,7 +104,7 @@ Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-co
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
 | `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。链接按钮使用可读的 `primary-ink` / `danger-ink`（按下使用 `primary-ink-active`），不使用主题基色；危险语义和显式覆盖保留。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。普通链接按钮使用主题基色 `primary`，按下使用 `primary-active`；危险链接保留可读的 `danger-ink`，显式覆盖优先。
 
 配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色。
 

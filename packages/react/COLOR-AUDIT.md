@@ -148,8 +148,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
 | `--leaf-color-primary-hover` | 0 | 0 | 0 |
 | `--leaf-color-primary-indicator` | 25 | 2 | 48 |
-| `--leaf-color-primary-ink` | 14 | 3 | 26 |
-| `--leaf-color-primary-ink-active` | 1 | 0 | 1 |
+| `--leaf-color-primary-ink` | 13 | 3 | 25 |
+| `--leaf-color-primary-ink-active` | 0 | 0 | 0 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
 | `--leaf-color-primary-light-7` | 0 | 0 | 0 |
@@ -238,6 +238,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-primary-dark-9`
 - `--leaf-color-primary-focus`
 - `--leaf-color-primary-hover`
+- `--leaf-color-primary-ink-active`
 - `--leaf-color-primary-light-3`
 - `--leaf-color-primary-light-7`
 - `--leaf-color-primary-light-9`
@@ -358,7 +359,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `rgb(241 241 242)` x1 - User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role.
 - hardcodedColors: `rgb(0 0 0/0.08)` x1 - Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract.
 - hardcodedColors: `rgba(0,0,0,0.04)` x1 - Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract.
-- mixFormulas: `color-mix(in srgb,var(--leaf-color-primary)8%,transparent)` x1 - User-requested lighter primary Menu selection uses an 8% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token.
+- mixFormulas: `color-mix(in srgb,var(--leaf-color-primary)5%,transparent)` x1 - User-requested lighter primary Menu selection uses a 5% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token.
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-4)` x1 - Primary Menu press clears its persistent layer and uses a lighter transient feedback layer.
 
 ### `progress/progress.scss`

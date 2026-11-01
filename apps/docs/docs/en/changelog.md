@@ -7,6 +7,20 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.14.0 - 2026-11-01
+
+### Added and improved
+
+- Tooltip now uses a rounder floating surface with a wider rounded arrow and adds an `arrow` prop to control it; Popover also gains a floating arrow and rounded card surface.
+- Tabs size examples now show line, card and segmented appearances at every size, with reduced internal vertical spacing for small segmented tabs.
+- ColorPicker hover feedback covers the full field shell; ordinary link buttons use the theme color, and primary Menu selection uses a lighter 5% theme-color fill. Design resources and bilingual documentation are synchronized.
+
+### Migration
+
+- Tooltip now shows an arrow by default and changes its radius; pass `arrow={false}` to keep the arrow hidden. Popover now shows an arrow by default; check custom floating-panel styles for overlap or positioning assumptions.
+- The default text color for ordinary `Button variant="link"` changes from `primary-ink` to the theme `primary` color, with `primary-active` on press. Danger semantics and explicit component or state overrides retain precedence; verify contrast for custom theme colors.
+- The selected background for the default `primary` Menu changes from an 8% to a 5% theme-color mix for inline and floating submenus; `neutral` and `raised` appearances are unchanged.
+
 ## 0.13.2 - 2026-11-01
 
 ### Added and improved

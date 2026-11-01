@@ -538,9 +538,9 @@
       ],
       "mixFormulas": [
         {
-          "expression": "color-mix(in srgb,var(--leaf-color-primary)8%,transparent)",
+          "expression": "color-mix(in srgb,var(--leaf-color-primary)5%,transparent)",
           "count": 1,
-          "reason": "User-requested lighter primary Menu selection uses an 8% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token."
+          "reason": "User-requested lighter primary Menu selection uses a 5% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token."
         }
       ],
       "derivedTokenUsages": [

@@ -27,6 +27,12 @@
   &[data-readonly]:not([data-disabled]) {
     cursor: default;
   }
+  &:hover:not([data-disabled]) {
+    --leaf-field-background: var(
+      --leaf-component-color-picker-background,
+      var(--leaf-color-surface-muted)
+    );
+  }
   &__trigger {
     box-sizing: border-box;
     display: inline-flex;
@@ -43,10 +49,6 @@
     background: transparent;
     font: inherit;
     cursor: inherit;
-    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      background: var(--leaf-color-surface-muted);
-    }
     &:disabled {
       cursor: not-allowed;
     }

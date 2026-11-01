@@ -75,6 +75,7 @@ Tooltip 的 `disabled` 只关闭提示，不会禁用按钮。禁用按钮本身
 | `content` | `ReactNode` | 必填 | 提示内容；为空字符串、null 或 undefined 时不显示。 |
 | `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发元素，需支持 ref 和事件 |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 期望展示位置，空间不足时自动调整 |
+| `arrow` | `boolean` | `true` | 是否显示指向触发元素的箭头。 |
 | `disabled` | `boolean` | `false` | 禁止显示提示，不禁用触发元素。 |
 | `open` | `boolean` | — | 受控的展开状态。 |
 | `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |

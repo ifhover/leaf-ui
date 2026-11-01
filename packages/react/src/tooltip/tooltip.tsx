@@ -33,6 +33,7 @@ export interface TooltipProps extends PopupOptions {
     | 'right'
     | 'right-start'
     | 'right-end';
+  arrow?: boolean;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -45,6 +46,7 @@ export function TooltipControl({
   content,
   children,
   placement = 'top',
+  arrow = true,
   open: controlled,
   defaultOpen = false,
   onOpenChange,
@@ -132,6 +134,7 @@ export function TooltipControl({
         panelRef={panel}
         id={id}
         role="tooltip"
+        data-arrow={arrow ? 'true' : 'false'}
         placement={popupPlacement ?? placement}
         className={classes('leaf-floating', 'leaf-tooltip', className, popupClassName)}
         style={popupStyle}

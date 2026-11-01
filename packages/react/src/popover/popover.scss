@@ -1,9 +1,16 @@
 @use '../styles/mixins' as mixins;
 .leaf-popover {
+  --leaf-popover-radius: var(--leaf-component-popover-radius, var(--leaf-radius-lg));
+  --leaf-surface-radius: var(--leaf-popover-radius);
   padding: var(--leaf-component-popover-padding, 14px 16px);
+  border-radius: var(--leaf-popover-radius);
   outline: none;
   overflow-wrap: anywhere;
   border-color: var(--leaf-color-divider);
+  @include mixins.floating-arrow;
+  & > .leaf-floating__viewport {
+    border-radius: var(--leaf-surface-inner-radius);
+  }
   &__title {
     margin-block-end: 6px;
     color: var(--leaf-color-text);

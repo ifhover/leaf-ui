@@ -95,7 +95,7 @@ test('neutral Menu uses the requested light fill without changing other appearan
     assert.equal(palette['--leaf-menu-hover-color'], 'var(--leaf-color-primary)');
     assert.equal(
       palette['--leaf-menu-selected-background'],
-      'color-mix(in srgb,var(--leaf-color-primary)8%,transparent)',
+      'color-mix(in srgb,var(--leaf-color-primary)5%,transparent)',
     );
     assert.equal(palette['--leaf-menu-hover-opacity'], '0');
     assert.equal(palette['--leaf-menu-active-background'], 'var(--leaf-color-primary-alpha-4)');

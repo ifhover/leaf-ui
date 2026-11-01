@@ -75,6 +75,7 @@ The trigger must forward its ref and events. Its existing `aria-describedby` is 
 | `content` | `ReactNode` | Required | Tooltip content; empty strings, null and undefined suppress the tooltip. |
 | `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Trigger element supporting a ref and events |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Preferred placement; adjusts when space is limited |
+| `arrow` | `boolean` | `true` | Whether to show the arrow pointing to the trigger. |
 | `disabled` | `boolean` | `false` | Suppress the tooltip without disabling its trigger. |
 | `open` | `boolean` | — | Controlled open state. |
 | `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |

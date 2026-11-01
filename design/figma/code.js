@@ -139,7 +139,13 @@ async function importLeafResources() {
         component.appendChild(
           label(
             'Button',
-            variant === 'solid' ? 'on-primary' : variant === 'link' ? 'primary-ink' : 'text',
+            variant === 'solid'
+              ? 'on-primary'
+              : variant === 'link'
+                ? state === 'pressed'
+                  ? 'primary-active'
+                  : 'primary'
+                : 'text',
           ),
         );
         if (state === 'disabled') component.opacity = 0.45;

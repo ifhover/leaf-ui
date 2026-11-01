@@ -1,8 +1,18 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-tooltip {
+  --leaf-tooltip-radius: var(
+    --leaf-component-tooltip-radius,
+    max(0px, calc(var(--leaf-radius-sm) * 2))
+  );
+  --leaf-surface-radius: var(--leaf-tooltip-radius);
   max-width: min(300px, calc(100vw - 24px));
   padding: var(--leaf-component-tooltip-padding, 7px 10px);
   border: 0;
-  border-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius-sm));
+  border-radius: var(--leaf-tooltip-radius);
+  & > .leaf-floating__viewport {
+    border-radius: var(--leaf-tooltip-radius);
+  }
   color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
   background: var(--leaf-component-tooltip-background, var(--leaf-color-text));
   font-size: var(--leaf-font-size-sm);
@@ -12,6 +22,7 @@
     --leaf-component-tooltip-shadow,
     var(--leaf-surface-shadow, var(--leaf-shadow-md))
   );
+  @include mixins.floating-arrow;
   transition-duration:
     var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
   &[data-state='closing'] {

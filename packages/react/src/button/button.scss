@@ -7,8 +7,8 @@
     var(--leaf-border-width, 1px)
   );
   --leaf-button-color: var(--leaf-color-primary);
-  --leaf-button-ink: var(--leaf-color-primary-ink, var(--leaf-button-color));
-  --leaf-button-ink-active: var(--leaf-color-primary-ink-active, var(--leaf-button-active));
+  --leaf-button-ink: var(--leaf-button-color);
+  --leaf-button-ink-active: var(--leaf-button-active);
   --leaf-button-on-color: var(--leaf-color-on-primary);
   --leaf-focus-color: var(--leaf-color-text-muted);
   --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));

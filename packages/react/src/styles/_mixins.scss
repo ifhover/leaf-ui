@@ -322,6 +322,94 @@
   );
 }
 
+// Shared rounded arrow for floating panels that point at their trigger.
+@mixin floating-arrow {
+  &.leaf-floating.leaf-scrollbar {
+    overflow: visible;
+  }
+  &::before {
+    position: absolute;
+    z-index: 1;
+    width: 16px;
+    height: 5px;
+    border-radius: 3px;
+    background: inherit;
+    pointer-events: none;
+    content: '';
+  }
+  &[data-arrow='false']::before {
+    display: none;
+  }
+  &[data-side='top']::before {
+    inset-block-end: -4px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    clip-path: polygon(
+      8% 0,
+      92% 0,
+      86% 18%,
+      62% 78%,
+      56% 94%,
+      52% 100%,
+      48% 100%,
+      44% 94%,
+      38% 78%,
+      14% 18%
+    );
+  }
+  &[data-side='bottom']::before {
+    inset-block-start: -4px;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    clip-path: polygon(
+      8% 100%,
+      92% 100%,
+      86% 82%,
+      62% 22%,
+      56% 6%,
+      52% 0,
+      48% 0,
+      44% 6%,
+      38% 22%,
+      14% 82%
+    );
+  }
+  &[data-side='left']::before {
+    inset-block-start: 50%;
+    inset-inline-end: -4px;
+    transform: translateY(-50%);
+    clip-path: polygon(
+      0 8%,
+      0 92%,
+      18% 86%,
+      78% 62%,
+      94% 56%,
+      100% 52%,
+      100% 48%,
+      94% 44%,
+      78% 38%,
+      18% 14%
+    );
+  }
+  &[data-side='right']::before {
+    inset-block-start: 50%;
+    inset-inline-start: -4px;
+    transform: translateY(-50%);
+    clip-path: polygon(
+      100% 8%,
+      100% 92%,
+      82% 86%,
+      22% 62%,
+      6% 56%,
+      0 52%,
+      0 48%,
+      6% 44%,
+      22% 38%,
+      82% 14%
+    );
+  }
+}
+
 @mixin field-states($component) {
   // Hover and press keep the resting paint by default. Explicit component
   // overrides still apply, while only focus or an open popup deepens the border.

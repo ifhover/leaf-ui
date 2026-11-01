@@ -27,7 +27,9 @@ describe('Popover', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Open' }));
     expect(click).toHaveBeenCalledOnce();
     expect(ref.current).toBe(screen.getByRole('button', { name: 'Open' }));
-    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog', { name: 'Settings' });
+    expect(document.querySelector('.leaf-popover')).toHaveAttribute('data-arrow', 'true');
+    expect(dialog).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Inside' })).toHaveFocus();
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();

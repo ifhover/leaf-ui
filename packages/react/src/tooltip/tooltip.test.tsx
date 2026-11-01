@@ -4,6 +4,22 @@ import { describe, expect, it, vi } from 'vitest';
 import { Button, Tooltip } from '../index';
 
 describe('Tooltip', () => {
+  it('shows an arrow by default and allows it to be disabled', () => {
+    const { rerender } = render(
+      <Tooltip open content="Help">
+        <Button>Hover</Button>
+      </Tooltip>,
+    );
+    const panel = document.querySelector('.leaf-tooltip');
+    expect(panel).toHaveAttribute('data-arrow', 'true');
+    rerender(
+      <Tooltip open arrow={false} content="Help">
+        <Button>Hover</Button>
+      </Tooltip>,
+    );
+    expect(document.querySelector('.leaf-tooltip')).toHaveAttribute('data-arrow', 'false');
+  });
+
   it('opens on keyboard focus, merges descriptions and refs, and closes on Escape', async () => {
     const ref = createRef<HTMLButtonElement>();
     render(

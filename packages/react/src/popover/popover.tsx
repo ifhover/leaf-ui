@@ -186,6 +186,7 @@ export function PopoverControl({
         id={id}
         role={mode === 'click' ? 'dialog' : 'tooltip'}
         tabIndex={-1}
+        data-arrow="true"
         placement={popupPlacement ?? placement}
         width={width}
         maxWidth={maxWidth}

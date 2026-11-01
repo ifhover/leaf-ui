@@ -1609,6 +1609,7 @@ const apiPropertyOrder = {
     'content',
     'children',
     'placement',
+    'arrow',
     'disabled',
     'open',
     'defaultOpen',
@@ -2353,6 +2354,10 @@ const specific = {
   'TooltipProps.disabled': [
     '禁止显示提示，不禁用触发元素。',
     'Suppress the tooltip without disabling its trigger.',
+  ],
+  'TooltipProps.arrow': [
+    '是否显示指向触发元素的箭头。',
+    'Whether to show the arrow pointing to the trigger.',
   ],
   'PopconfirmProps.aria-label': [
     '确认浮层的可访问名称；默认使用字符串标题或当前语言的确认名称。',
