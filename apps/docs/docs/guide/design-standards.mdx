@@ -17,7 +17,7 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 | [Menu](/components/menu) | 默认 `raised`，柔和底板上的选中项使用独立内容面、细边框和轻投影。 | 导航沿用选中表面；不再叠加另一条高亮或大面积品牌色背景。`neutral` 和 `primary` 是其他明确的外观选择。 |
 | [Button](/components/button) | 默认 `outline`，中性内容面和边框，带轻微静止阴影。 | 普通操作保持中性，关键操作才使用 `solid`；不让所有按钮同时争抢注意力。 |
 | [Card](/components/card) | `variant="layered"` 用底板承载小号弱标题，内层内容面承载正文。Card 本身默认仍是 `default`。 | 独立任务分区需要标题与内容分层时使用 `layered`；此时不显示 `description`，重要说明放在正文或独立 CardTitle 中。 |
-| [DataTable](/components/table) | 默认 `layered`，弱化表头与内层数据表面延续分层 Card 的关系。 | 主要数据区域直接放置表格和工具栏；通常不再外包一层同样的分层 Card。确需嵌入已有内容面时考虑 `simple`。 |
+| [DataTable](/components/table) | 默认使用简洁的数据表面，表头和行状态保持克制。 | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列；通常不再外包一层同样的分层 Card。 |
 
 “底板”和“内容面”是角色，不是固定浅灰和纯白。用户改变表面色或切换深色外观后，分组关系仍应保留。选中状态沿用组件自身的表面、勾选、边框或指示，不在页面层强制统一成“永远没有背景”或另一套主题色高亮。
 
@@ -130,7 +130,7 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 
 ### 数据区域
 
-DataTable 已有分层表面，工具栏通过 `toolbar` 接入。此处只有三行，关闭分页；数据较多时沿用组件分页，不把所有数据硬塞在固定高度中。DataTable 使用独立的 `/table` 入口，需要安装其可选 TanStack 依赖，见[表格接入](/components/table)。
+DataTable 已有独立的数据表面，筛选和其他操作控件与表格并列放置。此处只有三行，关闭分页；数据较多时沿用组件分页，不把所有数据硬塞在固定高度中。DataTable 使用独立的 `/table` 入口，需要安装其可选 TanStack 依赖，见[表格接入](/components/table)。
 
 <ComponentExample title="数据区域" preview={<DataRegion />} fileName="data-region.tsx" width={600}>
 

@@ -18,12 +18,10 @@ export interface DataTableVirtualOptions {
 /** Shared presentation props do not depend on TanStack or the caller's row type. */
 export interface DataTablePresentationProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
-  /** Content for the toolbar in the automatic layout. */
-  toolbar?: ReactNode;
   size?: ControlSize;
-  /** Extend to the surrounding Card content edges while keeping toolbar and pagination insets. */
-  bleed?: boolean;
-  /** Alternating row backgrounds; enabled by default. */
+  /** Add an outer frame and separators between columns and rows. */
+  bordered?: boolean;
+  /** Alternating row backgrounds; disabled by default. */
   striped?: boolean;
   /** Limits the table viewport; headers always remain fixed above the scrolling content. */
   maxHeight?: CSSProperties['maxHeight'];

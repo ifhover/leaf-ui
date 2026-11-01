@@ -9,7 +9,7 @@ const members = [
 export function TableSimple() {
   return (
     <DataTable
-      striped={false}
+      bordered
       data={members}
       columns={[
         { accessorKey: 'name', header: '成员' },
@@ -17,7 +17,7 @@ export function TableSimple() {
         { accessorKey: 'projects', header: '项目数' },
       ]}
       rowKey="id"
-      aria-label="带行间分隔线的表格"
+      aria-label="带边框的表格"
       pagination={false}
     />
   );

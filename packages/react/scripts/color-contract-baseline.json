@@ -722,11 +722,6 @@
         "reason": "Card uses a lighter 50% divider blend while other softened frames keep the 70% divider blend; both follow their actual local surface."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-primary)3%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table hover follows component-local surface."
-      },
-      {
         "expression": "color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))",
         "count": 1,
         "reason": "Neutral-focus field variant preserves existing interactions."
@@ -745,11 +740,6 @@
         "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
         "count": 1,
         "reason": "Table stripes follow component-local text and surface."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-table-text)80%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table header ink follows component-local text and surface."
       }
     ],
     "derivedTokenUsages": [

@@ -7,6 +7,20 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.13.2 - 2026-11-01
+
+### 新增与改进
+
+- DataTable 新增 `bordered`，支持包含分组表头的完整行列网格；表头颜色、600 字重、字号行高、间距、短竖向分割线、排序箭头与顶部圆角对齐 Ant Design。
+- DataTable 新增 `renderRowHeader`，在每条记录的正常列上方展示订单等信息，选择控件跨信息行与数据行；可选详情继续使用 `renderExpandedRow`。同步中英文带边框订单示例。
+- 默认中性基色恢复为纯灰 `#707070`，共享文字、表面与边框不再默认偏蓝；同步主题文档、设计资源和 Figma 导出。
+
+### 迁移说明
+
+- DataTable 移除 `toolbar` 和 `bleed`，删除实例及 `ConfigProvider.components.DataTable` 中的对应配置。筛选和其他操作控件放在表格外部，不再提供卡片内贴边表格；旧 JavaScript 参数会被忽略。
+- DataTable 默认 `size` 由 `md` 改为 `lg`，默认 `striped` 改为 `false`，所有尺寸的表头与正文共用 14px 基础字号、22px 行高。需要原中号尺寸时显式设置 `size="md"`，需要交替背景时设置 `striped`。
+- 默认中性基色由 `#6c737e` 改为 `#707070`；需要此前色调时设置 `theme.tokens.neutralColor: '#6c737e'`，显式主题颜色继续保留其色相。
+
 ## 0.13.1 - 2026-11-01
 
 ### 新增与改进

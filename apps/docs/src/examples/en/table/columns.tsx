@@ -27,13 +27,15 @@ export function TableColumns() {
     },
   });
   return (
-    <DataTable
-      table={table}
-      aria-label="Pinned and resizable columns"
-      maxHeight={300}
-      resizable
-      toolbar={<Button onClick={() => table.resetColumnSizing()}>Reset widths</Button>}
-      pagination={false}
-    />
+    <>
+      <Button onClick={() => table.resetColumnSizing()}>Reset widths</Button>
+      <DataTable
+        table={table}
+        aria-label="Pinned and resizable columns"
+        maxHeight={300}
+        resizable
+        pagination={false}
+      />
+    </>
   );
 }

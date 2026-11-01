@@ -1,10 +1,10 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TableBasic } from '../../../src/examples/en/table/basic';
-import { TableCard } from '../../../src/examples/en/table/card';
 import { TableSimple } from '../../../src/examples/en/table/simple';
 import { TableSorting } from '../../../src/examples/en/table/sorting';
 import { TableSelection } from '../../../src/examples/en/table/selection';
 import { TableExpansion } from '../../../src/examples/en/table/expansion';
+import { TableRowHeader } from '../../../src/examples/en/table/row-header';
 import { TableStates } from '../../../src/examples/en/table/states';
 import { TableColumns } from '../../../src/examples/en/table/columns';
 import { TableSizing } from '../../../src/examples/en/table/sizing';
@@ -29,7 +29,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## Basic usage
 
-Pass data, column definitions, and a stable unique `rowKey`. Tables use a simple surface with alternating stripes, and local pagination is enabled by default. This example sets 5 rows per page so you can switch pages. Ordinary tables without configured widths distribute space based on content, with long text wrapping as needed.
+Pass data, column definitions, and a stable unique `rowKey`. Tables use light gray headers, 600 header weight, rounded top corners, and fine row dividers. The default `size` is `lg`, with 55px single-line headers and data rows; use `md` or `sm` for smaller padding. Local pagination is enabled by default. This example sets 5 rows per page so you can switch pages. Ordinary tables without configured widths distribute space based on content, with long text wrapping as needed.
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -44,22 +44,11 @@ Pass data, column definitions, and a stable unique `rowKey`. Tables use a simple
 
 ## Examples
 
-### Table in a card
-
-Place `DataTable` directly in the `Card` body and enable `bleed` to extend the table to both content edges. The `toolbar` and built-in pagination retain the card's horizontal insets; pagination padding matches the table's outward extension. This also works directly inside an integrated Card tab panel. Additional layout wrappers do not receive automatic bleed insets.
-
-<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
-
-```tsx lineNumbers file="../../../src/examples/en/table/card.tsx"
-```
-
-</ComponentExample>
-
-### Row dividers
+### Bordered table
 
 <a id="simple-appearance" />
 
-Alternating stripes distinguish rows by default; set `striped={false}` to use fine row dividers instead.
+Fine row dividers are shown by default; set `striped` to switch to alternating row backgrounds. Set `bordered` for a full cell grid, including grouped headers and the final bottom rule, with rounded top corners. Bordered grids hide the short header separators.
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -101,6 +90,19 @@ Enable row expansion with `options.getRowCanExpand` and render content via `rend
 
 </ComponentExample>
 
+### Record information rows
+
+Use `renderRowHeader` to show an order number, source or timestamp above each record's regular cells. Selection spans the information and data rows, and records remain contiguous. Pagination, sorting and selection still operate on one record.
+
+For optional details, provide `renderExpandedRow`; its expansion control appears at the trailing edge of the information row. Use `options.getRowCanExpand` to choose which records can expand. Omit both options when details are unnecessary.
+
+<ComponentExample exampleId="row-header" preview={<TableRowHeader />} fileName="row-header.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/table/row-header.tsx"
+```
+
+</ComponentExample>
+
 ### Empty, loading, and error
 
 Use `loading`, `emptyContent`, `error`, and `onRetry` to present and handle loading, empty, and error states.
@@ -129,7 +131,7 @@ When every column has a fixed width, extra space remains on the right. Leave a c
 
 ### Pinning and resizing
 
-Set `resizable` to enable column resizing, and configure `size`, `minSize`, and `maxSize` in column definitions. Use `options.initialState.columnPinning` to pin columns, and `maxHeight` to keep headers fixed while scrolling internally. Use `toolbar` for header actions.
+Set `resizable` to enable column resizing, and configure `size`, `minSize`, and `maxSize` in column definitions. Use `options.initialState.columnPinning` to pin columns, and `maxHeight` to keep headers fixed while scrolling internally. Render header actions outside DataTable.
 
 Pinned, resizable, and virtual tables use deterministic widths. Unsized columns start at 150px and share remaining space. Pinned columns ignore `meta.flex`. Manually resizing a column keeps the new width; double-click its handle or reset column sizing to restore flexible allocation.
 
@@ -205,10 +207,9 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | Customize TanStack state, callbacks and server configuration. |
 | `localPagination` | `boolean` | — | Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows. |
 | `table` | `TanStackTable<TData>` | — | Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination. |
-| `toolbar` | `ReactNode` | — | Toolbar content in the automatic layout. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `bleed` | `boolean` | `false` | Extend the table to the content edges when placed directly in a Card body or integrated tab panel. Toolbar and pagination restore matching horizontal padding. Additional layout wrappers and standalone tables have no automatic extension. |
-| `striped` | `boolean` | `true` | Alternating backgrounds start from the second row and hide row dividers by default. Disable to show fine row dividers. |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'lg'` | Presentation size. |
+| `bordered` | `boolean` | `false` | Show a full cell grid, including grouped headers and the final bottom rule, with rounded top corners. |
+| `striped` | `boolean` | `false` | Fine row dividers are shown by default; true adds alternating backgrounds from the second row and hides row dividers, except in bordered grids. |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | Maximum table viewport height. Headers always stay fixed while the body scrolls internally; virtual mode defaults to 400 when omitted. |
 | `minWidth` | `CSSProperties['minWidth']` | — | Minimum content-area width; adapts to the container and column widths by default. |
 | `loading` | `boolean` | `false` | Show a loading state. |
@@ -221,8 +222,9 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `pagination` | `boolean \| `[`DataTablePaginationProps`](#datatablepagination-api) | `true` | Pagination visibility or display options; see <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>. With direct data input, false also disables local slicing. |
 | `tableRef` | `Ref<HTMLTableElement>` | — | Native table DOM ref. |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | Accessible row-action name; defaults to row.id. |
+| `renderRowHeader` | `(row: Row<TData>) => ReactNode` | — | Render a spanning information row above each record. Selection spans both rows, and expansion controls move to its trailing edge. Pagination and sorting still operate on records. |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | Leaf-row details; configure getRowCanExpand. |
-| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | Custom row attributes/events. |
+| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | Customize the regular data row attributes and events; selected styling also applies to its information row. |
 | `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | Cell attributes, styles or spans; a zero colSpan / rowSpan omits the cell. |
 
 `aria-label` / `aria-labelledby` apply to the inner native table; other div attributes apply to the wrapper.
@@ -354,7 +356,7 @@ Configure the estimated virtual row height and overscan.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `estimateRowHeight` | `number` | `48` | Estimated height before measuring. |
+| `estimateRowHeight` | `number` | `48` | Estimated record height before measurement, including its information row, data row and expanded details. |
 | `overscan` | `number` | `5` | Additional rows before/after the viewport. |
 
 ### DataTablePagination API

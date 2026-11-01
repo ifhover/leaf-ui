@@ -138,11 +138,6 @@
       padding-block-end: 16px;
     }
   }
-  &__body > [data-leaf-bleed],
-  &__tabs > .leaf-tabs__panels > .leaf-tabs__panel > [data-leaf-bleed] {
-    --leaf-bleed-left: var(--leaf-card-content-padding-left);
-    --leaf-bleed-right: var(--leaf-card-content-padding-right);
-  }
   &__header + &__body {
     padding-block-start: 0;
   }

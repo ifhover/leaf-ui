@@ -19,7 +19,7 @@
 
 五种语义基色在浅深模式保持相同原值，独立于彼此。仅生成 `light-3`、`light-7`、`light-9`、`dark-1`、`dark-3`、`dark-7`、`dark-9` 七档，数字表示白色或黑色的占比（单位 10%），使用 sRGB 混色。例如 `primary-light-3` 是 70% primary + 30% 白，`primary-dark-1` 是 90% primary + 10% 黑，不是透明度。不会把原色替换成某一档，也不保留 `primary-100` 至 `-900` 等旧语义数字档。按需派生不意味着铺满亮暗 1–9 的全部矩阵。
 
-中性色带继续由固定 OKLCH 明度序列生成 `100`–`900`，默认基色为略偏蓝的灰色 `#6c737e`，可通过 `neutralColor` 修改。派生色保留基色的色相，在接近白色和黑色时减弱色度，不将中性色强制转为纯灰。五种语义色共 35 个派生色，加中性九档共 44 档。原色与派生色跨模式共享，只有用途映射随实际表面变化。
+中性色带继续由固定 OKLCH 明度序列生成 `100`–`900`，默认基色为纯灰色 `#707070`，可通过 `neutralColor` 修改。默认灰阶保持 RGB 三通道相等，不偏蓝；显式传入带色相的中性基色时，派生色保留该色相，并在接近白色和黑色时减弱色度。五种语义色共 35 个派生色，加中性九档共 44 档。原色与派生色跨模式共享，只有用途映射随实际表面变化。
 
 `resolveColorRoles(appearance, overrides)` 返回 `{ values, sources }`，统一生成共享用途并记录覆盖来源。颜色派生只随 ConfigProvider 的 JS 配置更新；不通过 DOM 属性、computed color、canvas 探针或媒体查询推断输入，也不在 hydration 后重写色板。应用可以用 `useSystemAppearance()` 获取系统偏好，再把结果传给 ConfigProvider；这是 JS 输入，不是颜色引擎监听 DOM。Portal 复制区域 CSS 变量以传递主题，不重新解析或派生颜色。CSS 颜色表达式保持表达式形式，需要确定数值的计算应由应用传入具体颜色。`deriveColors` 仅额外输出具有真实消费者的有限光学配方，不再生成无消费的旧百分比矩阵。
 
@@ -83,7 +83,7 @@ Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和�
 
 内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。内容容器的柔化边框与普通 Modal 的分区线复用 `softened-frame-color`，随实际局部表面减淡；Confirm 不继承 Modal 的分区线调整。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。条纹、悬停和遮罩基于当前表格的表面与文字计算，不能替换成仅对默认白底近似的全局色。选中行始终使用映射后的 `--leaf-color-primary-soft`，内部展开操作复用文字按钮的中性反馈；显式 `primarySoftColor` 等覆盖继续优先，不为补默认值生成新全局 token。
+Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头复用 `subtle-action-background`，将当前内容面与 `surface-muted` 等比混合；表格横线、表头短分割线和 bordered 网格共用柔化后的 divider，显式组件与全局边框色优先。不在 Table 内强制去色；纯灰来自默认中性基色，显式主题颜色继续继承。普通行悬停复用表头浅底，排序表头使用 `surface-muted`，排序列使用表头浅底；条纹和遮罩基于当前表格的表面与文字计算。选中行使用映射后的 `--leaf-color-primary-soft`，悬停使用 `primary-soft-hover`；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
 
 ### 共享底板与内容表面
 

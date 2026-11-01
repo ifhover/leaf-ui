@@ -234,7 +234,7 @@ describe('theme color derivation', () => {
       for (const step of colorScaleSteps)
         expect(light.values[`--leaf-color-${family}-${step}`]).toBeUndefined();
     }
-    expect(neutralColorScale).toEqual(generateColorScale('#6c737e'));
+    expect(neutralColorScale).toEqual(generateColorScale('#707070'));
   });
   it('mixes only named percentages around the original base and preserves opaque endpoints', () => {
     for (const seed of ['#1677ff', '#1e964f', '#ff0000', '#000000', '#ffffff']) {
@@ -279,19 +279,19 @@ describe('theme color derivation', () => {
       'override',
     );
   });
-  it('carries the blue-gray neutral tint through shared roles and lets callers restore pure gray', () => {
+  it('keeps default neutral roles achromatic and preserves explicitly tinted neutral seeds', () => {
     for (const appearance of ['light', 'dark'] as const) {
       const defaults = leafThemeVariables({ appearance });
-      const gray = leafThemeVariables({ appearance, tokens: { neutralColor: '#707070' } });
+      const tinted = leafThemeVariables({ appearance, tokens: { neutralColor: '#6c737e' } });
       for (const role of ['text-muted', 'surface-muted', 'border', 'divider'] as const) {
         const { r, g, b } = new TinyColor(String(defaults[`--leaf-color-${role}`])).toRgb();
-        expect(b, `${appearance} ${role}`).toBeGreaterThan(g);
-        expect(g, `${appearance} ${role}`).toBeGreaterThan(r);
-        const restored = new TinyColor(String(gray[`--leaf-color-${role}`])).toRgb();
-        expect(restored.r).toBe(restored.g);
-        expect(restored.g).toBe(restored.b);
+        expect(r, `${appearance} ${role}`).toBe(g);
+        expect(g, `${appearance} ${role}`).toBe(b);
+        const explicit = new TinyColor(String(tinted[`--leaf-color-${role}`])).toRgb();
+        expect(explicit.b).toBeGreaterThan(explicit.g);
+        expect(explicit.g).toBeGreaterThan(explicit.r);
       }
-      expect(defaults['--leaf-color-primary']).toBe(gray['--leaf-color-primary']);
+      expect(defaults['--leaf-color-primary']).toBe(tinted['--leaf-color-primary']);
       expect(
         leafThemeVariables({ appearance, tokens: { mutedTextColor: '#123456' } })[
           '--leaf-color-text-muted'

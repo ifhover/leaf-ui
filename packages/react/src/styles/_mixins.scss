@@ -260,22 +260,24 @@
 @mixin table-family($component: table) {
   --leaf-table-surface: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
   --leaf-table-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
-  --leaf-table-header-background: var(--leaf-table-surface);
-  --leaf-table-header-color: var(
-    --leaf-component-#{$component}-color,
-    var(--leaf-color-text-muted)
+  --leaf-table-header-background: var(
+    --leaf-component-#{$component}-background,
+    #{subtle-action-background(var(--leaf-table-surface))}
   );
-  --leaf-table-hover-background: color-mix(
-    in srgb,
-    var(--leaf-color-primary) 3%,
-    var(--leaf-table-surface)
+  --leaf-table-header-color: var(--leaf-table-text);
+  --leaf-table-hover-background: var(--leaf-table-header-background);
+  --leaf-table-header-sort-background: var(
+    --leaf-component-#{$component}-background,
+    var(--leaf-color-surface-muted)
   );
+  --leaf-table-body-sort-background: var(--leaf-table-header-background);
   --leaf-table-striped-background: color-mix(
     in srgb,
     var(--leaf-table-text) 2%,
     var(--leaf-table-surface)
   );
   --leaf-table-selected-background: var(--leaf-color-primary-soft);
+  --leaf-table-selected-hover-background: var(--leaf-color-primary-soft-hover);
   // Retain the historical optional compatibility variable; its default is local to this family.
   --leaf-table-overlay-background: var(
     --leaf-color-surface-alpha-80,

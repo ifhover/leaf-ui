@@ -17,7 +17,7 @@ This guide covers component composition and the scales for custom page layouts. 
 | [Menu](/en/components/menu) | Defaults to `raised`: a selected content surface, fine border and light shadow on a muted canvas. | Retain the selected surface instead of adding another indicator or a large brand-colored background. `neutral` and `primary` are other explicit appearances. |
 | [Button](/en/components/button) | Defaults to `outline`: a neutral content surface and border with a slight resting shadow. | Keep ordinary actions neutral; reserve `solid` for important actions rather than emphasizing every button. |
 | [Card](/en/components/card) | `variant="layered"` puts a small muted heading on the canvas and content on an inner surface. Card itself still defaults to `default`. | Use `layered` for independent tasks needing a heading/content separation. It does not display `description`; put important explanations in the body or a standalone CardTitle. |
-| [DataTable](/en/components/table) | Defaults to `layered`: a quiet header and inner data surface share the layered Card relationship. | Place the main table and its toolbar directly, usually without another layered Card around them. Consider `simple` when embedding a table in an existing content surface. |
+| [DataTable](/en/components/table) | Uses a simple data surface by default, with restrained header and row states. | Place the main table directly and render filters and other actions alongside it, usually without another layered Card around them. |
 
 Canvas and content surface are roles, not fixed light gray and pure white. Preserve their grouping when users change surface colors or switch to dark appearance. Retain each component's selected surface, checkmark, border or indicator; do not impose either "selection never has a background" or another page-level brand highlight.
 
@@ -130,7 +130,7 @@ A standalone heading carries the description while the layered Card retains a sh
 
 ### Data region
 
-DataTable already provides a layered surface; supply its tools through `toolbar`. This three-row example disables pagination. For larger datasets, retain component pagination rather than squeezing everything into a fixed height. DataTable uses the separate `/table` entry and requires its optional TanStack dependency; see [Table setup](/en/components/table).
+DataTable provides its own data surface; place filters and other actions alongside the table. This three-row example disables pagination. For larger datasets, retain component pagination rather than squeezing everything into a fixed height. DataTable uses the separate `/table` entry and requires its optional TanStack dependency; see [Table setup](/en/components/table).
 
 <ComponentExample title="Data region" preview={<DataRegion />} fileName="data-region.tsx" width={600}>
 

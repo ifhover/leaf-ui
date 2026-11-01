@@ -31,7 +31,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronRight } from 'lucide-react';
+import { ChevronRight, Triangle } from 'lucide-react';
 import {
   createContext,
   Fragment,
@@ -126,6 +126,8 @@ interface DataTableInstanceProps<TData> extends DataTablePresentationProps {
   localPagination?: never;
 
   getRowLabel?: (row: Row<TData>) => string;
+  /** Render a full-width information row above each record's normal cells. */
+  renderRowHeader?: (row: Row<TData>) => ReactNode;
   renderExpandedRow?: (row: Row<TData>) => ReactNode;
   getRowProps?: (row: Row<TData>) => DataTableRowProps;
   getCellProps?: (cell: Cell<TData, unknown>) => DataTableCellProps;
@@ -161,10 +163,9 @@ function useDataTableContext() {
 
 function DataTableRoot<TData>({
   table,
-  toolbar,
-  size = 'md',
-  bleed = false,
-  striped = true,
+  size = 'lg',
+  bordered = false,
+  striped = false,
   maxHeight,
   minWidth,
   loading = false,
@@ -173,6 +174,7 @@ function DataTableRoot<TData>({
   onRetry,
   selection = false,
   getRowLabel,
+  renderRowHeader,
   renderExpandedRow,
   getRowProps,
   getCellProps,
@@ -197,7 +199,7 @@ function DataTableRoot<TData>({
     label,
     labelledBy,
     size,
-    bleed,
+    bordered,
     striped,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
@@ -207,6 +209,7 @@ function DataTableRoot<TData>({
     onRetry,
     selection,
     getRowLabel: getRowLabel ? (row) => getRowLabel(row as Row<TData>) : undefined,
+    renderRowHeader: renderRowHeader ? (row) => renderRowHeader(row as Row<TData>) : undefined,
     renderExpandedRow: renderExpandedRow
       ? (row) => renderExpandedRow(row as Row<TData>)
       : undefined,
@@ -270,14 +273,7 @@ function DataTableRoot<TData>({
   return (
     <DataTableContext.Provider value={value}>
       <FieldScope>
-        <div
-          {...props}
-          className={classes('leaf-data-table', className)}
-          data-leaf-bleed={bleed || undefined}
-        >
-          {toolbar != null && toolbar !== false && (
-            <DataTableToolbarControl>{toolbar}</DataTableToolbarControl>
-          )}
+        <div {...props} className={classes('leaf-data-table', className)}>
           <DataTableContentControl />
           {automaticPagination && (
             <DataTableFooterControl>
@@ -288,10 +284,6 @@ function DataTableRoot<TData>({
       </FieldScope>
     </DataTableContext.Provider>
   );
-}
-
-function DataTableToolbarControl({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div {...props} className={classes('leaf-data-table__toolbar', className)} />;
 }
 
 function DataTableFooterControl({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -418,12 +410,21 @@ function DataRow({
   lastVisible?: boolean;
 }) {
   const config = useDataTableContext();
-  const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
-    config;
+  const {
+    id,
+    selection,
+    loading,
+    getRowLabel,
+    renderRowHeader,
+    renderExpandedRow,
+    getRowProps,
+    getCellProps,
+  } = config;
+  const t = useText();
   const format = useFormattedText();
   const detailsId = `${id}-detail-${encodeURIComponent(row.id)}`;
   const label = getRowLabel?.(row) ?? row.id;
-  const expandable = config.expandable;
+  const expandable = config.expandable && !renderRowHeader;
   const detail = Boolean(
     !collapsed && renderExpandedRow && row.getIsExpanded() && !row.subRows.length,
   );
@@ -435,21 +436,90 @@ function DataRow({
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const custom = getRowProps?.(row);
   const element = useRef<HTMLTableRowElement>(null);
-  const hidden = useRowMotion(element, collapsed, animate);
-  const Cell = animate ? MotionCell : Table.Cell;
+  // Native row spans must open/close as a whole; do not animate half a record.
+  const hidden = useRowMotion(element, collapsed, animate && !renderRowHeader);
+  const Cell = animate && !renderRowHeader ? MotionCell : Table.Cell;
   useEffect(() => {
     const node = element.current;
-    const next = node?.nextElementSibling;
-    if (!node || !measureRef || !next?.hasAttribute('data-detail-row')) return;
+    if (!node || !measureRef) return;
     const measure = () => measureRef(node);
-    measure();
+    const header = renderRowHeader ? node.previousElementSibling : null;
+    const detail = renderExpandedRow ? node.nextElementSibling : null;
     const observer =
       typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
-    observer?.observe(next);
+    if (header?.hasAttribute('data-row-header')) observer?.observe(header);
+    if (detail?.hasAttribute('data-detail-row')) observer?.observe(detail);
+    measure();
     return () => observer?.disconnect();
-  }, [measureRef]);
+  }, [measureRef, renderRowHeader, renderExpandedRow]);
+  const selected = selection ? row.getIsSelected() : custom?.selected;
+  const selectionCell = selection ? (
+    <Cell
+      rowSpan={renderRowHeader ? 2 : undefined}
+      className="leaf-data-table__utility leaf-data-table__selection"
+    >
+      {selection === 'single' ? (
+        <Radio
+          name={`${id}-selection`}
+          form={`${id}-detached-selection`}
+          aria-label={format('dataTable.selectRow', { label })}
+          checked={row.getIsSelected()}
+          disabled={loading || !row.getCanSelect()}
+          onChange={() => config.table.setRowSelection({ [row.id]: true })}
+        />
+      ) : (
+        <Checkbox
+          aria-label={format('dataTable.selectRow', { label })}
+          checked={row.getIsSelected()}
+          indeterminate={row.getIsSomeSelected()}
+          disabled={loading || !row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+        />
+      )}
+    </Cell>
+  ) : null;
+  const expandControl =
+    config.expandable && row.getCanExpand() ? (
+      <ButtonControl
+        variant="text"
+        size="sm"
+        className="leaf-data-table__expand"
+        startIcon={<ChevronRight className="leaf-data-table__expand-icon" />}
+        aria-label={format(row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow', {
+          label,
+        })}
+        aria-expanded={row.getIsExpanded()}
+        aria-controls={renderExpandedRow && !row.subRows.length ? detailsId : undefined}
+        disabled={loading}
+        onClick={row.getToggleExpandedHandler()}
+        style={renderRowHeader ? undefined : { marginInlineStart: row.depth * 12 }}
+      >
+        {renderRowHeader
+          ? t(row.getIsExpanded() ? 'dataTable.collapseDetails' : 'dataTable.expandDetails')
+          : undefined}
+      </ButtonControl>
+    ) : null;
   return (
     <Fragment>
+      {renderRowHeader && (
+        <Table.Row
+          className="leaf-data-table__record-header"
+          data-row-header={row.id}
+          hidden={hidden || undefined}
+          aria-hidden={collapsed || undefined}
+          {...inertProps(collapsed)}
+          aria-rowindex={ariaRowIndex}
+          selected={selected}
+        >
+          {selectionCell}
+          <Table.Cell colSpan={Math.max(1, cells.length)} className="leaf-data-table__record-cell">
+            <div className="leaf-data-table__record-heading">
+              <div className="leaf-data-table__record-summary">{renderRowHeader(row)}</div>
+              {expandControl}
+            </div>
+          </Table.Cell>
+        </Table.Row>
+      )}
       <Table.Row
         {...custom}
         ref={(node) => {
@@ -458,55 +528,18 @@ function DataRow({
         }}
         data-index={rowIndex}
         data-row-id={row.id}
-        data-striped={stripeIndex % 2 === 1 || undefined}
+        data-striped={(config.striped && stripeIndex % 2 === 1) || undefined}
         data-last-visible={lastVisible || undefined}
         hidden={hidden || undefined}
         aria-hidden={collapsed || undefined}
         {...inertProps(collapsed)}
-        aria-rowindex={ariaRowIndex}
-        selected={selection ? row.getIsSelected() : custom?.selected}
+        aria-rowindex={ariaRowIndex ? ariaRowIndex + Number(Boolean(renderRowHeader)) : undefined}
+        selected={selected}
       >
-        {selection && (
-          <Cell className="leaf-data-table__utility">
-            {selection === 'single' ? (
-              <Radio
-                name={`${id}-selection`}
-                form={`${id}-detached-selection`}
-                aria-label={format('dataTable.selectRow', { label })}
-                checked={row.getIsSelected()}
-                disabled={loading || !row.getCanSelect()}
-                onChange={() => config.table.setRowSelection({ [row.id]: true })}
-              />
-            ) : (
-              <Checkbox
-                aria-label={format('dataTable.selectRow', { label })}
-                checked={row.getIsSelected()}
-                indeterminate={row.getIsSomeSelected()}
-                disabled={loading || !row.getCanSelect()}
-                onChange={row.getToggleSelectedHandler()}
-              />
-            )}
-          </Cell>
-        )}
+        {!renderRowHeader && selectionCell}
         {expandable && (
-          <Cell className="leaf-data-table__utility">
-            {row.getCanExpand() && (
-              <ButtonControl
-                variant="text"
-                size="sm"
-                className="leaf-data-table__expand"
-                startIcon={<ChevronRight className="leaf-data-table__expand-icon" />}
-                aria-label={format(
-                  row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow',
-                  { label },
-                )}
-                aria-expanded={row.getIsExpanded()}
-                aria-controls={renderExpandedRow && !row.subRows.length ? detailsId : undefined}
-                disabled={loading}
-                onClick={row.getToggleExpandedHandler()}
-                style={{ marginInlineStart: row.depth * 12 }}
-              />
-            )}
+          <Cell className="leaf-data-table__utility leaf-data-table__expansion">
+            {expandControl}
           </Cell>
         )}
         {cells.map((cell) => {
@@ -519,6 +552,7 @@ function DataRow({
               align={meta?.align}
               {...props}
               {...pinProps(cell.column)}
+              data-sorted={cell.column.getIsSorted() || undefined}
               className={classes(meta?.cellClassName, props?.className)}
             >
               {cell.getIsPlaceholder()
@@ -541,7 +575,9 @@ function DataRow({
           className="leaf-data-table__detail"
           id={detailsId}
           data-detail-row={row.id}
-          aria-rowindex={ariaRowIndex && detail ? ariaRowIndex + 1 : undefined}
+          aria-rowindex={
+            ariaRowIndex && detail ? ariaRowIndex + 1 + Number(Boolean(renderRowHeader)) : undefined
+          }
           hidden={!detail}
         >
           <Table.Cell colSpan={Math.max(1, cells.length + utilityCount)}>
@@ -589,9 +625,11 @@ function VirtualRows({
         : [...new Set([...visible, focusedIndex])].sort((first, second) => first - second);
     },
     measureElement: (element) => {
+      const header = element.previousElementSibling;
       const detail = element.nextElementSibling;
       return (
         element.getBoundingClientRect().height +
+        (header?.hasAttribute('data-row-header') ? header.getBoundingClientRect().height : 0) +
         (detail?.hasAttribute('data-detail-row') ? detail.getBoundingClientRect().height : 0)
       );
     },
@@ -707,13 +745,13 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   ];
   const headers = table.getHeaderGroups();
   const sortingAvailable = hasSortingModel(table);
-  const expandable = config.expandable;
+  const expandable = config.expandable && !config.renderRowHeader;
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const colSpan = Math.max(1, columns.length + utilityCount);
   const layout = getColumnLayout(table, columns, {
     forceFixed: Boolean(resizable || virtual || columns.some((column) => column.getIsPinned())),
     availableWidth,
-    utilityWidth: utilityCount * 44,
+    utilityWidth: (selection ? 32 : 0) + (expandable ? 48 : 0),
   });
   const status =
     error != null && error !== false
@@ -730,12 +768,13 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
     let count = headers.length;
     const indexes = rows.map((row) => {
       const index = ++count;
+      if (config.renderRowHeader) count++;
       if (expanded && config.renderExpandedRow && row.getIsExpanded() && !row.subRows.length)
         count++;
       return index;
     });
     return { indexes, count };
-  }, [virtual, rows, headers.length, expanded, config.renderExpandedRow]);
+  }, [virtual, rows, headers.length, expanded, config.renderExpandedRow, config.renderRowHeader]);
   return (
     <div {...props} className={classes('leaf-data-table__content', className)}>
       <Table
@@ -749,6 +788,7 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         aria-busy={loading || undefined}
         aria-rowcount={virtual && !status ? virtualRows.count : undefined}
         size={config.size}
+        bordered={config.bordered}
         striped={config.striped}
         maxHeight={config.maxHeight}
         minWidth={config.minWidth}
@@ -762,8 +802,8 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
         <colgroup>
-          {selection && <col style={{ width: 44 }} />}
-          {expandable && <col style={{ width: 44 }} />}
+          {selection && <col style={{ width: 32 }} />}
+          {expandable && <col style={{ width: 48 }} />}
           {columns.map((column) => (
             <col
               key={column.id}
@@ -777,12 +817,18 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
           {headers.map((group, groupIndex) => (
             <Table.Row key={group.id} aria-rowindex={virtual ? groupIndex + 1 : undefined}>
               {groupIndex === 0 && selection && (
-                <Table.ColumnHeader rowSpan={headers.length} className="leaf-data-table__utility">
+                <Table.ColumnHeader
+                  rowSpan={headers.length}
+                  className="leaf-data-table__utility leaf-data-table__selection"
+                >
                   <SelectionHeader />
                 </Table.ColumnHeader>
               )}
               {groupIndex === 0 && expandable && (
-                <Table.ColumnHeader rowSpan={headers.length} className="leaf-data-table__utility">
+                <Table.ColumnHeader
+                  rowSpan={headers.length}
+                  className="leaf-data-table__utility leaf-data-table__expansion"
+                >
                   <span className="leaf-table__sr-only">{t('dataTable.expandRows')}</span>
                 </Table.ColumnHeader>
               )}
@@ -795,8 +841,6 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                   !header.isPlaceholder &&
                   !column.columns.length &&
                   column.getCanSort();
-                const SortIcon =
-                  sorted === 'asc' ? ArrowUp : sorted === 'desc' ? ArrowDown : ArrowUpDown;
                 const nextSort = column.getNextSortingOrder();
                 const sortLabel =
                   nextSort === 'asc'
@@ -807,7 +851,10 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                 return (
                   <Table.ColumnHeader
                     key={header.id}
-                    colSpan={header.colSpan}
+                    colSpan={header.colSpan > 1 ? header.colSpan : undefined}
+                    data-leaf-header-group={header.colSpan > 1 || undefined}
+                    data-sortable={canSort || undefined}
+                    data-sorted={sorted || undefined}
                     scope={header.colSpan > 1 ? 'colgroup' : 'col'}
                     align={meta?.align}
                     className={meta?.headerClassName}
@@ -831,7 +878,18 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                           onClick={column.getToggleSortingHandler()}
                         >
                           <span>{flexRender(column.columnDef.header, header.getContext())}</span>
-                          <SortIcon size={14} aria-hidden="true" />
+                          <span className="leaf-data-table__sort-icons" aria-hidden="true">
+                            <Triangle
+                              size={12}
+                              className="leaf-data-table__sort-up"
+                              data-active={sorted === 'asc' || undefined}
+                            />
+                            <Triangle
+                              size={12}
+                              className="leaf-data-table__sort-down"
+                              data-active={sorted === 'desc' || undefined}
+                            />
+                          </span>
                         </button>
                       ) : (
                         flexRender(column.columnDef.header, header.getContext())
@@ -855,16 +913,17 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         <Table.Body
           onFocusCapture={
             virtual
-              ? (event) =>
+              ? (event) => {
+                  const row = (event.target as Element).closest(
+                    '[data-row-id], [data-detail-row], [data-row-header]',
+                  );
                   setFocusedRowId(
-                    (event.target as Element)
-                      .closest('[data-row-id], [data-detail-row]')
-                      ?.getAttribute('data-row-id') ??
-                      (event.target as Element)
-                        .closest('[data-detail-row]')
-                        ?.getAttribute('data-detail-row') ??
+                    row?.getAttribute('data-row-id') ??
+                      row?.getAttribute('data-row-header') ??
+                      row?.getAttribute('data-detail-row') ??
                       undefined,
-                  )
+                  );
+                }
               : undefined
           }
           onBlurCapture={
@@ -1063,7 +1122,8 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     columnDividers: _columnDividers,
     layout: _layout,
     children: _children,
-    bordered: _bordered,
+    toolbar: _toolbar,
+    bleed: _bleed,
     selectAllMode: _selectAllMode,
     columnReordering: _columnReordering,
     onRowReorder: _onRowReorder,
@@ -1075,7 +1135,8 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     columnDividers?: unknown;
     layout?: unknown;
     children?: unknown;
-    bordered?: unknown;
+    toolbar?: unknown;
+    bleed?: unknown;
     selectAllMode?: unknown;
     columnReordering?: unknown;
     onRowReorder?: unknown;

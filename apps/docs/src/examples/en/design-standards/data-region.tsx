@@ -19,6 +19,17 @@ export function DataRegion() {
         <CardTitle level={2} size="lg" description="View member names and their teams.">
           Team members
         </CardTitle>
+        <Flex align="center" gap="sm" wrap>
+          <Input
+            aria-label="Search members"
+            placeholder="Search members"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <Text tone="muted" role="status">
+            {visible.length} {visible.length === 1 ? 'member' : 'members'}
+          </Text>
+        </Flex>
         <DataTable
           aria-label="Team members"
           data={visible}
@@ -28,19 +39,6 @@ export function DataRegion() {
             { accessorKey: 'team', header: 'Team' },
           ]}
           pagination={false}
-          toolbar={
-            <Flex align="center" gap="sm" wrap>
-              <Input
-                aria-label="Search members"
-                placeholder="Search members"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-              <Text tone="muted" role="status">
-                {visible.length} {visible.length === 1 ? 'member' : 'members'}
-              </Text>
-            </Flex>
-          }
         />
       </Flex>
     </Typography>

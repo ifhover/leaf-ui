@@ -101,7 +101,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-danger-soft` | 0 | 1 | 2 |
 | `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
 | `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-divider` | 15 | 6 | 33 |
+| `--leaf-color-divider` | 14 | 6 | 32 |
 | `--leaf-color-info` | 4 | 0 | 5 |
 | `--leaf-color-info-border` | 0 | 0 | 0 |
 | `--leaf-color-info-dark-1` | 0 | 0 | 0 |
@@ -130,8 +130,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-primary` | 10 | 1 | 14 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 5 | 2 | 13 |
-| `--leaf-color-primary` | 32 | 3 | 83 |
+| `--leaf-color-option-hover` | 5 | 2 | 14 |
+| `--leaf-color-primary` | 32 | 3 | 81 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
@@ -148,7 +148,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-focus` | 0 | 0 | 0 |
 | `--leaf-color-primary-hover` | 0 | 0 | 0 |
 | `--leaf-color-primary-indicator` | 25 | 2 | 48 |
-| `--leaf-color-primary-ink` | 15 | 3 | 28 |
+| `--leaf-color-primary-ink` | 14 | 3 | 26 |
 | `--leaf-color-primary-ink-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
@@ -156,7 +156,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-light-9` | 0 | 0 | 0 |
 | `--leaf-color-primary-soft` | 0 | 1 | 5 |
 | `--leaf-color-primary-soft-active` | 0 | 0 | 0 |
-| `--leaf-color-primary-soft-hover` | 0 | 1 | 1 |
+| `--leaf-color-primary-soft-hover` | 0 | 1 | 2 |
 | `--leaf-color-success` | 4 | 0 | 6 |
 | `--leaf-color-success-border` | 0 | 0 | 0 |
 | `--leaf-color-success-dark-1` | 0 | 0 | 0 |
@@ -173,11 +173,11 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-surface` | 33 | 4 | 59 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 25 | 4 | 43 |
+| `--leaf-color-surface-muted` | 25 | 4 | 44 |
 | `--leaf-color-surface-raised` | 8 | 2 | 10 |
 | `--leaf-color-text` | 47 | 4 | 97 |
-| `--leaf-color-text-muted` | 42 | 6 | 105 |
-| `--leaf-color-text-subtle` | 10 | 1 | 15 |
+| `--leaf-color-text-muted` | 43 | 6 | 104 |
+| `--leaf-color-text-subtle` | 11 | 1 | 16 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
 | `--leaf-color-warning` | 3 | 1 | 5 |
 | `--leaf-color-warning-alpha-16` | 1 | 0 | 1 |

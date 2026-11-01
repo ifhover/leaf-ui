@@ -19,7 +19,7 @@ const semanticSeeds = {
   warning: '#faad14',
   info: '#1677ff',
 };
-export const colorSeeds = { ...semanticSeeds, neutral: '#6c737e' };
+export const colorSeeds = { ...semanticSeeds, neutral: '#707070' };
 
 export const neutralColorScale = generateColorScale(colorSeeds.neutral) as ColorScale;
 

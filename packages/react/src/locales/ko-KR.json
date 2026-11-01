@@ -274,6 +274,8 @@
     "collapseRow": "{label} 행 접기",
     "expandRow": "{label} 행 펼치기",
     "expandRows": "행 펼치기",
+    "expandDetails": "상세 펼치기",
+    "collapseDetails": "상세 접기",
     "sortAscending": "오름차순 정렬",
     "sortDescending": "내림차순 정렬",
     "clearSorting": "정렬 해제"

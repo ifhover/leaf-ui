@@ -274,6 +274,8 @@
     "collapseRow": "收起行: {label}",
     "expandRow": "展開行: {label}",
     "expandRows": "展開行",
+    "expandDetails": "展開詳情",
+    "collapseDetails": "收起詳情",
     "sortAscending": "升序排序",
     "sortDescending": "降序排序",
     "clearSorting": "取消排序"

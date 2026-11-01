@@ -7,6 +7,20 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.13.2 - 2026-11-01
+
+### Added and improved
+
+- DataTable adds `bordered` for a complete cell grid, including grouped headers. Header colors, weight 600, typography, spacing, short header separators, sort arrows and rounded top corners follow Ant Design.
+- DataTable adds `renderRowHeader` for order information above each record's regular cells, with selection spanning both rows. Optional details continue to use `renderExpandedRow`. Added matching bilingual bordered order examples.
+- The default neutral seed returns to achromatic `#707070`, removing the default blue tint from shared text, surfaces and borders. Updated theme documentation, design resources and Figma exports.
+
+### Migration
+
+- DataTable removes `toolbar` and `bleed`. Remove these props from instances and `ConfigProvider.components.DataTable`. Place filters and other controls outside the table; edge-to-edge card embedding is removed. Legacy JavaScript values are ignored.
+- DataTable's default `size` changes from `md` to `lg`, and `striped` defaults to `false`. Headers and body cells share the base 14px font and 22px line height at every size. Set `size="md"` for the previous medium spacing and `striped` for alternating backgrounds.
+- The default neutral seed changes from `#6c737e` to `#707070`. Set `theme.tokens.neutralColor: '#6c737e'` to retain the previous tint; explicitly tinted themes keep their hue.
+
 ## 0.13.1 - 2026-11-01
 
 ### Added and improved

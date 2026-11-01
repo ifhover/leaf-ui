@@ -2,24 +2,21 @@
 @use '../styles/mixins' as *;
 
 .leaf-data-table {
-  // Each table owns its inset; nested tables do not inherit an outer table's bleed.
-  --leaf-bleed-left: 0px;
-  --leaf-bleed-right: 0px;
   display: flex;
   flex-direction: column;
   min-height: 0;
   &__heading {
     display: flex;
-    min-height: 24px;
     align-items: center;
     gap: 6px;
     min-width: 0;
-    &[data-align='center'],
-    &[data-align='center'] .leaf-data-table__sort {
+    .leaf-table__column-header[data-leaf-header-group] & {
       justify-content: center;
     }
-    &[data-align='end'],
-    &[data-align='end'] .leaf-data-table__sort {
+    &[data-align='center'] {
+      justify-content: center;
+    }
+    &[data-align='end'] {
       justify-content: flex-end;
     }
   }
@@ -30,18 +27,6 @@
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-font-size);
 
-  &[data-leaf-bleed] {
-    width: calc(100% + var(--leaf-bleed-left) + var(--leaf-bleed-right));
-    margin-left: calc(0px - var(--leaf-bleed-left));
-    margin-right: calc(0px - var(--leaf-bleed-right));
-
-    > .leaf-data-table__toolbar,
-    > .leaf-data-table__footer {
-      padding-left: var(--leaf-bleed-left);
-      padding-right: var(--leaf-bleed-right);
-    }
-  }
-
   &__content {
     display: flex;
     flex: 1 1 auto;
@@ -49,7 +34,6 @@
     min-height: 0;
   }
 
-  &__toolbar,
   &__footer {
     display: flex;
     flex-shrink: 0;
@@ -57,19 +41,15 @@
     align-items: center;
     gap: var(--leaf-component-table-gap, 12px);
   }
-  &__toolbar {
-    margin-block-end: 14px;
-  }
   &__footer {
     justify-content: flex-end;
-    margin-block-start: 14px;
+    margin-block-start: 16px;
   }
   &__sort {
     display: flex;
     width: 100%;
-    min-height: 24px;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 4px;
     padding: 0;
     border: 0;
@@ -78,36 +58,62 @@
     text-align: inherit;
     font: inherit;
     cursor: pointer;
-    transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+    &::after {
+      position: absolute;
+      inset: 0;
+      content: '';
     }
     &:focus-visible {
       @include focus-ring;
       border-radius: var(--leaf-radius-sm);
     }
-    &[data-sorted] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    }
     svg {
       flex-shrink: 0;
     }
-    > span {
+    > span:first-child {
+      flex: 1;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
   }
+  &__sort-icons {
+    display: inline-flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    color: var(--leaf-color-text-subtle);
+    line-height: 0;
+    svg {
+      fill: currentColor;
+      stroke: none;
+      &[data-active] {
+        color: var(--leaf-color-primary);
+      }
+    }
+  }
+  &__sort:hover &__sort-icons {
+    color: var(--leaf-color-text-muted);
+  }
+  &__sort-down {
+    margin-block-start: -4px;
+    rotate: 180deg;
+  }
   &__utility {
-    width: 44px;
     padding-inline: 8px;
     text-align: center;
     .leaf-checkbox,
     .leaf-radio {
       vertical-align: middle;
-      min-height: 24px;
+      min-height: 22px;
     }
+  }
+  &__selection {
+    width: 32px;
+  }
+  &__expansion {
+    width: 48px;
   }
   &__expand-icon {
     transition: rotate var(--leaf-motion-fast) var(--leaf-motion-easing);
@@ -118,12 +124,27 @@
   &__detail {
     --leaf-table-row-base: var(--leaf-color-surface-muted);
   }
+  &__record-cell {
+    padding-block: 6px;
+  }
+  &__record-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    min-height: var(--leaf-control-height-sm);
+    .leaf-data-table__expand {
+      margin-inline-start: auto;
+      flex-shrink: 0;
+    }
+  }
+  &__record-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
   &__row-content {
     display: flow-root;
     min-width: 0;
-  }
-  tr[data-last-visible] > td {
-    border-block-end: 0;
   }
   &__resize {
     display: block;

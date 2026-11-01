@@ -26,6 +26,7 @@ import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/def
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
   size?: ControlSize;
+  bordered?: boolean;
   striped?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
   minWidth?: CSSProperties['minWidth'];
@@ -68,8 +69,9 @@ export interface TableErrorProps extends TableStateProps {
 
 const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function TableRootControl(
   {
-    size = 'md',
-    striped = true,
+    size = 'lg',
+    bordered = false,
+    striped = false,
     maxHeight,
     minWidth,
     tableLayout,
@@ -191,6 +193,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
       className={classes(
         'leaf-table',
         `leaf-table--${size}`,
+        bordered && 'leaf-table--bordered',
         striped && 'leaf-table--striped',
         className,
       )}

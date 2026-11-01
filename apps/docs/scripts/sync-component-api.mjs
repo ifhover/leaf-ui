@@ -597,12 +597,12 @@ const choicePopupMaxWidth = [
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
 const tableStripedDescription = [
-  '默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。',
-  'Alternating backgrounds start from the second row and hide row dividers by default. Disable to show fine row dividers.',
+  '默认显示细行分割线；设置为 true 后从第二行开始展示交替行背景并隐藏行间分割线，bordered 网格始终保留。',
+  'Fine row dividers are shown by default; true adds alternating backgrounds from the second row and hides row dividers, except in bordered grids.',
 ];
-const tableBleedDescription = [
-  '直接嵌入 Card 正文或内嵌标签页面板时，让表格区域左右贴边；工具栏与分页补回相同的横向内边距。额外布局容器内不自动延伸，Card 外无延伸量。',
-  'Extend the table to the content edges when placed directly in a Card body or integrated tab panel. Toolbar and pagination restore matching horizontal padding. Additional layout wrappers and standalone tables have no automatic extension.',
+const tableBorderedDescription = [
+  '显示完整行列网格，包含分组表头和末行底线；仅顶部有圆角。',
+  'Show a full cell grid, including grouped headers and the final bottom rule, with rounded top corners.',
 ];
 const tableHeightDescription = [
   '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
@@ -704,7 +704,7 @@ const specificDefaults = {
   'LeafThemeTokens.onDangerColor': '`#ffffff`',
   'LeafThemeTokens.onWarningColor': '`#ffffff`',
   'LeafThemeTokens.onInfoColor': '`#ffffff`',
-  'LeafThemeTokens.neutralColor': '`#6c737e`',
+  'LeafThemeTokens.neutralColor': '`#707070`',
   'AutoCompleteProps.value': '—',
   'AutoCompleteProps.defaultOpen': '`false`',
   'AutoCompleteProps.optionHeight': ['由主题和密度计算', 'Theme and density dependent'],
@@ -3122,22 +3122,26 @@ const specific = {
     '由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。',
     'Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination.',
   ],
-  'DataTableProps.toolbar': [
-    '自动布局中的工具栏内容。',
-    'Toolbar content in the automatic layout.',
+  'DataTableProps.renderRowHeader': [
+    '为每条记录的正常列上方渲染通栏信息行；选择控件跨两行，展开入口显示在信息行右侧。分页和排序仍按记录计算。',
+    'Render a spanning information row above each record. Selection spans both rows, and expansion controls move to its trailing edge. Pagination and sorting still operate on records.',
+  ],
+  'DataTableProps.getRowProps': [
+    '自定义正常数据行的属性与事件；selected 样式同时应用于该记录的信息行。',
+    'Customize the regular data row attributes and events; selected styling also applies to its information row.',
+  ],
+  'DataTableVirtualOptions.estimateRowHeight': [
+    '测量前的估算记录高度，包含信息行、数据行与展开详情。',
+    'Estimated record height before measurement, including its information row, data row and expanded details.',
   ],
   'DataTableProps.pagination': tablePaginationDescription,
   'DataTablePresentationProps.pagination': tablePaginationDescription,
   'DataTableProps.localPagination': localPaginationDescription,
   'UseDataTableOptions.localPagination': localPaginationDescription,
-  'DataTablePresentationProps.toolbar': [
-    '自动布局中的工具栏内容。',
-    'Toolbar content in the automatic layout.',
-  ],
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
-  'DataTableProps.bleed': tableBleedDescription,
-  'DataTablePresentationProps.bleed': tableBleedDescription,
+  'DataTableProps.bordered': tableBorderedDescription,
+  'DataTablePresentationProps.bordered': tableBorderedDescription,
   'DataTableProps.maxHeight': tableHeightDescription,
   'DataTablePresentationProps.maxHeight': tableHeightDescription,
   'DataTableProps.minWidth': [

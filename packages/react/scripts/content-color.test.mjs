@@ -17,42 +17,68 @@ const TARGET_FILES = [
   'breadcrumb/breadcrumb.scss',
 ];
 
-test('tables default to square content surfaces and one softened 2px header divider', async () => {
+test('tables use top-only radii and Ant Design header separators', async () => {
   const table = await compiledStyles('table/table.scss');
   const surface = table('.leaf-table');
   assert.equal(surface.background, 'var(--leaf-table-surface)');
-  assert.equal(surface['--leaf-table-header-background'], 'var(--leaf-table-surface)');
-  assert.equal(surface['border-radius'], '0px');
+  assert.equal(
+    surface['--leaf-table-header-background'],
+    'var(--leaf-component-table-background,color-mix(in srgb,var(--leaf-table-surface),var(--leaf-color-surface-muted)))',
+  );
+  assert.equal(surface['border-radius'], 'var(--leaf-table-radius)var(--leaf-table-radius)0 0');
   assert.equal(surface.border, '0px');
   assert.equal(surface['box-shadow'], 'none');
   assert.throws(() => table('.leaf-table__panel'), /missing compiled rule/);
-  const divider = table('.leaf-table__header::after');
-  assert.equal(
-    divider['border-block-end'],
-    '2px solid var(--leaf-component-table-border-color,var(--leaf-frame-border-color,var(--leaf-table-frame-color)))',
-  );
-  assert.equal(divider['inset-block-end'], '0px');
-  assert.equal(divider['inset-inline'], '0px');
-  assert.equal(divider['pointer-events'], 'none');
+  assert.throws(() => table('.leaf-table__header::after'), /missing compiled rule/);
   assert.equal(table('.leaf-table__header')['clip-path'], undefined);
-  assert.throws(() => table('.leaf-table__column-header::before'), /missing compiled rule/);
+  const split = table(
+    '.leaf-table__column-header:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after',
+  );
+  assert.equal(split.width, '1px');
+  assert.equal(split.height, '1.6em');
+  assert.equal(split['inset-block-start'], '50%');
+  assert.equal(split['inset-inline-end'], '0px');
+  assert.equal(split.transform, 'translateY(-50%)');
   assert.throws(() => table('.leaf-table__cell[data-pin-edge]::after'), /missing compiled rule/);
 });
 
 test('headers use base typography and taller size-dependent padding', async () => {
   const table = await compiledStyles('table/table.scss');
-  assert.equal(table('.leaf-table__column-header')['font-size'], 'var(--leaf-font-size)');
+  assert.equal(table('.leaf-table__column-header')['font-size'], 'inherit');
+  assert.equal(table('.leaf-table')['line-height'], '1.5714285714');
+  assert.equal(table('.leaf-table__column-header')['font-weight'], '600');
   assert.equal(
     table('.leaf-table__column-header')['padding-block'],
     'var(--leaf-table-heading-gap)',
   );
   assert.equal(table('.leaf-table')['--leaf-table-heading-gap'], 'var(--leaf-table-padding-block)');
-  assert.equal(
-    table('.leaf-table')['--leaf-table-padding-block'],
-    'var(--leaf-density-row-padding,12px)',
-  );
+  assert.equal(table('.leaf-table')['--leaf-table-padding-block'], '16px');
+  assert.equal(table('.leaf-table')['--leaf-table-padding-inline'], '16px');
   assert.equal(table('.leaf-table--sm')['--leaf-table-padding-block'], '8px');
-  assert.equal(table('.leaf-table--lg')['--leaf-table-padding-block'], '16px');
+  assert.equal(table('.leaf-table--sm')['--leaf-table-padding-inline'], '8px');
+  assert.equal(table('.leaf-table--md')['--leaf-table-padding-block'], '12px');
+  assert.equal(table('.leaf-table--md')['--leaf-table-padding-inline'], '8px');
+});
+
+test('bordered tables use one neutral grid and suppress leaf-header split lines', async () => {
+  const table = await compiledStyles('table/table.scss');
+  const bordered = table('.leaf-table--bordered');
+  assert.equal(
+    bordered['border-block-start'],
+    'var(--leaf-table-border-width)solid var(--leaf-table-border-color)',
+  );
+  assert.equal(bordered['border-inline-start'], bordered['border-block-start']);
+  assert.equal(
+    table('.leaf-table--bordered .leaf-table__cell')['border-inline-end'],
+    'var(--leaf-table-border-width)solid var(--leaf-table-border-color)',
+  );
+  assert.equal(
+    table(
+      '.leaf-table--bordered .leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header',
+    )['border-block-end'],
+    'var(--leaf-table-border-width)solid var(--leaf-table-border-color)',
+  );
+  assert.equal(table('.leaf-table--bordered .leaf-table__column-header::after').display, 'none');
 });
 
 test('segmented progress keeps the outer track radius and removes inner fill curves', async () => {
@@ -67,10 +93,7 @@ test('segmented progress keeps the outer track radius and removes inner fill cur
 test('tables retain theme-aware ink, stripes and explicit divider paint overrides', async () => {
   const table = await compiledStyles('table/table.scss');
   const palette = table('.leaf-table');
-  assert.equal(
-    palette['--leaf-table-header-color'],
-    'var(--leaf-component-table-color,var(--leaf-color-text-muted))',
-  );
+  assert.equal(palette['--leaf-table-header-color'], 'var(--leaf-table-text)');
   assert.equal(
     palette['--leaf-table-frame-color'],
     'color-mix(in srgb,var(--leaf-color-divider)70%,var(--leaf-table-surface))',
@@ -91,14 +114,15 @@ test('tables retain theme-aware ink, stripes and explicit divider paint override
   );
   assert.equal(
     table('.leaf-table__cell')['border-block-end'],
-    '1px solid var(--leaf-color-divider)',
+    'var(--leaf-table-border-width)solid var(--leaf-table-divider)',
   );
 });
 
 test('table outer cell insets exclude fixed-width utility columns in both directions', async () => {
   const table = await compiledStyles('tabletanstack/tabletanstack.scss');
   const utility = table('.leaf-data-table__utility');
-  assert.equal(utility.width, '44px');
+  assert.equal(table('.leaf-data-table__selection').width, '32px');
+  assert.equal(table('.leaf-data-table__expansion').width, '48px');
   assert.equal(utility['padding-inline'], '8px');
   for (const rtl of [false, true]) {
     for (const [position, edge, side] of [
@@ -112,49 +136,6 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
       );
     }
   }
-});
-
-test('Card table bleed restores identical toolbar and pagination insets and isolates nested tables', async () => {
-  const card = await compiledStyles('card/card.scss');
-  const table = await compiledStyles('tabletanstack/tabletanstack.scss');
-  for (const selector of [
-    '.leaf-card__body > [data-leaf-bleed]',
-    '.leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel > [data-leaf-bleed]',
-  ]) {
-    const insets = card(selector);
-    for (const side of ['left', 'right']) {
-      assert.equal(insets[`--leaf-bleed-${side}`], `var(--leaf-card-content-padding-${side})`);
-    }
-  }
-  for (const side of ['left', 'right']) {
-    assert.equal(table('.leaf-data-table')[`--leaf-bleed-${side}`], '0px');
-    assert.equal(
-      table('.leaf-data-table[data-leaf-bleed]')[`margin-${side}`],
-      `calc(0px - var(--leaf-bleed-${side}))`,
-    );
-    for (const part of ['toolbar', 'footer']) {
-      assert.equal(
-        table(`.leaf-data-table[data-leaf-bleed] > .leaf-data-table__${part}`)[`padding-${side}`],
-        `var(--leaf-bleed-${side})`,
-      );
-    }
-    assert.equal(
-      card('.leaf-card')[`--leaf-card-content-padding-${side}`],
-      `var(--leaf-component-card-padding-${side},var(--leaf-card-padding))`,
-    );
-    assert.equal(
-      card('.leaf-card--layered > .leaf-card__panel > .leaf-card__body')[`padding-${side}`],
-      `var(--leaf-card-content-padding-${side})`,
-    );
-  }
-  assert.equal(
-    table('.leaf-data-table[data-leaf-bleed]').width,
-    'calc(100% + var(--leaf-bleed-left)+ var(--leaf-bleed-right))',
-  );
-  assert.equal(table('.leaf-data-table[data-leaf-bleed]')['margin-block'], undefined);
-  assert.equal(card('.leaf-card__body').padding, 'var(--leaf-card-padding)');
-  assert.equal(table('.leaf-data-table__toolbar')['margin-block-end'], '14px');
-  assert.equal(table('.leaf-data-table__footer')['margin-block-start'], '14px');
 });
 
 function stripComments(source) {

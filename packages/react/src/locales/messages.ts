@@ -275,6 +275,8 @@ export interface LocaleMessages {
     readonly collapseRow: string;
     readonly expandRow: string;
     readonly expandRows: string;
+    readonly expandDetails: string;
+    readonly collapseDetails: string;
     readonly sortAscending: string;
     readonly sortDescending: string;
     readonly clearSorting: string;

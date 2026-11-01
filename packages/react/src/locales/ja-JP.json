@@ -274,6 +274,8 @@
     "collapseRow": "行「{label}」を折りたたむ",
     "expandRow": "行「{label}」を展開",
     "expandRows": "行を展開",
+    "expandDetails": "詳細を展開",
+    "collapseDetails": "詳細を折りたたむ",
     "sortAscending": "昇順に並べ替え",
     "sortDescending": "降順に並べ替え",
     "clearSorting": "並べ替えを解除"

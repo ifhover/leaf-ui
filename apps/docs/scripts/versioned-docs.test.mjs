@@ -622,18 +622,19 @@ test('API defaults distinguish required, explicit, previous and absent values', 
 test('API defaults use the declared parameter type for composed table roots', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
-  assert.equal((await properties(adapter, 'DataTableProps')).get('size').defaultValue, "'md'");
+  assert.equal((await properties(adapter, 'DataTableProps')).get('size').defaultValue, "'lg'");
   assert.equal(
     (await properties(adapter, 'DataTableProps')).get('pagination').defaultValue,
     'true',
   );
   const props = await properties(adapter, 'DataTableProps');
   assert.equal(props.get('table').type, 'TanStackTable<TData>');
-  assert.equal(props.get('toolbar').type, 'ReactNode');
+  assert.equal(props.get('bordered').type, 'boolean');
   for (const name of [
     'children',
     'layout',
-    'bordered',
+    'toolbar',
+    'bleed',
     'selectAllMode',
     'columnReordering',
     'onRowReorder',

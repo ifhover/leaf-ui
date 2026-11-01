@@ -19,6 +19,17 @@ export function DataRegion() {
         <CardTitle level={2} size="lg" description="查看成员姓名与所属团队。">
           团队成员
         </CardTitle>
+        <Flex align="center" gap="sm" wrap>
+          <Input
+            aria-label="搜索成员"
+            placeholder="搜索成员"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <Text tone="muted" role="status">
+            {visible.length} 位成员
+          </Text>
+        </Flex>
         <DataTable
           aria-label="团队成员"
           data={visible}
@@ -28,19 +39,6 @@ export function DataRegion() {
             { accessorKey: 'team', header: '团队' },
           ]}
           pagination={false}
-          toolbar={
-            <Flex align="center" gap="sm" wrap>
-              <Input
-                aria-label="搜索成员"
-                placeholder="搜索成员"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-              <Text tone="muted" role="status">
-                {visible.length} 位成员
-              </Text>
-            </Flex>
-          }
         />
       </Flex>
     </Typography>

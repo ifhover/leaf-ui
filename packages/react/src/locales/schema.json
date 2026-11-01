@@ -1032,6 +1032,14 @@
           "type": "string",
           "description": "English: Expand rows"
         },
+        "expandDetails": {
+          "type": "string",
+          "description": "English: Expand details"
+        },
+        "collapseDetails": {
+          "type": "string",
+          "description": "English: Collapse details"
+        },
         "sortAscending": {
           "type": "string",
           "description": "English: Sort ascending"

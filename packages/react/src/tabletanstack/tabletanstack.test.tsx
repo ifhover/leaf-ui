@@ -17,7 +17,6 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
-import { Card } from '../card';
 import { ConfigProvider } from '../config-provider';
 import { Form, FormField } from '../form';
 import * as tableEntry from '../table';
@@ -197,13 +196,15 @@ describe('DataTable TanStack adapter', () => {
     for (const property of [
       'children',
       'layout',
-      'bordered',
       'selectAllMode',
       'columnReordering',
       'onRowReorder',
+      'toolbar',
+      'bleed',
     ] as const) {
       expectTypeOf<DataTableProps<Person>>().not.toHaveProperty(property);
     }
+    expectTypeOf<DataTableProps<Person>>().toHaveProperty('bordered');
     expectTypeOf<UseDataTableOptions<Person>>().not.toHaveProperty('pagination');
   });
 
@@ -217,22 +218,23 @@ describe('DataTable TanStack adapter', () => {
       onRowReorder: vi.fn(),
       variant: 'layered',
       columnDividers: true,
+      toolbar: 'Obsolete toolbar',
+      bleed: true,
     };
-    const view = render(
-      <DataTable {...legacy} data={data} columns={columns} rowKey="id" toolbar="Tools" />,
-    );
+    const view = render(<DataTable {...legacy} data={data} columns={columns} rowKey="id" />);
     const assertAutomaticContent = () => {
       const root = screen.getByRole('table').closest('.leaf-data-table');
-      expect(screen.getByText('Tools')).toBeInTheDocument();
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.queryByText('Obsolete composition')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete toolbar')).not.toBeInTheDocument();
       for (const property of Object.keys(legacy)) expect(root).not.toHaveAttribute(property);
+      expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--bordered');
       expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
         'leaf-table--column-dividers',
       );
     };
     assertAutomaticContent();
-    view.rerender(<Harness {...legacy} toolbar="Tools" />);
+    view.rerender(<Harness {...legacy} />);
     assertAutomaticContent();
     expect(legacy.onRowReorder).not.toHaveBeenCalled();
   });
@@ -471,28 +473,23 @@ describe('DataTable TanStack adapter', () => {
     function ApplicationTable() {
       const table = useDataTable({ data, columns, rowKey: 'id', localPagination: false });
       return (
-        <DataTable
-          table={table}
-          pagination={false}
-          toolbar={
-            <>
-              <input
-                aria-label="Filter names"
-                value={String(table.getColumn('name')?.getFilterValue() ?? '')}
-                onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  table.setColumnVisibility({ age: false });
-                  table.setColumnOrder(['team', 'name', 'age']);
-                }}
-              >
-                Choose columns
-              </button>
-            </>
-          }
-        />
+        <>
+          <input
+            aria-label="Filter names"
+            value={String(table.getColumn('name')?.getFilterValue() ?? '')}
+            onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              table.setColumnVisibility({ age: false });
+              table.setColumnOrder(['team', 'name', 'age']);
+            }}
+          >
+            Choose columns
+          </button>
+          <DataTable table={table} pagination={false} />
+        </>
       );
     }
     render(<ApplicationTable />);
@@ -520,23 +517,15 @@ describe('DataTable TanStack adapter', () => {
         options: { initialState: { pagination: { pageIndex: 0, pageSize: 2 } } },
       });
       return (
-        <DataTable
-          table={table}
-          pagination={pagination}
-          toolbar={
-            <>
-              <button type="button" onClick={() => setPagination((value) => !value)}>
-                Toggle slicing
-              </button>
-              <button
-                type="button"
-                onClick={() => table.getColumn('name')?.setFilterValue('alice')}
-              >
-                Filter Alice
-              </button>
-            </>
-          }
-        />
+        <>
+          <button type="button" onClick={() => setPagination((value) => !value)}>
+            Toggle slicing
+          </button>
+          <button type="button" onClick={() => table.getColumn('name')?.setFilterValue('alice')}>
+            Filter Alice
+          </button>
+          <DataTable table={table} pagination={pagination} />
+        </>
       );
     }
     render(
@@ -595,14 +584,16 @@ describe('DataTable TanStack adapter', () => {
         onSelectedRowKeysChange: setKeys,
       });
       return (
-        <DataTable
-          data={data}
-          columns={columns}
-          rowKey="id"
-          selection="multiple"
-          options={selection.selectionOptions}
-          toolbar={<span>{selection.selectedRowKeys.join(',')}</span>}
-        />
+        <>
+          <span>{selection.selectedRowKeys.join(',')}</span>
+          <DataTable
+            data={data}
+            columns={columns}
+            rowKey="id"
+            selection="multiple"
+            options={selection.selectionOptions}
+          />
+        </>
       );
     }
     const { rerender } = render(
@@ -645,7 +636,7 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
   });
 
-  it('defaults to a frameless striped table in data mode and server output', () => {
+  it('defaults to an Ant Design-style frameless table in data mode and server output', () => {
     const props = {
       data,
       columns,
@@ -653,84 +644,32 @@ describe('DataTable TanStack adapter', () => {
       pagination: false,
     } as const;
     const { rerender } = render(<DataTable {...props} />);
-    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--striped');
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
+    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
+      'leaf-table--bordered',
+    );
     expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
       'leaf-table--column-dividers',
     );
     const html = renderToString(<DataTable {...props} />);
     expect(html).not.toContain('leaf-table__panel');
-    expect(html).toContain('leaf-table--striped');
+    expect(html).not.toContain('leaf-table--striped');
+    expect(html).not.toContain('leaf-table--bordered');
     expect(html).not.toContain('leaf-table--column-dividers');
     expect(html).not.toContain('variant=');
     const rows = screen.getAllByRole('row').slice(1);
-    expect(rows.map((row) => row.hasAttribute('data-striped'))).toEqual([false, true, false, true]);
-    rerender(<DataTable {...props} striped={false} />);
-    expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
-    expect(renderToString(<DataTable {...props} striped={false} />)).not.toContain(
-      'leaf-table--striped',
-    );
-  });
-
-  it('supports regional bleed and instance opt-out without resetting pagination or the native table', async () => {
-    function CardTable({ bleed }: { bleed?: boolean }) {
-      const table = useDataTable({
-        data,
-        columns,
-        rowKey: 'id',
-        options: { initialState: { pagination: { pageSize: 2 } } },
-      });
-      return (
-        <Card title="Members">
-          <DataTable
-            table={table}
-            bleed={bleed}
-            aria-label="People"
-            toolbar={<input aria-label="Filter members" />}
-          />
-        </Card>
-      );
-    }
-    const view = (bleed?: boolean) => (
-      <ConfigProvider locale="en-US" components={{ DataTable: { bleed: true } }}>
-        <CardTable bleed={bleed} />
-      </ConfigProvider>
-    );
-    const { rerender } = render(view());
-    const table = screen.getByRole('table', { name: 'People' });
-    const root = table.closest('.leaf-data-table');
-    expect(root).toHaveAttribute('data-leaf-bleed', 'true');
-    expect(root).not.toHaveAttribute('bleed');
-    expect(root?.parentElement).toHaveClass('leaf-card__body');
-    expect(
-      screen.getByRole('textbox', { name: 'Filter members' }).closest('.leaf-data-table__toolbar')
-        ?.parentElement,
-    ).toBe(root);
-    expect(
-      screen.getByRole('button', { name: 'Next page' }).closest('.leaf-data-table__footer')
-        ?.parentElement,
-    ).toBe(root);
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
-    expect(screen.getByText('Charlie')).toBeInTheDocument();
-    expect(screen.queryByText('Alice')).toBeNull();
-    rerender(view(false));
-    expect(screen.getByRole('table', { name: 'People' })).toBe(table);
-    expect(root).not.toHaveAttribute('data-leaf-bleed');
-    expect(screen.getByText('Charlie')).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Filter members' })).toBeInTheDocument();
-  });
-
-  it('renders bleed consistently in data mode and SSR without adding a native table attribute', () => {
-    const props = { data, columns, rowKey: 'id', pagination: false } as const;
-    const { rerender } = render(<DataTable {...props} bleed />);
-    const table = screen.getByRole('table');
-    expect(table.closest('.leaf-data-table')).toHaveAttribute('data-leaf-bleed', 'true');
-    expect(table).not.toHaveAttribute('bleed');
-    const html = renderToString(<DataTable {...props} bleed />);
-    expect(html).toContain('data-leaf-bleed="true"');
-    expect(html).not.toMatch(/\sbleed=/u);
-    rerender(<DataTable {...props} />);
-    expect(screen.getByRole('table')).toBe(table);
-    expect(table.closest('.leaf-data-table')).not.toHaveAttribute('data-leaf-bleed');
+    expect(rows.map((row) => row.hasAttribute('data-striped'))).toEqual([
+      false,
+      false,
+      false,
+      false,
+    ]);
+    rerender(<DataTable {...props} striped />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--striped');
+    expect(renderToString(<DataTable {...props} striped />)).toContain('leaf-table--striped');
+    rerender(<DataTable {...props} bordered />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--bordered');
+    expect(renderToString(<DataTable {...props} bordered />)).toContain('leaf-table--bordered');
   });
 
   it('lets explicit stripes override regional defaults without replacing the table', () => {
@@ -852,6 +791,127 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('textbox', { name: 'Note Alice' })).toBe(note);
     expect(note).toHaveValue('Draft saved');
     expect(submit).not.toHaveBeenCalled();
+  });
+
+  it('selects logical page records when their selection cells span information and data rows', async () => {
+    let instance: TanStackTable<Person> | undefined;
+    render(
+      <Harness
+        selection="multiple"
+        renderRowHeader={(row) => `Summary ${row.original.name}`}
+        onState={(table) => {
+          instance = table;
+        }}
+      />,
+    );
+    const table = screen.getByRole('table');
+    expect([...table.querySelectorAll('tbody tr')].map((row) => row.textContent)).toEqual([
+      'Summary Alice',
+      'Alice32Design',
+      'Summary Bob',
+      'Bob21Engineering',
+    ]);
+    expect(screen.getAllByRole('checkbox')).toHaveLength(3);
+    const checkbox = screen.getByRole('checkbox', { name: 'Select row: Alice' });
+    expect(checkbox.closest('td')).toHaveAttribute('rowspan', '2');
+    expect(screen.getByText('Summary Alice').closest('td')).toHaveAttribute('colspan', '3');
+    expect(screen.queryByRole('button', { name: /Expand row/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Select row: Bob' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select all rows on this page' }));
+    expect(instance?.getState().rowSelection).toEqual({ alice: true });
+    const header = screen.getByText('Summary Alice').closest('tr');
+    expect(header).toHaveAttribute('data-selected');
+    expect(header?.nextElementSibling).toHaveAttribute('data-selected');
+    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
+    expect(screen.getByText('Summary Charlie')).toBeInTheDocument();
+    expect(screen.queryByText('Summary Alice')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Dana' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Previous page' }));
+    expect(checkbox).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
+    expect(instance?.getState().rowSelection).toEqual({ alice: true, dana: true });
+  });
+
+  it('keeps information rows paired after sorting, filtering and changing visible columns', async () => {
+    function Records() {
+      const table = useDataTable({
+        data,
+        columns,
+        rowKey: 'id',
+        options: {
+          enableSorting: true,
+          sortDescFirst: false,
+          initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
+        },
+      });
+      return (
+        <ConfigProvider locale="en-US">
+          <button type="button" onClick={() => table.getColumn('team')?.setFilterValue('Design')}>
+            Design only
+          </button>
+          <button type="button" onClick={() => table.getColumn('team')?.toggleVisibility(false)}>
+            Hide team
+          </button>
+          <DataTable table={table} renderRowHeader={(row) => `Summary ${row.original.name}`} />
+        </ConfigProvider>
+      );
+    }
+    render(<Records />);
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort ascending' }));
+    expect(bodyNames()).toEqual(['Bob', 'Dana']);
+    for (const name of ['Bob', 'Dana']) {
+      expect(screen.getByText(`Summary ${name}`).closest('tr')?.nextElementSibling).toHaveAttribute(
+        'data-row-id',
+        name.toLowerCase(),
+      );
+    }
+    await userEvent.click(screen.getByRole('button', { name: 'Design only' }));
+    expect(bodyNames()).toEqual(['Alice', 'Charlie']);
+    expect(screen.queryByText('Summary Bob')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Hide team' }));
+    expect(screen.getByText('Summary Alice').closest('td')).toHaveAttribute('colspan', '2');
+    expect(screen.getByText('Summary Charlie').closest('td')).toHaveAttribute('colspan', '2');
+  });
+
+  it('moves optional details into the information row and retains collapsed input state', async () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <DataTable
+          data={data.slice(0, 2)}
+          columns={columns}
+          rowKey="id"
+          selection="multiple"
+          pagination={false}
+          getRowLabel={(row) => row.original.name}
+          renderRowHeader={(row) => `Summary ${row.original.name}`}
+          options={{ getRowCanExpand: (row) => !row.original.disabled }}
+          renderExpandedRow={(row) => <input aria-label={`Note ${row.original.name}`} />}
+        />
+      </ConfigProvider>,
+    );
+    const table = screen.getByRole('table');
+    expect(table.querySelectorAll('col')).toHaveLength(4);
+    expect(table.querySelectorAll('.leaf-data-table__expansion')).toHaveLength(0);
+    const opener = screen.getByRole('button', { name: 'Expand row: Alice' });
+    expect(opener).toHaveTextContent('Expand details');
+    expect(opener.closest('tr')).toHaveAttribute('data-row-header', 'alice');
+    expect(screen.queryByRole('button', { name: 'Expand row: Bob' })).not.toBeInTheDocument();
+    const details = document.getElementById(opener.getAttribute('aria-controls') ?? '');
+    expect(details).toHaveAttribute('hidden');
+    await userEvent.click(opener);
+    expect(opener).toHaveAttribute('aria-expanded', 'true');
+    expect(opener).toHaveTextContent('Collapse details');
+    expect(details).not.toHaveAttribute('hidden');
+    expect(details?.querySelector('td')).toHaveAttribute('colspan', '4');
+    const note = screen.getByRole('textbox', { name: 'Note Alice' });
+    await userEvent.type(note, 'Keep this draft');
+    await userEvent.click(opener);
+    expect(details).toHaveAttribute('hidden');
+    expect(bodyNames()).toEqual(['Alice', 'Bob']);
+    await userEvent.click(opener);
+    expect(screen.getByRole('textbox', { name: 'Note Alice' })).toBe(note);
+    expect(note).toHaveValue('Keep this draft');
   });
 
   it('expands hierarchical rows through the supplied row model', async () => {
@@ -1028,15 +1088,12 @@ describe('DataTable TanStack adapter', () => {
       });
       instance = table;
       return (
-        <DataTable
-          table={table}
-          pagination={pagination}
-          toolbar={
-            <button type="button" onClick={() => table.resetSorting()}>
-              Reset sorting
-            </button>
-          }
-        />
+        <>
+          <button type="button" onClick={() => table.resetSorting()}>
+            Reset sorting
+          </button>
+          <DataTable table={table} pagination={pagination} />
+        </>
       );
     }
     const { rerender } = render(
@@ -1129,22 +1186,20 @@ describe('DataTable TanStack adapter', () => {
         defaultSelectedRowKeys: mode === 'single' ? ['alice', 'bob'] : ['alice'],
       });
       return (
-        <DataTable
-          data={data}
-          columns={columns}
-          rowKey="id"
-          selection={mode}
-          options={selection.selectionOptions}
-          pagination={false}
-          toolbar={
-            <>
-              <span data-testid="selected-keys">{selection.selectedRowKeys.join(',')}</span>
-              <button type="button" onClick={selection.clearSelection}>
-                Clear selection
-              </button>
-            </>
-          }
-        />
+        <>
+          <span data-testid="selected-keys">{selection.selectedRowKeys.join(',')}</span>
+          <button type="button" onClick={selection.clearSelection}>
+            Clear selection
+          </button>
+          <DataTable
+            data={data}
+            columns={columns}
+            rowKey="id"
+            selection={mode}
+            options={selection.selectionOptions}
+            pagination={false}
+          />
+        </>
       );
     }
     const { rerender } = render(
@@ -1260,5 +1315,78 @@ describe('DataTable TanStack adapter', () => {
     expect(markup).toContain('aria-rowindex="2"');
     expect(markup).toContain('Alice');
     expect(markup).not.toContain('role="grid"');
+  });
+
+  it('hides both rows of retained grouped records when a group collapses', async () => {
+    function Grouped() {
+      const table = useReactTable({
+        data,
+        columns,
+        getRowId: (person) => person.id,
+        getCoreRowModel: getCoreRowModel(),
+        getGroupedRowModel: getGroupedRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
+        initialState: { grouping: ['team'], expanded: true },
+      });
+      return (
+        <ConfigProvider locale="en-US">
+          <DataTable
+            table={table}
+            pagination={false}
+            renderRowHeader={(row) => `Summary ${row.id}`}
+          />
+        </ConfigProvider>
+      );
+    }
+    render(<Grouped />);
+    const header = screen.getByText('Summary alice').closest('tr');
+    const record = header?.nextElementSibling;
+    expect(header).not.toHaveAttribute('hidden');
+    await userEvent.click(screen.getByRole('button', { name: 'Collapse row: team:Design' }));
+    expect(header).toHaveAttribute('hidden');
+    expect(record).toHaveAttribute('hidden');
+    expect(header).toHaveAttribute('aria-hidden', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Expand row: team:Design' }));
+    expect(screen.getByText('Summary alice').closest('tr')).toBe(header);
+    expect(header).not.toHaveAttribute('hidden');
+    expect(record).not.toHaveAttribute('hidden');
+  });
+
+  it('counts information, data and visible detail rows in virtual table semantics', () => {
+    const markup = renderToString(
+      <DataTable
+        data={data}
+        columns={columns}
+        rowKey="id"
+        virtual
+        pagination={false}
+        selection="single"
+        renderRowHeader={(row) => `Summary ${row.original.name}`}
+        renderExpandedRow={() => 'Details'}
+        options={{ initialState: { expanded: { alice: true } } }}
+      />,
+    );
+    const container = document.createElement('div');
+    container.innerHTML = markup;
+    expect(container.querySelector('table')).toHaveAttribute('aria-rowcount', '10');
+    expect(container.querySelector('[data-row-header="alice"]')).toHaveAttribute(
+      'aria-rowindex',
+      '2',
+    );
+    expect(container.querySelector('[data-row-id="alice"]')).toHaveAttribute('aria-rowindex', '3');
+    expect(container.querySelector('[data-detail-row="alice"]')).toHaveAttribute(
+      'aria-rowindex',
+      '4',
+    );
+    expect(container.querySelector('[data-row-header="bob"]')).toHaveAttribute(
+      'aria-rowindex',
+      '5',
+    );
+    expect(container.querySelector('[data-row-id="bob"]')).toHaveAttribute('aria-rowindex', '6');
+    expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(4);
+    expect(container.querySelector('input[type="radio"]')?.closest('td')).toHaveAttribute(
+      'rowspan',
+      '2',
+    );
   });
 });

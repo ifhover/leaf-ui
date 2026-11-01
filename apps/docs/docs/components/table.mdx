@@ -1,10 +1,10 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TableBasic } from '../../src/examples/table/basic';
-import { TableCard } from '../../src/examples/table/card';
 import { TableSimple } from '../../src/examples/table/simple';
 import { TableSorting } from '../../src/examples/table/sorting';
 import { TableSelection } from '../../src/examples/table/selection';
 import { TableExpansion } from '../../src/examples/table/expansion';
+import { TableRowHeader } from '../../src/examples/table/row-header';
 import { TableStates } from '../../src/examples/table/states';
 import { TableColumns } from '../../src/examples/table/columns';
 import { TableSizing } from '../../src/examples/table/sizing';
@@ -29,7 +29,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 基础用法
 
-传入数据、列定义与稳定唯一的 `rowKey`。默认使用简洁外观和斑马纹，并开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本可以换行。
+传入数据、列定义与稳定唯一的 `rowKey`。默认使用浅灰表头、600 字重、顶部圆角和细行分隔线；`size` 默认为 `lg`，单行文字的表头与数据行高均为 55px，可设置 `md` 或 `sm` 缩小间距。默认开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本可以换行。
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -44,22 +44,11 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 示例
 
-### 卡片内表格
-
-将 `DataTable` 直接放入 `Card` 正文并启用 `bleed`，表格区域即可左右贴边。`toolbar` 筛选区与内置分页保留卡片的横向内边距，分页补回的内边距与表格向外延伸的距离一致。支持直接放入 Card 内嵌标签页的内容区；额外包裹有布局的容器时不自动贴边。
-
-<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
-
-```tsx lineNumbers file="../../src/examples/table/card.tsx"
-```
-
-</ComponentExample>
-
-### 行间分隔线
+### 带边框
 
 <a id="简洁样式" />
 
-默认使用斑马纹区分行；设置 `striped={false}` 可改为行间细线。
+默认显示细行分隔线；设置 `striped` 可切换为交替行背景。设置 `bordered` 可显示完整单元格网格，包含分组表头和末行底线，仅顶部保留圆角；网格模式下不显示表头短分割线。
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -101,6 +90,19 @@ npm install @tanstack/react-table@^8.21.3
 
 </ComponentExample>
 
+### 记录信息行
+
+使用 `renderRowHeader` 在每条记录的正常列上方展示订单号、来源或时间等信息。多选框跨信息行和数据行，记录之间连续排列；分页、排序和选择仍按一条记录计算。
+
+需要额外详情时，配置 `renderExpandedRow`；展开入口会显示在信息行右侧。通过 `options.getRowCanExpand` 决定哪些记录允许展开。不需要详情时，省略这两个配置即可。
+
+<ComponentExample exampleId="row-header" preview={<TableRowHeader />} fileName="row-header.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/row-header.tsx"
+```
+
+</ComponentExample>
+
 ### 空数据、加载和错误
 
 通过 `loading`、`emptyContent`、`error` 与 `onRetry` 展示并处理加载中、空数据和错误状态。
@@ -129,7 +131,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 固定列与列宽调整
 
-设置 `resizable` 开启列宽拖拽，在列定义中通过 `size`、`minSize`、`maxSize` 限制宽度范围。在 `options.initialState.columnPinning` 中固定列，配合 `maxHeight` 固定表头并在内部滚动。可通过 `toolbar` 添加表头工具栏。
+设置 `resizable` 开启列宽拖拽，在列定义中通过 `size`、`minSize`、`maxSize` 限制宽度范围。在 `options.initialState.columnPinning` 中固定列，配合 `maxHeight` 固定表头并在内部滚动。表头操作控件由应用放在 DataTable 外部。
 
 固定列、列宽调整和虚拟滚动使用确定的列宽，未配置宽度的列以 150px 为基础分配剩余空间。固定列忽略 `meta.flex`；手动调整后该列保持调整后的宽度，双击手柄或重置列宽可恢复弹性分配。
 
@@ -205,10 +207,9 @@ npm install @tanstack/react-table@^8.21.3
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调和服务端配置。 |
 | `localPagination` | `boolean` | — | 是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。 |
 | `table` | `TanStackTable<TData>` | — | 由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。 |
-| `toolbar` | `ReactNode` | — | 自动布局中的工具栏内容。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `bleed` | `boolean` | `false` | 直接嵌入 Card 正文或内嵌标签页面板时，让表格区域左右贴边；工具栏与分页补回相同的横向内边距。额外布局容器内不自动延伸，Card 外无延伸量。 |
-| `striped` | `boolean` | `true` | 默认从第二行开始展示交替行背景，并隐藏行间分割线；关闭时显示行间细线。 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'lg'` | 展示尺寸。 |
+| `bordered` | `boolean` | `false` | 显示完整行列网格，包含分组表头和末行底线；仅顶部有圆角。 |
+| `striped` | `boolean` | `false` | 默认显示细行分割线；设置为 true 后从第二行开始展示交替行背景并隐藏行间分割线，bordered 网格始终保留。 |
 | `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。 |
 | `minWidth` | `CSSProperties['minWidth']` | — | 表格内容区域的最小宽度；默认适应容器与列宽。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
@@ -221,8 +222,9 @@ npm install @tanstack/react-table@^8.21.3
 | `pagination` | `boolean \| `[`DataTablePaginationProps`](#datatablepagination-api) | `true` | 分页器开关或展示参数，参见 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>；直接传入数据时，false 同时关闭本地切页。 |
 | `tableRef` | `Ref<HTMLTableElement>` | — | 原生表格 DOM ref。 |
 | `getRowLabel` | `(row: Row<TData>) => string` | — | 行操作的可访问名称；默认使用稳定 row.id。 |
+| `renderRowHeader` | `(row: Row<TData>) => ReactNode` | — | 为每条记录的正常列上方渲染通栏信息行；选择控件跨两行，展开入口显示在信息行右侧。分页和排序仍按记录计算。 |
 | `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | 渲染叶子行详情，同时配置 getRowCanExpand。 |
-| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | 自定义行属性与事件。 |
+| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | 自定义正常数据行的属性与事件；selected 样式同时应用于该记录的信息行。 |
 | `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
 
 `aria-label` / `aria-labelledby` 应用于内部原生表格，其余原生属性传递给外层容器。
@@ -354,7 +356,7 @@ const columns = [
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `estimateRowHeight` | `number` | `48` | 测量前的估算行高。 |
+| `estimateRowHeight` | `number` | `48` | 测量前的估算记录高度，包含信息行、数据行与展开详情。 |
 | `overscan` | `number` | `5` | 在可视区前后额外渲染的行数。 |
 
 ### DataTablePagination API

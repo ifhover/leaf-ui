@@ -18,7 +18,7 @@ export function ThemeColors() {
     danger: '#ff4d4f',
     warning: '#faad14',
     info: '#1677ff',
-    neutral: '#6c737e',
+    neutral: '#707070',
     mutedSurface: 'rgb(244,243,239)',
   });
   const [blackText, setBlackText] = useState(false);

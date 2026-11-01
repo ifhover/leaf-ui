@@ -27,13 +27,15 @@ export function TableColumns() {
     },
   });
   return (
-    <DataTable
-      table={table}
-      aria-label="固定列与列宽调整"
-      maxHeight={300}
-      resizable
-      toolbar={<Button onClick={() => table.resetColumnSizing()}>重置列宽</Button>}
-      pagination={false}
-    />
+    <>
+      <Button onClick={() => table.resetColumnSizing()}>重置列宽</Button>
+      <DataTable
+        table={table}
+        aria-label="固定列与列宽调整"
+        maxHeight={300}
+        resizable
+        pagination={false}
+      />
+    </>
   );
 }

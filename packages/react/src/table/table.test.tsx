@@ -12,11 +12,12 @@ describe('Table', () => {
   it('uses one frameless surface and preserves the table when stripes change', () => {
     const { rerender } = render(<Table />);
     const root = screen.getByRole('table').closest('.leaf-table');
-    expect(root).toHaveClass('leaf-table--striped');
-    expect(root?.querySelector('.leaf-table__panel')).toBeNull();
-    rerender(<Table striped={false} />);
-    expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
     expect(root).not.toHaveClass('leaf-table--striped');
+    expect(root).toHaveClass('leaf-table--lg');
+    expect(root?.querySelector('.leaf-table__panel')).toBeNull();
+    rerender(<Table striped />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
+    expect(root).toHaveClass('leaf-table--striped');
   });
 
   it('preserves native table semantics, header scopes, spans and refs', () => {

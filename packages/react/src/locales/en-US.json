@@ -274,6 +274,8 @@
     "collapseRow": "Collapse row: {label}",
     "expandRow": "Expand row: {label}",
     "expandRows": "Expand rows",
+    "expandDetails": "Expand details",
+    "collapseDetails": "Collapse details",
     "sortAscending": "Sort ascending",
     "sortDescending": "Sort descending",
     "clearSorting": "Clear sorting"
