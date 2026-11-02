@@ -308,6 +308,8 @@
   },
   "upload": {
     "uploadUrlCannotBeEmpty": "업로드 URL을 입력해 주세요",
+    "uploadAvatar": "업로드",
+    "reuploadAvatar": "다시 업로드",
     "uploadFailed": "업로드 실패",
     "chooseOneFileAtATime": "파일을 한 번에 하나씩 선택해 주세요",
     "fileTypeIsNotAccepted": "지원하지 않는 파일 형식입니다",

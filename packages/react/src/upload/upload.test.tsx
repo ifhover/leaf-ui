@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { StrictMode, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  AvatarUpload,
   ConfigProvider,
   FileList,
   Upload,
@@ -26,6 +27,117 @@ afterEach(() => {
 });
 const textFile = (name = 'notes.txt') => new File(['hello'], name, { type: 'text/plain' });
 describe('Upload and FileList', () => {
+  it('shows loading during asynchronous avatar validation and applies avatar defaults independently', async () => {
+    let finishValidation: (accepted: boolean) => void = () => {};
+    const beforeUpload = () =>
+      new Promise<boolean>((resolve) => {
+        finishValidation = resolve;
+      });
+    const { container } = render(
+      <ConfigProvider
+        locale="en-US"
+        components={{ AvatarUpload: { reuploadText: 'Replace photo' }, Upload: { disabled: true } }}
+      >
+        <AvatarUpload
+          defaultFileList={[{ uid: 'saved', url: '/saved.png', status: 'done' }]}
+          beforeUpload={beforeUpload}
+        />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Replace photo' })).toBeEnabled();
+    await userEvent.upload(
+      container.querySelector('input[type=file]') as HTMLInputElement,
+      new File(['a'], 'new.png', { type: 'image/png' }),
+    );
+    expect(screen.getByRole('button', { name: 'Loading' })).toHaveAttribute('aria-busy', 'true');
+    expect(container.querySelector('img')).toBeNull();
+    await act(async () => finishValidation(false));
+    expect(container.querySelector('img')).toHaveAttribute('src', '/saved.png');
+    expect(screen.getByRole('button', { name: 'Replace photo' })).toBeEnabled();
+  });
+  it('shows an avatar only after success and replaces it with a single new upload', async () => {
+    const requests: {
+      request: UploadRequest;
+      resolve: (result: UploadResult) => void;
+      reject: (error: Error) => void;
+    }[] = [];
+    const custom = vi.fn(
+      (request: UploadRequest) =>
+        new Promise<UploadResult>((resolve, reject) => requests.push({ request, resolve, reject })),
+    );
+    const changes = vi.fn();
+    const { container, unmount } = render(
+      <ConfigProvider locale="en-US">
+        <AvatarUpload customRequest={custom} onChange={changes} />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeEnabled();
+    const input = container.querySelector('input[type=file]') as HTMLInputElement;
+    const photo = new File(['photo'], 'avatar.png', { type: 'image/png' });
+    await userEvent.upload(input, photo);
+    await waitFor(() => expect(custom).toHaveBeenCalledOnce());
+    expect(screen.getByRole('button', { name: 'Loading' })).toBeDisabled();
+    expect(container.querySelector('img')).toBeNull();
+    await act(async () => requests[0]?.resolve({ url: '/avatar.png' }));
+    expect(container.querySelector('img')).toHaveAttribute('src', '/avatar.png');
+    expect(screen.getByRole('button', { name: 'Upload again' })).toBeEnabled();
+    await userEvent.upload(input, photo);
+    await waitFor(() => expect(custom).toHaveBeenCalledTimes(2));
+    expect(changes.mock.lastCall?.[0]).toHaveLength(1);
+    await act(async () => requests[1]?.reject(new Error('Server unavailable')));
+    expect(screen.getByRole('alert')).toHaveTextContent('Server unavailable');
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeEnabled();
+    await userEvent.upload(input, photo);
+    await waitFor(() => expect(custom).toHaveBeenCalledTimes(3));
+    unmount();
+    expect(requests[2]?.request.signal.aborted).toBe(true);
+    expect(revokeUrl).toHaveBeenCalledWith('blob:preview');
+  });
+  it('keeps the avatar on validation rejection, ignores disabled drops and restores form defaults', async () => {
+    const original = { uid: 'saved', url: '/saved.png', status: 'done' as const };
+    const reject = vi.fn();
+    const custom = vi.fn(async () => ({ url: '/new.png' }));
+    const { container, rerender } = render(
+      <ConfigProvider locale="en-US">
+        <form>
+          <AvatarUpload
+            defaultFileList={[original]}
+            maxSize={2}
+            onReject={reject}
+            customRequest={custom}
+          />
+          <button type="reset">Reset</button>
+        </form>
+      </ConfigProvider>,
+    );
+    const root = container.querySelector('.leaf-upload') as Element;
+    fireEvent.drop(root, {
+      dataTransfer: { files: [new File(['long'], 'large.png', { type: 'image/png' })] },
+    });
+    await waitFor(() => expect(reject).toHaveBeenCalledOnce());
+    expect(container.querySelector('img')).toHaveAttribute('src', '/saved.png');
+    fireEvent.drop(root, {
+      dataTransfer: { files: [new File(['a'], 'small.png', { type: 'image/png' })] },
+    });
+    await waitFor(() => expect(container.querySelector('img')).toHaveAttribute('src', '/new.png'));
+    await userEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    await waitFor(() =>
+      expect(container.querySelector('img')).toHaveAttribute('src', '/saved.png'),
+    );
+    rerender(<AvatarUpload disabled customRequest={custom} />);
+    fireEvent.drop(container.querySelector('.leaf-upload') as Element, {
+      dataTransfer: { files: [new File(['a'], 'small.png', { type: 'image/png' })] },
+    });
+    expect(custom).toHaveBeenCalledOnce();
+  });
+  it('does not add clipboard files to Upload', () => {
+    const changes = vi.fn();
+    const { container } = render(<Upload onChange={changes} />);
+    fireEvent.paste(container.querySelector('.leaf-upload') as Element, {
+      clipboardData: { files: [textFile()] },
+    });
+    expect(changes).not.toHaveBeenCalled();
+  });
   it('handles URL-only files, zero bytes and media-only preview actions', () => {
     render(
       <ConfigProvider locale="en-US">

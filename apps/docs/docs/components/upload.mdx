@@ -3,9 +3,8 @@ import { UploadBasic } from '../../src/examples/upload/basic';
 import { UploadRestrictions } from '../../src/examples/upload/restrictions';
 import { UploadDrag } from '../../src/examples/upload/advanced';
 import { ManualUpload } from '../../src/examples/upload/manual-upload';
-import { Concurrency } from '../../src/examples/upload/concurrency';
-import { PictureCard } from '../../src/examples/upload/picture-card';
-import { Paste } from '../../src/examples/upload/paste';
+import { UploadControlled } from '../../src/examples/upload/controlled';
+import { UploadAvatar } from '../../src/examples/upload/avatar';
 
 export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
@@ -26,13 +25,45 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
 </ComponentExample>
 
+涉及上传的示例均使用本地模拟请求，不会将文件发送到服务器。
+
 {/* leaf:section examples */}
 
 ## 示例
 
+### 拖拽上传
+
+<a id="拖拽进度与取消" />
+
+设置 `drag` 显示拖拽区域，`concurrency={2}` 限制最多同时上传两个文件，其余文件排队。选择至少三个文件可观察排队；上传中可取消，取消或失败后可在列表中重试。
+
+<a id="并发上传" />
+
+<ComponentExample exampleId="advanced" preview={<UploadDrag />} fileName="advanced.tsx" width={480}>
+
+```tsx lineNumbers file="../../src/examples/upload/advanced.tsx"
+```
+
+</ComponentExample>
+
+### 用户头像上传
+
+使用 `AvatarUpload` 上传单张头像，选择图片后自动上传。点击已上传的图片可重新选择。
+
+<ComponentExample exampleId="avatar" preview={<UploadAvatar />} fileName="avatar.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/upload/avatar.tsx"
+```
+
+</ComponentExample>
+
+文件校验未通过时保留原文件；校验通过后，列表立即切换为新文件，请在上传成功后再更新已保存的头像地址。上传失败会显示错误，可重新选择。
+
+本例显示的是本地临时预览地址；实际接入时，由上传结果返回可保存的 `url`。
+
 ### 文件限制
 
-使用 `accept`、`maxSize` 和 `maxCount` 限制格式、单文件大小与列表总数。拒绝原因显示在控件下方，也可通过 `onReject` 获取；同一批次中符合条件的文件仍会加入列表。服务端仍需校验文件。
+使用 `accept`、`maxSize` 和 `maxCount` 限制格式、单文件大小与文件总数。被拒绝的文件显示错误并触发 `onReject`，同批次的有效文件仍会接收。服务端仍需校验文件。
 
 <ComponentExample exampleId="restrictions" preview={<UploadRestrictions />} fileName="restrictions.tsx" width={480}>
 
@@ -43,22 +74,20 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
 校验按格式、大小、数量、`beforeUpload` 的顺序执行。`beforeUpload` 返回 `false` 或抛出异常时拒绝文件；返回 `File` 可替换待上传文件，但不会再次检查其格式和大小。`multiple={false}` 只限制每次选择一个文件；列表总数限制为一个时使用 `maxCount={1}`。
 
-### 拖拽、进度与取消
+### 受控文件列表
 
-设置 `drag` 接收拖拽文件。此例在本地模拟上传，不发送请求；上传中可取消，取消或失败后可重试。`customRequest` 必须用 `signal` 中止实际传输，通过 `onProgress` 报告进度，完成时 resolve、失败时 reject。
+通过 `fileList` 回显已有文件，并在每次 `onChange` 中回写完整列表，包括上传状态变化和移除。本例使用内嵌文本地址演示已有文件，实际接入时替换为服务返回的文件地址；新选择的文件保持待上传状态。
 
-<ComponentExample exampleId="advanced" preview={<UploadDrag />} fileName="advanced.tsx" width={480}>
+<ComponentExample exampleId="controlled" preview={<UploadControlled />} fileName="controlled.tsx" width={480}>
 
-```tsx lineNumbers file="../../src/examples/upload/advanced.tsx"
+```tsx lineNumbers file="../../src/examples/upload/controlled.tsx"
 ```
 
 </ComponentExample>
 
-接入服务可设置 `action`：`POST` 发送包含 `data` 和文件的 `FormData`，文件字段由 `fieldName` 指定；`PUT` 发送原始文件。JSON 响应和 `customRequest` 返回值可以提供 `url`、`name`。同时配置时，`customRequest` 优先于 `action`。
-
 ### 手动上传
 
-`autoUpload={false}` 阻止选择后自动发送。通过 ref 的 `upload()` 开始上传；`abort()` 取消进行中的请求并清空队列，保留文件列表。此例使用本地模拟请求。
+设置 `autoUpload={false}`，再通过 ref 的 `upload()` 开始上传。`abort()` 取消进行中的请求并清空队列，保留文件列表。按钮根据文件状态禁用无效操作，取消后可再次开始上传。
 
 <ComponentExample exampleId="manual-upload" preview={<ManualUpload />} fileName="manual-upload.tsx" width={480}>
 
@@ -66,47 +95,6 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 ```
 
 </ComponentExample>
-
-### 并发上传
-
-`concurrency` 限制同时进行的请求数，其余文件排队。选择至少三个文件，观察此例最多同时上传两个；请求仍为本地模拟。
-
-<ComponentExample exampleId="concurrency" preview={<Concurrency />} fileName="concurrency.tsx" width={480}>
-
-```tsx lineNumbers file="../../src/examples/upload/concurrency.tsx"
-```
-
-</ComponentExample>
-
-### 图片卡片
-
-设置 `listType="picture-card"` 展示图片缩略图。此例只选择图片，不上传。
-
-<ComponentExample exampleId="picture-card" preview={<PictureCard />} fileName="picture-card.tsx" width={480}>
-
-```tsx lineNumbers file="../../src/examples/upload/picture-card.tsx"
-```
-
-</ComponentExample>
-
-### 粘贴文件
-
-设置 `paste` 后，在控件内聚焦并粘贴剪贴板中的文件。普通文本不会变为文件；可用文件类型取决于剪贴板与浏览器。此例仅选择文件。
-
-<ComponentExample exampleId="paste" preview={<Paste />} fileName="paste.tsx" width={480}>
-
-```tsx lineNumbers file="../../src/examples/upload/paste.tsx"
-```
-
-</ComponentExample>
-
-#### 列表与表单接入
-
-传入 `fileList` 后，由应用在每次 `onChange` 中回写新列表，包括进度、成功、失败、取消和移除等变化。非受控模式使用 `defaultFileList`；表单重置会中止上传并恢复初始列表，受控列表需要应用同步重置。
-
-`name` 用于原生 `FormData`，与上传请求的 `fieldName` 不同：文件以同名字段提交，有 `originFile` 时提交该 `File`，否则提交 URL，两者均缺少时跳过该项。待上传、失败和取消的文件不会因状态自动排除；`required` 只要求列表非空，不代表上传成功。
-
-移除前可在 `onRemove` 中检查权限，返回 `false` 保留文件。若只需要展示文件或定制文件操作，参考 [FileList](./file-list.mdx)。
 
 {/* leaf:section api */}
 
@@ -129,7 +117,6 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 | `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | 格式、大小、数量或校验拒绝 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `drag` | `boolean` | `false` | 是否启用拖拽区域。 |
-| `paste` | `boolean` | — | 接收剪贴板中的文件。 |
 | `directory` | `boolean` | — | 选择目录及其文件；依赖浏览器的目录选择能力。 |
 | `autoUpload` | `boolean` | `true` | 文件校验通过后自动开始；false 时用 ref.upload()。 |
 | `concurrency` | `number` | `3` | 同时进行的上传请求数。 |
@@ -141,13 +128,60 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 | `withCredentials` | `boolean` | `false` | 跨域发送凭证 |
 | `fieldName` | `string` | `'file'` | POST 上传请求中的文件字段名，与原生表单的 name 不同。 |
 | `showFileList` | `boolean` | `true` | 展示文件列表 |
-| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | 文件列表的展示形式。 |
+| `listType` | `'text' \| 'picture'` | `'text'` | 文件列表的展示形式。 |
 | `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | 移除前调用；返回 false 或拒绝 Promise 可阻止移除。 |
 | `hint` | `ReactNode` | — | 选择区域下方的说明文字。 |
 | `children` | `ReactNode` | — | 选择按钮或拖拽区域的标题。 |
 | `name` | `string` | — | 原生 FormData 字段名；每项提交 File 或 URL 字符串，同名多项用 getAll() 读取。 |
 | `form` | `string` | — | 关联的原生表单 ID。 |
 | `required` | `boolean` | — | 要求列表至少有一项，不保证文件已经上传成功。 |
+
+#### 上传请求
+
+接入服务可设置 `action`：`POST` 发送包含 `data` 和文件的 `FormData`，文件字段由 `fieldName` 指定；`PUT` 发送原始文件。JSON 响应和 `customRequest` 返回值可以提供 `url`、`name`。同时配置时，`customRequest` 优先于 `action`。
+
+#### 列表与表单接入
+
+使用受控 `fileList` 时，每次 `onChange` 都需回写，包括上传状态变化和移除。`defaultFileList` 设置非受控初始列表；原生表单重置会中止上传并恢复该列表，受控状态由应用同步重置。
+
+`name` 用于原生 `FormData`，与上传请求的 `fieldName` 不同：文件以同名字段提交，有 `originFile` 时提交该 `File`，否则提交 URL，两者均缺少时跳过该项。待上传、失败和取消的文件不会因状态自动排除；`required` 只要求列表非空，不代表上传成功。
+
+`onRemove` 返回 `false` 或拒绝 Promise 时保留文件。
+
+### AvatarUploadProps API
+
+单张图片上传封装，默认 `accept="image/*"` 并自动上传，不显示文件列表或移除按钮。`children` 设置初始文案，`reuploadText` 设置重新上传文案。
+
+请求、校验和表单参数沿用 [UploadProps](#uploadprops-api)。受控 `fileList` 最多包含一个文件，需在每次 `onChange` 中回写。
+
+<details className="leaf-api-details">
+<summary>查看头像上传完整参数</summary>
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | — | 受控文件列表；省略时使用内部非受控列表。 |
+| `defaultFileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | 非受控模式的初始文件列表；支持表单重置。 |
+| `onChange` | `(files: `[`UploadFile`](#uploadfile-api)`[], info: `[`UploadChangeInfo`](#uploadchangeinfo-api)`) => void` | — | 列表及上传状态变化 |
+| `accept` | `string` | `'image/*'` | 允许的 MIME 或后缀，如 image/*,.pdf |
+| `maxSize` | `number` | — | 单个文件最大字节数 |
+| `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | 接收前校验或转换文件；false 或异常表示拒绝。返回的替换文件不会重新执行类型和大小检查。 |
+| `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | 格式、大小、数量或校验拒绝 |
+| `disabled` | `boolean` | `false` | 禁用交互。 |
+| `action` | `string \| ((file: File) => string \| Promise<string>)` | — | 上传地址；未配置 action 和 customRequest 时仅选择文件。 |
+| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | 自定义上传，优先于 action；成功时 resolve，失败时 reject，并响应 signal 取消请求。 |
+| `method` | `'POST' \| 'PUT'` | `'POST'` | POST 使用 FormData，PUT 上传文件本身 |
+| `headers` | `Readonly<Record<string, string>>` | — | 请求头 |
+| `data` | `Readonly<Record<string, string \| Blob>>` | — | POST 的额外表单数据 |
+| `withCredentials` | `boolean` | `false` | 跨域发送凭证 |
+| `fieldName` | `string` | `'file'` | POST 上传请求中的文件字段名，与原生表单的 name 不同。 |
+| `hint` | `ReactNode` | — | 选择区域下方的说明文字。 |
+| `children` | `ReactNode` | — | 选择按钮或拖拽区域的标题。 |
+| `name` | `string` | — | 原生 FormData 字段名；每项提交 File 或 URL 字符串，同名多项用 getAll() 读取。 |
+| `form` | `string` | — | 关联的原生表单 ID。 |
+| `required` | `boolean` | — | 要求列表至少有一项，不保证文件已经上传成功。 |
+| `reuploadText` | `string` | — | 图片悬停或聚焦时显示的重新上传文案。 |
+
+</details>
 
 ### UploadHandle
 
@@ -197,7 +231,7 @@ export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
 ### UploadRequest API
 
-自定义上传请求接收的文件、进度与取消信息。
+自定义上传请求接收的文件、进度与取消信息。`customRequest` 必须通过 `signal` 中止实际传输，用 `onProgress` 报告进度，成功时 resolve、失败时 reject。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |

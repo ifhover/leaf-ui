@@ -91,7 +91,7 @@ import type {
   TitleProps,
   TypographyProps,
 } from '../typography/typography';
-import type { UploadProps } from '../upload/upload';
+import type { AvatarUploadProps, UploadProps } from '../upload/upload';
 import type { VirtualListProps } from '../virtuallist/virtuallist';
 
 /** Only props independent of the caller's item type can cross a generic component boundary. */
@@ -99,6 +99,7 @@ type GenericComponentName = 'FormList' | 'VirtualList' | 'DataTable';
 
 /** Full public props keep each hook key tied to its component, including Select's union. */
 interface ComponentPropsMap {
+  AvatarUpload: AvatarUploadProps;
   Affix: AffixProps;
   Alert: AlertProps;
   Anchor: AnchorProps;
@@ -203,6 +204,7 @@ interface ComponentPropsMap {
 
 /** Default props for supported components; null clears that component's inherited defaults. */
 export interface LeafComponentDefaults {
+  AvatarUpload?: Partial<Omit<AvatarUploadProps, 'key' | 'ref'>> | null;
   Affix?: Partial<Omit<AffixProps, 'key' | 'ref'>> | null;
   Alert?: Partial<Omit<AlertProps, 'key' | 'ref' | 'title'>> | null;
   Anchor?: Partial<Omit<AnchorProps, 'key' | 'ref' | 'items'>> | null;

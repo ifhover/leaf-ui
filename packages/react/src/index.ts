@@ -227,6 +227,7 @@ export type {
 } from './typography';
 export { Link, Paragraph, Text, Title, Typography } from './typography';
 export type {
+  AvatarUploadProps,
   UploadChangeInfo,
   UploadFile,
   UploadProps,
@@ -234,7 +235,7 @@ export type {
   UploadRequest,
   UploadResult,
 } from './upload';
-export { Upload } from './upload';
+export { AvatarUpload, Upload } from './upload';
 export type { UploadHandle } from './upload/upload';
 export type { VirtualListHandle, VirtualListProps } from './virtuallist';
 export { VirtualList } from './virtuallist';

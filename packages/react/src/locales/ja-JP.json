@@ -308,6 +308,8 @@
   },
   "upload": {
     "uploadUrlCannotBeEmpty": "アップロード先のURLを指定してください",
+    "uploadAvatar": "アップロード",
+    "reuploadAvatar": "再アップロード",
     "uploadFailed": "アップロードに失敗しました",
     "chooseOneFileAtATime": "ファイルを1つずつ選択してください",
     "fileTypeIsNotAccepted": "対応していないファイル形式です",

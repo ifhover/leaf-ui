@@ -1,5 +1,12 @@
-import { Button, Flex, Upload, type UploadHandle, type UploadRequest } from '@ifhover/leaf-ui';
-import { useRef } from 'react';
+import {
+  Button,
+  Flex,
+  Upload,
+  type UploadFile,
+  type UploadHandle,
+  type UploadRequest,
+} from '@ifhover/leaf-ui';
+import { useRef, useState } from 'react';
 
 const simulateUpload = ({ signal }: UploadRequest) =>
   new Promise<void>((resolve, reject) => {
@@ -21,12 +28,25 @@ const simulateUpload = ({ signal }: UploadRequest) =>
 
 export function ManualUpload() {
   const upload = useRef<UploadHandle>(null);
+  const [files, setFiles] = useState<UploadFile[]>([]);
+  const uploading = files.some((file) => file.status === 'uploading');
+  const canUpload = files.some(
+    (file) => file.originFile && ['ready', 'error', 'cancelled'].includes(file.status ?? 'ready'),
+  );
   return (
     <Flex direction="column" gap="md">
-      <Upload ref={upload} autoUpload={false} customRequest={simulateUpload} />
+      <Upload
+        ref={upload}
+        fileList={files}
+        onChange={setFiles}
+        autoUpload={false}
+        customRequest={simulateUpload}
+      />
       <Flex gap="sm" wrap>
-        <Button onClick={() => upload.current?.upload()}>开始上传</Button>
-        <Button onClick={() => upload.current?.abort()} variant="outline">
+        <Button disabled={!canUpload || uploading} onClick={() => upload.current?.upload()}>
+          开始上传
+        </Button>
+        <Button disabled={!uploading} onClick={() => upload.current?.abort()} variant="outline">
           取消上传
         </Button>
       </Flex>

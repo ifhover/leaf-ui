@@ -1158,6 +1158,14 @@
           "type": "string",
           "description": "English: Upload URL cannot be empty"
         },
+        "uploadAvatar": {
+          "type": "string",
+          "description": "English: Upload"
+        },
+        "reuploadAvatar": {
+          "type": "string",
+          "description": "English: Upload again"
+        },
         "uploadFailed": {
           "type": "string",
           "description": "English: Upload failed"

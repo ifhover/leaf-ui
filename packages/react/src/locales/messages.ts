@@ -309,6 +309,8 @@ export interface LocaleMessages {
   };
   readonly upload: {
     readonly uploadUrlCannotBeEmpty: string;
+    readonly uploadAvatar: string;
+    readonly reuploadAvatar: string;
     readonly uploadFailed: string;
     readonly chooseOneFileAtATime: string;
     readonly fileTypeIsNotAccepted: string;

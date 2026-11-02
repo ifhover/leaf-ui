@@ -308,6 +308,8 @@
   },
   "upload": {
     "uploadUrlCannotBeEmpty": "Upload URL cannot be empty",
+    "uploadAvatar": "Upload",
+    "reuploadAvatar": "Upload again",
     "uploadFailed": "Upload failed",
     "chooseOneFileAtATime": "Choose one file at a time",
     "fileTypeIsNotAccepted": "File type is not accepted",

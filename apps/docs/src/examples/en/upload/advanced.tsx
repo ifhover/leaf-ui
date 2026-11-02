@@ -24,5 +24,5 @@ const simulateUpload = ({ signal, onProgress }: UploadRequest) =>
   });
 
 export function UploadDrag() {
-  return <Upload drag multiple customRequest={simulateUpload} />;
+  return <Upload drag multiple concurrency={2} customRequest={simulateUpload} />;
 }

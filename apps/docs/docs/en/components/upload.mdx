@@ -3,9 +3,8 @@ import { UploadBasic } from '../../../src/examples/en/upload/basic';
 import { UploadRestrictions } from '../../../src/examples/en/upload/restrictions';
 import { UploadDrag } from '../../../src/examples/en/upload/advanced';
 import { ManualUpload } from '../../../src/examples/en/upload/manual-upload';
-import { Concurrency } from '../../../src/examples/en/upload/concurrency';
-import { PictureCard } from '../../../src/examples/en/upload/picture-card';
-import { Paste } from '../../../src/examples/en/upload/paste';
+import { UploadControlled } from '../../../src/examples/en/upload/controlled';
+import { UploadAvatar } from '../../../src/examples/en/upload/avatar';
 
 export const leafDoc = { component: 'Upload', primaryApi: 'UploadProps' };
 
@@ -26,13 +25,45 @@ Without `action` or `customRequest`, files are selected and remain ready; no req
 
 </ComponentExample>
 
+Upload examples use simulated local requests and do not send files to a server.
+
 {/* leaf:section examples */}
 
 ## Examples
 
+### Drag upload
+
+<a id="drag-progress-and-cancellation" />
+
+Set `drag` to show the dropzone and `concurrency={2}` to upload at most two files at a time while the rest wait in a queue. Select at least three files to see the queue. Cancel an active upload, or retry a cancelled or failed file from the list.
+
+<a id="concurrent-uploads" />
+
+<ComponentExample exampleId="advanced" preview={<UploadDrag />} fileName="advanced.tsx" width={480}>
+
+```tsx lineNumbers file="../../../src/examples/en/upload/advanced.tsx"
+```
+
+</ComponentExample>
+
+### Avatar upload
+
+Use `AvatarUpload` to upload a single avatar image automatically after selection. Click the uploaded image to choose a replacement.
+
+<ComponentExample exampleId="avatar" preview={<UploadAvatar />} fileName="avatar.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/upload/avatar.tsx"
+```
+
+</ComponentExample>
+
+Invalid selections keep the current file. Once validation passes, the list switches to the new file; update your saved avatar URL only after upload succeeds. On failure, an error appears and you can choose again.
+
+This example displays a temporary local preview URL. In a real integration, return a persistent `url` from the upload result.
+
 ### File restrictions
 
-Use `accept`, `maxSize` and `maxCount` to limit formats, per-file size and total file count. Rejections appear below the control and are available in `onReject`. Accepted files from the same batch are still added. Always validate files on the server.
+Use `accept`, `maxSize` and `maxCount` to limit file types, size and total count. Rejected files show an error and trigger `onReject`; valid files in the same selection are still accepted. Validate files on the server as well.
 
 <ComponentExample exampleId="restrictions" preview={<UploadRestrictions />} fileName="restrictions.tsx" width={480}>
 
@@ -43,22 +74,20 @@ Use `accept`, `maxSize` and `maxCount` to limit formats, per-file size and total
 
 Validation runs in this order: format, size, count, then `beforeUpload`. Returning `false` or throwing rejects the file. Returning a `File` replaces the upload payload without rechecking its format or size. `multiple={false}` limits each selection to one file; use `maxCount={1}` to limit the entire list to one.
 
-### Drag, progress and cancellation
+### Controlled file list
 
-Set `drag` to accept dropped files. This example simulates uploads locally and sends no requests. Cancel an active upload, then retry cancelled or failed files. A `customRequest` must use `signal` to abort the transport, report progress with `onProgress`, resolve on success and reject on failure.
+Use `fileList` to display existing files and write back the complete list on every `onChange`, including status updates and removal. This example uses an inline text URL for the existing file; replace it with a URL returned by your service. Newly selected files remain ready for upload.
 
-<ComponentExample exampleId="advanced" preview={<UploadDrag />} fileName="advanced.tsx" width={480}>
+<ComponentExample exampleId="controlled" preview={<UploadControlled />} fileName="controlled.tsx" width={480}>
 
-```tsx lineNumbers file="../../../src/examples/en/upload/advanced.tsx"
+```tsx lineNumbers file="../../../src/examples/en/upload/controlled.tsx"
 ```
 
 </ComponentExample>
 
-Set `action` to connect a service: `POST` sends `FormData` containing `data` and the file under `fieldName`; `PUT` sends the raw file. A JSON response or `customRequest` result can provide `url` and `name`. If both are configured, `customRequest` takes precedence over `action`.
-
 ### Manual upload
 
-`autoUpload={false}` prevents uploads from starting immediately after selection. Call `upload()` on the ref to start. `abort()` cancels active requests and clears the queue without removing files. This example uses a simulated local request.
+Set `autoUpload={false}`, then call `upload()` on the ref to start. `abort()` cancels active requests and clears the queue while keeping the file list. Buttons disable unavailable actions based on file status; cancelled files can be started again.
 
 <ComponentExample exampleId="manual-upload" preview={<ManualUpload />} fileName="manual-upload.tsx" width={480}>
 
@@ -66,47 +95,6 @@ Set `action` to connect a service: `POST` sends `FormData` containing `data` and
 ```
 
 </ComponentExample>
-
-### Concurrent uploads
-
-`concurrency` limits active requests while the remaining files wait in a queue. Select at least three files to see at most two uploading at once. Requests are simulated locally.
-
-<ComponentExample exampleId="concurrency" preview={<Concurrency />} fileName="concurrency.tsx" width={480}>
-
-```tsx lineNumbers file="../../../src/examples/en/upload/concurrency.tsx"
-```
-
-</ComponentExample>
-
-### Picture cards
-
-Set `listType="picture-card"` for image thumbnails. This example selects images without uploading them.
-
-<ComponentExample exampleId="picture-card" preview={<PictureCard />} fileName="picture-card.tsx" width={480}>
-
-```tsx lineNumbers file="../../../src/examples/en/upload/picture-card.tsx"
-```
-
-</ComponentExample>
-
-### Paste files
-
-With `paste`, focus inside the control and paste files from the clipboard. Plain text is not converted into a file; available file types depend on the clipboard and browser. This example only selects files.
-
-<ComponentExample exampleId="paste" preview={<Paste />} fileName="paste.tsx" width={480}>
-
-```tsx lineNumbers file="../../../src/examples/en/upload/paste.tsx"
-```
-
-</ComponentExample>
-
-#### List and form integration
-
-When providing `fileList`, write the new list back on every `onChange`, including progress, success, failure, cancellation and removal. Use `defaultFileList` for uncontrolled state. Form reset aborts uploads and restores the initial uncontrolled list; reset controlled state in your application.
-
-`name` is the native `FormData` field, distinct from the request’s `fieldName`. Items contribute repeated fields containing their `originFile`, or their URL when no file is available. Items without either are skipped. Ready, failed and cancelled items are not excluded based on status. `required` checks for a non-empty list, not successful uploads.
-
-Use `onRemove` to check whether a file can be removed; return `false` to keep it. For file display and custom actions, see [FileList](./file-list.mdx).
 
 {/* leaf:section api */}
 
@@ -129,7 +117,6 @@ Configure file selection, upload requests and file-list feedback.
 | `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | Type, size, count or validation rejections |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `drag` | `boolean` | `false` | Whether the dropzone is enabled. |
-| `paste` | `boolean` | — | Accept files from the clipboard. |
 | `directory` | `boolean` | — | Choose a directory and its files, subject to browser support. |
 | `autoUpload` | `boolean` | `true` | Start after validation; use ref.upload() when false. |
 | `concurrency` | `number` | `3` | Maximum concurrent upload requests. |
@@ -141,13 +128,60 @@ Configure file selection, upload requests and file-list feedback.
 | `withCredentials` | `boolean` | `false` | Include credentials in cross-origin requests |
 | `fieldName` | `string` | `'file'` | File field name in the POST upload request, distinct from native form name. |
 | `showFileList` | `boolean` | `true` | Display the file list |
-| `listType` | `'text' \| 'picture' \| 'picture-card'` | `'text'` | File list presentation. |
+| `listType` | `'text' \| 'picture'` | `'text'` | File list presentation. |
 | `onRemove` | `(file: `[`UploadFile`](#uploadfile-api)`) => boolean \| void \| Promise<boolean> \| Promise<void>` | — | Called before removal; false or a rejected Promise prevents removal. |
 | `hint` | `ReactNode` | — | Help text below the chooser area. |
 | `children` | `ReactNode` | — | Title of the chooser button or dropzone. |
 | `name` | `string` | — | Native FormData field name; entries submit Files or URL strings. Read repeated entries with getAll(). |
 | `form` | `string` | — | ID of the associated native form. |
 | `required` | `boolean` | — | Require at least one list entry, not a successfully uploaded file. |
+
+#### Upload requests
+
+Set `action` to connect a service: `POST` sends `FormData` containing `data` and the file under `fieldName`; `PUT` sends the raw file. A JSON response or `customRequest` result can provide `url` and `name`. If both are configured, `customRequest` takes precedence over `action`.
+
+#### List and form integration
+
+With a controlled `fileList`, write back every `onChange`, including status updates and removal. `defaultFileList` sets the initial uncontrolled list. Native form reset aborts uploads and restores that initial list; your application must reset controlled state.
+
+`name` is the native `FormData` field, distinct from the request’s `fieldName`. Items contribute repeated fields containing their `originFile`, or their URL when no file is available. Items without either are skipped. Ready, failed and cancelled items are not excluded based on status. `required` checks for a non-empty list, not successful uploads.
+
+Return `false` or reject the Promise from `onRemove` to keep the file.
+
+### AvatarUploadProps API
+
+A single-image wrapper. It defaults to `accept="image/*"` and automatic upload, with no file list or remove button. Use `children` for the initial label and `reuploadText` for the replacement label.
+
+Requests, validation and form fields follow [UploadProps](#uploadprops-api). A controlled `fileList` must contain at most one file; write back each `onChange`.
+
+<details className="leaf-api-details">
+<summary>View all avatar parameters</summary>
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `fileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | — | Controlled file list; the internal uncontrolled list is used when omitted. |
+| `defaultFileList` | `readonly `[`UploadFile`](#uploadfile-api)`[]` | `[]` | Initial file list for uncontrolled usage; native form reset is supported. |
+| `onChange` | `(files: `[`UploadFile`](#uploadfile-api)`[], info: `[`UploadChangeInfo`](#uploadchangeinfo-api)`) => void` | — | File list and status changes |
+| `accept` | `string` | `'image/*'` | Accepted MIME types or extensions, e.g. image/*,.pdf |
+| `maxSize` | `number` | — | Maximum bytes per file |
+| `beforeUpload` | `(file: File) => boolean \| File \| Promise<boolean \| File>` | — | Validate or transform before acceptance; false or rejection refuses the file. Replacement files are not rechecked for type and size. |
+| `onReject` | `(rejections: readonly `[`UploadRejection`](#uploadrejection-api)`[]) => void` | — | Type, size, count or validation rejections |
+| `disabled` | `boolean` | `false` | Disable interaction. |
+| `action` | `string \| ((file: File) => string \| Promise<string>)` | — | Upload URL; files are only selected when neither action nor customRequest is configured. |
+| `customRequest` | `(request: `[`UploadRequest`](#uploadrequest-api)`) => Promise<`[`UploadResult`](#uploadresult-api)` \| void>` | — | Custom transport taking precedence over action; resolve on success, reject on failure and honor signal cancellation. |
+| `method` | `'POST' \| 'PUT'` | `'POST'` | POST sends FormData; PUT sends the raw file |
+| `headers` | `Readonly<Record<string, string>>` | — | Request headers |
+| `data` | `Readonly<Record<string, string \| Blob>>` | — | Additional POST form data |
+| `withCredentials` | `boolean` | `false` | Include credentials in cross-origin requests |
+| `fieldName` | `string` | `'file'` | File field name in the POST upload request, distinct from native form name. |
+| `hint` | `ReactNode` | — | Help text below the chooser area. |
+| `children` | `ReactNode` | — | Title of the chooser button or dropzone. |
+| `name` | `string` | — | Native FormData field name; entries submit Files or URL strings. Read repeated entries with getAll(). |
+| `form` | `string` | — | ID of the associated native form. |
+| `required` | `boolean` | — | Require at least one list entry, not a successfully uploaded file. |
+| `reuploadText` | `string` | — | Replacement label shown on image hover or focus. |
+
+</details>
 
 ### UploadHandle
 
@@ -197,7 +231,7 @@ Describe a rejected file and the reason it was rejected.
 
 ### UploadRequest API
 
-File, progress and cancellation information supplied to a custom upload request.
+File, progress and cancellation information supplied to a custom upload request. A `customRequest` must use `signal` to cancel the transport, report progress with `onProgress`, resolve on success and reject on failure.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |

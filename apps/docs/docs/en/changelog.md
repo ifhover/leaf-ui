@@ -7,6 +7,18 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.15.0 - 2026-11-02
+
+### Added and improved
+
+- Added `AvatarUpload` for single-image avatar selection, loading feedback during asynchronous validation and upload, full-image display after success, and a replacement action on hover or keyboard focus.
+- Avatar uploads reuse Upload request, validation and form capabilities, with independent `ConfigProvider.components.AvatarUpload` defaults and localized messages.
+- Reorganized bilingual upload examples: merged concurrency into drag upload, added a controlled file list, disabled unavailable manual-upload actions based on file status, and clarified temporary avatar preview URLs versus URLs returned by a service.
+
+### Migration
+
+- Upload removes `paste` and `listType="picture-card"`. Remove these properties from instances and global defaults. For a single avatar, use `AvatarUpload` exported from the package root or `@ifhover/leaf-ui/upload`; continue using the standalone `FileList` for multi-file picture-card display.
+
 ## 0.14.1 - 2026-11-02
 
 ### Improvements and fixes

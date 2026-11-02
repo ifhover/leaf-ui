@@ -842,6 +842,7 @@ const apiSectionOrder = {
   ],
   'components/upload': [
     'UploadProps',
+    'AvatarUploadProps',
     'UploadHandle',
     'UploadFile',
     'UploadChangeInfo',
@@ -1250,7 +1251,6 @@ const apiPropertyOrder = {
     'onReject',
     'disabled',
     'drag',
-    'paste',
     'directory',
     'autoUpload',
     'concurrency',
@@ -2206,6 +2206,10 @@ const specific = {
   'FormErrorSummaryProps.title': [
     '错误汇总标题，默认使用当前语言的提示。',
     'Error-summary heading, localized by default.',
+  ],
+  'AvatarUploadProps.reuploadText': [
+    '图片悬停或聚焦时显示的重新上传文案。',
+    'Replacement label shown on image hover or focus.',
   ],
   'UploadProps.name': [
     '原生 FormData 字段名；每项提交 File 或 URL 字符串，同名多项用 getAll() 读取。',
@@ -3557,7 +3561,11 @@ for (const [page, names] of byPage) {
       const props = schema.get(name);
       if (!props?.size) continue;
       const section = apiSectionMatch(document, name);
-      const old = readApiRows(apiSectionMatch(original, name)?.match[2] ?? section?.match[2] ?? '');
+      const baseName = name === 'AvatarUploadProps' ? 'UploadProps' : name;
+      const old = new Map([
+        ...readApiRows(apiSectionMatch(original, baseName)?.match[2] ?? ''),
+        ...readApiRows(apiSectionMatch(original, name)?.match[2] ?? section?.match[2] ?? ''),
+      ]);
       const hasDefault =
         name !== 'UploadHandle' &&
         !/^\| (?:属性 \| 类型 \| 说明|Property \| Type \| Description) \|\r?$/mu.test(
@@ -3567,7 +3575,7 @@ for (const [page, names] of byPage) {
         `| ${name === 'UploadHandle' ? (english ? 'Method' : '方法') : english ? 'Property' : '属性'} | ${english ? 'Type' : '类型'} | ${hasDefault ? `${english ? 'Default' : '默认值'} | ` : ''}${english ? 'Description' : '说明'} |`,
         hasDefault ? '| --- | --- | --- | --- |' : '| --- | --- | --- |',
       ];
-      const priority = apiPropertyOrder[name] ?? [];
+      const priority = apiPropertyOrder[name] ?? apiPropertyOrder[baseName] ?? [];
       const rank = (property) => {
         const index = priority.indexOf(property);
         return index < 0 ? priority.length : index;
@@ -3584,6 +3592,7 @@ for (const [page, names] of byPage) {
           : previous?.description;
         const pair =
           specific[`${name}.${property}`] ??
+          specific[`${baseName}.${property}`] ??
           (contractDescriptions.has(property) || !previousDescription
             ? descriptions[property]
             : undefined);

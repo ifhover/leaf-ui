@@ -308,6 +308,8 @@
   },
   "upload": {
     "uploadUrlCannotBeEmpty": "上传地址不能为空",
+    "uploadAvatar": "上传",
+    "reuploadAvatar": "重新上传",
     "uploadFailed": "上传失败",
     "chooseOneFileAtATime": "每次只能选择一个文件",
     "fileTypeIsNotAccepted": "文件格式不支持",

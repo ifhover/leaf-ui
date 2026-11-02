@@ -1,4 +1,4 @@
-import { CloudUpload, RotateCw, Upload as UploadIcon, X } from 'lucide-react';
+import { CloudUpload, LoaderCircle, Plus, RotateCw, Upload as UploadIcon, X } from 'lucide-react';
 import {
   forwardRef,
   type HTMLAttributes,
@@ -13,7 +13,7 @@ import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import type { FileItem } from '../filelist';
 import { FileListControl as FileList } from '../filelist/filelist';
-import { fileName } from '../filelist/model';
+import { fileName, safeFileUrl } from '../filelist/model';
 import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
 import { FormValue } from '../shared/field';
@@ -64,8 +64,22 @@ export interface UploadProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onCha
   autoUpload?: boolean;
   concurrency?: number;
   directory?: boolean;
-  paste?: boolean;
-  listType?: 'text' | 'picture' | 'picture-card';
+  listType?: 'text' | 'picture';
+}
+export interface AvatarUploadProps
+  extends Omit<
+    UploadProps,
+    | 'multiple'
+    | 'maxCount'
+    | 'drag'
+    | 'directory'
+    | 'showFileList'
+    | 'listType'
+    | 'autoUpload'
+    | 'concurrency'
+    | 'onRemove'
+  > {
+  reuploadText?: string;
 }
 export interface UploadHandle {
   upload: (uid?: string) => void;
@@ -74,6 +88,37 @@ export interface UploadHandle {
 }
 export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
   rawProps: UploadProps,
+  ref,
+) {
+  return <UploadControl {...useComponentProps('Upload', rawProps)} ref={ref} />;
+});
+
+export const AvatarUpload = forwardRef<UploadHandle, AvatarUploadProps>(
+  function AvatarUpload(rawProps, ref) {
+    const { accept = 'image/*', ...props } = useComponentProps('AvatarUpload', rawProps);
+    return (
+      <UploadControl
+        {...props}
+        ref={ref}
+        accept={accept}
+        avatar
+        multiple={false}
+        drag={false}
+        directory={false}
+        showFileList={false}
+        autoUpload
+        concurrency={1}
+      />
+    );
+  },
+);
+
+interface UploadControlProps extends UploadProps {
+  avatar?: boolean;
+  reuploadText?: string;
+}
+const UploadControl = forwardRef<UploadHandle, UploadControlProps>(function UploadControl(
+  rawProps: UploadControlProps,
   ref,
 ) {
   const {
@@ -105,8 +150,9 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
     autoUpload = true,
     concurrency = 3,
     directory,
-    paste,
     listType = 'text',
+    avatar = false,
+    reuploadText,
     id: idProp,
     className,
     onDragEnter,
@@ -114,7 +160,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
     onDragOver,
     onDrop,
     ...props
-  } = useComponentProps('Upload', rawProps);
+  } = rawProps;
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const t = useText();
@@ -130,6 +176,17 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
   const [validating, setValidating] = useState(false);
   const [errors, setErrors] = useState<readonly UploadRejection[]>([]);
   const current = fileList ?? internal;
+  const avatarFile = current.at(-1);
+  const avatarBusy = avatar && (validating || avatarFile?.status === 'uploading');
+  const avatarUrl =
+    avatarFile && (!avatarFile.status || avatarFile.status === 'done')
+      ? safeFileUrl(avatarFile.url)
+      : undefined;
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState<string>();
+  const avatarPreview = avatarUrl && avatarUrl !== failedAvatarUrl ? avatarUrl : undefined;
+  const avatarLabel = avatarPreview
+    ? (reuploadText ?? t('upload.reuploadAvatar'))
+    : t('upload.uploadAvatar');
   // biome-ignore lint/correctness/useExhaustiveDependencies: The form prop can reassign the input to another native form.
   useEffect(() => {
     const owner = input.current?.form;
@@ -332,7 +389,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
     focus: () => trigger.current?.focus(),
   }));
   const addFiles = (files: readonly File[]) => {
-    if (disabled || !files.length) return;
+    if (disabled || avatarBusy || !files.length) return;
     const batchGeneration = generation.current;
     serial.current = serial.current
       .then(async () => {
@@ -358,6 +415,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
             continue;
           }
           if (
+            !avatar &&
             maxCount !== undefined &&
             latest.current.current.length + accepted.length >= maxCount
           ) {
@@ -398,7 +456,13 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
         }
         if (!mounted.current || batchGeneration !== generation.current) return;
         if (accepted.length) {
-          commit([...latest.current.current, ...accepted], {
+          if (avatar) {
+            setFailedAvatarUrl(undefined);
+            for (const job of jobs.current.values()) job.abort();
+            jobs.current.clear();
+            waiting.current.clear();
+          }
+          commit(avatar ? accepted : [...latest.current.current, ...accepted], {
             file: accepted.at(-1),
             reason: 'add',
           });
@@ -438,19 +502,13 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
       {...props}
       className={classes(
         'leaf-upload',
+        avatar && 'leaf-upload--avatar',
         drag && 'leaf-upload--drag',
         `leaf-upload--${listType}`,
         className,
       )}
       data-disabled={disabled || undefined}
       data-dragging={dragging || undefined}
-      onPaste={(event) => {
-        props.onPaste?.(event);
-        if (paste && !event.defaultPrevented && !disabled && event.clipboardData.files.length) {
-          event.preventDefault();
-          addFiles([...event.clipboardData.files]);
-        }
-      }}
       onDragEnter={(event) => {
         onDragEnter?.(event);
         if (!event.defaultPrevented && !disabled) {
@@ -486,7 +544,7 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
         className="leaf-upload__input"
         accept={accept}
         multiple={multiple}
-        disabled={disabled}
+        disabled={disabled || avatarBusy}
         tabIndex={-1}
         aria-label={t('upload.chooseFiles')}
         onChange={(event) => {
@@ -494,7 +552,39 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
           event.target.value = '';
         }}
       />
-      {drag ? (
+      {avatar ? (
+        <button
+          ref={trigger}
+          id={idProp ?? field?.id}
+          type="button"
+          className="leaf-upload__avatar"
+          data-filled={(!!avatarPreview && !avatarBusy) || undefined}
+          disabled={disabled || avatarBusy}
+          aria-busy={avatarBusy}
+          aria-label={avatarBusy ? t('common.loading') : avatarLabel}
+          onClick={() => input.current?.click()}
+        >
+          {avatarPreview && !avatarBusy ? (
+            <>
+              <img src={avatarPreview} alt="" onError={() => setFailedAvatarUrl(avatarPreview)} />
+              <span className="leaf-upload__avatar-overlay">{avatarLabel}</span>
+            </>
+          ) : (
+            <>
+              {avatarBusy ? (
+                <LoaderCircle
+                  className="leaf-upload__avatar-spinner"
+                  size={20}
+                  aria-hidden="true"
+                />
+              ) : (
+                <Plus size={20} aria-hidden="true" />
+              )}
+              <span>{children ?? t('upload.uploadAvatar')}</span>
+            </>
+          )}
+        </button>
+      ) : drag ? (
         <button
           ref={trigger}
           id={idProp ?? field?.id}
@@ -532,6 +622,12 @@ export const Upload = forwardRef<UploadHandle, UploadProps>(function Upload(
         disabled={disabled}
         triggerRef={trigger}
       />
+      {avatar && hint && <div className="leaf-upload__hint">{hint}</div>}
+      {avatar && avatarFile?.status === 'error' && (
+        <div className="leaf-upload__errors" role="alert">
+          {avatarFile.error ?? t('upload.uploadFailed')}
+        </div>
+      )}
       {errors.length > 0 && (
         <ul className="leaf-upload__errors" role="alert">
           {errors.map((error) => (

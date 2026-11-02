@@ -207,6 +207,15 @@
   },
   "debt": {},
   "exceptions": {
+    "upload/upload.scss": {
+      "hardcodedColors": [
+        {
+          "expression": "#fff",
+          "count": 1,
+          "reason": "头像照片上的深色媒体遮罩固定使用白字，与区域主题和品牌前景色独立；遮罩背景复用 spotlight 家族，强制颜色模式使用系统前景。"
+        }
+      ]
+    },
     "badge/badge.scss": {
       "hardcodedColors": [
         {

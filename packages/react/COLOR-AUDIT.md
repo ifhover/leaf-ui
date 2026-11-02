@@ -22,7 +22,7 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 43 | 58 |
+| Legal hardcoded-color exceptions | 44 | 59 |
 | Legal color-mix exceptions | 2 | 2 |
 | Reviewed derived-token exceptions | 6 | 6 |
 | Reviewed color-scale step exceptions | 0 | 0 |
@@ -84,8 +84,8 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 22 | 5 | 39 |
-| `--leaf-color-border-hover` | 5 | 1 | 6 |
+| `--leaf-color-border` | 22 | 5 | 40 |
+| `--leaf-color-border-hover` | 6 | 1 | 7 |
 | `--leaf-color-danger` | 9 | 1 | 12 |
 | `--leaf-color-danger-active` | 1 | 0 | 1 |
 | `--leaf-color-danger-border` | 1 | 1 | 4 |
@@ -177,7 +177,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-surface` | 33 | 4 | 59 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 25 | 4 | 44 |
+| `--leaf-color-surface-muted` | 25 | 4 | 45 |
 | `--leaf-color-surface-raised` | 8 | 2 | 10 |
 | `--leaf-color-text` | 47 | 4 | 98 |
 | `--leaf-color-text-muted` | 43 | 6 | 104 |
@@ -400,6 +400,9 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ### `typography/typography.scss`
 - derivedTokenUsages: `var(--leaf-color-warning-alpha-16)` x1 - Inline mark highlighting annotates document content; it is distinct from warning feedback and status-label surfaces.
+
+### `upload/upload.scss`
+- hardcodedColors: `#fff` x1 - 头像照片上的深色媒体遮罩固定使用白字，与区域主题和品牌前景色独立；遮罩背景复用 spotlight 家族，强制颜色模式使用系统前景。
 
 ## Ongoing controls
 
