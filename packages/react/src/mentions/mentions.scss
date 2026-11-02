@@ -37,4 +37,8 @@
 .leaf-floating.leaf-mentions__panel {
   @include mixins.floating-paint(mentions);
   @include mixins.field-popup(textarea);
+  font-size: var(
+    --leaf-component-mentions-font-size,
+    var(--leaf-component-textarea-font-size, var(--leaf-current-font-size, var(--leaf-font-size)))
+  );
 }

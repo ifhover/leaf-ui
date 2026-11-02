@@ -1,5 +1,11 @@
 @use '../styles/mixins' as mixins;
 @use '../input/input';
+.leaf-color-picker-custom-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+}
 .leaf-color-picker {
   @include mixins.field('color-picker');
   display: inline-flex;

@@ -227,4 +227,8 @@
 
 .leaf-floating.leaf-picker-panel {
   @include mixins.field-popup(date-picker);
+  font-size: var(
+    --leaf-component-date-picker-font-size,
+    var(--leaf-current-font-size, var(--leaf-font-size))
+  );
 }

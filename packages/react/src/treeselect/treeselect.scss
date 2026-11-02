@@ -99,6 +99,7 @@
     --leaf-tree-option-radius: var(--leaf-floating-option-radius);
     .leaf-tree {
       color: var(--leaf-component-tree-color, inherit);
+      font-size: var(--leaf-component-tree-font-size, inherit);
     }
     .leaf-tree__toggle {
       flex-basis: 24px;
@@ -151,4 +152,8 @@
 .leaf-floating.leaf-tree-select__panel {
   @include mixins.floating-paint(tree-select);
   @include mixins.field-popup(tree-select);
+  font-size: var(
+    --leaf-component-tree-select-font-size,
+    var(--leaf-current-font-size, var(--leaf-font-size))
+  );
 }

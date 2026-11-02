@@ -15,6 +15,17 @@ test('link buttons brighten on hover and darken on press while respecting explic
   );
   assert.equal(base['--leaf-button-hover-color'], 'var(--leaf-button-base-color)');
   const danger = button('.leaf-button--danger');
+  assert.equal(danger['--leaf-button-color'], 'var(--leaf-color-danger)');
+  assert.equal(danger['--leaf-button-ink'], 'var(--leaf-button-color)');
+  for (const variant of ['outline', 'text']) {
+    assert.equal(
+      button(`.leaf-button:is(.leaf-button--${variant}).leaf-button--danger`)[
+        '--leaf-button-rest-color'
+      ],
+      'var(--leaf-button-color)',
+    );
+  }
+  assert.equal(danger['--leaf-button-on-color'], 'var(--leaf-color-on-danger)');
   assert.equal(
     danger['--leaf-button-ink-hover'],
     'var(--leaf-color-danger-link-hover,var(--leaf-button-ink))',
@@ -28,12 +39,28 @@ test('link buttons brighten on hover and darken on press while respecting explic
     'color var(--leaf-motion-color)cubic-bezier(0.645,0.045,0.355,1)',
   );
   const link = button('.leaf-button:is(.leaf-button--link)');
+  const dangerOutline = button('.leaf-button:is(.leaf-button--outline).leaf-button--danger');
   for (const state of ['hover', 'active']) {
     assert.equal(
       link[`--leaf-button-${state}-color`],
       `var(--leaf-component-button-color,var(--leaf-button-ink-${state}))`,
     );
+    assert.equal(
+      dangerOutline[`--leaf-button-${state}-color`],
+      link[`--leaf-button-${state}-color`],
+    );
   }
+  assert.equal(
+    dangerOutline['--leaf-button-hover-border'],
+    'var(--leaf-component-button-border-color,var(--leaf-frame-border-color,var(--leaf-button-ink-hover)))',
+  );
+  assert.equal(dangerOutline['--leaf-button-active-border'], 'var(--leaf-button-ink-active)');
+  assert.equal(
+    button(
+      '.leaf-button:is(.leaf-button--outline):not(.leaf-button--danger):hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))',
+    )['--leaf-button-active-border'],
+    'var(--leaf-button-hover-border)',
+  );
   const variants =
     '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link)';
   assert.equal(
@@ -133,6 +160,33 @@ test('Tabs increase large spacing and keep Card insets with explicit height over
   for (const property of ['padding', 'gap']) {
     assert.equal(tabs('.leaf-tabs')[`--leaf-tabs-item-${property}`], 'initial');
   }
+});
+
+test('field popup text follows scoped control typography while keeping explicit font overrides', async () => {
+  for (const [file, selector, component] of [
+    ['select/select.scss', '.leaf-floating.leaf-select__panel', 'select'],
+    ['autocomplete/autocomplete.scss', '.leaf-floating.leaf-autocomplete__panel', 'auto-complete'],
+    ['cascader/cascader.scss', '.leaf-floating.leaf-cascader__panel', 'cascader'],
+    ['treeselect/treeselect.scss', '.leaf-floating.leaf-tree-select__panel', 'tree-select'],
+    ['datepicker/datepicker.scss', '.leaf-floating.leaf-picker-panel', 'date-picker'],
+  ]) {
+    const rule = await compiledStyles(file);
+    assert.equal(
+      rule(selector)['font-size'],
+      `var(--leaf-component-${component}-font-size,var(--leaf-current-font-size,var(--leaf-font-size)))`,
+      file,
+    );
+  }
+  const mentions = await compiledStyles('mentions/mentions.scss');
+  assert.equal(
+    mentions('.leaf-floating.leaf-mentions__panel')['font-size'],
+    'var(--leaf-component-mentions-font-size,var(--leaf-component-textarea-font-size,var(--leaf-current-font-size,var(--leaf-font-size))))',
+  );
+  const treeSelect = await compiledStyles('treeselect/treeselect.scss');
+  assert.equal(
+    treeSelect('.leaf-tree-select__panel .leaf-tree')['font-size'],
+    'var(--leaf-component-tree-font-size,inherit)',
+  );
 });
 
 test('compiled option and selection consumers expose their shared family roles', async () => {

@@ -6,6 +6,7 @@ import { ColorPickerPresets } from '../../src/examples/color-picker/presets';
 import { ColorPickerStates } from '../../src/examples/color-picker/states';
 import { ColorPickerGradient } from '../../src/examples/color-picker/gradient';
 import { ColorPickerControlled } from '../../src/examples/color-picker/controlled';
+import { ColorPickerCustomTrigger } from '../../src/examples/color-picker/custom-trigger';
 
 export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps' };
 
@@ -29,6 +30,19 @@ export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps
 {/* leaf:section examples */}
 
 ## 示例
+
+### 自定义触发按钮
+
+将按钮作为 `children` 传入，即可替换默认色块控件。纯色和渐变模式均支持；`showText`、`size` 只控制默认触发控件，自定义按钮的内容和尺寸由按钮自身设置。
+
+<ComponentExample exampleId="custom-trigger" preview={<ColorPickerCustomTrigger />} fileName="custom-trigger.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/color-picker/custom-trigger.tsx"
+```
+
+</ComponentExample>
+
+触发组件须将 ref、点击事件和 ARIA 属性传给实际按钮；原生 `button` 和 Leaf UI `Button` 可直接使用。原有点击事件仍会执行，调用 `event.preventDefault()` 可阻止弹层展开。
 
 ### 颜色格式
 
@@ -117,6 +131,7 @@ export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps
 | `popupStyle` | `CSSProperties` | — | 浮层的自定义样式。 |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | 包装或补充面板内容，保留传入的内容以维持交互。 |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | 返回浮层的挂载容器，也可返回 ShadowRoot。 |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | — | 替换默认色块的自定义按钮；须转发 ref、点击事件和 ARIA 属性，支持纯色与渐变模式。 |
 | `value` | `string` | — | 受控颜色值；支持 HEX、RGB、HSL、CSS 命名颜色，渐变模式使用 linear-gradient 字符串。 |
 | `defaultValue` | `string` | `'#1e964f'` | 非受控模式的初始颜色值；表单重置时恢复此值。 |
 | `onChange` | `(color: string) => void` | — | 调色过程中实时触发；清除时返回空字符串。 |

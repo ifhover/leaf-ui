@@ -151,4 +151,8 @@
 .leaf-floating.leaf-cascader__panel {
   @include mixins.floating-paint(cascader);
   @include mixins.field-popup(cascader);
+  font-size: var(
+    --leaf-component-cascader-font-size,
+    var(--leaf-current-font-size, var(--leaf-font-size))
+  );
 }

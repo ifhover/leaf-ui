@@ -11,7 +11,8 @@
   border: 0;
   border-radius: var(--leaf-tooltip-radius);
   & > .leaf-floating__viewport {
-    border-radius: var(--leaf-tooltip-radius);
+    // Padding belongs to the outer panel; rounding this text-sized viewport clips glyphs.
+    border-radius: 0;
   }
   color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
   background: var(--leaf-component-tooltip-background, var(--leaf-color-text));

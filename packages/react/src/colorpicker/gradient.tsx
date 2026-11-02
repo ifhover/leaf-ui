@@ -13,6 +13,7 @@ import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
 import { SliderControl as Slider } from '../slider/slider';
 import { type ColorPickerProps, SolidColorPicker } from './colorpicker';
+import { ColorPickerTrigger } from './trigger';
 export interface ColorGradientStop {
   key?: string;
   color: string;
@@ -50,6 +51,7 @@ const defaultGradient: ColorGradient = {
 };
 const initial = gradientString(defaultGradient);
 export function GradientColorPicker({
+  children,
   value,
   defaultValue = initial,
   onChange,
@@ -88,7 +90,7 @@ export function GradientColorPicker({
     { messages } = useLeafConfig(),
     t = useText();
   const formatText = useFormattedText();
-  const disabled = disabledProp || field?.disabled;
+  const disabled = disabledProp || field?.disabled || children?.props.disabled;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const trigger = useRef<HTMLButtonElement>(null),
     panel = useRef<HTMLDivElement>(null),
@@ -143,7 +145,11 @@ export function GradientColorPicker({
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: The enclosed native button owns keyboard interaction; this wrapper only extends its hit area. */}
       <span
         ref={root}
-        className={classes('leaf-color-picker', `leaf-color-picker--${size}`, className)}
+        className={classes(
+          children ? 'leaf-color-picker-custom-trigger' : 'leaf-color-picker',
+          !children && `leaf-color-picker--${size}`,
+          className,
+        )}
         style={style}
         data-status={status}
         data-disabled={disabled || undefined}
@@ -163,15 +169,17 @@ export function GradientColorPicker({
           trigger.current?.click();
         }}
       >
-        <button
+        <ColorPickerTrigger
           {...props}
-          ref={trigger}
-          type={props.type ?? 'button'}
+          custom={children}
+          triggerRef={trigger}
+          type={props.type ?? children?.props.type ?? 'button'}
           form={form}
           id={id ?? field?.id}
           disabled={disabled}
           aria-label={
-            props['aria-label'] ?? (field?.labelId ? undefined : messages.colorPicker.label)
+            props['aria-label'] ??
+            (field?.labelId || children ? undefined : messages.colorPicker.label)
           }
           aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
           aria-describedby={
@@ -199,7 +207,7 @@ export function GradientColorPicker({
                   : messages.colorPicker.label}
             </span>
           )}
-        </button>
+        </ColorPickerTrigger>
         {allowClear && current && !disabled && !readOnly && (
           <button
             type="button"

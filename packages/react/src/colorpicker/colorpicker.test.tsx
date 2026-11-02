@@ -1,9 +1,124 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { ColorPicker, ConfigProvider, Form, FormField } from '../index';
+import { Button, ColorPicker, ConfigProvider, Form, FormField } from '../index';
 
 describe('ColorPicker', () => {
+  it.each(['solid', 'gradient'] as const)(
+    'uses a custom %s button with its ref, events, name and keyboard interaction intact',
+    async (mode) => {
+      const ref = createRef<HTMLButtonElement>();
+      const childClick = vi.fn();
+      const pickerClick = vi.fn();
+      const onOpenChange = vi.fn();
+      const { container } = render(
+        <ColorPicker mode={mode} onClick={pickerClick} onOpenChange={onOpenChange}>
+          <Button ref={ref} variant="solid" className="custom-trigger" onClick={childClick}>
+            Pick a color
+          </Button>
+        </ColorPicker>,
+      );
+      const trigger = screen.getByRole('button', { name: 'Pick a color' });
+      expect(ref.current).toBe(trigger);
+      expect(trigger).toHaveClass('leaf-button--solid', 'custom-trigger');
+      expect(trigger).not.toHaveClass('leaf-color-picker__trigger');
+      expect(container.querySelector('.leaf-color-picker')).toBeNull();
+      expect(container.querySelector('button button')).toBeNull();
+      await userEvent.click(trigger);
+      expect(childClick).toHaveBeenCalledTimes(1);
+      expect(pickerClick).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(true);
+      expect(trigger).toHaveAttribute('aria-controls', screen.getByRole('dialog').id);
+      await userEvent.keyboard('{Escape}');
+      expect(trigger).toHaveFocus();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await userEvent.keyboard('{Enter}');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      await userEvent.click(trigger);
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await userEvent.keyboard(' ');
+      expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    },
+  );
+
+  it.each(['solid', 'gradient'] as const)(
+    'honors cancellation, disabled triggers, read-only and controlled open state for custom %s buttons',
+    async (mode) => {
+      const onOpenChange = vi.fn();
+      const cancel = vi.fn((event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault());
+      const { rerender } = render(
+        <ColorPicker mode={mode} onOpenChange={onOpenChange}>
+          <button type="button" onClick={cancel}>
+            Pick a color
+          </button>
+        </ColorPicker>,
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Pick a color' }));
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).not.toHaveBeenCalled();
+      for (const state of [{ disabled: true }, { readOnly: true }]) {
+        rerender(
+          <ColorPicker mode={mode} {...state} open onOpenChange={onOpenChange}>
+            <Button>Pick a color</Button>
+          </ColorPicker>,
+        );
+        const trigger = screen.getByRole('button', { name: 'Pick a color' });
+        onOpenChange.mockClear();
+        await userEvent.click(trigger);
+        expect(trigger).toHaveAttribute('aria-expanded', 'false');
+        expect(onOpenChange).not.toHaveBeenCalled();
+      }
+      rerender(
+        <ColorPicker mode={mode} open onOpenChange={onOpenChange}>
+          <Button disabled>Pick a color</Button>
+        </ColorPicker>,
+      );
+      expect(screen.getByRole('button', { name: 'Pick a color' })).toBeDisabled();
+      expect(screen.queryByRole('dialog')).toBeNull();
+      rerender(
+        <ColorPicker mode={mode} open={false} onOpenChange={onOpenChange}>
+          <Button>Pick a color</Button>
+        </ColorPicker>,
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Pick a color' }));
+      expect(onOpenChange).toHaveBeenLastCalledWith(true);
+      expect(screen.queryByRole('dialog')).toBeNull();
+    },
+  );
+
+  it.each(['solid', 'gradient'] as const)(
+    'keeps custom %s triggers associated with field descriptions, clearing and native form reset',
+    async (mode) => {
+      const initial =
+        mode === 'solid' ? '#1677ff' : 'linear-gradient(90deg, #1677ff 0%, #ff0000 100%)';
+      const { container } = render(
+        <ConfigProvider locale="en-US">
+          <Form>
+            <FormField label="Accent" description="Field hint" required>
+              <ColorPicker mode={mode} name="accent" defaultValue={initial} allowClear>
+                <Button aria-describedby="custom-hint">Pick a color</Button>
+              </ColorPicker>
+            </FormField>
+          </Form>
+        </ConfigProvider>,
+      );
+      const form = container.querySelector('form') as HTMLFormElement;
+      const trigger = screen.getByRole('button', { name: 'Accent' });
+      expect(trigger.getAttribute('aria-describedby')).toContain('custom-hint');
+      expect(trigger).toHaveAccessibleDescription('Field hint');
+      expect(new FormData(form).get('accent')).toBe(initial);
+      await userEvent.click(screen.getByRole('button', { name: 'Clear color' }));
+      expect(new FormData(form).get('accent')).toBe('');
+      expect(trigger).toHaveFocus();
+      const proxy = form.querySelector('input[name="accent"]') as HTMLInputElement;
+      fireEvent.invalid(proxy);
+      expect(trigger).toHaveFocus();
+      fireEvent.reset(form);
+      await waitFor(() => expect(new FormData(form).get('accent')).toBe(initial));
+    },
+  );
+
   it('isolates the value Input from its owning field and regional Input defaults', async () => {
     const change = vi.fn();
     const { container } = render(

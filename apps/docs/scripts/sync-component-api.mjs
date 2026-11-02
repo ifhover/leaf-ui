@@ -3387,6 +3387,10 @@ const specific = {
     '受控颜色值；支持 HEX、RGB、HSL、CSS 命名颜色，渐变模式使用 linear-gradient 字符串。',
     'Controlled color; accepts HEX, RGB, HSL and CSS named colors, or a linear-gradient string in gradient mode.',
   ],
+  'ColorPickerProps.children': [
+    '替换默认色块的自定义按钮；须转发 ref、点击事件和 ARIA 属性，支持纯色与渐变模式。',
+    'Custom button replacing the default swatch; must forward its ref, click events and ARIA attributes. Supports solid and gradient modes.',
+  ],
   'ColorPickerProps.defaultValue': [
     '非受控模式的初始颜色值；表单重置时恢复此值。',
     'Initial uncontrolled color, restored when the form resets.',

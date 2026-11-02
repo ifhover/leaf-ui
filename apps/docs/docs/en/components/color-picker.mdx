@@ -6,6 +6,7 @@ import { ColorPickerPresets } from '../../../src/examples/en/color-picker/preset
 import { ColorPickerStates } from '../../../src/examples/en/color-picker/states';
 import { ColorPickerGradient } from '../../../src/examples/en/color-picker/gradient';
 import { ColorPickerControlled } from '../../../src/examples/en/color-picker/controlled';
+import { ColorPickerCustomTrigger } from '../../../src/examples/en/color-picker/custom-trigger';
 
 export const leafDoc = { component: 'ColorPicker', primaryApi: 'ColorPickerProps' };
 
@@ -29,6 +30,19 @@ Click the swatch to open the panel and choose a color.
 {/* leaf:section examples */}
 
 ## Examples
+
+### Custom trigger button
+
+Pass a button as `children` to replace the default swatch control. Both solid and gradient modes support this. `showText` and `size` apply only to the default trigger; configure the custom button's content and size on the button itself.
+
+<ComponentExample exampleId="custom-trigger" preview={<ColorPickerCustomTrigger />} fileName="custom-trigger.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/color-picker/custom-trigger.tsx"
+```
+
+</ComponentExample>
+
+The trigger component must forward its ref, click events and ARIA attributes to the actual button. Native `button` and Leaf UI `Button` work directly. Existing click handlers still run; call `event.preventDefault()` to prevent the panel from opening.
 
 ### Color formats
 
@@ -117,6 +131,7 @@ Configuration for color values, output formats, presets and panel interactions.
 | `popupStyle` | `CSSProperties` | — | Custom popup styles. |
 | `popupRender` | `(content: ReactNode) => ReactNode` | — | Wrap or extend popup content; retain the supplied content to preserve interaction. |
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
+| `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | — | Custom button replacing the default swatch; must forward its ref, click events and ARIA attributes. Supports solid and gradient modes. |
 | `value` | `string` | — | Controlled color; accepts HEX, RGB, HSL and CSS named colors, or a linear-gradient string in gradient mode. |
 | `defaultValue` | `string` | `'#1e964f'` | Initial uncontrolled color, restored when the form resets. |
 | `onChange` | `(color: string) => void` | — | Fires continuously while adjusting; clearing returns an empty string. |

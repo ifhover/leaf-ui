@@ -106,11 +106,11 @@ Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-co
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
 | `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。普通链接按钮使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`；危险链接静止使用可读的 `danger-ink`，悬停和按下使用 `danger-link-hover` / `danger-link-active`。线形 Tabs 未选中标签悬停使用 `primary-hover`，按下使用 `primary-link-active`，选中标签保持主题基色；显式组件文字和状态覆盖优先。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button 的危险描边、文字和链接外观默认文字直接使用 `danger` 基色，不使用可读文字派生色；显式组件文字覆盖优先，应用需确认实际对比度。普通链接按钮使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`；危险链接悬停和按下使用 `danger-link-hover` / `danger-link-active`。线形 Tabs 未选中标签悬停使用 `primary-hover`，按下使用 `primary-link-active`，选中标签保持主题基色；显式组件文字和状态覆盖优先。
 
 上述文字动作色按 Ant Design 5.29.3 的 HSV 色板规则派生：普通链接悬停第 4 档，危险链接和 Tabs 悬停第 5 档，按下均为第 7 档。链接的四个独立角色服务于文字反馈，避免改动实底按下的 10% 混黑与可读 ink 配方；既有 primary / danger 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 默认 300ms、使用 CSS ease；两者随 motionDuration 缩放并遵守减少动态效果设置。
 
-配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边悬停复用 border-hover（危险操作使用 danger-ink），按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，保持文字、边框与阴影不变，不偏主题色。
+配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；普通描边悬停复用 border-hover，按下保留当前文字和边框。危险描边的文字和边框在悬停 / 按下时分别共用 `danger-link-hover` / `danger-link-active`。描边按下背景通过共享 subtle-action-background 将实际背景与 surface-muted 等比混合，阴影保持不变，不偏主题色。
 
 Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均消费 `option-hover` 轨道，滑块分别消费 `surface` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式全局 / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
 

@@ -188,4 +188,8 @@
 .leaf-floating.leaf-select__panel {
   @include mixins.floating-paint(select);
   @include mixins.field-popup(select);
+  font-size: var(
+    --leaf-component-select-font-size,
+    var(--leaf-current-font-size, var(--leaf-font-size))
+  );
 }

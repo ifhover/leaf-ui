@@ -5,7 +5,9 @@ import {
   type CSSProperties,
   type KeyboardEvent,
   type PointerEvent,
+  type ReactElement,
   type ReactNode,
+  type Ref,
   useEffect,
   useId,
   useRef,
@@ -27,14 +29,21 @@ import {
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { TabsControl } from '../tabs/tabs';
 import { GradientColorPicker } from './gradient';
+import { ColorPickerTrigger } from './trigger';
 
 export interface ColorPreset {
   label: ReactNode;
   colors: readonly string[];
 }
 export interface ColorPickerProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'defaultValue' | 'onChange'>,
+  extends Omit<
+      ButtonHTMLAttributes<HTMLButtonElement>,
+      'value' | 'defaultValue' | 'onChange' | 'children'
+    >,
     PopupOptions {
+  children?: ReactElement<
+    ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> }
+  >;
   value?: string;
   defaultValue?: string;
   onChange?: (color: string) => void;
@@ -65,6 +74,7 @@ type HSV = { h: number; s: number; v: number; a: number };
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const formatItems = ['hex', 'rgb', 'hsl'].map((key) => ({ key, label: key.toUpperCase() }));
 export function SolidColorPicker({
+  children,
   value,
   defaultValue = defaultColors.light.primary,
   onChange,
@@ -101,7 +111,7 @@ export function SolidColorPicker({
 }: ColorPickerProps) {
   const { messages } = useLeafConfig();
   const field = useFormField();
-  const disabled = disabledProp || field?.disabled;
+  const disabled = disabledProp || field?.disabled || children?.props.disabled;
   const required = requiredProp ?? field?.required;
   const status = statusProp ?? (field?.error ? 'error' : undefined);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -204,7 +214,11 @@ export function SolidColorPicker({
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: The enclosed native button owns keyboard interaction; this wrapper only extends its hit area. */}
       <span
         ref={root}
-        className={classes('leaf-color-picker', `leaf-color-picker--${size}`, className)}
+        className={classes(
+          children ? 'leaf-color-picker-custom-trigger' : 'leaf-color-picker',
+          !children && `leaf-color-picker--${size}`,
+          className,
+        )}
         style={style}
         data-status={status}
         data-disabled={disabled || undefined}
@@ -224,15 +238,18 @@ export function SolidColorPicker({
           trigger.current?.click();
         }}
       >
-        <button
+        <ColorPickerTrigger
           {...props}
-          ref={trigger}
-          type={props.type ?? 'button'}
+          custom={children}
+          triggerRef={trigger}
+          type={props.type ?? children?.props.type ?? 'button'}
           form={form}
           id={props.id ?? field?.id}
           className="leaf-color-picker__trigger"
           disabled={disabled}
-          aria-label={label ?? (field?.labelId ? undefined : messages.colorPicker.label)}
+          aria-label={
+            label ?? (field?.labelId || children ? undefined : messages.colorPicker.label)
+          }
           aria-labelledby={props['aria-labelledby'] ?? field?.labelId}
           aria-describedby={
             [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
@@ -256,7 +273,7 @@ export function SolidColorPicker({
                 : display || messages.colorPicker.label}
             </span>
           )}
-        </button>
+        </ColorPickerTrigger>
         {clearable && (
           <button
             type="button"

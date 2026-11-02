@@ -9,7 +9,7 @@ const options = [
 
 export function ButtonSizes() {
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
+    <Grid gap={16} align="center" style={{ gridTemplateColumns: 'max-content minmax(0, 1fr)' }}>
       {options.map(({ value, label }) => (
         <Fragment key={value}>
           <Text tone="muted">{label}</Text>

@@ -7,6 +7,23 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.0 - 2026-11-03
+
+### Added and improved
+
+- ColorPicker accepts a custom trigger button through `children` in both solid and gradient modes, preserving button events, refs, keyboard operation, form submission, clearing and reset. Added bilingual usage examples.
+- Button icon examples now cover small, medium and large sizes, with size labels placed closer to their buttons.
+
+### Fixed
+
+- Fixed Tooltip's inner scroll viewport clipping text at its rounded corners while retaining the outer radius and padding.
+- Fixed popup body text not following field sizes in Select, AutoComplete, Cascader, TreeSelect, Mentions and date/time pickers, including the inner tree overriding TreeSelect popup typography.
+
+### Migration
+
+- Danger outline, text and link buttons now use the `danger` seed for default text. Danger outline text and borders brighten on hover and darken when pressed, sharing state colors with danger links. Solid foregrounds and explicit component/state overrides retain their existing rules; verify text contrast in custom themes.
+- Selection and date/time popup body text follows the control size, with small text for `sm`. Calendar date cells and independent internal controls retain their own typography; explicit component font settings and `popupStyle` take precedence. Check text wrapping in layouts that depend on the previous popup font size.
+
 ## 0.15.0 - 2026-11-02
 
 ### Added and improved

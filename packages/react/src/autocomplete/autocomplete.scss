@@ -41,4 +41,8 @@
 .leaf-floating.leaf-autocomplete__panel {
   @include mixins.floating-paint(auto-complete);
   @include mixins.field-popup(auto-complete);
+  font-size: var(
+    --leaf-component-auto-complete-font-size,
+    var(--leaf-current-font-size, var(--leaf-font-size))
+  );
 }

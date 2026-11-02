@@ -96,7 +96,7 @@
 
   &--danger {
     --leaf-button-color: var(--leaf-color-danger);
-    --leaf-button-ink: var(--leaf-color-danger-ink);
+    --leaf-button-ink: var(--leaf-button-color);
     --leaf-button-ink-hover: var(--leaf-color-danger-link-hover, var(--leaf-button-ink));
     --leaf-button-ink-active: var(--leaf-color-danger-link-active, var(--leaf-button-active));
     --leaf-button-on-color: var(--leaf-color-on-danger);
@@ -163,17 +163,22 @@
         var(--leaf-button-base-background)
       )};
     --leaf-button-active-border: var(--leaf-button-base-border);
-    &:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible)) {
+    &:not(.leaf-button--danger):hover:not(:disabled):not([data-loading]):where(
+        :not(:focus-visible)
+      ) {
       --leaf-button-active-border: var(--leaf-button-hover-border);
     }
     &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-color-danger-ink);
+      --leaf-button-rest-color: var(--leaf-button-color);
       --leaf-button-rest-border: var(--leaf-button-color);
 
+      --leaf-button-hover-color: var(--leaf-component-button-color, var(--leaf-button-ink-hover));
+      --leaf-button-active-color: var(--leaf-component-button-color, var(--leaf-button-ink-active));
       --leaf-button-hover-border: var(
         --leaf-component-button-border-color,
-        var(--leaf-frame-border-color, var(--leaf-button-ink))
+        var(--leaf-frame-border-color, var(--leaf-button-ink-hover))
       );
+      --leaf-button-active-border: var(--leaf-button-ink-active);
     }
   }
   &:is(&--link) {
@@ -200,7 +205,7 @@
     --leaf-button-hover-background: var(--leaf-text-action-background);
     --leaf-button-active-background: var(--leaf-text-action-active-background);
     &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-color-danger-ink);
+      --leaf-button-rest-color: var(--leaf-button-color);
     }
   }
   &:is(&--solid, &--outline, &--text, &--link) {
