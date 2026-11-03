@@ -39,7 +39,7 @@
       },
       "warning-alpha-16": {
         "type": "color",
-        "value": "rgba(250, 173, 20, 0.16)"
+        "value": "rgba(230, 159, 18, 0.16)"
       },
       "neutral": {
         "type": "color",
@@ -215,55 +215,55 @@
       },
       "success": {
         "type": "color",
-        "value": "#52c41a"
+        "value": "#4bb418"
       },
       "success-light-3": {
         "type": "color",
-        "value": "rgba(134, 214, 95, 1)"
+        "value": "rgba(129, 203, 93, 1)"
       },
       "success-light-7": {
         "type": "color",
-        "value": "rgba(203, 237, 186, 1)"
+        "value": "rgba(201, 233, 186, 1)"
       },
       "success-light-9": {
         "type": "color",
-        "value": "rgba(238, 249, 232, 1)"
+        "value": "rgba(237, 248, 232, 1)"
       },
       "success-dark-1": {
         "type": "color",
-        "value": "rgba(74, 176, 23, 1)"
+        "value": "rgba(68, 162, 22, 1)"
       },
       "success-dark-3": {
         "type": "color",
-        "value": "rgba(57, 137, 18, 1)"
+        "value": "rgba(53, 126, 17, 1)"
       },
       "success-dark-7": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(23, 54, 7, 1)"
       },
       "success-dark-9": {
         "type": "color",
-        "value": "rgba(8, 20, 3, 1)"
+        "value": "rgba(8, 18, 2, 1)"
       },
       "success-soft": {
         "type": "color",
-        "value": "rgba(238, 249, 232, 1)"
+        "value": "rgba(237, 248, 232, 1)"
       },
       "success-soft-hover": {
         "type": "color",
-        "value": "rgba(203, 237, 186, 1)"
+        "value": "rgba(201, 233, 186, 1)"
       },
       "success-soft-active": {
         "type": "color",
-        "value": "rgba(203, 237, 186, 1)"
+        "value": "rgba(201, 233, 186, 1)"
       },
       "success-border": {
         "type": "color",
-        "value": "rgba(203, 237, 186, 1)"
+        "value": "rgba(201, 233, 186, 1)"
       },
       "success-ink": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(53, 126, 17, 1)"
       },
       "on-success": {
         "type": "color",
@@ -343,55 +343,55 @@
       },
       "warning": {
         "type": "color",
-        "value": "#faad14"
+        "value": "#e69f12"
       },
       "warning-light-3": {
         "type": "color",
-        "value": "rgba(252, 198, 91, 1)"
+        "value": "rgba(238, 188, 89, 1)"
       },
       "warning-light-7": {
         "type": "color",
-        "value": "rgba(254, 230, 185, 1)"
+        "value": "rgba(248, 226, 184, 1)"
       },
       "warning-light-9": {
         "type": "color",
-        "value": "rgba(255, 247, 232, 1)"
+        "value": "rgba(253, 245, 231, 1)"
       },
       "warning-dark-1": {
         "type": "color",
-        "value": "rgba(225, 156, 18, 1)"
+        "value": "rgba(207, 143, 16, 1)"
       },
       "warning-dark-3": {
         "type": "color",
-        "value": "rgba(175, 121, 14, 1)"
+        "value": "rgba(161, 111, 13, 1)"
       },
       "warning-dark-7": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "warning-dark-9": {
         "type": "color",
-        "value": "rgba(25, 17, 2, 1)"
+        "value": "rgba(23, 16, 2, 1)"
       },
       "warning-soft": {
         "type": "color",
-        "value": "rgba(255, 247, 232, 1)"
+        "value": "rgba(253, 245, 231, 1)"
       },
       "warning-soft-hover": {
         "type": "color",
-        "value": "rgba(254, 230, 185, 1)"
+        "value": "rgba(248, 226, 184, 1)"
       },
       "warning-soft-active": {
         "type": "color",
-        "value": "rgba(254, 230, 185, 1)"
+        "value": "rgba(248, 226, 184, 1)"
       },
       "warning-border": {
         "type": "color",
-        "value": "rgba(254, 230, 185, 1)"
+        "value": "rgba(248, 226, 184, 1)"
       },
       "warning-ink": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "on-warning": {
         "type": "color",
@@ -495,7 +495,7 @@
       },
       "warning-alpha-16": {
         "type": "color",
-        "value": "rgba(250, 173, 20, 0.16)"
+        "value": "rgba(230, 159, 18, 0.16)"
       },
       "neutral": {
         "type": "color",
@@ -671,55 +671,55 @@
       },
       "success": {
         "type": "color",
-        "value": "#52c41a"
+        "value": "#4bb418"
       },
       "success-light-3": {
         "type": "color",
-        "value": "rgba(134, 214, 95, 1)"
+        "value": "rgba(129, 203, 93, 1)"
       },
       "success-light-7": {
         "type": "color",
-        "value": "rgba(203, 237, 186, 1)"
+        "value": "rgba(201, 233, 186, 1)"
       },
       "success-light-9": {
         "type": "color",
-        "value": "rgba(238, 249, 232, 1)"
+        "value": "rgba(237, 248, 232, 1)"
       },
       "success-dark-1": {
         "type": "color",
-        "value": "rgba(74, 176, 23, 1)"
+        "value": "rgba(68, 162, 22, 1)"
       },
       "success-dark-3": {
         "type": "color",
-        "value": "rgba(57, 137, 18, 1)"
+        "value": "rgba(53, 126, 17, 1)"
       },
       "success-dark-7": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(23, 54, 7, 1)"
       },
       "success-dark-9": {
         "type": "color",
-        "value": "rgba(8, 20, 3, 1)"
+        "value": "rgba(8, 18, 2, 1)"
       },
       "success-soft": {
         "type": "color",
-        "value": "rgba(8, 20, 3, 1)"
+        "value": "rgba(8, 18, 2, 1)"
       },
       "success-soft-hover": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(23, 54, 7, 1)"
       },
       "success-soft-active": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(23, 54, 7, 1)"
       },
       "success-border": {
         "type": "color",
-        "value": "rgba(25, 59, 8, 1)"
+        "value": "rgba(23, 54, 7, 1)"
       },
       "success-ink": {
         "type": "color",
-        "value": "#52c41a"
+        "value": "rgba(129, 203, 93, 1)"
       },
       "on-success": {
         "type": "color",
@@ -799,55 +799,55 @@
       },
       "warning": {
         "type": "color",
-        "value": "#faad14"
+        "value": "#e69f12"
       },
       "warning-light-3": {
         "type": "color",
-        "value": "rgba(252, 198, 91, 1)"
+        "value": "rgba(238, 188, 89, 1)"
       },
       "warning-light-7": {
         "type": "color",
-        "value": "rgba(254, 230, 185, 1)"
+        "value": "rgba(248, 226, 184, 1)"
       },
       "warning-light-9": {
         "type": "color",
-        "value": "rgba(255, 247, 232, 1)"
+        "value": "rgba(253, 245, 231, 1)"
       },
       "warning-dark-1": {
         "type": "color",
-        "value": "rgba(225, 156, 18, 1)"
+        "value": "rgba(207, 143, 16, 1)"
       },
       "warning-dark-3": {
         "type": "color",
-        "value": "rgba(175, 121, 14, 1)"
+        "value": "rgba(161, 111, 13, 1)"
       },
       "warning-dark-7": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "warning-dark-9": {
         "type": "color",
-        "value": "rgba(25, 17, 2, 1)"
+        "value": "rgba(23, 16, 2, 1)"
       },
       "warning-soft": {
         "type": "color",
-        "value": "rgba(25, 17, 2, 1)"
+        "value": "rgba(23, 16, 2, 1)"
       },
       "warning-soft-hover": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "warning-soft-active": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "warning-border": {
         "type": "color",
-        "value": "rgba(75, 52, 6, 1)"
+        "value": "rgba(69, 48, 5, 1)"
       },
       "warning-ink": {
         "type": "color",
-        "value": "#faad14"
+        "value": "#e69f12"
       },
       "on-warning": {
         "type": "color",

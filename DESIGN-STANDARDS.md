@@ -67,7 +67,7 @@
 ### 颜色
 
 - 主题色用于可操作的强调；success / info / warning / danger 表达含义。弱化文字保持可读；自定义色板须对实际前景 / 背景组合满足 WCAG 对比度。透明派生色使用预乘 sRGB alpha。
-- 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由显式 `light-N` / `dark-N` 派生与 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#1e964f`、success `#52c41a`、danger `#ff4d4f`、warning `#faad14`、info `#1677ff`。用户提供的 primary 保持原值，不改写、不强制为 500 档。
+- 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由显式 `light-N` / `dark-N` 派生与 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#1e964f`、success `#4bb418`、danger `#ff4d4f`、warning `#e69f12`、info `#1677ff`。用户提供的 primary 保持原值，不改写、不强制为 500 档。
 - 反馈类视觉 API 使用 `danger`；旧的 `error` 仅作为兼容别名并归一为 `danger`。Form 校验、Progress 与 Steps 的状态名保留 `error`，消费 danger token。
 - 浅深模式都保留显式主色实底；外观切换只换用途映射，不重新着色基色或生成另一套色阶。`ink`、`primary-indicator` 的选阶规则与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
 - 使用主色焦点指示的组件在原主色偏暗时使用可见指示色；按钮保持中性焦点反馈。
@@ -75,7 +75,7 @@
 - Checkbox、Radio、Switch 的选中实底使用原 primary 与 on-primary 内容。primary indicator 只用于需要与表面分隔的边界和选中指示；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
 - Radio 按下不缩放控件；选中圆框和卡片边框使用主题基色，显式 Radio 组件边框与状态覆盖优先。选中圆点按 Ant Design 5 使用 300ms 的 `cubic-bezier(0.78, 0.14, 0.15, 0.86)` 缩放与透明度过渡，圆框颜色使用 200ms ease；时长随区域 motionDuration 缩放，遵守减少动态效果设置。
 - Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式全局、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
-- Warning 图标、字段强调与状态填充使用共享琥珀基色（`#faad14`）；警告文字独立派生可读 ink。Tag 的 soft 标签文字跟随对应语义基色，solid 标签文字使用白色；不要为文字对比度把所有警告强调色调暗。
+- Warning 图标、字段强调与状态填充使用共享琥珀基色（`#e69f12`）；警告文字独立派生可读 ink。Tag 的 soft 标签文字跟随对应语义基色，solid 标签文字使用白色；不要为文字对比度把所有警告强调色调暗。
 
 ### 动效
 
@@ -282,7 +282,7 @@
 - 带边框的 Descriptions、FileList 和 Collapse 使用柔化内容框而不是强字段边框，保持平面，不机械嵌套卡片。组件圆角与内容绘制必须作用到可见表面。
 - 窄屏下 Form 与 Transfer 按自身容器宽度响应。
 - Checkbox / Radio 卡片选项：整张卡片是一个可点击 label，含中性图标底座、标题 / 描述列和行尾原生控件。组内可排成响应式网格，或一个共享边框与行分隔的列表。选中边框使用主题色，无渐变或抬起。状态标签不可交互；辅助文字是可访问描述，不属于选项名称。
-- Alert 使用减淡的中性表面（复用 `subtle-action-background`，将内容面与柔和底板等比混合）和语义图标色，显式背景覆盖优先，保留播报 role。
+- Alert 默认无边框，使用对应状态的 `*-soft` 语义浅底，标题和图标使用对应状态基色，标题字重为 500；仅标题时采用紧凑内边距和与输入框相同的基础圆角，带描述时采用更宽松的内边距、medium 圆角并放大标题。显式组件颜色、背景、边框、圆角和内边距覆盖优先，保留播报 role。
 - Result 图标无背景或外框；danger 使用红色语义 CircleAlert。默认 / small 图标 48 / 36 px。标题使用大号正文（sm 为基础字号），描述使用小号文字。
 - Scrollbar 轨道覆盖在内容上，在悬停、滚动或键盘聚焦时出现；拖动不抢输入焦点，也不显示指针焦点轮廓。`size="sm"` 用于密集列表：更窄的轨道（6 px、距边 2 px）和更淡的滑块。
 - Scrollbar 的 persistent 使轨道常驻并按 orientation 为对应轴预留独立空间；scrollbar="always" 仍是常显覆盖式，hidden 优先隐藏并不预留。时间列统一使用 persistent，避免遮挡数值与勾选。

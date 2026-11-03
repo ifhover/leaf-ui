@@ -15,9 +15,9 @@ const solidForeground = { black: '#000000', white: '#ffffff' } as const;
 export const semanticColorFamilies = ['primary', 'success', 'danger', 'warning', 'info'] as const;
 const semanticSeeds = {
   primary: '#1e964f',
-  success: '#52c41a',
+  success: '#4bb418',
   danger: '#ff4d4f',
-  warning: '#faad14',
+  warning: '#e69f12',
   info: '#1677ff',
 };
 export const colorSeeds = { ...semanticSeeds, neutral: '#707070' };

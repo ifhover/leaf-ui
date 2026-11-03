@@ -14,9 +14,9 @@ const colorOptions = [
 export function ThemeColors() {
   const [colors, setColors] = useState({
     primary: '#1e964f',
-    success: '#52c41a',
+    success: '#4bb418',
     danger: '#ff4d4f',
-    warning: '#faad14',
+    warning: '#e69f12',
     info: '#1677ff',
     neutral: '#707070',
     mutedSurface: 'rgb(244,243,239)',

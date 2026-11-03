@@ -92,9 +92,37 @@ test('compiled feedback components retain semantic assignments and the danger al
 
 test('compiled alert close and confirm error use their intended feedback roles', async () => {
   const rule = await compiledStyles('alert/alert.scss');
+  assert.equal(rule('.leaf-alert__title')['font-weight'], '500');
+  assert.equal(
+    rule('.leaf-alert__title').color,
+    'var(--leaf-component-alert-color,var(--leaf-feedback-color))',
+  );
+  assert.equal(rule('.leaf-alert').padding, 'var(--leaf-component-alert-padding,8px 12px)');
+  assert.match(rule('.leaf-alert').border, /^var\(--leaf-component-alert-border-width,0px\)solid/u);
+  assert.equal(
+    rule('.leaf-alert[data-description]').padding,
+    'var(--leaf-component-alert-padding,16px)',
+  );
+  assert.equal(
+    rule('.leaf-alert:not([data-description])')['border-radius'],
+    'var(--leaf-component-alert-radius,var(--leaf-radius))',
+  );
+  assert.equal(
+    rule('.leaf-alert[data-description] .leaf-alert__title')['font-size'],
+    'var(--leaf-font-size-lg)',
+  );
   assert.equal(
     rule('.leaf-alert').background,
-    'var(--leaf-component-alert-background,color-mix(in srgb,var(--leaf-color-surface),var(--leaf-color-surface-muted)))',
+    'var(--leaf-component-alert-background,var(--leaf-alert-background))',
+  );
+  assert.equal(rule('.leaf-alert--info')['--leaf-alert-background'], 'var(--leaf-color-info-soft)');
+  assert.equal(
+    rule('.leaf-alert--warning')['--leaf-alert-background'],
+    'var(--leaf-color-warning-soft)',
+  );
+  assert.equal(
+    rule('.leaf-alert--danger')['--leaf-alert-background'],
+    'var(--leaf-color-danger-soft)',
   );
   assert.equal(
     rule('.leaf-alert__close:hover:not(:disabled)').background,

@@ -705,6 +705,8 @@ const specificDefaults = {
   'LeafThemeTokens.onWarningColor': '`#ffffff`',
   'LeafThemeTokens.onInfoColor': '`#ffffff`',
   'LeafThemeTokens.neutralColor': '`#707070`',
+  'LeafThemeTokens.successColor': '`#4bb418`',
+  'LeafThemeTokens.warningColor': '`#e69f12`',
   'AutoCompleteProps.value': '—',
   'AutoCompleteProps.defaultOpen': '`false`',
   'AutoCompleteProps.optionHeight': ['由主题和密度计算', 'Theme and density dependent'],

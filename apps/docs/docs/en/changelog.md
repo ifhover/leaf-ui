@@ -7,6 +7,18 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.2 - 2026-11-04
+
+### Improvements
+
+- Alert now uses a borderless status-tinted background with a medium-weight (500) title in the corresponding status color. Title-only alerts use tighter spacing and the same radius as inputs; alerts with descriptions use a larger title, more padding and a wider title-to-description gap.
+- Slightly darken the default success and warning colors, with matching light/dark palettes, theme examples and design resources.
+
+### Migration notes
+
+- Alert defaults to 8px 12px padding for title-only content and 16px padding with a description, with an 8px title-to-description gap. Its default border width is now 0. Explicit component background, color, border, radius and padding overrides retain precedence; check layouts that rely on the previous spacing or title wrapping.
+- The default success base changes from `#52c41a` to `#4bb418`, and warning from `#faad14` to `#e69f12`. Semantic components and derived soft backgrounds update together. Set `theme.tokens.successColor` / `warningColor` explicitly to retain the previous colors. White text on these fills remains below the 4.5:1 normal-text contrast target; adjust `onSuccessColor` / `onWarningColor` when needed. Alert titles use the base status color, so verify their actual contrast in custom themes.
+
 ## 0.16.1 - 2026-11-03
 
 ### Improvements and fixes

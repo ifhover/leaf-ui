@@ -16,9 +16,9 @@ import { leafThemeVariables, mergeLeafTheme } from './theme';
 
 const semanticSeeds = {
   primary: '#1e964f',
-  success: '#52c41a',
+  success: '#4bb418',
   danger: '#ff4d4f',
-  warning: '#faad14',
+  warning: '#e69f12',
   info: '#1677ff',
 } as const;
 const neutralSteps = colorScaleSteps;
