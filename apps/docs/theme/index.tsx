@@ -10,9 +10,9 @@ export * from '@rspress/core/theme-original';
 export { CodeButtonGroup } from '../src/components/code-button-group';
 export { DocsNav as Nav } from '../src/components/docs-nav';
 export { DocsSidebar as Sidebar } from '../src/components/docs-sidebar';
-export { HomeLayout } from '../src/components/home';
 export { SearchButton } from '../src/components/search-button';
 export { SwitchAppearance } from '../src/components/switch-appearance';
+export { HomeLayout } from './home-layout';
 
 export function Layout(props: LayoutProps) {
   return (

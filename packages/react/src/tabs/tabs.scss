@@ -6,6 +6,7 @@
   --leaf-tabs-item-padding: initial;
   --leaf-tabs-item-gap: initial;
   --leaf-tabs-track-padding: initial;
+  --leaf-tabs-track-padding-block: initial;
   min-width: 0;
   color: var(--leaf-component-tabs-color, var(--leaf-color-text));
   font: var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) /
@@ -60,16 +61,13 @@
     &::after {
       content: '';
       position: absolute;
-      inset-inline-start: 50%;
+      inset-inline: 0;
       bottom: 0;
-      width: 18px;
-      height: var(--leaf-tabs-indicator-line, 2px);
-      border-radius: 999px;
+      height: 2px;
       background: var(
         --leaf-component-tabs-indicator-color,
         var(--leaf-color-primary-indicator, var(--leaf-color-primary))
       );
-      transform: translateX(-50%);
     }
   }
   &__tab {
@@ -234,6 +232,15 @@
       var(--leaf-component-tabs-padding, var(--leaf-tabs-track-padding, 3px)),
       var(--leaf-component-tabs-border-width, var(--leaf-border-width, 1px))
     );
+    @each $side in top, bottom {
+      --leaf-surface-padding-#{$side}: var(
+        --leaf-component-tabs-padding-#{$side},
+        var(
+          --leaf-component-tabs-padding,
+          var(--leaf-tabs-track-padding-block, var(--leaf-surface-padding))
+        )
+      );
+    }
     flex: 0 1 auto;
     box-sizing: border-box;
     --leaf-tabs-segmented-tab-height: max(
@@ -291,11 +298,41 @@
       order: 2;
     }
   }
-  &--line &__tab {
-    // The line indicator lives inside the tab box, so line tabs are slightly
-    // taller than card tabs to keep a clear gap between the label and the pill.
-    min-height: calc(var(--leaf-current-control-height) + 4px);
+  &--line > &__header {
+    position: relative;
+    &::before {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      border-block-end: 1px solid var(--leaf-component-tabs-border-color, var(--leaf-color-divider));
+      content: '';
+      pointer-events: none;
+    }
+  }
+  &--line > &__header &__indicator[data-animate='true'] {
+    transition:
+      transform calc(var(--leaf-motion-color) * 1.5) ease,
+      width calc(var(--leaf-motion-color) * 1.5) ease,
+      height calc(var(--leaf-motion-color) * 1.5) ease;
+  }
+  &--line > &__header &__tab {
+    min-height: var(--leaf-current-control-height);
+    padding-block: max(
+      0px,
+      calc((var(--leaf-current-control-height) - var(--leaf-tabs-line-height)) / 2)
+    );
+    padding-inline: 0;
+    border-radius: 0;
+    line-height: var(--leaf-tabs-line-height);
     transition: color calc(var(--leaf-motion-color) * 1.5) ease;
+    &[aria-selected='true'] {
+      text-shadow: 0 0 0.25px currentColor;
+    }
+  }
+  &--line.leaf-tabs--bottom > &__header::before,
+  &--line.leaf-tabs--bottom > &__header &__indicator::after {
+    top: 0;
+    bottom: auto;
   }
   &--card &__tab {
     gap: 6px;
@@ -333,10 +370,11 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-tabs--line .leaf-tabs__tab,
+  .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab,
   .leaf-tabs__tab,
   .leaf-tabs__close,
   .leaf-tabs__scroll-action,
+  .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__indicator[data-animate='true'],
   .leaf-tabs__indicator[data-animate='true'] {
     transition: none;
   }
@@ -344,15 +382,14 @@
 .leaf-tabs {
   --leaf-current-control-height: var(--leaf-component-tabs-height, var(--leaf-control-height));
   --leaf-current-font-size: var(--leaf-component-tabs-font-size, var(--leaf-font-size));
-  --leaf-tabs-indicator-line: 3px;
 }
 .leaf-tabs--sm {
+  --leaf-tabs-track-padding-block: 2px;
   --leaf-current-control-height: var(
     --leaf-component-tabs-height-sm,
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size-sm);
-  --leaf-tabs-indicator-line: 2px;
 }
 .leaf-tabs--lg {
   --leaf-tabs-item-padding: 18px;
@@ -363,7 +400,33 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
-  --leaf-tabs-indicator-line: 4px;
+}
+
+.leaf-tabs--line {
+  --leaf-tabs-item-gap: 32px;
+  --leaf-tabs-line-padding-block: 12px;
+  --leaf-tabs-line-height: calc(
+    var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) + 8px
+  );
+  --leaf-current-control-height: var(
+    --leaf-component-tabs-height,
+    calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+  );
+  &.leaf-tabs--sm {
+    --leaf-tabs-line-padding-block: 8px;
+    --leaf-current-font-size: var(--leaf-font-size);
+    --leaf-current-control-height: var(
+      --leaf-component-tabs-height-sm,
+      calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+    );
+  }
+  &.leaf-tabs--lg {
+    --leaf-tabs-line-padding-block: 16px;
+    --leaf-current-control-height: var(
+      --leaf-component-tabs-height-lg,
+      calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+    );
+  }
 }
 
 .leaf-tabs {
@@ -417,7 +480,7 @@
       );
     }
   }
-  &--line &__tab {
+  &--line > &__header &__tab {
     --leaf-tabs-tab-color: var(
       --leaf-component-tabs-muted-color,
       var(--leaf-component-tabs-color, var(--leaf-color-text))
@@ -475,7 +538,7 @@
   .leaf-tabs--segmented .leaf-tabs__tab[aria-selected='true'] {
     color: HighlightText;
   }
-  .leaf-tabs--line .leaf-tabs__tab[aria-selected='true'] {
+  .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected='true'] {
     color: Highlight;
   }
 }

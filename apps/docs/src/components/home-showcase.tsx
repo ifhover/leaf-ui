@@ -43,6 +43,7 @@ import './home-showcase.scss';
 export function HomeShowcase() {
   const { t } = useDocsLocale();
   const [scene, setScene] = useState('components');
+  const [workspaceVisited, setWorkspaceVisited] = useState(false);
   const { color: accent, setColor: setAccent } = useDocsTheme();
   return (
     <section
@@ -54,7 +55,10 @@ export function HomeShowcase() {
           type="card"
           aria-label={t('预览场景', 'Preview scene')}
           activeKey={scene}
-          onChange={setScene}
+          onChange={(key) => {
+            setScene(key);
+            if (key === 'workspace') setWorkspaceVisited(true);
+          }}
           items={[
             { key: 'components', label: t('组件', 'Components') },
             { key: 'workspace', label: t('工作台', 'Workspace') },
@@ -79,9 +83,7 @@ export function HomeShowcase() {
         <div hidden={scene !== 'components'}>
           <ComponentShowcase />
         </div>
-        <div hidden={scene !== 'workspace'}>
-          <WorkspaceShowcase />
-        </div>
+        <div hidden={scene !== 'workspace'}>{workspaceVisited && <WorkspaceShowcase />}</div>
       </ConfigProvider>
     </section>
   );

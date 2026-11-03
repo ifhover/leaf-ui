@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { Select } from './select';
+import { Select, type SelectOption } from './select';
 
 const options = [
   { label: '设计', value: 'design' },
@@ -10,6 +10,59 @@ const options = [
   { label: '产品', value: 'product' },
 ];
 describe('Select custom popup', () => {
+  it('refreshes selected records and keeps remote labels and callback order when options change', async () => {
+    const change = vi.fn();
+    const selected = ['product', 'design'];
+    const { rerender } = render(
+      <Select options={options} multiple value={selected} onChange={change} />,
+    );
+    const refreshed = { value: 'product', label: '新产品' };
+    const added = { value: 'new', label: '新团队' };
+    rerender(<Select options={[refreshed, added]} multiple value={selected} onChange={change} />);
+    expect(screen.getByRole('button', { name: '移除 新产品' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除 设计' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('combobox'));
+    await userEvent.click(screen.getByRole('option', { name: '新团队' }));
+    expect(change).toHaveBeenLastCalledWith(
+      ['product', 'design', 'new'],
+      [refreshed, options[0], added],
+    );
+  });
+  it('reuses search results while moving the highlight and refreshes them for new options', () => {
+    const filter = vi.fn((query: string, option: SelectOption) =>
+      String(option.label).includes(query),
+    );
+    const { rerender } = render(<Select options={options} showSearch filterOption={filter} />);
+    fireEvent.click(screen.getByRole('combobox'));
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '产品' } });
+    const option = screen.getByRole('option', { name: '产品' });
+    filter.mockClear();
+    fireEvent.mouseEnter(option);
+    expect(option).toHaveAttribute('data-highlighted', 'true');
+    expect(filter).not.toHaveBeenCalled();
+    rerender(
+      <Select
+        options={[{ value: 'updated', label: '产品二组' }]}
+        showSearch
+        filterOption={filter}
+      />,
+    );
+    expect(screen.getByRole('option', { name: '产品二组' })).toBeInTheDocument();
+    expect(filter).toHaveBeenCalled();
+  });
+  it('clears without reporting an option whose value is the empty string', () => {
+    const change = vi.fn();
+    render(
+      <Select
+        options={[{ value: '', label: 'Empty' }, ...options]}
+        defaultValue="design"
+        allowClear
+        onChange={change}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: '清除选择' }));
+    expect(change).toHaveBeenLastCalledWith('', undefined);
+  });
   it('caps selections while allowing removal and collapses extra tags', async () => {
     const change = vi.fn();
     const { container } = render(

@@ -67,4 +67,4 @@ Leaf UI 是面向桌面工具、管理后台和数据密集界面的组件库。
 - **主题色反馈：** Pagination 当前页使用主题色浅底的移动块；InputNumber 步进按钮悬停变主题色、按下缩小，应复用文字按钮反馈。
 - **装饰效果：** Upload 悬停主题色边框和拖拽光晕、InputOTP 当前格光晕偏重；LoadingBar 主题色发光；Progress 循环扫光。
 - **按下缩放：** Checkbox、Tag 关闭按钮、CheckableTag 按下缩小，Mentions 前缀放大。
-- **弹性缓动：** Modal、Tour 入场，Notification、Alert、Result 图标入场，line Tabs 指示条，Collapse 与 Menu 箭头旋转等仍使用 `--leaf-motion-spring`。
+- **弹性缓动：** Modal、Tour 入场，Notification、Alert、Result 图标入场，Collapse 与 Menu 箭头旋转等仍使用 `--leaf-motion-spring`。

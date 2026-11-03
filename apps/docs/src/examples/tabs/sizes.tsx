@@ -1,4 +1,4 @@
-import { ConfigProvider, Grid, ScrollArea, Tabs, Text } from '@ifhover/leaf-ui';
+import { Grid, ScrollArea, Tabs, Text } from '@ifhover/leaf-ui';
 import { Fragment } from 'react';
 
 const items = [
@@ -36,27 +36,15 @@ export function TabsSizes() {
         {appearances.map((appearance) => (
           <Fragment key={appearance.value}>
             <Text tone="muted">{appearance.label}</Text>
-            {sizes.map((size) => {
-              const tab = (
-                <Tabs
-                  aria-label={`${size.label}${appearance.label}`}
-                  size={size.value}
-                  type={appearance.value}
-                  items={items}
-                />
-              );
-              return (
-                <Fragment key={size.value}>
-                  {size.value === 'sm' && appearance.value === 'segmented' ? (
-                    <ConfigProvider theme={{ components: { Tabs: { padding: '2px 3px' } } }}>
-                      {tab}
-                    </ConfigProvider>
-                  ) : (
-                    tab
-                  )}
-                </Fragment>
-              );
-            })}
+            {sizes.map((size) => (
+              <Tabs
+                key={size.value}
+                aria-label={`${size.label}${appearance.label}`}
+                size={size.value}
+                type={appearance.value}
+                items={items}
+              />
+            ))}
           </Fragment>
         ))}
       </Grid>

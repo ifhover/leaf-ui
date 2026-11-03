@@ -80,12 +80,14 @@ test('link buttons brighten on hover and darken on press while respecting explic
 
 test('line Tabs use link feedback for unselected text without changing other appearances', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
-  const line = tabs('.leaf-tabs--line .leaf-tabs__tab');
+  const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
   assert.equal(
     line['--leaf-tabs-tab-color'],
     'var(--leaf-component-tabs-muted-color,var(--leaf-component-tabs-color,var(--leaf-color-text)))',
   );
-  const selected = tabs('.leaf-tabs--line .leaf-tabs__tab[aria-selected=true]');
+  const selected = tabs(
+    '.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected=true]',
+  );
   assert.equal(
     selected['--leaf-tabs-tab-color'],
     'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
@@ -98,6 +100,7 @@ test('line Tabs use link feedback for unselected text without changing other app
     assert.equal(selected[`--leaf-tabs-tab-${state}-color`], 'var(--leaf-tabs-tab-color)');
   }
   assert.equal(line.transition, 'color calc(var(--leaf-motion-color)* 1.5)ease');
+  assert.equal(selected['text-shadow'], '0 0 0.25px currentColor');
   for (const state of ['hover', 'active']) {
     const selector =
       state === 'hover'
@@ -122,7 +125,7 @@ test('line Tabs use link feedback for unselected text without changing other app
   }
 });
 
-test('Tabs increase large spacing and keep Card insets with explicit height overrides', async () => {
+test('line Tabs share sizing and an edge-to-edge underline inside and outside Card', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
   const large = tabs('.leaf-tabs--lg');
   assert.equal(large['--leaf-tabs-item-padding'], '18px');
@@ -136,27 +139,45 @@ test('Tabs increase large spacing and keep Card insets with explicit height over
     assert.match(tabs(selector).gap, /--leaf-component-tabs-gap/);
     assert.match(tabs(selector).gap, /--leaf-tabs-item-gap/);
   }
-  const card = await compiledStyles('card/card.scss');
-  assert.equal(
-    card('.leaf-card__tabs > .leaf-tabs__header .leaf-tabs__tab')['padding-inline'],
-    'var(--leaf-tabs-item-padding,10px)',
-  );
+  const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
+  assert.equal(line['padding-inline'], '0px');
+  assert.equal(line['min-height'], 'var(--leaf-current-control-height)');
   for (const [selector, suffix] of [
-    ['.leaf-card__tabs', ''],
-    ['.leaf-card__tabs.leaf-tabs--sm', '-sm'],
-    ['.leaf-card__tabs.leaf-tabs--lg', '-lg'],
+    ['.leaf-tabs--line', ''],
+    ['.leaf-tabs--line.leaf-tabs--sm', '-sm'],
+    ['.leaf-tabs--line.leaf-tabs--lg', '-lg'],
   ]) {
-    assert.equal(
-      card(selector)['--leaf-current-control-height'],
-      `var(--leaf-component-tabs-height${suffix},calc(var(--leaf-control-height${suffix})- 4px))`,
+    assert.ok(
+      tabs(selector)['--leaf-current-control-height'].startsWith(
+        `var(--leaf-component-tabs-height${suffix},`,
+      ),
     );
   }
+  const underline = tabs('.leaf-tabs__indicator::after');
+  assert.equal(underline['inset-inline'], '0px');
+  assert.equal(underline.bottom, '0px');
+  assert.equal(underline.height, '2px');
+  assert.equal(underline['border-radius'], undefined);
+  const baseline = tabs('.leaf-tabs--line > .leaf-tabs__header::before');
+  assert.equal(baseline['inset-inline'], '0px');
+  assert.equal(baseline.bottom, '0px');
   assert.equal(
-    card('.leaf-card > .leaf-card__tabs:first-child > .leaf-tabs__header')[
-      '--leaf-card-tab-heading-height'
-    ].replace(/\s+/g, ''),
-    'max(var(--leaf-current-control-height),calc(var(--leaf-card-title-line-height)+var(--leaf-card-heading-gap)*2-4px))',
+    baseline['border-block-end'],
+    '1px solid var(--leaf-component-tabs-border-color,var(--leaf-color-divider))',
   );
+  for (const selector of [
+    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header::before',
+    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header .leaf-tabs__indicator::after',
+  ]) {
+    assert.equal(tabs(selector).top, '0px');
+    assert.equal(tabs(selector).bottom, 'auto');
+  }
+  const card = await compiledStyles('card/card.scss');
+  assert.equal(card('.leaf-card__tabs')['--leaf-current-control-height'], undefined);
+  const cardHeader = card('.leaf-card__tabs > .leaf-tabs__header');
+  assert.equal(cardHeader['padding-block'], '0px');
+  assert.equal(cardHeader['min-height'], undefined);
+  assert.equal(cardHeader['border-block-end'], undefined);
   for (const property of ['padding', 'gap']) {
     assert.equal(tabs('.leaf-tabs')[`--leaf-tabs-item-${property}`], 'initial');
   }

@@ -303,54 +303,20 @@
   }
   &__tabs {
     // The navigation belongs to the heading; panes use the card's content insets.
-    --leaf-current-control-height: var(
-      --leaf-component-tabs-height,
-      calc(var(--leaf-control-height) - 4px)
-    );
-    &.leaf-tabs--sm {
-      --leaf-current-control-height: var(
-        --leaf-component-tabs-height-sm,
-        calc(var(--leaf-control-height-sm) - 4px)
-      );
-    }
-    &.leaf-tabs--lg {
-      --leaf-current-control-height: var(
-        --leaf-component-tabs-height-lg,
-        calc(var(--leaf-control-height-lg) - 4px)
-      );
-    }
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
     > .leaf-tabs__header {
       padding: var(--leaf-card-padding);
       padding-block: 0;
-      border-block-end: 1px solid
-        var(
-          --leaf-component-card-border-color,
-          var(--leaf-frame-border-color, var(--leaf-card-frame-color))
-        );
       background: var(--leaf-component-card-header-background, transparent);
       border-start-start-radius: inherit;
       border-start-end-radius: inherit;
-      // Reserve the indicator's 1px overlap with the divider without growing the bar.
-      > .leaf-tabs__viewport > .leaf-tabs__scroll {
-        margin-block-end: -1px;
-      }
-      > .leaf-tabs__viewport > .leaf-tabs__scroll > .leaf-tabs__list {
-        box-shadow: none;
-        > .leaf-scrollbar__content > .leaf-tabs__track {
-          gap: var(--leaf-spacing-md);
-          // The selected line replaces the card divider instead of stacking above it.
-          overflow: visible;
-          padding-block-end: 1px;
-        }
-      }
-      .leaf-tabs__indicator::after {
-        bottom: -1px;
-      }
-      .leaf-tabs__tab {
-        padding-inline: var(--leaf-tabs-item-padding, 10px);
-      }
+    }
+    &.leaf-tabs--line > .leaf-tabs__header::before {
+      border-block-end-color: var(
+        --leaf-component-card-border-color,
+        var(--leaf-frame-border-color, var(--leaf-card-frame-color))
+      );
     }
     > .leaf-tabs__panels > .leaf-tabs__panel {
       padding: var(--leaf-card-padding);
@@ -360,36 +326,6 @@
       > :last-child {
         margin-block-end: 0;
       }
-    }
-  }
-  & > &__tabs:first-child > .leaf-tabs__header,
-  & > &__cover + &__tabs > .leaf-tabs__header,
-  &:not(.leaf-card--headed) > &__panel > &__tabs:first-child > .leaf-tabs__header,
-  &:not(.leaf-card--headed) > &__panel > &__cover + &__tabs > .leaf-tabs__header {
-    // A replacement heading fills the whole row; the underline stays on its bottom edge.
-    --leaf-card-tab-heading-height: max(
-      var(--leaf-current-control-height),
-      calc(var(--leaf-card-title-line-height) + var(--leaf-card-heading-gap) * 2 - 4px)
-    );
-    align-items: stretch;
-    > .leaf-tabs__viewport > .leaf-tabs__scroll > .leaf-tabs__list {
-      display: flex;
-      > .leaf-scrollbar__content > .leaf-tabs__track {
-        flex-shrink: 0;
-        > .leaf-tabs__entry {
-          align-items: stretch;
-          > .leaf-tabs__tab {
-            min-height: var(--leaf-card-tab-heading-height);
-          }
-          > .leaf-tabs__close,
-          > .leaf-tabs__drag {
-            align-self: center;
-          }
-        }
-      }
-    }
-    > .leaf-tabs__extra {
-      align-self: center;
     }
   }
   &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header {

@@ -163,13 +163,17 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     () => suppliedOptions.flatMap((entry) => ('options' in entry ? [...entry.options] : [entry])),
     [suppliedOptions],
   );
-  const options = useMemo(
-    () => [
-      ...baseOptions,
-      ...created.filter((entry) => !baseOptions.some((option) => option.value === entry.value)),
-    ],
-    [baseOptions, created],
-  );
+  const options = useMemo(() => {
+    if (!created.length) return baseOptions;
+    const baseValues = new Set(baseOptions.map((option) => option.value));
+    return [...baseOptions, ...created.filter((entry) => !baseValues.has(entry.value))];
+  }, [baseOptions, created]);
+  const optionIndex = useMemo(() => {
+    const index = new Map<string, SelectOption>();
+    // Match the first option, as the previous Array.find lookup did.
+    for (const option of options) if (!index.has(option.value)) index.set(option.value, option);
+    return index;
+  }, [options]);
   const optionGroups = useMemo(
     () =>
       new Map(
@@ -199,15 +203,19 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     input,
     form,
   );
-  const values = typeof selected === 'string' ? (selected ? [selected] : []) : selected;
+  const values = useMemo(
+    () => (typeof selected === 'string' ? (selected ? [selected] : []) : selected),
+    [selected],
+  );
+  const selectedValues = useMemo(() => new Set(values), [values]);
   const atLimit =
     multiple && maxCount !== undefined && values.length >= Math.max(0, Math.floor(maxCount));
   const unavailable = (option: SelectOption) =>
-    option.disabled || (atLimit && !values.includes(option.value));
+    option.disabled || (atLimit && !selectedValues.has(option.value));
   const selectedCache = useRef(new Map<string, SelectOption>());
   const nextCache = new Map<string, SelectOption>();
   for (const key of values) {
-    const record = options.find((option) => option.value === key) ?? selectedCache.current.get(key);
+    const record = optionIndex.get(key) ?? selectedCache.current.get(key);
     if (record) nextCache.set(key, record);
   }
   selectedCache.current = nextCache;
@@ -222,22 +230,25 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     defaultOpen,
   );
   const [highlighted, setHighlighted] = useState(-1);
-  const matched =
-    !searchQuery || !showSearch || filterOption === false
-      ? options
-      : options.filter((option) =>
-          typeof filterOption === 'function'
-            ? filterOption(searchQuery, option)
-            : searchText(option).toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()),
-        );
-  const newValue = searchQuery.trim();
-  const createOption =
-    allowCreate &&
-    newValue &&
-    !options.some((option) => option.value === newValue || searchText(option) === newValue)
-      ? { value: newValue, label: newValue }
-      : null;
-  const filtered = createOption ? [...matched, createOption] : matched;
+  const { createOption, filtered } = useMemo(() => {
+    const normalizedQuery = searchQuery.toLocaleLowerCase();
+    const matched =
+      !searchQuery || !showSearch || filterOption === false
+        ? options
+        : options.filter((option) =>
+            typeof filterOption === 'function'
+              ? filterOption(searchQuery, option)
+              : searchText(option).toLocaleLowerCase().includes(normalizedQuery),
+          );
+    const newValue = searchQuery.trim();
+    const createOption =
+      allowCreate &&
+      newValue &&
+      !options.some((option) => option.value === newValue || searchText(option) === newValue)
+        ? { value: newValue, label: newValue }
+        : null;
+    return { createOption, filtered: createOption ? [...matched, createOption] : matched };
+  }, [options, searchQuery, showSearch, filterOption, allowCreate]);
   const rows = useMemo(() => {
     const entries: { key: string; option?: SelectOption; group?: ReactNode; index: number }[] = [];
     let previousGroup: ReactNode;
@@ -282,29 +293,31 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   const change = (next: readonly string[]) => {
     if (disabled || inputProps.readOnly) return;
     setSelected(multiple ? next : (next[0] ?? ''));
-    if (props.multiple)
+    if (props.multiple) {
+      const nextValues = new Set(next);
       props.onChange?.(
         [...next],
         [
           ...selectedOptions,
-          ...options.filter((option) => !values.includes(option.value)),
+          ...options.filter((option) => !selectedValues.has(option.value)),
           ...(createOption ? [createOption] : []),
-        ].filter((option) => next.includes(option.value)),
+        ].filter((option) => nextValues.has(option.value)),
       );
-    else
+    } else
       props.onChange?.(
         next[0] ?? '',
-        [...options, ...(createOption ? [createOption] : [])].find(
-          (option) => option.value === next[0],
-        ),
+        next[0] === undefined
+          ? undefined
+          : (optionIndex.get(next[0]) ??
+              (createOption?.value === next[0] ? createOption : undefined)),
       );
   };
   const selectionIndex = () =>
-    filtered.findIndex((option) => values.includes(option.value) && !unavailable(option));
+    filtered.findIndex((option) => selectedValues.has(option.value) && !unavailable(option));
   const openMenu = () => {
     if (disabled || inputProps.readOnly) return;
     const active = filtered.findIndex(
-      (option) => values.includes(option.value) && !unavailable(option),
+      (option) => selectedValues.has(option.value) && !unavailable(option),
     );
     setHighlighted(active >= 0 ? active : filtered.findIndex((option) => !unavailable(option)));
     setOpen(true);
@@ -324,7 +337,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     }
     change(
       multiple
-        ? values.includes(option.value)
+        ? selectedValues.has(option.value)
           ? values.filter((value) => value !== option.value)
           : [...values, option.value]
         : [option.value],
@@ -353,11 +366,11 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
       aria-setsize={filtered.length}
       type="button"
       role="option"
-      aria-selected={values.includes(option.value)}
-      aria-disabled={option.disabled || (atLimit && !values.includes(option.value)) || undefined}
+      aria-selected={selectedValues.has(option.value)}
+      aria-disabled={unavailable(option) || undefined}
       data-highlighted={highlighted === index || undefined}
       className="leaf-floating__option"
-      disabled={option.disabled || (atLimit && !values.includes(option.value))}
+      disabled={unavailable(option)}
       tabIndex={-1}
       onMouseEnter={() => {
         if (!unavailable(option)) setHighlighted(index);
@@ -577,7 +590,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
               ) {
                 const last = [...values]
                   .reverse()
-                  .find((value) => !options.find((option) => option.value === value)?.disabled);
+                  .find((value) => !optionIndex.get(value)?.disabled);
                 if (last) {
                   event.preventDefault();
                   change(values.filter((value) => value !== last));

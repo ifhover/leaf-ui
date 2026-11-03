@@ -7,6 +7,20 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.1 - 2026-11-03
+
+### Improvements and fixes
+
+- Line Tabs follow Ant Design sizing and selection feedback, with a continuous divider, an underline spanning the tab width and motion without overshoot. Embedded Card tabs share the sizing rules of standalone tabs.
+- Small segmented Tabs use less vertical padding, including the format switcher in ColorPicker. Size examples now show component defaults directly.
+- Select and Transfer reuse option lookups, selection sets and search results to reduce repeated work in large lists. Collapsed selection tags cache their widths and refresh them when content, fonts or regional configuration changes.
+- The documentation site loads its homepage on demand and mounts the workspace preview on first use, reducing the initial content loaded by ordinary component pages.
+
+### Migration
+
+- Default small / medium / large line Tabs heights change to 38 / 46 / 56px. Small and medium tabs share the base font size. Labels have zero horizontal padding, the default item gap is 32px, and the selection underline is a rectangular 2px line. Card no longer adjusts Tabs heights or imposes a heading-based minimum. Check custom styles that depend on the previous height, padding or indicator shape; explicit component height, font size and gap overrides retain precedence.
+- Default vertical padding for small segmented Tabs changes from 3px to 2px; horizontal padding remains 3px. Explicit component padding overrides retain precedence.
+
 ## 0.16.0 - 2026-11-03
 
 ### Added and improved

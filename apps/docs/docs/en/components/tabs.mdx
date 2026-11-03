@@ -18,7 +18,7 @@ Switch content within one region.
 
 ## Basic usage
 
-Define labels and content with `items`; select a tab to switch panels. Unselected line tabs use body text color, then the lighter theme color on hover and the darker theme color when pressed, with a default color transition of 300ms. Selected tabs retain the theme color.
+Define labels and content with `items`; select a tab to switch panels. Unselected line tabs use body text color, then the lighter theme color on hover and the darker theme color when pressed, with a default color transition of 300ms. Selected tabs use the theme color and an underline spanning the tab width. A continuous divider runs along the bottom of the tab bar.
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
@@ -33,7 +33,7 @@ Define labels and content with `items`; select a tab to switch panels. Unselecte
 
 ### Sizes
 
-Use `size` to set the tab control size. Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
+Use `size` to set the tab control size. Small and medium line tabs share a font size and differ in vertical spacing; large line tabs increase both the font size and vertical spacing. Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
 
 <ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 

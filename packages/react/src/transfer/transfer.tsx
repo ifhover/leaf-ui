@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useId, useMemo, useRef, useState } from 'react';
 import { ButtonControl } from '../button/button';
 import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
 import { useComponentProps } from '../config-provider/component-defaults';
@@ -44,11 +44,12 @@ export interface TransferProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onC
   required?: boolean;
   oneWay?: boolean;
 }
+const empty: readonly string[] = [];
 export function Transfer(rawProps: TransferProps) {
   const {
     items,
     value,
-    defaultValue = [],
+    defaultValue = empty,
     onChange,
     selectedKeys,
     onSelectionChange,
@@ -77,11 +78,38 @@ export function Transfer(rawProps: TransferProps) {
   const [internal, setInternal] = useState<readonly string[]>([]);
   const selected = selectedKeys ?? internal;
   const [queries, setQueries] = useState(['', '']);
-  useListMotion(
-    root,
-    JSON.stringify([current, queries, items.map((item) => item.key)]),
-    virtual ? '[data-no-transfer-motion]' : '.leaf-transfer__item[data-motion-key]',
+  const currentKeys = useMemo(() => new Set(current), [current]);
+  const checkedKeys = useMemo(() => new Set(selected), [selected]);
+  const searchableItems = useMemo(
+    () =>
+      items.map((item) => ({
+        item,
+        text: `${item.searchLabel ?? (typeof item.label === 'string' ? item.label : item.key)} ${item.description ?? ''}`.toLocaleLowerCase(),
+      })),
+    [items],
   );
+  const panels = useMemo(() => {
+    const lists: [TransferItem[], TransferItem[]] = [[], []];
+    const normalizedQueries = queries.map((query) => query.toLocaleLowerCase());
+    for (const { item, text } of searchableItems) {
+      const side = currentKeys.has(item.key) ? 1 : 0;
+      if (
+        filterOption
+          ? filterOption(queries[side] ?? '', item)
+          : text.includes(normalizedQueries[side] ?? '')
+      )
+        lists[side].push(item);
+    }
+    return [
+      { list: lists[0], enabled: lists[0].filter((item) => !item.disabled) },
+      { list: lists[1], enabled: lists[1].filter((item) => !item.disabled) },
+    ] as const;
+  }, [searchableItems, currentKeys, queries, filterOption]);
+  const motionKey = useMemo(
+    () => (virtual ? undefined : JSON.stringify([current, queries, items.map((item) => item.key)])),
+    [virtual, current, queries, items],
+  );
+  useListMotion(root, motionKey, virtual ? '' : '.leaf-transfer__item[data-motion-key]');
   const select = (keys: string[]) => {
     if (selectedKeys === undefined) setInternal(keys);
     onSelectionChange?.(keys);
@@ -91,41 +119,34 @@ export function Transfer(rawProps: TransferProps) {
       .filter(
         (item) =>
           !item.disabled &&
-          selected.includes(item.key) &&
-          current.includes(item.key) === (direction === 'left'),
+          checkedKeys.has(item.key) &&
+          currentKeys.has(item.key) === (direction === 'left'),
       )
       .map((item) => item.key);
     if (!moved.length || disabled) return;
+    const movedKeys = new Set(moved);
     const next =
-      direction === 'right'
-        ? [...current, ...moved]
-        : current.filter((key) => !moved.includes(key));
+      direction === 'right' ? [...current, ...moved] : current.filter((key) => !movedKeys.has(key));
     setCurrent(next);
-    select(selected.filter((key) => !moved.includes(key)));
+    select(selected.filter((key) => !movedKeys.has(key)));
     onChange?.([...next], { direction, movedKeys: moved });
   };
   const panel = (side: 0 | 1) => {
     const query = queries[side] ?? '';
-    const list = items.filter(
-      (item) =>
-        current.includes(item.key) === (side === 1) &&
-        (filterOption
-          ? filterOption(query, item)
-          : `${item.searchLabel ?? (typeof item.label === 'string' ? item.label : item.key)} ${item.description ?? ''}`
-              .toLocaleLowerCase()
-              .includes(query.toLocaleLowerCase())),
+    const { list, enabled } = panels[side];
+    const checkedCount = enabled.reduce(
+      (count, item) => count + Number(checkedKeys.has(item.key)),
+      0,
     );
-    const enabled = list.filter((item) => !item.disabled);
-    const checked = enabled.filter((item) => selected.includes(item.key));
     const row = (item: TransferItem) => (
       <div
         className="leaf-transfer__item"
         data-motion-key={item.key}
-        data-selected={selected.includes(item.key) ? '' : undefined}
+        data-selected={checkedKeys.has(item.key) ? '' : undefined}
       >
         <Checkbox
           disabled={disabled || item.disabled}
-          checked={selected.includes(item.key)}
+          checked={checkedKeys.has(item.key)}
           onChange={(event) =>
             select(
               event.target.checked
@@ -147,21 +168,22 @@ export function Transfer(rawProps: TransferProps) {
           <Checkbox
             aria-label={t('transfer.selectAllVisibleItems')}
             disabled={disabled || !enabled.length}
-            checked={enabled.length > 0 && checked.length === enabled.length}
-            indeterminate={checked.length > 0 && checked.length < enabled.length}
-            onChange={(event) =>
+            checked={enabled.length > 0 && checkedCount === enabled.length}
+            indeterminate={checkedCount > 0 && checkedCount < enabled.length}
+            onChange={(event) => {
+              const enabledKeys = new Set(enabled.map((item) => item.key));
               select(
                 event.target.checked
-                  ? [...new Set([...selected, ...enabled.map((item) => item.key)])]
-                  : selected.filter((key) => !enabled.some((item) => item.key === key)),
-              )
-            }
+                  ? [...new Set([...selected, ...enabledKeys])]
+                  : selected.filter((key) => !enabledKeys.has(key)),
+              );
+            }}
           />
           <span id={`${id}-${side}`}>
             {titles?.[side] ?? (side === 0 ? t('transfer.available') : t('transfer.selected'))}
           </span>
           <small>
-            {checked.length ? `${checked.length} / ` : ''}
+            {checkedCount ? `${checkedCount} / ` : ''}
             {list.length}
           </small>
         </header>
@@ -233,8 +255,7 @@ export function Transfer(rawProps: TransferProps) {
           disabled={
             disabled ||
             !items.some(
-              (item) =>
-                !item.disabled && selected.includes(item.key) && !current.includes(item.key),
+              (item) => !item.disabled && checkedKeys.has(item.key) && !currentKeys.has(item.key),
             )
           }
           onClick={() => move('right')}
@@ -248,8 +269,7 @@ export function Transfer(rawProps: TransferProps) {
             disabled={
               disabled ||
               !items.some(
-                (item) =>
-                  !item.disabled && selected.includes(item.key) && current.includes(item.key),
+                (item) => !item.disabled && checkedKeys.has(item.key) && currentKeys.has(item.key),
               )
             }
             onClick={() => move('left')}
