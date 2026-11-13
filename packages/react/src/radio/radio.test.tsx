@@ -10,6 +10,13 @@ const options = [
   { label: '自定义', value: 'custom', disabled: true },
 ];
 describe('RadioGroup', () => {
+  it('keeps an empty group visually and semantically unselected', () => {
+    render(<RadioGroup label="外观" options={options} />);
+    for (const radio of screen.getAllByRole('radio')) {
+      expect(radio).not.toBeChecked();
+    }
+  });
+
   it('supports native arrow keys, mutual exclusion and group labels', async () => {
     render(<RadioGroup label="外观" options={options} defaultValue="light" />);
     expect(screen.getByRole('group', { name: '外观' })).toBeInTheDocument();

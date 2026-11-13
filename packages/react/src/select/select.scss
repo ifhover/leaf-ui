@@ -128,7 +128,7 @@
     transform: none;
   }
   &--multiple {
-    @include selection.trigger-padding('select', 30px);
+    @include selection.trigger-padding('select', 30px, var(--leaf-density-field-padding));
   }
   &--multiple &__input {
     height: max(

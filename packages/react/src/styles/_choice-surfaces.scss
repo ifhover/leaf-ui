@@ -2,7 +2,8 @@
 
 @mixin item(
   $component,
-  $checked-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+  $checked-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+  $supports-indeterminate: false
 ) {
   &__copy {
     min-width: 0;
@@ -82,9 +83,13 @@
       border-color: var(--leaf-color-border-hover);
       background: var(--leaf-color-surface-muted);
     }
-    &:has(.leaf-#{$component}__input:checked),
-    &:has(.leaf-#{$component}__input:indeterminate) {
+    &:has(.leaf-#{$component}__input:checked) {
       border-color: $checked-border;
+    }
+    @if $supports-indeterminate {
+      &:has(.leaf-#{$component}__input:indeterminate) {
+        border-color: $checked-border;
+      }
     }
     &:has(.leaf-#{$component}__input:focus-visible) {
       @include mixins.focus-ring;
@@ -96,9 +101,13 @@
   @media (forced-colors: active) {
     &--card {
       border-color: ButtonBorder;
-      &:has(.leaf-#{$component}__input:checked),
-      &:has(.leaf-#{$component}__input:indeterminate) {
+      &:has(.leaf-#{$component}__input:checked) {
         border-color: Highlight;
+      }
+      @if $supports-indeterminate {
+        &:has(.leaf-#{$component}__input:indeterminate) {
+          border-color: Highlight;
+        }
       }
       &:has(.leaf-#{$component}__input:focus-visible) {
         outline-color: Highlight;

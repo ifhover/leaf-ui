@@ -1,10 +1,10 @@
-@mixin trigger-padding($component, $inline-end) {
+@mixin trigger-padding($component, $inline-end, $inline-start: 3px) {
   padding-block: var(--leaf-component-#{$component}-padding-top, 3px)
     var(--leaf-component-#{$component}-padding-bottom, 3px);
-  padding-inline: var(--leaf-component-#{$component}-padding-left, 3px)
+  padding-inline: var(--leaf-component-#{$component}-padding-left, #{$inline-start})
     var(--leaf-component-#{$component}-padding-right, #{$inline-end});
   &:where([dir='rtl']) {
-    padding-inline: var(--leaf-component-#{$component}-padding-right, 3px)
+    padding-inline: var(--leaf-component-#{$component}-padding-right, #{$inline-start})
       var(--leaf-component-#{$component}-padding-left, #{$inline-end});
   }
 }

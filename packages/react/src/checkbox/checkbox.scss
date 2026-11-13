@@ -1,8 +1,8 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/choice-surfaces';
 .leaf-checkbox {
-  @include mixins.choice(checkbox);
-  @include choice-surfaces.item(checkbox);
+  @include mixins.choice(checkbox, $supports-indeterminate: true);
+  @include choice-surfaces.item(checkbox, $supports-indeterminate: true);
   &__input {
     border-radius: var(--leaf-choice-radius, 5px);
     box-shadow: var(--leaf-shadow-xs);
@@ -80,5 +80,5 @@
 }
 
 .leaf-checkbox {
-  @include mixins.choice-states(checkbox);
+  @include mixins.choice-states(checkbox, $supports-indeterminate: true);
 }

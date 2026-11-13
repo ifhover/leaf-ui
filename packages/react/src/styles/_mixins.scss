@@ -572,12 +572,15 @@
   }
 }
 
+// Native radios match :indeterminate when their group has no checked option;
+// only controls with an explicit mixed state should opt into that selector.
 @mixin choice(
   $component: choice,
   $checked-border: var(
       --leaf-frame-border-color,
       var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-    )
+    ),
+  $supports-indeterminate: false
 ) {
   @include control-size;
   box-sizing: border-box;
@@ -625,10 +628,15 @@
       box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
       scale var(--leaf-motion-fast) var(--leaf-motion-spring);
 
-    &:checked,
-    &:indeterminate {
+    &:checked {
       border-color: $checked-border;
       background: var(--leaf-color-primary);
+    }
+    @if $supports-indeterminate {
+      &:indeterminate {
+        border-color: $checked-border;
+        background: var(--leaf-color-primary);
+      }
     }
 
     &:focus-visible {
@@ -660,7 +668,8 @@
       --leaf-frame-border-color,
       var(--leaf-color-primary-indicator, var(--leaf-color-primary))
     ),
-  $feedback-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+  $feedback-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+  $supports-indeterminate: false
 ) {
   @include choice-label-states($component);
   &__input {
@@ -677,10 +686,15 @@
       var(--leaf-control-shadow, var(--leaf-shadow-xs))
     );
     box-shadow: var(--leaf-choice-shadow);
-    &:checked,
-    &:indeterminate {
+    &:checked {
       --leaf-choice-background: var(--leaf-color-primary);
       --leaf-choice-border: #{$checked-border};
+    }
+    @if $supports-indeterminate {
+      &:indeterminate {
+        --leaf-choice-background: var(--leaf-color-primary);
+        --leaf-choice-border: #{$checked-border};
+      }
     }
     &:focus-visible:not(:disabled) {
       @include state-paint(
@@ -693,6 +707,8 @@
       );
     }
     &:disabled {
+      --leaf-choice-background: var(--leaf-color-surface-muted);
+      --leaf-choice-border: var(--leaf-color-border);
       @include state-paint(
         $component,
         disabled,
@@ -701,6 +717,16 @@
         var(--leaf-choice-border),
         var(--leaf-choice-shadow)
       );
+    }
+    &:disabled:checked {
+      --leaf-choice-background: var(--leaf-color-border);
+      --leaf-choice-border: var(--leaf-color-border);
+    }
+    @if $supports-indeterminate {
+      &:disabled:indeterminate {
+        --leaf-choice-background: var(--leaf-color-border);
+        --leaf-choice-border: var(--leaf-color-border);
+      }
     }
   }
   &:hover:not([data-disabled]) &__input:not(:disabled):where(:not(:focus-visible)) {

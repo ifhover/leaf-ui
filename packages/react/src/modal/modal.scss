@@ -8,13 +8,21 @@
   position: fixed;
   inset: 0;
   z-index: var(--leaf-z-index-modal, 1100);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow: auto;
   padding: 24px;
-  // A larger bottom inset raises the visual center without clipping tall dialogs.
-  padding-block-end: clamp(24px, 16dvh, 160px);
+  // Flexible spacers preserve the raised center, then yield to tall dialogs.
+  &::before,
+  &::after {
+    content: '';
+    flex: 1 1 0px;
+    pointer-events: none;
+  }
+  &::after {
+    flex-basis: calc(clamp(24px, 16dvh, 160px) - 24px);
+  }
   &[data-state='closing'] {
     pointer-events: none;
   }
@@ -38,7 +46,8 @@
   position: relative;
   box-sizing: border-box;
   max-width: 100%;
-  max-height: calc(100dvh - 24px - clamp(24px, 16dvh, 160px));
+  max-height: calc(100dvh - 48px);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   border: var(--leaf-component-modal-border-width, var(--leaf-border-width, 1px)) solid

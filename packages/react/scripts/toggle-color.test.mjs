@@ -37,6 +37,11 @@ test('Radio uses primary borders and Ant Design selection timing without press s
   );
   assert.equal(radio('.leaf-radio__input:checked ~ .leaf-radio__mark').transform, 'scale(1)');
   assert.equal(mark.background, 'var(--leaf-color-on-primary)');
+  assert.throws(() => radio('.leaf-radio__input:indeterminate'), /missing compiled rule/u);
+  assert.throws(
+    () => radio('.leaf-radio--card:has(.leaf-radio__input:indeterminate)'),
+    /missing compiled rule/u,
+  );
 
   // The shared mixins retain Checkbox's existing indicator and frame overrides.
   const checkbox = await compiledStyles('checkbox/checkbox.scss');
@@ -44,6 +49,32 @@ test('Radio uses primary borders and Ant Design selection timing without press s
     checkbox('.leaf-checkbox__input:checked')['border-color'],
     'var(--leaf-frame-border-color,var(--leaf-color-primary-indicator,var(--leaf-color-primary)))',
   );
+  assert.equal(
+    checkbox('.leaf-checkbox__input:indeterminate')['border-color'],
+    'var(--leaf-frame-border-color,var(--leaf-color-primary-indicator,var(--leaf-color-primary)))',
+  );
+  assert.equal(
+    checkbox('.leaf-checkbox--card:has(.leaf-checkbox__input:indeterminate)')['border-color'],
+    'var(--leaf-color-primary-indicator,var(--leaf-color-primary))',
+  );
+  for (const [component, file] of [
+    ['checkbox', 'checkbox/checkbox.scss'],
+    ['radio', 'radio/radio.scss'],
+  ]) {
+    const choice = await compiledStyles(file);
+    const disabled = choice(`.leaf-${component}__input:disabled`);
+    assert.equal(disabled['--leaf-choice-background'], 'var(--leaf-color-surface-muted)');
+    assert.equal(disabled['--leaf-choice-border'], 'var(--leaf-color-border)');
+    const selectedDisabledSelectors = [`.leaf-${component}__input:disabled:checked`];
+    if (component === 'checkbox') {
+      selectedDisabledSelectors.push(`.leaf-${component}__input:disabled:indeterminate`);
+    }
+    for (const selector of selectedDisabledSelectors) {
+      const selectedDisabled = choice(selector);
+      assert.equal(selectedDisabled['--leaf-choice-background'], 'var(--leaf-color-border)');
+      assert.equal(selectedDisabled['--leaf-choice-border'], 'var(--leaf-color-border)');
+    }
+  }
 });
 
 test('compiled switch pairs a neutral off track with a light thumb in both appearances', async () => {
