@@ -1389,4 +1389,15 @@ describe('DataTable TanStack adapter', () => {
       '2',
     );
   });
+
+  it('keeps pagination at md for lg and md tables and uses sm for sm tables', () => {
+    const view = render(<DataTable data={data} columns={columns} rowKey="id" size="lg" />);
+    const nav = () => screen.getByRole('navigation');
+    expect(nav()).toHaveClass('leaf-pagination--md');
+    expect(nav()).not.toHaveClass('leaf-pagination--lg');
+    view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="md" />);
+    expect(nav()).toHaveClass('leaf-pagination--md');
+    view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="sm" />);
+    expect(nav()).toHaveClass('leaf-pagination--sm');
+  });
 });

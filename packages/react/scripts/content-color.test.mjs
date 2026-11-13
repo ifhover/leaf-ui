@@ -55,9 +55,9 @@ test('headers use base typography and taller size-dependent padding', async () =
   assert.equal(table('.leaf-table')['--leaf-table-padding-block'], '16px');
   assert.equal(table('.leaf-table')['--leaf-table-padding-inline'], '16px');
   assert.equal(table('.leaf-table--sm')['--leaf-table-padding-block'], '8px');
-  assert.equal(table('.leaf-table--sm')['--leaf-table-padding-inline'], '8px');
+  assert.equal(table('.leaf-table--sm')['--leaf-table-padding-inline'], '12px');
   assert.equal(table('.leaf-table--md')['--leaf-table-padding-block'], '12px');
-  assert.equal(table('.leaf-table--md')['--leaf-table-padding-inline'], '8px');
+  assert.equal(table('.leaf-table--md')['--leaf-table-padding-inline'], '14px');
 });
 
 test('bordered tables use one neutral grid and suppress leaf-header split lines', async () => {
@@ -105,6 +105,18 @@ test('tables retain theme-aware ink, stripes and explicit divider paint override
   assert.equal(
     palette['--leaf-table-striped-background'],
     'color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))',
+  );
+  assert.equal(
+    palette['--leaf-table-hover-background'],
+    'color-mix(in srgb,var(--leaf-table-text)4%,var(--leaf-table-surface))',
+  );
+  assert.equal(
+    palette['--leaf-table-selected-background'],
+    'color-mix(in srgb,var(--leaf-color-primary)6%,var(--leaf-table-surface))',
+  );
+  assert.equal(
+    palette['--leaf-table-selected-hover-background'],
+    'color-mix(in srgb,var(--leaf-color-primary)10%,var(--leaf-table-surface))',
   );
   assert.equal(
     table('.leaf-table--striped .leaf-table__body > .leaf-table__row > .leaf-table__cell')[

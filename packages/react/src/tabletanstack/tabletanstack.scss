@@ -83,21 +83,30 @@
     flex: none;
     flex-direction: column;
     align-items: center;
+    gap: 2px;
     color: var(--leaf-color-text-subtle);
     line-height: 0;
     svg {
+      display: block;
       fill: currentColor;
       stroke: none;
+      opacity: 0.6;
+      transition:
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
       &[data-active] {
         color: var(--leaf-color-primary);
+        opacity: 1;
       }
     }
   }
-  &__sort:hover &__sort-icons {
-    color: var(--leaf-color-text-muted);
+  &__sort:hover &__sort-icons svg:not([data-active]) {
+    opacity: 0.9;
+  }
+  &__sort[data-sorted] &__sort-icons svg:not([data-active]) {
+    opacity: 0.35;
   }
   &__sort-down {
-    margin-block-start: -4px;
     rotate: 180deg;
   }
   &__utility {
@@ -200,6 +209,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-data-table__sort,
+  .leaf-data-table__sort-icons svg,
   .leaf-data-table__expand-icon,
   .leaf-data-table__resize::after {
     transition: none;

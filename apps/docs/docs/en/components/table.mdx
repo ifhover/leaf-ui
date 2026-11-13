@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TableBasic } from '../../../src/examples/en/table/basic';
 import { TableSimple } from '../../../src/examples/en/table/simple';
+import { TableSizes } from '../../../src/examples/en/table/sizes';
 import { TableSorting } from '../../../src/examples/en/table/sorting';
 import { TableSelection } from '../../../src/examples/en/table/selection';
 import { TableExpansion } from '../../../src/examples/en/table/expansion';
@@ -53,6 +54,17 @@ Fine row dividers are shown by default; set `striped` to switch to alternating r
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/table/simple.tsx"
+```
+
+</ComponentExample>
+
+### Sizes
+
+Supports `lg` (default), `md`, and `sm` padding densities. Embedded pagination stays `md` for both `lg` and `md` tables, and switches to `sm` for `sm` tables.
+
+<ComponentExample exampleId="sizes" preview={<TableSizes />} fileName="sizes.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/table/sizes.tsx"
 ```
 
 </ComponentExample>
@@ -364,7 +376,7 @@ Configure the estimated virtual row height and overscan.
 See <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a> (opens in a new tab) for general display options. The table manages pagination state automatically; only differences are listed below:
 
 - `total`, `current`, `pageSize`, and `onChange` are owned by the table instance; configure initial pagination via `initialState.pagination`.
-- `showSizeChanger` defaults to true, and `size` inherits from DataTable.
+- `showSizeChanger` defaults to true; `size` defaults to `md` for `lg` and `md` tables and `sm` for `sm` tables.
 - When total count is unknown (`pageCount: -1`), only Previous and Next buttons are shown; `hasNextPage` explicitly controls whether the Next button is enabled.
 
 | Property | Type | Default | Description |

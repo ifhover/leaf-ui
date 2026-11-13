@@ -44,12 +44,12 @@
 
   &--sm {
     --leaf-table-padding-block: 8px;
-    --leaf-table-padding-inline: 8px;
+    --leaf-table-padding-inline: 12px;
   }
 
   &--md {
     --leaf-table-padding-block: 12px;
-    --leaf-table-padding-inline: 8px;
+    --leaf-table-padding-inline: 14px;
   }
 
   &__scroll-area {
@@ -119,7 +119,7 @@
       --leaf-table-row-background,
       var(--leaf-table-row-base, var(--leaf-table-surface))
     );
-    transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
     &[data-pinned] {
       position: sticky;
       z-index: 1;

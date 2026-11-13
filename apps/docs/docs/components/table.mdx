@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TableBasic } from '../../src/examples/table/basic';
 import { TableSimple } from '../../src/examples/table/simple';
+import { TableSizes } from '../../src/examples/table/sizes';
 import { TableSorting } from '../../src/examples/table/sorting';
 import { TableSelection } from '../../src/examples/table/selection';
 import { TableExpansion } from '../../src/examples/table/expansion';
@@ -53,6 +54,17 @@ npm install @tanstack/react-table@^8.21.3
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/table/simple.tsx"
+```
+
+</ComponentExample>
+
+### 不同尺寸
+
+支持 `lg`（默认）、`md` 与 `sm` 三种行高与间距密度。内部分页器在 `lg` 与 `md` 表格下保持 `md` 尺寸，在 `sm` 表格下同步切换为 `sm`。
+
+<ComponentExample exampleId="sizes" preview={<TableSizes />} fileName="sizes.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/sizes.tsx"
 ```
 
 </ComponentExample>
@@ -364,7 +376,7 @@ const columns = [
 通用展示参数见 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>。表格自动管理分页状态，此处列出与通用分页器的差异：
 
 - `total`、`current`、`pageSize` 和 `onChange` 由表格实例统一接管，初始分页在实例的 `initialState.pagination` 中配置。
-- `showSizeChanger` 默认开启，`size` 默认跟随 DataTable。
+- `showSizeChanger` 默认开启；`size` 在 `lg` 与 `md` 表格下默认为 `md`，在 `sm` 表格下为 `sm`。
 - 总数未知（`pageCount: -1`）时仅显示上一页与下一页按钮，可通过 `hasNextPage` 控制下一页是否可用。
 
 | 属性 | 类型 | 默认值 | 说明 |

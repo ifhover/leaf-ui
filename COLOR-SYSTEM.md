@@ -85,7 +85,7 @@ Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和�
 
 内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。内容容器的柔化边框与普通 Modal 的分区线复用 `softened-frame-color`，随实际局部表面减淡；Confirm 不继承 Modal 的分区线调整。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头复用 `subtle-action-background`，将当前内容面与 `surface-muted` 等比混合；表格横线、表头短分割线和 bordered 网格共用柔化后的 divider，显式组件与全局边框色优先。不在 Table 内强制去色；纯灰来自默认中性基色，显式主题颜色继续继承。普通行悬停复用表头浅底，排序表头使用 `surface-muted`，排序列使用表头浅底；条纹和遮罩基于当前表格的表面与文字计算。选中行使用映射后的 `--leaf-color-primary-soft`，悬停使用 `primary-soft-hover`；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
+Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头复用 `subtle-action-background`，将当前内容面与 `surface-muted` 等比混合；表格横线、表头短分割线和 bordered 网格共用柔化后的 divider，显式组件与全局边框色优先。不在 Table 内强制去色；纯灰来自默认中性基色，显式主题颜色继续继承。普通行悬停基于当前表格表面混入 4% 表格文字色，排序表头使用 `surface-muted`，排序列使用表头浅底；条纹（2% 表格文字色）、选中（6% 主题基色，悬停 10% 主题基色）和遮罩均基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
 
 ### 共享底板与内容表面
 

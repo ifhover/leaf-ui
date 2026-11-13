@@ -31,7 +31,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
-import { ChevronRight, Triangle } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import {
   createContext,
   Fragment,
@@ -879,15 +879,13 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                         >
                           <span>{flexRender(column.columnDef.header, header.getContext())}</span>
                           <span className="leaf-data-table__sort-icons" aria-hidden="true">
-                            <Triangle
-                              size={12}
+                            <SortTriangle
                               className="leaf-data-table__sort-up"
-                              data-active={sorted === 'asc' || undefined}
+                              active={sorted === 'asc'}
                             />
-                            <Triangle
-                              size={12}
+                            <SortTriangle
                               className="leaf-data-table__sort-down"
-                              data-active={sorted === 'desc' || undefined}
+                              active={sorted === 'desc'}
                             />
                           </span>
                         </button>
@@ -972,12 +970,28 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   );
 }
 
+function SortTriangle({ className, active }: { className: string; active: boolean }) {
+  return (
+    <svg
+      width="10"
+      height="5"
+      viewBox="0 0 10 5"
+      className={className}
+      data-active={active || undefined}
+      aria-hidden="true"
+    >
+      <path d="M4.4 1.0 Q5 0.35 5.6 1.0 L8.7 4.1 Q9.15 4.65 8.4 4.65 L1.6 4.65 Q0.85 4.65 1.3 4.1 Z" />
+    </svg>
+  );
+}
+
 function DataTablePaginationControl({
   className,
   hasNextPage,
   ...props
 }: DataTablePaginationProps) {
   const { table, loading, size } = useDataTableContext();
+  const paginationSize = size === 'sm' ? 'sm' : 'md';
   const { pageIndex, pageSize } = table.getState().pagination;
   const { direction } = useLeafConfig();
   const t = useText();
@@ -1004,7 +1018,7 @@ function DataTablePaginationControl({
         className={classes('leaf-data-table__pagination', className)}
       >
         <ButtonControl
-          size={props.size ?? size}
+          size={props.size ?? paginationSize}
           variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
@@ -1013,7 +1027,7 @@ function DataTablePaginationControl({
         </ButtonControl>
         <span>{pageIndex + 1}</span>
         <ButtonControl
-          size={props.size ?? size}
+          size={props.size ?? paginationSize}
           variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
           disabled={props.disabled || loading || !(hasNextPage ?? table.getCanNextPage())}
           onClick={() => table.nextPage()}
@@ -1031,7 +1045,7 @@ function DataTablePaginationControl({
   return (
     <Pagination
       showSizeChanger
-      size={size}
+      size={paginationSize}
       {...props}
       className={classes('leaf-data-table__pagination', className)}
       total={total}
