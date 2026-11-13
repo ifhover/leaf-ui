@@ -7,6 +7,20 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.4 - 2026-11-14
+
+### Backfilled improvements
+
+- Restored the high priority style, color-role, radius, surface hierarchy and interaction updates that were committed on `0.15.1` but missed from the previous release, covering forms, selectors, overlays, Tabs, Transfer, Upload, Slider, Progress, Modal and Drawer, with matching bilingual API, theme and design-resource documentation.
+- Unified clean white content surfaces, border and divider hierarchy, and restrained motion feedback. Tabs now support `tone` / `shape`; Transfer uses a two-column single-surface panel; theme tokens and color audit baselines are synchronized.
+- Documentation deployment now builds only the current `@ifhover/leaf-ui` `latest` release, producing the root site and its `/v/X.Y.Z/` snapshot without fetching or deploying older documentation.
+
+### Migration notes
+
+- The base radius changes from `8px` to `10px`, with `8 / 10 / 12px` control-size steps. Check custom styles that depend on the previous radius, borders, shadows or gray surfaces; explicit component overrides retain precedence.
+- Tabs add `tone?: 'soft' | 'solid'` and `shape?: 'default' | 'pill'`; `card` and `segmented` variants use a themed soft selection surface by default. Transfer, Slider, Progress, Upload, Modal, Drawer and selection components also update their default surfaces or motion feedback; use explicit tokens and props when preserving a previous layout.
+- The documentation site no longer publishes older version paths. For older APIs, use the package version and type declarations installed by the project.
+
 ## 0.16.3 - 2026-11-14
 
 ### Improvements and fixes
