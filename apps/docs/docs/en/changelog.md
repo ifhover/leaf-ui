@@ -7,6 +7,19 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.3 - 2026-11-14
+
+### Improvements and fixes
+
+- Refined DataTable sorting carets, row hover and selection feedback with surface-local neutral and theme blends, and aligned horizontal padding across sizes.
+- DataTable's embedded pagination uses `md` for `lg` and `md` tables and `sm` for `sm` tables; added bilingual size examples.
+- Fixed Pagination previous and next controls so their icon-only square layout is preserved at small size, with consistent button width and padding across sizes.
+
+### Migration notes
+
+- DataTable `sm` / `md` horizontal padding changes from `8px` to `12px` / `14px`. Row hover, selection and selected-hover backgrounds now blend 4% / 6% / 10% of the table text or theme color into the current surface. Check custom styles that depend on the previous spacing or muted header fill; explicit component state overrides retain precedence.
+- Embedded DataTable pagination no longer always follows the table size: `lg` and `md` default to `md`, while `sm` defaults to `sm`. Pass `pagination.size` to override it explicitly.
+
 ## 0.16.2 - 2026-11-04
 
 ### Improvements
