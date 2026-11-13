@@ -2,7 +2,7 @@
 
 Prefer ConfigProvider's `theme.primaryColor`, `theme.borderRadius` and `theme.controlHeight` for everyday customization. Related styles derive automatically; see [theming](/en/guide/theming).
 
-Default light base colors come from `colors.ts`: primary uses `#1e964f`, success uses `#4bb418`, danger uses `#ff4d4f`, warning uses `#e69f12`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
+Default light base colors come from `colors.ts`: primary uses `#007aff`, success uses `#4bb418`, danger uses `#ff4d4f`, warning uses `#e69f12`, and info uses `#1677ff`. Component styles and static palettes consume the same `--leaf-color-*` variables instead of redeclaring semantic colors.
 
 ## LeafThemeTokens
 
@@ -22,7 +22,7 @@ Default light base colors come from `colors.ts`: primary uses `#1e964f`, success
 | `mutedTextColor` | `string` | Appearance | Main / secondary text |
 | `subtleTextColor` | `string` | — | Auxiliary text; shares the muted default and can be overridden separately. |
 | `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
-| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, layered Card canvases and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence. |
+| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Layered Card canvases and card-variant date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence. |
 | `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
 | `borderColor` | `string` | Appearance | Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence. |
 | `borderHoverColor` | `string` | — | Neutral border color on hover. |
@@ -31,8 +31,8 @@ Default light base colors come from `colors.ts`: primary uses `#1e964f`, success
 | `controlShadow` | `string` | — | Default shadow for interactive controls. |
 | `surfaceShadow` | `string` | — | Default shadow for content surfaces and popups; component elevation remains the fallback. |
 | `borderRadiusSm` | `number \| string` | `Base × 0.5` | Small / large radius override |
-| `borderRadiusMd` | `number \| string` | `Base × 1.5` | Medium radius override for content surfaces such as cards and alerts |
-| `borderRadiusLg` | `number \| string` | Base × 2 | Large radius override |
+| `borderRadiusMd` | `number \| string` | `Base × 1.4` | Medium radius override for content surfaces such as cards and alerts |
+| `borderRadiusLg` | `number \| string` | Base × 1.6 | Large radius override |
 | `controlHeightSm` | `number \| string` | Base height − 6px (minimum 1px) | Small control height override |
 | `controlHeightLg` | `number \| string` | Base height + 6px | Large control height override |
 | `fontSizeSm` | `number \| string` | `Base − 1px` | Small / large font override |

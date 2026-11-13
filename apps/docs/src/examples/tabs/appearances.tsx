@@ -19,6 +19,10 @@ export function TabsAppearances() {
         <Text tone="muted">分段</Text>
         <Tabs aria-label="分段" type="segmented" items={items} />
       </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <Text tone="muted">实底胶囊</Text>
+        <Tabs aria-label="实底胶囊" type="segmented" tone="solid" shape="pill" items={items} />
+      </Space>
     </Space>
   );
 }

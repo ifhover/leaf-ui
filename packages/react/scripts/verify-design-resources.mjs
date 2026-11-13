@@ -10,9 +10,11 @@ const root = path.resolve(import.meta.dirname, '../../..'),
 const tokens = JSON.parse(await readFile(path.join(assets, 'leaf.tokens.json'), 'utf8'));
 const studio = JSON.parse(await readFile(path.join(assets, 'leaf.tokens-studio.json'), 'utf8'));
 for (const [name, value] of Object.entries({
-  radiusSm: 4,
-  radius: 8,
-  radiusMd: 12,
+  radiusSm: 5,
+  controlRadiusSm: 8,
+  radius: 10,
+  controlRadiusLg: 12,
+  radiusMd: 14,
   radiusLg: 16,
 })) {
   assert.equal(tokens.foundation[name].$value.value, value);

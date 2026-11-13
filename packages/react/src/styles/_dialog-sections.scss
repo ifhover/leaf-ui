@@ -106,10 +106,7 @@
   &--divided > &__footer {
     @include mixins.action-footer-padding($component);
     border-block-start: 1px solid var(--leaf-dialog-divider);
-    background: var(
-      --leaf-component-#{$component}-footer-background,
-      var(--leaf-color-surface-muted)
-    );
+    background: var(--leaf-component-#{$component}-footer-background, transparent);
   }
   @media (max-width: 480px) {
     --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 10px);

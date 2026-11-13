@@ -147,6 +147,7 @@ export function Transfer(rawProps: TransferProps) {
         <Checkbox
           disabled={disabled || item.disabled}
           checked={checkedKeys.has(item.key)}
+          description={item.description}
           onChange={(event) =>
             select(
               event.target.checked
@@ -155,10 +156,7 @@ export function Transfer(rawProps: TransferProps) {
             )
           }
         >
-          <span>
-            {renderItem?.(item) ?? item.label}
-            {item.description && <small>{item.description}</small>}
-          </span>
+          {renderItem?.(item) ?? item.label}
         </Checkbox>
       </div>
     );
@@ -215,13 +213,15 @@ export function Transfer(rawProps: TransferProps) {
               renderItem={row}
               height={height}
               estimateSize={(item) =>
-                Math.max(estimateControlHeight(theme, density), item.description ? 42 : 0) + 6
+                Math.max(estimateControlHeight(theme, density), item.description ? 44 : 0) + 14
               }
               emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
             />
           ) : (
             <ScrollbarControl
+              size="sm"
               viewportClassName="leaf-transfer__list"
+              contentClassName="leaf-transfer__list-content"
               height={height}
               role="presentation"
             >

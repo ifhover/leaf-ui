@@ -1,10 +1,7 @@
 @use '../styles/mixins' as mixins;
 
 .leaf-tooltip {
-  --leaf-tooltip-radius: var(
-    --leaf-component-tooltip-radius,
-    max(0px, calc(var(--leaf-radius-sm) * 2))
-  );
+  --leaf-tooltip-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius));
   --leaf-surface-radius: var(--leaf-tooltip-radius);
   max-width: min(300px, calc(100vw - 24px));
   padding: var(--leaf-component-tooltip-padding, 7px 10px);

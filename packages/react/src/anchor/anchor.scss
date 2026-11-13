@@ -54,7 +54,7 @@
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not([aria-current]) {
       color: var(--leaf-color-primary-ink);
-      background: var(--leaf-color-option-hover);
+      background: #{mixins.choice-option-background()};
     }
     &[aria-current] {
       color: var(--leaf-color-primary-ink);
@@ -62,7 +62,7 @@
       background: var(--leaf-accent-soft-background);
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      @include mixins.focus-ring;
       outline-offset: -2px;
       border-radius: var(--leaf-radius-sm);
     }

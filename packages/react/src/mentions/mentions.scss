@@ -11,7 +11,7 @@
   width: 22px;
   height: 22px;
   border: 1px solid var(--leaf-color-border);
-  border-radius: 6px;
+  border-radius: calc(var(--leaf-radius) * 0.6);
   background: var(--leaf-color-surface-raised);
   color: var(--leaf-color-text-subtle);
   font-size: 12px;
@@ -19,14 +19,12 @@
   transition:
     color var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
 }
 .leaf-mentions__panel [aria-selected='true'] .leaf-mentions__prefix {
   background: var(--leaf-color-surface);
   color: var(--leaf-color-text);
   border-color: var(--leaf-color-border-hover);
-  transform: scale(1.06);
 }
 @media (prefers-reduced-motion: reduce) {
   .leaf-mentions__prefix {

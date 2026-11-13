@@ -100,7 +100,7 @@
     scale: 1;
     transition:
       opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-duration) var(--leaf-motion-spring);
+      scale var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   [aria-checked='false'] &__check {
     scale: 0.6;

@@ -56,15 +56,24 @@
     border: var(--leaf-component-descriptions-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-descriptions-border-color,
-        var(--leaf-frame-border-color, var(--leaf-descriptions-frame-color))
+        var(--leaf-frame-border-color, var(--leaf-color-border))
       );
     box-shadow: var(--leaf-component-descriptions-shadow, var(--leaf-surface-shadow, none));
-    border-radius: var(--leaf-component-descriptions-radius, var(--leaf-radius-md));
+    border-radius: var(
+      --leaf-component-descriptions-radius,
+      var(--leaf-current-radius, var(--leaf-radius-md))
+    );
     background: var(--leaf-component-descriptions-background, var(--leaf-color-surface));
     .leaf-descriptions__header {
       padding-block-end: 14px;
       border-bottom: 1px solid var(--leaf-descriptions-frame-color);
     }
+  }
+  &--sm {
+    --leaf-current-radius: var(--leaf-control-radius-lg);
+  }
+  &--lg {
+    --leaf-current-radius: var(--leaf-radius-lg);
   }
   &--sm &__list {
     gap: 8px 16px;

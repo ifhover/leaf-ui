@@ -25,7 +25,7 @@
     font: inherit;
     line-height: inherit;
     &::placeholder {
-      color: var(--leaf-color-text-muted);
+      color: var(--leaf-color-text-subtle);
     }
     &:disabled {
       cursor: not-allowed;
@@ -135,9 +135,13 @@
       background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
       border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
       color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing);
+      box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       background: #{mixins.choice-option-background()};
+    }
+    &:active:not(:disabled) {
+      scale: 0.94;
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -193,19 +197,10 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .leaf-date-picker__icon {
+  .leaf-date-picker__icon,
+  .leaf-date-picker__day {
     transition: none;
   }
-}
-// Touch input needs larger targets than the dense pointer layout.
-.leaf-picker__presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px;
-  border-radius: var(--leaf-radius);
-  background: var(--leaf-color-surface-muted);
-  margin: 6px;
 }
 
 .leaf-picker-presets {
@@ -214,7 +209,7 @@
   gap: 4px;
   margin: 6px;
   padding: 6px;
-  background: var(--leaf-color-surface-muted);
+  background: transparent;
   border-radius: var(--leaf-radius);
 }
 

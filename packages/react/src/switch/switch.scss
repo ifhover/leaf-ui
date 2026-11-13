@@ -146,8 +146,8 @@
     );
   }
   &__spinner {
-    width: 10px;
-    height: 10px;
+    width: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
+    height: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
     color: currentColor;
     animation: var(
       --leaf-motion-animation,

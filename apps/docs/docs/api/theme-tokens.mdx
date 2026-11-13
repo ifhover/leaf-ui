@@ -2,7 +2,7 @@
 
 日常定制优先设置 ConfigProvider 的 `theme.primaryColor`、`theme.borderRadius` 和 `theme.controlHeight`，其他样式会自动派生，见[定制主题](/guide/theming)。
 
-默认浅色基础色统一来自 `colors.ts`：主题为 `#1e964f`，成功为 `#4bb418`，危险为 `#ff4d4f`，警告为 `#e69f12`，信息为 `#1677ff`。组件样式和静态色板都消费同一组 `--leaf-color-*` 变量，不要在组件内重复声明语义色。
+默认浅色基础色统一来自 `colors.ts`：主题为 `#007aff`，成功为 `#4bb418`，危险为 `#ff4d4f`，警告为 `#e69f12`，信息为 `#1677ff`。组件样式和静态色板都消费同一组 `--leaf-color-*` 变量，不要在组件内重复声明语义色。
 
 ## LeafThemeTokens
 
@@ -22,7 +22,7 @@
 | `mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
 | `subtleTextColor` | `string` | — | 辅助文字；默认与 mutedTextColor 同值，可独立覆盖。 |
 | `surfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
-| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。 |
+| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Card layered 与 card 形态日期面板等共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。 |
 | `raisedSurfaceColor` | `string` | — | 浮层与抬升表面色。 |
 | `borderColor` | `string` | 按外观生成 | 全局外框色；显式设置时统一覆盖实色控件和弱描边外框，组件级覆盖优先。 |
 | `borderHoverColor` | `string` | — | 悬停时的中性边框色。 |
@@ -31,8 +31,8 @@
 | `controlShadow` | `string` | — | 可交互控件的默认阴影。 |
 | `surfaceShadow` | `string` | — | 内容表面与浮层的默认阴影；未设置时保留组件的分层阴影。 |
 | `borderRadiusSm` | `number \| string` | `基础圆角 × 0.5` | 单独覆盖小 / 大圆角 |
-| `borderRadiusMd` | `number \| string` | `基础圆角 × 1.5` | 单独覆盖卡片、提示等内容表面的中圆角 |
-| `borderRadiusLg` | `number \| string` | 基础圆角 × 2 | 单独覆盖大圆角 |
+| `borderRadiusMd` | `number \| string` | `基础圆角 × 1.4` | 单独覆盖卡片、提示等内容表面的中圆角 |
+| `borderRadiusLg` | `number \| string` | 基础圆角 × 1.6 | 单独覆盖大圆角 |
 | `controlHeightSm` | `number \| string` | 基础高度 − 6px，最小 1px | 单独覆盖小尺寸控件高度 |
 | `controlHeightLg` | `number \| string` | 基础高度 + 6px | 单独覆盖大尺寸控件高度 |
 | `fontSizeSm` | `number \| string` | `基础字号 − 1px` | 单独覆盖小 / 大字号 |

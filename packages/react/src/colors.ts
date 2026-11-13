@@ -14,7 +14,7 @@ import { type ColorShades, semanticColorShadeSteps } from './color-shades';
 const solidForeground = { black: '#000000', white: '#ffffff' } as const;
 export const semanticColorFamilies = ['primary', 'success', 'danger', 'warning', 'info'] as const;
 const semanticSeeds = {
-  primary: '#1e964f',
+  primary: '#007aff',
   success: '#4bb418',
   danger: '#ff4d4f',
   warning: '#e69f12',
@@ -23,37 +23,6 @@ const semanticSeeds = {
 export const colorSeeds = { ...semanticSeeds, neutral: '#707070' };
 
 export const neutralColorScale = generateColorScale(colorSeeds.neutral) as ColorScale;
-
-export const defaultColors = {
-  light: {
-    ...semanticSeeds,
-    neutral: colorSeeds.neutral,
-    'on-primary': solidForeground.white,
-    'on-danger': solidForeground.white,
-    'on-warning': solidForeground.white,
-    'on-info': solidForeground.white,
-    'on-success': solidForeground.white,
-    text: neutralColorScale[900],
-    'text-muted': neutralColorScale[600],
-    surface: solidForeground.white,
-    'surface-muted': neutralColorScale[100],
-    border: neutralColorScale[200],
-  },
-  dark: {
-    ...semanticSeeds,
-    neutral: colorSeeds.neutral,
-    'on-primary': solidForeground.white,
-    'on-danger': solidForeground.white,
-    'on-warning': solidForeground.white,
-    'on-info': solidForeground.white,
-    'on-success': solidForeground.white,
-    text: neutralColorScale[100],
-    'text-muted': neutralColorScale[400],
-    surface: neutralColorScale[900],
-    'surface-muted': neutralColorScale[800],
-    border: neutralColorScale[800],
-  },
-};
 
 const cssColorExpression = (color: string) =>
   /^(?:var|color-mix|light-dark|oklch|oklab|lab|lch|color|hwb)\(/i.test(color);
@@ -81,6 +50,37 @@ export function mixColors(
     alpha ? Math.round((x[key] * x.a * ratio + y[key] * y.a * (1 - ratio)) / alpha) : 0;
   return `rgba(${channel('r')}, ${channel('g')}, ${channel('b')}, ${Number(alpha.toFixed(4))})`;
 }
+
+export const defaultColors = {
+  light: {
+    ...semanticSeeds,
+    neutral: colorSeeds.neutral,
+    'on-primary': solidForeground.white,
+    'on-danger': solidForeground.white,
+    'on-warning': solidForeground.white,
+    'on-info': solidForeground.white,
+    'on-success': solidForeground.white,
+    text: neutralColorScale[900],
+    'text-muted': neutralColorScale[600],
+    surface: solidForeground.white,
+    'surface-muted': neutralColorScale[100],
+    border: mixColors(neutralColorScale[200], solidForeground.white, 82) ?? neutralColorScale[200],
+  },
+  dark: {
+    ...semanticSeeds,
+    neutral: colorSeeds.neutral,
+    'on-primary': solidForeground.white,
+    'on-danger': solidForeground.white,
+    'on-warning': solidForeground.white,
+    'on-info': solidForeground.white,
+    'on-success': solidForeground.white,
+    text: neutralColorScale[100],
+    'text-muted': neutralColorScale[400],
+    surface: neutralColorScale[900],
+    'surface-muted': neutralColorScale[800],
+    border: neutralColorScale[800],
+  },
+};
 
 type ColorVariables = Record<`--leaf-${string}`, string>;
 type RoleChoice = { value: string; source: string };
@@ -195,6 +195,30 @@ export function resolveColorRoles(
       step === 'white' ? solidForeground.white : neutral[step],
       step === 'white' ? 'white' : colorVariable(`neutral-${step}`),
     );
+  const surfaceValue = values['--leaf-color-surface'] ?? colors.surface ?? solidForeground.white;
+  if (!darkSurface) {
+    assign(
+      'border',
+      mixColors(neutral[200], surfaceValue, 82) ?? neutral[200],
+      'mix(--leaf-color-neutral-200, --leaf-color-surface, 82%)',
+    );
+    assign(
+      'border-hover',
+      mixColors(neutral[300], surfaceValue, 82) ?? neutral[300],
+      'mix(--leaf-color-neutral-300, --leaf-color-surface, 82%)',
+    );
+    assign(
+      'divider',
+      mixColors(neutral[200], surfaceValue, 68) ?? neutral[200],
+      'mix(--leaf-color-neutral-200, --leaf-color-surface, 68%)',
+    );
+  } else {
+    assign(
+      'divider',
+      mixColors(neutral[800], surfaceValue, 70) ?? neutral[800],
+      'mix(--leaf-color-neutral-800, --leaf-color-surface, 70%)',
+    );
+  }
 
   const surface = values['--leaf-color-surface'] ?? colors.surface ?? '';
   const muted = values['--leaf-color-surface-muted'] ?? colors['surface-muted'] ?? '';

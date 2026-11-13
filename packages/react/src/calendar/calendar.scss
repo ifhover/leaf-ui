@@ -138,6 +138,9 @@
     border-radius: calc(var(--leaf-radius-sm) + 2px);
     background: var(--leaf-segmented-background);
   }
+  &__segmented {
+    border: 1px solid var(--leaf-segmented-border);
+  }
   &__nav-group &__nav {
     width: 26px;
     height: 24px;
@@ -157,10 +160,12 @@
     &:hover {
       color: var(--leaf-color-text);
     }
+    &:active:not(:disabled) {
+      scale: 0.96;
+    }
     &[aria-pressed='true'] {
       background: var(--leaf-segmented-selected-background);
-      box-shadow: var(--leaf-shadow-xs);
-      color: var(--leaf-color-text);
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -201,7 +206,12 @@
     min-width: 0;
     background: transparent;
     cursor: pointer;
-    transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
+    transition:
+      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:active:not(:disabled) {
+      scale: 0.95;
+    }
     &:focus-visible {
       z-index: 1;
       outline: 2px solid var(--leaf-color-focus, var(--leaf-color-text-muted));

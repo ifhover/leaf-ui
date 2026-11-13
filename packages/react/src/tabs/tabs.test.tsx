@@ -132,4 +132,21 @@ describe('Tabs', () => {
     expect(within(screen.getByRole('tabpanel')).getByText('Second content')).toBeInTheDocument();
     expect(screen.queryByRole('textbox', { hidden: true })).toBeNull();
   });
+
+  it('supports solid tone and pill shape modifiers on segmented and card appearances', () => {
+    render(
+      <Tabs
+        type="segmented"
+        tone="solid"
+        shape="pill"
+        aria-label="Map scope"
+        items={[
+          { key: 'global', label: 'Global' },
+          { key: 'province', label: 'Province' },
+        ]}
+      />,
+    );
+    const root = screen.getByRole('tablist').closest('.leaf-tabs');
+    expect(root).toHaveClass('leaf-tabs--segmented', 'leaf-tabs--solid', 'leaf-tabs--pill');
+  });
 });

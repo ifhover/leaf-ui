@@ -34,8 +34,8 @@
   margin-bottom: 12px;
   opacity: 1;
   transition:
-    grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-spring),
-    margin-bottom var(--leaf-motion-slow) var(--leaf-motion-spring),
+    grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+    margin-bottom var(--leaf-motion-slow) var(--leaf-motion-easing),
     opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   @starting-style {
     grid-template-rows: 0fr;
@@ -80,7 +80,7 @@
     var(--leaf-line-height) var(--leaf-font-family);
   pointer-events: auto;
   transform: translate(0) scale(1);
-  transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+  transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
   @starting-style {
     transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
       scale(0.97);
@@ -127,7 +127,11 @@
     flex: none;
     align-self: flex-start;
     display: flex;
-    padding: 3px;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
 

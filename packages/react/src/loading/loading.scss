@@ -27,12 +27,9 @@
     animation-play-state: var(--leaf-motion-play-state);
   }
   &__content {
-    transition:
-      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-      filter var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
     &[data-loading='true'] {
       opacity: 0.45;
-      filter: blur(0.5px);
       user-select: none;
       pointer-events: none;
     }

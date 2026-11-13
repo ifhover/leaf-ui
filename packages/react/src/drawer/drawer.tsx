@@ -259,11 +259,11 @@ function DrawerSurface({
               {closable && (
                 <button
                   type="button"
-                  className="leaf-modal__close"
+                  className="leaf-drawer__close"
                   aria-label={messages.common.close}
                   onClick={onClose}
                 >
-                  <X size={18} aria-hidden="true" />
+                  <X size={16} aria-hidden="true" />
                 </button>
               )}
             </div>

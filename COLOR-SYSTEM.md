@@ -7,7 +7,7 @@
 - 同一种角色使用同一份默认配方；不因新增组件而新增一组全局颜色。
 - 不按 HEX 相同或接近判断合并。品牌与成功、边框与分隔线等不同语义保留独立入口，默认值允许共享。
 - 调色入口是 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`；业务 CSS 读取结果，不能承诺直接改基础 CSS 变量会重新运行派生算法。
-- 本规范不授权改变既定交互：输入和选择类字段（含 Textarea、Mentions、InputNumber）聚焦或展开统一使用主题色边框。普通选项使用中性反馈，Button 实底仅按下变色，链接文字悬停变亮、按下变深，描边悬停加深边框、按下仅将背景轻微变灰。
+- 本规范不授权改变既定交互：输入和选择类字段（含 Textarea、Mentions、InputNumber）聚焦或展开统一使用主题色边框；普通选项使用中性反馈，Button 实底仅按下变色，链接文字悬停变亮、按下变深，描边悬停加深边框、按下仅将背景轻微变灰（点击时的微缩反馈属于交互几何，不改变颜色角色）。
 
 ## 三层颜色架构
 
@@ -89,19 +89,19 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 
 ### 共享底板与内容表面
 
-分段 Tabs 的外轨、ColorPicker 格式切换轨道、分层 Card 与 Transfer 的外层底板、显式 card 型日期 / 时间面板的画布直接共用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为 `rgb(244, 243, 239)` 等精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+分层 `Card`（`variant="layered"`）的外层底板、显式 `panelVariant="card"` 的日期 / 时间面板画布以及保留柔和背景的分段底板使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
-Tabs 选中滑块与 Card / Transfer / 面板内层内容继续使用 `--leaf-color-surface`，保持层次。DataTable 整体直接使用该内容表面，不再保留外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
+`Segmented Tabs`、`Calendar` 视图分段、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用纯白净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用 `--leaf-segmented-border`（默认 `--leaf-color-divider`）与 `shadow-xs`。`DataTable` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
 ### 跨组件的有限配方
 
 | 配方 | 责任与实际消费者 |
 | --- | --- |
-| `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、导航、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中。分页当前页属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认 |
+| `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、导航、穿梭框（`Transfer`）选中项、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中。分页当前页属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认 |
 | `danger-soft-feedback-family` | 危险浅底反馈，供 Dropdown / Menu 危险操作、Form / Confirm 错误摘要、FileList 动作复用 |
 | `status-ink-family` / `status-label-family` | 五种语义的可读文字、浅底标签和实底前景；Typography / FileList / Tag 不再自行选择 `text-80` |
 | `panel-canvas-family` | 显式 card 型日期面板的柔和画布；Modal 与 Drawer 直接使用 surface |
-| `segmented-surface-family` | Tabs 与 ColorPicker 格式切换共用轨道、选中底和弱文字 |
+| `segmented-surface-family` | 分段 `Tabs` 与 `Calendar` 视图切换共用净白轨道（`--leaf-color-surface`）、边框（`--leaf-color-divider`）、主题浅底高亮（`--leaf-color-primary-soft`）和弱文字 |
 | `overlay-family(dialog / spotlight)` | Modal / Drawer 默认共用无模糊灰色遮罩，可显式开启模糊；Tour 保留更强的无模糊聚光遮罩 |
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
 | `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |

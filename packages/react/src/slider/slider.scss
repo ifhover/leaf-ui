@@ -5,10 +5,13 @@
   isolation: isolate;
   box-sizing: border-box;
   height: var(--leaf-control-height);
-  margin: 8px 10px 28px;
+  margin: 8px 10px;
   min-width: 0;
   color: var(--leaf-component-slider-color, var(--leaf-color-text));
   font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
+  &:not(.leaf-slider--vertical):has(.leaf-slider__mark) {
+    margin-block-end: 28px;
+  }
   &__rail {
     position: absolute;
     inset-inline: 0;
@@ -54,8 +57,9 @@
       cursor: grab;
       box-shadow: var(--leaf-shadow-xs);
       transition:
+        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
         box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+        transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     }
     &::-moz-range-track {
       background: transparent;
@@ -71,34 +75,33 @@
       cursor: grab;
       box-shadow: var(--leaf-shadow-xs);
       transition:
+        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
         box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+        transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     }
-    &:hover:not(:disabled)::-webkit-slider-thumb,
-    &:focus-visible::-webkit-slider-thumb {
-      transform: scale(1.15);
-      box-shadow: 0 0 0 5px var(--leaf-accent-halo-color);
+    &:hover:not(:disabled)::-webkit-slider-thumb {
+      border-color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
+      box-shadow: var(--leaf-shadow-sm);
     }
-    &:hover:not(:disabled)::-moz-range-thumb,
-    &:focus-visible::-moz-range-thumb {
-      transform: scale(1.15);
-      box-shadow: 0 0 0 5px var(--leaf-accent-halo-color);
+    &:hover:not(:disabled)::-moz-range-thumb {
+      border-color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
+      box-shadow: var(--leaf-shadow-sm);
     }
     &:active:not(:disabled)::-webkit-slider-thumb {
-      transform: scale(1.08);
+      transform: scale(0.96);
       cursor: grabbing;
-      box-shadow: 0 0 0 7px var(--leaf-accent-halo-active-color);
+      box-shadow: var(--leaf-shadow-xs);
     }
     &:active:not(:disabled)::-moz-range-thumb {
-      transform: scale(1.08);
+      transform: scale(0.96);
       cursor: grabbing;
-      box-shadow: 0 0 0 7px var(--leaf-accent-halo-active-color);
+      box-shadow: var(--leaf-shadow-xs);
     }
     &:focus-visible::-webkit-slider-thumb {
-      box-shadow: 0 0 0 4px var(--leaf-accent-halo-focus-color);
+      box-shadow: 0 0 0 3px var(--leaf-accent-halo-focus-color);
     }
     &:focus-visible::-moz-range-thumb {
-      box-shadow: 0 0 0 4px var(--leaf-accent-halo-focus-color);
+      box-shadow: 0 0 0 3px var(--leaf-accent-halo-focus-color);
     }
   }
   &--range &__input {
@@ -120,7 +123,7 @@
     font-variant-numeric: tabular-nums;
     transition:
       opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
   }
   &:hover &__value,
@@ -148,20 +151,19 @@
     }
     &[data-active] .leaf-slider__dot,
     &:hover:not(:disabled) .leaf-slider__dot {
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      transform: scale(1.25);
+      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
     }
   }
   &__dot {
+    box-sizing: border-box;
     position: absolute;
-    top: calc(var(--leaf-control-height) / -2 - 4px);
-    width: 4px;
-    height: 4px;
+    top: calc(var(--leaf-control-height) / -2 - 6px);
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--leaf-color-border);
     border-radius: 50%;
-    background: var(--leaf-color-border);
-    transition:
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    background: var(--leaf-color-surface);
+    transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &--vertical {
     width: 34px;
@@ -204,8 +206,8 @@
       transform: translateY(50%);
     }
     .leaf-slider__dot {
-      top: calc(50% - 2px);
-      left: -25px;
+      top: calc(50% - 4px);
+      left: -27px;
     }
     .leaf-slider__value {
       inset-inline-end: auto;

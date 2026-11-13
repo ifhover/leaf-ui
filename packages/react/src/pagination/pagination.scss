@@ -23,7 +23,7 @@
     box-sizing: border-box;
     border: var(--leaf-border-width, 1px) solid
       var(--leaf-frame-border-color, var(--leaf-accent-soft-border));
-    border-radius: var(--leaf-radius);
+    border-radius: var(--leaf-current-radius, var(--leaf-radius));
     background: var(--leaf-accent-soft-background);
     opacity: 0;
     &[data-visible='true'] {
@@ -40,6 +40,7 @@
   &__entry > .leaf-button {
     --leaf-current-control-height: inherit;
     --leaf-current-font-size: inherit;
+    --leaf-current-radius: inherit;
     --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
     min-width: var(--leaf-current-control-height);
     height: var(--leaf-current-control-height);
@@ -69,10 +70,7 @@
     }
   }
   &--outline .leaf-pagination__indicator {
-    border-color: var(
-      --leaf-frame-border-color,
-      var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-    );
+    border-color: var(--leaf-frame-border-color, var(--leaf-accent-soft-border));
   }
   &[data-disabled] &__indicator[data-visible='true'] {
     opacity: 0.45;
@@ -146,6 +144,7 @@
     var(--leaf-control-height)
   );
   --leaf-current-font-size: var(--leaf-component-pagination-font-size, var(--leaf-font-size));
+  --leaf-current-radius: var(--leaf-radius);
 }
 .leaf-pagination--sm {
   --leaf-current-control-height: var(
@@ -153,6 +152,7 @@
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size-sm);
+  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
 }
 .leaf-pagination--lg {
   --leaf-current-control-height: var(
@@ -160,6 +160,7 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
 }
 @media (forced-colors: active) {
   .leaf-pagination__indicator {

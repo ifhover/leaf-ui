@@ -164,7 +164,7 @@ describe('portable component themes', () => {
 
   it('keeps the five seeds and semantic shades and neutral scale values shared while modern roles follow appearance', () => {
     const seeds = {
-      primary: '#1e964f',
+      primary: '#007aff',
       success: '#4bb418',
       danger: '#ff4d4f',
       warning: '#e69f12',
@@ -303,5 +303,18 @@ describe('component padding geometry', () => {
     expect(variables['--leaf-component-dropdown-radius']).toBe('12px');
     for (const side of ['top', 'right', 'bottom', 'left'])
       expect(variables[`--leaf-component-dropdown-padding-${side}`]).toBe('3px');
+  });
+
+  it('derives harmonic control and surface radii when borderRadius changes', () => {
+    expect(leafThemeVariables({ borderRadius: 10 })).toEqual({
+      '--leaf-radius': '10px',
+      '--leaf-radius-sm': 'calc(var(--leaf-radius) * 0.5)',
+      '--leaf-control-radius-sm': 'calc(var(--leaf-radius) * 0.8)',
+      '--leaf-control-radius-lg': 'calc(var(--leaf-radius) * 1.2)',
+      '--leaf-radius-md': 'calc(var(--leaf-radius) * 1.4)',
+      '--leaf-radius-lg': 'calc(var(--leaf-radius) * 1.6)',
+      '--leaf-choice-radius': 'calc(var(--leaf-radius) * 0.5)',
+    });
+    expect(leafThemeVariables({ borderRadius: 0 })['--leaf-radius']).toBe('0px');
   });
 });

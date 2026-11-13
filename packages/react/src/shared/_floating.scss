@@ -12,9 +12,9 @@ $include-field-styles: true !default;
   );
   --leaf-floating-option-radius: var(--leaf-surface-inner-radius);
   --leaf-popup-x: 0px;
-  --leaf-popup-y: -4px;
-  --leaf-popup-scale: 0.985;
-  --leaf-popup-scale-closing: 0.98;
+  --leaf-popup-y: -6px;
+  --leaf-popup-scale: 0.96;
+  --leaf-popup-scale-closing: 0.975;
   --leaf-popup-origin-x: center;
   --leaf-popup-origin-y: top;
   box-sizing: border-box;
@@ -26,7 +26,7 @@ $include-field-styles: true !default;
   border: var(--leaf-surface-border) solid
     var(
       --leaf-component-floating-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+      var(--leaf-frame-border-color, var(--leaf-color-divider))
     );
   color: var(--leaf-component-floating-color, var(--leaf-color-text));
   font-family: var(--leaf-font-family);
@@ -222,7 +222,7 @@ $include-field-styles: true !default;
   background: var(--leaf-color-option-hover);
   pointer-events: none;
   transition:
-    translate var(--leaf-motion-duration) var(--leaf-motion-spring),
+    translate var(--leaf-motion-duration) var(--leaf-motion-easing),
     height var(--leaf-motion-fast) var(--leaf-motion-easing),
     width var(--leaf-motion-fast) var(--leaf-motion-easing),
     background-color var(--leaf-motion-color) var(--leaf-motion-easing),

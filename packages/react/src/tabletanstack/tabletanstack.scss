@@ -39,10 +39,8 @@
     flex-shrink: 0;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--leaf-component-table-gap, 12px);
-  }
-  &__footer {
     justify-content: flex-end;
+    gap: var(--leaf-component-table-gap, 12px);
     margin-block-start: 16px;
   }
   &__sort {

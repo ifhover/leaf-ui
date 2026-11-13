@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 .leaf-rate {
   --leaf-rate-size: 24px;
   // Rating gold is its own semantic scale; it is not a warning state.
@@ -19,13 +21,14 @@
     display: inline-flex;
     width: var(--leaf-rate-size);
     height: var(--leaf-rate-size);
-    transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
-    &:has(.leaf-rate__option:hover:not(:disabled):not([aria-disabled='true'])),
-    &:has(.leaf-rate__option:focus-visible) {
-      transform: translateY(-2px) scale(1.12);
-    }
+    transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:has(.leaf-rate__option:active:not(:disabled):not([aria-disabled='true'])) {
       transform: scale(0.94);
+    }
+    &:has(.leaf-rate__option:focus-visible) {
+      border-radius: var(--leaf-radius-sm);
+      @include mixins.focus-ring;
+      outline-offset: 2px;
     }
   }
   &__empty,
@@ -36,7 +39,7 @@
     stroke-width: 1.5;
   }
   &__empty {
-    color: var(--leaf-color-border);
+    color: var(--leaf-color-border-hover);
     fill: var(--leaf-color-surface-muted);
   }
   &__fill {
@@ -63,8 +66,7 @@
     background: transparent;
     cursor: pointer;
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      outline-offset: 3px;
+      outline: none;
     }
     &:disabled {
       cursor: not-allowed;

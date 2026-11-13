@@ -344,8 +344,10 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   if (theme.borderRadius !== undefined) {
     variables['--leaf-radius'] = length(theme.borderRadius);
     variables['--leaf-radius-sm'] = 'calc(var(--leaf-radius) * 0.5)';
-    variables['--leaf-radius-md'] = 'calc(var(--leaf-radius) * 1.5)';
-    variables['--leaf-radius-lg'] = 'calc(var(--leaf-radius) * 2)';
+    variables['--leaf-control-radius-sm'] = 'calc(var(--leaf-radius) * 0.8)';
+    variables['--leaf-control-radius-lg'] = 'calc(var(--leaf-radius) * 1.2)';
+    variables['--leaf-radius-md'] = 'calc(var(--leaf-radius) * 1.4)';
+    variables['--leaf-radius-lg'] = 'calc(var(--leaf-radius) * 1.6)';
     variables['--leaf-choice-radius'] = 'calc(var(--leaf-radius) * 0.5)';
   }
   if (theme.controlHeight !== undefined) {

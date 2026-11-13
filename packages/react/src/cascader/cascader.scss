@@ -32,7 +32,7 @@
     > svg {
       flex: 0 0 auto;
       color: var(--leaf-color-text-muted);
-      transition: transform var(--leaf-motion-slow) var(--leaf-motion-spring);
+      transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
   }
   &__value {
@@ -43,7 +43,7 @@
     text-overflow: ellipsis;
   }
   &__placeholder {
-    color: var(--leaf-color-text-muted);
+    color: var(--leaf-color-text-subtle);
   }
   &--multiple &__trigger {
     @include selection.trigger-padding('cascader', 10px);
@@ -87,7 +87,7 @@
     @include mixins.choice-option-size;
     justify-content: space-between;
     > svg:not(.leaf-select__spinner) {
-      transition: transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
     &[aria-selected='true'] > .lucide-chevron-right {
       transform: translateX(2px);
@@ -105,7 +105,7 @@
   &__check {
     animation: var(
       --leaf-motion-animation,
-      leaf-cascader-check-enter var(--leaf-motion-duration) var(--leaf-motion-spring)
+      leaf-cascader-check-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
     );
   }
 }
@@ -132,6 +132,7 @@
 .leaf-cascader {
   --leaf-current-control-height: var(--leaf-component-cascader-height, var(--leaf-control-height));
   --leaf-current-font-size: var(--leaf-component-cascader-font-size, var(--leaf-font-size));
+  --leaf-current-radius: var(--leaf-radius);
 }
 .leaf-cascader--sm {
   --leaf-current-control-height: var(
@@ -139,6 +140,7 @@
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size-sm);
+  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
 }
 .leaf-cascader--lg {
   --leaf-current-control-height: var(
@@ -146,6 +148,7 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
 }
 
 .leaf-floating.leaf-cascader__panel {

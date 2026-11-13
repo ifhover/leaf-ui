@@ -133,7 +133,7 @@ Configuration for color values, output formats, presets and panel interactions.
 | `getPopupContainer` | `() => Element \| DocumentFragment` | — | Return a popup container, including a ShadowRoot. |
 | `children` | `ReactElement< ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> } >` | — | Custom button replacing the default swatch; must forward its ref, click events and ARIA attributes. Supports solid and gradient modes. |
 | `value` | `string` | — | Controlled color; accepts HEX, RGB, HSL and CSS named colors, or a linear-gradient string in gradient mode. |
-| `defaultValue` | `string` | `'#1e964f'` | Initial uncontrolled color, restored when the form resets. |
+| `defaultValue` | `string` | `'#007aff'` | Initial uncontrolled color, restored when the form resets. |
 | `onChange` | `(color: string) => void` | — | Fires continuously while adjusting; clearing returns an empty string. |
 | `onChangeComplete` | `(color: string) => void` | — | Fires once when an adjustment ends; clearing returns an empty string. |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | Color text format, applied to each stop in gradient mode. |

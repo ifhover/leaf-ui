@@ -33,7 +33,7 @@
     border: var(--leaf-file-border) solid
       var(
         --leaf-component-file-list-border-color,
-        var(--leaf-frame-border-color, var(--leaf-file-list-frame-color))
+        var(--leaf-frame-border-color, var(--leaf-color-border))
       );
     box-shadow: var(--leaf-component-file-list-shadow, var(--leaf-surface-shadow, none));
     border-radius: var(--leaf-file-radius);
@@ -404,7 +404,7 @@
     border: var(--leaf-file-border) solid
       var(
         --leaf-component-file-list-border-color,
-        var(--leaf-frame-border-color, var(--leaf-file-list-frame-color))
+        var(--leaf-frame-border-color, var(--leaf-color-border))
       );
     box-shadow: var(--leaf-component-file-list-shadow, var(--leaf-surface-shadow, none));
     border-radius: var(--leaf-file-radius);

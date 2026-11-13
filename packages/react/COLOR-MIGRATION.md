@@ -76,7 +76,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 38 | `input-otp` | `inputotp` | `accent-halo-family`; field/base roles | Reviewed |
 | 39 | `layout` | `layout` | Direct surface, muted, and divider roles | Reviewed |
 | 40 | `loading` | `loading` | Local translucent surface scrim | Exception |
-| 41 | `loading-bar` | `loadingbar` | Local primary glow effect | Exception |
+| 41 | `loading-bar` | `loadingbar` | Direct primary indicator role | Reviewed |
 | 42 | `masonry` | `masonry` | No color responsibility | No color |
 | 43 | `mentions` | `mentions` | `floating-paint`; `choice-option`; Textarea field/base roles | Inherited |
 | 44 | `menu` | `menu` | `danger-soft-feedback-family`; explicit local appearance palette | Reviewed + exception |
@@ -133,7 +133,7 @@ The remaining numeric-token usages are deliberately transparent or appearance-sp
 - The shared accent halo keeps `primary-alpha-12`, `primary-alpha-16`, and `primary-alpha-20` because these are optical rings rather than soft selection fills.
 - The shared table overlay retains the optional historical `surface-alpha-80` compatibility input with a local surface formula.
 - Typography's inline warning mark retains `warning-alpha-16` because it highlights document content; it is not a status-label surface.
-- Loading, LoadingBar, QRCode, and Skeleton retain their own translucent scrim, glow, and shimmer formulas.
+- Loading, QRCode, and Skeleton retain their own translucent scrim and shimmer formulas.
 - Menu retains its complete local appearance, including `primary-alpha-10` / `primary-alpha-4` and neutral black overlays.
 
 Table stripes, hover tint and the loading scrim still follow the actual table surface and text because the component supports a local custom surface. Only its selected-row fill is normalized to `primary-soft`.
@@ -147,7 +147,7 @@ These roles stay with their component because the visual responsibility is not a
 - Rate keeps its independent rating scale; it is not the warning status family.
 - Image preview, Carousel controls, and the FileList video letterbox keep media-owned overlays and contrast handling.
 - Typography's inline warning mark keeps its translucent content-highlight layer rather than adopting an opaque status surface.
-- Loading keeps its surface scrim, LoadingBar its glow, Progress and Skeleton their local shimmer/effect paint, and QRCode its exposed canvas foreground/background roles.
+- Loading keeps its surface scrim, Progress and Skeleton their local shimmer/effect paint, and QRCode its exposed canvas foreground/background roles.
 - Tooltip keeps inverse-content contrast and Tour keeps spotlight contrast.
 - Button's solid split divider remains a local on-color separator role.
 - Tag's close feedback stays `color-mix(currentColor 10%, transparent)` so it follows the actual solid/soft label foreground and does not reduce contrast over a pale hover fill.

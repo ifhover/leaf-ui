@@ -89,8 +89,13 @@
   }
   > button {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
     margin-inline-start: 6px;
-    padding: 3px;
+    padding: 0;
     border: 0;
     border-radius: var(--leaf-radius-sm);
 

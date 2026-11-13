@@ -52,8 +52,7 @@
     inset-inline-start: auto;
     inset-inline-end: 6px;
     transform: none;
-    // A fixed white separator keeps the inset indicator distinct from its target.
-    box-shadow: 0 0 0 2px #fff;
+    box-shadow: 0 0 0 2px var(--leaf-color-surface);
   }
   &__count {
     display: inline-block;

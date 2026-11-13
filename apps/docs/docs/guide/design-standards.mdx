@@ -68,7 +68,7 @@ Flex 的 `gap="sm|md|lg"` 与 Space 的 `size="sm|md|lg"` 直接读取对应变�
 
 尺寸和密度是两个维度：同一行控件使用一致 `size`；通过 ConfigProvider 统一密度，不逐个缩放。触屏操作应提供更宽松的目标，不因套用紧凑表格而缩小所有按钮。
 
-圆角使用 `--leaf-radius-sm`、`--leaf-radius`、`--leaf-radius-md`、`--leaf-radius-lg`，默认为 4 / 8 / 12 / 16px，随基础圆角按 0.5 / 1 / 1.5 / 2 派生。通常由组件处理内外嵌套，不手工覆盖内部 `.leaf-*` 圆角。
+圆角使用 `--leaf-radius-sm`、`--leaf-control-radius-sm`、`--leaf-radius`、`--leaf-control-radius-lg`、`--leaf-radius-md`、`--leaf-radius-lg`，默认为 `5 / 8 / 10 / 12 / 14 / 16px`，随基础圆角按 `0.5 / 0.8 / 1 / 1.2 / 1.4 / 1.6` 派生（控件和分段标签按 `sm / md / lg` 对应 `8 / 10 / 12px`，卡片和带边框描述列表对应 `12 / 14 / 16px`）。通常由组件处理内外嵌套，不手工覆盖内部 `.leaf-*` 圆角。
 
 阴影使用库提供的 `--leaf-shadow-xs`、`--leaf-shadow-sm`、`--leaf-shadow-md`、`--leaf-shadow-lg`：描边按钮和默认 Card 的静止反馈最轻，分层 Card / Table 的内层内容使用 `shadow-sm`，浮层使用更高层级。优先使用组件默认值，不在容器外重复添加阴影；悬停不抬升、不放大、不切换阴影等级。需要覆盖时通过主题配置，保留用户 `controlShadow` / `surfaceShadow` 设置。
 
@@ -112,7 +112,7 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 ## 选择合适的外观
 
 - 一般操作使用默认描边按钮，主要操作使用 `variant="solid"`；低强调局部操作可用 `text`，行内链接式操作可用 `link`，危险操作设置 `danger`。
-- 不增加悬停抬起、按下缩小、彩色光晕或装饰渐变。保留组件自身的反馈，不在页面中重新设计每种状态。
+- 不在页面 CSS 中额外叠加悬停抬起、缩放、彩色光晕或装饰渐变。保留组件自身的交互反馈，不在页面中重新设计每种状态。
 - 输入和选择类字段聚焦或展开时使用主题色边框，不增加外圈；Textarea、Mentions 和 InputNumber 也遵循同一规则。错误、警告和禁用状态保留各自反馈；按钮保留中性键盘焦点轮廓。
 
 ## 最小组合

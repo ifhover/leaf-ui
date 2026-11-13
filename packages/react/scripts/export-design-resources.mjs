@@ -78,9 +78,11 @@ for (const [mode, density] of Object.entries(densityTokens)) {
   };
 }
 tokens.foundation = {
-  radiusSm: { $type: 'dimension', $value: { value: 4, unit: 'px' } },
-  radius: { $type: 'dimension', $value: { value: 8, unit: 'px' } },
-  radiusMd: { $type: 'dimension', $value: { value: 12, unit: 'px' } },
+  radiusSm: { $type: 'dimension', $value: { value: 5, unit: 'px' } },
+  controlRadiusSm: { $type: 'dimension', $value: { value: 8, unit: 'px' } },
+  radius: { $type: 'dimension', $value: { value: 10, unit: 'px' } },
+  controlRadiusLg: { $type: 'dimension', $value: { value: 12, unit: 'px' } },
+  radiusMd: { $type: 'dimension', $value: { value: 14, unit: 'px' } },
   radiusLg: { $type: 'dimension', $value: { value: 16, unit: 'px' } },
   fontWeightNormal: { $type: 'fontWeight', $value: 400 },
   fontWeightMedium: { $type: 'fontWeight', $value: 500 },

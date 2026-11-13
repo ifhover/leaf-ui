@@ -44,7 +44,7 @@ Use `size` to set the tab control size. Small and medium line tabs share a font 
 
 ### Appearances
 
-Use `type` to choose the tab appearance.
+Use `type` to choose the tab appearance. For `card` and `segmented` tabs, configure `tone` (`soft` or `solid`) and `shape` (`default` or `pill`).
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
@@ -125,6 +125,8 @@ Configure tab data, the active tab and panel retention.
 | `defaultActiveKey` | `string` | First enabled item | Initial tab key in uncontrolled mode; later changes do not reset the selection. |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | Tab appearance |
+| `tone` | `'soft' \| 'solid'` | `'soft'` | Selection highlight tone for card and segmented tabs: soft primary tint or solid primary fill. |
+| `shape` | `'default' \| 'pill'` | `'default'` | Tab corner shape for card and segmented tabs: rounded rectangle or pill. |
 | `placement` | `'top' \| 'bottom'` | `'top'` | Tab bar placement |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size. |
 | `block` | `boolean` | `false` | Fill the available width with equal-width tabs |

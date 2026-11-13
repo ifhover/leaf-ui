@@ -13,7 +13,7 @@ const colorOptions = [
 
 export function ThemeColors() {
   const [colors, setColors] = useState({
-    primary: '#1e964f',
+    primary: '#007aff',
     success: '#4bb418',
     danger: '#ff4d4f',
     warning: '#e69f12',
@@ -80,7 +80,7 @@ export function ThemeColors() {
           variant="layered"
           size="sm"
           title="Shared muted surface"
-          description="The Tabs track and card canvas share this surface."
+          description="The layered Card outer canvas uses mutedSurfaceColor."
         >
           <Tabs
             type="segmented"
@@ -91,12 +91,13 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: 'Content surface',
-                children: 'The selected tab and inset content keep using the content surface.',
+                children: 'The active tab tint and inset content keep using the content surface.',
               },
               {
                 key: 'muted',
                 label: 'Muted surface',
-                children: 'The Tabs track and card canvas share mutedSurfaceColor.',
+                children:
+                  'Outer layered canvases use mutedSurfaceColor without tinting the clean rail.',
               },
             ]}
           />

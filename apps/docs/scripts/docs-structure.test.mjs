@@ -117,7 +117,7 @@ test('color guides show semantic shades and a matching editable surface example'
       'utf8',
     );
     assert.match(tokensPage, /mutedSurfaceColor[^\n]*--leaf-color-surface-muted/u);
-    assert.match(tokensPage, /Tabs[^\n]*Card[^\n]*(?:日期|date)/u);
+    assert.match(tokensPage, /Card[^\n]*(?:日期|date)/iu);
     const mutedSurfaceRow = tokensPage
       .split('\n')
       .find((line) => line.includes('`mutedSurfaceColor`'));

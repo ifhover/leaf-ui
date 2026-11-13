@@ -39,7 +39,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     scale: 1;
-    transition: scale var(--leaf-motion-slow) var(--leaf-motion-spring);
+    transition: scale var(--leaf-motion-slow) var(--leaf-motion-easing);
     @starting-style {
       scale: 0.96;
     }
@@ -75,26 +75,20 @@
     @include mixins.overlay-family(spotlight);
     position: fixed;
     inset: 0;
-    background: var(--leaf-overlay-background);
-    border-radius: var(--leaf-radius);
+    background: transparent;
+    border-radius: 0;
     pointer-events: none;
     z-index: var(--leaf-z-index-modal);
-  }
-}
-
-.leaf-tour__mask {
-  pointer-events: none;
-  background: transparent;
-  border-radius: 0;
-  > div {
-    position: absolute;
-    background: var(--leaf-overlay-background);
-    pointer-events: auto;
-    transition:
-      top var(--leaf-motion-slow) var(--leaf-motion-spring),
-      left var(--leaf-motion-slow) var(--leaf-motion-spring),
-      width var(--leaf-motion-slow) var(--leaf-motion-spring),
-      height var(--leaf-motion-slow) var(--leaf-motion-spring);
+    > div {
+      position: absolute;
+      background: var(--leaf-overlay-background);
+      pointer-events: auto;
+      transition:
+        top var(--leaf-motion-slow) var(--leaf-motion-easing),
+        left var(--leaf-motion-slow) var(--leaf-motion-easing),
+        width var(--leaf-motion-slow) var(--leaf-motion-easing),
+        height var(--leaf-motion-slow) var(--leaf-motion-easing);
+    }
   }
 }
 @media (prefers-reduced-motion: reduce) {

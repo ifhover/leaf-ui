@@ -120,7 +120,7 @@ test('line Tabs use link feedback for unselected text without changing other app
       tabs(`.leaf-tabs--${appearance} .leaf-tabs__tab[aria-selected=true]`)[
         '--leaf-tabs-tab-color'
       ],
-      'var(--leaf-component-tabs-color,var(--leaf-color-text))',
+      'var(--leaf-component-tabs-color,var(--leaf-color-primary-ink,var(--leaf-color-primary)))',
     );
   }
 });
@@ -342,7 +342,7 @@ test('Input fills its shell and only rounds native edges that meet the outer fra
     for (const corner of ['start', 'end']) {
       assert.equal(
         edge[`border-${corner}-${side}-radius`],
-        'max(0px,var(--leaf-component-input-radius,var(--leaf-radius))- var(--leaf-field-border-width))',
+        'max(0px,var(--leaf-component-input-radius,var(--leaf-current-radius,var(--leaf-radius)))- var(--leaf-field-border-width))',
       );
       assert.equal(
         input(`.leaf-input-group--compact > *:not(:${child}-child) > .leaf-input__native`)[

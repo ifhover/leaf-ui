@@ -87,7 +87,8 @@
     border-color var(--leaf-motion-color) var(--leaf-motion-easing),
     color var(--leaf-motion-color) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-color) var(--leaf-motion-easing);
+    opacity var(--leaf-motion-color) var(--leaf-motion-easing),
+    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
 }
 
 @mixin text-action-family {
@@ -135,15 +136,18 @@
 @mixin control-size {
   --leaf-current-font-size: var(--leaf-font-size);
   --leaf-current-control-height: var(--leaf-control-height, 34px);
+  --leaf-current-radius: var(--leaf-radius);
 
   &--sm {
     --leaf-current-control-height: var(--leaf-control-height-sm, 28px);
     --leaf-current-font-size: var(--leaf-font-size-sm, 13px);
+    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
   }
 
   &--lg {
     --leaf-current-control-height: var(--leaf-control-height-lg, 40px);
     --leaf-current-font-size: var(--leaf-font-size-lg, 16px);
+    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 }
 
@@ -224,8 +228,8 @@
 
 @mixin segmented-surface-family {
   --leaf-segmented-border: var(--leaf-color-divider);
-  --leaf-segmented-background: var(--leaf-color-surface-muted);
-  --leaf-segmented-selected-background: var(--leaf-color-surface);
+  --leaf-segmented-background: var(--leaf-color-surface);
+  --leaf-segmented-selected-background: var(--leaf-color-primary-soft);
   --leaf-segmented-muted-color: var(--leaf-color-text-muted);
 }
 
@@ -308,7 +312,7 @@
 
 // Portal panels use the same public component paint tokens as their trigger,
 // while retaining the shared floating defaults and concentric radius solver.
-@mixin floating-paint($component, $border: var(--leaf-color-border)) {
+@mixin floating-paint($component, $border: var(--leaf-color-divider)) {
   --leaf-surface-border: var(
     --leaf-component-#{$component}-border-width,
     var(--leaf-component-floating-border-width, var(--leaf-border-width, 1px))
@@ -539,7 +543,10 @@
       --leaf-component-#{$component}-border-color,
       var(--leaf-frame-border-color, var(--leaf-color-border))
     );
-  border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius));
+  border-radius: var(
+    --leaf-component-#{$component}-radius,
+    var(--leaf-current-radius, var(--leaf-radius))
+  );
   color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
   background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
   box-shadow: var(--leaf-field-shadow);
@@ -626,7 +633,7 @@
       border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
       background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-spring);
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
 
     &:checked {
       border-color: $checked-border;

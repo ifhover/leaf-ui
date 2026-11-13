@@ -22,11 +22,11 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 44 | 59 |
+| Legal hardcoded-color exceptions | 43 | 57 |
 | Legal color-mix exceptions | 2 | 2 |
-| Reviewed derived-token exceptions | 6 | 6 |
+| Reviewed derived-token exceptions | 5 | 5 |
 | Reviewed color-scale step exceptions | 0 | 0 |
-| Reviewed field-structure exceptions | 17 | 27 |
+| Reviewed field-structure exceptions | 16 | 26 |
 
 Registered undefined-token risk occurrences: 0.
 
@@ -48,7 +48,7 @@ Optional override tokens and unknown fallback names remain visible in the audit.
 
 - `autocomplete/autocomplete.scss`: 1 controlled border expression
 - `cascader/cascader.scss`: 2 controlled border expressions
-- `colorpicker/colorpicker.scss`: 4 controlled border expressions
+- `colorpicker/colorpicker.scss`: 3 controlled border expressions
 - `datepicker/datepicker.scss`: 3 controlled border expressions
 - `input/input.scss`: 1 controlled border expression
 - `inputnumber/inputnumber.scss`: 4 controlled border expressions
@@ -84,7 +84,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 22 | 5 | 40 |
+| `--leaf-color-border` | 25 | 4 | 54 |
 | `--leaf-color-border-hover` | 6 | 1 | 7 |
 | `--leaf-color-danger` | 9 | 1 | 12 |
 | `--leaf-color-danger-active` | 1 | 0 | 1 |
@@ -94,16 +94,16 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-danger-dark-7` | 0 | 0 | 0 |
 | `--leaf-color-danger-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-danger-hover` | 0 | 0 | 0 |
-| `--leaf-color-danger-ink` | 9 | 1 | 16 |
+| `--leaf-color-danger-ink` | 8 | 1 | 13 |
 | `--leaf-color-danger-light-3` | 0 | 0 | 0 |
 | `--leaf-color-danger-light-7` | 0 | 0 | 0 |
 | `--leaf-color-danger-light-9` | 0 | 0 | 0 |
 | `--leaf-color-danger-link-active` | 1 | 0 | 1 |
 | `--leaf-color-danger-link-hover` | 1 | 0 | 1 |
-| `--leaf-color-danger-soft` | 0 | 1 | 2 |
+| `--leaf-color-danger-soft` | 1 | 1 | 3 |
 | `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
 | `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-divider` | 14 | 6 | 32 |
+| `--leaf-color-divider` | 15 | 6 | 35 |
 | `--leaf-color-info` | 4 | 0 | 5 |
 | `--leaf-color-info-border` | 0 | 0 | 0 |
 | `--leaf-color-info-dark-1` | 0 | 0 | 0 |
@@ -114,7 +114,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-info-light-3` | 0 | 0 | 0 |
 | `--leaf-color-info-light-7` | 0 | 0 | 0 |
 | `--leaf-color-info-light-9` | 0 | 0 | 0 |
-| `--leaf-color-info-soft` | 0 | 1 | 1 |
+| `--leaf-color-info-soft` | 1 | 1 | 2 |
 | `--leaf-color-info-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-info-soft-hover` | 0 | 0 | 0 |
 | `--leaf-color-neutral` | 1 | 0 | 1 |
@@ -129,28 +129,28 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-neutral-900` | 0 | 0 | 0 |
 | `--leaf-color-on-danger` | 3 | 1 | 4 |
 | `--leaf-color-on-info` | 2 | 1 | 3 |
-| `--leaf-color-on-primary` | 10 | 1 | 14 |
+| `--leaf-color-on-primary` | 11 | 1 | 17 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 5 | 2 | 14 |
-| `--leaf-color-primary` | 33 | 3 | 82 |
+| `--leaf-color-option-hover` | 4 | 2 | 13 |
+| `--leaf-color-primary` | 31 | 3 | 85 |
 | `--leaf-color-primary-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
 | `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-16` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-20` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-4` | 1 | 0 | 1 |
-| `--leaf-color-primary-alpha-55` | 1 | 0 | 1 |
+| `--leaf-color-primary-alpha-55` | 0 | 0 | 0 |
 | `--leaf-color-primary-border` | 1 | 1 | 2 |
 | `--leaf-color-primary-dark-1` | 0 | 0 | 0 |
 | `--leaf-color-primary-dark-3` | 0 | 0 | 0 |
 | `--leaf-color-primary-dark-7` | 0 | 0 | 0 |
 | `--leaf-color-primary-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-primary-fill-border` | 1 | 0 | 1 |
-| `--leaf-color-primary-focus` | 0 | 0 | 0 |
-| `--leaf-color-primary-hover` | 1 | 0 | 1 |
-| `--leaf-color-primary-indicator` | 25 | 2 | 47 |
-| `--leaf-color-primary-ink` | 13 | 3 | 25 |
+| `--leaf-color-primary-focus` | 1 | 0 | 1 |
+| `--leaf-color-primary-hover` | 2 | 0 | 3 |
+| `--leaf-color-primary-indicator` | 21 | 2 | 40 |
+| `--leaf-color-primary-ink` | 15 | 3 | 29 |
 | `--leaf-color-primary-ink-active` | 0 | 0 | 0 |
 | `--leaf-color-primary-ink-hover` | 1 | 0 | 1 |
 | `--leaf-color-primary-light-3` | 0 | 0 | 0 |
@@ -158,7 +158,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-primary-light-9` | 0 | 0 | 0 |
 | `--leaf-color-primary-link-active` | 2 | 0 | 2 |
 | `--leaf-color-primary-link-hover` | 1 | 0 | 1 |
-| `--leaf-color-primary-soft` | 0 | 1 | 5 |
+| `--leaf-color-primary-soft` | 1 | 1 | 7 |
 | `--leaf-color-primary-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-primary-soft-hover` | 0 | 1 | 2 |
 | `--leaf-color-success` | 4 | 0 | 6 |
@@ -171,19 +171,19 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-success-light-3` | 0 | 0 | 0 |
 | `--leaf-color-success-light-7` | 0 | 0 | 0 |
 | `--leaf-color-success-light-9` | 0 | 0 | 0 |
-| `--leaf-color-success-soft` | 0 | 1 | 1 |
+| `--leaf-color-success-soft` | 1 | 1 | 2 |
 | `--leaf-color-success-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-success-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-surface` | 33 | 4 | 59 |
+| `--leaf-color-surface` | 33 | 4 | 63 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 25 | 4 | 45 |
-| `--leaf-color-surface-raised` | 8 | 2 | 10 |
-| `--leaf-color-text` | 47 | 4 | 98 |
-| `--leaf-color-text-muted` | 43 | 6 | 104 |
-| `--leaf-color-text-subtle` | 11 | 1 | 16 |
+| `--leaf-color-surface-muted` | 21 | 4 | 37 |
+| `--leaf-color-surface-raised` | 5 | 2 | 7 |
+| `--leaf-color-text` | 47 | 4 | 92 |
+| `--leaf-color-text-muted` | 44 | 6 | 101 |
+| `--leaf-color-text-subtle` | 13 | 1 | 18 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
-| `--leaf-color-warning` | 3 | 1 | 5 |
+| `--leaf-color-warning` | 4 | 1 | 6 |
 | `--leaf-color-warning-alpha-16` | 1 | 0 | 1 |
 | `--leaf-color-warning-border` | 0 | 1 | 1 |
 | `--leaf-color-warning-dark-1` | 0 | 0 | 0 |
@@ -194,7 +194,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-warning-light-3` | 0 | 0 | 0 |
 | `--leaf-color-warning-light-7` | 0 | 0 | 0 |
 | `--leaf-color-warning-light-9` | 0 | 0 | 0 |
-| `--leaf-color-warning-soft` | 0 | 1 | 1 |
+| `--leaf-color-warning-soft` | 1 | 1 | 2 |
 | `--leaf-color-warning-soft-active` | 0 | 0 | 0 |
 | `--leaf-color-warning-soft-hover` | 0 | 0 | 0 |
 
@@ -208,7 +208,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-danger-light-3`
 - `--leaf-color-danger-light-7`
 - `--leaf-color-danger-light-9`
-- `--leaf-color-danger-soft`
 - `--leaf-color-danger-soft-active`
 - `--leaf-color-danger-soft-hover`
 - `--leaf-color-info-border`
@@ -220,7 +219,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-info-light-3`
 - `--leaf-color-info-light-7`
 - `--leaf-color-info-light-9`
-- `--leaf-color-info-soft`
 - `--leaf-color-info-soft-active`
 - `--leaf-color-info-soft-hover`
 - `--leaf-color-neutral-100`
@@ -236,16 +234,15 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-primary-alpha-12`
 - `--leaf-color-primary-alpha-16`
 - `--leaf-color-primary-alpha-20`
+- `--leaf-color-primary-alpha-55`
 - `--leaf-color-primary-dark-1`
 - `--leaf-color-primary-dark-3`
 - `--leaf-color-primary-dark-7`
 - `--leaf-color-primary-dark-9`
-- `--leaf-color-primary-focus`
 - `--leaf-color-primary-ink-active`
 - `--leaf-color-primary-light-3`
 - `--leaf-color-primary-light-7`
 - `--leaf-color-primary-light-9`
-- `--leaf-color-primary-soft`
 - `--leaf-color-primary-soft-active`
 - `--leaf-color-primary-soft-hover`
 - `--leaf-color-success-border`
@@ -257,7 +254,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-success-light-3`
 - `--leaf-color-success-light-7`
 - `--leaf-color-success-light-9`
-- `--leaf-color-success-soft`
 - `--leaf-color-success-soft-active`
 - `--leaf-color-success-soft-hover`
 - `--leaf-color-warning-border`
@@ -269,7 +265,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-warning-light-3`
 - `--leaf-color-warning-light-7`
 - `--leaf-color-warning-light-9`
-- `--leaf-color-warning-soft`
 - `--leaf-color-warning-soft-active`
 - `--leaf-color-warning-soft-hover`
 
@@ -283,9 +278,6 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ### `autocomplete/autocomplete.scss`
 - fieldFamilyBorders: `border:0` x1 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
-
-### `badge/badge.scss`
-- hardcodedColors: `#fff` x1 - Explicit inside Badge design contract: a fixed white separator ring on light and dark targets, independent of surface and foreground overrides. Covered by badge browser geometry and paint tests.
 
 ### `button/button.scss`
 - mixFormulas: `color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)` x1 - Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color.
@@ -308,10 +300,9 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `#ff0` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `#fff` x6 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(0 0 0/25%)` x4 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
-- hardcodedColors: `rgb(0 0 0/8%)` x2 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
+- hardcodedColors: `rgb(0 0 0/8%)` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(255 255 255/18%)` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - fieldFamilyBorders: `border:0` x2 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
-- fieldFamilyBorders: `border:1px solid rgb(0 0 0/8%)` x1 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 - fieldFamilyBorders: `border:2px solid #fff` x3 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 - fieldFamilyBorders: `border:2px solid var(--leaf-color-surface)` x1 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 
@@ -354,9 +345,6 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ### `loading/loading.scss`
 - derivedTokenUsages: `var(--leaf-color-surface-alpha-55)` x1 - A busy overlay allows the obscured content to remain visible; not an opaque surface or interactive option.
-
-### `loadingbar/loadingbar.scss`
-- derivedTokenUsages: `var(--leaf-color-primary-alpha-55)` x1 - Glow around the progress indicator is an optical effect; it does not define label or selection paint.
 
 ### `menu/menu.scss`
 - hardcodedColors: `rgb(241 241 242)` x1 - User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role.

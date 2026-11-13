@@ -199,7 +199,11 @@
     transition:
       color var(--leaf-motion-color) var(--leaf-motion-easing),
       gap var(--leaf-motion-duration) var(--leaf-motion-easing),
-      padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing);
+      padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:active:not(:disabled):not([aria-disabled='true']) {
+      scale: 0.985;
+    }
     @include row-feedback;
   }
 
@@ -234,7 +238,7 @@
     flex: none;
     width: 14px;
     transition:
-      transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+      transform var(--leaf-motion-slow) var(--leaf-motion-easing),
       width var(--leaf-motion-duration) var(--leaf-motion-easing),
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
@@ -319,6 +323,7 @@
     transition: none;
   }
   .leaf-menu__item::before,
+  .leaf-menu__popup .leaf-floating__option,
   .leaf-menu__popup .leaf-floating__option::before {
     transition: none;
   }
@@ -381,7 +386,12 @@
     text-decoration: none;
     line-height: var(--leaf-line-height);
     font-size: inherit;
-    transition: color var(--leaf-motion-color) var(--leaf-motion-easing);
+    transition:
+      color var(--leaf-motion-color) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:active:not(:disabled):not([aria-disabled='true']) {
+      scale: 0.985;
+    }
     @include row-feedback;
   }
 

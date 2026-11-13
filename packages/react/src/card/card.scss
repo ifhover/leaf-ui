@@ -67,8 +67,8 @@
     calc(var(--leaf-card-padding) - var(--leaf-card-inset) - var(--leaf-card-border-width))
   );
   --leaf-card-canvas: var(--leaf-color-surface-muted);
-  // Keep the frame quiet without removing the card's border cue.
-  @include softened-frame-color(card, var(--leaf-card-surface), 50%);
+  // 内部分隔线保持柔化边框色；外层描边保持清晰可读的基准边框色。
+  @include softened-frame-color(card, var(--leaf-card-surface));
   box-sizing: border-box;
   min-width: 0;
   border: var(--leaf-card-border-width) solid transparent;
@@ -84,16 +84,18 @@
   &--bordered {
     border-color: var(
       --leaf-component-card-border-color,
-      var(--leaf-frame-border-color, var(--leaf-card-frame-color))
+      var(--leaf-frame-border-color, var(--leaf-color-border))
     );
   }
   &--sm {
+    --leaf-card-radius: var(--leaf-component-card-radius, var(--leaf-control-radius-lg));
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2));
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2));
     --leaf-card-title-font-size: var(--leaf-font-size);
     --leaf-card-title-line-height: var(--leaf-line-height);
   }
   &--lg {
+    --leaf-card-radius: var(--leaf-component-card-radius, var(--leaf-radius-lg));
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 3));
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 3));
     --leaf-card-title-font-size: calc(var(--leaf-font-size) + 4px);
@@ -237,7 +239,7 @@
       border: var(--leaf-card-border-width) solid
         var(
           --leaf-component-card-border-color,
-          var(--leaf-frame-border-color, var(--leaf-card-frame-color))
+          var(--leaf-frame-border-color, var(--leaf-color-border))
         );
       border-radius: max(0px, calc(var(--leaf-card-radius) - var(--leaf-card-border-width) - 2px));
       background: var(--leaf-card-surface);

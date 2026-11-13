@@ -68,7 +68,7 @@ Flex's `gap="sm|md|lg"` and Space's `size="sm|md|lg"` read these variables. Grid
 
 Size and density are separate dimensions. Use consistent `size` values in one row and ConfigProvider for regional density instead of scaling each control. Provide more generous touch targets rather than shrinking all actions to match a compact table.
 
-Use `--leaf-radius-sm`, `--leaf-radius`, `--leaf-radius-md` and `--leaf-radius-lg`: defaults are 4 / 8 / 12 / 16px, derived from the base at 0.5 / 1 / 1.5 / 2 times. Components normally handle their own nested geometry; do not override internal `.leaf-*` radii.
+Use `--leaf-radius-sm`, `--leaf-control-radius-sm`, `--leaf-radius`, `--leaf-control-radius-lg`, `--leaf-radius-md` and `--leaf-radius-lg`: defaults are `5 / 8 / 10 / 12 / 14 / 16px`, derived from the base at `0.5 / 0.8 / 1 / 1.2 / 1.4 / 1.6` times (so `sm / md / lg` controls use `8 / 10 / 12px` and sized cards / bordered descriptions use `12 / 14 / 16px`). Components normally handle their own nested geometry; do not override internal `.leaf-*` radii.
 
 Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: outlined buttons and default Card use the lightest resting feedback, layered Card / Table inner surfaces use `shadow-sm`, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
 
@@ -112,7 +112,7 @@ Place the page within the current ConfigProvider region. These styles need not b
 ## Choose an appearance
 
 - Use default outlined buttons for ordinary actions and `variant="solid"` for primary actions. Use `text` for quieter local actions, `link` for inline link-style actions, and `danger` for destructive actions.
-- Do not add hover lifts, pressed scaling, colored halos or decorative gradients. Preserve component feedback instead of redesigning every state in page CSS.
+- Do not add custom hover lifts, scaling, colored halos or decorative gradients in page CSS. Keep components' built-in feedback instead of redesigning every state.
 - Input and picker fields use a primary-colored border on focus or while open, without an outer halo. Textarea, Mentions and InputNumber follow the same rule. Error, warning and disabled states retain their feedback; buttons retain a neutral keyboard focus outline.
 
 ## Minimal compositions

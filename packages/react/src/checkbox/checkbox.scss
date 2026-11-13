@@ -10,20 +10,20 @@
       border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
   }
   &:active:not([data-disabled]) &__input {
-    transform: scale(0.9);
+    transform: scale(0.94);
   }
   &__control {
-    transition: transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+    transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
   }
   &__mark {
     opacity: 0;
     transform: scale(0.6);
     transition:
       opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
     position: absolute;
     width: 14px;
     height: 14px;
@@ -48,6 +48,8 @@
   }
   @media (prefers-reduced-motion: reduce) {
     &__control,
+    &__input,
+    &__mark,
     &__mark--check polyline,
     &__mark--check path {
       transition: none;
@@ -70,7 +72,7 @@
   &__options {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 18px;
+    gap: 8px 18px;
   }
   &--vertical &__options {
     flex-direction: column;

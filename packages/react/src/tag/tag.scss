@@ -49,7 +49,10 @@
   max-width: var(--leaf-tag-width, 100%);
   padding: 2px 9px;
   border: 1px solid transparent;
-  border-radius: var(--leaf-component-tag-radius, var(--leaf-radius-sm));
+  border-radius: var(
+    --leaf-component-tag-radius,
+    var(--leaf-current-radius, var(--leaf-radius-sm))
+  );
   color: var(--leaf-tag-paint-color);
   background: var(--leaf-tag-paint-background);
   font: max(12px, calc(var(--leaf-font-size) - 2px)) / var(--leaf-line-height-sm)
@@ -76,9 +79,11 @@
     text-overflow: ellipsis;
   }
   &--sm {
+    --leaf-current-radius: calc(var(--leaf-radius) * 0.4);
     padding: 0 7px;
   }
   &--lg {
+    --leaf-current-radius: calc(var(--leaf-radius) * 0.6);
     padding: 3px 12px;
     font-size: var(--leaf-font-size);
     line-height: var(--leaf-line-height);
@@ -122,13 +127,13 @@
     transition:
       opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
       background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-spring);
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover {
       opacity: 1;
       background: var(--leaf-tag-close-background, var(--leaf-tag-color-alpha-10));
     }
     &:active {
-      transform: scale(0.85);
+      transform: scale(0.92);
     }
     &:focus-visible {
       outline: 2px solid currentColor;
@@ -148,12 +153,12 @@
   transition:
     color var(--leaf-motion-duration) var(--leaf-motion-easing),
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-duration) var(--leaf-motion-spring);
+    transform var(--leaf-motion-duration) var(--leaf-motion-easing);
   &:hover:not(:disabled):not([aria-pressed='true']) {
     background: var(--leaf-component-tag-hover-background, var(--leaf-tag-color-alpha-10));
   }
   &:active:not(:disabled) {
-    transform: scale(0.96);
+    transform: scale(0.97);
   }
   &:focus-visible {
     outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
@@ -162,11 +167,6 @@
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-checkable-tag {
-    transition: none;
   }
 }
 .leaf-tag-group {

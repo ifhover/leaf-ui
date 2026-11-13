@@ -216,15 +216,6 @@
         }
       ]
     },
-    "badge/badge.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "#fff",
-          "count": 1,
-          "reason": "Explicit inside Badge design contract: a fixed white separator ring on light and dark targets, independent of surface and foreground overrides. Covered by badge browser geometry and paint tests."
-        }
-      ]
-    },
     "card/card.scss": {
       "hardcodedColors": [
         {
@@ -288,7 +279,7 @@
         },
         {
           "expression": "rgb(0 0 0/8%)",
-          "count": 2,
+          "count": 1,
           "reason": "ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors."
         },
         {
@@ -302,11 +293,6 @@
           "expression": "border:0",
           "count": 2,
           "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
-        },
-        {
-          "expression": "border:1px solid rgb(0 0 0/8%)",
-          "count": 1,
-          "reason": "ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell."
         },
         {
           "expression": "border:2px solid #fff",
@@ -519,15 +505,6 @@
           "expression": "var(--leaf-color-surface-alpha-55)",
           "count": 1,
           "reason": "A busy overlay allows the obscured content to remain visible; not an opaque surface or interactive option."
-        }
-      ]
-    },
-    "loadingbar/loadingbar.scss": {
-      "derivedTokenUsages": [
-        {
-          "expression": "var(--leaf-color-primary-alpha-55)",
-          "count": 1,
-          "reason": "Glow around the progress indicator is an optical effect; it does not define label or selection paint."
         }
       ]
     },

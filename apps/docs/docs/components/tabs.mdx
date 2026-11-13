@@ -44,7 +44,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ### 不同形态
 
-通过 `type` 选择标签页外观。
+通过 `type` 选择标签页外观；卡片（`card`）和分段（`segmented`）形态可通过 `tone` 切换主题浅底或实底，通过 `shape` 切换圆角矩形与胶囊形态。
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
@@ -125,6 +125,8 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 | `defaultActiveKey` | `string` | 首个可用项 | 非受控模式的初始标签 key，后续变化不重置选中项。 |
 | `onChange` | `(key: string) => void` | — | 激活项变化 |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | 标签形态 |
+| `tone` | `'soft' \| 'solid'` | `'soft'` | 卡片或分段形态的选中高亮风格：soft 为主题浅底，solid 为主题实底。 |
+| `shape` | `'default' \| 'pill'` | `'default'` | 卡片或分段形态的标签圆角：default 为圆角矩形，pill 为胶囊形。 |
 | `placement` | `'top' \| 'bottom'` | `'top'` | 标签栏位置 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸。 |
 | `block` | `boolean` | `false` | 标签等宽铺满可用宽度 |

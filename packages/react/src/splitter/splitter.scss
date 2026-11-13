@@ -34,6 +34,7 @@
       outline-offset: -2px;
     }
     button {
+      @include mixins.action-transition;
       position: absolute;
       inset-inline-start: 50%;
       top: 50%;
@@ -46,6 +47,15 @@
       height: 28px;
       cursor: pointer;
       z-index: 1;
+      &:hover {
+        background: var(--leaf-accent-soft-background);
+      }
+      &:active {
+        background: var(--leaf-accent-soft-border);
+      }
+      &:focus-visible {
+        @include mixins.focus-ring;
+      }
     }
   }
   &--vertical &__handle {
@@ -54,5 +64,11 @@
       width: 28px;
       height: 18px;
     }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .leaf-splitter__handle,
+  .leaf-splitter__handle button {
+    transition: none;
   }
 }

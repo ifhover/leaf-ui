@@ -19,6 +19,10 @@ export function TabsAppearances() {
         <Text tone="muted">Segmented</Text>
         <Tabs aria-label="Segmented" type="segmented" items={items} />
       </Space>
+      <Space direction="vertical" align="stretch" size="sm">
+        <Text tone="muted">Solid Pill</Text>
+        <Tabs aria-label="Solid Pill" type="segmented" tone="solid" shape="pill" items={items} />
+      </Space>
     </Space>
   );
 }

@@ -11,7 +11,7 @@
   overflow: hidden;
   color: var(--leaf-preview-ink);
   background: var(--leaf-preview-overlay);
-  font: 12px / 1.4 sans-serif;
+  font: var(--leaf-font-size-sm) / var(--leaf-line-height-sm) var(--leaf-font-family);
   outline: 0;
   animation: leaf-preview-in 300ms ease;
   transition: opacity 300ms ease;

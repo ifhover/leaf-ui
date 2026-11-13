@@ -129,7 +129,7 @@ export const leafDoc = { component: 'Progress', primaryApi: 'ProgressProps' };
 | `color` | `string` | — | 自定义进度颜色 |
 | `size` | `number` | `100` | 圆形宽高，单位像素 |
 | `indeterminate` | `boolean` | `false` | 总进度未知时展示加载动画，不显示百分比 |
-| `active` | `boolean` | `true` | 未完成的线形进度默认显示流光；设为 false 关闭，完成、错误或不确定进度时自动停止。 |
+| `active` | `boolean` | `false` | 未完成的线形进度是否显示流光；设为 true 开启，完成、错误或不确定进度时自动停止。 |
 | `trailColor` | `string` | — | 底轨颜色 |
 | `segments` | `readonly `[`ProgressSegment`](#progresssegment)`[]` | — | 按比例和颜色显示多个分段。 |
 | `steps` | `number` | — | 离散的进度段数。 |

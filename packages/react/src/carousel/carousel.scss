@@ -92,6 +92,7 @@
     gap: 7px;
     padding: 12px;
     button {
+      position: relative;
       border: 0;
       width: 7px;
       height: 7px;
@@ -100,8 +101,13 @@
       padding: 0;
       cursor: pointer;
       transition:
-        width var(--leaf-motion-slow) var(--leaf-motion-spring),
+        width var(--leaf-motion-slow) var(--leaf-motion-easing),
         background var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &::after {
+        content: '';
+        position: absolute;
+        inset: -8px -4px;
+      }
       &:focus-visible {
         outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
         outline-offset: 3px;

@@ -5,13 +5,16 @@
   display: inline-flex;
   max-width: 100%;
   --leaf-otp-size: var(--leaf-component-input-otp-height, var(--leaf-control-height));
+  --leaf-otp-radius: var(--leaf-radius);
   color: var(--leaf-component-input-otp-color, var(--leaf-color-text));
   font: var(--leaf-component-input-otp-font-size, var(--leaf-font-size)) var(--leaf-font-family);
   &--sm {
     --leaf-otp-size: var(--leaf-component-input-otp-height-sm, var(--leaf-control-height-sm));
+    --leaf-otp-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
   }
   &--lg {
     --leaf-otp-size: var(--leaf-component-input-otp-height-lg, var(--leaf-control-height-lg));
+    --leaf-otp-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 }
 .leaf-input-otp__input {
@@ -43,6 +46,7 @@
   gap: var(--leaf-component-input-otp-gap, 8px);
 }
 .leaf-input-otp__slot {
+  position: relative;
   box-sizing: border-box;
   width: var(--leaf-otp-size);
   height: var(--leaf-otp-size);
@@ -54,7 +58,7 @@
       --leaf-component-input-otp-border-color,
       var(--leaf-frame-border-color, var(--leaf-color-border))
     );
-  border-radius: var(--leaf-component-input-otp-radius, var(--leaf-radius));
+  border-radius: var(--leaf-component-input-otp-radius, var(--leaf-otp-radius, var(--leaf-radius)));
   background: var(--leaf-component-input-otp-background, var(--leaf-color-surface));
   box-shadow: var(
     --leaf-component-input-otp-shadow,
@@ -67,23 +71,30 @@
     background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   &[data-filled] {
-    background: var(--leaf-component-input-otp-background, var(--leaf-color-surface-raised));
     border-color: var(--leaf-color-border-hover);
   }
   &[data-active] {
-    border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    border-color: var(--leaf-color-primary-focus, var(--leaf-color-primary));
     box-shadow: var(
       --leaf-component-input-otp-focus-shadow,
+      0 0 0 2px var(--leaf-color-focus, var(--leaf-accent-halo-focus-color)),
       var(--leaf-component-input-otp-shadow, var(--leaf-control-shadow, var(--leaf-shadow-xs)))
     );
-    outline: 3px solid var(--leaf-color-focus, var(--leaf-accent-halo-color));
-    outline-offset: 0;
+  }
+  &[data-active]:not([data-filled])::after {
+    content: '';
+    position: absolute;
+    width: 1.5px;
+    height: 45%;
+    border-radius: 1px;
+    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    animation: var(--leaf-motion-animation, leaf-otp-caret 1s steps(1) infinite);
   }
 }
 .leaf-input-otp__character {
   animation: var(
     --leaf-motion-animation,
-    leaf-otp-enter var(--leaf-motion-duration) var(--leaf-motion-spring)
+    leaf-otp-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
   );
 }
 @keyframes leaf-otp-enter {
@@ -94,8 +105,21 @@
     opacity: 1;
   }
 }
+@keyframes leaf-otp-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
 .leaf-input-otp[data-status='error'] .leaf-input-otp__slot {
   border-color: var(--leaf-color-danger);
+}
+.leaf-input-otp[data-status='warning'] .leaf-input-otp__slot {
+  border-color: var(--leaf-color-warning);
 }
 .leaf-input-otp[data-disabled] {
   opacity: 0.55;
@@ -106,6 +130,9 @@
 @media (prefers-reduced-motion: reduce) {
   .leaf-input-otp__slot {
     transition: none;
+  }
+  .leaf-input-otp__slot::after {
+    animation: none;
   }
   .leaf-input-otp__character {
     animation: none;

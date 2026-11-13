@@ -50,6 +50,8 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   defaultActiveKey?: string;
   onChange?: (key: string) => void;
   type?: 'line' | 'card' | 'segmented';
+  tone?: 'soft' | 'solid';
+  shape?: 'default' | 'pill';
   placement?: 'top' | 'bottom';
   size?: ControlSize;
   /** Fill the available width with equally sized tabs. */
@@ -70,6 +72,8 @@ export function TabsControl({
   defaultActiveKey,
   onChange,
   type = 'line',
+  tone = 'soft',
+  shape = 'default',
   placement = 'top',
   size = 'md',
   block = false,
@@ -106,7 +110,7 @@ export function TabsControl({
     track,
     indicator,
     '[data-leaf-indicator-item][data-active="true"]',
-    `${selected}-${placement}-${type}-${direction}`,
+    `${selected}-${placement}-${type}-${tone}-${shape}-${direction}`,
     items.length > 0,
   );
   const [scrollSides, setScrollSides] = useState({ start: false, end: false });
@@ -173,6 +177,8 @@ export function TabsControl({
       className={classes(
         'leaf-tabs',
         `leaf-tabs--${type}`,
+        tone !== 'soft' && `leaf-tabs--${tone}`,
+        shape !== 'default' && `leaf-tabs--${shape}`,
         `leaf-tabs--${placement}`,
         `leaf-tabs--${size}`,
         block && 'leaf-tabs--block',

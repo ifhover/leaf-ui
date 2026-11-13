@@ -1,15 +1,24 @@
 .leaf-back-top {
   position: fixed;
-  z-index: var(--leaf-z-index-popup);
+  z-index: 50;
   inset-inline-end: 24px;
   bottom: 24px;
+  min-width: 44px;
+  min-height: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  &:has(.leaf-button__label) {
+    padding-inline: 16px;
+    border-radius: 999px;
+  }
   opacity: 0;
   visibility: hidden;
   transform: translateY(12px) scale(0.94);
   box-shadow: var(--leaf-shadow-md);
   transition:
     opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-slow) var(--leaf-motion-spring),
+    transform var(--leaf-motion-slow) var(--leaf-motion-easing),
     box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
     visibility var(--leaf-motion-slow);
   &[data-visible] {
@@ -17,10 +26,8 @@
     opacity: 1;
     transform: none;
   }
-  &[data-visible]:hover:not(:disabled) {
-    box-shadow: var(--leaf-shadow-lg);
-  }
   &[data-visible]:active:not(:disabled) {
+    transform: scale(0.96);
     box-shadow: var(--leaf-shadow-sm);
   }
 }

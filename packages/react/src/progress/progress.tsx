@@ -38,7 +38,7 @@ export function Progress(rawProps: ProgressProps) {
     color,
     size = 100,
     indeterminate = false,
-    active = true,
+    active = false,
     trailColor,
     segments,
     steps,

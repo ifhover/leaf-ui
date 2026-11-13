@@ -18,8 +18,6 @@
     font: inherit;
     font-size: var(--leaf-font-size);
     font-weight: var(--leaf-font-weight);
-    &:disabled {
-    }
 
     @include mixins.text-action;
   }
@@ -84,6 +82,7 @@
 }
 // Time-enabled pickers share one calendar/time composition and a flush footer.
 .leaf-picker-panel {
+  @include mixins.softened-frame-color(picker-divider, var(--leaf-color-surface), 75%);
   // An enclosing content card replaces the date-only calendar's own border.
   --leaf-picker-calendar-width: calc(
     292px - var(--leaf-surface-border) *
@@ -114,7 +113,7 @@
 .leaf-datetime-panel__time,
 .leaf-range-panel__time {
   min-width: 0;
-  border-inline-start: 1px solid var(--leaf-color-divider);
+  border-inline-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
   .leaf-time-picker__columns {
     height: 100%;
     padding: 8px 4px;
@@ -146,9 +145,9 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   margin: 0;
-  border-block-start: 1px solid var(--leaf-color-divider);
+  border-block-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
   background: var(--leaf-color-surface);
   border-end-start-radius: inherit;
   border-end-end-radius: inherit;

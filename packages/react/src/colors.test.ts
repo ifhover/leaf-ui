@@ -1,7 +1,7 @@
 import { readability, TinyColor } from '@ctrl/tinycolor';
 import { describe, expect, it } from 'vitest';
 import { colorRecipes } from './color-recipes';
-import { type ColorScaleStep, colorScaleSteps, generateColorScale } from './color-scale';
+import { colorScaleSteps, generateColorScale } from './color-scale';
 import { type ColorShadeStep, semanticColorShadeSteps } from './color-shades';
 import {
   defaultColors,
@@ -15,7 +15,7 @@ import {
 import { leafThemeVariables, mergeLeafTheme } from './theme';
 
 const semanticSeeds = {
-  primary: '#1e964f',
+  primary: '#007aff',
   success: '#4bb418',
   danger: '#ff4d4f',
   warning: '#e69f12',
@@ -299,43 +299,51 @@ describe('theme color derivation', () => {
       ).toBe('#123456');
     }
   });
-  it('maps neutral defaults and mode roles to the generated scale or white', () => {
+  it('maps neutral defaults and mode roles to the generated scale or softened surface mixes', () => {
     const expectations = {
       light: {
-        text: 900,
-        'text-muted': 600,
-        'surface-muted': 100,
-        'surface-raised': 'white',
-        border: 200,
-        'border-hover': 300,
-        divider: 200,
-        'option-hover': 200,
-        surface: 'white',
+        text: { value: neutralColorScale[900], source: '--leaf-color-neutral-900' },
+        'text-muted': { value: neutralColorScale[600], source: '--leaf-color-neutral-600' },
+        'surface-muted': { value: neutralColorScale[100], source: '--leaf-color-neutral-100' },
+        'surface-raised': { value: '#ffffff', source: 'white' },
+        border: {
+          value: mixColors(neutralColorScale[200], '#ffffff', 82),
+          source: 'mix(--leaf-color-neutral-200, --leaf-color-surface, 82%)',
+        },
+        'border-hover': {
+          value: mixColors(neutralColorScale[300], '#ffffff', 82),
+          source: 'mix(--leaf-color-neutral-300, --leaf-color-surface, 82%)',
+        },
+        divider: {
+          value: mixColors(neutralColorScale[200], '#ffffff', 68),
+          source: 'mix(--leaf-color-neutral-200, --leaf-color-surface, 68%)',
+        },
+        'option-hover': { value: neutralColorScale[200], source: '--leaf-color-neutral-200' },
+        surface: { value: '#ffffff', source: 'white' },
       },
       dark: {
-        text: 100,
-        'text-muted': 400,
-        'surface-muted': 800,
-        'surface-raised': 800,
-        border: 800,
-        'border-hover': 700,
-        divider: 800,
-        'option-hover': 700,
-        surface: 900,
+        text: { value: neutralColorScale[100], source: '--leaf-color-neutral-100' },
+        'text-muted': { value: neutralColorScale[400], source: '--leaf-color-neutral-400' },
+        'surface-muted': { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
+        'surface-raised': { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
+        border: { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
+        'border-hover': { value: neutralColorScale[700], source: '--leaf-color-neutral-700' },
+        divider: {
+          value: mixColors(neutralColorScale[800], neutralColorScale[900], 70),
+          source: 'mix(--leaf-color-neutral-800, --leaf-color-surface, 70%)',
+        },
+        'option-hover': { value: neutralColorScale[700], source: '--leaf-color-neutral-700' },
+        surface: { value: neutralColorScale[900], source: '--leaf-color-neutral-900' },
       },
     } as const;
     for (const mode of ['light', 'dark'] as const) {
       const roles = resolveColorRoles(mode);
       for (const step of neutralSteps)
         expect(roles.values[`--leaf-color-neutral-${step}`]).toBe(neutralColorScale[step]);
-      for (const [name, source] of Object.entries(expectations[mode])) {
+      for (const [name, expected] of Object.entries(expectations[mode])) {
         const key = `--leaf-color-${name}` as const;
-        const expected =
-          source === 'white' ? '#ffffff' : neutralColorScale[source as ColorScaleStep];
-        expect(roles.values[key], `${mode} ${name}`).toBe(expected);
-        expect(roles.sources[key], `${mode} ${name} source`).toBe(
-          source === 'white' ? 'white' : `--leaf-color-neutral-${source}`,
-        );
+        expect(roles.values[key], `${mode} ${name}`).toBe(expected.value);
+        expect(roles.sources[key], `${mode} ${name} source`).toBe(expected.source);
       }
       for (const name of ['text', 'text-muted', 'surface', 'surface-muted', 'border'] as const)
         expect(roles.values[`--leaf-color-${name}`]).toBe(defaultColors[mode][name]);

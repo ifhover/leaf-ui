@@ -206,6 +206,12 @@
   height: var(--leaf-steps-icon-size);
   color: var(--leaf-color-text-muted);
 }
+.leaf-steps--dot.leaf-steps--vertical {
+  .leaf-steps__item::before,
+  .leaf-steps__item::after {
+    inset-inline-start: 12px;
+  }
+}
 .leaf-steps--dot [data-status='process'] .leaf-steps__icon,
 .leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
   color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
@@ -244,7 +250,7 @@
     --leaf-component-steps-height-sm,
     var(--leaf-control-height-sm)
   );
-  --leaf-current-font-size: var(--leaf-font-size);
+  --leaf-current-font-size: var(--leaf-font-size-sm);
 }
 .leaf-steps--lg {
   --leaf-current-control-height: var(

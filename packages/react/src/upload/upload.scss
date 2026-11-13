@@ -50,7 +50,6 @@
       box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     &:hover:not(:disabled) {
       border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      background: var(--leaf-color-surface-raised);
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -72,12 +71,15 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-surface);
     color: var(--leaf-color-text-muted);
-    box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
+    box-shadow:
+      inset 0 0 0 1px var(--leaf-color-border),
+      var(--leaf-shadow-xs);
     transition:
       color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
   }
   &__dropzone:hover:not(:disabled) &__symbol,
   &[data-dragging] &__symbol {
@@ -119,16 +121,21 @@
     box-sizing: border-box;
     border: var(--leaf-border-width, 1px) dashed var(--leaf-color-border);
     border-radius: var(--leaf-radius-md);
-    background: var(--leaf-color-surface-muted);
+    background: var(--leaf-color-surface);
     color: inherit;
     font: inherit;
     cursor: pointer;
-    transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[data-filled] {
       border: 0;
     }
     &:hover:not(:disabled) {
-      border-color: var(--leaf-color-border-hover);
+      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    }
+    &:active:not(:disabled) {
+      scale: 0.985;
     }
     &:focus-visible {
       @include mixins.focus-ring;

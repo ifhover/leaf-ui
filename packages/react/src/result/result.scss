@@ -35,7 +35,7 @@
   &:not(.leaf-result--empty) &__icon > svg {
     animation: var(
       --leaf-motion-animation,
-      leaf-result-icon-enter var(--leaf-motion-slow) var(--leaf-motion-spring)
+      leaf-result-icon-enter var(--leaf-motion-slow) var(--leaf-motion-easing)
     );
   }
   &__title {
@@ -86,11 +86,11 @@
 @keyframes leaf-result-icon-enter {
   from {
     opacity: 0;
-    transform: scale(0.72);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {

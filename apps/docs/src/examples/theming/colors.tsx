@@ -13,7 +13,7 @@ const colorOptions = [
 
 export function ThemeColors() {
   const [colors, setColors] = useState({
-    primary: '#1e964f',
+    primary: '#007aff',
     success: '#4bb418',
     danger: '#ff4d4f',
     warning: '#e69f12',
@@ -80,7 +80,7 @@ export function ThemeColors() {
           variant="layered"
           size="sm"
           title="共享底板"
-          description="Tabs 轨道与卡片外底共用这份底板。"
+          description="分层 Card 的外层画布使用 mutedSurfaceColor。"
         >
           <Tabs
             type="segmented"
@@ -91,12 +91,12 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: '内容表面',
-                children: '选中的 Tabs 与内嵌内容仍使用内容表面。',
+                children: '选中的高亮与内嵌内容仍基于内容表面。',
               },
               {
                 key: 'muted',
                 label: '共享底板',
-                children: 'Tabs 轨道和外层画布共享 mutedSurfaceColor。',
+                children: '外层分层画布使用 mutedSurfaceColor，不覆盖净白轨道。',
               },
             ]}
           />

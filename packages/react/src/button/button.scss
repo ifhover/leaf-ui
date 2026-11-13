@@ -31,7 +31,10 @@
     0 calc(var(--leaf-button-height, var(--leaf-current-control-height)) * 0.42)
   );
   border: var(--leaf-button-border-width) solid transparent;
-  border-radius: var(--leaf-component-button-radius, var(--leaf-button-radius, var(--leaf-radius)));
+  border-radius: var(
+    --leaf-component-button-radius,
+    var(--leaf-button-radius, var(--leaf-current-radius, var(--leaf-radius)))
+  );
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-button-font-size, var(--leaf-current-font-size));
   font-weight: var(--leaf-font-weight);
@@ -258,6 +261,9 @@
         ),
         var(--leaf-button-active-shadow)
       );
+      &:not(.leaf-button--link) {
+        scale: 0.975;
+      }
     }
     &:disabled {
       @include mixins.state-paint(
@@ -407,6 +413,7 @@
 .leaf-button {
   --leaf-current-control-height: var(--leaf-component-button-height, var(--leaf-control-height));
   --leaf-current-font-size: var(--leaf-component-button-font-size, var(--leaf-font-size));
+  --leaf-current-radius: var(--leaf-radius);
 }
 .leaf-button--sm {
   --leaf-current-control-height: var(
@@ -414,6 +421,7 @@
     var(--leaf-control-height-sm)
   );
   --leaf-current-font-size: var(--leaf-font-size-sm);
+  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
 }
 .leaf-button--lg {
   --leaf-current-control-height: var(
@@ -421,4 +429,5 @@
     var(--leaf-control-height-lg)
   );
   --leaf-current-font-size: var(--leaf-font-size-lg);
+  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
 }

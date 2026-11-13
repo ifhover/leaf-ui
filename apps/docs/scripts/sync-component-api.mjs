@@ -683,6 +683,8 @@ const specificDefaults = {
   'ResultProps.description': '—',
   'FloatButtonProps.variant': "`'solid'`",
   'TabsProps.activeKey': '—',
+  'TabsProps.tone': "`'soft'`",
+  'TabsProps.shape': "`'default'`",
   'DatePickerProps.value': '—',
   'DatePickerProps.needConfirm': '`picker === "datetime"`',
   'DatePickerProps.panelVariant': "`'plain'`",
@@ -704,6 +706,9 @@ const specificDefaults = {
   'LeafThemeTokens.onDangerColor': '`#ffffff`',
   'LeafThemeTokens.onWarningColor': '`#ffffff`',
   'LeafThemeTokens.onInfoColor': '`#ffffff`',
+  'LeafTheme.primaryColor': "`'#007aff'`",
+  'LeafTheme.borderRadius': '`10`',
+  'ColorPickerProps.defaultValue': "`'#007aff'`",
   'LeafThemeTokens.neutralColor': '`#707070`',
   'LeafThemeTokens.successColor': '`#4bb418`',
   'LeafThemeTokens.warningColor': '`#e69f12`',
@@ -2605,6 +2610,14 @@ const specific = {
     '非受控模式的初始标签 key，后续变化不重置选中项。',
     'Initial tab key in uncontrolled mode; later changes do not reset the selection.',
   ],
+  'TabsProps.tone': [
+    '卡片或分段形态的选中高亮风格：soft 为主题浅底，solid 为主题实底。',
+    'Selection highlight tone for card and segmented tabs: soft primary tint or solid primary fill.',
+  ],
+  'TabsProps.shape': [
+    '卡片或分段形态的标签圆角：default 为圆角矩形，pill 为胶囊形。',
+    'Tab corner shape for card and segmented tabs: rounded rectangle or pill.',
+  ],
   'DatePickerProps.value': [
     '受控值：日期 / 日期时间为 Date，纯时间为 HH:mm[:ss] 字符串；空值为 null。',
     'Controlled value: Date for dates/date-times, HH:mm[:ss] string for time; null when empty.',
@@ -3108,8 +3121,8 @@ const specific = {
     'Semantic icon beside the title, or the explanation when untitled; null hides it.',
   ],
   'ProgressProps.active': [
-    '未完成的线形进度默认显示流光；设为 false 关闭，完成、错误或不确定进度时自动停止。',
-    'Shimmer inside an unfinished line; false disables it. Completed, failed and indeterminate progress omit it.',
+    '未完成的线形进度是否显示流光；设为 true 开启，完成、错误或不确定进度时自动停止。',
+    'Shimmer inside an unfinished line; true enables it. Completed, failed and indeterminate progress omit it.',
   ],
   'CheckboxProps.onChange': [
     '从 event.target.checked 读取选中状态。',
@@ -3291,8 +3304,8 @@ const specific = {
     'Auxiliary text; shares the muted default and can be overridden separately.',
   ],
   'LeafThemeTokens.mutedSurfaceColor': [
-    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Tabs 轨道、Card layered 与日期面板共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
-    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Tabs tracks, layered Card canvases and date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
+    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Card layered 与 card 形态日期面板等共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
+    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Layered Card canvases and card-variant date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
   ],
   'LeafThemeTokens.raisedSurfaceColor': [
     '浮层与抬升表面色。',
@@ -3355,6 +3368,10 @@ const specific = {
   'LeafThemeTokens.borderColor': [
     '全局外框色；显式设置时统一覆盖实色控件和弱描边外框，组件级覆盖优先。',
     'Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence.',
+  ],
+  'LeafTheme.borderRadius': [
+    '基础圆角；数字为 px，小标签按 0.5、sm/lg 控件按 0.8/1.2、内容面与浮层按 1.4/1.6 倍生成。',
+    'Base radius; small tags use × 0.5, sm/lg controls use × 0.8/1.2, and surface/popup radii use × 1.4/1.6.',
   ],
   'LeafThemeTokens.onPrimaryColor': [
     '主题实底上的字色；默认白色，可手动设为 #000000。',
