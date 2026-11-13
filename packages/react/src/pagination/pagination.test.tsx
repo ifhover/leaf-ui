@@ -241,4 +241,16 @@ describe('Pagination', () => {
     rerender(<Pagination total={10} hideOnSinglePage />);
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
+
+  it('marks step buttons as square icon-only controls across sizes including sm', () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Pagination total={100} size="sm" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Previous page' })).toHaveClass(
+      'leaf-button--icon-only',
+    );
+    expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass('leaf-button--icon-only');
+  });
 });

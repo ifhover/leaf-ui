@@ -148,10 +148,9 @@ export function PaginationControl({
         type="button"
         disabled={disabled || page === 1}
         aria-label={messages.pagination.previousPage}
+        startIcon={<ChevronLeft size={16} aria-hidden="true" />}
         onClick={() => choose(page - 1)}
-      >
-        <ChevronLeft size={16} aria-hidden="true" />
-      </ButtonControl>
+      />
       {simple ? (
         <span className="leaf-pagination__simple">
           {page} / {pages}
@@ -213,10 +212,9 @@ export function PaginationControl({
         type="button"
         disabled={disabled || page === pages}
         aria-label={messages.pagination.nextPage}
+        startIcon={<ChevronRight size={16} aria-hidden="true" />}
         onClick={() => choose(page + 1)}
-      >
-        <ChevronRight size={16} aria-hidden="true" />
-      </ButtonControl>
+      />
       {showSizeChanger && (
         <SelectControl
           size={size}

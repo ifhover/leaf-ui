@@ -46,6 +46,10 @@
     padding: 0 8px;
     font-size: inherit;
     font-variant-numeric: tabular-nums;
+    &.leaf-button--icon-only {
+      width: var(--leaf-current-control-height);
+      padding: 0;
+    }
     // Only the current page delegates its paint to the moving indicator.
     &[aria-current='page'] {
       &,
@@ -84,6 +88,8 @@
     color: var(--leaf-color-text-muted);
   }
   &__jump {
+    width: var(--leaf-current-control-height);
+    padding: 0;
     .leaf-button__label > svg {
       display: none;
     }
@@ -129,7 +135,7 @@
     transition: none;
   }
 }
-.leaf-pagination[dir='rtl'] > button .leaf-button__label > svg,
+.leaf-pagination[dir='rtl'] > button svg,
 .leaf-pagination[dir='rtl'] .leaf-pagination__jump .leaf-button__label > svg {
   transform: rotate(180deg);
 }
