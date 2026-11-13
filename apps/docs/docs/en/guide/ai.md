@@ -33,7 +33,7 @@ Install `@ifhover/leaf-ui` in your application, then describe the interface you 
 
 > Use the leaf-ui skill to build a login form with a password field, validation feedback and a submitting state.
 
-The skill resolves the installed package name and exact version from the target application directory, including legacy Leaf UI packages. Documentation always matches your dependency rather than newer APIs. In a monorepo, specify the application directory you are editing.
+The skill resolves the installed package name and exact version from the target application directory. Documentation always matches your dependency rather than newer APIs. In a monorepo, specify the application directory you are editing.
 
 For new pages or substantial layout work, the skill first queries the same version's [Interface design and composition](/en/guide/design-standards), using the library's type, weight, spacing, density and color roles before retrieving components as needed. Default numbers are references, not replacements for user theme settings. Small API or behavior fixes do not require loading the whole guide.
 
@@ -52,6 +52,6 @@ Updating the skill does not upgrade Leaf UI. Your application's dependency still
 
 ## Documentation versions
 
-The default URL shows the latest published version. Use the version menu in the navigation bar to browse older releases. Each version retains its component demos, APIs and Markdown pages.
+The default URL and fixed version URL show the current latest release. Documentation deployment keeps the component demos, APIs and Markdown pages for that release. The skill still handles an older installed dependency from its package declarations and matching project metadata.
 
-AI entry points are `llm.txt`, `llms.txt` and `api/index.json` at each version's root. Component pages also offer Markdown links. The skill and its query helper are maintained on [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui).
+AI entry points are `llm.txt`, `llms.txt` and `api/index.json` at the current release root. Component pages also offer Markdown links. The skill and its query helper are maintained on [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui).

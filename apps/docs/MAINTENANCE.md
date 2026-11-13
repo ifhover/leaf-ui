@@ -99,11 +99,11 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 正式地址为 `https://ifhover.github.io/leaf-ui/`。`.github/workflows/pages.yml` 通过 GitHub Actions 部署 `site_build`，使用 `LEAF_DOCS_BASE=/leaf-ui/`。不提交静态产物和缓存。
 
-`pnpm build:versions` 从 npm 查询 `@ifhover/leaf-ui` 和历史包 `@sudden3/leaf-ui` 的已发布稳定版本、日期和 gitHead，经 `git archive` 还原发布提交，用对应源码、锁文件、示例与文档独立构建。需要完整 Git 历史。缺少提交、版本/包名不符、跨包重号、网络或权限错误、构建失败均中止部署。
+`pnpm build:versions` 只从 npm 查询 `@ifhover/leaf-ui` 的 `latest` 稳定版本、日期和 gitHead，经 `git archive` 还原该发布提交，用对应源码、锁文件、示例与文档独立构建。需要完整 Git 历史。缺少提交、版本/包名不符、网络或权限错误、构建失败均中止部署。
 
-默认入口对应 npm latest，不跳转到版本目录；同一提交额外构建 `/v/X.Y.Z/`。两份产物分别使用自己的 base，不能复制带版本路径的页面充当根站点。新作用域首次正式发布前，默认仍展示历史包稳定版；历史快照保持原来的包名和 API。版本菜单读取 `versions.json`，切换保留页面和锚点，不存在时回退指南或组件总览。
+默认入口对应 npm latest，不跳转到版本目录；同一提交额外构建 `/v/X.Y.Z/`。两份产物分别使用自己的 base，不能复制带版本路径的页面充当根站点。`versions.json` 只记录当前发布版本，站点不再生成或部署旧版本路径；版本切换基础设施保留以兼容既有链接和查询工具。
 
-旧快照只补充版本导航和 AI 基础设施，组件实现、文档与示例保持发布提交。缓存 `.version-cache` 的键包含包名、提交、base 和基础设施摘要。修改 AI 导出的 import 后同步 `build-versioned-site.mjs` 的 `platformFiles` 及其直接依赖，并执行隔离快照测试。
+当前快照只补充版本导航和 AI 基础设施，组件实现、文档与示例保持发布提交。缓存 `.version-cache` 的键包含包名、提交、base 和基础设施摘要。修改 AI 导出的 import 后同步 `build-versioned-site.mjs` 的 `platformFiles` 及其直接依赖，并执行隔离快照测试。
 
 组件版本来自 `packages/react/package.json`；更新记录同步中英文，标题由 `pnpm check:release` 校验。未发布记录放在在线 `docs` 之外。Pages 只在 npm 发布成功后或手动维护时部署，不响应普通 `main` 推送；直接运行快照构建，不先重跑工作区完整检查和库 / 文档构建。部署后由 [轻量发布核验](../../packages/react/RELEASING.md#发布完成) 检查 npm、标签、默认文档、固定快照与 AI 文档，不能把 HTTP 可达性当作视觉验收。
 
@@ -111,4 +111,4 @@ Rspress 的 `llms: true` 输出页面 Markdown，`export-ai-docs.mjs` 输出 `ap
 
 开发预览的分支、地址、版本标记、记录与清理要求统一见 [开发流程](../../DEVELOPMENT-WORKFLOW.md#开发版在线文档)，不在此维护第二份发布规则。
 
-当前 Pages 与 `build:versions` 没有自动开发预览部署/清理；配置 base 之外还需独立部署步骤。记录 URL、分支、提交、部署位置和清理方式。合并或放弃后删除预览、资源、入口与活动清单，保留清理证据；正式历史快照继续可访问。
+当前 Pages 与 `build:versions` 没有自动开发预览部署/清理；配置 base 之外还需独立部署步骤。记录 URL、分支、提交、部署位置和清理方式。合并或放弃后删除预览、资源、入口与活动清单，保留清理证据；正式站点只保留当前发布版本。

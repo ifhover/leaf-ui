@@ -22,74 +22,39 @@ export const platformFiles = [
 ];
 
 const currentPackage = '@ifhover/leaf-ui';
-const legacyPackage = '@sudden3/leaf-ui';
-
-function compareVersions(a, b) {
-  const left = a.version.split('.').map(Number);
-  const right = b.version.split('.').map(Number);
-  return right[0] - left[0] || right[1] - left[1] || right[2] - left[2];
-}
-
-export function publishedReleases(registry, { allowEmpty = false } = {}) {
-  if (![currentPackage, legacyPackage].includes(registry.name))
+export function publishedReleases(registry) {
+  if (registry.name !== currentPackage)
     throw new Error('Unsupported npm package in documentation release metadata.');
-  const versions = Object.entries(registry.versions)
-    .filter(([version]) => /^\d+\.\d+\.\d+$/.test(version))
-    .map(([version, entry]) => {
-      const sourceCommit = entry.gitHead;
-      const publishedAt = registry.time[version];
-      if (!/^[a-f0-9]{40}$/.test(sourceCommit) || !Number.isFinite(Date.parse(publishedAt)))
-        throw new Error(`Published version ${version} has no reproducible source commit or date.`);
-      if (entry.name && entry.name !== registry.name)
-        throw new Error(`Published version ${version} has mismatched package metadata.`);
-      return { package: registry.name, version, sourceCommit, publishedAt };
-    })
-    .sort(compareVersions);
-  if (allowEmpty && versions.length === 0) return null;
-  const latest = registry['dist-tags'].latest;
-  if (!versions.some((release) => release.version === latest))
+  const latest = registry['dist-tags']?.latest;
+  if (!/^\d+\.\d+\.\d+$/.test(latest ?? ''))
     throw new Error('The npm latest tag must refer to a published stable version.');
-  return { package: registry.name, latest, versions };
-}
-
-export function mergePublishedReleases(current, legacy) {
-  const preferred = current ?? legacy;
-  if (!preferred) throw new Error('No published stable Leaf UI documentation source.');
-  const releases = new Map();
-  for (const source of [current, legacy].filter(Boolean)) {
-    for (const release of source.versions) {
-      if (releases.has(release.version))
-        throw new Error(
-          `Version ${release.version} exists in both npm packages. Publish the new package with a distinct higher version to preserve /v/${release.version}/.`,
-        );
-      releases.set(release.version, release);
-    }
-  }
-  if (current && legacy && compareVersions({ version: current.latest }, legacy.versions[0]) >= 0)
-    throw new Error(
-      `The new npm package's stable latest must be higher than legacy ${legacy.versions[0].version}.`,
-    );
+  const entry = registry.versions?.[latest];
+  const sourceCommit = entry?.gitHead;
+  const publishedAt = registry.time?.[latest];
+  if (!/^[a-f0-9]{40}$/.test(sourceCommit) || !Number.isFinite(Date.parse(publishedAt)))
+    throw new Error(`Published version ${latest} has no reproducible source commit or date.`);
+  if (entry.name && entry.name !== registry.name)
+    throw new Error(`Published version ${latest} has mismatched package metadata.`);
   return {
-    package: preferred.package,
-    latest: preferred.latest,
-    versions: [...releases.values()].sort(compareVersions),
+    package: registry.name,
+    latest,
+    versions: [{ package: registry.name, version: latest, sourceCommit, publishedAt }],
   };
 }
 
 export async function loadPublishedReleases(fetcher = fetch) {
-  const responses = await Promise.all(
-    [currentPackage, legacyPackage].map(async (name) => {
-      const response = await fetcher(`https://registry.npmjs.org/${name.replace('/', '%2F')}`, {
-        signal: AbortSignal.timeout(30000),
-      });
-      if (name === currentPackage && response.status === 404) return null;
-      if (!response.ok) throw new Error(`npm registry returned ${response.status} for ${name}`);
-      const registry = await response.json();
-      if (registry.name !== name) throw new Error(`npm registry package mismatch for ${name}`);
-      return publishedReleases(registry, { allowEmpty: name === currentPackage });
-    }),
+  const response = await fetcher(
+    `https://registry.npmjs.org/${currentPackage.replace('/', '%2F')}`,
+    {
+      signal: AbortSignal.timeout(30000),
+    },
   );
-  return mergePublishedReleases(...responses);
+  if (!response.ok)
+    throw new Error(`npm registry returned ${response.status} for ${currentPackage}`);
+  const registry = await response.json();
+  if (registry.name !== currentPackage)
+    throw new Error(`npm registry package mismatch for ${currentPackage}`);
+  return publishedReleases(registry);
 }
 
 async function run(command, args, cwd, log, env = {}) {
@@ -154,8 +119,7 @@ export async function installPlatform(snapshot) {
   const { name } = JSON.parse(
     await readFile(path.join(snapshot, 'packages/react/package.json'), 'utf8'),
   );
-  if (![currentPackage, legacyPackage].includes(name))
-    throw new Error('Unsupported Leaf UI snapshot package.');
+  if (name !== currentPackage) throw new Error('Unsupported Leaf UI snapshot package.');
   for (const file of platformFiles.filter((file) => !file.endsWith('build-versioned-site.mjs'))) {
     // 0.1.0 predates English documentation; do not create an incomplete locale.
     if (file.includes('/docs/en/')) {

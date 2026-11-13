@@ -46,7 +46,7 @@
 npm deprecate '@sudden3/leaf-ui@*' 'This package has moved to @ifhover/leaf-ui. See https://ifhover.github.io/leaf-ui/guide/getting-started.html'
 ```
 
-文档构建同时读取新旧两包。新包尚未发布或只有开发预发布时，默认文档继续使用旧包的稳定版；新包有正式版本后使用新包的 `latest`，保留旧包各版快照。每个快照的包名与 `gitHead` 均来自实际发布记录，Skill 同时校验已安装的包名和精确版本。
+文档构建只读取 `@ifhover/leaf-ui` 的当前 `latest` 稳定版本，并生成默认站点和同版本 `/v/X.Y.Z/` 快照；不再拉取或部署旧包的历史文档。每个产物的包名与 `gitHead` 均来自实际发布记录，Skill 仍校验已安装的包名和精确版本。
 
 ## 检查与发布
 
@@ -73,7 +73,7 @@ pnpm build
 
 `pnpm release:pack` 只封装现有的 `dist`，不构建、不执行基础验收；它要求源码已提交，在暂存副本中写入 `gitHead`，不改工作区包清单。单独打包或校验摘要不能代替质量 CI 成功。发布任务不接受 PR / 开发分支的运行，也不在找不到证据时自行降级发布。质量运行失败时修复后重新检查；artifact 过期或缺失时重新运行该提交原有的 `main` 推送质量运行，再重试发布。
 
-文档历史快照继续复用现有缓存；根站点与 `/v/X.Y.Z/` 的 base 不同，所需的独立构建不能当作重复步骤删除。版本、提交或基础设施不匹配时不能复用旧产物。临时预览只清理本次实际创建的内容，不为没有创建预览的发布新增清理任务或证明材料。
+当前文档快照继续复用现有缓存；根站点与 `/v/X.Y.Z/` 的 base 不同，所需的独立构建不能当作重复步骤删除。版本、提交或基础设施不匹配时不能复用旧产物。临时预览只清理本次实际创建的内容，不为没有创建预览的发布新增清理任务或证明材料。
 
 ### GitHub Actions 自动发布（推荐）
 
@@ -92,7 +92,7 @@ pnpm build
    ```
 
 3. 发布工作流确认标签与组件版本一致、提交已包含在 `main`，且新版本高于 npm `latest`；等待该 SHA 的质量 CI 整体成功，下载并校验其 artifact，再发布公开包与 provenance。不安装工作区依赖、不重新执行 `pnpm check` / `pnpm build`。
-4. 工作流用 `verify:release` 的 npm-only 模式确认 npm `gitHead`、`latest` 和远端标签。成功后，`Deploy documentation` 自动从 `main` 运行，构建已发布文档与快照，并在部署后执行完整发布结果核验。
+4. 工作流用 `verify:release` 的 npm-only 模式确认 npm `gitHead`、`latest` 和远端标签。成功后，`Deploy documentation` 自动从 `main` 运行，只构建当前已发布文档和同版本快照，并在部署后执行完整发布结果核验。
 
 此工作流只处理正式版本，拒绝预发布标签。同一版本不能覆盖：如果 npm 已有该版本且提交不同，会要求升版；如果该版本已从同一提交发布并且仍是 `latest`，重跑会跳过上传，继续核对并触发文档部署。npm 已发布而文档失败时，优先重跑 `Deploy documentation`，无需重新发布 npm。
 
@@ -122,10 +122,10 @@ npm 的 `gitHead` 和 `vX.Y.Z` 标签必须指向同一个实际发布提交。�
 
 1. 确认发布标签已推送，npm 和文档工作流成功。构建器从 npm `gitHead` 还原发布提交，该提交须已推送且包版本与 npm 一致。npm 已发布但文档失败时只重跑文档部署；维护部署使用手动入口。
 2. 部署工作流已自动执行轻量核验，直接引用其成功证据，不再由 AI 逐项重复查询。手动发布或排障时，可在仓库根目录运行 `pnpm verify:release --version X.Y.Z`（省略版本则使用当前组件版本），用 `--commit <完整SHA>` 固定预期提交；`--npm-only` 只检查发布前半段，不能据此称文档已上线。默认只尝试一次，传播延迟时可用 `--attempts 12` 有界重试。
-3. 完整核验包含 npm 版本 / `latest` / `gitHead`、远端 Git 标签、`versions.json`、默认与固定快照的 `api/index.json`、`ai/v1/index.json`、`llm.txt` / `llms.txt`、中英文 Button 页面 / Markdown / 更新记录以及各一项 JS / CSS 资源。它是固定数量的 HTTP 检查，不证明全站交互、搜索、视觉或无障碍已验收；实际效果由用户查看，不扩展为 AI 全站巡检。
-4. 仅在本次确实创建过临时开发文档时清理其资源与入口，确认不再提供开发内容。正式历史快照保留。发布结果、实际效果确认状态和相关未完成项分别报告；任一步失败仍按未完成的发布处理。
+3. 完整核验包含 npm 版本 / `latest` / `gitHead`、远端 Git 标签、`versions.json`、默认与当前固定快照的 `api/index.json`、`ai/v1/index.json`、`llm.txt` / `llms.txt`、中英文 Button 页面 / Markdown / 更新记录以及各一项 JS / CSS 资源。它是固定数量的 HTTP 检查，不证明全站交互、搜索、视觉或无障碍已验收；实际效果由用户查看，不扩展为 AI 全站巡检。
+4. 仅在本次确实创建过临时开发文档时清理其资源与入口，确认不再提供开发内容。发布结果、实际效果确认状态和相关未完成项分别报告；任一步失败仍按未完成的发布处理。
 
-若发布后文档工作流未自动运行，或需要重试文档部署，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；各版示例与 API 必须始终使用对应的发布提交。文档基础设施更新可以通过构建器的公共 overlay 应用到旧快照，不能混入未发布组件 API。
+若发布后文档工作流未自动运行，或需要重试文档部署，手动触发 `Deploy documentation` workflow。不要重新将 main 上的组件源码构建到旧版本路径；当前示例与 API 必须始终使用对应的发布提交。文档基础设施更新通过构建器的公共 overlay 应用到当前快照，不能混入未发布组件 API。
 
 AI Skill 与组件包独立发行，维护方式见 [skills/README.md](../../skills/README.md)。新增导出时确保有对应组件或指南页面，让该版 API 索引可按组件和类型查找；无需复制一份完整手册到 Skill。
 

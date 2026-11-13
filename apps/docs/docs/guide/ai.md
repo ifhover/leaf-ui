@@ -33,7 +33,7 @@ npx skills add ifhover/leaf-ui --skill leaf-ui --agent cursor
 
 > 使用 leaf-ui skill 为这个项目编写登录表单，支持密码输入、校验反馈和提交状态。
 
-skill 从目标应用目录解析实际安装的包名和精确版本，同时兼容迁移前的 Leaf UI 包。查询始终匹配项目依赖，不会因为站点更新而改用新 API。在 monorepo 中，应明确要修改哪个应用目录。
+skill 从目标应用目录解析实际安装的包名和精确版本。查询始终匹配项目依赖，不会因为站点更新而改用新 API。在 monorepo 中，应明确要修改哪个应用目录。
 
 新建页面或大幅调整布局时，skill 会先查询同版本的[界面设计与组合](/guide/design-standards)，沿用当前库的字号、字重、间距、密度与颜色角色，再按需查询组件。默认数值是参考，页面继续继承用户的主题配置；局部 API 或行为修复不必加载整份指南。
 
@@ -52,6 +52,6 @@ npx skills remove leaf-ui
 
 ## 文档版本
 
-默认地址展示最新已发布版本，顶部菜单可切换旧版本。每个版本有独立的组件演示、API 与 Markdown 页面，旧版本内容保留。
+默认地址和固定版本地址都展示当前最新发布版本；文档部署只保留这一版本的组件演示、API 与 Markdown 页面。项目中已安装的旧版本仍由 skill 根据类型声明和对应依赖处理。
 
-AI 查询入口包括版本根目录的 `llm.txt`、`llms.txt` 和 `api/index.json`。组件页面也提供 Markdown 链接。skill 的源码与查询工具见 [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui)。
+AI 查询入口包括当前版本根目录的 `llm.txt`、`llms.txt` 和 `api/index.json`。组件页面也提供 Markdown 链接。skill 的源码与查询工具见 [GitHub](https://github.com/ifhover/leaf-ui/tree/main/skills/leaf-ui)。

@@ -312,7 +312,6 @@ test('component defaults stay scoped to their own function rather than sibling c
 import {
   installPlatform,
   loadPublishedReleases,
-  mergePublishedReleases,
   platformFiles,
   publishedReleases,
   redirectPage,
@@ -928,7 +927,7 @@ test('missing pages fall back without an unrelated anchor; old Chinese-only rele
 test('versions are discovered from published npm metadata and source commits', () => {
   const sha = 'a'.repeat(40);
   const data = {
-    name: '@sudden3/leaf-ui',
+    name: '@ifhover/leaf-ui',
     'dist-tags': { latest: '0.10.0' },
     versions: {
       '0.2.0': { gitHead: sha },
@@ -939,11 +938,11 @@ test('versions are discovered from published npm metadata and source commits', (
   };
   assert.deepEqual(
     publishedReleases(data).versions.map((version) => version.version),
-    ['0.10.0', '0.2.0'],
+    ['0.10.0'],
   );
   assert.throws(
     () => publishedReleases({ ...data, 'dist-tags': { latest: '0.99.0' } }),
-    /published stable version/,
+    /reproducible/,
   );
   assert.throws(() => publishedReleases({ ...data, versions: { '0.2.0': {} } }), /reproducible/);
   assert.match(redirectPage('/leaf-ui/components/index.html'), /location.search\+location.hash/);
@@ -1195,57 +1194,36 @@ const registryFixture = (name, version, commit = 'a'.repeat(40)) => ({
   time: { [version]: '2026-10-11T00:00:00Z' },
 });
 
-test('new npm scope becomes default while legacy releases retain their package and source', () => {
+test('the release manifest keeps only the current package latest release', () => {
   const current = publishedReleases(registryFixture('@ifhover/leaf-ui', '0.5.0', 'b'.repeat(40)));
-  const legacy = publishedReleases(registryFixture('@sudden3/leaf-ui', '0.4.2'));
-  const merged = mergePublishedReleases(current, legacy);
-  assert.equal(merged.package, '@ifhover/leaf-ui');
-  assert.equal(merged.latest, '0.5.0');
-  assert.deepEqual(merged.versions, [...current.versions, ...legacy.versions]);
-  assert.deepEqual(mergePublishedReleases(null, legacy), legacy);
-  assert.throws(
-    () =>
-      mergePublishedReleases(
-        publishedReleases(registryFixture('@ifhover/leaf-ui', '0.4.2')),
-        legacy,
-      ),
-    /exists in both npm packages/,
+  assert.equal(current.package, '@ifhover/leaf-ui');
+  assert.equal(current.latest, '0.5.0');
+  assert.deepEqual(
+    current.versions.map(({ version }) => version),
+    ['0.5.0'],
   );
   assert.throws(
-    () =>
-      mergePublishedReleases(
-        publishedReleases(registryFixture('@ifhover/leaf-ui', '0.3.1')),
-        legacy,
-      ),
-    /must be higher than legacy 0.4.2/,
+    () => publishedReleases(registryFixture('@sudden3/leaf-ui', '0.4.2')),
+    /Unsupported npm package/,
   );
 });
 
-test('unpublished or prerelease-only new package keeps the published default; registry failures are not hidden', async () => {
-  const legacy = registryFixture('@sudden3/leaf-ui', '0.4.2');
-  for (const current of [null, registryFixture('@ifhover/leaf-ui', '0.5.0-dev.1')]) {
-    const requests = [];
-    const manifest = await loadPublishedReleases(async (url) => {
-      requests.push(url);
-      return url.includes('@ifhover')
-        ? current
-          ? Response.json(current)
-          : new Response('', { status: 404 })
-        : Response.json(legacy);
-    });
-    assert.equal(manifest.package, '@sudden3/leaf-ui');
-    assert.equal(manifest.latest, '0.4.2');
-    assert.equal(manifest.versions.length, 1);
-    assert.equal(requests.length, 2);
-  }
+test('only current latest metadata is requested and registry failures are not hidden', async () => {
+  const requests = [];
+  const manifest = await loadPublishedReleases(async (url) => {
+    requests.push(url);
+    return Response.json(registryFixture('@ifhover/leaf-ui', '0.5.0'));
+  });
+  assert.equal(manifest.package, '@ifhover/leaf-ui');
+  assert.equal(manifest.latest, '0.5.0');
+  assert.equal(manifest.versions.length, 1);
+  assert.equal(requests.length, 1);
   await assert.rejects(
-    loadPublishedReleases(async (url) =>
-      url.includes('@ifhover') ? new Response('', { status: 503 }) : Response.json(legacy),
-    ),
+    loadPublishedReleases(async () => new Response('', { status: 503 })),
     /503/,
   );
   await assert.rejects(
-    loadPublishedReleases(async () => Response.json(legacy)),
+    loadPublishedReleases(async () => Response.json(registryFixture('@sudden3/leaf-ui', '0.4.2'))),
     /package mismatch/,
   );
 });
@@ -1253,7 +1231,7 @@ test('unpublished or prerelease-only new package keeps the published default; re
 test('historical platform overlays resolve components and installation instructions from the snapshot package', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'leaf-ui-platform-test-'));
   try {
-    for (const packageName of ['@sudden3/leaf-ui', '@ifhover/leaf-ui']) {
+    for (const packageName of ['@ifhover/leaf-ui']) {
       const snapshot = path.join(root, packageName.slice(1).replace('/', '-'));
       const docs = path.join(snapshot, 'apps/docs');
       await mkdir(path.join(snapshot, 'packages/react'), { recursive: true });
@@ -1304,7 +1282,7 @@ test('AI infrastructure links use only design guides available in each snapshot 
         await mkdir(path.join(docs, 'theme'), { recursive: true });
         await writeFile(
           path.join(snapshot, 'packages/react/package.json'),
-          JSON.stringify({ name: '@sudden3/leaf-ui', version: '0.3.0' }),
+          JSON.stringify({ name: '@ifhover/leaf-ui', version: '0.3.0' }),
         );
         await writeFile(path.join(docs, 'rspress.config.ts'), 'export default {};');
         await writeFile(
@@ -1333,7 +1311,7 @@ test('AI infrastructure links use only design guides available in each snapshot 
           }
           const source = (await readFile(path.join(repository, relative), 'utf8')).replaceAll(
             '@ifhover/leaf-ui',
-            '@sudden3/leaf-ui',
+            '@ifhover/leaf-ui',
           );
           const link = `[${label}](/${locale}guide/design-standards)`;
           assert.ok(source.includes(link));
