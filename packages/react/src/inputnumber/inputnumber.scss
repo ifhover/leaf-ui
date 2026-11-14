@@ -1,93 +1,96 @@
 @use '../styles/mixins' as mixins;
-.leaf-input-number {
-  @include mixins.field('input-number');
-  display: inline-flex;
-  align-items: center;
-  gap: var(--leaf-component-input-number-gap, 8px);
-  height: var(--leaf-current-control-height);
-  padding-inline-start: 10px;
-  overflow: hidden;
-  &__input {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    padding: 0;
-    border: 0;
-    outline: none;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-variant-numeric: tabular-nums;
-    &::placeholder {
-      color: var(--leaf-color-text-subtle);
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
-  }
-  &:not(:has(#{&}__controls)) {
-    padding-inline-end: 10px;
-  }
-  &__controls {
-    display: flex;
-    flex: 0 0 24px;
-    align-self: stretch;
-    flex-direction: column;
-    border-inline-start: 1px solid var(--leaf-color-border);
-    background: var(--leaf-color-surface);
-    transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-    button {
-      @include mixins.text-action;
-      display: inline-flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
+
+@layer leaf-ui {
+  .leaf-input-number {
+    @include mixins.field('input-number');
+    display: inline-flex;
+    align-items: center;
+    gap: var(--leaf-component-input-number-gap, 8px);
+    height: var(--leaf-current-control-height);
+    padding-inline-start: 10px;
+    overflow: hidden;
+    &__input {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
       padding: 0;
       border: 0;
-      color: var(--leaf-color-text-muted);
-      background: var(--leaf-color-surface);
+      outline: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-variant-numeric: tabular-nums;
+      &::placeholder {
+        color: var(--leaf-color-text-subtle);
+      }
       &:disabled {
-        opacity: 0.4;
         cursor: not-allowed;
       }
     }
-    button + button {
-      border-top: 1px solid var(--leaf-color-border);
+    &:not(:has(#{&}__controls)) {
+      padding-inline-end: 10px;
+    }
+    &__controls {
+      display: flex;
+      flex: 0 0 24px;
+      align-self: stretch;
+      flex-direction: column;
+      border-inline-start: 1px solid var(--leaf-color-border);
+      background: var(--leaf-color-surface);
+      transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      button {
+        @include mixins.text-action;
+        display: inline-flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 0;
+        color: var(--leaf-color-text-muted);
+        background: var(--leaf-color-surface);
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+      button + button {
+        border-top: 1px solid var(--leaf-color-border);
+      }
+    }
+    &:focus-within &__controls {
+      border-inline-start-color: var(--leaf-field-color-border-30);
     }
   }
-  &:focus-within &__controls {
-    border-inline-start-color: var(--leaf-field-color-border-30);
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-input-number__controls,
+    .leaf-input-number__controls button {
+      transition: none;
+    }
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-input-number__controls,
-  .leaf-input-number__controls button {
-    transition: none;
-  }
-}
 
-.leaf-input-number {
-  --leaf-current-control-height: var(
-    --leaf-component-input-number-height,
-    var(--leaf-control-height)
-  );
-  --leaf-current-font-size: var(--leaf-component-input-number-font-size, var(--leaf-font-size));
-  --leaf-current-radius: var(--leaf-radius);
-}
-.leaf-input-number--sm {
-  --leaf-current-control-height: var(
-    --leaf-component-input-number-height-sm,
-    var(--leaf-control-height-sm)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-sm);
-  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-}
-.leaf-input-number--lg {
-  --leaf-current-control-height: var(
-    --leaf-component-input-number-height-lg,
-    var(--leaf-control-height-lg)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-lg);
-  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+  .leaf-input-number {
+    --leaf-current-control-height: var(
+      --leaf-component-input-number-height,
+      var(--leaf-control-height)
+    );
+    --leaf-current-font-size: var(--leaf-component-input-number-font-size, var(--leaf-font-size));
+    --leaf-current-radius: var(--leaf-radius);
+  }
+  .leaf-input-number--sm {
+    --leaf-current-control-height: var(
+      --leaf-component-input-number-height-sm,
+      var(--leaf-control-height-sm)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+  }
+  .leaf-input-number--lg {
+    --leaf-current-control-height: var(
+      --leaf-component-input-number-height-lg,
+      var(--leaf-control-height-lg)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+  }
 }

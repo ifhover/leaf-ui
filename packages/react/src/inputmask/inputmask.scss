@@ -1,6 +1,8 @@
-.leaf-input-mask {
-  font-variant-numeric: tabular-nums;
-  .leaf-input__native {
-    letter-spacing: 0.025em;
+@layer leaf-ui {
+  .leaf-input-mask {
+    font-variant-numeric: tabular-nums;
+    .leaf-input__native {
+      letter-spacing: 0.025em;
+    }
   }
 }

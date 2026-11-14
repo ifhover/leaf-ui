@@ -1,26 +1,28 @@
-.leaf-infinite-scroll {
-  min-width: 0;
-  &__sentinel {
-    height: 1px;
+@layer leaf-ui {
+  .leaf-infinite-scroll {
+    min-width: 0;
+    &__sentinel {
+      height: 1px;
+    }
+    &__status {
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      color: var(--leaf-color-text-muted);
+      font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+    }
+    &__feedback {
+      display: inline-flex;
+      align-items: center;
+      animation: var(
+        --leaf-motion-animation,
+        leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
+      );
+    }
   }
-  &__status {
-    display: flex;
-    justify-content: center;
-    padding: 12px;
-    color: var(--leaf-color-text-muted);
-    font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
-  }
-  &__feedback {
-    display: inline-flex;
-    align-items: center;
-    animation: var(
-      --leaf-motion-animation,
-      leaf-content-in var(--leaf-motion-duration) var(--leaf-motion-easing)
-    );
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-infinite-scroll__feedback {
-    animation: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-infinite-scroll__feedback {
+      animation: none;
+    }
   }
 }

@@ -1,433 +1,438 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-button {
-  @include mixins.danger-soft-feedback-family;
-  --leaf-button-border-width: var(
-    --leaf-component-button-border-width,
-    var(--leaf-border-width, 1px)
-  );
-  --leaf-button-color: var(--leaf-color-primary);
-  --leaf-button-ink: var(--leaf-button-color);
-  --leaf-button-ink-hover: var(--leaf-color-primary-link-hover, var(--leaf-button-ink));
-  --leaf-button-ink-active: var(--leaf-color-primary-link-active, var(--leaf-button-active));
-  --leaf-button-on-color: var(--leaf-color-on-primary);
-  --leaf-focus-color: var(--leaf-color-text-muted);
-  --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
-  --leaf-button-active-color: var(--leaf-button-rest-color);
-  --leaf-button-active-background: var(--leaf-button-rest-background);
-  --leaf-button-active-border: var(--leaf-button-rest-border);
-  --leaf-button-hover-border: var(--leaf-button-base-border);
-  --leaf-button-hover-color: var(--leaf-button-base-color);
-  --leaf-button-active-shadow: var(--leaf-button-base-shadow);
-  box-sizing: border-box;
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  gap: var(--leaf-component-button-gap, 6px);
-  min-height: var(--leaf-button-height, var(--leaf-current-control-height));
-  padding: var(
-    --leaf-component-button-padding,
-    0 calc(var(--leaf-button-height, var(--leaf-current-control-height)) * 0.42)
-  );
-  border: var(--leaf-button-border-width) solid transparent;
-  border-radius: var(
-    --leaf-component-button-radius,
-    var(--leaf-button-radius, var(--leaf-current-radius, var(--leaf-radius)))
-  );
-  font-family: var(--leaf-font-family);
-  font-size: var(--leaf-component-button-font-size, var(--leaf-current-font-size));
-  font-weight: var(--leaf-font-weight);
-  line-height: var(--leaf-line-height);
-  text-decoration: none;
-  white-space: nowrap;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  appearance: none;
-  @include mixins.action-transition;
-  @include mixins.control-size;
-
-  &:focus-visible {
-    @include mixins.focus-ring;
-  }
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-  }
-  &[data-loading] {
-    cursor: default;
-    opacity: 1;
-  }
-  &__content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: inherit;
-    min-width: 0;
-    transition:
-      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &__loading {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    opacity: 0;
-    transform: scale(0.7);
-    pointer-events: none;
-    transition:
-      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &[data-loading] &__content {
-    opacity: 0;
-    transform: translateY(3px);
-  }
-  &[data-loading] &__loading {
-    opacity: 1;
-    transform: scale(1);
-  }
-  &[data-loading] &__spinner {
-    animation: var(
-      --leaf-motion-animation,
-      leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+@layer leaf-ui {
+  .leaf-button {
+    @include mixins.danger-soft-feedback-family;
+    --leaf-button-border-width: var(
+      --leaf-component-button-border-width,
+      var(--leaf-border-width, 1px)
     );
-    animation-play-state: var(--leaf-motion-play-state, running);
-  }
-
-  &--danger {
-    --leaf-button-color: var(--leaf-color-danger);
+    --leaf-button-color: var(--leaf-color-primary);
     --leaf-button-ink: var(--leaf-button-color);
-    --leaf-button-ink-hover: var(--leaf-color-danger-link-hover, var(--leaf-button-ink));
-    --leaf-button-ink-active: var(--leaf-color-danger-link-active, var(--leaf-button-active));
-    --leaf-button-on-color: var(--leaf-color-on-danger);
-    --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
-  }
-
-  &--icon-only {
-    width: var(--leaf-button-height, var(--leaf-current-control-height));
-    padding: 0;
-  }
-  &--full-width {
-    width: 100%;
-  }
-
-  &--link {
-    transition: color var(--leaf-motion-color) cubic-bezier(0.645, 0.045, 0.355, 1);
-    align-self: center;
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    &.leaf-button--icon-only {
-      width: auto;
-    }
-  }
-
-  &__icon,
-  &__spinner {
+    --leaf-button-ink-hover: var(--leaf-color-primary-link-hover, var(--leaf-button-ink));
+    --leaf-button-ink-active: var(--leaf-color-primary-link-active, var(--leaf-button-active));
+    --leaf-button-on-color: var(--leaf-color-on-primary);
+    --leaf-focus-color: var(--leaf-color-text-muted);
+    --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
+    --leaf-button-active-color: var(--leaf-button-rest-color);
+    --leaf-button-active-background: var(--leaf-button-rest-background);
+    --leaf-button-active-border: var(--leaf-button-rest-border);
+    --leaf-button-hover-border: var(--leaf-button-base-border);
+    --leaf-button-hover-color: var(--leaf-button-base-color);
+    --leaf-button-active-shadow: var(--leaf-button-base-shadow);
+    box-sizing: border-box;
     display: inline-flex;
-    flex: 0 0 auto;
+    position: relative;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
-
-// Public and composite actions share the same paint API.
-.leaf-button {
-  &:is(&--solid) {
-    --leaf-button-rest-color: var(--leaf-button-on-color);
-    --leaf-button-rest-background: var(--leaf-button-color);
-    --leaf-button-rest-border: transparent;
-    --leaf-button-rest-shadow: none;
-
-    --leaf-button-active-background: var(--leaf-button-active);
-  }
-  &:is(&--outline) {
-    --leaf-button-rest-color: var(--leaf-color-text);
-    --leaf-button-rest-background: var(--leaf-color-surface);
-    --leaf-button-rest-border: var(--leaf-color-border);
-    --leaf-button-rest-shadow: var(--leaf-shadow-xs);
-
-    --leaf-button-hover-border: var(
-      --leaf-component-button-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+    gap: var(--leaf-component-button-gap, 6px);
+    min-height: var(--leaf-button-height, var(--leaf-current-control-height));
+    padding: var(
+      --leaf-component-button-padding,
+      0 calc(var(--leaf-button-height, var(--leaf-current-control-height)) * 0.42)
     );
-    --leaf-button-active-color: var(--leaf-button-base-color);
-    --leaf-button-active-background: #{mixins.subtle-action-background(
-        var(--leaf-button-base-background)
-      )};
-    --leaf-button-active-border: var(--leaf-button-base-border);
-    &:not(.leaf-button--danger):hover:not(:disabled):not([data-loading]):where(
-        :not(:focus-visible)
-      ) {
-      --leaf-button-active-border: var(--leaf-button-hover-border);
+    border: var(--leaf-button-border-width) solid transparent;
+    border-radius: var(
+      --leaf-component-button-radius,
+      var(--leaf-button-radius, var(--leaf-current-radius, var(--leaf-radius)))
+    );
+    font-family: var(--leaf-font-family);
+    font-size: var(--leaf-component-button-font-size, var(--leaf-current-font-size));
+    font-weight: var(--leaf-font-weight);
+    line-height: var(--leaf-line-height);
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    appearance: none;
+    @include mixins.action-transition;
+    @include mixins.control-size;
+
+    &:focus-visible {
+      @include mixins.focus-ring;
     }
-    &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-button-color);
-      --leaf-button-rest-border: var(--leaf-button-color);
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+    &[data-loading] {
+      cursor: default;
+      opacity: 1;
+    }
+    &__content {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: inherit;
+      min-width: 0;
+      transition:
+        opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &__loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform: scale(0.7);
+      pointer-events: none;
+      transition:
+        opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &[data-loading] &__content {
+      opacity: 0;
+      transform: translateY(3px);
+    }
+    &[data-loading] &__loading {
+      opacity: 1;
+      transform: scale(1);
+    }
+    &[data-loading] &__spinner {
+      animation: var(
+        --leaf-motion-animation,
+        leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+      );
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+
+    &--danger {
+      --leaf-button-color: var(--leaf-color-danger);
+      --leaf-button-ink: var(--leaf-button-color);
+      --leaf-button-ink-hover: var(--leaf-color-danger-link-hover, var(--leaf-button-ink));
+      --leaf-button-ink-active: var(--leaf-color-danger-link-active, var(--leaf-button-active));
+      --leaf-button-on-color: var(--leaf-color-on-danger);
+      --leaf-button-active: var(--leaf-color-danger-active, var(--leaf-button-color));
+    }
+
+    &--icon-only {
+      width: var(--leaf-button-height, var(--leaf-current-control-height));
+      padding: 0;
+    }
+    &--full-width {
+      width: 100%;
+    }
+
+    &--link {
+      transition: color var(--leaf-motion-color) cubic-bezier(0.645, 0.045, 0.355, 1);
+      align-self: center;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      &.leaf-button--icon-only {
+        width: auto;
+      }
+    }
+
+    &__icon,
+    &__spinner {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  // Public and composite actions share the same paint API.
+  .leaf-button {
+    &:is(&--solid) {
+      --leaf-button-rest-color: var(--leaf-button-on-color);
+      --leaf-button-rest-background: var(--leaf-button-color);
+      --leaf-button-rest-border: transparent;
+      --leaf-button-rest-shadow: none;
+
+      --leaf-button-active-background: var(--leaf-button-active);
+    }
+    &:is(&--outline) {
+      --leaf-button-rest-color: var(--leaf-color-text);
+      --leaf-button-rest-background: var(--leaf-color-surface);
+      --leaf-button-rest-border: var(--leaf-color-border);
+      --leaf-button-rest-shadow: var(--leaf-shadow-xs);
+
+      --leaf-button-hover-border: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+      );
+      --leaf-button-active-color: var(--leaf-button-base-color);
+      --leaf-button-active-background: #{mixins.subtle-action-background(
+          var(--leaf-button-base-background)
+        )};
+      --leaf-button-active-border: var(--leaf-button-base-border);
+      &:not(.leaf-button--danger):hover:not(:disabled):not([data-loading]):where(
+          :not(:focus-visible)
+        ) {
+        --leaf-button-active-border: var(--leaf-button-hover-border);
+      }
+      &.leaf-button--danger {
+        --leaf-button-rest-color: var(--leaf-button-color);
+        --leaf-button-rest-border: var(--leaf-button-color);
+
+        --leaf-button-hover-color: var(--leaf-component-button-color, var(--leaf-button-ink-hover));
+        --leaf-button-active-color: var(
+          --leaf-component-button-color,
+          var(--leaf-button-ink-active)
+        );
+        --leaf-button-hover-border: var(
+          --leaf-component-button-border-color,
+          var(--leaf-frame-border-color, var(--leaf-button-ink-hover))
+        );
+        --leaf-button-active-border: var(--leaf-button-ink-active);
+      }
+    }
+    &:is(&--link) {
+      --leaf-button-rest-color: var(--leaf-button-ink);
+      --leaf-button-rest-background: transparent;
+      --leaf-button-rest-border: transparent;
+      --leaf-button-rest-shadow: none;
 
       --leaf-button-hover-color: var(--leaf-component-button-color, var(--leaf-button-ink-hover));
       --leaf-button-active-color: var(--leaf-component-button-color, var(--leaf-button-ink-active));
-      --leaf-button-hover-border: var(
-        --leaf-component-button-border-color,
-        var(--leaf-frame-border-color, var(--leaf-button-ink-hover))
-      );
-      --leaf-button-active-border: var(--leaf-button-ink-active);
-    }
-  }
-  &:is(&--link) {
-    --leaf-button-rest-color: var(--leaf-button-ink);
-    --leaf-button-rest-background: transparent;
-    --leaf-button-rest-border: transparent;
-    --leaf-button-rest-shadow: none;
-
-    --leaf-button-hover-color: var(--leaf-component-button-color, var(--leaf-button-ink-hover));
-    --leaf-button-active-color: var(--leaf-component-button-color, var(--leaf-button-ink-active));
-    --leaf-button-active-background: transparent;
-    --leaf-button-active-border: transparent;
-    &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-  }
-  &:is(&--text) {
-    @include mixins.text-action-family;
-    --leaf-button-rest-color: var(--leaf-text-action-color);
-    --leaf-button-rest-background: transparent;
-    --leaf-button-rest-border: transparent;
-    --leaf-button-rest-shadow: none;
-    --leaf-button-hover-background: var(--leaf-text-action-background);
-    --leaf-button-active-background: var(--leaf-text-action-active-background);
-    &.leaf-button--danger {
-      --leaf-button-rest-color: var(--leaf-button-color);
-    }
-  }
-  &:is(&--solid, &--outline, &--text, &--link) {
-    --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
-    --leaf-button-base-background: var(
-      --leaf-component-button-background,
-      var(--leaf-button-rest-background)
-    );
-    --leaf-button-base-border: var(
-      --leaf-component-button-border-color,
-      var(--leaf-frame-border-color, var(--leaf-button-rest-border))
-    );
-    --leaf-button-base-shadow: var(
-      --leaf-component-button-shadow,
-      var(--leaf-control-shadow, var(--leaf-button-rest-shadow))
-    );
-    color: var(--leaf-button-base-color);
-    background: var(--leaf-button-base-background);
-    border-color: var(--leaf-button-base-border);
-    box-shadow: var(--leaf-button-base-shadow);
-    &:focus-visible:not(:disabled) {
-      @include mixins.state-paint(
-        button,
-        focus,
-        var(--leaf-button-base-color),
-        var(--leaf-button-base-background),
-        var(--leaf-button-base-border),
-        var(--leaf-button-base-shadow)
-      );
-    }
-    &:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible)) {
-      @include mixins.state-paint(
-        button,
-        hover,
-        var(--leaf-button-hover-color),
-        var(--leaf-button-hover-background, var(--leaf-button-base-background)),
-        var(--leaf-button-hover-border),
-        var(--leaf-button-base-shadow)
-      );
-    }
-    &:active:not(:disabled):not([data-loading]) {
-      @include mixins.state-paint(
-        button,
-        active,
-        var(--leaf-button-active-color),
-        var(--leaf-button-active-background),
-        var(
-          --leaf-component-button-border-color,
-          var(--leaf-frame-border-color, var(--leaf-button-active-border))
-        ),
-        var(--leaf-button-active-shadow)
-      );
-      &:not(.leaf-button--link) {
-        scale: 0.975;
+      --leaf-button-active-background: transparent;
+      --leaf-button-active-border: transparent;
+      &.leaf-button--danger:active:not(:disabled):not([data-loading]) {
+        text-decoration: underline;
+        text-underline-offset: 3px;
       }
     }
-    &:disabled {
-      @include mixins.state-paint(
-        button,
-        disabled,
-        var(--leaf-button-base-color),
-        var(--leaf-button-base-background),
-        var(--leaf-button-base-border),
-        var(--leaf-button-base-shadow)
+    &:is(&--text) {
+      @include mixins.text-action-family;
+      --leaf-button-rest-color: var(--leaf-text-action-color);
+      --leaf-button-rest-background: transparent;
+      --leaf-button-rest-border: transparent;
+      --leaf-button-rest-shadow: none;
+      --leaf-button-hover-background: var(--leaf-text-action-background);
+      --leaf-button-active-background: var(--leaf-text-action-active-background);
+      &.leaf-button--danger {
+        --leaf-button-rest-color: var(--leaf-button-color);
+      }
+    }
+    &:is(&--solid, &--outline, &--text, &--link) {
+      --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
+      --leaf-button-base-background: var(
+        --leaf-component-button-background,
+        var(--leaf-button-rest-background)
       );
+      --leaf-button-base-border: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-button-rest-border))
+      );
+      --leaf-button-base-shadow: var(
+        --leaf-component-button-shadow,
+        var(--leaf-control-shadow, var(--leaf-button-rest-shadow))
+      );
+      color: var(--leaf-button-base-color);
+      background: var(--leaf-button-base-background);
+      border-color: var(--leaf-button-base-border);
+      box-shadow: var(--leaf-button-base-shadow);
+      &:focus-visible:not(:disabled) {
+        @include mixins.state-paint(
+          button,
+          focus,
+          var(--leaf-button-base-color),
+          var(--leaf-button-base-background),
+          var(--leaf-button-base-border),
+          var(--leaf-button-base-shadow)
+        );
+      }
+      &:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible)) {
+        @include mixins.state-paint(
+          button,
+          hover,
+          var(--leaf-button-hover-color),
+          var(--leaf-button-hover-background, var(--leaf-button-base-background)),
+          var(--leaf-button-hover-border),
+          var(--leaf-button-base-shadow)
+        );
+      }
+      &:active:not(:disabled):not([data-loading]) {
+        @include mixins.state-paint(
+          button,
+          active,
+          var(--leaf-button-active-color),
+          var(--leaf-button-active-background),
+          var(
+            --leaf-component-button-border-color,
+            var(--leaf-frame-border-color, var(--leaf-button-active-border))
+          ),
+          var(--leaf-button-active-shadow)
+        );
+        &:not(.leaf-button--link) {
+          scale: 0.975;
+        }
+      }
+      &:disabled {
+        @include mixins.state-paint(
+          button,
+          disabled,
+          var(--leaf-button-base-color),
+          var(--leaf-button-base-background),
+          var(--leaf-button-base-border),
+          var(--leaf-button-base-shadow)
+        );
+      }
     }
   }
-}
 
-@keyframes leaf-spin {
-  to {
-    transform: rotate(360deg);
+  @keyframes leaf-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .leaf-button,
-  .leaf-button__content,
-  .leaf-button__loading {
-    transition: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-button,
+    .leaf-button__content,
+    .leaf-button__loading {
+      transition: none;
+    }
+    .leaf-button[data-loading] .leaf-button__spinner {
+      animation: none;
+    }
   }
-  .leaf-button[data-loading] .leaf-button__spinner {
-    animation: none;
-  }
-}
 
-@media (forced-colors: active) {
-  .leaf-button:is(
-    .leaf-button--solid,
-    .leaf-button--outline,
-    .leaf-button--link,
-    .leaf-button--text
-  ) {
-    border-color: ButtonText;
-    &:disabled {
-      color: GrayText;
-      border-color: GrayText;
-    }
-    &:focus-visible {
-      outline-color: Highlight;
+  @media (forced-colors: active) {
+    .leaf-button:is(
+      .leaf-button--solid,
+      .leaf-button--outline,
+      .leaf-button--link,
+      .leaf-button--text
+    ) {
+      border-color: ButtonText;
+      &:disabled {
+        color: GrayText;
+        border-color: GrayText;
+      }
+      &:focus-visible {
+        outline-color: Highlight;
+      }
     }
   }
-}
 
-.leaf-button-group {
-  display: inline-flex;
-  align-items: stretch;
-  gap: 8px;
-}
-.leaf-button-group--attached {
-  gap: 0;
-  > .leaf-button {
-    position: relative;
-    &:not(:first-child) {
-      border-start-start-radius: 0;
-      border-end-start-radius: 0;
-      margin-inline-start: calc(-1 * var(--leaf-button-border-width));
+  .leaf-button-group {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .leaf-button-group--attached {
+    gap: 0;
+    > .leaf-button {
+      position: relative;
+      &:not(:first-child) {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+        margin-inline-start: calc(-1 * var(--leaf-button-border-width));
+      }
+      &:not(:last-child) {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+      }
+      &:hover:not(:disabled),
+      &:active:not(:disabled),
+      &:focus-visible {
+        z-index: 1;
+      }
     }
-    &:not(:last-child) {
-      border-start-end-radius: 0;
-      border-end-end-radius: 0;
-    }
-    &:hover:not(:disabled),
-    &:active:not(:disabled),
-    &:focus-visible {
+  }
+
+  .leaf-button-group {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .leaf-split-button {
+    isolation: isolate;
+    &.leaf-button-group--attached > .leaf-button {
       z-index: 1;
     }
   }
-}
 
-.leaf-button-group {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-}
-
-.leaf-split-button {
-  isolation: isolate;
-  &.leaf-button-group--attached > .leaf-button {
-    z-index: 1;
-  }
-}
-
-.leaf-split-button > .leaf-button--outline {
-  --leaf-split-button-divider-color: var(
-    --leaf-component-button-border-color,
-    var(--leaf-frame-border-color, var(--leaf-color-primary-border, var(--leaf-color-border)))
-  );
-  &.leaf-button--danger {
+  .leaf-split-button > .leaf-button--outline {
     --leaf-split-button-divider-color: var(
       --leaf-component-button-border-color,
-      var(--leaf-frame-border-color, var(--leaf-button-color))
+      var(--leaf-frame-border-color, var(--leaf-color-primary-border, var(--leaf-color-border)))
     );
+    &.leaf-button--danger {
+      --leaf-split-button-divider-color: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-button-color))
+      );
+    }
+    // The shared edge stays neutral while the outer border responds to each action.
+    &:first-child {
+      border-inline-end-color: var(--leaf-split-button-divider-color);
+    }
+    &:not(:first-child) {
+      border-inline-start-color: var(--leaf-split-button-divider-color);
+    }
   }
-  // The shared edge stays neutral while the outer border responds to each action.
-  &:first-child {
-    border-inline-end-color: var(--leaf-split-button-divider-color);
-  }
-  &:not(:first-child) {
-    border-inline-start-color: var(--leaf-split-button-divider-color);
-  }
-}
 
-.leaf-split-button > .leaf-button + .leaf-button {
-  &:not(.leaf-button--outline) {
-    margin-inline-start: 0;
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    z-index: 2;
-    inset-block: 22%;
-    inset-inline-start: 0;
-    width: 1px;
-    background: var(
-      --leaf-component-button-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-    pointer-events: none;
-  }
-  &.leaf-button--solid::before {
-    background: color-mix(in srgb, var(--leaf-button-on-color) 32%, transparent);
-  }
-  &.leaf-button--outline::before {
-    display: none;
-  }
-  &.leaf-button--link {
-    margin-inline-start: 8px;
+  .leaf-split-button > .leaf-button + .leaf-button {
+    &:not(.leaf-button--outline) {
+      margin-inline-start: 0;
+    }
     &::before {
-      inset-inline-start: -4px;
+      content: '';
+      position: absolute;
+      z-index: 2;
+      inset-block: 22%;
+      inset-inline-start: 0;
+      width: 1px;
+      background: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+      pointer-events: none;
     }
-  }
-  @media (forced-colors: active) {
-    &::before,
     &.leaf-button--solid::before {
-      background: ButtonText;
+      background: color-mix(in srgb, var(--leaf-button-on-color) 32%, transparent);
+    }
+    &.leaf-button--outline::before {
+      display: none;
+    }
+    &.leaf-button--link {
+      margin-inline-start: 8px;
+      &::before {
+        inset-inline-start: -4px;
+      }
+    }
+    @media (forced-colors: active) {
+      &::before,
+      &.leaf-button--solid::before {
+        background: ButtonText;
+      }
     }
   }
-}
 
-.leaf-button {
-  --leaf-current-control-height: var(--leaf-component-button-height, var(--leaf-control-height));
-  --leaf-current-font-size: var(--leaf-component-button-font-size, var(--leaf-font-size));
-  --leaf-current-radius: var(--leaf-radius);
-}
-.leaf-button--sm {
-  --leaf-current-control-height: var(
-    --leaf-component-button-height-sm,
-    var(--leaf-control-height-sm)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-sm);
-  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-}
-.leaf-button--lg {
-  --leaf-current-control-height: var(
-    --leaf-component-button-height-lg,
-    var(--leaf-control-height-lg)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-lg);
-  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+  .leaf-button {
+    --leaf-current-control-height: var(--leaf-component-button-height, var(--leaf-control-height));
+    --leaf-current-font-size: var(--leaf-component-button-font-size, var(--leaf-font-size));
+    --leaf-current-radius: var(--leaf-radius);
+  }
+  .leaf-button--sm {
+    --leaf-current-control-height: var(
+      --leaf-component-button-height-sm,
+      var(--leaf-control-height-sm)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+  }
+  .leaf-button--lg {
+    --leaf-current-control-height: var(
+      --leaf-component-button-height-lg,
+      var(--leaf-control-height-lg)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+  }
 }

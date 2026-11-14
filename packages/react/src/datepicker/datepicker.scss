@@ -1,235 +1,238 @@
 @use '../styles/mixins' as mixins;
 @use '../shared/picker';
-.leaf-date-picker {
-  @include mixins.field('date-picker');
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  height: var(--leaf-current-control-height);
-  padding: 0;
-  &--extended {
-    width: 280px;
-  }
-  &__input {
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    height: 100%;
-    padding-block: 0;
-    padding-inline: 10px 34px;
-    border: 0;
-    border-radius: inherit;
-    outline: none;
-    color: inherit;
-    background: transparent;
-    font: inherit;
-    line-height: inherit;
-    &::placeholder {
-      color: var(--leaf-color-text-subtle);
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
-  }
-  &[data-clearable] &__input {
-    padding-inline-end: 56px;
-  }
-  &[data-segmented] &__input {
-    font-variant-numeric: tabular-nums;
-    direction: ltr;
-    caret-color: transparent;
-    &::selection {
-      color: var(--leaf-color-on-info);
-      background: var(--leaf-color-info);
-    }
-  }
-  &[data-direction='rtl'][data-segmented] &__input {
-    padding-left: 34px;
-    padding-right: 10px;
-    text-align: right;
-  }
-  &[data-direction='rtl'][data-segmented][data-clearable] &__input {
-    padding-left: 56px;
-  }
-  &__icon {
-    position: absolute;
-    inset-inline-end: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--leaf-color-text-muted);
-    cursor: pointer;
-    transition:
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      color: var(--leaf-color-text);
-    }
-    &:active:not(:disabled) {
-      scale: 0.9;
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
-  }
-  > .leaf-picker-clear {
-    inset-inline-end: 29px;
-  }
-  &[data-open] &__icon {
-    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-  }
-  &__panel {
-    width: 292px;
-    --leaf-surface-padding: 0px;
-    @each $side in top, right, bottom, left {
-      --leaf-surface-padding-#{$side}: 0px;
-    }
-  }
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2px;
-    margin-bottom: 8px;
-  }
-  &__nav {
-    display: inline-flex;
-    flex: 0 0 auto;
-    width: 28px;
-    height: 30px;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    border: 0;
-    border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    &:disabled {
-      opacity: 0.4;
-    }
 
-    @include mixins.text-action;
-  }
-  &__day {
+@layer leaf-ui {
+  .leaf-date-picker {
+    @include mixins.field('date-picker');
     display: inline-flex;
-    min-width: 0;
-    height: 32px;
-    width: 100%;
+    position: relative;
     align-items: center;
-    justify-content: center;
+    height: var(--leaf-current-control-height);
     padding: 0;
-    border: 1px solid transparent;
-    // Date cells use the same option radius and soft hover as Select rows.
-    border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    color: var(--leaf-color-text);
-    background: transparent;
-    font: inherit;
-    font-size: 12px;
-    cursor: pointer;
-    transition:
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover:not(:disabled) {
-      background: #{mixins.choice-option-background()};
+    &--extended {
+      --leaf-field-width: 280px;
     }
-    &:active:not(:disabled) {
-      scale: 0.94;
+    &__input {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      padding-block: 0;
+      padding-inline: 10px 34px;
+      border: 0;
+      border-radius: inherit;
+      outline: none;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      line-height: inherit;
+      &::placeholder {
+        color: var(--leaf-color-text-subtle);
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
-    &:focus-visible {
-      @include mixins.focus-ring;
-      outline-offset: -1px;
+    &[data-clearable] &__input {
+      padding-inline-end: 56px;
     }
-    &:disabled {
+    &[data-segmented] &__input {
+      font-variant-numeric: tabular-nums;
+      direction: ltr;
+      caret-color: transparent;
+      &::selection {
+        color: var(--leaf-color-on-info);
+        background: var(--leaf-color-info);
+      }
+    }
+    &[data-direction='rtl'][data-segmented] &__input {
+      padding-left: 34px;
+      padding-right: 10px;
+      text-align: right;
+    }
+    &[data-direction='rtl'][data-segmented][data-clearable] &__input {
+      padding-left: 56px;
+    }
+    &__icon {
+      position: absolute;
+      inset-inline-end: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      background: transparent;
       color: var(--leaf-color-text-muted);
-      cursor: not-allowed;
-      opacity: 0.45;
+      cursor: pointer;
+      transition:
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &:hover:not(:disabled) {
+        color: var(--leaf-color-text);
+      }
+      &:active:not(:disabled) {
+        scale: 0.9;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
     }
-    &--outside {
-      color: var(--leaf-color-text-muted);
+    > .leaf-picker-clear {
+      inset-inline-end: 29px;
     }
-    &--selected,
-    &--selected:hover:not(:disabled) {
-      color: var(--leaf-color-on-primary);
-      background: var(--leaf-color-primary);
-      box-shadow:
-        inset 0 0 0 1px var(--leaf-color-primary-fill-border, transparent),
-        var(--leaf-shadow-xs);
-    }
-    // Pointer previews have no inner outline; keyboard focus remains visible.
-    &--preview,
-    &--preview:hover:not(:disabled) {
+    &[data-open] &__icon {
       color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-      background: var(--leaf-calendar-range-background);
-      box-shadow: none;
     }
-    &--selected:disabled {
-      color: var(--leaf-color-text-muted);
-      background: var(--leaf-color-surface-muted);
-      border-color: var(--leaf-color-border);
-      opacity: 1;
+    &__panel {
+      width: 292px;
+      --leaf-surface-padding: 0px;
+      @each $side in top, right, bottom, left {
+        --leaf-surface-padding-#{$side}: 0px;
+      }
+    }
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+    &__nav {
+      display: inline-flex;
+      flex: 0 0 auto;
+      width: 28px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      &:disabled {
+        opacity: 0.4;
+      }
+
+      @include mixins.text-action;
+    }
+    &__day {
+      display: inline-flex;
+      min-width: 0;
+      height: 32px;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 1px solid transparent;
+      // Date cells use the same option radius and soft hover as Select rows.
+      border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      color: var(--leaf-color-text);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition:
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
+        scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &:hover:not(:disabled) {
+        background: #{mixins.choice-option-background()};
+      }
+      &:active:not(:disabled) {
+        scale: 0.94;
+      }
+      &:focus-visible {
+        @include mixins.focus-ring;
+        outline-offset: -1px;
+      }
+      &:disabled {
+        color: var(--leaf-color-text-muted);
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+      &--outside {
+        color: var(--leaf-color-text-muted);
+      }
+      &--selected,
+      &--selected:hover:not(:disabled) {
+        color: var(--leaf-color-on-primary);
+        background: var(--leaf-color-primary);
+        box-shadow:
+          inset 0 0 0 1px var(--leaf-color-primary-fill-border, transparent),
+          var(--leaf-shadow-xs);
+      }
+      // Pointer previews have no inner outline; keyboard focus remains visible.
+      &--preview,
+      &--preview:hover:not(:disabled) {
+        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        background: var(--leaf-calendar-range-background);
+        box-shadow: none;
+      }
+      &--selected:disabled {
+        color: var(--leaf-color-text-muted);
+        background: var(--leaf-color-surface-muted);
+        border-color: var(--leaf-color-border);
+        opacity: 1;
+      }
     }
   }
-}
-.leaf-calendar--week {
-  .leaf-date-picker__day {
-    border-radius: 0;
+  .leaf-calendar--week {
+    .leaf-date-picker__day {
+      border-radius: 0;
+    }
+    .leaf-calendar__cell:nth-child(7n + 1) > .leaf-date-picker__day {
+      border-start-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      border-end-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+    }
+    .leaf-calendar__cell:nth-child(7n) > .leaf-date-picker__day {
+      border-start-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      border-end-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+    }
+    .leaf-calendar__cell--week-hover
+      > .leaf-date-picker__day:not(:disabled):not(.leaf-date-picker__day--selected) {
+      background: #{mixins.choice-option-background()};
+      border-radius: 0;
+    }
   }
-  .leaf-calendar__cell:nth-child(7n + 1) > .leaf-date-picker__day {
-    border-start-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    border-end-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-date-picker__icon,
+    .leaf-date-picker__day {
+      transition: none;
+    }
   }
-  .leaf-calendar__cell:nth-child(7n) > .leaf-date-picker__day {
-    border-start-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    border-end-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-  }
-  .leaf-calendar__cell--week-hover
-    > .leaf-date-picker__day:not(:disabled):not(.leaf-date-picker__day--selected) {
-    background: #{mixins.choice-option-background()};
-    border-radius: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-date-picker__icon,
-  .leaf-date-picker__day {
-    transition: none;
-  }
-}
 
-.leaf-picker-presets {
-  box-sizing: border-box;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin: 6px;
-  padding: 6px;
-  background: transparent;
-  border-radius: var(--leaf-radius);
-}
-/* 非侧边快捷区在 max-content 面板中按面板自身宽度换行，避免撑宽浮层引发横向滚动条 */
-.leaf-picker-presets:not(.leaf-picker-presets--side) {
-  width: 0;
-  min-width: calc(100% - 12px);
-}
+  .leaf-picker-presets {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 6px;
+    padding: 6px;
+    background: transparent;
+    border-radius: var(--leaf-radius);
+  }
+  /* 非侧边快捷区在 max-content 面板中按面板自身宽度换行，避免撑宽浮层引发横向滚动条 */
+  .leaf-picker-presets:not(.leaf-picker-presets--side) {
+    width: 0;
+    min-width: calc(100% - 12px);
+  }
 
-.leaf-date-picker__panel {
-  @include mixins.floating-paint(date-picker);
-}
-.leaf-floating.leaf-date-picker__panel {
-  width: 292px;
-}
+  .leaf-date-picker__panel {
+    @include mixins.floating-paint(date-picker);
+  }
+  :where(.leaf-floating).leaf-date-picker__panel {
+    width: 292px;
+  }
 
-.leaf-floating.leaf-picker-panel {
-  @include mixins.field-popup(date-picker);
-  font-size: var(
-    --leaf-component-date-picker-font-size,
-    var(--leaf-current-font-size, var(--leaf-font-size))
-  );
+  .leaf-floating.leaf-picker-panel {
+    @include mixins.field-popup(date-picker);
+    font-size: var(
+      --leaf-component-date-picker-font-size,
+      var(--leaf-current-font-size, var(--leaf-font-size))
+    );
+  }
 }

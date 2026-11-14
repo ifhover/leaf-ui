@@ -34,6 +34,8 @@ React 18 or 19 and the matching React DOM version must be installed in your appl
 
 Browser component entries load theme variables, shared styles and the required component and service styles automatically. No manual CSS imports or Sass installation are needed. See [server-side rendering](/en/guide/ssr) for framework-specific setup in Next.js, TanStack Start and other frameworks.
 
+Leaf UI styles are placed inside `@layer leaf-ui` so utility classes and application styles can override component defaults cleanly. Because unlayered global CSS always takes precedence over `@layer` rules, move any project-wide global reset CSS into `@layer base`. See [Tailwind CSS](/en/guide/tailwindcss) for layer order setup.
+
 Examples use Flex, Space, Grid and FormField for layout. Tailwind CSS is not required.
 
 ## Use a component

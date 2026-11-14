@@ -13,19 +13,22 @@ For a project with Tailwind installed, choose the configuration for your version
 
 ### Tailwind CSS 4
 
-Add one import to your CSS entry:
+Declare the cascade layer order before importing styles in your CSS entry:
 
 ```css title="app.css"
+@layer theme, base, leaf-ui, components, utilities;
 @import 'tailwindcss';
 @import '@ifhover/leaf-ui/tailwind.css';
 ```
+
+Leaf UI places all component styles inside `@layer leaf-ui`. Declaring the layer order upfront ensures lazily imported component stylesheets stay below Tailwind utilities so classes such as `w-full` or `w-80` can override default field widths.
 
 <DocsCollapse title="Keep your existing base styles">
 
 To omit Tailwind's Preflight reset, use this entry instead:
 
 ```css title="app.css"
-@layer theme, base, components, utilities;
+@layer theme, base, leaf-ui, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 @import '@ifhover/leaf-ui/tailwind.css';
@@ -46,9 +49,10 @@ module.exports = {
 };
 ```
 
-Keep the Tailwind 3 directives in your CSS entry:
+Declare the cascade layer order above the Tailwind 3 directives so on-demand component styles stay between `base` and `utilities`:
 
 ```css title="app.css"
+@layer base, leaf-ui, components, utilities;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -152,6 +156,8 @@ Combine motion utilities as `transition-colors duration-leaf ease-leaf motion-re
 
 ## Usage tips
 
+- **Style layers and overrides**: Leaf UI component styles live inside `@layer leaf-ui`. With the `@layer` order above, utility classes such as `w-full` and `w-80` override default component dimensions, spacing and borders; field components also honor `--leaf-field-width` on the field or an ancestor.
+- **Global resets**: Unlayered global CSS always overrides layered styles in CSS Cascade Layers. If your application has unlayered global reset CSS, place it inside `@layer base` and import your `app.css` before component stylesheets load.
 - **Opacity**: Tailwind 4 supports `bg-leaf-primary/50`. In Tailwind 3, these colors do not support `/50`, `bg-opacity-*` or `text-opacity-*`; define translucent colors in application CSS.
 - **Source scanning**: Write complete class names such as `bg-leaf-primary` instead of constructing `bg-leaf-${color}`.
 - **Base styles**: A CSS-only page with no Leaf UI component imports also needs `@ifhover/leaf-ui/styles.css`.

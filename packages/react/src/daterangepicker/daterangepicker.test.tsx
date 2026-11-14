@@ -360,16 +360,29 @@ describe('DateRangePicker', () => {
       sass.compileAsync(path.join(styleRoot, 'datepicker/datepicker.scss')),
     ]);
 
+    const flattenLayerRules = (ruleList: CSSRuleList): CSSRule[] =>
+      Array.from(ruleList).flatMap((rule) =>
+        !('selectorText' in rule) && !('conditionText' in rule) && 'cssRules' in rule
+          ? flattenLayerRules((rule as CSSGroupingRule).cssRules)
+          : [rule],
+      );
+
     const parseCss = (css: string) => {
       const style = document.createElement('style');
       style.textContent = css;
       document.head.appendChild(style);
-      const rules = Array.from(style.sheet?.cssRules ?? []);
+      const topRules = Array.from(style.sheet?.cssRules ?? []);
+      const rules = style.sheet ? flattenLayerRules(style.sheet.cssRules) : [];
       style.remove();
-      return rules;
+      return { topRules, rules };
     };
 
-    const calendarRules = parseCss(calendarResult.css);
+    const { topRules: calendarTopRules, rules: calendarRules } = parseCss(calendarResult.css);
+    const isLayerRule = (rule: CSSRule): rule is CSSLayerBlockRule =>
+      !('selectorText' in rule) &&
+      !('conditionText' in rule) &&
+      'cssRules' in rule &&
+      'name' in rule;
     const isStyleRule = (rule: CSSRule): rule is CSSStyleRule =>
       'selectorText' in rule &&
       typeof (rule as CSSStyleRule).selectorText === 'string' &&
@@ -389,10 +402,13 @@ describe('DateRangePicker', () => {
           rule.style.getPropertyValue(prop).trim() === value,
       );
 
+    expect(calendarTopRules.some((rule) => isLayerRule(rule) && rule.name === 'leaf-ui')).toBe(
+      true,
+    );
     expect(
       hasDeclaration(
         calendarRules,
-        '.leaf-floating.leaf-range-panel--presets',
+        ':where(.leaf-floating).leaf-range-panel--presets',
         'width',
         'max-content',
       ),
@@ -423,13 +439,16 @@ describe('DateRangePicker', () => {
     expect(
       hasDeclaration(
         mediaChildRules,
-        '.leaf-floating.leaf-range-panel:not(.leaf-range-panel--datetime)',
+        ':where(.leaf-floating).leaf-range-panel:where(:not(.leaf-range-panel--datetime))',
         'width',
         '300px',
       ),
     ).toBe(true);
 
-    const datepickerRules = parseCss(datepickerResult.css);
+    const { topRules: datepickerTopRules, rules: datepickerRules } = parseCss(datepickerResult.css);
+    expect(datepickerTopRules.some((rule) => isLayerRule(rule) && rule.name === 'leaf-ui')).toBe(
+      true,
+    );
     expect(
       hasDeclaration(
         datepickerRules,
@@ -444,5 +463,113 @@ describe('DateRangePicker', () => {
           '0',
         ),
     ).toBe(true);
+  });
+
+  it('wraps picker field widths in @layer leaf-ui with low-specificity :where() defaults', async () => {
+    const styleRoot = path.resolve(__dirname, '..');
+    const [datepickerResult, calendarResult, formResult] = await Promise.all([
+      sass.compileAsync(path.join(styleRoot, 'datepicker/datepicker.scss')),
+      sass.compileAsync(path.join(styleRoot, 'shared/calendar.scss')),
+      sass.compileAsync(path.join(styleRoot, 'form/form.scss')),
+    ]);
+
+    const parseCss = (css: string) => {
+      const style = document.createElement('style');
+      style.textContent = css;
+      document.head.appendChild(style);
+      const flattenLayerRules = (ruleList: CSSRuleList): CSSRule[] =>
+        Array.from(ruleList).flatMap((rule) =>
+          !('selectorText' in rule) && !('conditionText' in rule) && 'cssRules' in rule
+            ? flattenLayerRules((rule as CSSGroupingRule).cssRules)
+            : [rule],
+        );
+      const topRules = Array.from(style.sheet?.cssRules ?? []);
+      const rules = style.sheet ? flattenLayerRules(style.sheet.cssRules) : [];
+      style.remove();
+      return { topRules, rules };
+    };
+
+    const hasDeclaration = (rules: CSSRule[], selector: string, prop: string, value: string) =>
+      rules.some(
+        (rule) =>
+          'selectorText' in rule &&
+          typeof (rule as CSSStyleRule).selectorText === 'string' &&
+          (rule as CSSStyleRule).selectorText
+            .split(',')
+            .map((part) => part.trim())
+            .includes(selector) &&
+          (rule as CSSStyleRule).style
+            .getPropertyValue(prop)
+            .replace(/\s+/gu, ' ')
+            .replace(/\s*([(),])\s*/gu, '$1')
+            .trim() === value,
+      );
+
+    const { topRules: datepickerTop, rules: datepickerRules } = parseCss(datepickerResult.css);
+    const { topRules: calendarTop, rules: calendarRules } = parseCss(calendarResult.css);
+    const { topRules: formTop, rules: formRules } = parseCss(formResult.css);
+
+    for (const top of [datepickerTop, calendarTop, formTop]) {
+      expect(
+        top.some(
+          (rule) =>
+            !('selectorText' in rule) &&
+            !('conditionText' in rule) &&
+            'name' in rule &&
+            (rule as CSSLayerBlockRule).name === 'leaf-ui',
+        ),
+      ).toBe(true);
+    }
+
+    expect(
+      hasDeclaration(
+        datepickerRules,
+        ':where(.leaf-date-picker)',
+        'width',
+        'var(--leaf-field-width,240px)',
+      ),
+    ).toBe(true);
+    expect(
+      hasDeclaration(datepickerRules, '.leaf-date-picker--extended', '--leaf-field-width', '280px'),
+    ).toBe(true);
+
+    expect(
+      hasDeclaration(calendarRules, '.leaf-date-range-picker', '--leaf-field-width', '300px'),
+    ).toBe(true);
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-date-range-picker--datetime',
+        '--leaf-field-width',
+        '380px',
+      ),
+    ).toBe(true);
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-date-range-picker--extended',
+        '--leaf-field-width',
+        '440px',
+      ),
+    ).toBe(true);
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-time-range-picker--extended',
+        '--leaf-field-width',
+        '300px',
+      ),
+    ).toBe(true);
+
+    const formWidthRule = formRules.find(
+      (rule): rule is CSSStyleRule =>
+        'selectorText' in rule &&
+        typeof rule.selectorText === 'string' &&
+        rule.selectorText.includes('.leaf-form-field__body > :where(') &&
+        rule.selectorText.includes('.leaf-date-picker') &&
+        rule.selectorText.includes('.leaf-date-range-picker'),
+    );
+    expect(formWidthRule).toBeDefined();
+    expect(formWidthRule?.style.getPropertyValue('width').trim()).toBe('100%');
   });
 });

@@ -44,6 +44,7 @@ for (const [subpath, targets] of Object.entries(manifest.exports)) {
           ? await readFile(new URL('dist/esm/styles/foundation.css', packageRoot), 'utf8')
           : styles;
       assert.ok(shared.includes('--leaf-control-height'), `${subpath} includes shared tokens`);
+      assert.match(shared, /@layer\s+leaf-ui\b/, `${subpath} wraps styles in @layer leaf-ui`);
       assert.ok(!styles.includes('@use'), `${subpath} is compiled CSS`);
     }
     continue;
@@ -581,11 +582,25 @@ const foundationCss = await readFile(
 );
 assert.match(foundationCss, /--leaf-control-height:\s*34px/);
 assert.match(foundationCss, /--leaf-font-size:\s*14px/);
+assert.match(foundationCss, /@layer\s+leaf-ui\b/);
+for (const fileName of await readdir(new URL('dist/esm/styles/components/', packageRoot))) {
+  if (!fileName.endsWith('.css')) continue;
+  const componentCss = await readFile(
+    new URL(`dist/esm/styles/components/${fileName}`, packageRoot),
+    'utf8',
+  );
+  assert.match(
+    componentCss,
+    /@layer\s+leaf-ui\b/,
+    `components/${fileName} wraps styles in @layer leaf-ui`,
+  );
+}
 assert.match(baseCss, /@import ['"]\.\/foundation\.css['"]/);
 assert.match(baseCss, /components\/message\.css/);
 assert.match(baseCss, /components\/modal\.css/);
 assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary component styles');
 const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
+assert.match(css, /@layer\s+leaf-ui\b/);
 assert.match(css, /--leaf-control-height:\s*34px/);
 assert.match(css, /--leaf-color-danger/);
 assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]|\.leaf-segmented/);

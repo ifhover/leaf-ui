@@ -1,66 +1,68 @@
-.leaf-statistic {
-  color: var(--leaf-color-text);
-  font-family: var(--leaf-font-family);
-  &__title {
-    color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size-sm);
-    margin-bottom: 6px;
-    font-weight: 400;
-  }
-  &__value {
-    font-size: 28px;
-    font-weight: var(--leaf-font-weight);
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-  }
-  &__number {
-    display: inline-block;
-    &[data-loading] {
-      min-width: 100px;
-      color: transparent;
-      border-radius: var(--leaf-radius-sm);
-      background: linear-gradient(
-        100deg,
-        var(--leaf-color-surface-muted) 20%,
-        var(--leaf-color-option-hover) 45%,
-        var(--leaf-color-surface-muted) 70%
-      );
-      background-size: 240% 100%;
-      animation: var(
-        --leaf-motion-animation,
-        leaf-statistic-shimmer calc(var(--leaf-motion-duration) * 7) linear infinite
-      );
+@layer leaf-ui {
+  .leaf-statistic {
+    color: var(--leaf-color-text);
+    font-family: var(--leaf-font-family);
+    &__title {
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      margin-bottom: 6px;
+      font-weight: 400;
+    }
+    &__value {
+      font-size: 28px;
+      font-weight: var(--leaf-font-weight);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    &__number {
+      display: inline-block;
+      &[data-loading] {
+        min-width: 100px;
+        color: transparent;
+        border-radius: var(--leaf-radius-sm);
+        background: linear-gradient(
+          100deg,
+          var(--leaf-color-surface-muted) 20%,
+          var(--leaf-color-option-hover) 45%,
+          var(--leaf-color-surface-muted) 70%
+        );
+        background-size: 240% 100%;
+        animation: var(
+          --leaf-motion-animation,
+          leaf-statistic-shimmer calc(var(--leaf-motion-duration) * 7) linear infinite
+        );
+      }
+    }
+    &__suffix {
+      font-size: var(--leaf-font-size);
+      font-weight: 400;
+      color: var(--leaf-color-text-muted);
+      letter-spacing: normal;
+    }
+    &__accessible {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
     }
   }
-  &__suffix {
-    font-size: var(--leaf-font-size);
-    font-weight: 400;
-    color: var(--leaf-color-text-muted);
-    letter-spacing: normal;
+  @keyframes leaf-statistic-shimmer {
+    to {
+      background-position: -240% 0;
+    }
   }
-  &__accessible {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
-  }
-}
-@keyframes leaf-statistic-shimmer {
-  to {
-    background-position: -240% 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-statistic__number[data-loading] {
-    animation: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-statistic__number[data-loading] {
+      animation: none;
+    }
   }
 }

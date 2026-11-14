@@ -1,29 +1,31 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-tooltip {
-  --leaf-tooltip-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius));
-  --leaf-surface-radius: var(--leaf-tooltip-radius);
-  max-width: min(300px, calc(100vw - 24px));
-  padding: var(--leaf-component-tooltip-padding, 7px 10px);
-  border: 0;
-  border-radius: var(--leaf-tooltip-radius);
-  & > .leaf-floating__viewport {
-    // Padding belongs to the outer panel; rounding this text-sized viewport clips glyphs.
-    border-radius: 0;
-  }
-  color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
-  background: var(--leaf-component-tooltip-background, var(--leaf-color-text));
-  font-size: var(--leaf-font-size-sm);
-  line-height: var(--leaf-line-height-sm);
-  overflow-wrap: anywhere;
-  box-shadow: var(
-    --leaf-component-tooltip-shadow,
-    var(--leaf-surface-shadow, var(--leaf-shadow-md))
-  );
-  @include mixins.floating-arrow;
-  transition-duration:
-    var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
-  &[data-state='closing'] {
-    transition-duration: var(--leaf-motion-fast);
+@layer leaf-ui {
+  .leaf-tooltip {
+    --leaf-tooltip-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius));
+    --leaf-surface-radius: var(--leaf-tooltip-radius);
+    max-width: min(300px, calc(100vw - 24px));
+    padding: var(--leaf-component-tooltip-padding, 7px 10px);
+    border: 0;
+    border-radius: var(--leaf-tooltip-radius);
+    & > .leaf-floating__viewport {
+      // Padding belongs to the outer panel; rounding this text-sized viewport clips glyphs.
+      border-radius: 0;
+    }
+    color: var(--leaf-component-tooltip-color, var(--leaf-color-surface));
+    background: var(--leaf-component-tooltip-background, var(--leaf-color-text));
+    font-size: var(--leaf-font-size-sm);
+    line-height: var(--leaf-line-height-sm);
+    overflow-wrap: anywhere;
+    box-shadow: var(
+      --leaf-component-tooltip-shadow,
+      var(--leaf-surface-shadow, var(--leaf-shadow-md))
+    );
+    @include mixins.floating-arrow;
+    transition-duration:
+      var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
+    &[data-state='closing'] {
+      transition-duration: var(--leaf-motion-fast);
+    }
   }
 }

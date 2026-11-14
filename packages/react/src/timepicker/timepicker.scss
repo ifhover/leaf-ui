@@ -1,86 +1,88 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-time-picker {
-  &__panel {
-    min-width: 240px;
-    --leaf-surface-padding: 0px;
-    @each $side in top, right, bottom, left {
-      --leaf-surface-padding-#{$side}: 0px;
+@layer leaf-ui {
+  .leaf-time-picker {
+    &__panel {
+      min-width: 240px;
+      --leaf-surface-padding: 0px;
+      @each $side in top, right, bottom, left {
+        --leaf-surface-padding-#{$side}: 0px;
+      }
+    }
+    &__columns {
+      display: flex;
+      align-items: stretch;
+      padding: 8px;
+      gap: 0;
+      min-width: 0;
+    }
+    &__column-wrap {
+      min-width: 0;
+      flex: 1;
+      padding-inline: 4px;
+    }
+    &__column-wrap + &__column-wrap {
+      border-inline-start: 1px solid var(--leaf-color-divider);
+    }
+    &__column-label {
+      padding: 0 4px 6px;
+      color: var(--leaf-color-text-muted);
+      text-align: center;
+      font-size: var(--leaf-font-size-sm);
+      white-space: nowrap;
+    }
+    &__column {
+      position: relative;
+      overscroll-behavior: contain;
+    }
+    &__options {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    &__column .leaf-floating__option {
+      @include mixins.choice-option;
+      @include mixins.choice-option-size(var(--leaf-density-option-height));
+      justify-content: space-between;
+      gap: 4px;
+      // The scrollbar owns its gutter; row padding only separates the value and check.
+      padding-inline: 6px 2px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    &__column .leaf-floating__option + .leaf-floating__option {
+      margin-top: 0;
+    }
+    // Same saved-value mark and motion as .leaf-select__check.
+    &__check {
+      flex: 0 0 auto;
+      opacity: 0;
+      transform: scale(0.6) rotate(-12deg);
+      transition:
+        opacity var(--leaf-motion-color) var(--leaf-motion-easing),
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    [aria-selected='true'] > &__check {
+      opacity: 1;
+      transform: scale(1) rotate(0);
     }
   }
-  &__columns {
-    display: flex;
-    align-items: stretch;
-    padding: 8px;
-    gap: 0;
-    min-width: 0;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-time-picker__check {
+      transition: none;
+    }
   }
-  &__column-wrap {
-    min-width: 0;
-    flex: 1;
-    padding-inline: 4px;
-  }
-  &__column-wrap + &__column-wrap {
-    border-inline-start: 1px solid var(--leaf-color-divider);
-  }
-  &__column-label {
-    padding: 0 4px 6px;
-    color: var(--leaf-color-text-muted);
-    text-align: center;
-    font-size: var(--leaf-font-size-sm);
-    white-space: nowrap;
-  }
-  &__column {
-    position: relative;
-    overscroll-behavior: contain;
-  }
-  &__options {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  &__column .leaf-floating__option {
-    @include mixins.choice-option;
-    @include mixins.choice-option-size(var(--leaf-density-option-height));
-    justify-content: space-between;
-    gap: 4px;
-    // The scrollbar owns its gutter; row padding only separates the value and check.
-    padding-inline: 6px 2px;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  &__column .leaf-floating__option + .leaf-floating__option {
-    margin-top: 0;
-  }
-  // Same saved-value mark and motion as .leaf-select__check.
-  &__check {
-    flex: 0 0 auto;
-    opacity: 0;
-    transform: scale(0.6) rotate(-12deg);
-    transition:
-      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  [aria-selected='true'] > &__check {
-    opacity: 1;
-    transform: scale(1) rotate(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-time-picker__check {
-    transition: none;
-  }
-}
 
-.leaf-time-picker__panel {
-  @include mixins.floating-paint(date-picker);
-}
-.leaf-floating.leaf-time-picker__panel {
-  width: min(240px, calc(100vw - 24px));
-  &:has(.leaf-time-picker__columns[data-seconds], .leaf-time-picker__columns[data-period]) {
-    width: min(320px, calc(100vw - 24px));
+  .leaf-time-picker__panel {
+    @include mixins.floating-paint(date-picker);
   }
-  &:has(.leaf-time-picker__columns[data-seconds][data-period]) {
-    width: min(420px, calc(100vw - 24px));
+  .leaf-floating.leaf-time-picker__panel {
+    width: min(240px, calc(100vw - 24px));
+    &:has(.leaf-time-picker__columns[data-seconds], .leaf-time-picker__columns[data-period]) {
+      width: min(320px, calc(100vw - 24px));
+    }
+    &:has(.leaf-time-picker__columns[data-seconds][data-period]) {
+      width: min(420px, calc(100vw - 24px));
+    }
   }
 }

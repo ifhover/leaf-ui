@@ -220,3 +220,53 @@ test('the preset satisfies the official Tailwind 3 Config type without Tailwind 
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('Tailwind layer declaration places utilities after compiled @layer leaf-ui styles', async () => {
+  const sass = requireLibrary('sass-embedded');
+  const { css: datepickerCss } = await sass.compileAsync(
+    path.join(libraryRoot, 'src/datepicker/datepicker.scss'),
+  );
+  assert.match(datepickerCss, /@layer\s+leaf-ui\b/);
+  assert.match(datepickerCss, /:where\(\.leaf-date-picker\)/);
+
+  const html = '<div class="leaf-date-picker w-full"></div>';
+  const v3Result = await postcss([
+    tailwind3({
+      content: [{ raw: html, extension: 'html' }],
+      presets: [preset],
+      corePlugins: { preflight: false },
+    }),
+  ]).process(
+    `@layer base, leaf-ui, components, utilities;\n@tailwind utilities;\n${datepickerCss}`,
+    {
+      from: undefined,
+    },
+  );
+  const v3Statement = v3Result.root.nodes.find(
+    (node) => node.type === 'atrule' && node.name === 'layer' && !node.nodes,
+  );
+  assert.equal(v3Statement?.params, 'base, leaf-ui, components, utilities');
+  assert.ok(ruleFor(v3Result.root, 'w-full'), 'Tailwind 3 compiles w-full');
+
+  const directory = await mkdtemp(path.join(compilerRoot, '.tailwind-test-'));
+  try {
+    await writeFile(path.join(directory, 'input.html'), html);
+    await writeFile(path.join(directory, 'datepicker.css'), datepickerCss);
+    const v4Result = await postcss([tailwind4({ optimize: false })]).process(
+      `@layer theme, base, leaf-ui, components, utilities;\n@import "tailwindcss/theme.css" layer(theme);\n@import "tailwindcss/utilities.css" layer(utilities) source(none);\n@source "./input.html";\n@import "./datepicker.css";\n${cssTheme}`,
+      { from: path.join(directory, 'input.css') },
+    );
+    const layerStatements = v4Result.root.nodes
+      .filter((node) => node.type === 'atrule' && node.name === 'layer' && !node.nodes)
+      .map((node) => node.params);
+    assert.equal(layerStatements[0], 'theme, base, leaf-ui, components, utilities');
+    const utilitiesLayer = v4Result.root.nodes.find(
+      (node) => node.type === 'atrule' && node.name === 'layer' && node.params === 'utilities',
+    );
+    assert.ok(utilitiesLayer, 'Tailwind 4 emits @layer utilities');
+    assert.ok(ruleFor(utilitiesLayer, 'w-full'), 'Tailwind 4 puts w-full inside @layer utilities');
+  } finally {
+    assert.ok(directory.startsWith(path.join(compilerRoot, '.tailwind-test-')));
+    await rm(directory, { recursive: true, force: true });
+  }
+});

@@ -1,322 +1,325 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/geometry' as geometry;
-.leaf-calendar {
-  @include mixins.calendar-selection-family;
-  min-width: 260px;
-  padding: 12px;
-  box-sizing: border-box;
-  &__headings {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    white-space: nowrap;
-  }
-  &__heading {
-    padding: 5px 6px;
-    border: 0;
-    border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-    font: inherit;
-    font-size: var(--leaf-font-size);
-    font-weight: var(--leaf-font-weight);
 
-    @include mixins.text-action;
-  }
-  &__weekdays,
-  &__cells {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 0;
-  }
-  &__cells {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    min-width: 0;
-  }
-  &__weekdays {
-    color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
-    text-align: center;
-    font-size: var(--leaf-font-size-sm);
-    padding: 6px 0 8px;
-  }
-  &__cell {
-    min-width: 0;
-    padding: 0;
-    transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
-  }
-  &__cell--range {
-    background: var(--leaf-calendar-range-background);
-  }
-  // Range ends share the date cell curve so the band and the selected cell line up.
-  &__cell--start {
-    border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0 0
-      var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-  }
-  &__cell--end {
-    border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
-      var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
-  }
-  &:dir(rtl) {
-    .leaf-calendar__cell--start {
-      border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
-        var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
+@layer leaf-ui {
+  .leaf-calendar {
+    @include mixins.calendar-selection-family;
+    min-width: 260px;
+    padding: 12px;
+    box-sizing: border-box;
+    &__headings {
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      white-space: nowrap;
     }
-    .leaf-calendar__cell--end {
+    &__heading {
+      padding: 5px 6px;
+      border: 0;
+      border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      font: inherit;
+      font-size: var(--leaf-font-size);
+      font-weight: var(--leaf-font-weight);
+
+      @include mixins.text-action;
+    }
+    &__weekdays,
+    &__cells {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 0;
+    }
+    &__cells {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      min-width: 0;
+    }
+    &__weekdays {
+      color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
+      text-align: center;
+      font-size: var(--leaf-font-size-sm);
+      padding: 6px 0 8px;
+    }
+    &__cell {
+      min-width: 0;
+      padding: 0;
+      transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    }
+    &__cell--range {
+      background: var(--leaf-calendar-range-background);
+    }
+    // Range ends share the date cell curve so the band and the selected cell line up.
+    &__cell--start {
       border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0 0
         var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     }
-    .leaf-date-picker__nav > svg {
-      rotate: 180deg;
+    &__cell--end {
+      border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
+        var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
+    }
+    &:dir(rtl) {
+      .leaf-calendar__cell--start {
+        border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
+          var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
+      }
+      .leaf-calendar__cell--end {
+        border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0 0
+          var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      }
+      .leaf-date-picker__nav > svg {
+        rotate: 180deg;
+      }
+    }
+    &__cells--coarse {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      .leaf-date-picker__day {
+        min-height: 42px;
+        width: 100%;
+      }
+    }
+    &[data-view='quarter'] .leaf-calendar__cells {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  &__cells--coarse {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    .leaf-date-picker__day {
-      min-height: 42px;
-      width: 100%;
+  // Time-enabled pickers share one calendar/time composition and a flush footer.
+  .leaf-picker-panel {
+    @include mixins.softened-frame-color(picker-divider, var(--leaf-color-surface), 75%);
+    // An enclosing content card replaces the date-only calendar's own border.
+    --leaf-picker-calendar-width: calc(
+      292px - var(--leaf-surface-border) *
+        2 - var(--leaf-surface-padding-left) - var(--leaf-surface-padding-right) - var(
+          --leaf-picker-content-border
+        )
+    );
+    --leaf-picker-content-border: 0px;
+    max-height: calc(100dvh - 24px);
+  }
+  .leaf-datetime-panel,
+  .leaf-range-panel,
+  .leaf-time-range-picker__panel,
+  .leaf-time-picker__panel {
+    --leaf-surface-padding: 0px;
+    @each $side in top, right, bottom, left {
+      --leaf-surface-padding-#{$side}: 0px;
     }
+    max-width: calc(100vw - 24px);
   }
-  &[data-view='quarter'] .leaf-calendar__cells {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  :where(.leaf-floating).leaf-range-panel {
+    width: min(600px, calc(100vw - 24px));
   }
-}
-// Time-enabled pickers share one calendar/time composition and a flush footer.
-.leaf-picker-panel {
-  @include mixins.softened-frame-color(picker-divider, var(--leaf-color-surface), 75%);
-  // An enclosing content card replaces the date-only calendar's own border.
-  --leaf-picker-calendar-width: calc(
-    292px - var(--leaf-surface-border) *
-      2 - var(--leaf-surface-padding-left) - var(--leaf-surface-padding-right) - var(
-        --leaf-picker-content-border
-      )
-  );
-  --leaf-picker-content-border: 0px;
-  max-height: calc(100dvh - 24px);
-}
-.leaf-datetime-panel,
-.leaf-range-panel,
-.leaf-time-range-picker__panel,
-.leaf-time-picker__panel {
-  --leaf-surface-padding: 0px;
-  @each $side in top, right, bottom, left {
-    --leaf-surface-padding-#{$side}: 0px;
+  :where(.leaf-floating).leaf-datetime-panel,
+  :where(.leaf-floating).leaf-range-panel--datetime,
+  :where(.leaf-floating).leaf-range-panel--presets {
+    width: max-content;
   }
-  max-width: calc(100vw - 24px);
-}
-.leaf-floating.leaf-range-panel {
-  width: min(600px, calc(100vw - 24px));
-}
-.leaf-floating.leaf-datetime-panel,
-.leaf-floating.leaf-range-panel--datetime,
-.leaf-floating.leaf-range-panel--presets {
-  width: max-content;
-}
-.leaf-floating.leaf-range-panel--presets {
-  max-width: calc(100vw - 24px);
-}
-.leaf-datetime-panel__time,
-.leaf-range-panel__time {
-  min-width: 0;
-  border-inline-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
-  .leaf-time-picker__columns {
-    height: 100%;
-    padding: 8px 4px;
+  :where(.leaf-floating).leaf-range-panel--presets {
+    max-width: calc(100vw - 24px);
   }
-  .leaf-time-picker__column-wrap {
-    box-sizing: border-box;
-    flex: 0 0 auto;
-    width: 84px;
-    &[data-time-unit='period'] {
-      width: 96px;
-    }
-  }
-}
-.leaf-date-range-picker {
-  width: 300px;
-  &--datetime {
-    width: 380px;
-  }
-  &--extended {
-    width: 440px;
-  }
-}
-.leaf-time-range-picker--extended {
-  width: 300px;
-}
-.leaf-picker-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 10px 12px;
-  margin: 0;
-  border-block-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
-  background: var(--leaf-color-surface);
-  border-end-start-radius: inherit;
-  border-end-end-radius: inherit;
-  font-size: var(--leaf-font-size-sm);
-  color: var(--leaf-color-text-muted);
-  &__extra {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px;
-  }
-}
-.leaf-range-panel__endpoints {
-  width: fit-content;
-  max-width: 100%;
-  margin: 6px;
-}
-.leaf-range-panel__body {
-  display: grid;
-  min-width: 0;
-}
-.leaf-range-panel__body--presets {
-  grid-template-columns: auto minmax(0, 1fr);
-}
-.leaf-range-panel__calendars {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  > .leaf-range-panel__calendar {
+  .leaf-datetime-panel__time,
+  .leaf-range-panel__time {
     min-width: 0;
-  }
-  > .leaf-range-panel__calendar + .leaf-range-panel__calendar {
-    border-inline-start: 1px solid var(--leaf-color-divider);
-  }
-  &:not(.leaf-range-panel__calendars--datetime) .leaf-calendar {
-    min-width: 248px;
-  }
-}
-/* 带侧边快捷区时保持每个日历的基准宽度，由外层 max-content 面板容纳避免双日历互相挤压溢出 */
-.leaf-range-panel--presets
-  .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
-  > .leaf-range-panel__calendar {
-    width: var(--leaf-picker-calendar-width);
-    max-width: 100%;
-  }
-}
-.leaf-datetime-panel__body,
-.leaf-range-panel__calendars--datetime {
-  display: grid;
-  grid-template-columns: minmax(0, var(--leaf-picker-calendar-width)) auto;
-  align-items: stretch;
-  min-width: 0;
-  .leaf-calendar {
-    min-width: 0;
-    width: 100%;
-    max-width: var(--leaf-picker-calendar-width);
-    margin-inline: auto;
-  }
-}
-.leaf-picker-presets.leaf-picker-presets--side {
-  @include mixins.calendar-selection-family;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  gap: 4px;
-  min-width: 90px;
-  margin: 6px;
-  margin-inline-end: 0;
-  padding: 6px;
-  background: transparent;
-  border: 0;
-  border-radius: var(--leaf-radius);
-  > .leaf-button {
-    justify-content: flex-start;
-    &[aria-pressed='true'] {
-      background: var(--leaf-calendar-range-background);
-      color: var(--leaf-color-primary-ink);
+    border-inline-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
+    .leaf-time-picker__columns {
+      height: 100%;
+      padding: 8px 4px;
+    }
+    .leaf-time-picker__column-wrap {
+      box-sizing: border-box;
+      flex: 0 0 auto;
+      width: 84px;
+      &[data-time-unit='period'] {
+        width: 96px;
+      }
     }
   }
-}
-.leaf-floating.leaf-picker-panel--card {
-  --leaf-picker-content-border: 2px;
-  --leaf-surface-padding: 6px;
-  @each $side in top, right, bottom, left {
-    --leaf-surface-padding-#{$side}: 6px;
+  .leaf-date-range-picker {
+    --leaf-field-width: 300px;
+    &--datetime {
+      --leaf-field-width: 380px;
+    }
+    &--extended {
+      --leaf-field-width: 440px;
+    }
   }
-  @include mixins.panel-canvas-family;
-  background: var(--leaf-panel-canvas-background);
-  .leaf-picker-view,
-  &.leaf-date-picker__panel .leaf-calendar,
-  .leaf-range-panel__calendars,
-  .leaf-time-range-picker__panels,
-  > .leaf-floating__viewport > .leaf-scrollbar__content > .leaf-time-picker__columns {
-    background: var(--leaf-color-surface);
-    border: 1px solid var(--leaf-color-border);
-    border-radius: var(--leaf-radius);
-    overflow: hidden;
+  .leaf-time-range-picker--extended {
+    --leaf-field-width: 300px;
   }
   .leaf-picker-footer {
-    padding: 8px 0 0;
-    border: 0;
-    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    margin: 0;
+    border-block-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
+    background: var(--leaf-color-surface);
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+    font-size: var(--leaf-font-size-sm);
+    color: var(--leaf-color-text-muted);
+    &__extra {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
   }
   .leaf-range-panel__endpoints {
-    margin: 0 0 6px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 6px;
   }
-}
-@media (max-width: 620px) {
-  .leaf-floating.leaf-range-panel:not(.leaf-range-panel--datetime) {
-    width: 300px;
+  .leaf-range-panel__body {
+    display: grid;
+    min-width: 0;
   }
-  .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
-    grid-template-columns: 1fr;
+  .leaf-range-panel__body--presets {
+    grid-template-columns: auto minmax(0, 1fr);
   }
+  .leaf-range-panel__calendars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    > .leaf-range-panel__calendar {
+      min-width: 0;
+    }
+    > .leaf-range-panel__calendar + .leaf-range-panel__calendar {
+      border-inline-start: 1px solid var(--leaf-color-divider);
+    }
+    &:not(.leaf-range-panel__calendars--datetime) .leaf-calendar {
+      min-width: 248px;
+    }
+  }
+  /* 带侧边快捷区时保持每个日历的基准宽度，由外层 max-content 面板容纳避免双日历互相挤压溢出 */
   .leaf-range-panel--presets
     .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
     > .leaf-range-panel__calendar {
-      width: auto;
-    }
-  }
-  .leaf-range-panel__body--presets {
-    grid-template-columns: 1fr;
-  }
-  .leaf-picker-presets.leaf-picker-presets--side {
-    flex-direction: row;
-    flex-wrap: wrap;
-    min-width: 0;
-    margin-inline-end: 6px;
-    margin-bottom: 0;
-  }
-}
-@media (max-width: 620px) {
-  .leaf-floating.leaf-datetime-panel,
-  .leaf-floating.leaf-range-panel--datetime {
-    width: min(292px, calc(100vw - 24px));
-    &:has(.leaf-time-picker__columns[data-seconds][data-period]) {
-      width: min(374px, calc(100vw - 24px));
+      width: var(--leaf-picker-calendar-width);
+      max-width: 100%;
     }
   }
   .leaf-datetime-panel__body,
   .leaf-range-panel__calendars--datetime {
-    grid-template-columns: minmax(0, 1fr);
-    .leaf-datetime-panel__time,
-    .leaf-range-panel__time {
-      border-inline-start: 0;
-      border-block-start: 1px solid var(--leaf-color-divider);
-    }
-    .leaf-time-picker__columns {
-      --leaf-time-column-height: 160px;
-    }
-    .leaf-time-picker__column-wrap {
-      flex: 1;
-      width: auto;
+    display: grid;
+    grid-template-columns: minmax(0, var(--leaf-picker-calendar-width)) auto;
+    align-items: stretch;
+    min-width: 0;
+    .leaf-calendar {
+      min-width: 0;
+      width: 100%;
+      max-width: var(--leaf-picker-calendar-width);
+      margin-inline: auto;
     }
   }
-}
-@media (forced-colors: active) {
-  .leaf-date-picker__day--preview {
-    border-style: dashed;
-    border-color: Highlight;
+  .leaf-picker-presets.leaf-picker-presets--side {
+    @include mixins.calendar-selection-family;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 4px;
+    min-width: 90px;
+    margin: 6px;
+    margin-inline-end: 0;
+    padding: 6px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--leaf-radius);
+    > .leaf-button {
+      justify-content: flex-start;
+      &[aria-pressed='true'] {
+        background: var(--leaf-calendar-range-background);
+        color: var(--leaf-color-primary-ink);
+      }
+    }
+  }
+  .leaf-floating.leaf-picker-panel--card {
+    --leaf-picker-content-border: 2px;
+    --leaf-surface-padding: 6px;
+    @each $side in top, right, bottom, left {
+      --leaf-surface-padding-#{$side}: 6px;
+    }
+    @include mixins.panel-canvas-family;
+    background: var(--leaf-panel-canvas-background);
+    .leaf-picker-view,
+    &.leaf-date-picker__panel .leaf-calendar,
+    .leaf-range-panel__calendars,
+    .leaf-time-range-picker__panels,
+    > .leaf-floating__viewport > .leaf-scrollbar__content > .leaf-time-picker__columns {
+      background: var(--leaf-color-surface);
+      border: 1px solid var(--leaf-color-border);
+      border-radius: var(--leaf-radius);
+      overflow: hidden;
+    }
+    .leaf-picker-footer {
+      padding: 8px 0 0;
+      border: 0;
+      background: transparent;
+    }
+    .leaf-range-panel__endpoints {
+      margin: 0 0 6px;
+    }
+  }
+  @media (max-width: 620px) {
+    :where(.leaf-floating).leaf-range-panel:where(:not(.leaf-range-panel--datetime)) {
+      width: 300px;
+    }
+    .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
+      grid-template-columns: 1fr;
+    }
+    .leaf-range-panel--presets
+      .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
+      > .leaf-range-panel__calendar {
+        width: auto;
+      }
+    }
+    .leaf-range-panel__body--presets {
+      grid-template-columns: 1fr;
+    }
+    .leaf-picker-presets.leaf-picker-presets--side {
+      flex-direction: row;
+      flex-wrap: wrap;
+      min-width: 0;
+      margin-inline-end: 6px;
+      margin-bottom: 0;
+    }
+  }
+  @media (max-width: 620px) {
+    .leaf-floating.leaf-datetime-panel,
+    .leaf-floating.leaf-range-panel--datetime {
+      width: min(292px, calc(100vw - 24px));
+      &:has(.leaf-time-picker__columns[data-seconds][data-period]) {
+        width: min(374px, calc(100vw - 24px));
+      }
+    }
+    .leaf-datetime-panel__body,
+    .leaf-range-panel__calendars--datetime {
+      grid-template-columns: minmax(0, 1fr);
+      .leaf-datetime-panel__time,
+      .leaf-range-panel__time {
+        border-inline-start: 0;
+        border-block-start: 1px solid var(--leaf-color-divider);
+      }
+      .leaf-time-picker__columns {
+        --leaf-time-column-height: 160px;
+      }
+      .leaf-time-picker__column-wrap {
+        flex: 1;
+        width: auto;
+      }
+    }
+  }
+  @media (forced-colors: active) {
+    .leaf-date-picker__day--preview {
+      border-style: dashed;
+      border-color: Highlight;
+    }
   }
 }

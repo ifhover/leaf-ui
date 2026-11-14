@@ -1,3 +1,5 @@
-.leaf-flex {
-  min-width: 0;
+@layer leaf-ui {
+  .leaf-flex {
+    min-width: 0;
+  }
 }

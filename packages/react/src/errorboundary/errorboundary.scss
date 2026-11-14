@@ -1,33 +1,35 @@
-.leaf-error-boundary {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  color: var(--leaf-color-text);
-  border: var(--leaf-component-error-boundary-border-width, var(--leaf-border-width, 1px)) solid
-    var(
-      --leaf-component-error-boundary-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-  box-shadow: var(--leaf-component-error-boundary-shadow, var(--leaf-surface-shadow, none));
-  border-radius: var(--leaf-radius-md);
-  background: var(--leaf-color-surface);
-  animation: var(
-    --leaf-motion-animation,
-    leaf-error-reveal var(--leaf-motion-duration) var(--leaf-motion-easing)
-  );
-}
-@keyframes leaf-error-reveal {
-  from {
-    opacity: 0;
-    translate: 0 4px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
+@layer leaf-ui {
   .leaf-error-boundary {
-    animation: none;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    color: var(--leaf-color-text);
+    border: var(--leaf-component-error-boundary-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-error-boundary-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    box-shadow: var(--leaf-component-error-boundary-shadow, var(--leaf-surface-shadow, none));
+    border-radius: var(--leaf-radius-md);
+    background: var(--leaf-color-surface);
+    animation: var(
+      --leaf-motion-animation,
+      leaf-error-reveal var(--leaf-motion-duration) var(--leaf-motion-easing)
+    );
+  }
+  @keyframes leaf-error-reveal {
+    from {
+      opacity: 0;
+      translate: 0 4px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-error-boundary {
+      animation: none;
+    }
   }
 }

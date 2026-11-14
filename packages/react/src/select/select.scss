@@ -1,198 +1,201 @@
 @use '../styles/mixins' as mixins;
 @use '../shared/picker';
 @use '../shared/selection';
-.leaf-select {
-  @include mixins.field('select');
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  min-height: var(--leaf-current-control-height);
-  padding: var(--leaf-component-select-padding, 0 30px 0 var(--leaf-density-field-padding));
-  cursor: pointer;
-  &[data-searchable] {
-    cursor: text;
-  }
-  &[data-disabled] {
-    cursor: not-allowed;
-  }
-  &[data-clearable] {
-    padding-inline-end: 54px;
-  }
-  &__input-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 24px;
-  }
-  &__input {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
-    padding: 0;
-    border: 0;
-    border-radius: inherit;
-    outline: none;
-    color: inherit;
-    background: transparent;
-    font: inherit;
-    line-height: inherit;
-    &::placeholder {
-      color: var(--leaf-color-text-subtle);
-    }
-    &:read-only {
-      cursor: pointer;
-    }
-    &:disabled {
-      cursor: not-allowed;
-    }
-  }
-  &__value {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  &__arrow {
-    position: absolute;
-    inset-inline-end: 8px;
-    top: 50%;
-    transform: translateY(-50%);
+
+@layer leaf-ui {
+  .leaf-select {
+    @include mixins.field('select');
     display: inline-flex;
+    position: relative;
     align-items: center;
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--leaf-color-text-muted);
+    min-height: var(--leaf-current-control-height);
+    padding: var(--leaf-component-select-padding, 0 30px 0 var(--leaf-density-field-padding));
     cursor: pointer;
-    &:disabled {
+    &[data-searchable] {
+      cursor: text;
+    }
+    &[data-disabled] {
       cursor: not-allowed;
     }
-    > svg {
-      transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &[data-clearable] {
+      padding-inline-end: 54px;
     }
-  }
-  &[data-open] &__arrow > svg {
-    transform: rotate(180deg);
-  }
-  &__panel .leaf-floating__option {
-    @include mixins.choice-option;
-    @include mixins.choice-option-size(
-      var(--leaf-select-option-height, var(--leaf-current-control-height, 34px))
-    );
-    height: auto;
-    justify-content: space-between;
-    > svg {
-      flex: 0 0 auto;
+    &__input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 24px;
     }
-    .leaf-floating__option-label {
+    &__input {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
       min-width: 0;
-      white-space: normal;
-      overflow-wrap: anywhere;
+      height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
+      padding: 0;
+      border: 0;
+      border-radius: inherit;
+      outline: none;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      line-height: inherit;
+      &::placeholder {
+        color: var(--leaf-color-text-subtle);
+      }
+      &:read-only {
+        cursor: pointer;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+    &__value {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &__arrow {
+      position: absolute;
+      inset-inline-end: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--leaf-color-text-muted);
+      cursor: pointer;
+      &:disabled {
+        cursor: not-allowed;
+      }
+      > svg {
+        transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
+    }
+    &[data-open] &__arrow > svg {
+      transform: rotate(180deg);
+    }
+    &__panel .leaf-floating__option {
+      @include mixins.choice-option;
+      @include mixins.choice-option-size(
+        var(--leaf-select-option-height, var(--leaf-current-control-height, 34px))
+      );
+      height: auto;
+      justify-content: space-between;
+      > svg {
+        flex: 0 0 auto;
+      }
+      .leaf-floating__option-label {
+        min-width: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+    }
+    &__panel .leaf-floating__option + .leaf-floating__option,
+    &__panel .leaf-floating__options {
+      margin-top: 0;
+      gap: 0;
+    }
+    &__panel > .leaf-floating__viewport > .leaf-scrollbar__content {
+      display: flex;
+      flex-direction: column;
+    }
+    &__check {
+      opacity: 0;
+      transform: scale(0.6) rotate(-12deg);
+      transition:
+        opacity var(--leaf-motion-color) var(--leaf-motion-easing),
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &__panel [aria-selected='true'] &__check {
+      opacity: 1;
+      transform: scale(1) rotate(0);
+    }
+    &__spinner {
+      animation: var(
+        --leaf-motion-animation,
+        leaf-select-spin calc(var(--leaf-motion-duration) * 4) linear infinite
+      );
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+    &[data-open] &__arrow > .leaf-select__spinner {
+      transform: none;
+    }
+    &--multiple {
+      @include selection.trigger-padding('select', 30px, var(--leaf-density-field-padding));
+    }
+    &--multiple &__input {
+      height: max(
+        1px,
+        calc(
+          var(--leaf-current-control-height) - 6px - 2 *
+            var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+        )
+      );
+      min-width: 0;
     }
   }
-  &__panel .leaf-floating__option + .leaf-floating__option,
-  &__panel .leaf-floating__options {
-    margin-top: 0;
-    gap: 0;
+  @keyframes leaf-select-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
-  &__panel > .leaf-floating__viewport > .leaf-scrollbar__content {
-    display: flex;
-    flex-direction: column;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-select__spinner {
+      animation: none;
+    }
+    .leaf-select__arrow > svg,
+    .leaf-select__check,
+    .leaf-select__tag > button {
+      transition: none;
+    }
+    .leaf-select__panel .leaf-floating__option,
+    .leaf-select__panel .leaf-floating__option::before {
+      transition: none;
+    }
   }
-  &__check {
-    opacity: 0;
-    transform: scale(0.6) rotate(-12deg);
-    transition:
-      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+
+  .leaf-select__group {
+    @include mixins.section-label;
+    padding: 10px 10px 4px;
   }
-  &__panel [aria-selected='true'] &__check {
-    opacity: 1;
-    transform: scale(1) rotate(0);
+
+  .leaf-select {
+    --leaf-current-control-height: var(--leaf-component-select-height, var(--leaf-control-height));
+    --leaf-current-font-size: var(--leaf-component-select-font-size, var(--leaf-font-size));
+    --leaf-current-radius: var(--leaf-radius);
   }
-  &__spinner {
-    animation: var(
-      --leaf-motion-animation,
-      leaf-select-spin calc(var(--leaf-motion-duration) * 4) linear infinite
+  .leaf-select--sm {
+    --leaf-current-control-height: var(
+      --leaf-component-select-height-sm,
+      var(--leaf-control-height-sm)
     );
-    animation-play-state: var(--leaf-motion-play-state, running);
+    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
   }
-  &[data-open] &__arrow > .leaf-select__spinner {
-    transform: none;
-  }
-  &--multiple {
-    @include selection.trigger-padding('select', 30px, var(--leaf-density-field-padding));
-  }
-  &--multiple &__input {
-    height: max(
-      1px,
-      calc(
-        var(--leaf-current-control-height) - 6px - 2 *
-          var(--leaf-field-border-width, var(--leaf-border-width, 1px))
-      )
+  .leaf-select--lg {
+    --leaf-current-control-height: var(
+      --leaf-component-select-height-lg,
+      var(--leaf-control-height-lg)
     );
-    min-width: 0;
+    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
-}
-@keyframes leaf-select-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-select__spinner {
-    animation: none;
-  }
-  .leaf-select__arrow > svg,
-  .leaf-select__check,
-  .leaf-select__tag > button {
-    transition: none;
-  }
-  .leaf-select__panel .leaf-floating__option,
-  .leaf-select__panel .leaf-floating__option::before {
-    transition: none;
-  }
-}
 
-.leaf-select__group {
-  @include mixins.section-label;
-  padding: 10px 10px 4px;
-}
-
-.leaf-select {
-  --leaf-current-control-height: var(--leaf-component-select-height, var(--leaf-control-height));
-  --leaf-current-font-size: var(--leaf-component-select-font-size, var(--leaf-font-size));
-  --leaf-current-radius: var(--leaf-radius);
-}
-.leaf-select--sm {
-  --leaf-current-control-height: var(
-    --leaf-component-select-height-sm,
-    var(--leaf-control-height-sm)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-sm);
-  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-}
-.leaf-select--lg {
-  --leaf-current-control-height: var(
-    --leaf-component-select-height-lg,
-    var(--leaf-control-height-lg)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-lg);
-  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
-}
-
-.leaf-floating.leaf-select__panel {
-  @include mixins.floating-paint(select);
-  @include mixins.field-popup(select);
-  font-size: var(
-    --leaf-component-select-font-size,
-    var(--leaf-current-font-size, var(--leaf-font-size))
-  );
+  .leaf-floating.leaf-select__panel {
+    @include mixins.floating-paint(select);
+    @include mixins.field-popup(select);
+    font-size: var(
+      --leaf-component-select-font-size,
+      var(--leaf-current-font-size, var(--leaf-font-size))
+    );
+  }
 }

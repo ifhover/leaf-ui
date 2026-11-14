@@ -1,65 +1,70 @@
-.leaf-badge {
-  --leaf-badge-color: var(--leaf-color-danger);
-  --leaf-badge-on-color: var(--leaf-color-on-danger);
-  --leaf-badge-direction: 1;
-  --leaf-badge-anchor-shift: -14px;
-  &:dir(rtl) {
-    --leaf-badge-direction: -1;
-  }
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  vertical-align: middle;
-  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
-  &__indicator {
-    box-sizing: border-box;
+@layer leaf-ui {
+  .leaf-badge {
+    --leaf-badge-color: var(--leaf-color-danger);
+    --leaf-badge-on-color: var(--leaf-color-on-danger);
+    --leaf-badge-direction: 1;
+    --leaf-badge-anchor-shift: -14px;
+    &:dir(rtl) {
+      --leaf-badge-direction: -1;
+    }
+    position: relative;
     display: inline-flex;
-    justify-content: center;
     align-items: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 100px;
-    color: var(--leaf-badge-on-color);
-    background: var(--leaf-badge-color);
-    font-size: 11px;
-    line-height: 1;
-    font-weight: 500;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
-    transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    gap: 8px;
+    vertical-align: middle;
+    font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+    &__indicator {
+      box-sizing: border-box;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 100px;
+      color: var(--leaf-badge-on-color);
+      background: var(--leaf-badge-color);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 500;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &__indicator--dot {
+      border-radius: 100px;
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+      padding: 0;
+      --leaf-badge-anchor-shift: -8px;
+    }
+    // Keep the starting edge fixed so wider content only grows toward inline-end.
+    &--attached &__indicator {
+      position: absolute;
+      top: 4px;
+      inset-inline-start: 100%;
+      transform: translate(
+        calc(var(--leaf-badge-anchor-shift) * var(--leaf-badge-direction)),
+        -50%
+      );
+      box-shadow: 0 0 0 2px var(--leaf-color-surface);
+      pointer-events: none;
+    }
+    &--attached[data-placement='inside'] > &__indicator {
+      top: 6px;
+      inset-inline-start: auto;
+      inset-inline-end: 6px;
+      transform: none;
+      box-shadow: 0 0 0 2px var(--leaf-color-surface);
+    }
+    &__count {
+      display: inline-block;
+    }
   }
-  &__indicator--dot {
-    border-radius: 100px;
-    width: 8px;
-    height: 8px;
-    min-width: 8px;
-    padding: 0;
-    --leaf-badge-anchor-shift: -8px;
-  }
-  // Keep the starting edge fixed so wider content only grows toward inline-end.
-  &--attached &__indicator {
-    position: absolute;
-    top: 4px;
-    inset-inline-start: 100%;
-    transform: translate(calc(var(--leaf-badge-anchor-shift) * var(--leaf-badge-direction)), -50%);
-    box-shadow: 0 0 0 2px var(--leaf-color-surface);
-    pointer-events: none;
-  }
-  &--attached[data-placement='inside'] > &__indicator {
-    top: 6px;
-    inset-inline-start: auto;
-    inset-inline-end: 6px;
-    transform: none;
-    box-shadow: 0 0 0 2px var(--leaf-color-surface);
-  }
-  &__count {
-    display: inline-block;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-badge__indicator {
-    transition: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-badge__indicator {
+      transition: none;
+    }
   }
 }

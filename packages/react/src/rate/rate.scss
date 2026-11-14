@@ -1,87 +1,89 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-rate {
-  --leaf-rate-size: 24px;
-  // Rating gold is its own semantic scale; it is not a warning state.
-  --leaf-rate-color: #ffc53d;
-  position: relative;
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--leaf-component-rate-gap, 6px);
-  min-height: var(--leaf-control-height);
-  &--sm {
-    --leaf-rate-size: 18px;
-  }
-  &--lg {
-    --leaf-rate-size: 30px;
-  }
-  &__star {
+@layer leaf-ui {
+  .leaf-rate {
+    --leaf-rate-size: 24px;
+    // Rating gold is its own semantic scale; it is not a warning state.
+    --leaf-rate-color: #ffc53d;
     position: relative;
     display: inline-flex;
-    width: var(--leaf-rate-size);
-    height: var(--leaf-rate-size);
-    transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:has(.leaf-rate__option:active:not(:disabled):not([aria-disabled='true'])) {
-      transform: scale(0.94);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--leaf-component-rate-gap, 6px);
+    min-height: var(--leaf-control-height);
+    &--sm {
+      --leaf-rate-size: 18px;
     }
-    &:has(.leaf-rate__option:focus-visible) {
-      border-radius: var(--leaf-radius-sm);
-      @include mixins.focus-ring;
-      outline-offset: 2px;
+    &--lg {
+      --leaf-rate-size: 30px;
     }
-  }
-  &__empty,
-  &__fill svg {
-    position: absolute;
-    width: var(--leaf-rate-size);
-    height: var(--leaf-rate-size);
-    stroke-width: 1.5;
-  }
-  &__empty {
-    color: var(--leaf-color-border-hover);
-    fill: var(--leaf-color-surface-muted);
-  }
-  &__fill {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    overflow: hidden;
-    pointer-events: none;
-    color: var(--leaf-rate-color);
-    transition:
-      width var(--leaf-motion-duration) var(--leaf-motion-easing),
-      color var(--leaf-motion-duration) var(--leaf-motion-easing);
-    svg {
-      fill: currentColor;
+    &__star {
+      position: relative;
+      display: inline-flex;
+      width: var(--leaf-rate-size);
+      height: var(--leaf-rate-size);
+      transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &:has(.leaf-rate__option:active:not(:disabled):not([aria-disabled='true'])) {
+        transform: scale(0.94);
+      }
+      &:has(.leaf-rate__option:focus-visible) {
+        border-radius: var(--leaf-radius-sm);
+        @include mixins.focus-ring;
+        outline-offset: 2px;
+      }
     }
-  }
-  &__option {
-    position: relative;
-    flex: 1;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    border-radius: 3px;
-    background: transparent;
-    cursor: pointer;
-    &:focus-visible {
-      outline: none;
+    &__empty,
+    &__fill svg {
+      position: absolute;
+      width: var(--leaf-rate-size);
+      height: var(--leaf-rate-size);
+      stroke-width: 1.5;
     }
-    &:disabled {
-      cursor: not-allowed;
+    &__empty {
+      color: var(--leaf-color-border-hover);
+      fill: var(--leaf-color-surface-muted);
+    }
+    &__fill {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      overflow: hidden;
+      pointer-events: none;
+      color: var(--leaf-rate-color);
+      transition:
+        width var(--leaf-motion-duration) var(--leaf-motion-easing),
+        color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      svg {
+        fill: currentColor;
+      }
+    }
+    &__option {
+      position: relative;
+      flex: 1;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      border-radius: 3px;
+      background: transparent;
+      cursor: pointer;
+      &:focus-visible {
+        outline: none;
+      }
+      &:disabled {
+        cursor: not-allowed;
+      }
+      &[aria-disabled='true'] {
+        cursor: default;
+      }
     }
     &[aria-disabled='true'] {
-      cursor: default;
+      opacity: 0.5;
     }
   }
-  &[aria-disabled='true'] {
-    opacity: 0.5;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-rate__fill,
-  .leaf-rate__star {
-    transition: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-rate__fill,
+    .leaf-rate__star {
+      transition: none;
+    }
   }
 }

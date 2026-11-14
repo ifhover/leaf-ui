@@ -1,176 +1,178 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-tag {
-  --leaf-tag-color: var(--leaf-color-neutral);
-  --leaf-tag-color-surface-8: var(--leaf-color-surface-muted);
-  --leaf-tag-color-alpha-10: var(--leaf-color-option-hover);
-  --leaf-tag-ink: var(--leaf-color-text);
-  --leaf-tag-solid-foreground: var(--leaf-color-on-primary);
-  --leaf-status-label-close-background: var(--leaf-color-option-hover);
-  --leaf-tag-close-background: var(--leaf-status-label-close-background);
-  --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
-  --leaf-tag-paint-background: var(
-    --leaf-component-tag-background,
-    var(--leaf-tag-color-surface-8)
-  );
-
-  @mixin tag-family($tone) {
-    @include mixins.status-label-family($tone);
-    --leaf-tag-color: var(--leaf-status-label-base);
-    --leaf-tag-color-surface-8: var(--leaf-status-label-background);
-    --leaf-tag-color-alpha-10: var(--leaf-color-#{$tone}-soft-hover);
-    // Ant Design uses the semantic family color for soft tag text instead of
-    // the darker contrast-optimized ink role used by body-level feedback.
-    --leaf-tag-ink: var(--leaf-status-label-base);
-    --leaf-tag-solid-foreground: var(--leaf-status-label-foreground);
+@layer leaf-ui {
+  .leaf-tag {
+    --leaf-tag-color: var(--leaf-color-neutral);
+    --leaf-tag-color-surface-8: var(--leaf-color-surface-muted);
+    --leaf-tag-color-alpha-10: var(--leaf-color-option-hover);
+    --leaf-tag-ink: var(--leaf-color-text);
+    --leaf-tag-solid-foreground: var(--leaf-color-on-primary);
+    --leaf-status-label-close-background: var(--leaf-color-option-hover);
     --leaf-tag-close-background: var(--leaf-status-label-close-background);
-  }
-
-  &[data-color='primary'] {
-    @include tag-family(primary);
-  }
-  &[data-color='success'] {
-    @include tag-family(success);
-  }
-  &[data-color='warning'] {
-    @include tag-family(warning);
-  }
-  &[data-color='danger'],
-  &[data-color='error'] {
-    @include tag-family(danger);
-  }
-  &[data-color='info'] {
-    @include tag-family(info);
-  }
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  max-width: var(--leaf-tag-width, 100%);
-  padding: 2px 9px;
-  border: 1px solid transparent;
-  border-radius: var(
-    --leaf-component-tag-radius,
-    var(--leaf-current-radius, var(--leaf-radius-sm))
-  );
-  color: var(--leaf-tag-paint-color);
-  background: var(--leaf-tag-paint-background);
-  font: max(12px, calc(var(--leaf-font-size) - 2px)) / var(--leaf-line-height-sm)
-    var(--leaf-font-family);
-  font-weight: var(--leaf-font-weight, 500);
-  vertical-align: middle;
-  white-space: nowrap;
-  transition:
-    opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
-    max-width var(--leaf-motion-duration) var(--leaf-motion-easing),
-    padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing),
-    gap var(--leaf-motion-duration) var(--leaf-motion-easing);
-  &[data-state='closing'] {
-    opacity: 0;
-    max-width: 0;
-    padding-inline: 0;
-    gap: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  > span:not(.leaf-tag__icon) {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  &--sm {
-    --leaf-current-radius: calc(var(--leaf-radius) * 0.4);
-    padding: 0 7px;
-  }
-  &--lg {
-    --leaf-current-radius: calc(var(--leaf-radius) * 0.6);
-    padding: 3px 12px;
-    font-size: var(--leaf-font-size);
-    line-height: var(--leaf-line-height);
-  }
-  &--soft {
     --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
     --leaf-tag-paint-background: var(
       --leaf-component-tag-background,
       var(--leaf-tag-color-surface-8)
     );
-  }
-  &--solid {
-    --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-solid-foreground));
-    --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-tag-color));
-  }
-  &__icon {
-    display: inline-flex;
-    flex: none;
-    color: var(--leaf-tag-paint-color);
-    svg {
-      width: 13px;
-      height: 13px;
+
+    @mixin tag-family($tone) {
+      @include mixins.status-label-family($tone);
+      --leaf-tag-color: var(--leaf-status-label-base);
+      --leaf-tag-color-surface-8: var(--leaf-status-label-background);
+      --leaf-tag-color-alpha-10: var(--leaf-color-#{$tone}-soft-hover);
+      // Ant Design uses the semantic family color for soft tag text instead of
+      // the darker contrast-optimized ink role used by body-level feedback.
+      --leaf-tag-ink: var(--leaf-status-label-base);
+      --leaf-tag-solid-foreground: var(--leaf-status-label-foreground);
+      --leaf-tag-close-background: var(--leaf-status-label-close-background);
     }
-  }
-  &__close {
+
+    &[data-color='primary'] {
+      @include tag-family(primary);
+    }
+    &[data-color='success'] {
+      @include tag-family(success);
+    }
+    &[data-color='warning'] {
+      @include tag-family(warning);
+    }
+    &[data-color='danger'],
+    &[data-color='error'] {
+      @include tag-family(danger);
+    }
+    &[data-color='info'] {
+      @include tag-family(info);
+    }
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    flex: none;
-    width: 16px;
-    height: 16px;
-    margin-block: -1px;
-    padding: 1px;
-    margin-inline-end: -2px;
-    border: 0;
-    border-radius: 50%;
-    color: inherit;
-    background: transparent;
-    cursor: pointer;
-    opacity: 0.7;
+    gap: 5px;
+    max-width: var(--leaf-tag-width, 100%);
+    padding: 2px 9px;
+    border: 1px solid transparent;
+    border-radius: var(
+      --leaf-component-tag-radius,
+      var(--leaf-current-radius, var(--leaf-radius-sm))
+    );
+    color: var(--leaf-tag-paint-color);
+    background: var(--leaf-tag-paint-background);
+    font: max(12px, calc(var(--leaf-font-size) - 2px)) / var(--leaf-line-height-sm)
+      var(--leaf-font-family);
+    font-weight: var(--leaf-font-weight, 500);
+    vertical-align: middle;
+    white-space: nowrap;
     transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-    &:hover {
-      opacity: 1;
-      background: var(--leaf-tag-close-background, var(--leaf-tag-color-alpha-10));
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
+      max-width var(--leaf-motion-duration) var(--leaf-motion-easing),
+      padding-inline var(--leaf-motion-duration) var(--leaf-motion-easing),
+      gap var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &[data-state='closing'] {
+      opacity: 0;
+      max-width: 0;
+      padding-inline: 0;
+      gap: 0;
+      overflow: hidden;
+      pointer-events: none;
     }
-    &:active {
-      transform: scale(0.92);
+    > span:not(.leaf-tag__icon) {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    &--sm {
+      --leaf-current-radius: calc(var(--leaf-radius) * 0.4);
+      padding: 0 7px;
+    }
+    &--lg {
+      --leaf-current-radius: calc(var(--leaf-radius) * 0.6);
+      padding: 3px 12px;
+      font-size: var(--leaf-font-size);
+      line-height: var(--leaf-line-height);
+    }
+    &--soft {
+      --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-ink));
+      --leaf-tag-paint-background: var(
+        --leaf-component-tag-background,
+        var(--leaf-tag-color-surface-8)
+      );
+    }
+    &--solid {
+      --leaf-tag-paint-color: var(--leaf-component-tag-color, var(--leaf-tag-solid-foreground));
+      --leaf-tag-paint-background: var(--leaf-component-tag-background, var(--leaf-tag-color));
+    }
+    &__icon {
+      display: inline-flex;
+      flex: none;
+      color: var(--leaf-tag-paint-color);
+      svg {
+        width: 13px;
+        height: 13px;
+      }
+    }
+    &__close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      width: 16px;
+      height: 16px;
+      margin-block: -1px;
+      padding: 1px;
+      margin-inline-end: -2px;
+      border: 0;
+      border-radius: 50%;
+      color: inherit;
+      background: transparent;
+      cursor: pointer;
+      opacity: 0.7;
+      transition:
+        opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+        transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &:hover {
+        opacity: 1;
+        background: var(--leaf-tag-close-background, var(--leaf-tag-color-alpha-10));
+      }
+      &:active {
+        transform: scale(0.92);
+      }
+      &:focus-visible {
+        outline: 2px solid currentColor;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-tag,
+    .leaf-tag__close,
+    .leaf-checkable-tag {
+      transition: none;
+    }
+  }
+
+  .leaf-checkable-tag {
+    cursor: pointer;
+    transition:
+      color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &:hover:not(:disabled):not([aria-pressed='true']) {
+      background: var(--leaf-component-tag-hover-background, var(--leaf-tag-color-alpha-10));
+    }
+    &:active:not(:disabled) {
+      transform: scale(0.97);
     }
     &:focus-visible {
-      outline: 2px solid currentColor;
+      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      outline-offset: 2px;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-tag,
-  .leaf-tag__close,
-  .leaf-checkable-tag {
-    transition: none;
+  .leaf-tag-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
-}
-
-.leaf-checkable-tag {
-  cursor: pointer;
-  transition:
-    color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-  &:hover:not(:disabled):not([aria-pressed='true']) {
-    background: var(--leaf-component-tag-hover-background, var(--leaf-tag-color-alpha-10));
-  }
-  &:active:not(:disabled) {
-    transform: scale(0.97);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    outline-offset: 2px;
-  }
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-.leaf-tag-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }

@@ -1,86 +1,89 @@
 @use '../styles/mixins' as mixins;
 @use '../styles/choice-surfaces';
-.leaf-checkbox {
-  @include mixins.choice(checkbox, $supports-indeterminate: true);
-  @include choice-surfaces.item(checkbox, $supports-indeterminate: true);
-  &__input {
-    border-radius: var(--leaf-choice-radius, 5px);
-    box-shadow: var(--leaf-shadow-xs);
-    transition:
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-  }
-  &:active:not([data-disabled]) &__input {
-    transform: scale(0.94);
-  }
-  &__control {
-    transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-  }
-  &__mark {
-    opacity: 0;
-    transform: scale(0.6);
-    transition:
-      opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    color: var(--leaf-color-on-primary);
-    pointer-events: none;
-    stroke-width: 2.5;
-    &--check polyline,
-    &--check path {
-      stroke-dasharray: 22;
-      stroke-dashoffset: 22;
-      transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
-    }
-  }
-  &__input:checked:not(:indeterminate) ~ &__mark--check,
-  &__input:indeterminate ~ &__mark--mixed {
-    opacity: 1;
-    transform: scale(1);
-  }
-  &__input:checked:not(:indeterminate) ~ &__mark--check polyline,
-  &__input:checked:not(:indeterminate) ~ &__mark--check path {
-    stroke-dashoffset: 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    &__control,
-    &__input,
-    &__mark,
-    &__mark--check polyline,
-    &__mark--check path {
-      transition: none;
-    }
-  }
-}
 
-.leaf-checkbox-group {
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size) var(--leaf-font-family);
-  legend {
-    margin-bottom: 8px;
+@layer leaf-ui {
+  .leaf-checkbox {
+    @include mixins.choice(checkbox, $supports-indeterminate: true);
+    @include choice-surfaces.item(checkbox, $supports-indeterminate: true);
+    &__input {
+      border-radius: var(--leaf-choice-radius, 5px);
+      box-shadow: var(--leaf-shadow-xs);
+      transition:
+        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+        transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+    }
+    &:active:not([data-disabled]) &__input {
+      transform: scale(0.94);
+    }
+    &__control {
+      transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+    }
+    &__mark {
+      opacity: 0;
+      transform: scale(0.6);
+      transition:
+        opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      color: var(--leaf-color-on-primary);
+      pointer-events: none;
+      stroke-width: 2.5;
+      &--check polyline,
+      &--check path {
+        stroke-dasharray: 22;
+        stroke-dashoffset: 22;
+        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
+    }
+    &__input:checked:not(:indeterminate) ~ &__mark--check,
+    &__input:indeterminate ~ &__mark--mixed {
+      opacity: 1;
+      transform: scale(1);
+    }
+    &__input:checked:not(:indeterminate) ~ &__mark--check polyline,
+    &__input:checked:not(:indeterminate) ~ &__mark--check path {
+      stroke-dashoffset: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      &__control,
+      &__input,
+      &__mark,
+      &__mark--check polyline,
+      &__mark--check path {
+        transition: none;
+      }
+    }
+  }
+
+  .leaf-checkbox-group {
+    min-width: 0;
     padding: 0;
-    font-weight: var(--leaf-font-weight);
+    margin: 0;
+    border: 0;
+    color: var(--leaf-color-text);
+    font: var(--leaf-font-size) var(--leaf-font-family);
+    legend {
+      margin-bottom: 8px;
+      padding: 0;
+      font-weight: var(--leaf-font-weight);
+    }
+    &__options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+    }
+    &--vertical &__options {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    @include choice-surfaces.group(checkbox);
   }
-  &__options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
-  }
-  &--vertical &__options {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  @include choice-surfaces.group(checkbox);
-}
 
-.leaf-checkbox {
-  @include mixins.choice-states(checkbox, $supports-indeterminate: true);
+  .leaf-checkbox {
+    @include mixins.choice-states(checkbox, $supports-indeterminate: true);
+  }
 }

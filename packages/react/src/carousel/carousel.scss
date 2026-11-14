@@ -1,146 +1,148 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-carousel {
-  position: relative;
-  border-radius: var(--leaf-radius-md);
-  color: var(--leaf-color-text);
-  &__viewport {
+@layer leaf-ui {
+  .leaf-carousel {
     position: relative;
-    overflow: hidden;
-    border-radius: inherit;
-  }
-  &__track {
-    position: relative;
-    isolation: isolate;
-  }
-  &__slide {
-    position: absolute;
-    inset: 0;
-    min-width: 0;
-    box-sizing: border-box;
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-    &[data-active] {
+    border-radius: var(--leaf-radius-md);
+    color: var(--leaf-color-text);
+    &__viewport {
       position: relative;
-      visibility: visible;
-      opacity: 1;
-      pointer-events: auto;
-      z-index: 1;
+      overflow: hidden;
+      border-radius: inherit;
     }
-    &[data-exiting] {
-      visibility: visible;
-      height: max-content;
+    &__track {
+      position: relative;
+      isolation: isolate;
     }
-  }
-  &__arrow {
-    @include mixins.text-action-family;
-    @include mixins.action-transition;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    border: 0;
-    border-radius: 50%;
-    width: var(--leaf-control-height);
-    height: var(--leaf-control-height);
-    display: grid;
-    place-items: center;
-    background: var(--leaf-color-surface-muted);
-    color: var(--leaf-text-action-color);
-    box-shadow: none;
-    cursor: pointer;
-    z-index: 2;
-    &::before {
-      content: '';
+    &__slide {
       position: absolute;
       inset: 0;
-      border-radius: inherit;
-      background: transparent;
+      min-width: 0;
+      box-sizing: border-box;
+      visibility: hidden;
+      opacity: 0;
       pointer-events: none;
+      &[data-active] {
+        position: relative;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 1;
+      }
+      &[data-exiting] {
+        visibility: visible;
+        height: max-content;
+      }
+    }
+    &__arrow {
+      @include mixins.text-action-family;
       @include mixins.action-transition;
-    }
-    > svg {
-      position: relative;
-    }
-    &:hover:not(:disabled) {
-      &::before {
-        background: var(--leaf-text-action-background);
-      }
-    }
-    &:active:not(:disabled) {
-      &::before {
-        background: var(--leaf-text-action-active-background);
-      }
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
-    &:disabled {
-      opacity: 0.4;
-      cursor: default;
-    }
-    &--previous {
-      inset-inline-start: 12px;
-    }
-    &--next {
-      inset-inline-end: 12px;
-    }
-  }
-  &__dots {
-    display: flex;
-    justify-content: center;
-    gap: 7px;
-    padding: 12px;
-    button {
-      position: relative;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
       border: 0;
-      width: 7px;
-      height: 7px;
-      border-radius: 10px;
-      background: var(--leaf-color-border);
-      padding: 0;
+      border-radius: 50%;
+      width: var(--leaf-control-height);
+      height: var(--leaf-control-height);
+      display: grid;
+      place-items: center;
+      background: var(--leaf-color-surface-muted);
+      color: var(--leaf-text-action-color);
+      box-shadow: none;
       cursor: pointer;
-      transition:
-        width var(--leaf-motion-slow) var(--leaf-motion-easing),
-        background var(--leaf-motion-duration) var(--leaf-motion-easing);
-      &::after {
+      z-index: 2;
+      &::before {
         content: '';
         position: absolute;
-        inset: -8px -4px;
+        inset: 0;
+        border-radius: inherit;
+        background: transparent;
+        pointer-events: none;
+        @include mixins.action-transition;
+      }
+      > svg {
+        position: relative;
+      }
+      &:hover:not(:disabled) {
+        &::before {
+          background: var(--leaf-text-action-background);
+        }
+      }
+      &:active:not(:disabled) {
+        &::before {
+          background: var(--leaf-text-action-active-background);
+        }
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-        outline-offset: 3px;
+        @include mixins.focus-ring;
       }
-      &[aria-current] {
-        width: 20px;
-        background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      &--previous {
+        inset-inline-start: 12px;
+      }
+      &--next {
+        inset-inline-end: 12px;
       }
     }
+    &__dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px;
+      button {
+        position: relative;
+        border: 0;
+        width: 7px;
+        height: 7px;
+        border-radius: 10px;
+        background: var(--leaf-color-border);
+        padding: 0;
+        cursor: pointer;
+        transition:
+          width var(--leaf-motion-slow) var(--leaf-motion-easing),
+          background var(--leaf-motion-duration) var(--leaf-motion-easing);
+        &::after {
+          content: '';
+          position: absolute;
+          inset: -8px -4px;
+        }
+        &:focus-visible {
+          outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+          outline-offset: 3px;
+        }
+        &[aria-current] {
+          width: 20px;
+          background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        }
+      }
+    }
+    &__status {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
   }
-  &__status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-carousel__arrow,
+    .leaf-carousel__arrow::before,
+    .leaf-carousel__dots button {
+      transition: none;
+    }
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-carousel__arrow,
-  .leaf-carousel__arrow::before,
-  .leaf-carousel__dots button {
-    transition: none;
+  :dir(rtl) .leaf-carousel__arrow > svg {
+    transform: rotate(180deg);
   }
-}
-:dir(rtl) .leaf-carousel__arrow > svg {
-  transform: rotate(180deg);
-}
 
-.leaf-carousel__slide {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  min-inline-size: 100%;
+  .leaf-carousel__slide {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-inline-size: 100%;
+  }
 }

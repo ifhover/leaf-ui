@@ -1,140 +1,146 @@
 @use '../styles/mixins' as mixins;
-.leaf-input-otp {
-  @include mixins.accent-halo-family;
-  position: relative;
-  display: inline-flex;
-  max-width: 100%;
-  --leaf-otp-size: var(--leaf-component-input-otp-height, var(--leaf-control-height));
-  --leaf-otp-radius: var(--leaf-radius);
-  color: var(--leaf-component-input-otp-color, var(--leaf-color-text));
-  font: var(--leaf-component-input-otp-font-size, var(--leaf-font-size)) var(--leaf-font-family);
-  &--sm {
-    --leaf-otp-size: var(--leaf-component-input-otp-height-sm, var(--leaf-control-height-sm));
-    --leaf-otp-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+
+@layer leaf-ui {
+  .leaf-input-otp {
+    @include mixins.accent-halo-family;
+    position: relative;
+    display: inline-flex;
+    max-width: 100%;
+    --leaf-otp-size: var(--leaf-component-input-otp-height, var(--leaf-control-height));
+    --leaf-otp-radius: var(--leaf-radius);
+    color: var(--leaf-component-input-otp-color, var(--leaf-color-text));
+    font: var(--leaf-component-input-otp-font-size, var(--leaf-font-size)) var(--leaf-font-family);
+    &--sm {
+      --leaf-otp-size: var(--leaf-component-input-otp-height-sm, var(--leaf-control-height-sm));
+      --leaf-otp-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+    }
+    &--lg {
+      --leaf-otp-size: var(--leaf-component-input-otp-height-lg, var(--leaf-control-height-lg));
+      --leaf-otp-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+    }
   }
-  &--lg {
-    --leaf-otp-size: var(--leaf-component-input-otp-height-lg, var(--leaf-control-height-lg));
-    --leaf-otp-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
-  }
-}
-.leaf-input-otp__input {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: transparent;
-  caret-color: transparent;
-  outline: none;
-  font-size: 16px;
-  &::selection {
+  .leaf-input-otp__input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
     background: transparent;
     color: transparent;
+    caret-color: transparent;
+    outline: none;
+    font-size: 16px;
+    &::selection {
+      background: transparent;
+      color: transparent;
+    }
   }
-}
-.leaf-input-otp__slots {
-  display: flex;
-  gap: var(--leaf-component-input-otp-gap, 8px);
-  pointer-events: none;
-}
-.leaf-input-otp__item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--leaf-component-input-otp-gap, 8px);
-}
-.leaf-input-otp__slot {
-  position: relative;
-  box-sizing: border-box;
-  width: var(--leaf-otp-size);
-  height: var(--leaf-otp-size);
-  padding: var(--leaf-component-input-otp-padding, 0);
-  display: grid;
-  place-items: center;
-  border: var(--leaf-component-input-otp-border-width, var(--leaf-border-width, 1px)) solid
-    var(
-      --leaf-component-input-otp-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-  border-radius: var(--leaf-component-input-otp-radius, var(--leaf-otp-radius, var(--leaf-radius)));
-  background: var(--leaf-component-input-otp-background, var(--leaf-color-surface));
-  box-shadow: var(
-    --leaf-component-input-otp-shadow,
-    var(--leaf-control-shadow, var(--leaf-shadow-xs))
-  );
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  transition:
-    border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-  &[data-filled] {
-    border-color: var(--leaf-color-border-hover);
+  .leaf-input-otp__slots {
+    display: flex;
+    gap: var(--leaf-component-input-otp-gap, 8px);
+    pointer-events: none;
   }
-  &[data-active] {
-    border-color: var(--leaf-color-primary-focus, var(--leaf-color-primary));
-    box-shadow: var(
-      --leaf-component-input-otp-focus-shadow,
-      0 0 0 2px var(--leaf-color-focus, var(--leaf-accent-halo-focus-color)),
-      var(--leaf-component-input-otp-shadow, var(--leaf-control-shadow, var(--leaf-shadow-xs)))
-    );
+  .leaf-input-otp__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--leaf-component-input-otp-gap, 8px);
   }
-  &[data-active]:not([data-filled])::after {
-    content: '';
-    position: absolute;
-    width: 1.5px;
-    height: 45%;
-    border-radius: 1px;
-    background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    animation: var(--leaf-motion-animation, leaf-otp-caret 1s steps(1) infinite);
-  }
-}
-.leaf-input-otp__character {
-  animation: var(
-    --leaf-motion-animation,
-    leaf-otp-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
-  );
-}
-@keyframes leaf-otp-enter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes leaf-otp-caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-.leaf-input-otp[data-status='error'] .leaf-input-otp__slot {
-  border-color: var(--leaf-color-danger);
-}
-.leaf-input-otp[data-status='warning'] .leaf-input-otp__slot {
-  border-color: var(--leaf-color-warning);
-}
-.leaf-input-otp[data-disabled] {
-  opacity: 0.55;
-  .leaf-input-otp__input {
-    cursor: not-allowed;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
   .leaf-input-otp__slot {
-    transition: none;
-  }
-  .leaf-input-otp__slot::after {
-    animation: none;
+    position: relative;
+    box-sizing: border-box;
+    width: var(--leaf-otp-size);
+    height: var(--leaf-otp-size);
+    padding: var(--leaf-component-input-otp-padding, 0);
+    display: grid;
+    place-items: center;
+    border: var(--leaf-component-input-otp-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-input-otp-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    border-radius: var(
+      --leaf-component-input-otp-radius,
+      var(--leaf-otp-radius, var(--leaf-radius))
+    );
+    background: var(--leaf-component-input-otp-background, var(--leaf-color-surface));
+    box-shadow: var(
+      --leaf-component-input-otp-shadow,
+      var(--leaf-control-shadow, var(--leaf-shadow-xs))
+    );
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    transition:
+      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &[data-filled] {
+      border-color: var(--leaf-color-border-hover);
+    }
+    &[data-active] {
+      border-color: var(--leaf-color-primary-focus, var(--leaf-color-primary));
+      box-shadow: var(
+        --leaf-component-input-otp-focus-shadow,
+        0 0 0 2px var(--leaf-color-focus, var(--leaf-accent-halo-focus-color)),
+        var(--leaf-component-input-otp-shadow, var(--leaf-control-shadow, var(--leaf-shadow-xs)))
+      );
+    }
+    &[data-active]:not([data-filled])::after {
+      content: '';
+      position: absolute;
+      width: 1.5px;
+      height: 45%;
+      border-radius: 1px;
+      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      animation: var(--leaf-motion-animation, leaf-otp-caret 1s steps(1) infinite);
+    }
   }
   .leaf-input-otp__character {
-    animation: none;
+    animation: var(
+      --leaf-motion-animation,
+      leaf-otp-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
+    );
+  }
+  @keyframes leaf-otp-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes leaf-otp-caret {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .leaf-input-otp[data-status='error'] .leaf-input-otp__slot {
+    border-color: var(--leaf-color-danger);
+  }
+  .leaf-input-otp[data-status='warning'] .leaf-input-otp__slot {
+    border-color: var(--leaf-color-warning);
+  }
+  .leaf-input-otp[data-disabled] {
+    opacity: 0.55;
+    .leaf-input-otp__input {
+      cursor: not-allowed;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-input-otp__slot {
+      transition: none;
+    }
+    .leaf-input-otp__slot::after {
+      animation: none;
+    }
+    .leaf-input-otp__character {
+      animation: none;
+    }
   }
 }

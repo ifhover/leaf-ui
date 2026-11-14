@@ -1,192 +1,198 @@
 @use '../styles/mixins' as mixins;
-.leaf-switch {
-  @include mixins.choice(switch);
-  @include mixins.choice-label-states(switch);
-  --leaf-switch-border-width: var(
-    --leaf-component-switch-border-width,
-    var(--leaf-border-width, 1px)
-  );
-  --leaf-switch-width: 40px;
-  --leaf-switch-height: 24px;
-  --leaf-switch-thumb: 20px;
-  --leaf-switch-direction: 1;
-  &:dir(rtl) {
-    --leaf-switch-direction: -1;
-  }
-  &[data-loading] {
-    cursor: default;
-  }
-  &--sm {
-    --leaf-switch-width: 32px;
-    --leaf-switch-height: 20px;
-    --leaf-switch-thumb: 16px;
-  }
-  &--lg {
-    --leaf-switch-width: 48px;
-    --leaf-switch-height: 28px;
-    --leaf-switch-thumb: 24px;
-  }
-  &__control {
-    width: var(--leaf-switch-width);
-    height: var(--leaf-switch-height);
-  }
-  &__input {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: inherit;
-  }
-  &__track {
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: max(0px, calc(2px - var(--leaf-switch-border-width)));
-    --leaf-switch-track-border: var(
-      --leaf-component-switch-border-color,
-      var(--leaf-frame-border-color, var(--leaf-switch-track-background))
+
+@layer leaf-ui {
+  .leaf-switch {
+    @include mixins.choice(switch);
+    @include mixins.choice-label-states(switch);
+    --leaf-switch-border-width: var(
+      --leaf-component-switch-border-width,
+      var(--leaf-border-width, 1px)
     );
-    border: var(--leaf-switch-border-width) solid var(--leaf-switch-track-border);
-    border-radius: 999px;
-    --leaf-switch-track-background: var(
-      --leaf-component-switch-background,
-      light-dark(var(--leaf-color-option-hover), var(--leaf-color-option-hover))
-    );
-    --leaf-switch-track-shadow: var(
-      --leaf-component-switch-shadow,
-      var(--leaf-control-shadow, none)
-    );
-    background: var(--leaf-switch-track-background);
-    box-shadow: var(--leaf-switch-track-shadow);
-    pointer-events: none;
-    transition:
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &__thumb {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--leaf-switch-thumb);
-    height: var(--leaf-switch-thumb);
-    border-radius: 999px;
-    color: light-dark(var(--leaf-color-text-muted), var(--leaf-color-surface));
-    background: light-dark(var(--leaf-color-surface), var(--leaf-color-text));
-    box-shadow: var(--leaf-shadow-xs);
-    transition:
-      transform var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &__input:checked + &__track {
-    --leaf-switch-track-border: var(
-      --leaf-component-switch-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-primary-indicator, var(--leaf-color-primary)))
-    );
-    --leaf-switch-track-background: var(--leaf-color-primary);
-    background: var(--leaf-switch-track-background);
-  }
-  &__input:checked + &__track &__thumb {
-    color: var(--leaf-color-primary);
-    background: var(--leaf-color-on-primary);
-    transform: translateX(
-      calc((var(--leaf-switch-width) - var(--leaf-switch-height)) * var(--leaf-switch-direction))
-    );
-  }
-  &:active:not([data-disabled]) &__thumb {
-    box-shadow: var(--leaf-shadow-xs);
-  }
-  &__input:focus-visible + &__track {
-    @include mixins.focus-ring;
-  }
-  &__input:focus-visible:not(:disabled) + &__track {
-    @include mixins.state-paint(
-      switch,
-      focus,
-      inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-switch-track-border),
-      var(--leaf-switch-track-shadow)
-    );
-  }
-  &:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) &__track {
-    @include mixins.state-paint(
-      switch,
-      hover,
-      inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-switch-track-border),
-      var(--leaf-switch-track-shadow)
-    );
-  }
-  &:active:not([data-disabled]) &__track {
-    @include mixins.state-paint(
-      switch,
-      active,
-      inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-switch-track-border),
-      var(--leaf-switch-track-shadow)
-    );
-  }
-  &[data-disabled] &__track {
-    @include mixins.state-paint(
-      switch,
-      disabled,
-      inherit,
-      var(--leaf-switch-track-background),
-      var(--leaf-switch-track-border),
-      var(--leaf-switch-track-shadow)
-    );
-  }
-  &__spinner {
-    width: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
-    height: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
-    color: currentColor;
-    animation: var(
-      --leaf-motion-animation,
-      leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
-    );
-    animation-play-state: var(--leaf-motion-play-state, running);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    &__track,
-    &__thumb {
-      transition: none;
+    --leaf-switch-width: 40px;
+    --leaf-switch-height: 24px;
+    --leaf-switch-thumb: 20px;
+    --leaf-switch-direction: 1;
+    &:dir(rtl) {
+      --leaf-switch-direction: -1;
     }
-    &__spinner {
-      animation: none;
+    &[data-loading] {
+      cursor: default;
     }
-  }
-  @media (forced-colors: active) {
-    & &__control > &__input + &__track {
-      border-color: ButtonText;
-      background: Canvas;
+    &--sm {
+      --leaf-switch-width: 32px;
+      --leaf-switch-height: 20px;
+      --leaf-switch-thumb: 16px;
+    }
+    &--lg {
+      --leaf-switch-width: 48px;
+      --leaf-switch-height: 28px;
+      --leaf-switch-thumb: 24px;
+    }
+    &__control {
+      width: var(--leaf-switch-width);
+      height: var(--leaf-switch-height);
+    }
+    &__input {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+    &__track {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: max(0px, calc(2px - var(--leaf-switch-border-width)));
+      --leaf-switch-track-border: var(
+        --leaf-component-switch-border-color,
+        var(--leaf-frame-border-color, var(--leaf-switch-track-background))
+      );
+      border: var(--leaf-switch-border-width) solid var(--leaf-switch-track-border);
+      border-radius: 999px;
+      --leaf-switch-track-background: var(
+        --leaf-component-switch-background,
+        light-dark(var(--leaf-color-option-hover), var(--leaf-color-option-hover))
+      );
+      --leaf-switch-track-shadow: var(
+        --leaf-component-switch-shadow,
+        var(--leaf-control-shadow, none)
+      );
+      background: var(--leaf-switch-track-background);
+      box-shadow: var(--leaf-switch-track-shadow);
+      pointer-events: none;
+      transition:
+        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
     &__thumb {
-      color: Canvas;
-      background: ButtonText;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--leaf-switch-thumb);
+      height: var(--leaf-switch-thumb);
+      border-radius: 999px;
+      color: light-dark(var(--leaf-color-text-muted), var(--leaf-color-surface));
+      background: light-dark(var(--leaf-color-surface), var(--leaf-color-text));
+      box-shadow: var(--leaf-shadow-xs);
+      transition:
+        transform var(--leaf-motion-duration) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        color var(--leaf-motion-duration) var(--leaf-motion-easing),
+        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
-    & &__control > &__input:checked + &__track {
-      background: Highlight;
+    &__input:checked + &__track {
+      --leaf-switch-track-border: var(
+        --leaf-component-switch-border-color,
+        var(
+          --leaf-frame-border-color,
+          var(--leaf-color-primary-indicator, var(--leaf-color-primary))
+        )
+      );
+      --leaf-switch-track-background: var(--leaf-color-primary);
+      background: var(--leaf-switch-track-background);
     }
     &__input:checked + &__track &__thumb {
-      color: Highlight;
-      background: HighlightText;
+      color: var(--leaf-color-primary);
+      background: var(--leaf-color-on-primary);
+      transform: translateX(
+        calc((var(--leaf-switch-width) - var(--leaf-switch-height)) * var(--leaf-switch-direction))
+      );
+    }
+    &:active:not([data-disabled]) &__thumb {
+      box-shadow: var(--leaf-shadow-xs);
     }
     &__input:focus-visible + &__track {
-      outline-color: Highlight;
+      @include mixins.focus-ring;
+    }
+    &__input:focus-visible:not(:disabled) + &__track {
+      @include mixins.state-paint(
+        switch,
+        focus,
+        inherit,
+        var(--leaf-switch-track-background),
+        var(--leaf-switch-track-border),
+        var(--leaf-switch-track-shadow)
+      );
+    }
+    &:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) &__track {
+      @include mixins.state-paint(
+        switch,
+        hover,
+        inherit,
+        var(--leaf-switch-track-background),
+        var(--leaf-switch-track-border),
+        var(--leaf-switch-track-shadow)
+      );
+    }
+    &:active:not([data-disabled]) &__track {
+      @include mixins.state-paint(
+        switch,
+        active,
+        inherit,
+        var(--leaf-switch-track-background),
+        var(--leaf-switch-track-border),
+        var(--leaf-switch-track-shadow)
+      );
+    }
+    &[data-disabled] &__track {
+      @include mixins.state-paint(
+        switch,
+        disabled,
+        inherit,
+        var(--leaf-switch-track-background),
+        var(--leaf-switch-track-border),
+        var(--leaf-switch-track-shadow)
+      );
+    }
+    &__spinner {
+      width: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
+      height: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
+      color: currentColor;
+      animation: var(
+        --leaf-motion-animation,
+        leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+      );
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      &__track,
+      &__thumb {
+        transition: none;
+      }
+      &__spinner {
+        animation: none;
+      }
+    }
+    @media (forced-colors: active) {
+      & &__control > &__input + &__track {
+        border-color: ButtonText;
+        background: Canvas;
+      }
+      &__thumb {
+        color: Canvas;
+        background: ButtonText;
+      }
+      & &__control > &__input:checked + &__track {
+        background: Highlight;
+      }
+      &__input:checked + &__track &__thumb {
+        color: Highlight;
+        background: HighlightText;
+      }
+      &__input:focus-visible + &__track {
+        outline-color: Highlight;
+      }
     }
   }
-}
-@keyframes leaf-switch-spin {
-  to {
-    transform: rotate(360deg);
+  @keyframes leaf-switch-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }

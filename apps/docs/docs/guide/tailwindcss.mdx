@@ -13,19 +13,22 @@ import { TailwindTheme } from '../../src/examples/tailwindcss/theme';
 
 ### Tailwind CSS 4
 
-在 CSS 入口增加一行导入即可：
+在 CSS 入口提前声明层顺序并导入样式：
 
 ```css title="app.css"
+@layer theme, base, leaf-ui, components, utilities;
 @import 'tailwindcss';
 @import '@ifhover/leaf-ui/tailwind.css';
 ```
+
+Leaf UI 的组件样式位于 `@layer leaf-ui`，提前声明层顺序可确保按需加载的组件样式始终位于 Tailwind 工具类之前，避免 `w-full`、`w-80` 等工具类被组件默认宽度覆盖。
 
 <DocsCollapse title="沿用项目的基础样式">
 
 如果不需要 Tailwind 的 Preflight 重置样式，改用下面的入口：
 
 ```css title="app.css"
-@layer theme, base, components, utilities;
+@layer theme, base, leaf-ui, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 @import '@ifhover/leaf-ui/tailwind.css';
@@ -46,9 +49,10 @@ module.exports = {
 };
 ```
 
-CSS 入口保持 Tailwind 3 的写法：
+在 Tailwind 3 的 CSS 入口顶部同样建议声明层顺序，确保组件按需样式处于 `base` 与 `utilities` 之间：
 
 ```css title="app.css"
+@layer base, leaf-ui, components, utilities;
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -152,6 +156,8 @@ export default {
 
 ## 使用提示
 
+- **样式层与工具类覆盖**：Leaf UI 组件样式包裹在 `@layer leaf-ui` 中，配合上方的 `@layer` 声明即可直接用 `w-full`、`w-80` 等工具类覆盖组件默认尺寸、间距与边框；输入类组件也可通过 CSS 变量 `--leaf-field-width` 覆盖默认宽度。
+- **全局重置样式**：未包裹在 `@layer` 中的全局样式优先级高于所有分层样式。若宿主项目包含未分层的全局 reset CSS，可能会覆盖 Leaf UI 默认样式；请将其放入 `@layer base` 中，并在应用入口先引入项目的 `app.css`。
 - **透明度**：Tailwind 4 支持 `bg-leaf-primary/50`；Tailwind 3 不支持这些颜色的 `/50`、`bg-opacity-*` 或 `text-opacity-*`，半透明色需在业务 CSS 中定义。
 - **源码扫描**：写完整类名，如 `bg-leaf-primary`，不要拼接 `bg-leaf-${color}`。
 - **基础样式**：没有导入 Leaf UI 组件的纯 CSS 页面，还需引入 `@ifhover/leaf-ui/styles.css`。

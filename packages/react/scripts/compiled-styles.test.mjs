@@ -20,3 +20,9 @@ test('style contracts retain changed values and later declarations and reject mi
   assert.equal(rule(':is(.a,.b)').color, 'green');
   assert.throws(() => rule('.missing'), /missing compiled rule/u);
 });
+
+test('style contracts unwrap rules inside named @layer blocks', () => {
+  const rule = styleDeclarations('@layer leaf-ui { .sample { color: red; width: 240px; } }');
+  assert.equal(rule('.sample').color, 'red');
+  assert.equal(rule('.sample').width, '240px');
+});

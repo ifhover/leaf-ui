@@ -1,190 +1,192 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-transfer {
-  --leaf-transfer-radius: var(--leaf-component-transfer-radius, var(--leaf-radius-md));
-  --leaf-transfer-border-width: var(
-    --leaf-component-transfer-border-width,
-    var(--leaf-border-width, 1px)
-  );
-  @include mixins.accent-soft-feedback-family;
-  display: inline-flex;
-  flex-wrap: wrap;
-  container: leaf-transfer / inline-size;
-  width: 464px;
-  max-width: 100%;
-  align-self: flex-start;
-  box-sizing: border-box;
-  align-items: center;
-  gap: var(--leaf-component-transfer-gap, 12px);
-  color: var(--leaf-component-transfer-color, var(--leaf-color-text));
-  font: var(--leaf-component-transfer-font-size, var(--leaf-font-size)) var(--leaf-font-family);
-}
-
-.leaf-transfer__panel {
-  flex: 1 1 180px;
-  min-width: 0;
-  overflow: hidden;
-  border: var(--leaf-transfer-border-width) solid
-    var(
-      --leaf-component-transfer-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+@layer leaf-ui {
+  .leaf-transfer {
+    --leaf-transfer-radius: var(--leaf-component-transfer-radius, var(--leaf-radius-md));
+    --leaf-transfer-border-width: var(
+      --leaf-component-transfer-border-width,
+      var(--leaf-border-width, 1px)
     );
-  border-radius: var(--leaf-transfer-radius);
-  background: var(--leaf-component-transfer-background, var(--leaf-color-surface));
-  box-shadow: var(
-    --leaf-component-transfer-shadow,
-    var(--leaf-surface-shadow, var(--leaf-shadow-xs))
-  );
-}
+    @include mixins.accent-soft-feedback-family;
+    display: inline-flex;
+    flex-wrap: wrap;
+    container: leaf-transfer / inline-size;
+    width: 464px;
+    max-width: 100%;
+    align-self: flex-start;
+    box-sizing: border-box;
+    align-items: center;
+    gap: var(--leaf-component-transfer-gap, 12px);
+    color: var(--leaf-component-transfer-color, var(--leaf-color-text));
+    font: var(--leaf-component-transfer-font-size, var(--leaf-font-size)) var(--leaf-font-family);
+  }
 
-.leaf-transfer__header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: calc(var(--leaf-control-height) + 6px);
-  padding: var(--leaf-component-transfer-padding, 8px 12px);
-  box-sizing: border-box;
-  border-block-end: 1px solid var(--leaf-color-divider);
-  font-weight: var(--leaf-font-weight);
-  font-size: var(--leaf-font-size);
-  line-height: var(--leaf-line-height);
-  color: var(--leaf-component-transfer-color, var(--leaf-color-text));
-  background: var(--leaf-component-transfer-header-background, transparent);
-
-  > span {
+  .leaf-transfer__panel {
+    flex: 1 1 180px;
     min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  small {
-    margin-inline-start: auto;
-    flex: 0 0 auto;
-    color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size-sm);
-    font-weight: 400;
-    font-variant-numeric: tabular-nums;
-  }
-}
-
-.leaf-transfer__body {
-  min-width: 0;
-  background: transparent;
-}
-
-.leaf-transfer__search {
-  padding: 8px 8px 2px;
-
-  > .leaf-input {
-    width: 100%;
-  }
-}
-
-.leaf-transfer__list {
-  box-sizing: border-box;
-}
-
-.leaf-transfer__list-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  box-sizing: border-box;
-  min-height: 100%;
-  padding: 6px 8px 8px;
-
-  &:has(> .leaf-result) {
-    justify-content: center;
-  }
-}
-
-.leaf-transfer__body:not(:has(> .leaf-transfer__search)) .leaf-transfer__list-content {
-  padding-block-start: 8px;
-}
-
-.leaf-transfer__body > .leaf-virtual-list {
-  .leaf-scrollbar__content {
-    padding-block: 4px;
-  }
-
-  .leaf-virtual-list__item {
-    box-sizing: border-box;
-    padding: 2px 8px;
-  }
-}
-
-.leaf-transfer__item {
-  box-sizing: border-box;
-  padding: 6px 10px;
-  border-radius: var(--leaf-radius);
-  transition:
-    background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    color var(--leaf-motion-fast) var(--leaf-motion-easing),
-    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-
-  &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
-    background: #{mixins.choice-option-background()};
-  }
-
-  &:active:has(.leaf-checkbox:not([data-disabled])) {
-    scale: 0.985;
-  }
-
-  &[data-selected] {
-    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
-    background: var(--leaf-accent-soft-background);
-
-    .leaf-checkbox__description {
-      color: var(--leaf-color-text-muted);
-    }
-  }
-
-  .leaf-checkbox {
-    display: flex;
-    width: 100%;
-    min-height: 22px;
-    gap: 10px;
-
-    &__copy {
-      min-width: 0;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .leaf-transfer__item {
-    transition: none;
-  }
-}
-
-.leaf-transfer__actions {
-  display: grid;
-  gap: 6px;
-}
-
-@media (max-width: 480px) {
-  .leaf-transfer {
-    gap: 8px;
+    border: var(--leaf-transfer-border-width) solid
+      var(
+        --leaf-component-transfer-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border))
+      );
+    border-radius: var(--leaf-transfer-radius);
+    background: var(--leaf-component-transfer-background, var(--leaf-color-surface));
+    box-shadow: var(
+      --leaf-component-transfer-shadow,
+      var(--leaf-surface-shadow, var(--leaf-shadow-xs))
+    );
   }
 
   .leaf-transfer__header {
-    padding: 8px 10px;
-    gap: 8px;
-  }
-}
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: calc(var(--leaf-control-height) + 6px);
+    padding: var(--leaf-component-transfer-padding, 8px 12px);
+    box-sizing: border-box;
+    border-block-end: 1px solid var(--leaf-color-divider);
+    font-weight: var(--leaf-font-weight);
+    font-size: var(--leaf-font-size);
+    line-height: var(--leaf-line-height);
+    color: var(--leaf-component-transfer-color, var(--leaf-color-text));
+    background: var(--leaf-component-transfer-header-background, transparent);
 
-@container leaf-transfer (max-width: 400px) {
-  .leaf-transfer__panel {
-    flex-basis: 100%;
+    > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    small {
+      margin-inline-start: auto;
+      flex: 0 0 auto;
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      font-weight: 400;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .leaf-transfer__body {
+    min-width: 0;
+    background: transparent;
+  }
+
+  .leaf-transfer__search {
+    padding: 8px 8px 2px;
+
+    > .leaf-input {
+      width: 100%;
+    }
+  }
+
+  .leaf-transfer__list {
+    box-sizing: border-box;
+  }
+
+  .leaf-transfer__list-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-sizing: border-box;
+    min-height: 100%;
+    padding: 6px 8px 8px;
+
+    &:has(> .leaf-result) {
+      justify-content: center;
+    }
+  }
+
+  .leaf-transfer__body:not(:has(> .leaf-transfer__search)) .leaf-transfer__list-content {
+    padding-block-start: 8px;
+  }
+
+  .leaf-transfer__body > .leaf-virtual-list {
+    .leaf-scrollbar__content {
+      padding-block: 4px;
+    }
+
+    .leaf-virtual-list__item {
+      box-sizing: border-box;
+      padding: 2px 8px;
+    }
+  }
+
+  .leaf-transfer__item {
+    box-sizing: border-box;
+    padding: 6px 10px;
+    border-radius: var(--leaf-radius);
+    transition:
+      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      color var(--leaf-motion-fast) var(--leaf-motion-easing),
+      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+
+    &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
+      background: #{mixins.choice-option-background()};
+    }
+
+    &:active:has(.leaf-checkbox:not([data-disabled])) {
+      scale: 0.985;
+    }
+
+    &[data-selected] {
+      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      background: var(--leaf-accent-soft-background);
+
+      .leaf-checkbox__description {
+        color: var(--leaf-color-text-muted);
+      }
+    }
+
+    .leaf-checkbox {
+      display: flex;
+      width: 100%;
+      min-height: 22px;
+      gap: 10px;
+
+      &__copy {
+        min-width: 0;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-transfer__item {
+      transition: none;
+    }
   }
 
   .leaf-transfer__actions {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    gap: 6px;
   }
 
-  .leaf-transfer__actions svg {
-    transform: rotate(90deg);
+  @media (max-width: 480px) {
+    .leaf-transfer {
+      gap: 8px;
+    }
+
+    .leaf-transfer__header {
+      padding: 8px 10px;
+      gap: 8px;
+    }
+  }
+
+  @container leaf-transfer (max-width: 400px) {
+    .leaf-transfer__panel {
+      flex-basis: 100%;
+    }
+
+    .leaf-transfer__actions {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .leaf-transfer__actions svg {
+      transform: rotate(90deg);
+    }
   }
 }

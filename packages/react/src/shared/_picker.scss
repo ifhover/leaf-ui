@@ -1,39 +1,41 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-picker-clear {
-  position: absolute;
-  inset-inline-end: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  &--before-arrow {
-    inset-inline-end: 29px;
-  }
-
-  @include mixins.text-action;
-}
-
-.leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {
-  padding-inline-end: 34px;
-}
-.leaf-select[data-clearable] > .leaf-select__trigger,
-.leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
-.leaf-cascader[data-clearable] > .leaf-cascader__trigger {
-  // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
-  > span {
-    margin-inline-end: 24px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
+@layer leaf-ui {
   .leaf-picker-clear {
-    transition: none;
+    position: absolute;
+    inset-inline-end: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    &--before-arrow {
+      inset-inline-end: 29px;
+    }
+
+    @include mixins.text-action;
+  }
+
+  .leaf-date-picker[data-clearable] > .leaf-date-picker__trigger {
+    padding-inline-end: 34px;
+  }
+  .leaf-select[data-clearable] > .leaf-select__trigger,
+  .leaf-time-picker[data-clearable] > .leaf-time-picker__trigger,
+  .leaf-cascader[data-clearable] > .leaf-cascader__trigger {
+    // Reserve room beside the text; keep the trailing arrow aligned with the field edge.
+    > span {
+      margin-inline-end: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-picker-clear {
+      transition: none;
+    }
   }
 }

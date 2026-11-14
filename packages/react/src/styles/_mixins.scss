@@ -497,10 +497,13 @@
   border-color: var(--leaf-field-color);
 }
 
+/* 默认宽度通过 :where() 降权并读取局部宽度变量，方便组件扩展或外部样式覆盖 */
 @mixin field-width($width: 240px) {
-  width: $width;
-  max-width: 100%;
-  min-width: 0;
+  @at-root :where(#{&}) {
+    width: var(--leaf-field-width, $width);
+    max-width: 100%;
+    min-width: 0;
+  }
 }
 
 @mixin field($component: field, $focus: primary) {

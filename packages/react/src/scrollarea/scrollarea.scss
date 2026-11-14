@@ -1,6 +1,8 @@
 @use '../scrollbar/scrollbar';
 
-.leaf-scroll-area {
-  min-width: 0;
-  min-height: 0;
+@layer leaf-ui {
+  .leaf-scroll-area {
+    min-width: 0;
+    min-height: 0;
+  }
 }

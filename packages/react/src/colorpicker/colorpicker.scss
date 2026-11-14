@@ -1,192 +1,290 @@
 @use '../styles/mixins' as mixins;
 @use '../input/input';
-.leaf-color-picker-custom-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  vertical-align: middle;
-}
-.leaf-color-picker {
-  @include mixins.field('color-picker');
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  width: var(--leaf-current-control-height);
-  height: var(--leaf-current-control-height);
-  vertical-align: middle;
-  cursor: pointer;
-  &[data-clearable] {
-    width: calc(var(--leaf-current-control-height) + 28px);
-  }
-  &[data-show-text] {
-    width: 144px;
-    &[data-format='rgb'] {
-      width: 272px;
-    }
-    &[data-format='hsl'] {
-      width: 296px;
-    }
-    &[data-format='gradient'] {
-      width: 160px;
-    }
-  }
-  &[data-readonly]:not([data-disabled]) {
-    cursor: default;
-  }
-  &:hover:not([data-disabled]) {
-    --leaf-field-background: var(
-      --leaf-component-color-picker-background,
-      var(--leaf-color-surface-muted)
-    );
-  }
-  &__trigger {
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-    height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
-    padding: 0 5px;
-    border: 0;
-    border-radius: inherit;
-    color: inherit;
-    background: transparent;
-    font: inherit;
-    cursor: inherit;
-    &:disabled {
-      cursor: not-allowed;
-    }
-    &:focus-visible {
-      outline: none;
-    }
-  }
-  &__text {
-    min-width: 0;
-    padding-inline-end: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  &:not([data-show-text]) &__trigger {
-    justify-content: center;
-  }
-  &__swatch {
-    display: inline-flex;
-    width: 20px;
-    height: 20px;
-    flex: 0 0 auto;
-    overflow: hidden;
-    border-radius: calc(var(--leaf-radius) * 0.4);
-    background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
-    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 8%);
-    i {
-      width: 100%;
-      height: 100%;
-    }
-    &--large {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--leaf-radius-sm);
-    }
-  }
-  &--sm &__swatch {
-    width: 16px;
-    height: 16px;
-    border-radius: calc(var(--leaf-radius) * 0.3);
-  }
-  &--lg &__swatch {
-    width: 26px;
-    height: 26px;
-    border-radius: var(--leaf-radius-sm);
-  }
-  &__clear {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    margin-inline-end: 4px;
-    border: 0;
-    border-radius: calc(var(--leaf-radius) * 0.4);
 
-    @include mixins.text-action;
-  }
-  &__panel {
-    box-sizing: border-box;
-    padding: 0;
-    // Keep handles and preset outlines inside the scroll viewport's padding.
-    > .leaf-floating__viewport {
-      padding: 14px;
-    }
-  }
-  &__area {
-    position: relative;
-    height: 160px;
-    border-radius: var(--leaf-radius-sm);
-    background-image:
-      linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
-    cursor: crosshair;
-    touch-action: none;
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      outline-offset: 3px;
-    }
-  }
-  &__handle {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &__area:active &__handle,
-  &__area:focus-visible &__handle {
-    box-shadow:
-      0 0 0 4px rgb(255 255 255 / 18%),
-      0 0 3px 1px rgb(0 0 0 / 25%);
-  }
-  &__sliders {
-    display: flex;
+@layer leaf-ui {
+  .leaf-color-picker-custom-trigger {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin-block: 16px;
-    > div {
-      display: grid;
-      gap: 10px;
+    gap: 4px;
+    vertical-align: middle;
+  }
+  .leaf-color-picker {
+    @include mixins.field('color-picker');
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    width: var(--leaf-current-control-height);
+    height: var(--leaf-current-control-height);
+    vertical-align: middle;
+    cursor: pointer;
+    &[data-clearable] {
+      width: calc(var(--leaf-current-control-height) + 28px);
+    }
+    &[data-show-text] {
+      width: 144px;
+      &[data-format='rgb'] {
+        width: 272px;
+      }
+      &[data-format='hsl'] {
+        width: 296px;
+      }
+      &[data-format='gradient'] {
+        width: 160px;
+      }
+    }
+    &[data-readonly]:not([data-disabled]) {
+      cursor: default;
+    }
+    &:hover:not([data-disabled]) {
+      --leaf-field-background: var(
+        --leaf-component-color-picker-background,
+        var(--leaf-color-surface-muted)
+      );
+    }
+    &__trigger {
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
       flex: 1;
       min-width: 0;
-    }
-    input {
-      box-sizing: border-box;
-      width: 100%;
-      height: 10px;
-      margin: 0;
-      border-radius: 8px;
-      appearance: none;
-      cursor: pointer;
-      &::-webkit-slider-thumb {
-        appearance: none;
-        width: 14px;
-        height: 14px;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        background: transparent;
-        box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+      height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
+      padding: 0 5px;
+      border: 0;
+      border-radius: inherit;
+      color: inherit;
+      background: transparent;
+      font: inherit;
+      cursor: inherit;
+      &:disabled {
+        cursor: not-allowed;
       }
-      &::-moz-range-thumb {
-        width: 10px;
+      &:focus-visible {
+        outline: none;
+      }
+    }
+    &__text {
+      min-width: 0;
+      padding-inline-end: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    &:not([data-show-text]) &__trigger {
+      justify-content: center;
+    }
+    &__swatch {
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border-radius: calc(var(--leaf-radius) * 0.4);
+      background: repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 8%);
+      i {
+        width: 100%;
+        height: 100%;
+      }
+      &--large {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--leaf-radius-sm);
+      }
+    }
+    &--sm &__swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: calc(var(--leaf-radius) * 0.3);
+    }
+    &--lg &__swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--leaf-radius-sm);
+    }
+    &__clear {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      margin-inline-end: 4px;
+      border: 0;
+      border-radius: calc(var(--leaf-radius) * 0.4);
+
+      @include mixins.text-action;
+    }
+    &__panel {
+      box-sizing: border-box;
+      padding: 0;
+      // Keep handles and preset outlines inside the scroll viewport's padding.
+      > .leaf-floating__viewport {
+        padding: 14px;
+      }
+    }
+    &__area {
+      position: relative;
+      height: 160px;
+      border-radius: var(--leaf-radius-sm);
+      background-image:
+        linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
+      cursor: crosshair;
+      touch-action: none;
+      &:focus-visible {
+        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        outline-offset: 3px;
+      }
+    }
+    &__handle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &__area:active &__handle,
+    &__area:focus-visible &__handle {
+      box-shadow:
+        0 0 0 4px rgb(255 255 255 / 18%),
+        0 0 3px 1px rgb(0 0 0 / 25%);
+    }
+    &__sliders {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-block: 16px;
+      > div {
+        display: grid;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+      }
+      input {
+        box-sizing: border-box;
+        width: 100%;
         height: 10px;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        background: transparent;
-        box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+        margin: 0;
+        border-radius: 8px;
+        appearance: none;
+        cursor: pointer;
+        &::-webkit-slider-thumb {
+          appearance: none;
+          width: 14px;
+          height: 14px;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          background: transparent;
+          box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+        }
+        &::-moz-range-thumb {
+          width: 10px;
+          height: 10px;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          background: transparent;
+          box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
+        }
+        &:focus-visible {
+          outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+          outline-offset: 3px;
+        }
+      }
+    }
+    &__hue {
+      background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+    }
+    &__alpha {
+      background:
+        linear-gradient(to right, transparent, var(--leaf-alpha-color)),
+        repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
+    }
+    &__formats {
+      margin-block-end: 8px;
+    }
+    &__input {
+      width: 100%;
+    }
+    &__error {
+      display: block;
+      margin-top: 4px;
+      color: var(--leaf-color-danger-ink);
+      font-size: 12px;
+    }
+    &__preset-label {
+      margin: 14px 0 8px;
+      color: var(--leaf-color-text-muted);
+      font-size: 12px;
+    }
+    &__presets > div:last-child {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    &__preset {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-style: none;
+      border-radius: var(--leaf-radius-sm);
+      box-shadow: inset 0 0 0 1px var(--leaf-color-border);
+      cursor: pointer;
+      transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &:hover:not([aria-pressed='true']) {
+        box-shadow:
+          inset 0 0 0 1px var(--leaf-color-border),
+          var(--leaf-shadow-sm);
+      }
+      &[aria-pressed='true'] {
+        box-shadow:
+          inset 0 0 0 1px var(--leaf-color-border),
+          0 0 0 2px var(--leaf-color-surface),
+          0 0 0 4px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      }
+      &:focus-visible {
+        @include mixins.focus-ring;
+      }
+      &[aria-pressed='true']:focus-visible {
+        outline-offset: 4px;
+      }
+    }
+  }
+
+  .leaf-color-picker__gradient {
+    padding: 0;
+    // Keep stop outlines inside the scroll viewport, as in the solid panel.
+    > .leaf-floating__viewport {
+      padding: 16px;
+    }
+  }
+  .leaf-color-picker__gradient-preview {
+    height: 64px;
+    border-radius: var(--leaf-radius);
+    margin-block-end: 12px;
+  }
+  .leaf-color-picker__stops {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-block-end: 16px;
+    > button:not(.leaf-button) {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--leaf-color-surface);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--leaf-color-border);
+      cursor: pointer;
+      transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &[aria-pressed='true'] {
+        box-shadow: 0 0 0 2px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
       }
       &:focus-visible {
         outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
@@ -194,162 +292,67 @@
       }
     }
   }
-  &__hue {
-    background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-color-picker__trigger,
+    .leaf-color-picker__swatch,
+    .leaf-color-picker__clear,
+    .leaf-color-picker__handle,
+    .leaf-color-picker__input,
+    .leaf-color-picker__preset,
+    .leaf-color-picker__stops > button {
+      transition: none;
+    }
+    .leaf-color-picker__sliders input::-webkit-slider-thumb {
+      transition: none;
+    }
+    .leaf-color-picker__sliders input::-moz-range-thumb {
+      transition: none;
+    }
   }
-  &__alpha {
-    background:
-      linear-gradient(to right, transparent, var(--leaf-alpha-color)),
-      repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px;
+  .leaf-color-picker__gradient-field {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    margin-block: 12px;
+    font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
   }
-  &__formats {
-    margin-block-end: 8px;
-  }
-  &__input {
+  .leaf-color-picker__gradient-field > .leaf-color-picker,
+  .leaf-color-picker__gradient-field > .leaf-input-number {
     width: 100%;
   }
-  &__error {
-    display: block;
-    margin-top: 4px;
-    color: var(--leaf-color-danger-ink);
-    font-size: 12px;
-  }
-  &__preset-label {
-    margin: 14px 0 8px;
-    color: var(--leaf-color-text-muted);
-    font-size: 12px;
-  }
-  &__presets > div:last-child {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  &__preset {
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border-style: none;
-    border-radius: var(--leaf-radius-sm);
-    box-shadow: inset 0 0 0 1px var(--leaf-color-border);
-    cursor: pointer;
-    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &:hover:not([aria-pressed='true']) {
-      box-shadow:
-        inset 0 0 0 1px var(--leaf-color-border),
-        var(--leaf-shadow-sm);
-    }
-    &[aria-pressed='true'] {
-      box-shadow:
-        inset 0 0 0 1px var(--leaf-color-border),
-        0 0 0 2px var(--leaf-color-surface),
-        0 0 0 4px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
-    &:focus-visible {
-      @include mixins.focus-ring;
-    }
-    &[aria-pressed='true']:focus-visible {
-      outline-offset: 4px;
-    }
-  }
-}
 
-.leaf-color-picker__gradient {
-  padding: 0;
-  // Keep stop outlines inside the scroll viewport, as in the solid panel.
-  > .leaf-floating__viewport {
-    padding: 16px;
+  .leaf-color-picker {
+    --leaf-current-control-height: var(
+      --leaf-component-color-picker-height,
+      var(--leaf-control-height)
+    );
+    --leaf-current-font-size: var(--leaf-component-color-picker-font-size, var(--leaf-font-size));
+    --leaf-current-radius: var(--leaf-radius);
   }
-}
-.leaf-color-picker__gradient-preview {
-  height: 64px;
-  border-radius: var(--leaf-radius);
-  margin-block-end: 12px;
-}
-.leaf-color-picker__stops {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-block-end: 16px;
-  > button:not(.leaf-button) {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--leaf-color-surface);
-    border-radius: 50%;
-    box-shadow: 0 0 0 1px var(--leaf-color-border);
-    cursor: pointer;
-    transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
-    &[aria-pressed='true'] {
-      box-shadow: 0 0 0 2px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-    }
-    &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      outline-offset: 3px;
-    }
+  .leaf-color-picker--sm {
+    --leaf-current-control-height: var(
+      --leaf-component-color-picker-height-sm,
+      var(--leaf-control-height-sm)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-color-picker__trigger,
-  .leaf-color-picker__swatch,
-  .leaf-color-picker__clear,
-  .leaf-color-picker__handle,
-  .leaf-color-picker__input,
-  .leaf-color-picker__preset,
-  .leaf-color-picker__stops > button {
-    transition: none;
+  .leaf-color-picker--lg {
+    --leaf-current-control-height: var(
+      --leaf-component-color-picker-height-lg,
+      var(--leaf-control-height-lg)
+    );
+    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
-  .leaf-color-picker__sliders input::-webkit-slider-thumb {
-    transition: none;
-  }
-  .leaf-color-picker__sliders input::-moz-range-thumb {
-    transition: none;
-  }
-}
-.leaf-color-picker__gradient-field {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  margin-block: 12px;
-  font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
-}
-.leaf-color-picker__gradient-field > .leaf-color-picker,
-.leaf-color-picker__gradient-field > .leaf-input-number {
-  width: 100%;
-}
 
-.leaf-color-picker {
-  --leaf-current-control-height: var(
-    --leaf-component-color-picker-height,
-    var(--leaf-control-height)
-  );
-  --leaf-current-font-size: var(--leaf-component-color-picker-font-size, var(--leaf-font-size));
-  --leaf-current-radius: var(--leaf-radius);
-}
-.leaf-color-picker--sm {
-  --leaf-current-control-height: var(
-    --leaf-component-color-picker-height-sm,
-    var(--leaf-control-height-sm)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-sm);
-  --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-}
-.leaf-color-picker--lg {
-  --leaf-current-control-height: var(
-    --leaf-component-color-picker-height-lg,
-    var(--leaf-control-height-lg)
-  );
-  --leaf-current-font-size: var(--leaf-font-size-lg);
-  --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
-}
+  .leaf-color-picker__panel {
+    @include mixins.floating-paint(color-picker);
+  }
 
-.leaf-color-picker__panel {
-  @include mixins.floating-paint(color-picker);
-}
-
-.leaf-floating.leaf-color-picker__panel,
-.leaf-floating.leaf-color-picker__gradient {
-  @include mixins.field-popup(color-picker);
+  .leaf-floating.leaf-color-picker__panel,
+  .leaf-floating.leaf-color-picker__gradient {
+    @include mixins.field-popup(color-picker);
+  }
 }

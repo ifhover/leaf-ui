@@ -8,11 +8,19 @@ export async function compiledStyles(file) {
   return styleDeclarations(css, file);
 }
 
+// 仅展开 @layer 块；CSSStyleRule 在新版 jsdom 中也带 cssRules，不能把有 selectorText 的规则吞掉
+const flattenLayerRules = (ruleList) =>
+  [...ruleList].flatMap((rule) =>
+    !rule.selectorText && !('conditionText' in rule) && 'cssRules' in rule
+      ? flattenLayerRules(rule.cssRules)
+      : [rule],
+  );
+
 export function styleDeclarations(css, label = 'stylesheet') {
   const dom = new JSDOM('<style></style>');
   const element = dom.window.document.querySelector('style');
   element.textContent = css;
-  const rules = [...element.sheet.cssRules];
+  const rules = flattenLayerRules(element.sheet.cssRules);
   const result = rules
     .filter((rule) => rule.selectorText)
     .map((rule) => ({

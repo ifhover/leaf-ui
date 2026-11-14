@@ -1,87 +1,89 @@
-.leaf-float-button {
-  width: 44px;
-  height: 44px;
-  min-height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  box-shadow: var(--leaf-shadow-md);
-  transition:
-    box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-    transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-  &:active:not(:disabled) {
-    transform: scale(0.96);
-    box-shadow: var(--leaf-shadow-sm);
-  }
-  &--fixed {
-    position: fixed;
-    inset-inline-end: 24px;
-    bottom: 24px;
-    z-index: 50;
-  }
-}
-.leaf-float-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-  &--fixed {
-    position: fixed;
-    inset-inline-end: 24px;
-    bottom: 24px;
-    z-index: 50;
-  }
-  &__actions {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
+@layer leaf-ui {
+  .leaf-float-button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    box-shadow: var(--leaf-shadow-md);
     transition:
-      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
-      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
-    &[data-open] {
-      grid-template-rows: 1fr;
-      opacity: 1;
+      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
+      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+    &:active:not(:disabled) {
+      transform: scale(0.96);
+      box-shadow: var(--leaf-shadow-sm);
+    }
+    &--fixed {
+      position: fixed;
+      inset-inline-end: 24px;
+      bottom: 24px;
+      z-index: 50;
     }
   }
-  &__actions-inner {
-    min-height: 0;
-    overflow: hidden;
-    margin-inline: -12px;
-  }
-  &__actions-content {
+  .leaf-float-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 12px;
-  }
-  &__action {
-    transform: translateY(8px) scale(0.9);
-    opacity: 0;
-    transition:
-      transform var(--leaf-motion-slow) var(--leaf-motion-easing),
-      opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &__actions[data-open] &__action {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    transition-delay: calc(var(--leaf-motion-fast) * var(--leaf-float-order, 0) * 0.3);
-  }
-  &__trigger-icon {
-    display: flex;
-    transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
-    &[data-open] {
-      transform: rotate(45deg);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    &--fixed {
+      position: fixed;
+      inset-inline-end: 24px;
+      bottom: 24px;
+      z-index: 50;
+    }
+    &__actions {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition:
+        grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+        opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+      &[data-open] {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+    }
+    &__actions-inner {
+      min-height: 0;
+      overflow: hidden;
+      margin-inline: -12px;
+    }
+    &__actions-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+    }
+    &__action {
+      transform: translateY(8px) scale(0.9);
+      opacity: 0;
+      transition:
+        transform var(--leaf-motion-slow) var(--leaf-motion-easing),
+        opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &__actions[data-open] &__action {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      transition-delay: calc(var(--leaf-motion-fast) * var(--leaf-float-order, 0) * 0.3);
+    }
+    &__trigger-icon {
+      display: flex;
+      transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
+      &[data-open] {
+        transform: rotate(45deg);
+      }
     }
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-float-button,
-  .leaf-float-group__actions,
-  .leaf-float-group__action,
-  .leaf-float-group__trigger-icon {
-    transition: none;
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-float-button,
+    .leaf-float-group__actions,
+    .leaf-float-group__action,
+    .leaf-float-group__trigger-icon {
+      transition: none;
+    }
   }
 }

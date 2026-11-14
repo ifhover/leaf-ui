@@ -1,177 +1,179 @@
-.leaf-progress {
-  --leaf-progress-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-  &[data-status='success'] {
-    --leaf-progress-color: var(--leaf-color-success);
-  }
-  &[data-status='error'] {
-    --leaf-progress-color: var(--leaf-color-danger);
-  }
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
-  &__track {
-    flex: 1;
-    overflow: hidden;
-    border-radius: 100px;
-    background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
-    &--segments > .leaf-progress__fill {
-      // The track owns the outer curve; adjacent segments meet with square edges.
-      border-radius: 0;
+@layer leaf-ui {
+  .leaf-progress {
+    --leaf-progress-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    &[data-status='success'] {
+      --leaf-progress-color: var(--leaf-color-success);
     }
-  }
-  &__fill {
-    position: relative;
-    overflow: hidden;
-    height: 100%;
-    border-radius: inherit;
-    background: var(--leaf-progress-color);
-    transition:
-      width var(--leaf-motion-slow) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &[data-active] &__fill::after {
-    // The light band is a motion/readability effect, not a theme color role.
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    left: 0;
-    width: 65%;
-    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
-    transform: translateX(-110%);
-    pointer-events: none;
-    animation: var(
-      --leaf-motion-animation,
-      leaf-progress-shimmer calc(var(--leaf-motion-duration) * 12) linear infinite
-    );
-    animation-play-state: var(--leaf-motion-play-state, running);
-  }
-  &--dashboard {
-    .leaf-progress__arc {
-      stroke-linecap: butt;
+    &[data-status='error'] {
+      --leaf-progress-color: var(--leaf-color-danger);
     }
-  }
-  &--steps {
-    width: 100%;
-    .leaf-progress__track {
-      display: flex;
-      gap: 4px;
-      background: transparent;
-    }
-    .leaf-progress__step {
-      height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--leaf-color-text);
+    font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
+    &__track {
       flex: 1;
-      background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+      overflow: hidden;
       border-radius: 100px;
-      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
-      &[data-filled] {
-        background: var(--leaf-progress-color);
+      background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+      &--segments > .leaf-progress__fill {
+        // The track owns the outer curve; adjacent segments meet with square edges.
+        border-radius: 0;
       }
     }
-  }
-  &__arc--success {
-    stroke: var(--leaf-color-success);
-  }
-  &__info {
-    flex-shrink: 0;
-    min-width: 36px;
-    text-align: end;
-    svg {
-      width: 17px;
-      height: 17px;
-      color: var(--leaf-progress-color);
-      vertical-align: middle;
-    }
-  }
-  &--circle {
-    display: inline-flex;
-    position: relative;
-    flex-shrink: 0;
-    svg {
-      width: 100%;
+    &__fill {
+      position: relative;
+      overflow: hidden;
       height: 100%;
+      border-radius: inherit;
+      background: var(--leaf-progress-color);
+      transition:
+        width var(--leaf-motion-slow) var(--leaf-motion-easing),
+        background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
-    .leaf-progress__info {
+    &[data-active] &__fill::after {
+      // The light band is a motion/readability effect, not a theme color role.
+      content: '';
       position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      font-size: var(--leaf-font-size);
+      inset-block: 0;
+      left: 0;
+      width: 65%;
+      background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+      transform: translateX(-110%);
+      pointer-events: none;
+      animation: var(
+        --leaf-motion-animation,
+        leaf-progress-shimmer calc(var(--leaf-motion-duration) * 12) linear infinite
+      );
+      animation-play-state: var(--leaf-motion-play-state, running);
+    }
+    &--dashboard {
+      .leaf-progress__arc {
+        stroke-linecap: butt;
+      }
+    }
+    &--steps {
+      width: 100%;
+      .leaf-progress__track {
+        display: flex;
+        gap: 4px;
+        background: transparent;
+      }
+      .leaf-progress__step {
+        height: 100%;
+        flex: 1;
+        background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+        border-radius: 100px;
+        transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+        &[data-filled] {
+          background: var(--leaf-progress-color);
+        }
+      }
+    }
+    &__arc--success {
+      stroke: var(--leaf-color-success);
+    }
+    &__info {
+      flex-shrink: 0;
+      min-width: 36px;
+      text-align: end;
       svg {
-        width: 24px;
-        height: 24px;
+        width: 17px;
+        height: 17px;
+        color: var(--leaf-progress-color);
+        vertical-align: middle;
+      }
+    }
+    &--circle {
+      display: inline-flex;
+      position: relative;
+      flex-shrink: 0;
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+      .leaf-progress__info {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        font-size: var(--leaf-font-size);
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+    &__trail {
+      fill: none;
+      stroke: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
+    }
+    &__arc {
+      fill: none;
+      stroke: var(--leaf-progress-color);
+      stroke-linecap: round;
+      transition:
+        stroke-dasharray var(--leaf-motion-slow) var(--leaf-motion-easing),
+        stroke-dashoffset var(--leaf-motion-slow) var(--leaf-motion-easing),
+        stroke var(--leaf-motion-duration) var(--leaf-motion-easing);
+    }
+    &[data-indeterminate='true'] {
+      .leaf-progress__fill {
+        width: 35% !important;
+        animation: var(
+          --leaf-motion-animation,
+          leaf-progress-travel calc(var(--leaf-motion-duration) * 7) ease-in-out infinite
+        );
+        animation-play-state: var(--leaf-motion-play-state, running);
+      }
+      &.leaf-progress--circle > svg {
+        animation: var(
+          --leaf-motion-animation,
+          leaf-progress-rotate calc(var(--leaf-motion-duration) * 5) linear infinite
+        );
+        animation-play-state: var(--leaf-motion-play-state, running);
       }
     }
   }
-  &__trail {
-    fill: none;
-    stroke: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
-  }
-  &__arc {
-    fill: none;
-    stroke: var(--leaf-progress-color);
-    stroke-linecap: round;
-    transition:
-      stroke-dasharray var(--leaf-motion-slow) var(--leaf-motion-easing),
-      stroke-dashoffset var(--leaf-motion-slow) var(--leaf-motion-easing),
-      stroke var(--leaf-motion-duration) var(--leaf-motion-easing);
-  }
-  &[data-indeterminate='true'] {
-    .leaf-progress__fill {
-      width: 35% !important;
-      animation: var(
-        --leaf-motion-animation,
-        leaf-progress-travel calc(var(--leaf-motion-duration) * 7) ease-in-out infinite
-      );
-      animation-play-state: var(--leaf-motion-play-state, running);
+  @keyframes leaf-progress-travel {
+    from {
+      transform: translateX(-110%);
     }
-    &.leaf-progress--circle > svg {
-      animation: var(
-        --leaf-motion-animation,
-        leaf-progress-rotate calc(var(--leaf-motion-duration) * 5) linear infinite
-      );
-      animation-play-state: var(--leaf-motion-play-state, running);
+    to {
+      transform: translateX(390%);
     }
   }
-}
-@keyframes leaf-progress-travel {
-  from {
-    transform: translateX(-110%);
+  @keyframes leaf-progress-rotate {
+    to {
+      transform: rotate(360deg);
+    }
   }
-  to {
-    transform: translateX(390%);
+  @keyframes leaf-progress-shimmer {
+    to {
+      transform: translateX(265%);
+    }
   }
-}
-@keyframes leaf-progress-rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes leaf-progress-shimmer {
-  to {
-    transform: translateX(265%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-progress__fill,
-  .leaf-progress__step,
-  .leaf-progress__arc {
-    transition: none;
-  }
-  .leaf-progress[data-indeterminate='true'] {
+  @media (prefers-reduced-motion: reduce) {
     .leaf-progress__fill,
-    &.leaf-progress--circle > svg {
+    .leaf-progress__step,
+    .leaf-progress__arc {
+      transition: none;
+    }
+    .leaf-progress[data-indeterminate='true'] {
+      .leaf-progress__fill,
+      &.leaf-progress--circle > svg {
+        animation: none;
+      }
+    }
+    .leaf-progress[data-active] .leaf-progress__fill::after {
       animation: none;
     }
   }
-  .leaf-progress[data-active] .leaf-progress__fill::after {
-    animation: none;
-  }
-}
-@media (forced-colors: active) {
-  .leaf-progress__fill::after {
-    display: none;
+  @media (forced-colors: active) {
+    .leaf-progress__fill::after {
+      display: none;
+    }
   }
 }

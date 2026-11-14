@@ -1,157 +1,161 @@
 @use '../styles/mixins' as mixins;
 
-.leaf-notification-region {
-  --leaf-notification-enter-x: 18px;
-  --leaf-notification-enter-y: 0px;
-  position: fixed;
-  z-index: var(--leaf-z-index-message);
-  width: min(360px, calc(100vw - 32px));
-  pointer-events: none;
-  &--top-right {
-    top: 24px;
-    right: 24px;
-  }
-  &--top-left {
-    --leaf-notification-enter-x: -18px;
-    top: 24px;
-    left: 24px;
-  }
-  &--bottom-right {
-    --leaf-notification-enter-y: 8px;
-    bottom: 24px;
-    right: 24px;
-  }
-  &--bottom-left {
-    --leaf-notification-enter-x: -18px;
-    --leaf-notification-enter-y: 8px;
-    bottom: 24px;
-    left: 24px;
-  }
-}
-.leaf-notification-slot {
-  display: grid;
-  grid-template-rows: 1fr;
-  margin-bottom: 12px;
-  opacity: 1;
-  transition:
-    grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
-    margin-bottom var(--leaf-motion-slow) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-  @starting-style {
-    grid-template-rows: 0fr;
-    margin-bottom: 0;
-    opacity: 0;
-  }
-  &__content {
-    min-height: 0;
-  }
-  &[data-state='closing'] {
-    grid-template-rows: 0fr;
-    margin-bottom: 0;
-    opacity: 0;
+@layer leaf-ui {
+  .leaf-notification-region {
+    --leaf-notification-enter-x: 18px;
+    --leaf-notification-enter-y: 0px;
+    position: fixed;
+    z-index: var(--leaf-z-index-message);
+    width: min(360px, calc(100vw - 32px));
     pointer-events: none;
+    &--top-right {
+      top: 24px;
+      right: 24px;
+    }
+    &--top-left {
+      --leaf-notification-enter-x: -18px;
+      top: 24px;
+      left: 24px;
+    }
+    &--bottom-right {
+      --leaf-notification-enter-y: 8px;
+      bottom: 24px;
+      right: 24px;
+    }
+    &--bottom-left {
+      --leaf-notification-enter-x: -18px;
+      --leaf-notification-enter-y: 8px;
+      bottom: 24px;
+      left: 24px;
+    }
+  }
+  .leaf-notification-slot {
+    display: grid;
+    grid-template-rows: 1fr;
+    margin-bottom: 12px;
+    opacity: 1;
+    transition:
+      grid-template-rows var(--leaf-motion-slow) var(--leaf-motion-easing),
+      margin-bottom var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+    @starting-style {
+      grid-template-rows: 0fr;
+      margin-bottom: 0;
+      opacity: 0;
+    }
+    &__content {
+      min-height: 0;
+    }
+    &[data-state='closing'] {
+      grid-template-rows: 0fr;
+      margin-bottom: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition-duration: var(--leaf-motion-duration);
+      transition-timing-function: var(--leaf-motion-easing);
+      .leaf-notification-slot__content {
+        overflow: hidden;
+      }
+    }
+  }
+  .leaf-notification {
+    display: flex;
+    gap: var(--leaf-component-notification-gap, 12px);
+    padding: var(--leaf-component-notification-padding, 16px);
+    border: var(--leaf-component-notification-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-notification-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-divider))
+      );
+    border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
+    background: var(
+      --leaf-component-notification-background,
+      var(--leaf-color-surface-raised, var(--leaf-color-surface))
+    );
+    box-shadow: var(
+      --leaf-component-notification-shadow,
+      var(--leaf-surface-shadow, var(--leaf-shadow-md))
+    );
+    color: var(--leaf-component-notification-color, var(--leaf-color-text));
+    font: var(--leaf-component-notification-font-size, var(--leaf-font-size)) /
+      var(--leaf-line-height) var(--leaf-font-family);
+    pointer-events: auto;
+    transform: translate(0) scale(1);
+    transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
+    @starting-style {
+      transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
+        scale(0.97);
+    }
+    &__icon {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: var(--leaf-line-height);
+      color: var(--leaf-notification-color);
+      > svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    &__body {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    &__title {
+      flex: 1;
+      min-width: 0;
+      font-weight: var(--leaf-font-weight);
+    }
+    &__header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    &__description {
+      margin-top: 2px;
+      color: var(--leaf-color-text-muted);
+    }
+    &__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    &__close {
+      flex: none;
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: var(--leaf-radius-sm);
+
+      @include mixins.text-action;
+    }
+    @each $type in info, success, warning, danger, error {
+      &--#{$type} {
+        --leaf-notification-color: var(
+          --leaf-color-#{if(sass($type == error): danger; else: $type)}
+        );
+      }
+    }
+  }
+  .leaf-notification-slot[data-state='closing'] .leaf-notification {
+    transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
+      scale(0.98);
     transition-duration: var(--leaf-motion-duration);
     transition-timing-function: var(--leaf-motion-easing);
-    .leaf-notification-slot__content {
-      overflow: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-notification-slot,
+    .leaf-notification {
+      transition: none;
     }
-  }
-}
-.leaf-notification {
-  display: flex;
-  gap: var(--leaf-component-notification-gap, 12px);
-  padding: var(--leaf-component-notification-padding, 16px);
-  border: var(--leaf-component-notification-border-width, var(--leaf-border-width, 1px)) solid
-    var(
-      --leaf-component-notification-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-divider))
-    );
-  border-radius: var(--leaf-component-notification-radius, var(--leaf-radius-lg));
-  background: var(
-    --leaf-component-notification-background,
-    var(--leaf-color-surface-raised, var(--leaf-color-surface))
-  );
-  box-shadow: var(
-    --leaf-component-notification-shadow,
-    var(--leaf-surface-shadow, var(--leaf-shadow-md))
-  );
-  color: var(--leaf-component-notification-color, var(--leaf-color-text));
-  font: var(--leaf-component-notification-font-size, var(--leaf-font-size)) /
-    var(--leaf-line-height) var(--leaf-font-family);
-  pointer-events: auto;
-  transform: translate(0) scale(1);
-  transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
-  @starting-style {
-    transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
-      scale(0.97);
-  }
-  &__icon {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: var(--leaf-line-height);
-    color: var(--leaf-notification-color);
-    > svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-  &__body {
-    flex: 1;
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-  &__title {
-    flex: 1;
-    min-width: 0;
-    font-weight: var(--leaf-font-weight);
-  }
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  &__description {
-    margin-top: 2px;
-    color: var(--leaf-color-text-muted);
-  }
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  &__close {
-    flex: none;
-    align-self: flex-start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: var(--leaf-radius-sm);
-
-    @include mixins.text-action;
-  }
-  @each $type in info, success, warning, danger, error {
-    &--#{$type} {
-      --leaf-notification-color: var(--leaf-color-#{if(sass($type == error): danger; else: $type)});
-    }
-  }
-}
-.leaf-notification-slot[data-state='closing'] .leaf-notification {
-  transform: translate(var(--leaf-notification-enter-x), var(--leaf-notification-enter-y))
-    scale(0.98);
-  transition-duration: var(--leaf-motion-duration);
-  transition-timing-function: var(--leaf-motion-easing);
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-notification-slot,
-  .leaf-notification {
-    transition: none;
   }
 }

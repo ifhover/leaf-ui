@@ -2,303 +2,305 @@
 @use '../scrollbar/scrollbar';
 @use '../result/result';
 
-.leaf-table {
-  @include table-family(table);
-  @include softened-frame-color(table, var(--leaf-table-surface));
-  --leaf-table-header-split: var(--leaf-table-border-color);
-  --leaf-table-divider: var(--leaf-table-border-color);
-  --leaf-table-padding-block: 16px;
-  --leaf-table-padding-inline: 16px;
-  --leaf-table-heading-gap: var(--leaf-table-padding-block);
-  --leaf-table-inset: 0px;
-  --leaf-table-border-color: var(
-    --leaf-component-table-border-color,
-    var(--leaf-frame-border-color, var(--leaf-table-frame-color))
-  );
-  --leaf-table-border-width: var(
-    --leaf-component-table-border-width,
-    var(--leaf-border-width, 1px)
-  );
-  --leaf-table-radius: var(--leaf-component-table-radius, var(--leaf-radius));
-  position: relative;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
-  isolation: isolate;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  contain: inline-size;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-  border-radius: var(--leaf-table-radius) var(--leaf-table-radius) 0 0;
-  background: var(--leaf-table-surface);
-  color: var(--leaf-table-text);
-  font-family: var(--leaf-font-family);
-  font-size: var(--leaf-component-table-font-size, var(--leaf-font-size));
-  line-height: 1.5714285714;
-  box-shadow: none;
-
-  &--sm {
-    --leaf-table-padding-block: 8px;
-    --leaf-table-padding-inline: 12px;
-  }
-
-  &--md {
-    --leaf-table-padding-block: 12px;
-    --leaf-table-padding-inline: 14px;
-  }
-
-  &__scroll-area {
-    flex: 1 1 auto;
-    border-radius: inherit;
-  }
-
-  &__viewport {
+@layer leaf-ui {
+  .leaf-table {
+    @include table-family(table);
+    @include softened-frame-color(table, var(--leaf-table-surface));
+    --leaf-table-header-split: var(--leaf-table-border-color);
+    --leaf-table-divider: var(--leaf-table-border-color);
+    --leaf-table-padding-block: 16px;
+    --leaf-table-padding-inline: 16px;
+    --leaf-table-heading-gap: var(--leaf-table-padding-block);
+    --leaf-table-inset: 0px;
+    --leaf-table-border-color: var(
+      --leaf-component-table-border-color,
+      var(--leaf-frame-border-color, var(--leaf-table-frame-color))
+    );
+    --leaf-table-border-width: var(
+      --leaf-component-table-border-width,
+      var(--leaf-border-width, 1px)
+    );
+    --leaf-table-radius: var(--leaf-component-table-radius, var(--leaf-radius));
     position: relative;
-    overflow: auto;
-    scrollbar-width: none;
-    border-radius: inherit;
-    overscroll-behavior: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    &:focus-visible {
-      @include focus-ring;
-      outline-offset: -3px;
-    }
-  }
-
-  &[data-vertical-overflow] &__viewport {
-    overscroll-behavior-y: contain;
-  }
-
-  &__table {
-    width: max-content;
-    min-width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    color: inherit;
-    font: inherit;
-  }
-  &__sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    isolation: isolate;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    contain: inline-size;
     padding: 0;
     overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+    border: 0;
+    border-radius: var(--leaf-table-radius) var(--leaf-table-radius) 0 0;
+    background: var(--leaf-table-surface);
+    color: var(--leaf-table-text);
+    font-family: var(--leaf-font-family);
+    font-size: var(--leaf-component-table-font-size, var(--leaf-font-size));
+    line-height: 1.5714285714;
+    box-shadow: none;
 
-  &__header {
-    background: var(--leaf-table-header-background);
-    color: var(--leaf-table-header-color);
-  }
+    &--sm {
+      --leaf-table-padding-block: 8px;
+      --leaf-table-padding-inline: 12px;
+    }
 
-  &__header {
-    position: sticky;
-    inset-block-start: 0;
-    z-index: 3;
-  }
+    &--md {
+      --leaf-table-padding-block: 12px;
+      --leaf-table-padding-inline: 14px;
+    }
 
-  &__cell {
-    box-sizing: border-box;
-    padding: var(
-      --leaf-component-table-padding,
-      var(--leaf-table-padding-block) var(--leaf-table-padding-inline)
-    );
-    text-align: start;
-    vertical-align: middle;
-    overflow-wrap: anywhere;
-    border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
-    background: var(
-      --leaf-table-row-background,
-      var(--leaf-table-row-base, var(--leaf-table-surface))
-    );
-    transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
-    &[data-pinned] {
+    &__scroll-area {
+      flex: 1 1 auto;
+      border-radius: inherit;
+    }
+
+    &__viewport {
+      position: relative;
+      overflow: auto;
+      scrollbar-width: none;
+      border-radius: inherit;
+      overscroll-behavior: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      &:focus-visible {
+        @include focus-ring;
+        outline-offset: -3px;
+      }
+    }
+
+    &[data-vertical-overflow] &__viewport {
+      overscroll-behavior-y: contain;
+    }
+
+    &__table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      color: inherit;
+      font: inherit;
+    }
+    &__sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    &__header {
+      background: var(--leaf-table-header-background);
+      color: var(--leaf-table-header-color);
+    }
+
+    &__header {
       position: sticky;
-      z-index: 1;
+      inset-block-start: 0;
+      z-index: 3;
+    }
+
+    &__cell {
+      box-sizing: border-box;
+      padding: var(
+        --leaf-component-table-padding,
+        var(--leaf-table-padding-block) var(--leaf-table-padding-inline)
+      );
+      text-align: start;
+      vertical-align: middle;
+      overflow-wrap: anywhere;
+      border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
+      background: var(
+        --leaf-table-row-background,
+        var(--leaf-table-row-base, var(--leaf-table-surface))
+      );
+      transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
+      &[data-pinned] {
+        position: sticky;
+        z-index: 1;
+      }
+    }
+
+    &--bordered {
+      border-block-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      border-inline-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+
+      .leaf-table__cell {
+        border-inline-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      }
+
+      &.leaf-table--striped .leaf-table__body > .leaf-table__row > .leaf-table__cell,
+      &.leaf-table--striped .leaf-table__footer > .leaf-table__row > .leaf-table__cell,
+      .leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header {
+        border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      }
+
+      .leaf-table__column-header::after {
+        display: none;
+      }
+    }
+
+    &__row:not([aria-hidden='true'])
+      > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+      padding-inline-start: var(
+        --leaf-component-table-padding-left,
+        calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+      );
+    }
+
+    &__row:not([aria-hidden='true'])
+      > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+      padding-inline-end: var(
+        --leaf-component-table-padding-right,
+        calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+      );
+    }
+
+    &__column-header {
+      position: relative;
+      padding-block: var(--leaf-table-heading-gap);
+      font-size: inherit;
+      font-weight: 600;
+      line-height: inherit;
+      background: var(--leaf-table-header-background);
+      border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
+      white-space: nowrap;
+
+      // Ant Design places a short separator at the trailing edge of leaf headers.
+      &:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after {
+        position: absolute;
+        inset-block-start: 50%;
+        inset-inline-end: 0;
+        width: 1px;
+        height: 1.6em;
+        background: var(--leaf-table-header-split);
+        transform: translateY(-50%);
+        pointer-events: none;
+        content: '';
+      }
+
+      &[data-leaf-header-group] {
+        text-align: center;
+      }
+
+      &[data-sortable] {
+        cursor: pointer;
+      }
+
+      &[data-sorted],
+      &[data-sortable]:hover {
+        background: var(--leaf-table-header-sort-background);
+        &::after {
+          background: transparent;
+        }
+      }
+    }
+
+    &:not(.leaf-table--bordered)
+      &__header
+      > &__row:not(:last-child)
+      > &__column-header[data-leaf-header-group] {
+      border-block-end: 0;
+    }
+
+    &__body > &__row > &__cell[data-sorted] {
+      --leaf-table-row-base: var(--leaf-table-body-sort-background);
+    }
+
+    &--striped &__body > &__row[data-striped] {
+      --leaf-table-row-base: var(--leaf-table-striped-background);
+    }
+
+    &--striped &__body > &__row > &__cell,
+    &--striped &__footer > &__row > &__cell {
+      border-block-end: 0;
+    }
+
+    &__body > &__row:not(.leaf-table__state-row):hover {
+      --leaf-table-row-background: var(--leaf-table-hover-background);
+    }
+
+    &__body > &__row[data-selected] {
+      --leaf-table-row-background: var(--leaf-table-selected-background);
+    }
+
+    &__body > &__row[data-selected]:hover {
+      --leaf-table-row-background: var(--leaf-table-selected-hover-background);
+    }
+
+    &__state-cell {
+      padding: 0;
+    }
+
+    &__state-content {
+      position: sticky;
+      inset-inline-start: 0;
+      box-sizing: border-box;
+      width: var(--leaf-table-viewport-width, 100%);
+      max-width: 100%;
+      padding: var(
+        --leaf-component-table-padding,
+        var(--leaf-table-padding-block) var(--leaf-table-padding-inline)
+      );
+    }
+
+    &__state {
+      display: flex;
+      min-height: 132px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--leaf-color-text-muted);
+    }
+
+    &__overlay {
+      display: flex;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+      border-radius: inherit;
+      background: var(--leaf-table-overlay-background);
+      cursor: default;
     }
   }
 
-  &--bordered {
-    border-block-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
-    border-inline-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
-
-    .leaf-table__cell {
-      border-inline-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
-    }
-
-    &.leaf-table--striped .leaf-table__body > .leaf-table__row > .leaf-table__cell,
-    &.leaf-table--striped .leaf-table__footer > .leaf-table__row > .leaf-table__cell,
-    .leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header {
-      border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
-    }
-
-    .leaf-table__column-header::after {
-      display: none;
-    }
-  }
-
-  &__row:not([aria-hidden='true'])
-    > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+  [dir='rtl']
+    .leaf-table__row:not([aria-hidden='true'])
+    > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
     padding-inline-start: var(
-      --leaf-component-table-padding-left,
-      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
-    );
-  }
-
-  &__row:not([aria-hidden='true'])
-    > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-    padding-inline-end: var(
       --leaf-component-table-padding-right,
       calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
     );
   }
-
-  &__column-header {
-    position: relative;
-    padding-block: var(--leaf-table-heading-gap);
-    font-size: inherit;
-    font-weight: 600;
-    line-height: inherit;
-    background: var(--leaf-table-header-background);
-    border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
-    white-space: nowrap;
-
-    // Ant Design places a short separator at the trailing edge of leaf headers.
-    &:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after {
-      position: absolute;
-      inset-block-start: 50%;
-      inset-inline-end: 0;
-      width: 1px;
-      height: 1.6em;
-      background: var(--leaf-table-header-split);
-      transform: translateY(-50%);
-      pointer-events: none;
-      content: '';
-    }
-
-    &[data-leaf-header-group] {
-      text-align: center;
-    }
-
-    &[data-sortable] {
-      cursor: pointer;
-    }
-
-    &[data-sorted],
-    &[data-sortable]:hover {
-      background: var(--leaf-table-header-sort-background);
-      &::after {
-        background: transparent;
-      }
-    }
-  }
-
-  &:not(.leaf-table--bordered)
-    &__header
-    > &__row:not(:last-child)
-    > &__column-header[data-leaf-header-group] {
-    border-block-end: 0;
-  }
-
-  &__body > &__row > &__cell[data-sorted] {
-    --leaf-table-row-base: var(--leaf-table-body-sort-background);
-  }
-
-  &--striped &__body > &__row[data-striped] {
-    --leaf-table-row-base: var(--leaf-table-striped-background);
-  }
-
-  &--striped &__body > &__row > &__cell,
-  &--striped &__footer > &__row > &__cell {
-    border-block-end: 0;
-  }
-
-  &__body > &__row:not(.leaf-table__state-row):hover {
-    --leaf-table-row-background: var(--leaf-table-hover-background);
-  }
-
-  &__body > &__row[data-selected] {
-    --leaf-table-row-background: var(--leaf-table-selected-background);
-  }
-
-  &__body > &__row[data-selected]:hover {
-    --leaf-table-row-background: var(--leaf-table-selected-hover-background);
-  }
-
-  &__state-cell {
-    padding: 0;
-  }
-
-  &__state-content {
-    position: sticky;
-    inset-inline-start: 0;
-    box-sizing: border-box;
-    width: var(--leaf-table-viewport-width, 100%);
-    max-width: 100%;
-    padding: var(
-      --leaf-component-table-padding,
-      var(--leaf-table-padding-block) var(--leaf-table-padding-inline)
+  [dir='rtl']
+    .leaf-table__row:not([aria-hidden='true'])
+    > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+    padding-inline-end: var(
+      --leaf-component-table-padding-left,
+      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
     );
   }
-
-  &__state {
-    display: flex;
-    min-height: 132px;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 10px;
-    color: var(--leaf-color-text-muted);
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-table__cell {
+      transition: none;
+    }
   }
-
-  &__overlay {
-    display: flex;
-    position: absolute;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    z-index: 4;
-    border-radius: inherit;
-    background: var(--leaf-table-overlay-background);
-    cursor: default;
-  }
-}
-
-[dir='rtl']
-  .leaf-table__row:not([aria-hidden='true'])
-  > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-  padding-inline-start: var(
-    --leaf-component-table-padding-right,
-    calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
-  );
-}
-[dir='rtl']
-  .leaf-table__row:not([aria-hidden='true'])
-  > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-  padding-inline-end: var(
-    --leaf-component-table-padding-left,
-    calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
-  );
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-table__cell {
-    transition: none;
-  }
-}
-@media (forced-colors: active) {
-  .leaf-table__column-header::after {
-    background: CanvasText;
-  }
-  .leaf-table__row[data-selected] > td {
-    outline: 1px solid Highlight;
-    outline-offset: -2px;
+  @media (forced-colors: active) {
+    .leaf-table__column-header::after {
+      background: CanvasText;
+    }
+    .leaf-table__row[data-selected] > td {
+      outline: 1px solid Highlight;
+      outline-offset: -2px;
+    }
   }
 }

@@ -34,6 +34,8 @@ React 和 React DOM 由你的应用提供。如果项目尚未安装，请先执
 
 浏览器打包时，组件入口会自动加载主题变量、公共样式与所需的组件和服务样式，无需手动导入 CSS 或安装 Sass。Next.js、TanStack Start 等框架的额外配置见[服务端渲染](/guide/ssr)。
 
+Leaf UI 的样式包裹在 `@layer leaf-ui` 中，方便项目内的工具类或主题样式覆盖组件默认外观。如果项目存在未包裹在 `@layer` 中的全局重置 CSS（reset），由于未分层样式优先级高于分层样式，可能会影响组件外观；请将全局重置样式放入 `@layer base` 中，详见 [Tailwind CSS](/guide/tailwindcss) 集成说明。
+
 示例通过 Flex、Space、Grid 和 FormField 组织布局，无需安装 Tailwind CSS。
 
 ## 使用组件

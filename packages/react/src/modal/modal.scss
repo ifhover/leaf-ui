@@ -2,204 +2,210 @@
 @use '../styles/dialog-sections';
 @use '../styles/mixins' as mixins;
 
-.leaf-modal-mask {
-  --leaf-backdrop-blur: 12px;
-  box-sizing: border-box;
-  position: fixed;
-  inset: 0;
-  z-index: var(--leaf-z-index-modal, 1100);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: auto;
-  padding: 24px;
-  // Flexible spacers preserve the raised center, then yield to tall dialogs.
-  &::before,
-  &::after {
-    content: '';
-    flex: 1 1 0px;
-    pointer-events: none;
-  }
-  &::after {
-    flex-basis: calc(clamp(24px, 16dvh, 160px) - 24px);
-  }
-  &[data-state='closing'] {
-    pointer-events: none;
-  }
-}
-.leaf-modal-backdrop {
-  @include mixins.overlay-family;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  cursor: default;
-  background: var(--leaf-overlay-background);
-  @include backdrop.blur('.leaf-modal-mask');
-}
-.leaf-modal {
-  @include dialog-sections.sections(modal);
-  // Three compact layers retain depth without the large shadow's broad footprint.
-  --leaf-modal-default-shadow: var(--leaf-shadow-md), var(--leaf-shadow-md), var(--leaf-shadow-md);
-  position: relative;
-  box-sizing: border-box;
-  max-width: 100%;
-  max-height: calc(100dvh - 48px);
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  border: var(--leaf-component-modal-border-width, var(--leaf-border-width, 1px)) solid
-    var(
-      --leaf-component-modal-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-divider))
-    );
-  border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-lg));
-  background: var(--leaf-component-modal-background, var(--leaf-color-surface));
-  color: var(--leaf-component-modal-color, var(--leaf-color-text));
-  font: var(--leaf-component-modal-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
-    var(--leaf-font-family);
-  box-shadow: var(
-    --leaf-component-modal-shadow,
-    var(--leaf-surface-shadow, var(--leaf-modal-default-shadow))
-  );
-  outline: none;
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  transition:
-    transform var(--leaf-motion-slow) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
-  @starting-style {
-    opacity: 0;
-    transform: translateY(18px) scale(0.96);
-  }
-  > .leaf-modal__header {
-    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-    padding-block-end: 0;
-  }
-  &__header--simple {
-    --leaf-dialog-padding-block: var(--leaf-component-modal-padding-top, var(--leaf-spacing-md));
-    padding-block-start: var(--leaf-dialog-padding-block);
-  }
-  &__body {
-    flex: 1 1 auto;
-    padding: 0;
-    overflow: hidden;
-    border-radius: 0;
-  }
-  &__viewport {
-    overscroll-behavior: contain;
-  }
-  &__content {
+@layer leaf-ui {
+  .leaf-modal-mask {
+    --leaf-backdrop-blur: 12px;
     box-sizing: border-box;
-    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-  }
-  &__actions {
+    position: fixed;
+    inset: 0;
+    z-index: var(--leaf-z-index-modal, 1100);
     display: flex;
-    min-width: 0;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
+    overflow: auto;
+    padding: 24px;
+    // Flexible spacers preserve the raised center, then yield to tall dialogs.
+    &::before,
+    &::after {
+      content: '';
+      flex: 1 1 0px;
+      pointer-events: none;
+    }
+    &::after {
+      flex-basis: calc(clamp(24px, 16dvh, 160px) - 24px);
+    }
+    &[data-state='closing'] {
+      pointer-events: none;
+    }
   }
-  > .leaf-modal__footer {
-    padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-    padding-block-start: 0;
-  }
-  &--divided > .leaf-modal__header {
-    padding-block-end: var(--leaf-dialog-padding-block);
-  }
-  &--divided > .leaf-modal__footer {
-    padding-block-start: var(--leaf-dialog-padding-block);
-  }
-  &__close {
-    margin-inline-start: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 30px;
-    height: 30px;
-    padding: 4px;
+  .leaf-modal-backdrop {
+    @include mixins.overlay-family;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
     border: 0;
-    border-radius: var(--leaf-radius);
-
-    @include mixins.text-action;
+    cursor: default;
+    background: var(--leaf-overlay-background);
+    @include backdrop.blur('.leaf-modal-mask');
   }
-  // Confirm shares the dialog shell but retains its original spacing and typography.
-  &:not(.leaf-confirm) {
-    @include mixins.softened-frame-color(
-      modal,
-      var(--leaf-component-modal-background, var(--leaf-color-surface))
+  .leaf-modal {
+    @include dialog-sections.sections(modal);
+    // Three compact layers retain depth without the large shadow's broad footprint.
+    --leaf-modal-default-shadow:
+      var(--leaf-shadow-md), var(--leaf-shadow-md), var(--leaf-shadow-md);
+    position: relative;
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: calc(100dvh - 48px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border: var(--leaf-component-modal-border-width, var(--leaf-border-width, 1px)) solid
+      var(
+        --leaf-component-modal-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-divider))
+      );
+    border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-lg));
+    background: var(--leaf-component-modal-background, var(--leaf-color-surface));
+    color: var(--leaf-component-modal-color, var(--leaf-color-text));
+    font: var(--leaf-component-modal-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
+      var(--leaf-font-family);
+    box-shadow: var(
+      --leaf-component-modal-shadow,
+      var(--leaf-surface-shadow, var(--leaf-modal-default-shadow))
     );
-    --leaf-dialog-divider: var(--leaf-component-modal-border-color, var(--leaf-modal-frame-color));
-    --leaf-dialog-icon-size: var(--leaf-control-height-lg);
-    border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-md));
+    outline: none;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    transition:
+      transform var(--leaf-motion-slow) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+    @starting-style {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+    }
     > .leaf-modal__header {
-      padding: var(--leaf-component-modal-padding, 10px var(--leaf-density-dialog-block));
-      &.leaf-modal__header--icon {
-        padding: var(
-          --leaf-component-modal-padding,
-          var(--leaf-spacing-md) var(--leaf-density-dialog-block)
-        );
-      }
-      > .leaf-modal__icon {
-        align-self: center;
-        border: 0;
-        border-radius: var(--leaf-radius-md);
-        > svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
-      > .leaf-modal__heading h2 {
-        font-size: var(--leaf-component-modal-font-size, var(--leaf-font-size-lg));
-        font-weight: var(--leaf-heading-weight);
-      }
-      > .leaf-modal__heading > .leaf-modal__description {
-        font-size: var(--leaf-font-size-sm);
-      }
-      > .leaf-modal__close {
-        box-sizing: border-box;
-        align-self: center;
-        margin-inline-end: -4px;
-        width: 32px;
-        height: 32px;
-        padding: 8px;
-        > svg {
-          width: 16px;
-          height: 16px;
-        }
-      }
+      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
+      padding-block-end: 0;
+    }
+    &__header--simple {
+      --leaf-dialog-padding-block: var(--leaf-component-modal-padding-top, var(--leaf-spacing-md));
+      padding-block-start: var(--leaf-dialog-padding-block);
+    }
+    &__body {
+      flex: 1 1 auto;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 0;
+    }
+    &__viewport {
+      overscroll-behavior: contain;
+    }
+    &__content {
+      box-sizing: border-box;
+      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
+    }
+    &__actions {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     > .leaf-modal__footer {
-      padding: var(
-        --leaf-component-modal-padding,
-        calc(var(--leaf-spacing) * 1.5) var(--leaf-density-dialog-block)
+      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
+      padding-block-start: 0;
+    }
+    &--divided > .leaf-modal__header {
+      padding-block-end: var(--leaf-dialog-padding-block);
+    }
+    &--divided > .leaf-modal__footer {
+      padding-block-start: var(--leaf-dialog-padding-block);
+    }
+    &__close {
+      margin-inline-start: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      padding: 4px;
+      border: 0;
+      border-radius: var(--leaf-radius);
+
+      @include mixins.text-action;
+    }
+    // Confirm shares the dialog shell but retains its original spacing and typography.
+    &:not(.leaf-confirm) {
+      @include mixins.softened-frame-color(
+        modal,
+        var(--leaf-component-modal-background, var(--leaf-color-surface))
       );
-      background: var(--leaf-component-modal-footer-background, transparent);
+      --leaf-dialog-divider: var(
+        --leaf-component-modal-border-color,
+        var(--leaf-modal-frame-color)
+      );
+      --leaf-dialog-icon-size: var(--leaf-control-height-lg);
+      border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-md));
+      > .leaf-modal__header {
+        padding: var(--leaf-component-modal-padding, 10px var(--leaf-density-dialog-block));
+        &.leaf-modal__header--icon {
+          padding: var(
+            --leaf-component-modal-padding,
+            var(--leaf-spacing-md) var(--leaf-density-dialog-block)
+          );
+        }
+        > .leaf-modal__icon {
+          align-self: center;
+          border: 0;
+          border-radius: var(--leaf-radius-md);
+          > svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
+        > .leaf-modal__heading h2 {
+          font-size: var(--leaf-component-modal-font-size, var(--leaf-font-size-lg));
+          font-weight: var(--leaf-heading-weight);
+        }
+        > .leaf-modal__heading > .leaf-modal__description {
+          font-size: var(--leaf-font-size-sm);
+        }
+        > .leaf-modal__close {
+          box-sizing: border-box;
+          align-self: center;
+          margin-inline-end: -4px;
+          width: 32px;
+          height: 32px;
+          padding: 8px;
+          > svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+      > .leaf-modal__footer {
+        padding: var(
+          --leaf-component-modal-padding,
+          calc(var(--leaf-spacing) * 1.5) var(--leaf-density-dialog-block)
+        );
+        background: var(--leaf-component-modal-footer-background, transparent);
+      }
     }
   }
-}
-@media (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-modal {
+      transition: none;
+    }
+    .leaf-modal__close {
+      transition: none;
+    }
+  }
+  .leaf-modal-mask[data-state='closing'] .leaf-modal {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    transition-duration: var(--leaf-motion-duration);
+    transition-timing-function: var(--leaf-motion-easing);
+  }
   .leaf-modal {
-    transition: none;
+    --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
   }
-  .leaf-modal__close {
-    transition: none;
-  }
-}
-.leaf-modal-mask[data-state='closing'] .leaf-modal {
-  opacity: 0;
-  transform: translateY(10px) scale(0.98);
-  transition-duration: var(--leaf-motion-duration);
-  transition-timing-function: var(--leaf-motion-easing);
-}
-.leaf-modal {
-  --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
-}
 
-.leaf-modal-mask[hidden] {
-  display: none;
+  .leaf-modal-mask[hidden] {
+    display: none;
+  }
 }

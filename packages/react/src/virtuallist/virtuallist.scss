@@ -1,24 +1,27 @@
 @use '../styles/mixins' as mixins;
-.leaf-virtual-list {
-  min-width: 0;
-  position: relative;
-  overscroll-behavior: contain;
-  color: var(--leaf-color-text);
-  font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
-  &:focus-visible {
-    @include mixins.focus-ring;
-  }
-  &__canvas {
-    position: relative;
-  }
-  &__item {
-    position: absolute;
-    box-sizing: border-box;
-  }
-}
 
-.leaf-virtual-list__canvas {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+@layer leaf-ui {
+  .leaf-virtual-list {
+    min-width: 0;
+    position: relative;
+    overscroll-behavior: contain;
+    color: var(--leaf-color-text);
+    font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+    &:focus-visible {
+      @include mixins.focus-ring;
+    }
+    &__canvas {
+      position: relative;
+    }
+    &__item {
+      position: absolute;
+      box-sizing: border-box;
+    }
+  }
+
+  .leaf-virtual-list__canvas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 }
