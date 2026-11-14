@@ -377,7 +377,11 @@ const CalendarDateRangePicker = forwardRef<HTMLInputElement, CalendarDateRangePi
             ]);
           }
         }}
-        panelClassName={classes('leaf-range-panel', datetime && 'leaf-range-panel--datetime')}
+        panelClassName={classes(
+          'leaf-range-panel',
+          datetime && 'leaf-range-panel--datetime',
+          Boolean(presets?.length) && 'leaf-range-panel--presets',
+        )}
         renderPanel={(close) => (
           <>
             {datetime && (

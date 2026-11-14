@@ -204,6 +204,7 @@
 }
 
 .leaf-picker-presets {
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -211,6 +212,11 @@
   padding: 6px;
   background: transparent;
   border-radius: var(--leaf-radius);
+}
+/* 非侧边快捷区在 max-content 面板中按面板自身宽度换行，避免撑宽浮层引发横向滚动条 */
+.leaf-picker-presets:not(.leaf-picker-presets--side) {
+  width: 0;
+  min-width: calc(100% - 12px);
 }
 
 .leaf-date-picker__panel {

@@ -107,8 +107,12 @@
   width: min(600px, calc(100vw - 24px));
 }
 .leaf-floating.leaf-datetime-panel,
-.leaf-floating.leaf-range-panel--datetime {
+.leaf-floating.leaf-range-panel--datetime,
+.leaf-floating.leaf-range-panel--presets {
   width: max-content;
+}
+.leaf-floating.leaf-range-panel--presets {
+  max-width: calc(100vw - 24px);
 }
 .leaf-datetime-panel__time,
 .leaf-range-panel__time {
@@ -180,8 +184,22 @@
   padding: 0;
   margin: 0;
   border: 0;
+  > .leaf-range-panel__calendar {
+    min-width: 0;
+  }
   > .leaf-range-panel__calendar + .leaf-range-panel__calendar {
     border-inline-start: 1px solid var(--leaf-color-divider);
+  }
+  &:not(.leaf-range-panel__calendars--datetime) .leaf-calendar {
+    min-width: 248px;
+  }
+}
+/* 带侧边快捷区时保持每个日历的基准宽度，由外层 max-content 面板容纳避免双日历互相挤压溢出 */
+.leaf-range-panel--presets
+  .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
+  > .leaf-range-panel__calendar {
+    width: var(--leaf-picker-calendar-width);
+    max-width: 100%;
   }
 }
 .leaf-datetime-panel__body,
@@ -197,14 +215,21 @@
     margin-inline: auto;
   }
 }
-.leaf-picker-presets--side {
+.leaf-picker-presets.leaf-picker-presets--side {
   @include mixins.calendar-selection-family;
-  border: 0;
+  box-sizing: border-box;
+  display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
+  gap: 4px;
   min-width: 90px;
+  margin: 6px;
   margin-inline-end: 0;
+  padding: 6px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--leaf-radius);
   > .leaf-button {
     justify-content: flex-start;
     &[aria-pressed='true'] {
@@ -241,18 +266,27 @@
   }
 }
 @media (max-width: 620px) {
-  .leaf-range-panel:not(.leaf-range-panel--datetime) {
+  .leaf-floating.leaf-range-panel:not(.leaf-range-panel--datetime) {
     width: 300px;
   }
   .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
     grid-template-columns: 1fr;
   }
+  .leaf-range-panel--presets
+    .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) {
+    > .leaf-range-panel__calendar {
+      width: auto;
+    }
+  }
   .leaf-range-panel__body--presets {
     grid-template-columns: 1fr;
   }
-  .leaf-picker-presets--side {
+  .leaf-picker-presets.leaf-picker-presets--side {
     flex-direction: row;
     flex-wrap: wrap;
+    min-width: 0;
+    margin-inline-end: 6px;
+    margin-bottom: 0;
   }
 }
 @media (max-width: 620px) {

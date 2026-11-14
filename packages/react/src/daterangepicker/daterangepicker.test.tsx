@@ -1,5 +1,7 @@
+import path from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as sass from 'sass-embedded';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { DateRangePicker } from './daterangepicker';
@@ -336,5 +338,111 @@ describe('DateRangePicker', () => {
     expect(screen.getByRole('combobox')).toHaveFocus();
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}{ArrowRight}');
     expect(screen.getByRole('button', { name: '2026-01-09' })).toHaveFocus();
+  });
+  it('adds leaf-range-panel--presets only when non-empty presets are provided', () => {
+    const presetRange = [new Date(2026, 0, 1), new Date(2026, 0, 7)] as const;
+    const { rerender } = render(
+      <DateRangePicker defaultOpen presets={[{ label: 'First week', value: presetRange }]} />,
+    );
+    const getPanel = () => document.querySelector('.leaf-floating.leaf-range-panel');
+    expect(getPanel()).toHaveClass('leaf-range-panel--presets');
+
+    rerender(<DateRangePicker defaultOpen presets={[]} />);
+    expect(getPanel()).not.toHaveClass('leaf-range-panel--presets');
+
+    rerender(<DateRangePicker defaultOpen />);
+    expect(getPanel()).not.toHaveClass('leaf-range-panel--presets');
+  });
+  it('compiles preset panel layout rules to expand with presets without side overflow', async () => {
+    const styleRoot = path.resolve(__dirname, '..');
+    const [calendarResult, datepickerResult] = await Promise.all([
+      sass.compileAsync(path.join(styleRoot, 'shared/calendar.scss')),
+      sass.compileAsync(path.join(styleRoot, 'datepicker/datepicker.scss')),
+    ]);
+
+    const parseCss = (css: string) => {
+      const style = document.createElement('style');
+      style.textContent = css;
+      document.head.appendChild(style);
+      const rules = Array.from(style.sheet?.cssRules ?? []);
+      style.remove();
+      return rules;
+    };
+
+    const calendarRules = parseCss(calendarResult.css);
+    const isStyleRule = (rule: CSSRule): rule is CSSStyleRule =>
+      'selectorText' in rule &&
+      typeof (rule as CSSStyleRule).selectorText === 'string' &&
+      'style' in rule;
+    const isMediaRule = (rule: CSSRule): rule is CSSMediaRule =>
+      'conditionText' in rule &&
+      typeof (rule as CSSMediaRule).conditionText === 'string' &&
+      'cssRules' in rule;
+    const hasDeclaration = (rules: CSSRule[], selector: string, prop: string, value: string) =>
+      rules.some(
+        (rule) =>
+          isStyleRule(rule) &&
+          rule.selectorText
+            .split(',')
+            .map((part) => part.trim())
+            .includes(selector) &&
+          rule.style.getPropertyValue(prop).trim() === value,
+      );
+
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-floating.leaf-range-panel--presets',
+        'width',
+        'max-content',
+      ),
+    ).toBe(true);
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-picker-presets.leaf-picker-presets--side',
+        'box-sizing',
+        'border-box',
+      ),
+    ).toBe(true);
+    expect(
+      hasDeclaration(
+        calendarRules,
+        '.leaf-range-panel--presets .leaf-range-panel__calendars:not(.leaf-range-panel__calendars--datetime) > .leaf-range-panel__calendar',
+        'width',
+        'var(--leaf-picker-calendar-width)',
+      ),
+    ).toBe(true);
+
+    const mediaRule = calendarRules.find(
+      (rule): rule is CSSMediaRule =>
+        isMediaRule(rule) && rule.conditionText === '(max-width: 620px)',
+    );
+    expect(mediaRule).toBeDefined();
+    const mediaChildRules = Array.from(mediaRule?.cssRules ?? []);
+    expect(
+      hasDeclaration(
+        mediaChildRules,
+        '.leaf-floating.leaf-range-panel:not(.leaf-range-panel--datetime)',
+        'width',
+        '300px',
+      ),
+    ).toBe(true);
+
+    const datepickerRules = parseCss(datepickerResult.css);
+    expect(
+      hasDeclaration(
+        datepickerRules,
+        '.leaf-picker-presets:not(.leaf-picker-presets--side)',
+        'width',
+        '0px',
+      ) ||
+        hasDeclaration(
+          datepickerRules,
+          '.leaf-picker-presets:not(.leaf-picker-presets--side)',
+          'width',
+          '0',
+        ),
+    ).toBe(true);
   });
 });
