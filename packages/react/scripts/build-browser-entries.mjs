@@ -82,10 +82,82 @@ const base = await compileStringAsync(
   sassOptions,
 );
 
+const resolveSourceFile = async (relative) => {
+  const clean = relative.replace(/^\/+/u, '');
+  if (!clean || clean.startsWith('..')) return null;
+  const normalized = clean.replace(/\.scss$/u, '');
+  const directory = path.posix.dirname(normalized);
+  const base = path.posix.basename(normalized);
+  const prefix = directory === '.' ? '' : `${directory}/`;
+  const candidates = [
+    `${prefix}_${base}.scss`,
+    `${normalized}.scss`,
+    `${normalized}/_index.scss`,
+    `${normalized}/index.scss`,
+  ];
+  for (const candidate of candidates) {
+    try {
+      if ((await stat(path.join(source, candidate))).isFile()) return candidate;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+    }
+  }
+  return null;
+};
+
+// 自动浏览器入口已顺着 JS 模块依赖引入被依赖组件的 CSS，编译单组件切片时跳过重复的兄弟组件 @use，避免 @layer leaf-ui 阻断产物去重
+const compileComponentCss = async (owner, entry) => {
+  const entryFile = `${entry}.scss`;
+  const contents = await readFile(path.join(source, entryFile), 'utf8');
+  return compileStringAsync(contents, {
+    ...sassOptions,
+    url: new URL(`leaf-src:///${entryFile}`),
+    importers: [
+      {
+        async canonicalize(url, context) {
+          if (url.startsWith('leaf-empty:')) return new URL(url);
+          const baseDir =
+            context.containingUrl?.protocol === 'leaf-src:'
+              ? path.posix.dirname(context.containingUrl.pathname.slice(1))
+              : '';
+          const candidate = url.startsWith('leaf-src:')
+            ? new URL(url).pathname.slice(1)
+            : url.startsWith('.')
+              ? path.posix.normalize(path.posix.join(baseDir, url))
+              : url;
+          const resolved = await resolveSourceFile(candidate);
+          if (!resolved) return null;
+          const segments = resolved.replace(/\.scss$/u, '').split('/');
+          if (
+            segments.length === 2 &&
+            segments[0] === segments[1] &&
+            segments[0] !== owner &&
+            styled.has(segments[0])
+          ) {
+            return new URL(`leaf-empty:///${segments[0]}`);
+          }
+          return new URL(`leaf-src:///${resolved}`);
+        },
+        async load(url) {
+          if (url.protocol === 'leaf-empty:') return { contents: '', syntax: 'scss' };
+          if (url.protocol === 'leaf-src:') {
+            return {
+              contents: await readFile(path.join(source, url.pathname.slice(1)), 'utf8'),
+              syntax: 'scss',
+            };
+          }
+          return null;
+        },
+      },
+      ...sassOptions.importers,
+    ],
+  });
+};
+
 const componentCss = new Map();
 for (const name of [...styled, 'shared-calendar']) {
   const module = name === 'shared-calendar' ? 'shared/calendar' : `${name}/${name}`;
-  componentCss.set(name, (await compileStringAsync(`@use '${module}';`, sassOptions)).css);
+  componentCss.set(name, (await compileComponentCss(name, module)).css);
 }
 for (const format of ['esm', 'cjs']) {
   const output = path.join(root, 'dist', format);
