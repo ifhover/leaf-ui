@@ -7,6 +7,21 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.16.5 - 2026-11-14
+
+### 改进与修复
+
+- 将所有组件样式、设计变量与关键帧动效统一包裹进 CSS `@layer leaf-ui`，便于项目内的工具类或主题覆盖组件默认样式。
+- 输入、选择与日期 / 时间选择器默认宽度改用 `:where(...)`（`(0,0,0)` 权重）与局部 CSS 变量 `--leaf-field-width`，浮层组合选择器改为 `:where(.leaf-floating)`，避免覆盖 Tailwind 工具类或在按需跨文件加载时产生默认宽度冲突。
+- 修复 `DateRangePicker` 在展示侧边快捷区间（无 `showTime`）时因内层固定面板宽度导致内容区域溢出并出现横向滚动条的问题。
+- 同步更新中英文 Tailwind CSS 与快速开始指南，说明层叠顺序声明与未分层全局 reset CSS 的处理方式。
+
+### 迁移说明
+
+- 所有组件样式现位于 `@layer leaf-ui`；使用 Tailwind CSS 4 时请在入口 CSS 最前面声明 `@layer theme, base, leaf-ui, components, utilities;`，使用 Tailwind CSS 3 时建议在 `@tailwind base;` 前声明 `@layer base, leaf-ui, components, utilities;`，防止按需导入的组件样式晚于工具类加载而改变层叠优先级。
+- 若宿主项目存在未包裹在 `@layer` 中的全局重置样式（reset CSS），按 CSS Cascade Layers 规范其优先级高于 `@layer leaf-ui`，需移入 `@layer base`（或早于 `leaf-ui` 的层）中并在应用入口优先引入。
+- 表单控件默认宽度现为 `(0,0,0)` 权重且读取 `--leaf-field-width`，业务代码可直接通过工具类（如 `w-full`、`w-80`）或设置 `--leaf-field-width` 覆盖默认宽度。
+
 ## 0.16.4 - 2026-11-14
 
 ### 补发与改进

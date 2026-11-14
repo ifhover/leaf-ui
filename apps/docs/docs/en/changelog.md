@@ -7,6 +7,21 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.5 - 2026-11-14
+
+### Improvements and fixes
+
+- Wrapped all component styles, design variables and keyframes inside CSS `@layer leaf-ui` so application utilities and custom stylesheets can override component defaults cleanly.
+- Lowered default field-width specificity to `(0,0,0)` via `:where(...)` backed by `--leaf-field-width`, and updated floating panel compound selectors to `:where(.leaf-floating)`, resolving width override conflicts with Tailwind utilities and cross-file stylesheet load order.
+- Fixed horizontal scrollbar overflow in `DateRangePicker` when side presets are displayed without `showTime`.
+- Updated the bilingual Tailwind CSS and Quick Start guides with cascade layer ordering and unlayered global reset CSS guidance.
+
+### Migration notes
+
+- All Leaf UI styles now live inside `@layer leaf-ui`. With Tailwind CSS 4, declare `@layer theme, base, leaf-ui, components, utilities;` at the top of your entry stylesheet (or `@layer base, leaf-ui, components, utilities;` above `@tailwind base;` in Tailwind CSS 3) so lazily loaded component styles stay below utility classes.
+- Unlayered global reset CSS takes precedence over `@layer leaf-ui`; move project-wide resets into `@layer base` (or a layer ordered before `leaf-ui`) and import your application entry CSS first.
+- Field default widths now use `(0,0,0)` specificity and read `--leaf-field-width`; override widths with utility classes such as `w-full` or `w-80`, inline styles, or the `--leaf-field-width` custom property.
+
 ## 0.16.4 - 2026-11-14
 
 ### Backfilled improvements
