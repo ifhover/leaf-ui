@@ -7,6 +7,14 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.6 - 2026-11-17
+
+### Fixes
+
+- Fixed `Card` rendering an empty tab panel with extra padding and dangling `aria-controls` when `tabs` items omit `children` to act solely as a state switcher for Card content.
+- Preserved top padding on `Card` body and footer immediately following header-only tabs, and kept the body loading skeleton when `loading` is enabled without `Card` `children` or tab panels.
+- Updated the bilingual `Card` documentation to note omitting item `children` when using tabs as a state switcher.
+
 ## 0.16.5 - 2026-11-14
 
 ### Improvements and fixes

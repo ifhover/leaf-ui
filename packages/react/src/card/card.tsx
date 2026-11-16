@@ -51,11 +51,12 @@ export function Card(rawProps: CardProps) {
   const body = useRef<HTMLDivElement>(null);
   useContentTransition(body, loading ? 'loading' : 'content');
   const hasTabs = Boolean(tabs?.items.length);
+  const hasTabPanels = Boolean(tabs?.items.some((item) => item.children != null));
   const layered = variant === 'layered';
   const visibleDescription = layered ? undefined : description;
   const hasHeading = title != null || visibleDescription != null;
-  // A cover can be the complete content region; do not leave an empty body gap before the footer.
-  const hasBody = children != null || (!hasTabs && (loading || cover == null));
+  // 封面或无面板标签栏可直接搭配 Card children，仅在无标签面板且 loading 时保留空 body 骨架占位。
+  const hasBody = children != null || (!hasTabPanels && loading) || (!hasTabs && cover == null);
   const footerContent = footer != null && <div className="leaf-card__footer">{footer}</div>;
   const tabExtra =
     !hasHeading && extra != null ? (
@@ -80,7 +81,12 @@ export function Card(rawProps: CardProps) {
           className={classes('leaf-card__tabs', tabs.className)}
           items={tabs.items.map((item) => ({
             ...item,
-            children: <Skeleton loading={loading}>{item.children}</Skeleton>,
+            children:
+              item.children != null ? (
+                <Skeleton loading={loading}>{item.children}</Skeleton>
+              ) : (
+                item.children
+              ),
           }))}
           onReorder={
             tabs.onReorder &&

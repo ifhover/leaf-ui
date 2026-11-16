@@ -85,6 +85,76 @@ describe('Card tabs', () => {
     expect(screen.getByRole('button', { name: 'Card action' })).toBeInTheDocument();
     expect(screen.getByText('Shared explanation')).toBeInTheDocument();
   });
+
+  it('supports header-only tabs as a card body switcher without empty tab panels', async () => {
+    function SwitcherCard() {
+      const [view, setView] = useState('overview');
+      return (
+        <Card
+          title="Project"
+          tabs={{
+            activeKey: view,
+            onChange: setView,
+            items: [
+              { key: 'overview', label: 'Overview' },
+              { key: 'activity', label: 'Activity' },
+            ],
+          }}
+        >
+          {view === 'overview' ? 'Overview body' : 'Activity body'}
+        </Card>
+      );
+    }
+
+    const { container } = render(<SwitcherCard />);
+    expect(container.querySelector('.leaf-tabs__panels')).toBeNull();
+    expect(screen.queryByRole('tabpanel')).toBeNull();
+    expect(screen.getByRole('tab', { name: 'Overview' })).not.toHaveAttribute('aria-controls');
+    expect(screen.getByText('Overview body').closest('.leaf-card__body')).not.toBeNull();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Activity' }));
+    expect(screen.getByText('Activity body')).toBeInTheDocument();
+    expect(container.querySelector('.leaf-tabs__panels')).toBeNull();
+  });
+
+  it('shows body skeleton while loading header-only tabs and omits empty body otherwise', () => {
+    const views = [
+      { key: 'overview', label: 'Overview' },
+      { key: 'activity', label: 'Activity' },
+    ];
+    const { container, rerender } = render(
+      <Card loading tabs={{ 'aria-label': 'Views', items: views }} />,
+    );
+    const body = container.querySelector('.leaf-card__body');
+    expect(body).not.toBeNull();
+    expect(within(body as HTMLElement).getByRole('status')).toBeInTheDocument();
+    expect(container.querySelector('.leaf-tabs__panels')).toBeNull();
+
+    rerender(<Card tabs={{ 'aria-label': 'Views', items: views }} footer="Actions" />);
+    expect(container.querySelector('.leaf-card__body')).toBeNull();
+    expect(container.querySelector('.leaf-tabs__panels')).toBeNull();
+    expect(screen.getByText('Actions')).toBeInTheDocument();
+  });
+
+  it('avoids dangling aria-controls for items without children in mixed tab lists', async () => {
+    const mixed = [
+      { key: 'details', label: 'Details', children: 'Details panel' },
+      { key: 'external', label: 'Summary' },
+    ];
+    render(
+      <Card tabs={{ 'aria-label': 'Mixed', items: mixed }}>
+        <div>Shared body</div>
+      </Card>,
+    );
+    const detailsTab = screen.getByRole('tab', { name: 'Details' });
+    const summaryTab = screen.getByRole('tab', { name: 'Summary' });
+    expect(detailsTab).toHaveAttribute('aria-controls');
+    expect(summaryTab).not.toHaveAttribute('aria-controls');
+
+    await userEvent.click(summaryTab);
+    expect(screen.queryByRole('tabpanel')).toBeNull();
+    expect(screen.getByText('Shared body')).toBeInTheDocument();
+  });
 });
 
 describe('Card variants', () => {

@@ -89,7 +89,7 @@ export const leafDoc = { component: 'Card', primaryApi: 'CardProps' };
 
 ### 标签页卡片
 
-通过 `tabs.items` 定义标签页。没有卡片标题时，请通过 `tabs['aria-label']` 提供名称。各项的 `children` 是对应页面内容；Card 的 `children` 是所有页面下方的公共内容。
+通过 `tabs.items` 定义标签页。没有卡片标题时，请通过 `tabs['aria-label']` 提供名称。各项的 `children` 是对应页面内容；若仅将标签栏用于切换状态并把内容写在 Card 的 `children` 中，可省略各项的 `children`。Card 的 `children` 会作为正文展示在下方。
 
 <ComponentExample exampleId="tabs" preview={<CardTabs />} fileName="tabs.tsx">
 

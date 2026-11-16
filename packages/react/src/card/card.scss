@@ -278,7 +278,9 @@
       > .leaf-card__panel > .leaf-card__body:not(:last-child) {
         padding-block-end: 16px;
       }
-      > .leaf-card__panel > .leaf-card__tabs + .leaf-card__body {
+      > .leaf-card__panel
+        > .leaf-card__tabs:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden]))
+        + .leaf-card__body {
         padding-block-start: 0;
       }
       > .leaf-card__footer {
@@ -344,8 +346,14 @@
       border-start-start-radius: 0;
       border-start-end-radius: 0;
     }
-    &__tabs + &__body {
+    &__tabs:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden])) + &__body {
       padding-block-start: 0;
+    }
+    &:not(.leaf-card--layered)
+      > &__panel
+      > &__tabs:not(:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden])))
+      + &__footer {
+      padding-block-start: var(--leaf-card-padding);
     }
     &__tab-extra {
       display: flex;

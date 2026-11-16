@@ -89,7 +89,7 @@ Place actions beside the title with `extra`, or below the content with `footer`.
 
 ### Tabbed card
 
-Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has no title. Each item's `children` holds its page; Card's `children` holds shared content below the pages.
+Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has no title. Each item's `children` holds its page; omit item `children` when using the tab bar solely to switch state for Card's `children` below.
 
 <ComponentExample exampleId="tabs" preview={<CardTabs />} fileName="tabs.tsx">
 
