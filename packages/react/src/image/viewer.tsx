@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useDialog } from '../shared/dialog';
+import { useDialog, useOverlayLayer } from '../shared/dialog';
 import { useMotionEnabled } from '../shared/motion';
 import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
@@ -192,6 +192,7 @@ function ViewerHost({
     setClosing(true);
   }
   useDialog(present, root, id, close, true, { initialFocus: root, returnFocus: false });
+  const layer = useOverlayLayer(present, visible);
   useEffect(() => {
     if (present) {
       reportedHidden.current = false;
@@ -477,6 +478,7 @@ function ViewerHost({
       aria-describedby={`${id}-position`}
       tabIndex={-1}
       className="leaf-image-viewer"
+      style={layer.maskStyle}
       data-state={visible ? 'open' : 'closing'}
       data-motion={motion ? 'on' : 'off'}
       onKeyDown={(event) => {

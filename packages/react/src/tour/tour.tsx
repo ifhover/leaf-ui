@@ -3,7 +3,7 @@ import { type ReactNode, type RefObject, useEffect, useId, useRef, useState } fr
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
-import { useDialog } from '../shared/dialog';
+import { type OverlayLayer, useDialog, useOverlayLayer } from '../shared/dialog';
 import { FloatingPanel, type PopupOptions } from '../shared/floating';
 import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
@@ -47,6 +47,19 @@ function TourFocus({
 }) {
   useDialog(open, panel, owner, close, true, {}, true, modal);
   return children;
+}
+function TourStage({
+  present,
+  active,
+  children,
+}: {
+  present: boolean;
+  active: boolean;
+  children: (layer: OverlayLayer) => ReactNode;
+}) {
+  // 在 ScopedPortal 就绪后分配叠层，确保与 Modal/Drawer 同轮挂载时叠层顺序一致。
+  const layer = useOverlayLayer(present, active);
+  return children(layer);
 }
 export function Tour(rawProps: TourProps) {
   const {
@@ -153,69 +166,76 @@ export function Tour(rawProps: TourProps) {
   );
   return (
     <ScopedPortal container={getPopupContainer}>
-      <div
-        ref={root}
-        className="leaf-tour-root"
-        data-state={open ? 'open' : 'closing'}
-        aria-hidden={!open || undefined}
-        {...inertProps(!open)}
-      >
-        {mask && (
-          <div className="leaf-tour__mask" aria-hidden="true">
+      <TourStage present={present} active={open && Boolean(step)}>
+        {(layer) => (
+          <div
+            ref={root}
+            className="leaf-tour-root"
+            style={layer.maskStyle}
+            data-state={open ? 'open' : 'closing'}
+            aria-hidden={!open || undefined}
+            {...inertProps(!open)}
+          >
+            {mask && (
+              <div className="leaf-tour__mask" aria-hidden="true">
+                {rect ? (
+                  <>
+                    <div style={{ inset: `0 0 auto 0`, height: Math.max(0, rect.top - padding) }} />
+                    <div style={{ inset: `${rect.bottom + padding}px 0 0 0` }} />
+                    <div
+                      style={{
+                        top: rect.top - padding,
+                        left: 0,
+                        width: Math.max(0, rect.left - padding),
+                        height: rect.height + 2 * padding,
+                      }}
+                    />
+                    <div
+                      style={{
+                        top: rect.top - padding,
+                        left: rect.right + padding,
+                        right: 0,
+                        height: rect.height + 2 * padding,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <div style={{ inset: 0 }} />
+                )}
+              </div>
+            )}
             {rect ? (
-              <>
-                <div style={{ inset: `0 0 auto 0`, height: Math.max(0, rect.top - padding) }} />
-                <div style={{ inset: `${rect.bottom + padding}px 0 0 0` }} />
-                <div
-                  style={{
-                    top: rect.top - padding,
-                    left: 0,
-                    width: Math.max(0, rect.left - padding),
-                    height: rect.height + 2 * padding,
-                  }}
-                />
-                <div
-                  style={{
-                    top: rect.top - padding,
-                    left: rect.right + padding,
-                    right: 0,
-                    height: rect.height + 2 * padding,
-                  }}
-                />
-              </>
+              <FloatingPanel
+                open={open}
+                triggerRef={target}
+                panelRef={panel}
+                placement={step.placement ?? 'bottom'}
+                container={getPopupContainer}
+                role="dialog"
+                aria-modal={mask || undefined}
+                aria-labelledby={`${id}-title`}
+                className="leaf-floating leaf-tour"
+                style={layer.floatingStyle}
+                tabIndex={-1}
+              >
+                {content}
+              </FloatingPanel>
             ) : (
-              <div style={{ inset: 0 }} />
+              <div
+                ref={panel}
+                role="dialog"
+                aria-modal={mask || undefined}
+                aria-labelledby={`${id}-title`}
+                tabIndex={-1}
+                className="leaf-tour leaf-tour--center"
+                style={layer.floatingStyle}
+              >
+                {content}
+              </div>
             )}
           </div>
         )}
-        {rect ? (
-          <FloatingPanel
-            open={open}
-            triggerRef={target}
-            panelRef={panel}
-            placement={step.placement ?? 'bottom'}
-            container={getPopupContainer}
-            role="dialog"
-            aria-modal={mask || undefined}
-            aria-labelledby={`${id}-title`}
-            className="leaf-floating leaf-tour"
-            tabIndex={-1}
-          >
-            {content}
-          </FloatingPanel>
-        ) : (
-          <div
-            ref={panel}
-            role="dialog"
-            aria-modal={mask || undefined}
-            aria-labelledby={`${id}-title`}
-            tabIndex={-1}
-            className="leaf-tour leaf-tour--center"
-          >
-            {content}
-          </div>
-        )}
-      </div>
+      </TourStage>
     </ScopedPortal>
   );
 }

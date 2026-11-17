@@ -1,8 +1,94 @@
-import { type RefObject, useEffect, useRef } from 'react';
+import {
+  type CSSProperties,
+  type RefObject,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { tabbable } from 'tabbable';
 import { composedEventTarget, deepActiveElement } from './dom';
 
 const stack: HTMLElement[] = [];
+const layers: { id: symbol; level: number }[] = [];
+const OVERLAY_Z_STEP = 2;
+const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+const overlayZIndex = (addend: number) => `calc(var(--leaf-z-index-modal, 1100) + ${addend})`;
+
+function releaseLayer(current: { id: symbol; level: number } | null) {
+  if (current) {
+    const index = layers.indexOf(current);
+    if (index >= 0) layers.splice(index, 1);
+  }
+  return null;
+}
+
+export interface OverlayLayer {
+  level: number | null;
+  offset: number;
+  maskStyle: CSSProperties | undefined;
+  popupStyle: CSSProperties | undefined;
+  floatingStyle: CSSProperties | undefined;
+}
+
+/** 按浮层实际激活生命周期分配递增叠层，退场期间保留原层级直至完全卸载/隐藏。 */
+export function useOverlayLayer(present: boolean, open = present): OverlayLayer {
+  const [level, setLevel] = useState<number | null>(null);
+  const entry = useRef<{ id: symbol; level: number } | null>(null);
+  const wasOpen = useRef(false);
+
+  useBrowserLayoutEffect(() => {
+    const opened = open && !wasOpen.current;
+    wasOpen.current = open;
+    if (!present) {
+      entry.current = releaseLayer(entry.current);
+      setLevel(null);
+      return;
+    }
+    // 首次进入展示态，或在关闭动画尚未结束时重新打开，都分配当前最高叠层。
+    if (!entry.current || opened) {
+      entry.current = releaseLayer(entry.current);
+      const next = layers.length ? Math.max(...layers.map((item) => item.level)) + 1 : 0;
+      const item = { id: Symbol(), level: next };
+      layers.push(item);
+      entry.current = item;
+      setLevel(next);
+    }
+  }, [present, open]);
+
+  useBrowserLayoutEffect(
+    () => () => {
+      entry.current = releaseLayer(entry.current);
+    },
+    [],
+  );
+
+  return useMemo(() => {
+    const offset = level !== null && level > 0 ? level * OVERLAY_Z_STEP : 0;
+    if (offset === 0) {
+      return {
+        level,
+        offset: 0,
+        maskStyle: undefined,
+        popupStyle: undefined,
+        floatingStyle: undefined,
+      };
+    }
+    const popupValue = overlayZIndex(offset + 1);
+    return {
+      level,
+      offset,
+      maskStyle: { zIndex: overlayZIndex(offset) },
+      popupStyle: { '--leaf-z-index-popup': popupValue } as CSSProperties,
+      floatingStyle: {
+        zIndex: popupValue,
+        '--leaf-z-index-popup': popupValue,
+      } as CSSProperties,
+    };
+  }, [level]);
+}
 export type FocusTarget = RefObject<HTMLElement | null> | (() => HTMLElement | null);
 export interface DialogFocusOptions {
   initialFocus?: FocusTarget;

@@ -7,6 +7,14 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.17.2 - 2026-11-18
+
+### Fixes
+
+- Fixed multi-overlay stacking conflicts across `Modal`, `Confirm`, `Drawer`, `ImageViewer`, and `Tour` by allocating ascending layer offsets relative to `--leaf-z-index-modal` based on active presentation order, retaining each layer through exit transitions and resetting once all overlays close.
+- Synchronized `--leaf-z-index-popup` on stacked overlay surfaces so inner popups (`Select`, `Dropdown`, etc.) remain above their host overlay and below any higher overlay.
+- Avoided pre-mounting empty `.leaf-portal-scope` placeholders in `document.body` for unvisited, non-`forceRender` closed `Modal` and `Drawer` instances.
+
 ## 0.17.1 - 2026-11-17
 
 ### Fixes

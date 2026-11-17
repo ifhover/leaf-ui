@@ -7,6 +7,14 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.17.2 - 2026-11-18
+
+### 修复
+
+- 修复多浮层叠加时的 `z-index` 冲突：通过共享叠层分配机制为同时激活的 `Modal`、`Confirm`、`Drawer`、`ImageViewer` 与 `Tour` 按打开顺序递增计算基于 `--leaf-z-index-modal` 的遮罩 `z-index`，并在退出动画结束后释放层级、所有浮层关闭后自动归零。
+- 同步更新叠层面板内的 `--leaf-z-index-popup` 变量，使上层 `Modal` / `Drawer` / `Tour` 内部的 `Select`、`Dropdown` 等弹出面板始终位于当前浮层之上且低于更高叠层。
+- 避免未打开且未设置 `forceRender` 的 `Modal` / `Drawer` 预先在 `document.body` 插入空的 `.leaf-portal-scope` 占位容器。
+
 ## 0.17.1 - 2026-11-17
 
 ### 修复

@@ -404,4 +404,66 @@ describe('Modal and Confirm', () => {
     rerender(<Modal open title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />);
     expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true');
   });
+  it('allocates monotonic layers across hook confirmations, out-of-order close, and theme tokens', async () => {
+    function Example({ firstOpen }: { firstOpen: boolean }) {
+      const { confirm } = useConfirm();
+      const [third, setThird] = useState(false);
+      return (
+        <>
+          <Modal open={firstOpen} title="First modal">
+            <Button
+              onClick={() => {
+                void confirm({ title: 'Root confirm', children: 'Proceed?' });
+              }}
+            >
+              Ask
+            </Button>
+          </Modal>
+          <Button onClick={() => setThird(true)}>Open third</Button>
+          <Modal open={third} title="Third modal" />
+        </>
+      );
+    }
+
+    const { rerender } = render(
+      <ConfigProvider locale="en-US" theme={{ tokens: { modalZIndex: 1300 } }}>
+        <Example firstOpen={false} />
+      </ConfigProvider>,
+    );
+    // 未打开且非 forceRender 的 Modal 不应预先挂载 .leaf-portal-scope
+    expect(document.querySelectorAll('.leaf-portal-scope')).toHaveLength(0);
+
+    rerender(
+      <ConfigProvider locale="en-US" theme={{ tokens: { modalZIndex: 1300 } }}>
+        <Example firstOpen />
+      </ConfigProvider>,
+    );
+    const firstMask = screen
+      .getByRole('dialog', { name: 'First modal' })
+      .closest<HTMLElement>('.leaf-modal-mask');
+    expect(
+      firstMask
+        ?.closest<HTMLElement>('.leaf-portal-scope')
+        ?.style.getPropertyValue('--leaf-z-index-modal'),
+    ).toBe('1300');
+    expect(firstMask?.style.zIndex).toBe('');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ask' }));
+    const confirmMask = screen
+      .getByRole('alertdialog', { name: 'Root confirm' })
+      .closest<HTMLElement>('.leaf-modal-mask');
+    expect(confirmMask?.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
+
+    // 底层 First modal 在 Root confirm 之后先关闭，新打开的 Third modal 仍需高于 Root confirm
+    rerender(
+      <ConfigProvider locale="en-US" theme={{ tokens: { modalZIndex: 1300 } }}>
+        <Example firstOpen={false} />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Open third' }));
+    const thirdMask = screen
+      .getByRole('dialog', { name: 'Third modal' })
+      .closest<HTMLElement>('.leaf-modal-mask');
+    expect(thirdMask?.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 4)');
+  });
 });

@@ -13,7 +13,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
-import { type DialogFocusOptions, useDialog } from '../shared/dialog';
+import { type DialogFocusOptions, useDialog, useOverlayLayer } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
 import { useContentTransition, usePresence } from '../shared/presence';
@@ -223,6 +223,7 @@ function DrawerSurface({
   const backdrop = useRef<HTMLButtonElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const present = usePresence(open, backdrop);
+  const layer = useOverlayLayer(present, open);
   const hasTabs = Boolean(tabs?.items?.length);
   const hasHeading = title != null || description != null || icon != null;
   const contentRevision = useRef({ children, revision: 0 });
@@ -272,6 +273,7 @@ function DrawerSurface({
     <div
       hidden={!present}
       className={classes('leaf-drawer-mask', `leaf-drawer-mask--${placement}`)}
+      style={layer.maskStyle}
       data-blur={maskBlur ? undefined : 'off'}
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
@@ -311,6 +313,7 @@ function DrawerSurface({
           ...(horizontal
             ? { width: resized ?? width, height: '100%' }
             : { height: resized ?? height, width: '100%' }),
+          ...layer.popupStyle,
           ...style,
         }}
       >
@@ -406,6 +409,10 @@ function DrawerSurface({
 }
 export function Drawer(rawProps: DrawerProps) {
   const props = useComponentProps('Drawer', rawProps);
+  const visited = useRef(false);
+  // 首次打开或显式 forceRender 前保留行内锚点并延迟挂载 ScopedPortal，避免提前在 body 占位。
+  if (props.open || props.forceRender) visited.current = true;
+  if (!visited.current) return <span hidden />;
   return (
     <ScopedPortal container={props.container}>
       <DrawerSurface {...props} />

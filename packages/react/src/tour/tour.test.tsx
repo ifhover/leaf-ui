@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
+import { Modal } from '../modal';
 import { Tour } from './tour';
 
 it('releases focus and scrolling during dismissal and cancels removal when reopened', () => {
@@ -48,4 +49,17 @@ it('keeps the existing action focused when changing a step', () => {
   expect(screen.getByRole('dialog', { name: 'Second' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Next' })).toBe(next);
   expect(next).toHaveFocus();
+});
+
+it('stacks Tour above an already-open modal', () => {
+  render(
+    <ConfigProvider locale="en-US">
+      <Modal open title="Underlying dialog" />
+      <Tour open steps={[{ title: 'Overlay step', description: 'Guided step.' }]} />
+    </ConfigProvider>,
+  );
+  const tourDialog = screen.getByRole('dialog', { name: 'Overlay step' });
+  const tourRoot = tourDialog.closest<HTMLElement>('.leaf-tour-root');
+  expect(tourRoot?.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
+  expect(tourDialog.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 3)');
 });

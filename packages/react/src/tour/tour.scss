@@ -4,7 +4,7 @@
   .leaf-tour-root {
     position: fixed;
     inset: 0;
-    z-index: calc(var(--leaf-z-index-modal) + 4);
+    z-index: var(--leaf-z-index-modal);
     pointer-events: none;
     opacity: 1;
     transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
@@ -32,7 +32,7 @@
     background: var(--leaf-color-surface-raised, var(--leaf-color-surface));
     color: var(--leaf-color-text);
     font: var(--leaf-component-tour-font-size, var(--leaf-font-size)) var(--leaf-font-family);
-    z-index: calc(var(--leaf-z-index-modal) + 5);
+    z-index: calc(var(--leaf-z-index-modal) + 1);
     box-shadow: var(
       --leaf-component-tour-shadow,
       var(--leaf-surface-shadow, var(--leaf-shadow-lg))

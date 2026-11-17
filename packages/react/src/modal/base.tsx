@@ -12,7 +12,7 @@ import { ButtonControl } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
-import { useDialog } from '../shared/dialog';
+import { useDialog, useOverlayLayer } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
 import { useNaturalHeightTransition, usePresence } from '../shared/presence';
@@ -162,6 +162,7 @@ function ModalSurface({
   const content = useRef<HTMLDivElement>(null);
   const backdrop = useRef<HTMLButtonElement>(null);
   const present = usePresence(open, backdrop);
+  const layer = useOverlayLayer(present, open);
   const snapHeight = useNaturalHeightTransition(panel, content, open);
   const titleId = `${useId()}-title`;
   const descriptionId = `${useId()}-description`;
@@ -205,6 +206,7 @@ function ModalSurface({
     <div
       hidden={!present}
       className="leaf-modal-mask"
+      style={layer.maskStyle}
       data-blur={maskBlur ? undefined : 'off'}
       data-state={open ? 'open' : 'closing'}
       aria-hidden={!open || undefined}
@@ -241,7 +243,7 @@ function ModalSurface({
           hasHeading && 'leaf-modal--headed',
           className,
         )}
-        style={{ width, ...style }}
+        style={{ width, ...layer.popupStyle, ...style }}
       >
         <OverlayOwner.Provider value={modalId}>
           {(hasHeading || (!hasTabs && closable)) && (
@@ -318,6 +320,10 @@ function ModalSurface({
 
 // 内部复用的对话框基础容器，避免 Confirm / FileList 继承公开 Modal 默认配置或引入 Tabs。
 export function ModalBase(props: ModalBaseProps) {
+  const visited = useRef(false);
+  // 首次打开或显式 forceRender 前保留行内锚点并延迟挂载 ScopedPortal，避免提前在 body 占位。
+  if (props.open || props.forceRender) visited.current = true;
+  if (!visited.current) return <span hidden />;
   return (
     <ScopedPortal container={props.container}>
       <ModalSurface {...props} />

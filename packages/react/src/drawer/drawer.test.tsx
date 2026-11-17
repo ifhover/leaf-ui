@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -130,5 +130,67 @@ describe('Drawer', () => {
     expect(screen.getByText('Events view')).toBeInTheDocument();
     await userEvent.click(dialog.querySelector('.leaf-drawer__close') as HTMLButtonElement);
     expect(close).toHaveBeenCalledOnce();
+  });
+  it('stacks a newly opened drawer above an earlier open modal and preserves closing order', async () => {
+    function Example({ snapshotKey }: { snapshotKey: number }) {
+      const [modal, setModal] = useState(false);
+      const [drawer, setDrawer] = useState(false);
+      return (
+        <ConfigProvider locale="en-US">
+          <Button onClick={() => setModal(true)}>Open snapshot</Button>
+          <Drawer open={drawer} title="Merchant" onClose={() => setDrawer(false)}>
+            <Select aria-label="Status" options={[{ value: 'active', label: 'Active' }]} />
+            <Button onClick={() => setDrawer(false)}>Done</Button>
+          </Drawer>
+          {modal && (
+            <Modal key={snapshotKey} open title="Snapshot" onClose={() => setModal(false)}>
+              <Button onClick={() => setDrawer(true)}>Open merchant</Button>
+              <Button onClick={() => setModal(false)}>Close snapshot</Button>
+            </Modal>
+          )}
+        </ConfigProvider>
+      );
+    }
+
+    const { rerender } = render(<Example snapshotKey={1} />);
+    expect(document.querySelectorAll('.leaf-portal-scope')).toHaveLength(0);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Open snapshot' }));
+    const modalMask = screen
+      .getByRole('dialog', { name: 'Snapshot' })
+      .closest<HTMLElement>('.leaf-modal-mask');
+    expect(modalMask?.style.zIndex).toBe('');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Open merchant' }));
+    const drawerDialog = screen.getByRole('dialog', { name: 'Merchant' });
+    const drawerMask = drawerDialog.closest<HTMLElement>('.leaf-drawer-mask');
+    const drawerBackdrop = drawerMask?.querySelector<HTMLElement>('.leaf-drawer-backdrop');
+    if (!drawerMask || !drawerBackdrop) throw new Error('Drawer mask missing');
+    expect(drawerMask.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
+    expect(drawerDialog.style.getPropertyValue('--leaf-z-index-popup')).toBe(
+      'calc(var(--leaf-z-index-modal, 1100) + 3)',
+    );
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Status' }));
+    const popup = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+    expect(popup?.style.getPropertyValue('--leaf-z-index-popup')).toBe(
+      'calc(var(--leaf-z-index-modal, 1100) + 3)',
+    );
+    await userEvent.keyboard('{Escape}');
+
+    // 退出过渡期间保持原有叠层，结束后才释放
+    drawerBackdrop.style.transitionDuration = '200ms';
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(drawerMask).toHaveAttribute('data-state', 'closing');
+    expect(drawerMask.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
+    fireEvent.transitionEnd(drawerBackdrop, { propertyName: 'opacity' });
+    expect(drawerMask).toHaveAttribute('hidden');
+
+    // 关闭下层弹窗后再用新 key 挂载弹窗并重新打开已保留的抽屉，依然叠放于弹窗之上
+    await userEvent.click(screen.getByRole('button', { name: 'Close snapshot' }));
+    rerender(<Example snapshotKey={2} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Open snapshot' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Open merchant' }));
+    expect(drawerMask.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
   });
 });

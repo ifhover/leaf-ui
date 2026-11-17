@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { Fragment, type ReactNode, StrictMode, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
+import { Modal } from '../modal';
 import { ImagePreviewControl } from './image';
 import { useImagePreview } from './provider';
 import type { ImagePreviewItem } from './types';
@@ -578,5 +579,25 @@ describe('self-contained image preview', () => {
     await waitFor(() => expect(opener).toHaveFocus());
     expect(document.body.style.overflow).not.toBe('hidden');
     expect(closed).not.toHaveBeenCalled();
+  });
+  it('stacks the preview viewer above an already-open modal without token overrides', async () => {
+    function Example() {
+      const { preview } = useImagePreview();
+      return (
+        <Modal open title="Order snapshot">
+          <button type="button" onClick={() => preview([items[0]])}>
+            Preview photo
+          </button>
+        </Modal>
+      );
+    }
+    render(
+      <Region>
+        <Example />
+      </Region>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Preview photo' }));
+    const viewer = await screen.findByRole('dialog', { name: '图片预览' });
+    expect(viewer.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
   });
 });
