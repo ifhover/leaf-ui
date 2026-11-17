@@ -11,6 +11,8 @@ import {
   type CSSProperties,
   createContext,
   type HTMLAttributes,
+  type FocusEvent as ReactFocusEvent,
+  type PointerEvent as ReactPointerEvent,
   type RefObject,
   useCallback,
   useContext,
@@ -420,4 +422,160 @@ export function useActiveOption(
     const scope = root instanceof ShadowRoot ? root : document;
     scope.getElementById(optionId)?.scrollIntoView?.({ block: 'nearest' });
   }, [open, optionId, panelRef]);
+}
+
+const MODIFIER_KEYS = new Set(['Shift', 'Control', 'Alt', 'Meta']);
+const pointerModalities = new WeakMap<Document, boolean>();
+const modalityRefs = new WeakMap<Document, number>();
+const modalityCleanups = new WeakMap<Document, () => void>();
+
+function markPointerModality(doc: Document | null | undefined) {
+  if (doc) pointerModalities.set(doc, true);
+}
+
+function isPointerModality(doc: Document | null | undefined) {
+  return doc ? (pointerModalities.get(doc) ?? false) : false;
+}
+
+// 按 Document 引用计数监听最近输入方式，区分指针点击聚焦与键盘聚焦
+function subscribeModality(doc: Document) {
+  const count = modalityRefs.get(doc) ?? 0;
+  if (count === 0) {
+    const onPointer = () => {
+      pointerModalities.set(doc, true);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (!MODIFIER_KEYS.has(event.key)) pointerModalities.set(doc, false);
+    };
+    doc.addEventListener('pointerdown', onPointer, true);
+    doc.addEventListener('mousedown', onPointer, true);
+    doc.addEventListener('keydown', onKey, true);
+    modalityCleanups.set(doc, () => {
+      doc.removeEventListener('pointerdown', onPointer, true);
+      doc.removeEventListener('mousedown', onPointer, true);
+      doc.removeEventListener('keydown', onKey, true);
+    });
+  }
+  modalityRefs.set(doc, count + 1);
+  return () => {
+    const next = (modalityRefs.get(doc) ?? 1) - 1;
+    if (next <= 0) {
+      modalityRefs.delete(doc);
+      modalityCleanups.get(doc)?.();
+      modalityCleanups.delete(doc);
+      pointerModalities.delete(doc);
+    } else {
+      modalityRefs.set(doc, next);
+    }
+  };
+}
+
+export interface HoverFocusOptions {
+  enabled?: boolean;
+  inactive: boolean;
+  open: boolean;
+  change: (next: boolean) => void;
+  enterDelay: number;
+  leaveDelay: number;
+  triggerRef: RefObject<HTMLElement | null>;
+  panelRef: RefObject<HTMLElement | null>;
+  keepPanelFocus?: boolean;
+}
+
+/** 管理悬停与键盘聚焦浮层的展开、延时收起及外部/Escape 关闭。 */
+export function useHoverFocus({
+  enabled = true,
+  inactive,
+  open,
+  change,
+  enterDelay,
+  leaveDelay,
+  triggerRef,
+  panelRef,
+  keepPanelFocus = false,
+}: HoverFocusOptions) {
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const focused = useRef(false);
+  const hovered = useRef(false);
+  const changeRef = useRef(change);
+  changeRef.current = change;
+
+  const schedule = useCallback((next: boolean, delay: number) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => changeRef.current(next), Math.max(0, delay));
+  }, []);
+
+  const dismiss = useCallback((reason?: 'escape' | 'outside' | 'focus' | 'tab') => {
+    clearTimeout(timer.current);
+    // Escape 或外部关闭后解除聚焦锁定，避免后续悬停移开时无法自动收起
+    focused.current = false;
+    if (reason === 'outside') hovered.current = false;
+    changeRef.current(false);
+  }, []);
+
+  useFloatingDismiss(open, dismiss, triggerRef, panelRef);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  useEffect(() => {
+    if (!enabled || inactive) {
+      clearTimeout(timer.current);
+      focused.current = false;
+      hovered.current = false;
+    }
+  }, [enabled, inactive]);
+
+  useEffect(() => {
+    if (!enabled || typeof document === 'undefined') return;
+    return subscribeModality(triggerRef.current?.ownerDocument ?? document);
+  }, [enabled, triggerRef]);
+
+  const panelContains = (node: EventTarget | null) =>
+    keepPanelFocus && node instanceof Node && Boolean(panelRef.current?.contains(node));
+
+  return {
+    onTriggerPointerEnter: (event: ReactPointerEvent<HTMLElement>) => {
+      if (enabled && !inactive && !event.defaultPrevented && event.pointerType !== 'touch') {
+        hovered.current = true;
+        schedule(true, enterDelay);
+      }
+    },
+    onTriggerPointerLeave: () => {
+      hovered.current = false;
+      if (enabled && !focused.current && !(keepPanelFocus && panelContains(deepActiveElement())))
+        schedule(false, leaveDelay);
+    },
+    onTriggerPointerDown: (event: ReactPointerEvent<HTMLElement>) => {
+      if (!enabled) return;
+      markPointerModality(event.currentTarget.ownerDocument);
+      focused.current = false;
+    },
+    onTriggerFocus: (event: ReactFocusEvent<HTMLElement>) => {
+      if (
+        enabled &&
+        !inactive &&
+        !event.defaultPrevented &&
+        !isPointerModality(event.currentTarget.ownerDocument)
+      ) {
+        focused.current = true;
+        clearTimeout(timer.current);
+        changeRef.current(true);
+      }
+    },
+    onTriggerBlur: (event: ReactFocusEvent<HTMLElement>) => {
+      focused.current = false;
+      if (enabled && !hovered.current && !panelContains(event.relatedTarget))
+        schedule(false, leaveDelay);
+    },
+    onPanelPointerEnter: () => {
+      if (!enabled) return;
+      hovered.current = true;
+      clearTimeout(timer.current);
+    },
+    onPanelPointerLeave: () => {
+      hovered.current = false;
+      if (enabled && !focused.current && !panelContains(deepActiveElement()))
+        schedule(false, leaveDelay);
+    },
+  };
 }

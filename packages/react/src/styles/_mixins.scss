@@ -357,8 +357,8 @@
     display: none;
   }
   &[data-side='top']::before {
-    inset-block-end: -4px;
-    inset-inline-start: 50%;
+    bottom: -4px;
+    left: 50%;
     transform: translateX(-50%);
     clip-path: polygon(
       8% 0,
@@ -374,8 +374,8 @@
     );
   }
   &[data-side='bottom']::before {
-    inset-block-start: -4px;
-    inset-inline-start: 50%;
+    top: -4px;
+    left: 50%;
     transform: translateX(-50%);
     clip-path: polygon(
       8% 100%,
@@ -391,8 +391,10 @@
     );
   }
   &[data-side='left']::before {
-    inset-block-start: 50%;
-    inset-inline-end: -4px;
+    top: 50%;
+    right: -4px;
+    width: 5px;
+    height: 16px;
     transform: translateY(-50%);
     clip-path: polygon(
       0 8%,
@@ -408,8 +410,10 @@
     );
   }
   &[data-side='right']::before {
-    inset-block-start: 50%;
-    inset-inline-start: -4px;
+    top: 50%;
+    left: -4px;
+    width: 5px;
+    height: 16px;
     transform: translateY(-50%);
     clip-path: polygon(
       100% 8%,

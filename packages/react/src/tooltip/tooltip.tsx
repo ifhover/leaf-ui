@@ -13,7 +13,7 @@ import {
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
-import { FloatingPanel, type PopupOptions, useFloatingDismiss } from '../shared/floating';
+import { FloatingPanel, type PopupOptions, useHoverFocus } from '../shared/floating';
 
 export interface TooltipProps extends PopupOptions {
   content: ReactNode;
@@ -63,6 +63,8 @@ export function TooltipControl({
   const [internal, setInternal] = useState(defaultOpen);
   const inactive = disabled || children.props.disabled || content == null || content === '';
   const open = !inactive && (controlled ?? internal);
+  const openRef = useRef(open);
+  openRef.current = open;
   const trigger = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const childRef = version.startsWith('18.')
@@ -70,28 +72,26 @@ export function TooltipControl({
     : children.props.ref;
   const ref = useMergedRef(trigger, childRef);
   const id = `${useId()}-tooltip`;
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const focused = useRef(false);
-  const hovered = useRef(false);
   const change = (next: boolean) => {
-    if (controlled === undefined) setInternal(next);
-    if (next !== open) onOpenChange?.(next);
-  };
-  const schedule = (next: boolean, delay: number) => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => change(next), Math.max(0, delay));
-  };
-  const dismiss = () => {
-    clearTimeout(timer.current);
-    change(false);
-  };
-  useFloatingDismiss(open, dismiss, trigger, panel);
-  useEffect(() => () => clearTimeout(timer.current), []);
-  useEffect(() => {
-    if (inactive) {
-      clearTimeout(timer.current);
-      setInternal(false);
+    if (inactive && next) return;
+    if (next === openRef.current) return;
+    if (controlled === undefined) {
+      openRef.current = next;
+      setInternal(next);
     }
+    onOpenChange?.(next);
+  };
+  const hoverFocus = useHoverFocus({
+    inactive,
+    open,
+    change,
+    enterDelay,
+    leaveDelay,
+    triggerRef: trigger,
+    panelRef: panel,
+  });
+  useEffect(() => {
+    if (inactive) setInternal(false);
   }, [inactive]);
   return (
     <>
@@ -102,28 +102,23 @@ export function TooltipControl({
           undefined,
         onPointerEnter: (event) => {
           children.props.onPointerEnter?.(event);
-          if (!inactive && !event.defaultPrevented && event.pointerType !== 'touch') {
-            hovered.current = true;
-            schedule(true, enterDelay);
-          }
+          hoverFocus.onTriggerPointerEnter(event);
         },
         onPointerLeave: (event) => {
           children.props.onPointerLeave?.(event);
-          hovered.current = false;
-          if (!focused.current) schedule(false, leaveDelay);
+          hoverFocus.onTriggerPointerLeave();
+        },
+        onPointerDown: (event) => {
+          children.props.onPointerDown?.(event);
+          hoverFocus.onTriggerPointerDown(event);
         },
         onFocus: (event) => {
           children.props.onFocus?.(event);
-          if (!inactive && !event.defaultPrevented) {
-            focused.current = true;
-            clearTimeout(timer.current);
-            change(true);
-          }
+          hoverFocus.onTriggerFocus(event);
         },
         onBlur: (event) => {
           children.props.onBlur?.(event);
-          focused.current = false;
-          if (!hovered.current) schedule(false, leaveDelay);
+          hoverFocus.onTriggerBlur(event);
         },
       })}
       <FloatingPanel
@@ -138,14 +133,8 @@ export function TooltipControl({
         placement={popupPlacement ?? placement}
         className={classes('leaf-floating', 'leaf-tooltip', className, popupClassName)}
         style={popupStyle}
-        onPointerEnter={() => {
-          hovered.current = true;
-          clearTimeout(timer.current);
-        }}
-        onPointerLeave={() => {
-          hovered.current = false;
-          if (!focused.current) schedule(false, leaveDelay);
-        }}
+        onPointerEnter={hoverFocus.onPanelPointerEnter}
+        onPointerLeave={hoverFocus.onPanelPointerLeave}
       >
         {content}
       </FloatingPanel>

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -52,5 +52,39 @@ describe('Popover', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Details' }));
     expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('closes hover popovers after pointer leave when the trigger was clicked or dismissed with Escape', async () => {
+    render(
+      <Popover
+        title="Details"
+        trigger="hover"
+        content="Description"
+        enterDelay={20}
+        leaveDelay={20}
+      >
+        <Button>Details</Button>
+      </Popover>,
+    );
+    const button = screen.getByRole('button', { name: 'Details' });
+
+    await userEvent.hover(button);
+    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
+
+    await userEvent.click(button);
+    expect(button).toHaveFocus();
+    await userEvent.unhover(button);
+    await waitFor(() => expect(screen.queryByRole('tooltip')).toBeNull());
+
+    await userEvent.click(document.body);
+    await userEvent.tab();
+    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('tooltip')).toBeNull();
+
+    await userEvent.hover(button);
+    await waitFor(() => expect(screen.getByRole('tooltip')).toBeInTheDocument());
+    await userEvent.unhover(button);
+    await waitFor(() => expect(screen.queryByRole('tooltip')).toBeNull());
   });
 });

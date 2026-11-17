@@ -7,6 +7,13 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.17.3 - 2026-11-18
+
+### Fixes
+
+- Fixed `Tooltip` and `Popover` (`trigger="hover"`) staying open after clicking a focusable trigger and moving the pointer away, as well as failing to auto-close on subsequent hover/leave after an `Escape` dismiss; pointer-triggered focus no longer opens or locks the floating panel open, while keyboard focus remains supported.
+- Fixed floating arrows (`Tooltip` and `Popover`) clipping on `left` and `right` placements due to unswapped pseudo-element dimensions (`5px × 16px`), and aligned arrow offsets with physical `data-side` coordinates so RTL layouts keep arrows on the correct side.
+
 ## 0.17.2 - 2026-11-18
 
 ### Fixes
