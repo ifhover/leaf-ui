@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Carousel } from '../carousel';
 import { ConfigProvider } from '../config-provider';
+import { inertProps } from '../shared/inert';
 import { Statistic } from '../statistic';
 import { Tree } from '../tree';
 import { Tabs } from './tabs';
@@ -283,7 +284,7 @@ describe('Navigation motion contracts', () => {
         />
       );
       const { container, rerender } = render(
-        <div inert style={{ visibility: 'hidden' }}>
+        <div {...inertProps(true)} style={{ visibility: 'hidden' }}>
           <div>{tabs}</div>
         </div>,
       );
