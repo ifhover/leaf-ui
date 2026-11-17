@@ -2,7 +2,7 @@ import { X } from 'lucide-react';
 import {
   type ComponentType,
   type ReactNode,
-  type RefObject,
+  type Ref,
   useEffect,
   useId,
   useRef,
@@ -26,7 +26,7 @@ export interface ModalTabsRenderProps {
   titleId: string;
   hasHeading: boolean;
   closeButton: ReactNode;
-  contentRef: RefObject<HTMLDivElement | null>;
+  contentRef: Ref<HTMLDivElement>;
   snapHeight: () => void;
   ariaLabel?: string;
   ariaLabelledBy?: string;

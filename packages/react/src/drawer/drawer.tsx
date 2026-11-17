@@ -2,7 +2,7 @@ import { X } from 'lucide-react';
 import {
   type HTMLAttributes,
   type ReactNode,
-  type RefObject,
+  type Ref,
   useContext,
   useEffect,
   useId,
@@ -67,7 +67,7 @@ interface DrawerInnerProps {
   footer?: ReactNode;
   closable: boolean;
   onClose?: () => void;
-  contentRef: RefObject<HTMLDivElement | null>;
+  contentRef: Ref<HTMLDivElement>;
   ariaLabel?: string;
   ariaLabelledBy?: string;
   children?: ReactNode;
