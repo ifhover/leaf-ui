@@ -858,8 +858,8 @@ const apiSectionOrder = {
     'UploadResult',
   ],
   'components/file-list': ['FileListProps', 'FileItem'],
-  'components/modal': ['ModalProps'],
-  'components/drawer': ['DrawerProps'],
+  'components/modal': ['ModalProps', 'ModalTabsProps'],
+  'components/drawer': ['DrawerProps', 'DrawerTabsProps'],
   'components/confirm': ['ConfirmApi', 'ConfirmOptions', 'ConfirmProviderProps'],
   'components/grid': ['GridProps', 'RowProps', 'ColProps'],
   'components/descriptions': ['DescriptionsProps', 'DescriptionItem'],
@@ -1295,6 +1295,7 @@ const apiPropertyOrder = {
     'open',
     'title',
     'description',
+    'tabs',
     'children',
     'onClose',
     'onConfirm',
@@ -1323,6 +1324,7 @@ const apiPropertyOrder = {
     'open',
     'title',
     'description',
+    'tabs',
     'children',
     'onClose',
     'placement',
@@ -2069,6 +2071,14 @@ const specific = {
   ],
   'ModalProps.title': ['弹窗标题。', 'Dialog title.'],
   'DrawerProps.title': ['抽屉标题。', 'Drawer title.'],
+  'ModalProps.tabs': [
+    '内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。',
+    'Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider.',
+  ],
+  'DrawerProps.tabs': [
+    '内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。',
+    'Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider.',
+  ],
   'ModalProps.onConfirm': [
     '默认确认按钮的操作，可返回 Promise；等待期间阻止重复确认和默认关闭。成功后应用仍须更新 open。',
     'Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success.',
@@ -3579,8 +3589,13 @@ for (const [page, names] of byPage) {
           throw new Error(`Missing inline API documentation: ${file} (${name})`);
         continue;
       }
-      // Card tabs intentionally reuse the standalone Tabs API instead of duplicating its table.
-      if (page === 'components/card' && name === 'CardTabsProps') continue;
+      // 内嵌标签页直接复用独立 Tabs API 说明，不重复生成整张表格。
+      if (
+        (page === 'components/card' && name === 'CardTabsProps') ||
+        (page === 'components/modal' && name === 'ModalTabsProps') ||
+        (page === 'components/drawer' && name === 'DrawerTabsProps')
+      )
+        continue;
       const props = schema.get(name);
       if (!props?.size) continue;
       const section = apiSectionMatch(document, name);
@@ -3739,7 +3754,19 @@ for (const [page, names] of byPage) {
                 '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Card 固定使用 `type="line"` 与 `placement="top"`，并为标签页内容接入加载骨架；`tabs.extra` 仍属于标签栏，`items` 为空时恢复普通卡片。\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
                 'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Card fixes `type="line"` and `placement="top"`, adds loading skeletons to tab content, and keeps `tabs.extra` on the tab bar; an empty `items` list restores an ordinary card.\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
               ]
-            : undefined;
+            : page === 'components/modal'
+              ? [
+                  'ModalTabsProps',
+                  '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Modal 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通弹窗。\n\n```ts\ntype ModalTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+                  'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Modal fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary modal when `items` is empty.\n\n```ts\ntype ModalTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+                ]
+              : page === 'components/drawer'
+                ? [
+                    'DrawerTabsProps',
+                    '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Drawer 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通抽屉。\n\n```ts\ntype DrawerTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+                    'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Drawer fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary drawer when `items` is empty.\n\n```ts\ntype DrawerTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
+                  ]
+                : undefined;
     if (sharedReference) {
       const sharedSection = apiSectionMatch(document, sharedReference[0]);
       if (sharedSection) {

@@ -5,6 +5,7 @@ import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ModalDestroy } from '../../../src/examples/en/modal/destroy';
 import { ModalFocus } from '../../../src/examples/en/modal/focus';
 import { ModalAsync } from '../../../src/examples/en/modal/async';
+import { ModalTabs } from '../../../src/examples/en/modal/tabs';
 
 export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
@@ -90,6 +91,17 @@ Return a Promise to show loading and prevent duplicate actions. Default cancella
 
 </ComponentExample>
 
+### Tabbed modal
+
+Use `tabs` to embed line tabs beneath the heading or in place of it when untitled. The tab bar stays fixed above the scrolling body and always keeps its bottom divider even when `divided={false}`. Omit item `children` when using the tabs solely to switch state for Modal's `children`.
+
+<ComponentExample exampleId="tabs" preview={<ModalTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/tabs.tsx"
+```
+
+</ComponentExample>
+
 {/* leaf:section api */}
 
 ## API
@@ -105,6 +117,7 @@ Provide `aria-label` when omitting `title`.
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Dialog title. |
 | `description` | `ReactNode` | — | Additional description. |
+| `tabs` | [`ModalTabsProps`](#modaltabs-api) | — | Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider. |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `onConfirm` | `() => void \| Promise<void>` | — | Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success. |
 | `onCancel` | `() => void` | — | Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose. |
@@ -127,6 +140,14 @@ Provide `aria-label` when omitting `title`.
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
+
+### ModalTabs API
+
+See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Modal fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary modal when `items` is empty.
+
+```ts
+type ModalTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```
 
 ### ModalFooterActions
 

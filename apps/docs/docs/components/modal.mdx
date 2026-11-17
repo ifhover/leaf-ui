@@ -5,6 +5,7 @@ import { ModalFooter } from '../../src/examples/modal/footer';
 import { ModalDestroy } from '../../src/examples/modal/destroy';
 import { ModalFocus } from '../../src/examples/modal/focus';
 import { ModalAsync } from '../../src/examples/modal/async';
+import { ModalTabs } from '../../src/examples/modal/tabs';
 
 export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
@@ -90,6 +91,17 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 </ComponentExample>
 
+### 标签页弹窗
+
+通过 `tabs` 在标题下方或顶部嵌入线形标签页。标签栏固定在正文滚动区上方，即使设置 `divided={false}` 也会保留标签栏底部分割线；若仅将标签栏用于切换状态并把内容写在 Modal 的 `children` 中，可省略各项的 `children`。
+
+<ComponentExample exampleId="tabs" preview={<ModalTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/modal/tabs.tsx"
+```
+
+</ComponentExample>
+
 {/* leaf:section api */}
 
 ## API
@@ -105,6 +117,7 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
 | `title` | `ReactNode` | — | 弹窗标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
+| `tabs` | [`ModalTabsProps`](#modaltabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `onConfirm` | `() => void \| Promise<void>` | — | 默认确认按钮的操作，可返回 Promise；等待期间阻止重复确认和默认关闭。成功后应用仍须更新 open。 |
 | `onCancel` | `() => void` | — | 取消按钮、关闭按钮、遮罩或 Escape 请求关闭时调用；省略时调用 onClose。 |
@@ -127,6 +140,14 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
 | `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |
+
+### ModalTabs API
+
+内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Modal 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通弹窗。
+
+```ts
+type ModalTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```
 
 ### ModalFooterActions
 

@@ -11,6 +11,7 @@ export function useNaturalHeightTransition(
 ) {
   const enabled = useMotionEnabled();
   const sync = useRef<(() => void) | undefined>(undefined);
+  const snap = useRef<() => void>(() => {});
   useBrowserLayoutEffect(() => {
     const surface = surfaceRef.current;
     const content = contentRef.current;
@@ -52,6 +53,15 @@ export function useNaturalHeightTransition(
         });
     };
     sync.current = update;
+    // 切换标签页时立即刷新高度基线，避免触发容器高度缓动。
+    snap.current = () => {
+      animation?.cancel();
+      reveal?.cancel();
+      animation = undefined;
+      reveal = undefined;
+      lastHeight = surface.offsetHeight;
+      lastLayout = layout();
+    };
     let observer: ResizeObserver | undefined;
     if (typeof ResizeObserver !== 'undefined') {
       observer = new ResizeObserver(update);
@@ -61,12 +71,7 @@ export function useNaturalHeightTransition(
     // Viewport constraints change the visible height without changing content.
     // Resizing establishes a fresh baseline instead of animating stale geometry.
     const resize = () => {
-      animation?.cancel();
-      reveal?.cancel();
-      animation = undefined;
-      reveal = undefined;
-      lastHeight = surface.offsetHeight;
-      lastLayout = layout();
+      snap.current();
     };
     window.addEventListener('resize', resize);
     window.visualViewport?.addEventListener('resize', resize);
@@ -77,12 +82,14 @@ export function useNaturalHeightTransition(
       animation?.cancel();
       reveal?.cancel();
       sync.current = undefined;
+      snap.current = () => {};
     };
   }, [open, enabled, surfaceRef, contentRef]);
   // React updates to the header/footer are measurable before the next paint.
   useBrowserLayoutEffect(() => {
     sync.current?.();
   });
+  return useRef(() => snap.current()).current;
 }
 
 /** Animate a panel's explicit view change without remounting its focused controls. */

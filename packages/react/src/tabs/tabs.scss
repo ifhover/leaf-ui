@@ -196,6 +196,12 @@
     &__panel {
       padding-block: 18px;
       outline: none;
+      > :first-child {
+        margin-block-start: 0;
+      }
+      > :last-child {
+        margin-block-end: 0;
+      }
       &:focus-visible {
         @include mixins.focus-ring;
         outline-offset: -2px;

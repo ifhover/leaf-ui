@@ -27,7 +27,7 @@ const dependencies = {
   cascader: ['input', 'checkbox', 'scrollbar'],
   colorpicker: ['input', 'inputnumber', 'slider', 'tooltip', 'tabs'],
   form: [],
-  modal: ['scrollbar'],
+  modal: ['scrollbar', 'tabs'],
   confirm: ['modal', 'alert'],
   drawer: ['modal'],
   message: ['alert'],

@@ -3,7 +3,7 @@ import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState 
 import { FeedbackIcon } from '../alert/alert';
 import { ButtonControl, type ButtonProps } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
-import { ModalBase } from '../modal/modal';
+import { ModalBase } from '../modal/base';
 import type { DialogFocusOptions } from '../shared/dialog';
 
 export interface ConfirmOptions extends DialogFocusOptions {

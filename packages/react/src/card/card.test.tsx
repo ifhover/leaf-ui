@@ -193,6 +193,29 @@ describe('Card tabs', () => {
     expect(screen.getByRole('tablist')).toHaveAccessibleName('Custom tabs');
     expect(screen.getByRole('tablist')).not.toHaveAttribute('aria-labelledby');
   });
+
+  it('keeps the line tab bar header intact when bordered is false', () => {
+    render(
+      <Card
+        data-testid="borderless-tabbed-card"
+        bordered={false}
+        tabs={{
+          'aria-label': 'Views',
+          items: [
+            { key: 'a', label: 'A' },
+            { key: 'b', label: 'B' },
+          ],
+        }}
+      >
+        Body
+      </Card>,
+    );
+    const card = screen.getByTestId('borderless-tabbed-card');
+    expect(card).not.toHaveClass('leaf-card--bordered');
+    expect(
+      card.querySelector('.leaf-card__tabs.leaf-tabs--line > .leaf-tabs__header'),
+    ).not.toBeNull();
+  });
 });
 
 describe('Card variants', () => {

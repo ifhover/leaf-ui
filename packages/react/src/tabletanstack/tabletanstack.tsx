@@ -85,6 +85,17 @@ function warnDevelopment(key: string, message: string) {
   console.warn(`Leaf UI: ${message}`);
 }
 
+const SELECTION_CONTENT_WIDTH = 34; // 左右各 8px 内边距 + 18px 选择框本身宽度
+
+function resolvePx(value: number | string | undefined, fallback: number) {
+  if (typeof value === 'number') return Number.isFinite(value) && value >= 0 ? value : fallback;
+  if (typeof value === 'string') {
+    const match = /^\s*(?:0+(?:\.0+)?|(\d+(?:\.\d+)?)\s*px)\s*$/iu.exec(value);
+    if (match) return Number(match[1] ?? 0);
+  }
+  return fallback;
+}
+
 function hasSortingModel(table: TanStackTable<unknown>) {
   return Boolean(table.options.getSortedRowModel || table.options.manualSorting);
 }
@@ -716,6 +727,7 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const config = useDataTableContext();
   const { table, tableRef, loading, error, emptyContent, onRetry, selection, resizable, virtual } =
     config;
+  const { theme } = useLeafConfig();
   const t = useText();
   const viewport = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(0);
@@ -748,10 +760,15 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const expandable = config.expandable && !config.renderRowHeader;
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const colSpan = Math.max(1, columns.length + utilityCount);
+  // 开启 bordered 时单元格右边框占去内部空间，需要一并计入选择列宽度
+  const selectionBorderWidth = config.bordered
+    ? resolvePx(theme.components?.Table?.borderWidth ?? theme.tokens?.borderWidth, 1)
+    : 0;
+  const selectionWidth = SELECTION_CONTENT_WIDTH + selectionBorderWidth;
   const layout = getColumnLayout(table, columns, {
     forceFixed: Boolean(resizable || virtual || columns.some((column) => column.getIsPinned())),
     availableWidth,
-    utilityWidth: (selection ? 32 : 0) + (expandable ? 48 : 0),
+    utilityWidth: (selection ? selectionWidth : 0) + (expandable ? 48 : 0),
   });
   const status =
     error != null && error !== false
@@ -802,7 +819,15 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
         <colgroup>
-          {selection && <col style={{ width: 32 }} />}
+          {selection && (
+            <col
+              style={{
+                width: config.bordered
+                  ? `calc(${SELECTION_CONTENT_WIDTH}px + var(--leaf-table-border-width))`
+                  : SELECTION_CONTENT_WIDTH,
+              }}
+            />
+          )}
           {expandable && <col style={{ width: 48 }} />}
           {columns.map((column) => (
             <col

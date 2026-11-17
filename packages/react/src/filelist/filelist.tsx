@@ -19,7 +19,7 @@ import { type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { ImagePreviewControl as ImagePreview } from '../image/image';
-import { ModalBase } from '../modal/modal';
+import { ModalBase } from '../modal/base';
 import { classes } from '../shared/classes';
 import { useListMotion } from '../shared/motion';
 import { useFormattedText } from '../shared/use-formatted-text';

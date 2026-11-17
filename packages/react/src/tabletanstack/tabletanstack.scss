@@ -118,7 +118,10 @@
       }
     }
     &__selection {
-      width: 32px;
+      width: 34px;
+    }
+    .leaf-table--bordered &__selection {
+      width: calc(34px + var(--leaf-table-border-width));
     }
     &__expansion {
       width: 48px;

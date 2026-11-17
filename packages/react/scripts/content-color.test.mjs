@@ -133,7 +133,11 @@ test('tables retain theme-aware ink, stripes and explicit divider paint override
 test('table outer cell insets exclude fixed-width utility columns in both directions', async () => {
   const table = await compiledStyles('tabletanstack/tabletanstack.scss');
   const utility = table('.leaf-data-table__utility');
-  assert.equal(table('.leaf-data-table__selection').width, '32px');
+  assert.equal(table('.leaf-data-table__selection').width, '34px');
+  assert.equal(
+    table('.leaf-table--bordered .leaf-data-table__selection').width,
+    'calc(34px + var(--leaf-table-border-width))',
+  );
   assert.equal(table('.leaf-data-table__expansion').width, '48px');
   assert.equal(utility['padding-inline'], '8px');
   for (const rtl of [false, true]) {
@@ -277,6 +281,52 @@ test('Cards keep body top padding when header-only tabs or cover precede the bod
   assert.equal(
     card('.leaf-card__cover + .leaf-card__tabs > .leaf-tabs__header')['border-start-end-radius'],
     '0px',
+  );
+  assert.equal(
+    card('.leaf-card__tabs.leaf-tabs--line > .leaf-tabs__header::before')['border-block-end-color'],
+    'var(--leaf-component-card-border-color,var(--leaf-frame-border-color,var(--leaf-card-frame-color)))',
+  );
+});
+
+test('Modal and Drawer retain the tab bar bottom line even when divided is false', async () => {
+  const modal = await compiledStyles('modal/modal.scss');
+  assert.equal(
+    modal('.leaf-modal--tabbed > .leaf-modal__header:not(.leaf-modal__header--compact)')[
+      'border-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    modal('.leaf-modal--tabbed > .leaf-modal__header:not(.leaf-modal__header--compact)')[
+      'padding-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    modal('.leaf-dialog-tabs.leaf-tabs--line > .leaf-tabs__header::before')[
+      'border-block-end-color'
+    ],
+    'var(--leaf-dialog-divider)',
+  );
+
+  const drawer = await compiledStyles('drawer/drawer.scss');
+  assert.equal(
+    drawer('.leaf-drawer--tabbed > .leaf-drawer__header:not(.leaf-drawer__header--compact)')[
+      'border-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    drawer('.leaf-drawer--tabbed > .leaf-drawer__header:not(.leaf-drawer__header--compact)')[
+      'padding-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    drawer('.leaf-dialog-tabs.leaf-tabs--line > .leaf-tabs__header::before')[
+      'border-block-end-color'
+    ],
+    'var(--leaf-dialog-divider)',
   );
 });
 

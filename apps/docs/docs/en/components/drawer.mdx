@@ -4,6 +4,7 @@ import { DrawerPlacement } from '../../../src/examples/en/drawer/placement';
 import { DrawerSections } from '../../../src/examples/en/drawer/sections';
 import { DrawerResize } from '../../../src/examples/en/drawer/resize';
 import { DrawerNested } from '../../../src/examples/en/drawer/nested';
+import { DrawerTabs } from '../../../src/examples/en/drawer/tabs';
 
 export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
@@ -74,6 +75,17 @@ Set `push` on the child drawer to shift its nearest parent overlay. `true` means
 
 </ComponentExample>
 
+### Tabbed drawer
+
+Use `tabs` to embed line tabs beneath the heading or in place of it when untitled. The tab bar stays fixed above the scrolling body and always keeps its bottom divider even when `divided={false}` (the default). Omit item `children` when using the tabs solely to switch state for Drawer's `children`.
+
+<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/tabs.tsx"
+```
+
+</ComponentExample>
+
 For content preservation and focus configuration, see [Modal advanced usage](/en/components/modal#advanced-usage).
 
 {/* leaf:section api */}
@@ -89,6 +101,7 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Drawer title. |
 | `description` | `ReactNode` | — | Additional description. |
+| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider. |
 | `onClose` | `() => void` | — | Close request; update open in application state |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
 | `width` | `number \| string` | `380` | Width for left and right drawers |
@@ -112,3 +125,11 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
+
+### DrawerTabs API
+
+See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Drawer fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary drawer when `items` is empty.
+
+```ts
+type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```

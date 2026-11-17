@@ -96,7 +96,7 @@
       opacity: 0;
       transform: var(--leaf-drawer-enter);
     }
-    &__extra {
+    &__header > &__extra {
       margin-inline-start: auto;
     }
     &__footer {
@@ -148,6 +148,7 @@
     &__extra + &__close {
       margin-inline-start: 0;
     }
+    @include dialog-sections.tabs(drawer);
   }
   .leaf-drawer-mask[data-state='closing'] .leaf-drawer {
     opacity: 0;

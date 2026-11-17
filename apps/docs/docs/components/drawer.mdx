@@ -4,6 +4,7 @@ import { DrawerPlacement } from '../../src/examples/drawer/placement';
 import { DrawerSections } from '../../src/examples/drawer/sections';
 import { DrawerResize } from '../../src/examples/drawer/resize';
 import { DrawerNested } from '../../src/examples/drawer/nested';
+import { DrawerTabs } from '../../src/examples/drawer/tabs';
 
 export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
@@ -74,6 +75,17 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 </ComponentExample>
 
+### 标签页抽屉
+
+通过 `tabs` 在标题下方或顶部嵌入线形标签页。标签栏固定在正文滚动区上方，即使 `divided={false}`（默认值）也会保留标签栏底部分割线；若仅将标签栏用于切换状态并把内容写在 Drawer 的 `children` 中，可省略各项的 `children`。
+
+<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/drawer/tabs.tsx"
+```
+
+</ComponentExample>
+
 内容保留与焦点配置参见 [Modal 的进阶用法](/components/modal#进阶用法)。
 
 {/* leaf:section api */}
@@ -89,6 +101,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
 | `title` | `ReactNode` | — | 抽屉标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
+| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
 | `width` | `number \| string` | `380` | 左右抽屉宽度 |
@@ -112,3 +125,11 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
 | `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |
+
+### DrawerTabs API
+
+内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Drawer 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通抽屉。
+
+```ts
+type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```

@@ -331,12 +331,6 @@
       }
       > .leaf-tabs__panels > .leaf-tabs__panel {
         padding: var(--leaf-card-padding);
-        > :first-child {
-          margin-block-start: 0;
-        }
-        > :last-child {
-          margin-block-end: 0;
-        }
       }
     }
     &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header,

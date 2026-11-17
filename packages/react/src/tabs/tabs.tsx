@@ -66,7 +66,17 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   sortable?: boolean;
   onReorder?: (items: TabItem[]) => void;
 }
-export function TabsControl({
+export interface TabsParts {
+  rootProps: HTMLAttributes<HTMLDivElement>;
+  header: ReactNode;
+  panels: ReactNode;
+  selected: string | undefined;
+  hasPanels: boolean;
+  hasVisiblePanel: boolean;
+}
+
+/** 内部复用原语：拆分标签栏与面板，供 Card / Modal / Drawer 在各自滚动与分区结构中组装。 */
+export function useTabsParts({
   items,
   activeKey,
   defaultActiveKey,
@@ -87,10 +97,12 @@ export function TabsControl({
   sortable = false,
   onReorder,
   className,
+  panelsClassName,
   'aria-label': label,
   'aria-labelledby': labelledBy,
+  visibilityKey,
   ...props
-}: TabsProps) {
+}: TabsProps & { visibilityKey?: unknown; panelsClassName?: string }): TabsParts | null {
   const { direction } = useLeafConfig();
   const t = useText();
   const format = useFormattedText();
@@ -111,7 +123,7 @@ export function TabsControl({
     track,
     indicator,
     '[data-leaf-indicator-item][data-active="true"]',
-    `${selected}-${placement}-${type}-${tone}-${shape}-${direction}`,
+    `${selected}-${placement}-${type}-${tone}-${shape}-${direction}-${visibilityKey ?? ''}`,
     items.length > 0,
   );
   const [scrollSides, setScrollSides] = useState({ start: false, end: false });
@@ -120,7 +132,9 @@ export function TabsControl({
   useEffect(() => {
     const node = list.current;
     if (!overflow || !node) {
-      setScrollSides({ start: false, end: false });
+      setScrollSides((previous) =>
+        !previous.start && !previous.end ? previous : { start: false, end: false },
+      );
       return;
     }
     const measure = () => {
@@ -172,10 +186,15 @@ export function TabsControl({
     });
   };
   if (items.length === 0) return null;
-  return (
-    <div
-      {...props}
-      className={classes(
+  const hasPanels = items.some((item) => item.children != null);
+  const hasVisiblePanel = items.some((item) => item.key === selected && item.children != null);
+  return {
+    selected,
+    hasPanels,
+    hasVisiblePanel,
+    rootProps: {
+      ...props,
+      className: classes(
         'leaf-tabs',
         `leaf-tabs--${type}`,
         tone !== 'soft' && `leaf-tabs--${tone}`,
@@ -184,8 +203,9 @@ export function TabsControl({
         `leaf-tabs--${size}`,
         block && 'leaf-tabs--block',
         className,
-      )}
-    >
+      ),
+    },
+    header: (
       <TabDragScope enabled={sorting} items={items} onReorder={onReorder}>
         <div className="leaf-tabs__header">
           <div className="leaf-tabs__viewport">
@@ -334,28 +354,39 @@ export function TabsControl({
           {extra && <div className="leaf-tabs__extra">{extra}</div>}
         </div>
       </TabDragScope>
-      {items.some((item) => item.children != null) && (
-        <div className="leaf-tabs__panels">
-          {items.map(
-            (item, index) =>
-              item.children != null && (
-                <div
-                  key={item.key}
-                  id={`${id}-panel-${index}`}
-                  role="tabpanel"
-                  aria-labelledby={`${id}-tab-${index}`}
-                  hidden={item.key !== selected}
-                  // biome-ignore lint/a11y/noNoninteractiveTabindex: Tabpanels are keyboard focus destinations in the ARIA tabs pattern.
-                  tabIndex={0}
-                  className="leaf-tabs__panel"
-                >
-                  {(item.key === selected || (!destroyInactive && visited.includes(item.key))) &&
-                    item.children}
-                </div>
-              ),
-          )}
-        </div>
-      )}
+    ),
+    panels: hasPanels ? (
+      <div className={classes('leaf-tabs__panels', panelsClassName)}>
+        {items.map(
+          (item, index) =>
+            item.children != null && (
+              <div
+                key={item.key}
+                id={`${id}-panel-${index}`}
+                role="tabpanel"
+                aria-labelledby={`${id}-tab-${index}`}
+                hidden={item.key !== selected}
+                // biome-ignore lint/a11y/noNoninteractiveTabindex: Tabpanels are keyboard focus destinations in the ARIA tabs pattern.
+                tabIndex={0}
+                className="leaf-tabs__panel"
+              >
+                {(item.key === selected || (!destroyInactive && visited.includes(item.key))) &&
+                  item.children}
+              </div>
+            ),
+        )}
+      </div>
+    ) : null,
+  };
+}
+
+export function TabsControl(props: TabsProps) {
+  const parts = useTabsParts(props);
+  if (!parts) return null;
+  return (
+    <div {...parts.rootProps}>
+      {parts.header}
+      {parts.panels}
     </div>
   );
 }

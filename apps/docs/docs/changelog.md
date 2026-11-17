@@ -7,6 +7,18 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.17.0 - 2026-11-17
+
+### 新增功能
+
+- 为 `Modal` 与 `Drawer` 新增 `tabs` 属性（及 `ModalTabsProps` / `DrawerTabsProps` 类型），固定使用顶部 `line` 标签页：标签栏固定在正文滚动区上方，标签面板进入滚动区域；省略标签项 `children` 时可作为正文状态切换器，无标题时关闭按钮及 `Drawer` `extra` 自动移至标签栏行尾。
+
+### 改进与修复
+
+- 确保 `Modal`、`Drawer` 使用 `tabs` 时，即使设置 `divided={false}` 也始终保留标签栏底部分割线（同步确认 `Card` 在 `bordered={false}` 时保留标签栏底线），有标题时自动隐藏标题底线避免双线，并保持 `Modal` 切换标签页时高度立即更新。
+- 修复 `Tabs` 空条目渲染时的无状态循环重渲染，并在 `Confirm` 与 `FileList` 复用的 `ModalBase` 中隔离 `Tabs` 依赖。
+- 调整 `DataTable` 选择列默认宽度为 `34px`（启用 `bordered` 时计入单元格边框宽度），避免多选框在固定或带边框列布局下被裁切；同步更新中英文 `Modal`、`Drawer` 使用文档与示例。
+
 ## 0.16.7 - 2026-11-17
 
 ### 改进与修复

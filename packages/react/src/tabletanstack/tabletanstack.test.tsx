@@ -1400,4 +1400,66 @@ describe('DataTable TanStack adapter', () => {
     view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="sm" />);
     expect(nav()).toHaveClass('leaf-pagination--sm');
   });
+
+  it('sizes the selection column to fit its inline padding, control width and bordered end rule', () => {
+    const clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(1000);
+    try {
+      const pinnedColumns: ColumnDef<Person>[] = [
+        { accessorKey: 'name', header: 'Name' },
+        { accessorKey: 'team', header: 'Team', size: 140 },
+      ];
+      const view = render(
+        <DataTable
+          data={data}
+          columns={pinnedColumns}
+          rowKey="id"
+          pagination={false}
+          selection="multiple"
+          options={{ initialState: { columnPinning: { right: ['team'] } } }}
+        />,
+      );
+      let cols = [...screen.getByRole('table').querySelectorAll('col')];
+      expect(cols.map((col) => col.style.width)).toEqual(['34px', '826px', '140px']);
+
+      view.rerender(
+        <DataTable
+          data={data}
+          columns={pinnedColumns}
+          rowKey="id"
+          pagination={false}
+          selection="multiple"
+          bordered
+          options={{ initialState: { columnPinning: { right: ['team'] } } }}
+        />,
+      );
+      cols = [...screen.getByRole('table').querySelectorAll('col')];
+      expect(cols.map((col) => col.style.width)).toEqual([
+        'calc(34px + var(--leaf-table-border-width))',
+        '825px',
+        '140px',
+      ]);
+
+      view.rerender(
+        <ConfigProvider theme={{ components: { Table: { borderWidth: 2 } } }}>
+          <DataTable
+            data={data}
+            columns={pinnedColumns}
+            rowKey="id"
+            pagination={false}
+            selection="multiple"
+            bordered
+            options={{ initialState: { columnPinning: { right: ['team'] } } }}
+          />
+        </ConfigProvider>,
+      );
+      cols = [...screen.getByRole('table').querySelectorAll('col')];
+      expect(cols.map((col) => col.style.width)).toEqual([
+        'calc(34px + var(--leaf-table-border-width))',
+        '824px',
+        '140px',
+      ]);
+    } finally {
+      clientWidth.mockRestore();
+    }
+  });
 });

@@ -41,7 +41,7 @@
     @include backdrop.blur('.leaf-modal-mask');
   }
   .leaf-modal {
-    @include dialog-sections.sections(modal);
+    @include dialog-sections.sections(modal, var(--leaf-density-dialog-block));
     // Three compact layers retain depth without the large shadow's broad footprint.
     --leaf-modal-default-shadow:
       var(--leaf-shadow-md), var(--leaf-shadow-md), var(--leaf-shadow-md);
@@ -165,17 +165,18 @@
         > .leaf-modal__heading > .leaf-modal__description {
           font-size: var(--leaf-font-size-sm);
         }
-        > .leaf-modal__close {
-          box-sizing: border-box;
-          align-self: center;
-          margin-inline-end: -4px;
-          width: 32px;
-          height: 32px;
-          padding: 8px;
-          > svg {
-            width: 16px;
-            height: 16px;
-          }
+      }
+      > .leaf-modal__header > .leaf-modal__close,
+      .leaf-modal__tab-extra > .leaf-modal__close {
+        box-sizing: border-box;
+        align-self: center;
+        margin-inline-end: -4px;
+        width: 32px;
+        height: 32px;
+        padding: 8px;
+        > svg {
+          width: 16px;
+          height: 16px;
         }
       }
       > .leaf-modal__footer {
@@ -185,6 +186,10 @@
         );
         background: var(--leaf-component-modal-footer-background, transparent);
       }
+    }
+    @include dialog-sections.tabs(modal);
+    &.leaf-modal--tabbed > .leaf-modal__header.leaf-modal__header--icon {
+      padding-block-end: 4px;
     }
   }
   @media (prefers-reduced-motion: reduce) {

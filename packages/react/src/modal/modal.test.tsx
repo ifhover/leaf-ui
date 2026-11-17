@@ -327,4 +327,81 @@ describe('Modal and Confirm', () => {
     await expect(result).resolves.toBe(true);
     await act(async () => {});
   });
+  it('embeds top line tabs outside the scrolling body and preserves visited state', async () => {
+    const tabItems = [
+      { key: 'general', label: 'General', children: <input aria-label="Workspace name" /> },
+      { key: 'members', label: 'Members', children: 'Member list' },
+    ];
+    render(
+      <Modal open title="Workspace" divided={false} tabs={{ items: tabItems }}>
+        Shared footer note
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Workspace' });
+    expect(dialog).toHaveClass('leaf-modal--tabbed');
+    expect(dialog).not.toHaveClass('leaf-modal--divided');
+    const tablist = screen.getByRole('tablist', { name: 'Workspace' });
+    const tabsRoot = tablist.closest('.leaf-modal__tabs');
+    const body = dialog.querySelector('.leaf-modal__body');
+    expect(tabsRoot).toHaveClass('leaf-tabs--line', 'leaf-tabs--top');
+    expect(body?.contains(tablist)).toBe(false);
+    expect(body?.contains(screen.getByRole('tabpanel', { name: 'General' }))).toBe(true);
+    expect(screen.getByText('Shared footer note').closest('.leaf-modal__content')).not.toBeNull();
+
+    await userEvent.type(screen.getByRole('textbox', { name: 'Workspace name' }), 'Leaf');
+    await userEvent.click(screen.getByRole('tab', { name: 'Members' }));
+    expect(screen.getByRole('tabpanel', { name: 'Members' })).toHaveTextContent('Member list');
+    await userEvent.click(screen.getByRole('tab', { name: 'General' }));
+    expect(screen.getByRole('textbox', { name: 'Workspace name' })).toHaveValue('Leaf');
+  });
+  it('supports header-only tabs as a body switcher and moves close action onto untitled tabs', async () => {
+    const close = vi.fn();
+    function Example() {
+      const [view, setView] = useState('info');
+      return (
+        <Modal
+          open
+          aria-label="Details"
+          onClose={close}
+          tabs={{
+            activeKey: view,
+            onChange: setView,
+            items: [
+              { key: 'info', label: 'Info' },
+              { key: 'logs', label: 'Logs' },
+            ],
+          }}
+        >
+          {view === 'info' ? 'Info body' : 'Logs body'}
+        </Modal>
+      );
+    }
+    render(<Example />);
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.querySelector('.leaf-modal__header')).toBeNull();
+    expect(dialog.querySelector('.leaf-tabs__panels')).toBeNull();
+    expect(screen.queryByRole('tabpanel')).toBeNull();
+    expect(screen.getByRole('tab', { name: 'Info' })).not.toHaveAttribute('aria-controls');
+    expect(dialog.querySelector('.leaf-modal__tab-extra > .leaf-modal__close')).not.toBeNull();
+
+    await userEvent.click(screen.getByRole('tab', { name: 'Logs' }));
+    expect(screen.getByText('Logs body')).toBeInTheDocument();
+    await userEvent.click(dialog.querySelector('.leaf-modal__close') as HTMLButtonElement);
+    expect(close).toHaveBeenCalledOnce();
+  });
+  it('resets embedded tab selection when destroyOnClose unmounts the modal', async () => {
+    const tabItems = [
+      { key: 'one', label: 'One', children: 'First tab' },
+      { key: 'two', label: 'Two', children: 'Second tab' },
+    ];
+    const { rerender } = render(
+      <Modal open title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />,
+    );
+    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
+    expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true');
+    rerender(<Modal open={false} title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />);
+    await waitFor(() => expect(document.querySelector('.leaf-modal')).toBeNull());
+    rerender(<Modal open title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />);
+    expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true');
+  });
 });

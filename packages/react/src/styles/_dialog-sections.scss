@@ -1,16 +1,10 @@
 @use './mixins';
 
-@mixin sections($component) {
+@mixin sections($component, $inline-padding: var(--leaf-density-dialog-inline)) {
   --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
   --leaf-dialog-icon-size: calc(var(--leaf-control-height) + 6px);
-  --leaf-dialog-padding-start: var(
-    --leaf-component-#{$component}-padding-left,
-    var(--leaf-density-dialog-inline)
-  );
-  --leaf-dialog-padding-end: var(
-    --leaf-component-#{$component}-padding-right,
-    var(--leaf-density-dialog-inline)
-  );
+  --leaf-dialog-padding-start: var(--leaf-component-#{$component}-padding-left, #{$inline-padding});
+  --leaf-dialog-padding-end: var(--leaf-component-#{$component}-padding-right, #{$inline-padding});
   --leaf-dialog-padding-block: var(
     --leaf-component-#{$component}-padding-top,
     var(--leaf-density-dialog-block)
@@ -111,5 +105,49 @@
   @media (max-width: 480px) {
     --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 10px);
     --leaf-dialog-icon-size: var(--leaf-control-height);
+  }
+}
+
+@layer leaf-ui {
+  .leaf-dialog-tabs {
+    flex-shrink: 0;
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    > .leaf-tabs__header {
+      padding-inline: var(--leaf-dialog-padding-start) var(--leaf-dialog-padding-end);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+    &--headed > .leaf-tabs__header {
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+    // 使用内嵌标签栏时，即使 divided={false} 也始终保留标签栏底部分割线。
+    &.leaf-tabs--line > .leaf-tabs__header::before {
+      border-block-end-color: var(--leaf-dialog-divider);
+    }
+  }
+  .leaf-dialog-tab-extra {
+    display: flex;
+    align-items: center;
+    gap: var(--leaf-dialog-heading-gap);
+  }
+  .leaf-dialog-panels {
+    > .leaf-tabs__panel {
+      padding-block: 0;
+    }
+    &:has(> .leaf-tabs__panel:not([hidden])) + * {
+      margin-block-start: var(--leaf-dialog-padding-block);
+    }
+  }
+}
+
+@mixin tabs($component) {
+  &--tabbed > &__header:not(.leaf-#{$component}__header--compact) {
+    padding-block-end: 0;
+    border-block-end: 0;
+  }
+  > .leaf-dialog-tabs > .leaf-tabs__header {
+    background: var(--leaf-component-#{$component}-header-background, transparent);
   }
 }

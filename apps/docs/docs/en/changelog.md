@@ -7,6 +7,18 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.17.0 - 2026-11-17
+
+### Features
+
+- Added `tabs` support (`ModalTabsProps` / `DrawerTabsProps`) to `Modal` and `Drawer` using fixed top `line` tabs: the tab bar stays pinned above the scrolling body while tab panels scroll inside it; omitting item `children` turns the tab bar into a body switcher, and untitled dialogs move the close button (and `Drawer` `extra`) to the trailing edge of the tab bar.
+
+### Improvements and fixes
+
+- Retained the tab bar bottom divider in `Modal` and `Drawer` even when `divided={false}` (and confirmed `Card` retains it with `bordered={false}`), suppressed the heading bottom border when tabs sit beneath a title to avoid double lines, and snapped `Modal` height immediately on tab switches.
+- Fixed an empty-items state loop in `Tabs`, kept `Tabs` isolated from `ModalBase` (used by `Confirm` and `FileList`), and updated bilingual `Modal` / `Drawer` docs and examples.
+- Adjusted `DataTable` selection column width to `34px` (plus cell border width when `bordered`) so selection checkboxes fit cleanly in bordered and pinned column layouts.
+
 ## 0.16.7 - 2026-11-17
 
 ### Improvements and fixes

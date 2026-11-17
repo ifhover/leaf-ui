@@ -76,7 +76,7 @@ export type { DescriptionItem, DescriptionsProps } from './descriptions';
 export { Descriptions } from './descriptions';
 export type { DividerProps } from './divider';
 export { Divider } from './divider';
-export type { DrawerProps } from './drawer';
+export type { DrawerProps, DrawerTabsProps } from './drawer';
 export { Drawer } from './drawer';
 export type { DropdownItem, DropdownProps } from './dropdown';
 export { Dropdown } from './dropdown';
@@ -140,7 +140,7 @@ export type { MenuGroupProps, MenuItem, MenuProps } from './menu';
 export { Menu, MenuGroup } from './menu';
 export type { MessageApi, MessageOptions, MessageProps, MessageProviderProps } from './message';
 export { Message, MessageProvider, useMessage } from './message';
-export type { ModalFooterActions, ModalProps } from './modal';
+export type { ModalFooterActions, ModalProps, ModalTabsProps } from './modal';
 export { Modal } from './modal';
 export type {
   NotificationApi,
