@@ -281,6 +281,14 @@ for (const engine of ['rspack', 'vite']) {
         !new RegExp(`\\.leaf-${selector}\\s*\\{`).test(css),
         `${engine} ${name} excludes ${selector}`,
       );
+    if (name === 'table') {
+      const baseCellIndex = css.indexOf('.leaf-table__cell');
+      const utilityCellIndex = css.indexOf('.leaf-data-table__utility');
+      assert.ok(
+        baseCellIndex >= 0 && utilityCellIndex > baseCellIndex,
+        `${engine} table orders base Table CSS before DataTable CSS`,
+      );
+    }
     styles.set(name, css);
     report.push({ engine, fixture: name, cssBytes: Buffer.byteLength(css) });
   }

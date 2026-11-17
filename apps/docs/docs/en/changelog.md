@@ -7,6 +7,14 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.17.1 - 2026-11-17
+
+### Fixes
+
+- Fixed `DataTable` automatic browser style entries loading base `table.css` after `tabletanstack.css`, which caused `.leaf-table__cell` to override `.leaf-data-table__utility` (`padding-inline: 8px`) and `.leaf-data-table__record-cell` (`padding-block: 6px`) and push selection checkboxes toward the right border; reordered component CSS imports after dependency imports in automatic browser entries and raised selector specificity so layout stays independent of chunk order.
+- Fixed `Tabs` moving indicator failing to re-measure geometry when an ancestor (including a ShadowRoot host) clears `inert` or `hidden`.
+- Changed `Modal` and `Drawer` embedded-tabs `contentRef` props to `Ref<HTMLDivElement>` for React 18 type compatibility.
+
 ## 0.17.0 - 2026-11-17
 
 ### Features

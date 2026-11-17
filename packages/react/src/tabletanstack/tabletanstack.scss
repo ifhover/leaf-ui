@@ -111,6 +111,9 @@
     &__utility {
       padding-inline: 8px;
       text-align: center;
+      @at-root .leaf-table__cell#{&} {
+        padding-inline: 8px;
+      }
       .leaf-checkbox,
       .leaf-radio {
         vertical-align: middle;
@@ -137,6 +140,9 @@
     }
     &__record-cell {
       padding-block: 6px;
+      @at-root .leaf-table__cell#{&} {
+        padding-block: 6px;
+      }
     }
     &__record-heading {
       display: flex;

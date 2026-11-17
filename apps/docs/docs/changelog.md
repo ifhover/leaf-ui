@@ -7,6 +7,14 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.17.1 - 2026-11-17
+
+### 修复
+
+- 修复 `DataTable` 在自动浏览器按需样式入口下 `table.css` 晚于 `tabletanstack.css` 加载、导致 `.leaf-table__cell` 覆盖 `.leaf-data-table__utility`（`padding-inline: 8px`）与 `.leaf-data-table__record-cell`（`padding-block: 6px`）并使选择列内复选框偏右挤边的问题，同时调整自动样式切片的父子组件样式导入顺序并提升相关选择器权重。
+- 修复 `Tabs` 处于带 `inert` 或 `hidden` 的弹窗或隐藏祖先容器内时，解除遮蔽后移动指示条未重新测量几何位置与宽度的问题（含 ShadowRoot 宿主监听）。
+- 将 `Modal` 与 `Drawer` 内嵌标签页的 `contentRef` 类型调整为 `Ref<HTMLDivElement>`，保持对 React 18 的类型兼容。
+
 ## 0.17.0 - 2026-11-17
 
 ### 新增功能

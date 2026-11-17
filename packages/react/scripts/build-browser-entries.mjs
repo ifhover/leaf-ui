@@ -202,16 +202,47 @@ for (const format of ['esm', 'cjs']) {
     const css = owner
       ? [path.join(output, 'styles/foundation.css'), path.join(styles, `${owner}.css`)]
       : [];
-    const added = css
-      .map((file) => {
-        const relativeCss = path
-          .relative(path.dirname(destination), file)
-          .replaceAll(path.sep, '/');
-        return format === 'esm' ? `import '${relativeCss}';\n` : `require('${relativeCss}');\n`;
-      })
-      .join('');
+    const statements = css.map((file) => {
+      const relativeCss = path.relative(path.dirname(destination), file).replaceAll(path.sep, '/');
+      return format === 'esm' ? `import '${relativeCss}';` : `require('${relativeCss}');`;
+    });
+    const insertedLines = [];
+    let outputCode = original;
+    if (statements.length) {
+      const prefixLine = prefix.split('\n').length - 1;
+      const codeLines = original.split('\n');
+      let componentLine = prefixLine;
+      if (format === 'esm') {
+        for (let index = prefixLine; index < codeLines.length; index++) {
+          const line = codeLines[index];
+          if (/^\s*import\b/.test(line)) {
+            componentLine = index + 1;
+            continue;
+          }
+          if (/^\s*(?:\/\/.*)?$/.test(line)) continue;
+          break;
+        }
+      } else {
+        let seenRequire = false;
+        for (let index = prefixLine; index < codeLines.length; index++) {
+          const line = codeLines[index];
+          if (/^(?:const|var)\s+\S+\s*=\s*(?:\/\*[\s\S]*?\*\/\s*)?require\(/.test(line)) {
+            seenRequire = true;
+            componentLine = index + 1;
+            continue;
+          }
+          if (seenRequire) break;
+        }
+      }
+      const [foundationStatement, componentStatement] = statements;
+      // 子依赖组件 CSS 需先于当前组件 CSS 生效，保持与源码 @use 一致的层叠顺序
+      codeLines.splice(componentLine, 0, componentStatement);
+      codeLines.splice(prefixLine, 0, foundationStatement);
+      insertedLines.push(componentLine, prefixLine);
+      outputCode = codeLines.join('\n');
+    }
     await mkdir(path.dirname(destination), { recursive: true });
-    await writeFile(destination, prefix + added + original.slice(prefix.length));
+    await writeFile(destination, outputCode);
     try {
       const map = JSON.parse(await readFile(`${originalFile}.map`, 'utf8'));
       map.sources = map.sources.map((entry) =>
@@ -221,14 +252,10 @@ for (const format of ['esm', 'cjs']) {
               .relative(path.dirname(destination), path.resolve(path.dirname(originalFile), entry))
               .replaceAll(path.sep, '/'),
       );
-      if (added) {
-        const lines = map.mappings.split(';');
-        lines.splice(
-          prefix.split('\n').length - 1,
-          0,
-          ...Array(added.split('\n').length - 1).fill(''),
-        );
-        map.mappings = lines.join(';');
+      if (insertedLines.length) {
+        const mappingLines = map.mappings.split(';');
+        for (const lineIndex of insertedLines) mappingLines.splice(lineIndex, 0, '');
+        map.mappings = mappingLines.join(';');
       }
       await writeFile(`${destination}.map`, JSON.stringify(map));
     } catch (error) {

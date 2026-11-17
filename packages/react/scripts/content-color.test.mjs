@@ -140,6 +140,8 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
   );
   assert.equal(table('.leaf-data-table__expansion').width, '48px');
   assert.equal(utility['padding-inline'], '8px');
+  assert.equal(table('.leaf-table__cell.leaf-data-table__utility')['padding-inline'], '8px');
+  assert.equal(table('.leaf-table__cell.leaf-data-table__record-cell')['padding-block'], '6px');
   for (const rtl of [false, true]) {
     for (const [position, edge, side] of [
       ['first', 'start', rtl ? 'right' : 'left'],

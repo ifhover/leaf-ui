@@ -250,4 +250,86 @@ describe('Navigation motion contracts', () => {
     expect(screen.getByRole('textbox')).toBe(draft);
     expect(draft).toHaveValue('Saved');
   });
+
+  it('restores tab indicator geometry after ancestor inert or hidden masks are cleared', async () => {
+    const widthSpy = vi
+      .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains('leaf-tabs__track') ? 240 : 80;
+      });
+    const heightSpy = vi
+      .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+      .mockImplementation(function (this: HTMLElement) {
+        return 36;
+      });
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('leaf-tabs__track')) return new DOMRect(0, 0, 240, 36);
+        if (this.hasAttribute('data-leaf-indicator-item')) {
+          return this.dataset.tabKey === 'second'
+            ? new DOMRect(96, 0, 100, 36)
+            : new DOMRect(16, 0, 80, 36);
+        }
+        return new DOMRect(0, 0, 240, 36);
+      });
+    try {
+      const tabs = (
+        <Tabs
+          items={[
+            { key: 'first', label: 'First' },
+            { key: 'second', label: 'Second' },
+          ]}
+        />
+      );
+      const { container, rerender } = render(
+        <div inert style={{ visibility: 'hidden' }}>
+          <div>{tabs}</div>
+        </div>,
+      );
+      const shell = container.firstElementChild as HTMLElement;
+      expect(shell).toHaveAttribute('inert');
+      const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
+      expect(marker?.dataset.visible).toBe('false');
+
+      rerender(
+        <div>
+          <div>{tabs}</div>
+        </div>,
+      );
+      expect(shell).not.toHaveAttribute('inert');
+      await waitFor(() => {
+        expect(marker?.dataset.visible).toBe('true');
+      });
+      expect(marker?.dataset.animate).toBe('false');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('16px');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('80px');
+
+      rerender(
+        <div hidden>
+          <div>{tabs}</div>
+        </div>,
+      );
+      expect(shell).toHaveAttribute('hidden');
+      await waitFor(() => {
+        expect(marker?.dataset.visible).toBe('false');
+      });
+
+      rerender(
+        <div>
+          <div>{tabs}</div>
+        </div>,
+      );
+      expect(shell).not.toHaveAttribute('hidden');
+      await waitFor(() => {
+        expect(marker?.dataset.visible).toBe('true');
+      });
+      expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('16px');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('80px');
+    } finally {
+      widthSpy.mockRestore();
+      heightSpy.mockRestore();
+      rectSpy.mockRestore();
+    }
+  });
 });

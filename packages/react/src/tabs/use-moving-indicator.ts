@@ -65,7 +65,30 @@ export function useMovingIndicator(
         : new MutationObserver((records) => {
             if (records.some((record) => record.target !== marker)) schedule();
           });
-    mutation?.observe(host, { childList: true, subtree: true, characterData: true });
+    mutation?.observe(host, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['inert', 'hidden'],
+    });
+    // 监听祖先与 ShadowRoot 宿主的 inert/hidden 变化，解除遮蔽后恢复指示条测量
+    const ancestorObserver =
+      typeof MutationObserver === 'undefined' ? null : new MutationObserver(schedule);
+    for (
+      let current: Node | null = host.parentNode;
+      current;
+      current =
+        current.parentNode ??
+        (typeof ShadowRoot !== 'undefined' && current instanceof ShadowRoot ? current.host : null)
+    ) {
+      if (typeof Element !== 'undefined' && current instanceof Element) {
+        ancestorObserver?.observe(current, {
+          attributes: true,
+          attributeFilter: ['inert', 'hidden'],
+        });
+      }
+    }
     host.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     measure(false);
@@ -75,6 +98,7 @@ export function useMovingIndicator(
       cancelAnimationFrame(frame);
       observer?.disconnect();
       mutation?.disconnect();
+      ancestorObserver?.disconnect();
       host.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
       document.fonts?.removeEventListener('loadingdone', schedule);
