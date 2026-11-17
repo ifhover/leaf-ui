@@ -141,13 +141,13 @@
         margin-block-end: 0;
       }
       &:not(:last-child) {
-        padding-block-end: 16px;
+        padding-block-end: min(16px, var(--leaf-card-padding));
       }
     }
     &__header + &__body {
       padding-block-start: 0;
     }
-    &__header + &__panel > &__body {
+    &__header + &__panel > &__body:first-child {
       padding-block-start: 0;
     }
     &__footer {
@@ -275,9 +275,6 @@
         padding-left: var(--leaf-card-content-padding-left);
         padding-right: var(--leaf-card-content-padding-right);
       }
-      > .leaf-card__panel > .leaf-card__body:not(:last-child) {
-        padding-block-end: 16px;
-      }
       > .leaf-card__panel
         > .leaf-card__tabs:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden]))
         + .leaf-card__body {
@@ -342,7 +339,9 @@
         }
       }
     }
-    &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header {
+    &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header,
+    &__cover + &__tabs,
+    &__cover + &__tabs > .leaf-tabs__header {
       border-start-start-radius: 0;
       border-start-end-radius: 0;
     }
@@ -351,7 +350,7 @@
     }
     &:not(.leaf-card--layered)
       > &__panel
-      > &__tabs:not(:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden])))
+      > :is(&__cover, &__tabs:not(:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden]))))
       + &__footer {
       padding-block-start: var(--leaf-card-padding);
     }

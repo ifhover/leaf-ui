@@ -7,6 +7,14 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.16.7 - 2026-11-17
+
+### 改进与修复
+
+- 修复 `Card` 同时包含 `title` 与无面板 `tabs`（或 `cover`）时，正文区 `.leaf-card__body` 上边距被意外置为 `0` 的问题，使正文四边保留一致内边距。
+- 优化 `Card` 内嵌 `tabs` 的 `items` 引用稳定性与非字符串 `title` 下的 `aria-labelledby` 关联（并确保 `Tabs` 将 `aria-labelledby` 转发至 `role="tablist"`），同时去除 `loading` 结束时正文容器与 `Skeleton` 叠加的重复位移渐显。
+- 调整 `Card` 在 `cover` 紧邻 `tabs` 或 `footer` 时的顶部圆角与页脚间距，并将正文非末项底边距收敛为 `min(16px, var(--leaf-card-padding))` 以遵循较小的自定义卡片内边距。
+
 ## 0.16.6 - 2026-11-17
 
 ### 修复

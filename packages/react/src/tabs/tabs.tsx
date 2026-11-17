@@ -88,6 +88,7 @@ export function TabsControl({
   onReorder,
   className,
   'aria-label': label,
+  'aria-labelledby': labelledBy,
   ...props
 }: TabsProps) {
   const { direction } = useLeafConfig();
@@ -195,6 +196,7 @@ export function TabsControl({
               }}
               role="tablist"
               aria-label={label}
+              aria-labelledby={labelledBy}
               scrollbar="hidden"
               viewportProps={{ 'aria-orientation': 'horizontal' }}
               className="leaf-tabs__scroll"

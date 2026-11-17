@@ -1,4 +1,4 @@
-import { type HTMLAttributes, type ReactNode, useRef } from 'react';
+import { type HTMLAttributes, type ReactNode, useId, useMemo, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 import { useContentTransition } from '../shared/presence';
@@ -48,10 +48,13 @@ export function Card(rawProps: CardProps) {
     className,
     ...props
   } = useComponentProps('Card', rawProps);
+  const titleId = useId();
   const body = useRef<HTMLDivElement>(null);
-  useContentTransition(body, loading ? 'loading' : 'content');
-  const hasTabs = Boolean(tabs?.items.length);
-  const hasTabPanels = Boolean(tabs?.items.some((item) => item.children != null));
+  // Skeleton 内部已负责内容显露动效，此处仅保留高度过渡避免叠加。
+  useContentTransition(body, loading ? 'loading' : 'content', 0, true);
+  const rawTabItems = tabs?.items;
+  const hasTabs = Boolean(rawTabItems?.length);
+  const hasTabPanels = Boolean(rawTabItems?.some((item) => item.children != null));
   const layered = variant === 'layered';
   const visibleDescription = layered ? undefined : description;
   const hasHeading = title != null || visibleDescription != null;
@@ -67,33 +70,45 @@ export function Card(rawProps: CardProps) {
     ) : (
       tabs?.extra
     );
+  const tabItems = useMemo(() => {
+    if (!rawTabItems?.length) return undefined;
+    if (!hasTabPanels) return rawTabItems;
+    return rawTabItems.map((item) => ({
+      ...item,
+      children:
+        item.children != null ? (
+          <Skeleton loading={loading}>{item.children}</Skeleton>
+        ) : (
+          item.children
+        ),
+    }));
+  }, [rawTabItems, hasTabPanels, loading]);
+  const tabLabel = tabs?.['aria-label'] ?? (typeof title === 'string' ? title : undefined);
+  const tabLabelledBy =
+    tabs?.['aria-labelledby'] ??
+    (tabs?.['aria-label'] == null && title != null ? titleId : undefined);
   const content = (
     <>
       {cover != null && <div className="leaf-card__cover">{cover}</div>}
-      {hasTabs && tabs && (
+      {hasTabs && tabs && tabItems && (
         <Tabs
           {...tabs}
           type="line"
           placement="top"
           size={tabs.size ?? size}
-          aria-label={tabs['aria-label'] ?? (typeof title === 'string' ? title : undefined)}
+          aria-label={tabLabel}
+          aria-labelledby={tabLabelledBy}
           extra={tabExtra}
           className={classes('leaf-card__tabs', tabs.className)}
-          items={tabs.items.map((item) => ({
-            ...item,
-            children:
-              item.children != null ? (
-                <Skeleton loading={loading}>{item.children}</Skeleton>
-              ) : (
-                item.children
-              ),
-          }))}
+          items={tabItems}
           onReorder={
             tabs.onReorder &&
-            ((items) => {
-              const originals = new Map(tabs.items.map((item) => [item.key, item]));
-              tabs.onReorder?.(items.map((item) => originals.get(item.key) ?? item));
-            })
+            (hasTabPanels
+              ? (items) => {
+                  const originals = new Map(tabs.items.map((item) => [item.key, item]));
+                  tabs.onReorder?.(items.map((item) => originals.get(item.key) ?? item));
+                }
+              : tabs.onReorder)
           }
         />
       )}
@@ -126,7 +141,7 @@ export function Card(rawProps: CardProps) {
           {hasHeading && (
             <div className="leaf-card__heading">
               {title != null && (
-                <CardTitleControl size={size} className="leaf-card__title">
+                <CardTitleControl id={titleId} size={size} className="leaf-card__title">
                   {title}
                 </CardTitleControl>
               )}

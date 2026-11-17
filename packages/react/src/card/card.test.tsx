@@ -155,6 +155,44 @@ describe('Card tabs', () => {
     expect(screen.queryByRole('tabpanel')).toBeNull();
     expect(screen.getByText('Shared body')).toBeInTheDocument();
   });
+
+  it('links non-string card titles to tablist via aria-labelledby unless overridden', () => {
+    const { rerender } = render(
+      <Card
+        title={
+          <span>
+            Project <strong>Alpha</strong>
+          </span>
+        }
+        tabs={{
+          items: [
+            { key: 'a', label: 'A' },
+            { key: 'b', label: 'B' },
+          ],
+        }}
+      >
+        Body
+      </Card>,
+    );
+    const tablist = screen.getByRole('tablist');
+    expect(tablist).toHaveAccessibleName('Project Alpha');
+    expect(tablist).not.toHaveAttribute('aria-label');
+    expect(tablist).toHaveAttribute('aria-labelledby');
+
+    rerender(
+      <Card
+        title={<span>Project Alpha</span>}
+        tabs={{
+          'aria-label': 'Custom tabs',
+          items: [{ key: 'a', label: 'A' }],
+        }}
+      >
+        Body
+      </Card>,
+    );
+    expect(screen.getByRole('tablist')).toHaveAccessibleName('Custom tabs');
+    expect(screen.getByRole('tablist')).not.toHaveAttribute('aria-labelledby');
+  });
 });
 
 describe('Card variants', () => {

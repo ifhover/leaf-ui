@@ -7,6 +7,14 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.16.7 - 2026-11-17
+
+### Improvements and fixes
+
+- Fixed `Card` clearing top padding on `.leaf-card__body` when a heading precedes header-only `tabs` or a `cover`, keeping body padding consistent on all sides.
+- Stabilized `tabs.items` references passed from `Card`, associated non-string `title` headings with `tablist` via `aria-labelledby` (forwarding `aria-labelledby` onto `role="tablist"` in `Tabs`), and avoided stacking a second reveal translation/opacity transition over `Skeleton`.
+- Cleared top corners when `cover` precedes `tabs`, preserved top spacing on `footer` directly below a `cover`, and constrained non-last body bottom padding to `min(16px, var(--leaf-card-padding))`.
+
 ## 0.16.6 - 2026-11-17
 
 ### Fixes

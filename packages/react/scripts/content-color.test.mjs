@@ -250,6 +250,36 @@ test('cover-only Cards round the cover as the final content surface', async () =
   assert.equal(card('.leaf-card__panel').overflow, undefined);
 });
 
+test('Cards keep body top padding when header-only tabs or cover precede the body', async () => {
+  const card = await compiledStyles('card/card.scss');
+  assert.equal(card('.leaf-card__body').padding, 'var(--leaf-card-padding)');
+  assert.equal(
+    card('.leaf-card__body:not(:last-child)')['padding-block-end'],
+    'min(16px,var(--leaf-card-padding))',
+  );
+  assert.equal(
+    card('.leaf-card__header + .leaf-card__panel > .leaf-card__body:first-child')[
+      'padding-block-start'
+    ],
+    '0px',
+  );
+  assert.throws(
+    () => card('.leaf-card__header + .leaf-card__panel > .leaf-card__body'),
+    /missing compiled rule/u,
+  );
+  assert.equal(
+    card(
+      '.leaf-card__tabs:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden])) + .leaf-card__body',
+    )['padding-block-start'],
+    '0px',
+  );
+  assert.equal(card('.leaf-card__cover + .leaf-card__tabs')['border-start-start-radius'], '0px');
+  assert.equal(
+    card('.leaf-card__cover + .leaf-card__tabs > .leaf-tabs__header')['border-start-end-radius'],
+    '0px',
+  );
+});
+
 test('every local custom property has a consumer in its component source', async () => {
   const sources = await readTargets();
   const external = new Map(
