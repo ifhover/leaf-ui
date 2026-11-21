@@ -33,7 +33,7 @@
         inset-inline-start: 0;
         width: 2px;
         border-radius: 2px;
-        background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        background: var(--leaf-color-primary);
       }
     }
     ul {
@@ -54,11 +54,11 @@
         color var(--leaf-motion-duration) var(--leaf-motion-easing),
         background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
       &:hover:not([aria-current]) {
-        color: var(--leaf-color-primary-ink);
+        color: var(--leaf-color-primary);
         background: #{mixins.choice-option-background()};
       }
       &[aria-current] {
-        color: var(--leaf-color-primary-ink);
+        color: var(--leaf-color-primary);
         border-inline-start-color: var(--leaf-accent-soft-border);
         background: var(--leaf-accent-soft-background);
       }

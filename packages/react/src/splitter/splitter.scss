@@ -30,7 +30,7 @@
         background: var(--leaf-accent-soft-border);
       }
       &:focus-visible {
-        --leaf-focus-color: var(--leaf-color-primary-ink);
+        --leaf-focus-color: var(--leaf-color-primary);
         background: var(--leaf-color-surface-muted);
         @include mixins.focus-ring;
         outline-offset: -2px;
@@ -44,7 +44,7 @@
         border: 0;
         border-radius: var(--leaf-radius-sm);
         background: var(--leaf-color-surface);
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
         width: 18px;
         height: 28px;
         cursor: pointer;

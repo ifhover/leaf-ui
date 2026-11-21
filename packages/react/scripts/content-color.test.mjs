@@ -210,7 +210,7 @@ test('compiled content components retain semantic roles independent of SCSS layo
       'progress/progress.scss',
       '.leaf-progress',
       '--leaf-progress-color',
-      'var(--leaf-color-primary-indicator,var(--leaf-color-primary))',
+      'var(--leaf-color-primary)',
     ],
     ['rate/rate.scss', '.leaf-rate', '--leaf-rate-color', '#ffc53d'],
     [

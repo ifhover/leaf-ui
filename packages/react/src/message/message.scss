@@ -81,7 +81,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: var(--leaf-feedback-color, var(--leaf-color-primary-ink, var(--leaf-color-primary)));
+      color: var(--leaf-feedback-color, var(--leaf-color-primary));
     }
     @each $type in info, success, warning, danger, error {
       &--#{$type} {

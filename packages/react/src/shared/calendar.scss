@@ -236,7 +236,7 @@
       justify-content: flex-start;
       &[aria-pressed='true'] {
         background: var(--leaf-calendar-range-background);
-        color: var(--leaf-color-primary-ink);
+        color: var(--leaf-color-primary);
       }
     }
   }

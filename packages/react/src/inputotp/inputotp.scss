@@ -79,7 +79,7 @@
       border-color: var(--leaf-color-border-hover);
     }
     &[data-active] {
-      border-color: var(--leaf-color-primary-focus, var(--leaf-color-primary));
+      border-color: var(--leaf-color-primary);
       box-shadow: var(
         --leaf-component-input-otp-focus-shadow,
         0 0 0 2px var(--leaf-color-focus, var(--leaf-accent-halo-focus-color)),
@@ -92,7 +92,7 @@
       width: 1.5px;
       height: 45%;
       border-radius: 1px;
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      background: var(--leaf-color-primary);
       animation: var(--leaf-motion-animation, leaf-otp-caret 1s steps(1) infinite);
     }
   }

@@ -377,7 +377,7 @@
   }
 
   :is(.leaf-docs-nav__link, .leaf-docs-nav__language, .leaf-docs-nav__source):focus-visible {
-    outline: 2px solid var(--leaf-color-primary-indicator);
+    outline: 2px solid var(--leaf-color-primary);
     outline-offset: 2px;
   }
 }

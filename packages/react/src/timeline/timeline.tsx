@@ -62,7 +62,7 @@ export function Timeline(rawProps: TimelineProps) {
                 '--leaf-timeline-color':
                   color && color in colors
                     ? `var(--leaf-color-${colors[color as keyof typeof colors]})`
-                    : (color ?? 'var(--leaf-color-primary-indicator, var(--leaf-color-primary))'),
+                    : (color ?? 'var(--leaf-color-primary)'),
               } as LeafThemeStyle
             }
           >

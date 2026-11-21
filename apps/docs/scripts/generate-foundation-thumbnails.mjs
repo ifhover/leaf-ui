@@ -27,7 +27,7 @@ const circle = (x, y, radius, color) =>
   `<circle cx="${x}" cy="${y}" r="${radius}" fill="${color}"/>`;
 const images = {
   avatar: [
-    ['A', '#eaf4ed', 'var(--leaf-color-primary-ink)'],
+    ['A', '#eaf4ed', 'var(--leaf-color-primary)'],
     ['B', '#edf5ff', 'var(--leaf-color-info-ink)'],
     ['C', '#fff6e9', 'var(--leaf-color-warning-ink)'],
     ['D', 'var(--leaf-color-danger-soft)', 'var(--leaf-color-danger-ink)'],

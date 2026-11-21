@@ -68,10 +68,10 @@
 
 - 主题色用于可操作的强调；success / info / warning / danger 表达含义。弱化文字保持可读；自定义色板须对实际前景 / 背景组合满足 WCAG 对比度。透明派生色使用预乘 sRGB alpha。
 - 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由显式 `light-N` / `dark-N` 派生与 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#007aff`、success `#4bb418`、danger `#ff4d4f`、warning `#e69f12`、info `#1677ff`。用户提供的 primary 保持原值，不改写、不强制为 500 档。
-- 浅深模式都保留显式主色实底；外观切换只换用途映射，不重新着色基色或生成另一套色阶。`ink`、`primary-indicator` 的选阶规则与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
-- 使用主色焦点指示的组件在原主色偏暗时使用可见指示色；按钮保持中性焦点反馈。
+- 浅深模式都保留显式主色实底；外观切换只换用途映射，不重新着色基色或生成另一套色阶。非主色语义 `ink` 与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)；内置组件的主色文字、指示与边界展示统一直接使用主题基色 `primary`。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
+- 使用主色焦点指示的组件直接使用主题基色 `--leaf-color-primary`；按钮保持中性焦点反馈。
 - 实底 Button 默认透明边框，即使基色与周围表面相同也不自动补对比边框；显式全局、组件和状态边框覆盖及系统强制颜色模式仍有效。保留独立的 on-primary / on-success / on-danger / on-warning / on-info 角色，即使取值相同。浅深模式可以共享取值；只有确有视觉或对比需要时才区分，不复制完整矩阵。
-- Checkbox、Radio、Switch 的选中实底使用原 primary 与 on-primary 内容。primary indicator 只用于需要与表面分隔的边界和选中指示；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
+- Checkbox、Radio、Switch 的选中实底与边界统一使用原 primary 与 on-primary 内容；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
 - Radio 按下不缩放控件；选中圆框和卡片边框使用主题基色，显式 Radio 组件边框与状态覆盖优先。选中圆点按 Ant Design 5 使用 300ms 的 `cubic-bezier(0.78, 0.14, 0.15, 0.86)` 缩放与透明度过渡，圆框颜色使用 200ms ease；时长随区域 motionDuration 缩放，遵守减少动态效果设置。
 - Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式全局、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
 - Warning 图标、字段强调与状态填充使用共享琥珀基色（`#e69f12`）；警告文字独立派生可读 ink。Tag 的 soft 标签文字跟随对应语义基色，solid 标签文字使用白色；不要为文字对比度把所有警告强调色调暗。
@@ -145,9 +145,9 @@
 ### Tabs
 
 - 只支持横向，提供 `type?: 'line' | 'card' | 'segmented'`（默认 `'line'`）、`tone?: 'soft' | 'solid'`（默认 `'soft'`）与 `shape?: 'default' | 'pill'`（默认 `'default'`）；标签按下时应用克制的 `scale: 0.97` 微缩反馈（遵守减少动态效果）。
-- line：尺寸与选中反馈参考 Ant Design 5.29.3。小、默认、大尺寸的上下内边距为 8 / 12 / 16 px，左右内边距为 0，项间距统一为 32 px；小、默认字号沿用基础字号，大尺寸沿用大字号，行盒为当前字号加 8 px，默认高度为 38 / 46 / 56 px，显式组件高度、字号和 gap 覆盖优先。选中标签用主题基色和 0.25 px 同色文字阴影，字重稳定；其他标签用正文色，悬停用 primary-hover 亮色，按下用 primary-link-active 深色，显式组件文字和状态覆盖优先。标签栏底部绘制全宽 1 px 分割线，选中指示线使用 primary indicator 色，统一为 2 px 厚、直角、铺满标签宽度，无横向内缩；底部标签将分割线与指示线放在栏顶。指示线使用 300 ms ease 缓动移动，随区域 motionDuration 缩放。
-- card：去掉外围栏，项间距 4 px，未选中标签使用弱文字色（`muted-color`）。默认 `tone="soft"` 时选中滑块为 `--leaf-color-primary-soft` 浅底配 `--leaf-color-primary-ink` 文字，`tone="solid"` 时切换为 `--leaf-color-primary` 实底配 `--leaf-color-on-primary` 文字；`shape="pill"` 使用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项，保持 28 / 34 / 40 px 控件尺寸与 12 px 行内内边距。
-- segmented：纯白外轨（`--leaf-segmented-background`，即 `--leaf-color-surface`）配 1 px `--leaf-segmented-border`（`--leaf-color-divider`）边框与 `shadow-xs`，默认内边距 3 px，小尺寸上下内边距为 2 px、左右仍为 3 px；项间距 3 px；轨道高 28 / 34 / 40 px，标签行内内边距 14 px。默认 `tone="soft"` 使用 `--leaf-color-primary-soft` 浅底滑块（无默认阴影）配 `--leaf-color-primary-ink` 文字，`tone="solid"` 使用 `--leaf-color-primary` 实底配 `--leaf-color-on-primary`；`shape="pill"` 对外轨与标签启用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项。
+- line：尺寸与选中反馈参考 Ant Design 5.29.3。小、默认、大尺寸的上下内边距为 8 / 12 / 16 px，左右内边距为 0，项间距统一为 32 px；小、默认字号沿用基础字号，大尺寸沿用大字号，行盒为当前字号加 8 px，默认高度为 38 / 46 / 56 px，显式组件高度、字号和 gap 覆盖优先。选中标签用主题基色和 0.25 px 同色文字阴影，字重稳定；其他标签用正文色，悬停用 primary-hover 亮色，按下用 primary-link-active 深色，显式组件文字和状态覆盖优先。标签栏底部绘制全宽 1 px 分割线，选中指示线使用主题基色 `--leaf-color-primary`，统一为 2 px 厚、直角、铺满标签宽度，无横向内缩；底部标签将分割线与指示线放在栏顶。指示线使用 300 ms ease 缓动移动，随区域 motionDuration 缩放。
+- card：去掉外围栏，项间距 4 px，未选中标签使用弱文字色（`muted-color`）。默认 `tone="soft"` 时选中滑块为 `--leaf-color-primary-soft` 浅底配 `--leaf-color-primary` 文字，`tone="solid"` 时切换为 `--leaf-color-primary` 实底配 `--leaf-color-on-primary` 文字；`shape="pill"` 使用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项，保持 28 / 34 / 40 px 控件尺寸与 12 px 行内内边距。
+- segmented：纯白外轨（`--leaf-segmented-background`，即 `--leaf-color-surface`）配 1 px `--leaf-segmented-border`（`--leaf-color-divider`）边框与 `shadow-xs`，默认内边距 3 px，小尺寸上下内边距为 2 px、左右仍为 3 px；项间距 3 px；轨道高 28 / 34 / 40 px，标签行内内边距 14 px。默认 `tone="soft"` 使用 `--leaf-color-primary-soft` 浅底滑块（无默认阴影）配 `--leaf-color-primary` 文字，`tone="solid"` 使用 `--leaf-color-primary` 实底配 `--leaf-color-on-primary`；`shape="pill"` 对外轨与标签启用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项。
 - 大尺寸 card 与 segmented 外观的标签行内内边距为 18 px，项间距为 8 px，分段轨道内边距为 4 px；显式组件 gap 和 padding 继续优先。
 - `block` 等宽铺满；省略项内容可作为只有标签栏的视图切换器。标签溢出时在两侧显示描边纯图标滚动按钮，仅在标签栏悬停或获得键盘焦点时出现。
 - 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；只有选中指示保留移动动画。
@@ -225,7 +225,7 @@
 ### Calendar
 
 - 公开 Calendar 是独立实现，不复用浮层 CalendarPanel。完整布局参考 macOS 日历：粗体月份 + 常规字重年份作为标题，行尾为“月 / 年”分段控件与“‹ 今天 ›”按钮组。月视图使用 `divider` 细线网格，数字在格子顶部尾端，每月 1 日带月份缩写；年视图为 4 / 3 / 2 列迷你月历。
-- 行尾“月 / 年”分段控件（`.leaf-calendar-view__segmented`）使用 `--leaf-segmented-background`（纯白表面）与 `1px solid var(--leaf-segmented-border)` 边框，选中段使用 `--leaf-color-primary-ink` 文字与主题浅底（无投影）并在按下时应用 `scale: 0.96` 微缩。
+- 行尾“月 / 年”分段控件（`.leaf-calendar-view__segmented`）使用 `--leaf-segmented-background`（纯白表面）与 `1px solid var(--leaf-segmented-border)` 边框，选中段使用 `--leaf-color-primary` 文字与主题浅底（无投影）并在按下时应用 `scale: 0.96` 微缩。
 - 选中日期是实心 `primary` 胶囊配 `on-primary` 文字；今天只用主题色粗体数字，不加底色或描边；悬停使用中性浅底，日历格按下应用 `scale: 0.95`（遵守减少动态效果）。`cellRender` 内容位于数字下方，单行省略。容器窄于 560px 时用单字母星期并居中数字。
 - 紧凑日历宽 296px，日期为 30px 圆形目标，标题按钮展开月份选择。DatePicker 与 DateRangePicker 浮层继续复用紧凑 CalendarPanel，外观不受公开 Calendar 影响。
 
@@ -267,7 +267,7 @@
 ### FileList
 
 - 文本与缩略图列表外框使用 `--leaf-color-border`（与文件名起始对齐的内缩细线继续使用柔化分割线）；行悬停与聚焦使用半强度中性底并淡出相邻分割线。`text` 在宽容器（`> 480px`）中呈现单行清单（文件名居前，类型、可选大小与上传状态以圆点分隔对齐在操作前），窄容器自动折为双行；`picture` 保持双行缩略图附件布局。首行图标、文件信息与操作始终垂直居中，进度条与错误位于主行下方的信息列，不拉偏首行图标。
-- 类型图块为带柔化细线边框的 `surface-muted` 方块，静止图标统一使用弱化文字色，不按文件格式分配彩色；仅上传中（主题可读文字色）与错误态（危险浅底及语义文字色）着色。缩略图内侧保留 1px 柔化细线。
+- 类型图块为带柔化细线边框的 `surface-muted` 方块，静止图标统一使用弱化文字色，不按文件格式分配彩色；仅上传中（主题基色 `--leaf-color-primary`）与错误态（危险浅底及语义文字色）着色。缩略图内侧保留 1px 柔化细线。
 - 预览按钮、下载链接、移除和 Upload 操作使用方形几何，静止为弱化文字色，悬停 / 聚焦恢复正文色，移除在交互时显示危险文字色。图片卡片（`picture-card`）为带 `--leaf-color-border` 边框的白色卡片内缩 6px 的媒体区（同心圆角，宽容器 16:10、窄容器 16:9），悬停使用 `border-hover` 加深卡片边框而保持白底，无缩略图时展示带浅阴影的白色纸页标牌与大写扩展名；下方完整文件名独占一行，底栏对齐次要元信息与操作。空状态使用虚线框与中性回形针图块。缺少大小时不留空占位，缩略图失败时回退为类型图标，异步移除反馈留在对应文件上。无行阴影或悬停抬起。
 
 ### 图片预览
@@ -281,7 +281,7 @@
 
 - Form 的 `settings` 布局左侧标签列使用 `labelWidth`，右侧控件列默认占用扣除列间距后的剩余宽度；可通过 `settingsControlWidth` 按表单或字段覆盖为固定宽度。控件默认左对齐，也可按表单或字段切换为右对齐。标签和说明与控件顶部对齐；只有标签且右侧是单行控件时，标签保留一个控件高度并在该高度内垂直居中；窄容器仍改为上下排列。
 - Carousel 上一页 / 下一页使用浅中性底、无描边与阴影的圆形柔和按钮，复用文字动作的中性悬停 / 按下反馈，不缩放。按钮相对内容视口垂直居中，不包含底部指示点区域。
-- Transfer 采用左右双栏单层净白面板（容器默认宽度 `464px`，面板间距 `12px`）：直接消费 `--leaf-color-surface` 与 `--leaf-color-border`（外框带 `--leaf-shadow-xs`，无内层嵌套灰色托盘，搜索框聚焦不加深面板外框）；标题区与计数保留在净白面板顶部，底部使用 `1px solid var(--leaf-color-divider)` 分割线；列表区保留 `gap: 4px`（虚拟列表项包装 `2px 8px` 内边距），每个条目使用 `var(--leaf-radius)`（默认 `10px`）独立圆角与原生 `Checkbox description` 支持，悬停用中性浅底、选中用 `--leaf-accent-soft-background` 与 `--leaf-color-primary-ink`（绝不彼此粘连），按下应用 `scale: 0.985` 微缩（遵守减少动态效果）。显式组件背景、标题背景、边框与阴影覆盖优先。
+- Transfer 采用左右双栏单层净白面板（容器默认宽度 `464px`，面板间距 `12px`）：直接消费 `--leaf-color-surface` 与 `--leaf-color-border`（外框带 `--leaf-shadow-xs`，无内层嵌套灰色托盘，搜索框聚焦不加深面板外框）；标题区与计数保留在净白面板顶部，底部使用 `1px solid var(--leaf-color-divider)` 分割线；列表区保留 `gap: 4px`（虚拟列表项包装 `2px 8px` 内边距），每个条目使用 `var(--leaf-radius)`（默认 `10px`）独立圆角与原生 `Checkbox description` 支持，悬停用中性浅底、选中用 `--leaf-accent-soft-background` 与 `--leaf-color-primary`（绝不彼此粘连），按下应用 `scale: 0.985` 微缩（遵守减少动态效果）。显式组件背景、标题背景、边框与阴影覆盖优先。
 - 带边框的 Descriptions 与 Collapse 外框统一使用 `--leaf-color-border` 保持纯白边界清晰；Collapse（`--bordered`）附带 `--leaf-shadow-xs`，触发头悬停复用 `choice-option-background()` 中性浅底；内部分区维持更轻的分割线。组件圆角与内容绘制必须作用到可见表面。
 - 窄屏下 Form 与 Transfer 按自身容器宽度响应。
 - Checkbox / Radio 卡片选项：整张卡片是一个可点击 label，含中性图标底座、标题 / 描述列和行尾原生控件。组内可排成响应式网格，或一个共享边框与行分隔的列表。选中边框使用主题色，无渐变或抬起。状态标签不可交互；辅助文字是可访问描述，不属于选项名称。
@@ -298,7 +298,7 @@
 ### Upload、ColorPicker、InputOTP 与 Slider
 
 - ColorPicker 显示颜色文字时，HEX / RGB / HSL / 渐变模式默认宽度分别为 144 / 272 / 296 / 160px，透明度变化不改变宽度；显式 style.width 优先，最大宽度不超过容器。不显示文字时保持当前尺寸的方形色块控件，清除操作额外预留空间。格式切换复用内部 segmented Tabs。
-- Upload 拖拽图标徽标（`.leaf-upload__symbol`）使用 `--leaf-color-surface` 白色圆形底座配细边框与 `--leaf-shadow-xs`（悬停 / 拖拽时切至主题浅底与 `--leaf-color-primary-ink`）；ColorPicker 色块 / 预设保持几何稳定。
+- Upload 拖拽图标徽标（`.leaf-upload__symbol`）使用 `--leaf-color-surface` 白色圆形底座配细边框与 `--leaf-shadow-xs`（悬停 / 拖拽时切至主题浅底与 `--leaf-color-primary`）；ColorPicker 色块 / 预设保持几何稳定。
 - AvatarUpload 使用 128px 的虚线圆角方形上传入口：初始底色为 `--leaf-color-surface`、加号和上传文字，悬停切换主题色边框、按下应用 `scale: 0.985` 微缩（遵守减少动态效果），校验与请求期间以转圈图标替换加号，成功后图片铺满；悬停或键盘聚焦时显示深色媒体遮罩与白色“重新上传”文字。禁用时不可操作，失败后显示错误并允许重新选择。
 - InputOTP 仅在当前激活格使用主题聚焦边框与 2px `accent-halo-focus-color` 阴影；Slider 滑块仅在 `:focus-visible` 键盘聚焦时显示 3px `accent-halo-focus-color` 聚焦环，悬停不放大、拖拽不扩张大光晕（按下微缩至 `0.96`）；Upload 拖拽区保留主题浅底与细光晕；Progress 默认 `active={false}`（需循环扫光时显式传入 `active`），LoadingBar 不再叠加外发光；不得据此给 Input / Select 恢复外圈。
 

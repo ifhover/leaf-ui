@@ -29,7 +29,7 @@
       inset-inline-end: calc(100% - var(--leaf-slider-end));
       height: 100%;
       border-radius: inherit;
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      background: var(--leaf-color-primary);
     }
     &__input {
       appearance: none;
@@ -53,7 +53,7 @@
         width: 16px;
         height: 16px;
         margin-top: -6px;
-        border: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        border: 2px solid var(--leaf-color-primary);
         border-radius: 50%;
         background: var(--leaf-color-surface);
         cursor: grab;
@@ -71,7 +71,7 @@
         box-sizing: border-box;
         width: 16px;
         height: 16px;
-        border: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        border: 2px solid var(--leaf-color-primary);
         border-radius: 50%;
         background: var(--leaf-color-surface);
         cursor: grab;
@@ -126,7 +126,7 @@
       transition:
         opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
         transform var(--leaf-motion-duration) var(--leaf-motion-easing);
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
     }
     &:hover &__value,
     &:focus-within &__value {
@@ -153,7 +153,7 @@
       }
       &[data-active] .leaf-slider__dot,
       &:hover:not(:disabled) .leaf-slider__dot {
-        border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        border-color: var(--leaf-color-primary);
       }
     }
     &__dot {

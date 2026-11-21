@@ -1,4 +1,3 @@
-import { readability } from '@ctrl/tinycolor';
 import { render, waitFor } from '@testing-library/react';
 import type { CSSProperties } from 'react';
 import { describe, expect, it } from 'vitest';
@@ -49,7 +48,7 @@ describe('Tag', () => {
     expect(tag?.style.getPropertyValue('--leaf-tag-color')).toBe('');
   });
 
-  it('derives readable custom soft labels without inheriting primary ink', async () => {
+  it('keeps custom soft label ink at the base color while deriving soft surfaces', async () => {
     const { container } = render(<Tag color="#ffeb3b">Custom</Tag>);
     const tag = container.querySelector<HTMLElement>('.leaf-tag');
     if (!tag) throw new Error('Missing tag');
@@ -57,17 +56,8 @@ describe('Tag', () => {
     expect(tag.style.getPropertyValue('--leaf-tag-ink')).not.toContain('primary');
     const scale = generateColorShades('#ffeb3b');
     expect(tag.style.getPropertyValue('--leaf-tag-color-surface-8')).toBe(scale['light-9']);
-    expect(Object.values(scale ?? {})).toContain(tag.style.getPropertyValue('--leaf-tag-ink'));
     expect(tag.style.getPropertyValue('--leaf-tag-color-alpha-10')).toBe(scale['light-7']);
-    expect(tag.style.getPropertyValue('--leaf-tag-ink')).toBe(
-      resolveColorRoles('light', { primary: '#ffeb3b' }).values['--leaf-color-primary-ink'],
-    );
-    expect(
-      readability(
-        tag.style.getPropertyValue('--leaf-tag-ink'),
-        tag.style.getPropertyValue('--leaf-tag-color-surface-8'),
-      ),
-    ).toBeGreaterThanOrEqual(4.5);
+    expect(tag.style.getPropertyValue('--leaf-tag-ink')).toBe('#ffeb3b');
   });
 
   it('preserves explicit local tag variables and reactive expressions', () => {
@@ -85,7 +75,7 @@ describe('Tag', () => {
     );
   });
 
-  it('derives custom ink from the configured neutral and effective surface without DOM reads', () => {
+  it('derives custom soft surfaces from the configured neutral and effective surface without DOM reads', () => {
     const theme = {
       appearance: 'dark' as const,
       tokens: { neutralColor: '#665577', surfaceColor: '#ffffff', onPrimaryColor: '#000000' },
@@ -101,9 +91,7 @@ describe('Tag', () => {
       neutral: '#665577',
       surface: '#ffffff',
     }).values;
-    expect(tag?.style.getPropertyValue('--leaf-tag-ink')).toBe(
-      expected['--leaf-color-primary-ink'],
-    );
+    expect(tag?.style.getPropertyValue('--leaf-tag-ink')).toBe('#ff6900');
     expect(tag?.style.getPropertyValue('--leaf-tag-color-surface-8')).toBe(
       expected['--leaf-color-primary-soft'],
     );

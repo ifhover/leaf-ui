@@ -85,7 +85,7 @@
       inset-inline-end: 29px;
     }
     &[data-open] &__icon {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
     }
     &__panel {
       width: 292px;
@@ -162,13 +162,13 @@
         color: var(--leaf-color-on-primary);
         background: var(--leaf-color-primary);
         box-shadow:
-          inset 0 0 0 1px var(--leaf-color-primary-fill-border, transparent),
+          inset 0 0 0 1px var(--leaf-color-primary),
           var(--leaf-shadow-xs);
       }
       // Pointer previews have no inner outline; keyboard focus remains visible.
       &--preview,
       &--preview:hover:not(:disabled) {
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
         background: var(--leaf-calendar-range-background);
         box-shadow: none;
       }

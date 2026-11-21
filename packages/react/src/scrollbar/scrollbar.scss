@@ -121,7 +121,7 @@
       touch-action: none;
     }
     &__bar:has(:focus-visible) {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      outline: 2px solid var(--leaf-color-primary);
       outline-offset: 2px;
       border-radius: 999px;
     }

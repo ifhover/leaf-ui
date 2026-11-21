@@ -81,7 +81,7 @@ Input, InputNumber, InputSearch, Select, AutoComplete, Cascader, TreeSelect and 
 | Body and supporting text | `--leaf-color-text`, `--leaf-color-text-muted`; Text / Paragraph `tone`. Do not replace text roles with opacity on a whole paragraph. |
 | Content surface, muted canvas, raised surface | `--leaf-color-surface`, `--leaf-color-surface-muted`, `--leaf-color-surface-raised`. A "white card" does not mean hard-coded white. |
 | Frame, interactive border, divider | `--leaf-color-border`, `--leaf-color-border-hover`, `--leaf-color-divider`; do not use the frame color for every divider. |
-| Brand-colored text on ordinary surfaces | `--leaf-color-primary-ink`, or `Text tone="primary"` / Link; do not use the raw brand color for small text. |
+| Brand-colored text on ordinary surfaces | `--leaf-color-primary` (or `Text tone="primary"` / Link); built-in components use the base primary directly, and `--leaf-color-primary-ink` remains available when a 4.5:1 contrast-adjusted role is explicitly needed. |
 | Solid brand fill and its foreground | Pair `--leaf-color-primary` with `--leaf-color-on-primary`; prefer `Button variant="solid"` rather than manually specifying white text. |
 | Success, warning, danger, information | Use the corresponding status component. Custom semantic text uses the family's `*-ink`, soft fills use `*-soft`, and solid fills pair with `on-*`. Status colors convey meaning, not section decoration. |
 

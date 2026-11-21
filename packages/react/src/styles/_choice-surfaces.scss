@@ -2,7 +2,7 @@
 
 @mixin item(
   $component,
-  $checked-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+  $checked-border: var(--leaf-color-primary),
   $supports-indeterminate: false
 ) {
   &__copy {

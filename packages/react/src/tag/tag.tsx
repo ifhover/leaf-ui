@@ -46,7 +46,7 @@ function tagVariables(
     '--leaf-tag-color': seed,
     '--leaf-tag-color-alpha-10': values['--leaf-color-primary-soft-hover'],
     '--leaf-tag-color-surface-8': values['--leaf-color-primary-soft'],
-    '--leaf-tag-ink': values['--leaf-color-primary-ink'],
+    '--leaf-tag-ink': seed,
     '--leaf-tag-solid-foreground': 'var(--leaf-color-on-primary)',
   };
 }

@@ -181,10 +181,10 @@
   --leaf-danger-soft-active-background: var(--leaf-color-danger-soft-active);
 }
 
-// Base status colors paint indicators; text uses their contrast-aware ink roles.
+// Base status colors paint primary indicators and text; other semantic text uses contrast-aware ink roles.
 @mixin status-ink-family($tone) {
   @if $tone == primary {
-    --leaf-status-ink: var(--leaf-color-primary-ink);
+    --leaf-status-ink: var(--leaf-color-primary);
   } @else if $tone == success {
     --leaf-status-ink: var(--leaf-color-success-ink);
   } @else if $tone == warning {
@@ -590,10 +590,7 @@
 // only controls with an explicit mixed state should opt into that selector.
 @mixin choice(
   $component: choice,
-  $checked-border: var(
-      --leaf-frame-border-color,
-      var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-    ),
+  $checked-border: var(--leaf-frame-border-color, var(--leaf-color-primary)),
   $supports-indeterminate: false
 ) {
   @include control-size;
@@ -678,11 +675,8 @@
 
 @mixin choice-states(
   $component,
-  $checked-border: var(
-      --leaf-frame-border-color,
-      var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-    ),
-  $feedback-border: var(--leaf-color-primary-indicator, var(--leaf-color-primary)),
+  $checked-border: var(--leaf-frame-border-color, var(--leaf-color-primary)),
+  $feedback-border: var(--leaf-color-primary),
   $supports-indeterminate: false
 ) {
   @include choice-label-states($component);

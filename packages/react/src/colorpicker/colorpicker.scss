@@ -133,7 +133,7 @@
       cursor: crosshair;
       touch-action: none;
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        outline: 2px solid var(--leaf-color-primary);
         outline-offset: 3px;
       }
     }
@@ -191,7 +191,7 @@
           box-shadow: 0 0 2px 1px rgb(0 0 0 / 25%);
         }
         &:focus-visible {
-          outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+          outline: 2px solid var(--leaf-color-primary);
           outline-offset: 3px;
         }
       }
@@ -246,7 +246,7 @@
         box-shadow:
           inset 0 0 0 1px var(--leaf-color-border),
           0 0 0 2px var(--leaf-color-surface),
-          0 0 0 4px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+          0 0 0 4px var(--leaf-color-primary);
       }
       &:focus-visible {
         @include mixins.focus-ring;
@@ -284,10 +284,10 @@
       cursor: pointer;
       transition: box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
       &[aria-pressed='true'] {
-        box-shadow: 0 0 0 2px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        box-shadow: 0 0 0 2px var(--leaf-color-primary);
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        outline: 2px solid var(--leaf-color-primary);
         outline-offset: 3px;
       }
     }

@@ -279,7 +279,7 @@ $include-field-styles: true !default;
       }
     }
     .leaf-floating__loading-icon {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       animation: var(
         --leaf-motion-animation,
         leaf-floating-spin calc(var(--leaf-motion-duration) * 4) linear infinite

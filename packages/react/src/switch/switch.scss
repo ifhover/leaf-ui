@@ -89,10 +89,7 @@
     &__input:checked + &__track {
       --leaf-switch-track-border: var(
         --leaf-component-switch-border-color,
-        var(
-          --leaf-frame-border-color,
-          var(--leaf-color-primary-indicator, var(--leaf-color-primary))
-        )
+        var(--leaf-frame-border-color, var(--leaf-color-primary))
       );
       --leaf-switch-track-background: var(--leaf-color-primary);
       background: var(--leaf-switch-track-background);

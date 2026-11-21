@@ -35,7 +35,7 @@
 | 内容表面           | `--leaf-color-surface`、`--leaf-color-surface-muted`、`--leaf-color-surface-raised`                                                     |
 | 结构边界           | `--leaf-color-border`、`--leaf-color-border-hover`、`--leaf-color-divider`                                                              |
 | 语义用途映射       | `--leaf-color-<family>-soft`、`-soft-hover`、`-soft-active`、`-border`、`-ink`                                                          |
-| 主色可读前景与指示 | `--leaf-color-primary-indicator`、`--leaf-color-primary-focus`、`--leaf-color-primary-fill-border`                                      |
+| 主色派生指示角色   | `--leaf-color-primary-indicator`、`--leaf-color-primary-focus`、`--leaf-color-primary-fill-border`（保留生成，内置组件主色展示层直接使用 `--leaf-color-primary`） |
 | 实色前景           | `--leaf-color-on-primary`、`--leaf-color-on-success`、`--leaf-color-on-danger`、`--leaf-color-on-warning`、`--leaf-color-on-info`        |
 | 动作交互           | `--leaf-color-primary-active`、`--leaf-color-danger-active`，以及当前保留的 hover / ink-hover / ink-active 角色；是否使用由动作配方决定 |
 | 链接文字反馈       | `--leaf-color-primary-link-hover` / `-link-active`、`--leaf-color-danger-link-hover` / `-link-active`；primary-link-active 同时供线形 Tabs 按下使用 |
@@ -48,12 +48,12 @@
 
 - 中性文字、表面、边框和选项反馈共用中性色阶；显式不透明 surface 按实际亮暗选择配套文字与边界，未指定 surface 时按 appearance 选择。显式文字和其他角色覆盖仍优先。
 - `soft` 默认浅底取 `light-9`、暗底取 `dark-9`；`soft-hover` / `soft-active` 与 `border` 默认取 `light-7` / `dark-7`。显式自定义表面按实际亮暗选择，不能只按 `appearance` 猜测。
-- `ink` 先尝试原色，相对实际 surface、surface-muted 与 soft 背景都达到 4.5:1 就直接保留；不足时在已生成派生色中优先按表面方向从小到大调整，必要时回退纯黑或纯白。表达式与半透明输入无法可靠比较时保留原色，不猜测或监听 DOM，应用自行验收。
+- `ink` 先尝试原色，相对实际 surface、surface-muted 与 soft 背景都达到 4.5:1 就直接保留；不足时在已生成派生色中优先按表面方向从小到大调整，必要时回退纯黑或纯白。表达式与半透明输入无法可靠比较时保留原色，不猜测或监听 DOM，应用自行验收。内置组件及 `status-ink-family(primary)` 在展示主色（文字、徽标、普通链接常态等）时统一直接使用 `primary` 基色，`primary-ink` / `primary-ink-hover` 保留为全局派生角色供应用显式选择；自定义主题色需确认文字对比度。
 - `on-*`（实底上的文字 / 图标）始终默认纯白，不按对比度选择黑白；五种 `on*Color` token 可由应用显式设为纯黑或其他颜色。它不与浅底文字 `ink` 合并。组件消费共享 `on-*`，不硬编码白色或自动黑白判断。固定白色可能使部分基色组合低于 4.5:1：这是已确认的产品契约，验收时如实报告失败组合与 `on*Color` 定制方式，不自动改黑、不调暗基色，也不关闭 axe 对比度检查；库不保证固定白字或显式覆盖满足文字对比度。本条是实底前景规则的唯一出处，其他文档只链接这里。
-- `primary-indicator` 独立选择：原 primary 对当前表面达到 3:1 时可继续使用，否则从明暗派生色选择满足 3:1 的指示色。`primary-focus` 与选中控件的必要边界复用该结果，不用于给实底 Button 自动补边框。
-- Checkbox、Radio 和 Switch 的选中实底使用原 primary，内容使用 `on-primary`；`primary-indicator` 可用于边界或独立指示，不得把它用作实底却沿用原 primary 对应的内容色。
-- Radio 的选中圆框、卡片边框与交互边框直接使用 primary，不使用 primary-indicator；组件边框及对应状态覆盖优先。共享 choice / choice-states / choice-surfaces 配方通过参数提供这一区别，不改变 Checkbox 的默认映射。
-- 组件不得自行挑选语义明暗派生档或中性 `100`–`900`。常规状态使用映射后的 `*-soft`、`*-border`、`*-ink`、中性角色或显式组件覆盖；确需新增选阶逻辑时，先进入共享映射并补齐测试。
+- `primary-indicator` 独立选择：原 primary 对当前表面达到 3:1 时可继续使用，否则从明暗派生色选择满足 3:1 的指示色。`primary-indicator`、`primary-focus` 与 `primary-fill-border` 仍作为全局派生角色生成供显式使用；内置组件的主色指示、焦点提示、进度、选中边框与边界统一直接使用 `primary` 基色，不因亮暗自动压暗或提亮，`primary-indicator` 也不用于给实底 Button 自动补边框。
+- Checkbox、Radio 和 Switch 的选中实底、选中边框与交互边框统一直接使用原 `primary`，内容使用 `on-primary`；显式组件、边框与状态覆盖优先。禁止把派生色阶用作实底却沿用另一颜色的前景。
+- 共享 `choice` / `choice-states` / `choice-surfaces` 配方保留 `$checked-border` 参数以支持组件级边框差异，默认统一映射为 `var(--leaf-frame-border-color, var(--leaf-color-primary))`；组件边框及对应状态覆盖优先。
+- 组件不得自行挑选语义明暗派生档或中性 `100`–`900`。常规状态使用映射后的 `*-soft`、`*-border`、非主色语义的 `*-ink`、主色展示使用的 `primary`、中性角色或显式组件覆盖；确需新增选阶逻辑时，先进入共享映射并补齐测试。
 
 ## 视觉家族契约
 
@@ -99,14 +99,14 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 | --- | --- |
 | `accent-soft-feedback-family` | 品牌浅底与柔边，供分页、导航、穿梭框（`Transfer`）选中项、上传和拖拽提示复用；不替代普通选项的中性反馈，也不把拖拽称作持久选中。分页当前页属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认 |
 | `danger-soft-feedback-family` | 危险浅底反馈，供 Dropdown / Menu 危险操作、Form / Confirm 错误摘要、FileList 动作复用 |
-| `status-ink-family` / `status-label-family` | 五种语义的可读文字、浅底标签和实底前景；Typography / FileList / Tag 不再自行选择 `text-80` |
+| `status-ink-family` / `status-label-family` | 五种语义的文字、浅底标签和实底前景（其中 `primary` 展示文字直接使用 `--leaf-color-primary`，其余四种语义继续消费 `*-ink`）；Typography / FileList / Tag 不再自行选择 `text-80` |
 | `panel-canvas-family` | 显式 card 型日期面板的柔和画布；Modal 与 Drawer 直接使用 surface |
 | `segmented-surface-family` | 分段 `Tabs` 与 `Calendar` 视图切换共用净白轨道（`--leaf-color-surface`）、边框（`--leaf-color-divider`）、主题浅底高亮（`--leaf-color-primary-soft`）和弱文字 |
 | `overlay-family(dialog / spotlight)` | Modal / Drawer 默认共用无模糊灰色遮罩，可显式开启模糊；Tour 保留更强的无模糊聚光遮罩 |
 | `calendar-selection-family` | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈 |
 | `accent-halo-family` | InputOTP、Slider、Upload 的强调光晕；不得据此给 Input / Select 恢复外圈。整体属于待收敛项（见 [设计风格](DESIGN-STYLE.md#待收敛清单)），修改前与用户确认，确认前按现行契约维护 |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button 的危险描边、文字和链接外观默认文字直接使用 `danger` 基色，不使用可读文字派生色；显式组件文字覆盖优先，应用需确认实际对比度。普通链接按钮使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`；危险链接悬停和按下使用 `danger-link-hover` / `danger-link-active`。线形 Tabs 未选中标签悬停使用 `primary-hover`，按下使用 `primary-link-active`，选中标签保持主题基色；显式组件文字和状态覆盖优先。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认普通文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button 的危险描边、文字和链接外观默认文字直接使用 `danger` 基色，不使用可读文字派生色；显式组件文字覆盖优先，应用需确认实际对比度。普通链接按钮与 Typography 链接默认使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`；危险链接悬停和按下使用 `danger-link-hover` / `danger-link-active`。线形 Tabs 未选中标签悬停使用 `primary-hover`，按下使用 `primary-link-active`，选中标签保持主题基色；显式组件文字和状态覆盖优先。
 
 上述文字动作色按 Ant Design 5.29.3 的 HSV 色板规则派生：普通链接悬停第 4 档，危险链接和 Tabs 悬停第 5 档，按下均为第 7 档。链接的四个独立角色服务于文字反馈，避免改动实底按下的 10% 混黑与可读 ink 配方；既有 primary / danger 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 默认 300ms、使用 CSS ease；两者随 motionDuration 缩放并遵守减少动态效果设置。
 
@@ -116,7 +116,7 @@ Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均�
 
 ### 可读颜色与兼容性
 
-五个语义 family 都具有基色、共享色阶和用途角色。普通表面及浅底上的语义文字 `ink` 以 4.5:1 为目标；实底前景见 [角色映射与选阶](#角色映射与选阶)。显式字色及组件覆盖优先。
+五个语义 family 都具有基色、共享色阶和用途角色。内置组件中 `success` / `warning` / `danger` / `info` 在普通表面及浅底上的语义文字继续消费以 4.5:1 为目标的 `*-ink`，`primary` 展示层文字与指示统一消费 `primary` 基色（`primary-ink` 等派生角色保留生成供显式使用，应用需确认自定义主色的文字对比度）；实底前景见 [角色映射与选阶](#角色映射与选阶)。显式字色及组件覆盖优先。
 
 浅色 / 深色表示运行模式，不是要求每个角色必须有两个不同色值。基色、语义明暗派生和中性色带跨模式共享，只有用途映射随实际表面切换。`*-ink` 是普通表面上的彩色文字，`on-*` 是实色背景上的文字 / 图标，二者不可合并。
 

@@ -51,7 +51,7 @@
         background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
         box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
       &:hover:not(:disabled) {
-        border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        border-color: var(--leaf-color-primary);
       }
       &:focus-visible {
         @include mixins.focus-ring;
@@ -85,7 +85,7 @@
     }
     &__dropzone:hover:not(:disabled) &__symbol,
     &[data-dragging] &__symbol {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       background: var(--leaf-accent-soft-background);
     }
     &__title {
@@ -134,7 +134,7 @@
         border: 0;
       }
       &:hover:not(:disabled) {
-        border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        border-color: var(--leaf-color-primary);
       }
       &:active:not(:disabled) {
         scale: 0.985;

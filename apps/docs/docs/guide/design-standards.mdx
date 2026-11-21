@@ -81,7 +81,7 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 | 正文、说明 | `--leaf-color-text`、`--leaf-color-text-muted`；Text / Paragraph 的 `tone`。不要给整段正文加 opacity 代替文字角色。 |
 | 内容面、柔和底板、浮起表面 | `--leaf-color-surface`、`--leaf-color-surface-muted`、`--leaf-color-surface-raised`。不把“白色卡片”写成固定白色。 |
 | 外框、交互边框、分割线 | `--leaf-color-border`、`--leaf-color-border-hover`、`--leaf-color-divider`；不把分割线全部改成外框色。 |
-| 普通表面上的主题色文字 | `--leaf-color-primary-ink`，或 `Text tone="primary"` / Link；不直接拿主题基色作小字颜色。 |
+| 普通表面上的主题色文字 | `--leaf-color-primary`（或 `Text tone="primary"` / Link）；内置组件直接使用主题原色，若需按 4.5:1 自动调整可读文字色，可显式选用 `--leaf-color-primary-ink`。 |
 | 主题色实底与其文字 | `--leaf-color-primary` 配 `--leaf-color-on-primary`，优先使用 `Button variant="solid"`，不要自行指定白字。 |
 | 成功、警告、危险、信息 | 使用对应状态组件；自定义语义文字使用该 family 的 `*-ink`，浅底使用 `*-soft`，实底与 `on-*` 成对使用。状态色表达含义，不装饰普通分区。 |
 

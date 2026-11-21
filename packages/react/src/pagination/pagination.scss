@@ -60,7 +60,7 @@
         &:active:not([data-loading]),
         &:focus-visible:not([data-loading]),
         &:disabled {
-          color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+          color: var(--leaf-color-primary);
           background: transparent;
           border-color: transparent;
           box-shadow: none;

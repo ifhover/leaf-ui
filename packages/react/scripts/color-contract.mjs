@@ -992,7 +992,7 @@ Optional override tokens and unknown fallback names remain visible in the audit.
 
 ${fieldLines.join('\n')}
 
-All field shells must use the shared primary-focus default via \`mixins.field(component)\` and must not redefine \`--leaf-field-color\` or \`--leaf-field-rest-border\`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
+All field shells must use the shared primary focus default via \`mixins.field(component)\` and must not redefine \`--leaf-field-color\` or \`--leaf-field-rest-border\`. The shared expression registry prevents unreviewed formula growth but does not prove internal state precedence; changes there require the documented browser comparison. Inner native-control resets, structural dividers and popup-only paint are separately reviewed exceptions, not duplicated field-shell recipes.
 
 ## Undefined or optional tokens
 
@@ -1037,7 +1037,7 @@ ${formatExceptions(baseline.exceptions)}
 1. Fields: outer shells select shared field/validation recipes; ColorPicker reuses Input for its value field and Mentions reuses Textarea. Native border resets, internal dividers and swatch outlines have separate drawing responsibilities. All field shells inherit primary focus from the shared field default. Explicit neutral focus is reserved for reviewed exceptions.
 2. Options and surfaces: ordinary feedback uses semantic roles; branded selection, danger feedback, inset canvases, segmented surfaces, calendar selection and halos select reviewed families. A new component may not copy an existing component-specific exception.
 3. Reviewed local recipes: rating colors, media canvases, control mechanics, masking strengths and optical effects retain distinct responsibilities. Their expressions/counts are frozen with reasons below rather than counted as completed migrations or freely reusable defaults.
-4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching \`on-*\` content. Where a dark custom base needs edge separation, \`primary-indicator\` provides the boundary rather than replacing the fill.
+4. Solid fills: checked controls, selected calendar days and finished Steps pair base-tone fills with matching \`on-*\` content and \`primary\` borders rather than darkened \`primary-indicator\` or \`primary-fill-border\` roles.
 5. Optional/compatibility inputs: \`primarySoftColor\` overrides the always-present generated \`primary-soft\` role. The historical \`surface-alpha-80\` CSS override remains supported with a table-surface fallback; its unknown-name warning is intentional until compatibility cleanup is separately reviewed.
 6. Color-scale boundaries: \`color-shades.ts\`, \`color-scale.ts\` and generated \`_palette.scss\` define reusable shades for the five semantic families plus neutral 100-900 steps. Component and shared-family source may not choose those shades directly; it must consume purpose roles. Legacy transparency effects stay in the exact reviewed exception budgets.
 7. Generated token cleanup: review zero-consumer tokens only after removing all consumers; removal is a separate reviewed recipe/palette change.

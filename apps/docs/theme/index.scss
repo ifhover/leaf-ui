@@ -75,12 +75,12 @@ html.rp-dark {
   --leaf-site-accent: #4da2ff;
 }
 .leaf-docs-theme {
-  --leaf-site-accent: var(--leaf-color-primary-ink);
+  --leaf-site-accent: var(--leaf-color-primary);
   --rp-c-brand: var(--leaf-site-accent);
-  --rp-c-brand-light: var(--leaf-color-primary-ink-hover);
+  --rp-c-brand-light: var(--leaf-color-primary-hover);
   --rp-c-brand-lighter: var(--leaf-color-primary-soft);
-  --rp-c-brand-dark: var(--leaf-color-primary-ink);
-  --rp-c-brand-darker: var(--leaf-color-primary-ink);
+  --rp-c-brand-dark: var(--leaf-color-primary);
+  --rp-c-brand-darker: var(--leaf-color-primary);
   --rp-c-brand-tint: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
 }
 .rp-codeblock__content:has(> .leaf-docs-code-actions) {

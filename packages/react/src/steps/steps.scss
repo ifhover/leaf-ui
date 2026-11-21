@@ -37,7 +37,7 @@
       background: var(--leaf-color-border);
     }
     &__item:not(:last-child)::after {
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      background: var(--leaf-color-primary);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
@@ -107,8 +107,8 @@
     }
     [data-status='process'] &__icon {
       background: var(--leaf-color-surface);
-      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      border-color: var(--leaf-color-primary);
+      color: var(--leaf-color-primary);
       border-width: 1.5px;
     }
     [data-status='process'] &__title {
@@ -116,7 +116,7 @@
     }
     [data-status='finish'] &__icon {
       background: var(--leaf-color-primary);
-      border-color: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      border-color: var(--leaf-color-primary);
       color: var(--leaf-color-on-primary);
     }
     [data-status='error'] &__icon {
@@ -216,7 +216,7 @@
   }
   .leaf-steps--dot [data-status='process'] .leaf-steps__icon,
   .leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
-    color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+    color: var(--leaf-color-primary);
     background: transparent;
   }
   .leaf-steps__icon > .leaf-steps__progress {
@@ -225,7 +225,7 @@
     width: calc(100% + 8px);
     height: calc(100% + 8px);
     fill: none;
-    stroke: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+    stroke: var(--leaf-color-primary);
     stroke-width: 2;
     transform: rotate(-90deg);
     pointer-events: none;

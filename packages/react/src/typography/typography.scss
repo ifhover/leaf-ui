@@ -81,7 +81,7 @@
     &__action {
       border: 0;
       background: transparent;
-      color: var(--leaf-color-primary-ink);
+      color: var(--leaf-color-primary);
       font: inherit;
       cursor: pointer;
       border-radius: var(--leaf-radius-sm);
@@ -114,14 +114,14 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    color: var(--leaf-color-primary-ink);
+    color: var(--leaf-color-primary);
     text-decoration: none;
     font: inherit;
     text-underline-offset: 4px;
     text-decoration-thickness: 1px;
     transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
     &:hover:not([aria-disabled]) {
-      color: var(--leaf-color-primary-ink-hover);
+      color: var(--leaf-color-primary-link-hover, var(--leaf-color-primary));
     }
     &:focus-visible {
       @include mixins.focus-ring;
@@ -152,7 +152,7 @@
       border-color: var(--leaf-color-border-hover);
     }
     &:focus {
-      outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      outline: 2px solid var(--leaf-color-primary);
       outline-offset: 2px;
     }
   }

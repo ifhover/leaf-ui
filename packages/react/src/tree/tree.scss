@@ -112,7 +112,7 @@
       overflow-wrap: anywhere;
       &[data-match] {
         font-weight: 700;
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
       }
     }
     &__selection-mark {
@@ -180,7 +180,7 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      background: var(--leaf-color-primary);
     }
     &[data-drop='before']::before {
       top: 0;

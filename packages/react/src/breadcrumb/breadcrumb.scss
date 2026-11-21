@@ -35,7 +35,7 @@
       text-underline-offset: 4px;
       text-decoration-thickness: 1px;
       &:hover:not([aria-current='page']) {
-        color: var(--leaf-color-primary-ink);
+        color: var(--leaf-color-primary);
         text-decoration-color: currentColor;
       }
       &:focus-visible {

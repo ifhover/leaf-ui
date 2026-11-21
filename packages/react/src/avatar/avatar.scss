@@ -17,7 +17,11 @@
     // Identity colors reuse theme roles without implying a member's status.
     @each $tone, $family in (0: primary, 1: info, 2: warning, 3: danger) {
       &[data-text-fallback][data-avatar-tone='#{$tone}'] {
-        color: var(--leaf-component-avatar-color, var(--leaf-color-#{$family}-ink));
+        @if $family == primary {
+          color: var(--leaf-component-avatar-color, var(--leaf-color-primary));
+        } @else {
+          color: var(--leaf-component-avatar-color, var(--leaf-color-#{$family}-ink));
+        }
         background: var(--leaf-component-avatar-background, var(--leaf-color-#{$family}-soft));
       }
     }
@@ -100,7 +104,7 @@
         transform: scale(0.96);
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+        outline: 2px solid var(--leaf-color-primary);
         outline-offset: 3px;
       }
     }

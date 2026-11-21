@@ -82,7 +82,7 @@
     }
     &__title-icon {
       flex: 0 0 auto;
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       transition: rotate var(--leaf-motion-duration) var(--leaf-motion-easing);
       [aria-expanded='true'] > & {
         rotate: 90deg;
@@ -166,7 +166,7 @@
       }
       &[aria-pressed='true'] {
         background: var(--leaf-segmented-selected-background);
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
       }
       &:focus-visible {
         @include mixins.focus-ring;
@@ -239,13 +239,13 @@
       color: var(--leaf-color-text-subtle, var(--leaf-color-text-muted));
     }
     &__day[aria-current='date'] &__number {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       font-weight: var(--leaf-heading-weight);
     }
     // A selected day always reads as one solid primary disc, including today.
     &__cell[aria-selected='true'] &__day:not(:disabled) &__number {
       background: var(--leaf-color-primary);
-      box-shadow: inset 0 0 0 1px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      box-shadow: inset 0 0 0 1px var(--leaf-color-primary);
       color: var(--leaf-color-on-primary);
       font-weight: var(--leaf-heading-weight);
     }
@@ -468,7 +468,7 @@
         line-height: var(--leaf-line-height-lg);
       }
       .leaf-calendar-view__month[aria-current='date'] .leaf-calendar-view__month-name {
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
       }
       .leaf-calendar-view__month .leaf-calendar-view__content {
         padding-inline: 4px;
@@ -495,7 +495,7 @@
       border-radius: 999px;
       color: var(--leaf-color-text-muted);
       &--today {
-        color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+        color: var(--leaf-color-primary);
         font-weight: var(--leaf-heading-weight);
       }
       &--selected {
@@ -507,12 +507,12 @@
 
     // Compact month selection mirrors the selected-day disc as a solid pill.
     &--compact &__month[aria-current='date'] &__month-name {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       font-weight: var(--leaf-heading-weight);
     }
     &--compact &__month[aria-pressed='true']:not(:disabled) {
       background: var(--leaf-color-primary);
-      box-shadow: inset 0 0 0 1px var(--leaf-color-primary-indicator, var(--leaf-color-primary));
+      box-shadow: inset 0 0 0 1px var(--leaf-color-primary);
       color: var(--leaf-color-on-primary);
       .leaf-calendar-view__month-name,
       .leaf-calendar-view__content {

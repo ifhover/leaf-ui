@@ -29,7 +29,7 @@ Source-level review for the `0.9.0` development branch on `2026-10-23`.
 - `calendar-selection-family`: shared calendar range and selected-day paint uses `primary-soft`, with `primary-soft-hover` for selection feedback.
 - `overlay-family`: dialog and spotlight overlay roles for `modal`, `drawer`, and `tour`.
 - `panel-canvas-family`: muted panel canvas for inset calendar-picker panels.
-- `status-ink-family` / `status-label-family`: contrast-aware readable status ink and soft status-label foreground/background roles.
+- `status-ink-family` / `status-label-family`: readable status ink and soft status-label foreground/background roles (`primary` uses base `primary` directly; other semantic families use contrast-aware `*-ink`).
 - `table-family` and `softened-frame-color`: table surface, header divider and row paint; Card also shares the softened frame and consumes `resting-surface-shadow`. Selected rows use `primary-soft`; stripes, hover and loading scrims retain formulas based on the table's own surface and text. Table is frameless and has no pinned-column shadows.
 
 Single-consumer paint stays on direct semantic tokens or remains a documented local exception. A family is not introduced for a single consumer.
@@ -41,16 +41,16 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 1 | `alert` | `alert` | Status base/ink roles on a softened neutral surface via `subtle-action-background`; `option-hover` for close feedback | Reviewed |
 | 2 | `anchor` | `anchor` | `accent-soft-feedback-family` for selected navigation, resolved through `primary-soft` and `primary-border` | Reviewed |
 | 4 | `auto-complete` | `autocomplete` | Primary `field` focus; `floating-paint`; shared `choice-option` feedback | Inherited |
-| 5 | `avatar` | `avatar` | Direct surface, text, and border roles; grouped text fallbacks cycle through primary / info / warning / danger soft / ink pairs and neutral muted roles for identity, not status; explicit Avatar paint overrides win | Reviewed |
+| 5 | `avatar` | `avatar` | Direct surface, text, and border roles; grouped text fallbacks cycle through `primary-soft` / `primary`, `info` / `warning` / `danger` `*-soft` / `*-ink` pairs, and neutral muted roles for identity, not status; explicit Avatar paint overrides win | Reviewed |
 | 6 | `back-top` | `backtop` | Inherits shared Button action paint | Inherited |
 | 7 | `badge` | `badge` | Status base and on-status foreground roles; inside placement has an explicitly fixed white separator ring, independent of theme surface and foreground | Reviewed |
-| 8 | `breadcrumb` | `breadcrumb` | Direct text, muted, and primary-ink roles | Reviewed |
+| 8 | `breadcrumb` | `breadcrumb` | Direct text, muted, and primary roles | Reviewed |
 | 9 | `button` | `button` | Local action stack; `danger-soft-feedback-family` for ghost danger; local on-color split divider | Reviewed + exception |
-| 10 | `calendar` | `calendar` | `calendar-selection-family` and `segmented-surface-family`; `divider` hairline grid on `surface`; selected numeral uses `primary`, `on-primary`, and an indicator boundary; today uses primary ink only; hover / press use the shared choice-option and `option-hover` backgrounds | Reviewed |
+| 10 | `calendar` | `calendar` | `calendar-selection-family` and `segmented-surface-family`; `divider` hairline grid on `surface`; selected numeral uses `primary`, `on-primary`, and a `primary` boundary; today uses `primary` only; hover / press use the shared choice-option and `option-hover` backgrounds | Reviewed |
 | 11 | `card` | `card` | `softened-frame-color`; `resting-surface-shadow`; direct surface roles | Reviewed |
 | 12 | `carousel` | `carousel` | Local media-navigation controls over changing imagery | Exception |
 | 13 | `cascader` | `cascader` | Primary `field` focus; `floating-paint`; `choice-option`; controlled structural borders | Inherited |
-| 14 | `checkbox` | `checkbox` | `choice`; checked fill uses `primary`, checked border uses `primary-indicator`, and content uses `on-primary` | Reviewed |
+| 14 | `checkbox` | `checkbox` | `choice`; checked fill and border use `primary`, and content uses `on-primary` | Reviewed |
 | 15 | `collapse` | `collapse` | `control-size`; direct surface, divider, and text roles | Reviewed |
 | 16 | `color-picker` | `colorpicker` | Primary `field` focus; shared Input for color text and segmented Tabs for formats; intrinsic hue/alpha/checker/preset paint | Reviewed + exception |
 | 18 | `config-provider` | `config-provider` | Contrast-calculation canvas only; no component paint | Exception |
@@ -70,40 +70,40 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 32 | `grid` | `grid` | No color responsibility | No color |
 | 33 | `image` | `image` | Fixed media-viewer overlays and exposed viewer variables | Exception |
 | 34 | `infinite-scroll` | `infinitescroll` | Direct muted, text, and surface roles | Reviewed |
-| 35 | `input` | `input` | `field('input')` (shared primary-focus default); controlled native reset | Inherited |
+| 35 | `input` | `input` | `field('input')` (shared primary focus default); controlled native reset | Inherited |
 | 36 | `input-mask` | `inputmask` | Inherits the input field shell and native reset | Inherited |
 | 37 | `input-number` | `inputnumber` | `field`; `option-hover` for stepper backgrounds | Reviewed |
 | 38 | `input-otp` | `inputotp` | `accent-halo-family`; field/base roles | Reviewed |
 | 39 | `layout` | `layout` | Direct surface, muted, and divider roles | Reviewed |
 | 40 | `loading` | `loading` | Local translucent surface scrim | Exception |
-| 41 | `loading-bar` | `loadingbar` | Direct primary indicator role | Reviewed |
+| 41 | `loading-bar` | `loadingbar` | Direct primary role | Reviewed |
 | 42 | `masonry` | `masonry` | No color responsibility | No color |
 | 43 | `mentions` | `mentions` | `floating-paint`; `choice-option`; Textarea field/base roles | Inherited |
 | 44 | `menu` | `menu` | `danger-soft-feedback-family`; explicit local appearance palette | Reviewed + exception |
 | 45 | `message` | `message` | Status roles; direct surface and elevation roles | Reviewed |
 | 46 | `modal` | `modal` | `overlay-family`; shared dialog sections; direct panel surface; standard Modal section dividers reuse `softened-frame-color`, excluding Confirm | Reviewed |
 | 47 | `notification` | `notification` | Status roles; direct surface and elevation roles | Reviewed |
-| 48 | `pagination` | `pagination` | `accent-soft-feedback-family` resolves to `primary-soft` / `primary-border`; `primary-indicator` remains the selection indicator | Reviewed |
+| 48 | `pagination` | `pagination` | `accent-soft-feedback-family` resolves to `primary-soft` / `primary-border`; `primary` serves as the active item color | Reviewed |
 | 49 | `popconfirm` | `popconfirm` | Inherits popover/modal and button action roles | Inherited |
 | 50 | `popover` | `popover` | `floating-paint` with divider border | Inherited |
 | 51 | `progress` | `progress` | Primary track/fill plus local shimmer effect | Exception |
 | 52 | `qr-code` | `qrcode` | Exposed foreground/background roles and local canvas scrim | Exception |
-| 53 | `radio` | `radio` | `choice`; checked fill uses `primary`, checked border uses `primary-indicator`, and content uses `on-primary` | Reviewed |
+| 53 | `radio` | `radio` | `choice`; checked fill and border use `primary`, and content uses `on-primary` | Reviewed |
 | 54 | `rate` | `rate` | Independent rating red/orange/gold scale | Exception |
 | 55 | `result` | `result` | Status, surface, and text roles | Reviewed |
 | 56 | `scroll-area` | `scrollarea` | Inherits scrollbar paint | Inherited |
 | 57 | `scrollbar` | `scrollbar` | `focus-ring`; direct muted/text/surface roles | Reviewed |
-| 58 | `select` | `select` | `field('select')` (shared primary-focus default); `floating-paint`; `choice-option`; `section-label` | Inherited |
+| 58 | `select` | `select` | `field('select')` (shared primary focus default); `floating-paint`; `choice-option`; `section-label` | Inherited |
 | 59 | `skeleton` | `skeleton` | Local text-subtle shimmer | Exception |
-| 60 | `slider` | `slider` | `accent-halo-family`; fill and thumb keep `primary-indicator` as independent indicators | Reviewed |
+| 60 | `slider` | `slider` | `accent-halo-family`; fill and thumb use `primary` | Reviewed |
 | 61 | `space` | `space` | No color responsibility | No color |
 | 62 | `splitter` | `splitter` | `accent-soft-feedback-family`; hover uses `accent-soft-border`; `focus-ring` | Reviewed |
 | 63 | `statistic` | `statistic` | Direct text, muted, and status roles | Reviewed |
-| 64 | `steps` | `steps` | `control-size`; `focus-ring`; finished icons use `primary` / `on-primary` with an indicator border | Reviewed |
-| 65 | `switch` | `switch` | `choice`; unchecked `option-hover` track; checked `primary` track and `primary-indicator` border; `on-primary` thumb with `primary` spinner | Reviewed |
+| 64 | `steps` | `steps` | `control-size`; `focus-ring`; finished icons use `primary` / `on-primary` with a `primary` border | Reviewed |
+| 65 | `switch` | `switch` | `choice`; unchecked `option-hover` track; checked `primary` track and `primary` border; `on-primary` thumb with `primary` spinner | Reviewed |
 | 66 | `table` / `table/tanstack` | `tabletanstack` | `table-family` selected rows use `primary-soft`; table-local stripe/hover/scrim formulas retained; scrollbar | Inherited |
 | 67 | `tabs` | `tabs` | `segmented-surface-family`; `control-size`; shared state paint | Reviewed |
-| 68 | `tag` | `tag` | `status-label-family`; soft backgrounds and readable inks come from matching semantic roles; close feedback keeps `currentColor` translucency | Reviewed + exception |
+| 68 | `tag` | `tag` | `status-label-family`; soft backgrounds and foregrounds come from matching semantic roles (`primary` uses base `primary` directly); close feedback keeps `currentColor` translucency | Reviewed + exception |
 | 69 | `textarea` | `textarea` | `field`; native resize remains component-owned | Inherited |
 | 70 | `timeline` | `timeline` | Direct divider, primary, and status roles | Reviewed |
 | 71 | `tooltip` | `tooltip` | Local inverse-content contrast | Exception |
@@ -119,12 +119,12 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 
 `color-scale.ts` generates the shared neutral nine-step scale. Semantic families use the named light / dark shades from `color-shades.ts`; only neutral exposes 100-900 steps. These shades are foundation data, not a component color-picker API. Components and shared families consume purpose roles instead:
 
-- Semantic soft surfaces map from the shared scale to `*-soft`, feedback states use `*-soft-hover` / `*-soft-active`, borders use `*-border`, readable text uses `*-ink`, and solid fills use the matching `on-*` foreground.
-- `primary-indicator`, `primary-focus`, `primary-fill-border`, `primary-hover`, `primary-active`, `primary-ink-hover`, and `primary-ink-active` remain independent primary roles. Slider and Pagination continue to use `primary-indicator` where an indicator is the intended visual.
+- Semantic soft surfaces map from the shared scale to `*-soft`, feedback states use `*-soft-hover` / `*-soft-active`, borders use `*-border`, readable text uses `*-ink` (for `success` / `warning` / `danger` / `info`, while built-in `primary` display layers consume `primary` directly), and solid fills use the matching `on-*` foreground.
+- `primary-indicator`, `primary-focus`, `primary-fill-border`, `primary-hover`, `primary-active`, `primary-ink-hover`, and `primary-ink-active` remain generated global primary roles for explicit application opt-in. Built-in component display layers (including text, links, focus outlines, indicators, Slider, and Pagination) consume `primary` directly without contrast darkening, while pressed interactions keep `primary-active` / `primary-link-active`.
 - Neutral `text`, `text-muted`, `text-subtle`, `surface`, `surface-muted`, `surface-raised`, `border`, `border-hover`, `divider`, and `option-hover` are generated roles. `styles/tokens.scss` no longer replaces the last four with historical percentage aliases.
-- Checkbox and Radio checked fills use the cross-mode `primary` base, bordered by `primary-indicator` when dark-mode visibility requires it, with `on-primary` marks. Switch follows the same fill/border/content split and keeps its spinner on `primary`.
-- Calendar selected numerals, DatePicker selected days, and Steps finished icons pair `primary` paint with `on-primary` content. Their indicator/fill-border boundary provides dark-surface separation without changing geometry.
-- Tag's custom-color TS path also resolves shared roles. Historical local hook names such as `--leaf-tag-color-surface-8` remain compatibility plumbing, but their values map to the modern soft role rather than creating another percentage recipe.
+- Checkbox and Radio checked fills, borders, and marks use the cross-mode `primary` base and `on-primary`. Switch follows the same `primary` track/border and `on-primary` thumb split and keeps its spinner on `primary`.
+- Calendar selected numerals, DatePicker selected days, and Steps finished icons pair `primary` paint and borders with `on-primary` content without changing geometry.
+- Tag's custom-color TS path also resolves shared roles (consuming the base seed color for custom-color foreground `--leaf-tag-ink`). Historical local hook names such as `--leaf-tag-color-surface-8` remain compatibility plumbing, but their values map to the modern soft role rather than creating another percentage recipe.
 
 Only ten consumed optical percentage recipes remain generated. Unused historical percentage outputs are removed in 0.9.0; new component or shared-family consumption is rejected. The static checker records exact current usage in `styles/_mixins.scss` and component exceptions; `styles/_palette.scss` and `color-scale.ts` are definition sources and are not counted as component debt. Fixed shadow paint in `styles/tokens.scss` has an exact reviewed optical exception budget.
 

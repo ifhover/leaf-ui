@@ -132,7 +132,7 @@
     }
 
     &[data-selected] {
-      color: var(--leaf-color-primary-ink, var(--leaf-color-primary));
+      color: var(--leaf-color-primary);
       background: var(--leaf-accent-soft-background);
 
       .leaf-checkbox__description {

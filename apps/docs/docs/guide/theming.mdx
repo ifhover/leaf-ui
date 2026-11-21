@@ -254,10 +254,10 @@ ConfigProvider 会在它包裹的区域提供 `--leaf-*` CSS 变量。业务内�
 | `--leaf-color-neutral-{100..900}`                     | 中性色九档色阶，浅色与深色使用同一组值。                           |
 | `--leaf-color-<family>-soft` / `-soft-hover` / `-soft-active` | 各语义的柔和背景及反馈底色。                                       |
 | `--leaf-color-<family>-border`                        | 各语义由色阶映射的边界色。                                         |
-| `--leaf-color-<family>-ink`                           | 各语义在普通表面上的可读文字色。                                   |
-| `--leaf-color-primary-indicator`                      | 选中、进度和轮廓的主色指示。                                       |
-| `--leaf-color-primary-focus`                          | 主色焦点提示；Input / Select 默认使用，其他字段与按钮保留各自的焦点样式。 |
-| `--leaf-color-primary-fill-border`                    | 日期选中等主色区域的辅助边界；实底按钮不使用此角色。                 |
+| `--leaf-color-<family>-ink`                           | 各语义在普通表面上的可读文字色（内置组件对 `success` / `warning` / `danger` / `info` 使用该角色；主色展示层直接使用 `--leaf-color-primary`，`--leaf-color-primary-ink` 保留供应用显式选用）。 |
+| `--leaf-color-primary-indicator`                      | 按 3:1 对比度独立选择的主色指示派生角色，保留生成供应用显式使用；内置组件当前直接使用 `--leaf-color-primary`。 |
+| `--leaf-color-primary-focus`                          | 主色焦点派生角色，保留生成供应用显式使用；Input / Select 及内置主色焦点当前直接使用 `--leaf-color-primary`，其余控件保留各自的焦点样式。 |
+| `--leaf-color-primary-fill-border`                    | 日期选中等主色区域的辅助边界派生角色，保留生成供应用显式使用；内置组件当前直接使用 `--leaf-color-primary`，实底按钮不使用此角色。 |
 | `--leaf-color-on-primary` / `on-success` / `on-danger` / `on-warning` / `on-info` | 各实色背景上的内容色。                             |
 | `--leaf-color-text` / `--leaf-color-text-muted`       | 主要、次要文字色。                                                 |
 | `--leaf-color-surface` / `--leaf-color-surface-muted` | 内容背景、辅助背景。                                               |

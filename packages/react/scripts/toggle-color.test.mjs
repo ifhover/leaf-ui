@@ -43,19 +43,19 @@ test('Radio uses primary borders and Ant Design selection timing without press s
     /missing compiled rule/u,
   );
 
-  // The shared mixins retain Checkbox's existing indicator and frame overrides.
+  // The shared mixins retain Checkbox's primary and frame overrides.
   const checkbox = await compiledStyles('checkbox/checkbox.scss');
   assert.equal(
     checkbox('.leaf-checkbox__input:checked')['border-color'],
-    'var(--leaf-frame-border-color,var(--leaf-color-primary-indicator,var(--leaf-color-primary)))',
+    'var(--leaf-frame-border-color,var(--leaf-color-primary))',
   );
   assert.equal(
     checkbox('.leaf-checkbox__input:indeterminate')['border-color'],
-    'var(--leaf-frame-border-color,var(--leaf-color-primary-indicator,var(--leaf-color-primary)))',
+    'var(--leaf-frame-border-color,var(--leaf-color-primary))',
   );
   assert.equal(
     checkbox('.leaf-checkbox--card:has(.leaf-checkbox__input:indeterminate)')['border-color'],
-    'var(--leaf-color-primary-indicator,var(--leaf-color-primary))',
+    'var(--leaf-color-primary)',
   );
   for (const [component, file] of [
     ['checkbox', 'checkbox/checkbox.scss'],
@@ -99,7 +99,7 @@ test('compiled switch pairs the checked primary fill with its explicit foregroun
   assert.equal(checked.color, 'var(--leaf-color-primary)');
   const track = rule('.leaf-switch__input:checked + .leaf-switch__track');
   assert.equal(track['--leaf-switch-track-background'], 'var(--leaf-color-primary)');
-  assert.ok(track['--leaf-switch-track-border'].includes('var(--leaf-color-primary-indicator,'));
+  assert.ok(track['--leaf-switch-track-border'].includes('var(--leaf-color-primary)'));
 });
 
 test('compiled switch states retain the resting track as fallback', async () => {

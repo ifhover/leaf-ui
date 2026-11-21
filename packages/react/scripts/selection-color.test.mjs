@@ -120,7 +120,7 @@ test('line Tabs use link feedback for unselected text without changing other app
       tabs(`.leaf-tabs--${appearance} .leaf-tabs__tab[aria-selected=true]`)[
         '--leaf-tabs-tab-color'
       ],
-      'var(--leaf-component-tabs-color,var(--leaf-color-primary-ink,var(--leaf-color-primary)))',
+      'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
     );
   }
 });
@@ -242,7 +242,7 @@ test('compiled solid selections retain base fills, foregrounds and visible bound
     const selected = rule(selector);
     assert.equal(selected.background, 'var(--leaf-color-primary)');
     assert.equal(selected.color, 'var(--leaf-color-on-primary)');
-    assert.ok(selected[border].includes('--leaf-color-primary-'), `${file}: selected boundary`);
+    assert.ok(selected[border].includes('--leaf-color-primary'), `${file}: selected boundary`);
   }
 });
 
