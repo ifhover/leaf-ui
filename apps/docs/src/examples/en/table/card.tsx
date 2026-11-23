@@ -1,4 +1,4 @@
-import { Button } from '@ifhover/leaf-ui';
+import { Button, Input } from '@ifhover/leaf-ui';
 import { DataTable } from '@ifhover/leaf-ui/table';
 import { useState } from 'react';
 
@@ -12,7 +12,13 @@ const members = [
 
 export function TableCard() {
   const [team, setTeam] = useState('all');
-  const filtered = team === 'all' ? members : members.filter((member) => member.team === team);
+  const [query, setQuery] = useState('');
+  const keyword = query.trim().toLowerCase();
+  const filtered = members.filter(
+    (member) =>
+      (team === 'all' || member.team === team) &&
+      (!keyword || member.name.toLowerCase().includes(keyword)),
+  );
 
   return (
     <DataTable
@@ -29,6 +35,14 @@ export function TableCard() {
           { key: 'Engineering', label: 'Engineering' },
         ],
       }}
+      topContent={
+        <Input
+          placeholder="Filter by member name"
+          aria-label="Filter by member name"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      }
       data={filtered}
       columns={[
         { accessorKey: 'name', header: 'Member' },

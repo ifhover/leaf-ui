@@ -41,6 +41,19 @@
       margin-block-end: var(--leaf-spacing-md, 16px);
     }
 
+    &__top-content {
+      min-width: 0;
+      margin-block-end: var(--leaf-spacing-md, 16px);
+
+      > :first-child {
+        margin-block-start: 0;
+      }
+
+      > :last-child {
+        margin-block-end: 0;
+      }
+    }
+
     &__tab-extra {
       display: flex;
       align-items: center;
@@ -97,20 +110,33 @@
           }
         }
 
+        > .leaf-card__panel > .leaf-card__body > .leaf-data-table__top-content {
+          margin-block-end: 0;
+          padding: var(--leaf-card-padding) var(--leaf-card-padding)
+            min(16px, var(--leaf-card-padding));
+        }
+
+        > .leaf-card__header
+          + .leaf-card__panel
+          > .leaf-card__body:first-child
+          > .leaf-data-table__top-content:first-child {
+          padding-block-start: 0;
+        }
+
         .leaf-table {
           --leaf-table-inset: calc(var(--leaf-card-padding) - var(--leaf-table-padding-inline));
         }
 
         > .leaf-card__panel:first-child
           > .leaf-card__body:first-child
-          > .leaf-data-table__content:last-child
+          > .leaf-data-table__content:first-child:last-child
           .leaf-table {
           border-radius: var(--leaf-data-table-card-inner-radius);
         }
 
         > .leaf-card__panel:first-child
           > .leaf-card__body:first-child
-          > .leaf-data-table__content:not(:last-child)
+          > .leaf-data-table__content:first-child:not(:last-child)
           .leaf-table {
           border-radius: var(--leaf-data-table-card-inner-radius)
             var(--leaf-data-table-card-inner-radius) 0 0;
@@ -124,6 +150,10 @@
         > .leaf-card__panel
           > .leaf-card__body:not(:first-child)
           > .leaf-data-table__content:last-child
+          .leaf-table,
+        > .leaf-card__panel
+          > .leaf-card__body
+          > .leaf-data-table__content:not(:first-child):last-child
           .leaf-table {
           border-radius: 0 0 var(--leaf-data-table-card-inner-radius)
             var(--leaf-data-table-card-inner-radius);
@@ -137,6 +167,10 @@
         > .leaf-card__panel
           > .leaf-card__body:not(:first-child)
           > .leaf-data-table__content:not(:last-child)
+          .leaf-table,
+        > .leaf-card__panel
+          > .leaf-card__body
+          > .leaf-data-table__content:not(:first-child):not(:last-child)
           .leaf-table {
           border-radius: 0;
         }

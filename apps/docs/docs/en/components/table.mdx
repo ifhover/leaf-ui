@@ -49,7 +49,7 @@ Pass data, column definitions, and a stable unique `rowKey`. Tables use clean su
 
 ### Card appearance and title
 
-Set `variant="card"` to wrap the table and pagination inside a Card container (without Card footer chrome; the table spans full width with outer column edges aligned to Card padding), and use `title`, `description`, `extra`, and `tabs` to customize the header and tabs above the table.
+Set `variant="card"` to wrap the table and pagination inside a Card container (without Card footer chrome; the table spans full width with outer column edges aligned to Card padding), and use `title`, `description`, `extra`, `tabs`, and `topContent` to customize the header, tabs, and body-padded content area above the table.
 
 <ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
 
@@ -249,6 +249,7 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `description` | `ReactNode` | — | Supporting text displayed below the title. |
 | `extra` | `ReactNode` | — | Trailing actions or content in the title or tab bar. |
 | `tabs` | [`CardTabsProps`](card#cardtabs-api) | — | Line tabs displayed above the table; shares Card tabs controlled, uncontrolled and extra placement behavior. |
+| `topContent` | `ReactNode` | — | Full-width content rendered above the table; uses Card body padding in `card` variant. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
 | `bordered` | `boolean` | `false` | Add only an outer border and four rounded corners while keeping internal dividers and headers unchanged. |
 | `striped` | `boolean` | `false` | Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers. |

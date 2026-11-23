@@ -1527,4 +1527,59 @@ describe('DataTable TanStack adapter', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Active' }));
     expect(onTabChange).toHaveBeenCalledTimes(2);
   });
+
+  it('renders topContent above the table inside Card body and in default mode', () => {
+    const { container, rerender } = render(
+      <DataTable
+        variant="card"
+        title="Members"
+        tabs={{
+          activeKey: 'all',
+          items: [{ key: 'all', label: 'All' }],
+        }}
+        topContent={<div data-testid="filter-bar">Full width filter</div>}
+        data={data}
+        columns={columns}
+        rowKey="id"
+      />,
+    );
+
+    const cardBody = container.querySelector('.leaf-data-table__card .leaf-card__body');
+    const topContent = cardBody?.querySelector('.leaf-data-table__top-content');
+    const tableContent = cardBody?.querySelector('.leaf-data-table__content');
+    expect(topContent).toBeInTheDocument();
+    expect(topContent).toContainElement(screen.getByTestId('filter-bar'));
+    expect(cardBody?.firstElementChild).toBe(topContent);
+    expect(topContent?.nextElementSibling).toBe(tableContent);
+    expect(container.querySelector('.leaf-data-table')).not.toHaveAttribute('topcontent');
+
+    rerender(
+      <DataTable
+        topContent={<div data-testid="default-filter">Default filter</div>}
+        data={data}
+        columns={columns}
+        rowKey="id"
+        pagination={false}
+      />,
+    );
+    const defaultRoot = container.querySelector('.leaf-data-table');
+    const defaultTop = defaultRoot?.querySelector('.leaf-data-table__top-content');
+    expect(defaultTop).toBeInTheDocument();
+    expect(defaultTop).toContainElement(screen.getByTestId('default-filter'));
+    expect(defaultTop?.nextElementSibling).toBe(
+      defaultRoot?.querySelector('.leaf-data-table__content'),
+    );
+
+    rerender(
+      <DataTable
+        variant="card"
+        topContent={false}
+        data={data}
+        columns={columns}
+        rowKey="id"
+        pagination={false}
+      />,
+    );
+    expect(container.querySelector('.leaf-data-table__top-content')).toBeNull();
+  });
 });

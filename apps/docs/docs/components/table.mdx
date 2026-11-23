@@ -49,7 +49,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 卡片外观与标题区
 
-设置 `variant="card"` 使用卡片容器包裹表格（表格占满卡片宽度且首末列边缘对齐卡片内边距，分页器位于卡片内表格下方），并通过 `title`、`description`、`extra` 与 `tabs` 定制表格上方标题与标签区。
+设置 `variant="card"` 使用卡片容器包裹表格（表格占满卡片宽度且首末列边缘对齐卡片内边距，分页器位于卡片内表格下方），并通过 `title`、`description`、`extra`、`tabs` 与 `topContent` 定制表格上方标题、标签页与卡片主体内容区（`topContent` 在卡片模式下自带与 `Card` 一致的正文内边距）。
 
 <ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
 
@@ -249,6 +249,7 @@ npm install @tanstack/react-table@^8.21.3
 | `description` | `ReactNode` | — | 标题下方的补充说明。 |
 | `extra` | `ReactNode` | — | 标题或标签栏右侧的附加操作或信息。 |
 | `tabs` | [`CardTabsProps`](card#cardtabs-api) | — | 表格上方的线形标签页配置；支持与 Card tabs 一致的受控/非受控与附加区域行为。 |
+| `topContent` | `ReactNode` | — | 表格上方（标题与标签栏下方）的铺满内容区域；在 card 模式下自带与 Card 一致的正文内边距。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
 | `bordered` | `boolean` | `false` | 仅在表格外层添加边框与四角圆角，内部单元格分割线与表头样式保持不变。 |
 | `striped` | `boolean` | `false` | 默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。 |

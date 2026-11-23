@@ -240,19 +240,32 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
   );
   assert.equal(
     table(
-      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:last-child .leaf-table',
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body > .leaf-data-table__top-content',
+    ).padding,
+    'var(--leaf-card-padding)var(--leaf-card-padding)min(16px,var(--leaf-card-padding))',
+  );
+  assert.equal(
+    table(
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__header + .leaf-card__panel > .leaf-card__body:first-child > .leaf-data-table__top-content:first-child',
+    )['padding-block-start'],
+    '0px',
+  );
+  assert.equal(
+    table(
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:first-child:last-child .leaf-table',
     )['border-radius'],
     'var(--leaf-data-table-card-inner-radius)',
   );
   assert.equal(
     table(
-      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:not(:last-child) .leaf-table',
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:first-child:not(:last-child) .leaf-table',
     )['border-radius'],
     'var(--leaf-data-table-card-inner-radius)var(--leaf-data-table-card-inner-radius)0 0',
   );
   for (const selector of [
     '.leaf-data-table--card .leaf-data-table__card > .leaf-card__header + .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:last-child .leaf-table',
     '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body:not(:first-child) > .leaf-data-table__content:last-child .leaf-table',
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:not(:first-child):last-child .leaf-table',
   ]) {
     assert.equal(
       table(selector)['border-radius'],
@@ -262,6 +275,7 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
   for (const selector of [
     '.leaf-data-table--card .leaf-data-table__card > .leaf-card__header + .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:not(:last-child) .leaf-table',
     '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body:not(:first-child) > .leaf-data-table__content:not(:last-child) .leaf-table',
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:not(:first-child):not(:last-child) .leaf-table',
   ]) {
     assert.equal(table(selector)['border-radius'], '0px');
   }

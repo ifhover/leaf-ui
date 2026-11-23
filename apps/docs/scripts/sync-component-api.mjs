@@ -610,6 +610,10 @@ const tableTabsDescription = [
   '表格上方的线形标签页配置；支持与 Card tabs 一致的受控/非受控与附加区域行为。',
   'Line tabs displayed above the table; shares Card tabs controlled, uncontrolled and extra placement behavior.',
 ];
+const tableTopContentDescription = [
+  '表格上方（标题与标签栏下方）的铺满内容区域；在 card 模式下自带与 Card 一致的正文内边距。',
+  'Full-width content rendered above the table; uses Card body padding in `card` variant.',
+];
 const tableStripedDescription = [
   '默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。',
   'Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers.',
@@ -3300,6 +3304,8 @@ const specific = {
   'DataTablePresentationProps.extra': tableExtraDescription,
   'DataTableProps.tabs': tableTabsDescription,
   'DataTablePresentationProps.tabs': tableTabsDescription,
+  'DataTableProps.topContent': tableTopContentDescription,
+  'DataTablePresentationProps.topContent': tableTopContentDescription,
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
   'DataTableProps.bordered': tableBorderedDescription,

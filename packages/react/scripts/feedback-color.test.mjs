@@ -463,26 +463,27 @@ test('result icons share rounded tray geometry with neutral empty and soft seman
   assert.equal(base.padding, 'var(--leaf-component-result-padding,20px 16px)');
 
   const tray = result('.leaf-result__icon:not(:has(> img))');
-  assert.equal(tray.width, '32px');
-  assert.equal(tray.height, '32px');
+  assert.equal(tray.width, '40px');
+  assert.equal(tray.height, '40px');
   assert.equal(tray.border, '0px');
   assert.equal(tray['border-radius'], 'var(--leaf-radius)');
   assert.equal(tray.background, 'var(--leaf-result-icon-bg)');
 
   const svg = result('.leaf-result__icon:not(:has(> img)) > svg');
-  assert.equal(svg.width, '16px');
-  assert.equal(svg.height, '16px');
+  assert.equal(svg.width, '20px');
+  assert.equal(svg.height, '20px');
 
   assert.equal(result('.leaf-result__icon').margin, '0 auto var(--leaf-spacing-md)');
-  assert.equal(result('.leaf-result__title')['font-size'], 'var(--leaf-font-size)');
-  assert.equal(result('.leaf-result__description')['font-size'], 'var(--leaf-font-size)');
-  assert.equal(result('.leaf-result__description')['line-height'], 'var(--leaf-line-height)');
+  assert.equal(result('.leaf-result__title')['font-size'], 'var(--leaf-font-size-lg)');
+  assert.equal(result('.leaf-result__title')['line-height'], 'var(--leaf-line-height-lg)');
+  assert.equal(result('.leaf-result__description')['font-size'], 'var(--leaf-font-size-sm)');
+  assert.equal(result('.leaf-result__description')['line-height'], 'var(--leaf-line-height-sm)');
   assert.equal(
     result('.leaf-result__title + .leaf-result__description')['margin-top'],
     'var(--leaf-spacing-sm)',
   );
   assert.equal(result('.leaf-result__content')['margin-top'], 'var(--leaf-spacing-lg)');
-  assert.equal(result('.leaf-result__extra')['margin-top'], 'var(--leaf-spacing-lg)');
+  assert.equal(result('.leaf-result__extra')['margin-top'], 'var(--leaf-spacing-md)');
   assert.throws(() => result('.leaf-result--sm'), /missing compiled rule/u);
   assert.throws(() => result('.leaf-result--info'), /missing compiled rule/u);
 

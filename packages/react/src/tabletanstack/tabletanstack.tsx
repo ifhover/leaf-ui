@@ -173,6 +173,7 @@ function DataTableRoot<TData>({
   description,
   extra,
   tabs,
+  topContent,
   size = 'md',
   bordered = false,
   striped = false,
@@ -202,6 +203,7 @@ function DataTableRoot<TData>({
   const regionPrefix = isCard ? 'leaf-card' : 'leaf-data-table';
   const rawTabItems = tabs?.items;
   const hasTabs = Boolean(rawTabItems?.length);
+  const hasTopContent = topContent != null && typeof topContent !== 'boolean';
   const hasTitleHeading = title != null || description != null;
   const hasHeadingBar = hasTitleHeading || (!hasTabs && extra != null);
   const tabExtra =
@@ -332,6 +334,10 @@ function DataTableRoot<TData>({
       />
     ) : null;
 
+  const topContentNode = hasTopContent ? (
+    <div className="leaf-data-table__top-content">{topContent}</div>
+  ) : null;
+
   const footerNode = automaticPagination ? (
     <DataTableFooterControl>
       <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
@@ -362,6 +368,7 @@ function DataTableRoot<TData>({
               <div className="leaf-card__panel">
                 {tabsNode}
                 <div className="leaf-card__body">
+                  {topContentNode}
                   <DataTableContentControl />
                   {footerNode}
                 </div>
@@ -371,6 +378,7 @@ function DataTableRoot<TData>({
             <>
               {headingNode}
               {tabsNode}
+              {topContentNode}
               <DataTableContentControl />
               {footerNode}
             </>

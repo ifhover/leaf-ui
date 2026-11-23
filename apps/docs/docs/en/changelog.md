@@ -7,6 +7,16 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.20.0 - 2026-11-24
+
+### Features
+
+- **DataTable `topContent` slot**: Added `topContent` on `DataTable` to render full-width filter toolbars or summary notices directly above the table (below the heading and tabs), automatically inheriting `Card` body padding in `variant="card"`.
+
+### Improvements
+
+- **Result and Empty icon stage & typography**: Updated the borderless icon tray from `32px` (`16px` icon) to `40px` (`20px` icon), adjusted `Result` titles to `--leaf-font-size-lg` and descriptions to `--leaf-font-size-sm`, and unified action top spacing to `--leaf-spacing-md`.
+
 ## 0.19.0 - 2026-11-24
 
 ### Features

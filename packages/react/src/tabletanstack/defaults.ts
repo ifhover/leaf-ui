@@ -28,6 +28,8 @@ export interface DataTablePresentationProps
   extra?: ReactNode;
   /** Tabs placed above the table; matches `Card` `tabs` behavior. */
   tabs?: CardTabsProps;
+  /** Full-width content rendered above the table; uses Card body padding in `card` variant. */
+  topContent?: ReactNode;
   size?: ControlSize;
   /** Add an outer frame around the table without changing internal dividers. */
   bordered?: boolean;
